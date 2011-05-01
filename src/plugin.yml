@@ -1,0 +1,4 @@
+name: BukkitContrib
+main: com.afforess.bukkitcontrib.BukkitContrib
+version: 1.0.0
+authors: [Afforess, deltahat]
