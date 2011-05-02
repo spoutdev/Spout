@@ -10,25 +10,25 @@ import org.bukkitcontrib.event.inventory.InventoryListener;
 
 
 public class BukkitContrib extends JavaPlugin{
-	private static final ContribPlayerListener playerListener = new ContribPlayerListener();
-	private static final InventoryListener inventoryListener = new InventoryListener();
-	private static Server server;
-	@Override
-	public void onDisable() {
-		// TODO Auto-generated method stub
-		
-	}
+    private static final ContribPlayerListener playerListener = new ContribPlayerListener();
+    private static final InventoryListener inventoryListener = new InventoryListener();
+    private static Server server;
+    @Override
+    public void onDisable() {
+        // TODO Auto-generated method stub
+        
+    }
 
-	@Override
-	public void onEnable() {
-		BukkitContrib.server = getServer();
-		getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Type.CUSTOM_EVENT, inventoryListener, Priority.Normal, this);
-		Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
-	}
-	
-	public static Server getMinecraftServer() {
-		return server;
-	}
+    @Override
+    public void onEnable() {
+        BukkitContrib.server = getServer();
+        getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Type.CUSTOM_EVENT, inventoryListener, Priority.Normal, this);
+        Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
+    }
+    
+    public static Server getMinecraftServer() {
+        return server;
+    }
 
 }

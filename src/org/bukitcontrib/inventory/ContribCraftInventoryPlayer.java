@@ -6,11 +6,11 @@ import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer;
 
 public class ContribCraftInventoryPlayer extends CraftInventoryPlayer{
 
-	public ContribCraftInventoryPlayer(InventoryPlayer inventory) {
-		super(inventory);
-	}
+    public ContribCraftInventoryPlayer(InventoryPlayer inventory) {
+        super(inventory);
+    }
 
-	public InventoryPlayer getHandle() {
-		return (InventoryPlayer)this.inventory;
-	}
+    public InventoryPlayer getHandle() {
+        return (InventoryPlayer)this.inventory;
+    }
 }
