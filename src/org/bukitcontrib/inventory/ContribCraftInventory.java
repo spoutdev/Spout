@@ -1,4 +1,4 @@
-package com.afforess.bukkitcontrib.inventory;
+package org.bukitcontrib.inventory;
 
 import net.minecraft.server.IInventory;
 

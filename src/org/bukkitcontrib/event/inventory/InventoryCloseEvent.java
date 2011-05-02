@@ -1,4 +1,4 @@
-package com.afforess.bukkitcontrib.event.inventory;
+package org.bukkitcontrib.event.inventory;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

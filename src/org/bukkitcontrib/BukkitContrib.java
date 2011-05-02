@@ -1,4 +1,4 @@
-package com.afforess.bukkitcontrib;
+package org.bukkitcontrib;
 
 import java.util.logging.Logger;
 
@@ -6,8 +6,8 @@ import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkitcontrib.event.inventory.InventoryListener;
 
-import com.afforess.bukkitcontrib.event.inventory.InventoryListener;
 
 public class BukkitContrib extends JavaPlugin{
 	private static final ContribPlayerListener playerListener = new ContribPlayerListener();

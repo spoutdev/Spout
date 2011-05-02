@@ -1,4 +1,4 @@
-package com.afforess.bukkitcontrib;
+package org.bukkitcontrib;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.CraftServer;

@@ -1,14 +1,14 @@
-package com.afforess.bukkitcontrib;
+package org.bukkitcontrib;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukitcontrib.inventory.ContribCraftInventory;
 import org.bukkit.entity.Player;
+import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 
-import com.afforess.bukkitcontrib.event.inventory.InventoryCloseEvent;
-import com.afforess.bukkitcontrib.inventory.ContribCraftInventory;
 
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;

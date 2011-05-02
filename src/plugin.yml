@@ -1,4 +1,4 @@
 name: BukkitContrib
-main: com.afforess.bukkitcontrib.BukkitContrib
+main: org.bukkitcontrib.BukkitContrib
 version: 1.0.0
 authors: [Afforess, deltahat]
