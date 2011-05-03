@@ -186,7 +186,7 @@ public class BukkitContribNetServerHandler extends NetServerHandler{
             InventorySlotType type = getActiveInventorySlotType(packet.b);
             
             //alert of a newly opened inventory
-            if (!activeInventory){
+            if (!activeInventory) {
                 activeInventory = true;
                 InventoryOpenEvent event = new InventoryOpenEvent(player, getCraftInventory(inventory));
                 BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
@@ -227,7 +227,7 @@ public class BukkitContribNetServerHandler extends NetServerHandler{
                 this.player.inventory.b((ItemStack) null);
                 break;
             case ALLOW: // Allow the placement unconditionally
-                if(packet.b == -999) { // Clicked outside, just defer to default
+                if (packet.b == -999) { // Clicked outside, just defer to default
                     itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
                 }
                 else {
@@ -239,27 +239,27 @@ public class BukkitContribNetServerHandler extends NetServerHandler{
                         itemstack.count += cursorstack.count;
                         this.player.inventory.b((ItemStack) null);
                     }
-                    else if(click == lclick || (itemstack != null && cursorstack != null && !itemstack.a(cursorstack))) {
+                    else if (click == lclick || (itemstack != null && cursorstack != null && !itemstack.a(cursorstack))) {
                         // Either left-click, or right-click full slot with full cursor of different item; just swap contents
                         this.player.activeContainer.b(packet.b).c(cursorstack);
                         this.player.inventory.b(itemstack);
                     }
-                    else if(click == rclick) { // Right-click with either slot or cursor empty
-                        if(itemstack == null) { // Slot empty; drop one
+                    else if (click == rclick) { // Right-click with either slot or cursor empty
+                        if (itemstack == null) { // Slot empty; drop one
                             this.player.activeContainer.b(packet.b).c(cursorstack.a(1));
                             if(cursorstack.count == 0)
                                 this.player.inventory.b((ItemStack) null);
                         }
-                        else if(cursorstack == null) { // Cursor empty; take half
+                        else if (cursorstack == null) { // Cursor empty; take half
                             this.player.inventory.b(itemstack.a((itemstack.count + 1) / 2));
                         }
                         else { // Neither empty, but same item; drop one
                             ItemStack drop = cursorstack.a(1);
                             itemstack.count += drop.count;
                             this.player.activeContainer.b(packet.b).c(itemstack);
-                            if(cursorstack.count == 0)
+                            if (cursorstack.count == 0) {
                                 this.player.inventory.b((ItemStack) null);
-                            // this.player.activeContainer.a(packet102windowclick.b).c(cursorstack.a(1));
+                            }
                         }
                     }
                     itemstack = this.player.activeContainer.a(packet.b);
@@ -273,7 +273,8 @@ public class BukkitContribNetServerHandler extends NetServerHandler{
                 this.player.activeContainer.a();
                 this.player.y();
                 this.player.h = false;
-            } else {
+            }
+            else {
                 this.n.put(Integer.valueOf(this.player.activeContainer.f), Short.valueOf(packet.d));
                 this.player.netServerHandler.sendPacket(new Packet106Transaction(packet.a, packet.d, false));
                 this.player.activeContainer.a(this.player, false);
