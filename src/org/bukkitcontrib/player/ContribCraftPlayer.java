@@ -25,26 +25,26 @@ import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
 
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 
-	public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
-		super(server, entity);
-	}
-	
-	public boolean closeActiveWindow() {
-		InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory());
-		BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
-			return false;
-		}
+    public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
+        super(server, entity);
+    }
+    
+    public boolean closeActiveWindow() {
+        InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory());
+        BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
         getHandle().x();
         return true;
     }
     
     public boolean openInventoryWindow(Inventory inventory) {
-    	InventoryOpenEvent event = new InventoryOpenEvent(this, inventory);
-    	BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
-    	if (event.isCancelled()) {
-    		return false;
-    	}
+        InventoryOpenEvent event = new InventoryOpenEvent(this, inventory);
+        BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
         IInventory dialog = ((CraftInventory)event.getInventory()).getInventory();
         if (dialog instanceof TileEntityDispenser) {
             getHandle().a((TileEntityDispenser)dialog);
@@ -63,26 +63,26 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             throw new UnsupportedOperationException("Must be a valid workbench!");
         }
         else {
-        	ContainerWorkbench temp = new ContainerWorkbench(getHandle().inventory, ((CraftWorld)location.getWorld()).getHandle(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-        	IInventory inventory = temp.b;
-        	InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory));
-        	BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
-        	if (event.isCancelled()) {
-        		return false;
-        	}
+            ContainerWorkbench temp = new ContainerWorkbench(getHandle().inventory, ((CraftWorld)location.getWorld()).getHandle(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+            IInventory inventory = temp.b;
+            InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory));
+            BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return false;
+            }
             getHandle().a(location.getBlockX(), location.getBlockY(), location.getBlockZ());
             return true;
         }
     }
     
     public Inventory getActiveInventory() {
-    	return getNetServerHandler().getCraftInventory(getNetServerHandler().getActiveInventory());
+        return getNetServerHandler().getCraftInventory(getNetServerHandler().getActiveInventory());
     }
     
     public BukkitContribNetServerHandler getNetServerHandler() {
-    	return (BukkitContribNetServerHandler) getHandle().netServerHandler;
+        return (BukkitContribNetServerHandler) getHandle().netServerHandler;
     }
-	
+    
     public static boolean updateNetServerHandler(Player player) {
         CraftPlayer cp = (CraftPlayer)player;
         CraftServer server = (CraftServer)BukkitContrib.getMinecraftServer();
@@ -98,28 +98,28 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
     
     public static boolean updateBukkitEntity(Player player) {
-    	if (!(player instanceof ContribCraftPlayer)) {
-    		CraftPlayer cp = (CraftPlayer)player;
-    		EntityPlayer ep = cp.getHandle();
-    		Field bukkitEntity;
-			try {
-				bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-				bukkitEntity.setAccessible(true);
-	    		bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)BukkitContrib.getMinecraftServer(), ep));
-	    		return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-    	}
-       	return false;
+        if (!(player instanceof ContribCraftPlayer)) {
+            CraftPlayer cp = (CraftPlayer)player;
+            EntityPlayer ep = cp.getHandle();
+            Field bukkitEntity;
+            try {
+                bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+                bukkitEntity.setAccessible(true);
+                bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)BukkitContrib.getMinecraftServer(), ep));
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+           return false;
     }
     
     public static ContribPlayer getContribPlayer(Player player) {
-    	if (player instanceof ContribCraftPlayer) {
-    		return (ContribCraftPlayer)player;
-    	}
-    	updateBukkitEntity(player);
-    	return (ContribCraftPlayer)((CraftPlayer)player).getHandle().getBukkitEntity();
+        if (player instanceof ContribCraftPlayer) {
+            return (ContribCraftPlayer)player;
+        }
+        updateBukkitEntity(player);
+        return (ContribCraftPlayer)((CraftPlayer)player).getHandle().getBukkitEntity();
     }
 
 }

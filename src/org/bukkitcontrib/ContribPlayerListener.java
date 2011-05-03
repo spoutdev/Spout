@@ -13,16 +13,16 @@ public class ContribPlayerListener extends PlayerListener{
     }
     
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
-    	if (event.isCancelled()) {
-    		return;
-    	}
-    	if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
-    		Runnable update = new Runnable() {
-    			public void run() {
-    				ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
-    			}
-    		};
-    		BukkitContrib.getMinecraftServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update);
-    	}
+        if (event.isCancelled()) {
+            return;
+        }
+        if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
+            Runnable update = new Runnable() {
+                public void run() {
+                    ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
+                }
+            };
+            BukkitContrib.getMinecraftServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update);
+        }
     }
 }

@@ -34,7 +34,7 @@ public class BukkitContrib extends JavaPlugin{
     }
     
     public static BukkitContrib getInstance() {
-    	return instance;
+        return instance;
     }
 
 }
