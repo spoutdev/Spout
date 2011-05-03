@@ -1,6 +1,7 @@
 package org.bukkitcontrib.event.inventory;
 
 import org.bukitcontrib.inventory.ContribCraftInventoryPlayer;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +17,15 @@ public class InventoryClickEvent extends InventoryEvent{
 
     public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot) {
         super("InventoryClickEvent", player, inventory);
+        this.type = type;
+        this.item = item;
+        this.cursor = cursor;
+        this.slot = slot;
+        this.convertedSlot = convertSlot(this.slot);
+    }
+    
+    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, Location location) {
+        super("InventoryClickEvent", player, inventory, location);
         this.type = type;
         this.item = item;
         this.cursor = cursor;

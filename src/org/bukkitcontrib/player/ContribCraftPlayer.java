@@ -40,7 +40,11 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
     
     public boolean openInventoryWindow(Inventory inventory) {
-        InventoryOpenEvent event = new InventoryOpenEvent(this, inventory);
+    	return openInventoryWindow(inventory, null);
+    }
+    
+    public boolean openInventoryWindow(Inventory inventory, Location location) {
+        InventoryOpenEvent event = new InventoryOpenEvent(this, inventory, location);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -65,7 +69,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         else {
             ContainerWorkbench temp = new ContainerWorkbench(getHandle().inventory, ((CraftWorld)location.getWorld()).getHandle(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
             IInventory inventory = temp.b;
-            InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory));
+            InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory), location);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;

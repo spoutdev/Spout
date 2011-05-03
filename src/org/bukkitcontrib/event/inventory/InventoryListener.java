@@ -13,6 +13,7 @@ public class InventoryListener extends CustomEventListener implements Listener{
     }
     
     public void onInventoryOpen(InventoryOpenEvent event) {
+    	System.out.println("Inventory Open");
     }
     
     public void onInventoryClick(InventoryClickEvent event) {

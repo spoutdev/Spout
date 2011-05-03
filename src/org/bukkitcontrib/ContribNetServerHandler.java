@@ -9,6 +9,7 @@ import org.bukitcontrib.inventory.ContribCraftInventory;
 import org.bukitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukitcontrib.inventory.ContribCraftItemStack;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -44,6 +45,7 @@ public class ContribNetServerHandler extends NetServerHandler{
     
     protected Map<Integer, Short> n = new HashMap<Integer, Short>();
     protected boolean activeInventory = false;
+    protected Location activeLocation = null;
 
     public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
         super(minecraftserver, networkmanager, entityplayer);
@@ -139,7 +141,7 @@ public class ContribNetServerHandler extends NetServerHandler{
         IInventory inventory = getActiveInventory();
         
         
-        InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), getCraftInventory(inventory));
+        InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), getCraftInventory(inventory), activeLocation);
         Bukkit.getServer().getPluginManager().callEvent(event);
         
         if (event.isCancelled()) {
@@ -163,6 +165,7 @@ public class ContribNetServerHandler extends NetServerHandler{
         }
         else {
             activeInventory = false;
+            activeLocation = null;
             super.a(packet);
         }
     }
@@ -190,16 +193,17 @@ public class ContribNetServerHandler extends NetServerHandler{
             //alert of a newly opened inventory
             if (!activeInventory) {
                 activeInventory = true;
-                InventoryOpenEvent event = new InventoryOpenEvent(player, getCraftInventory(inventory));
+                InventoryOpenEvent event = new InventoryOpenEvent(player, getCraftInventory(inventory), activeLocation);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     this.player.x();
                     activeInventory = false;
+                    activeLocation = null;
                     return;
                 }
             }
             
-            InventoryClickEvent event = new InventoryClickEvent(player, getCraftInventory(inventory), type, slot, cursor, packet.b);
+            InventoryClickEvent event = new InventoryClickEvent(player, getCraftInventory(inventory), type, slot, cursor, packet.b, activeLocation);
             Bukkit.getServer().getPluginManager().callEvent(event);
             
             ItemStack itemstack = null;
