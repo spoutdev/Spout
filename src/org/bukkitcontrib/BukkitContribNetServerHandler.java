@@ -221,9 +221,6 @@ public class BukkitContribNetServerHandler extends NetServerHandler{
                           this.player.activeContainer.b(packet.b).c(itemstack);
                     }
                 }
-                if (event.getCursor() != null) {
-                     itemstack = new ItemStack(event.getCursor().getTypeId(), event.getCursor().getAmount(), event.getCursor().getDurability());
-                }
                 this.player.inventory.b((ItemStack) null);
                 break;
             case ALLOW: // Allow the placement unconditionally

@@ -13,6 +13,7 @@ public class BukkitContrib extends JavaPlugin{
     private static final ContribPlayerListener playerListener = new ContribPlayerListener();
     private static final InventoryListener inventoryListener = new InventoryListener();
     private static Server server;
+    private static BukkitContrib instance;
     @Override
     public void onDisable() {
 
@@ -21,13 +22,19 @@ public class BukkitContrib extends JavaPlugin{
     @Override
     public void onEnable() {
         BukkitContrib.server = getServer();
+        BukkitContrib.instance = this;
         getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Type.CUSTOM_EVENT, inventoryListener, Priority.Normal, this);
         Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
     }
     
     public static Server getMinecraftServer() {
         return server;
+    }
+    
+    public static BukkitContrib getInstance() {
+    	return instance;
     }
 
 }
