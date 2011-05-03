@@ -39,7 +39,7 @@ public abstract class InventoryEvent extends Event implements Cancellable {
      * @return location of the inventory
      */
     public Location getLocation() {
-    	return location;
+        return location;
     }
 
     @Override

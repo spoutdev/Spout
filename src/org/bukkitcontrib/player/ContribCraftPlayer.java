@@ -40,7 +40,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
     
     public boolean openInventoryWindow(Inventory inventory) {
-    	return openInventoryWindow(inventory, null);
+        return openInventoryWindow(inventory, null);
     }
     
     public boolean openInventoryWindow(Inventory inventory, Location location) {
@@ -119,7 +119,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
     
     public static void removeBukkitEntity(Player player) {
-    	CraftPlayer cp = (CraftPlayer)player;
+        CraftPlayer cp = (CraftPlayer)player;
         EntityPlayer ep = cp.getHandle();
         Field bukkitEntity;
         try {

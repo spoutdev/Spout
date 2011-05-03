@@ -16,10 +16,10 @@ public class BukkitContrib extends JavaPlugin{
     private static BukkitContrib instance;
     @Override
     public void onDisable() {
-    	Player[] online = getServer().getOnlinePlayers();
-    	for (Player player : online) {
-    		ContribCraftPlayer.removeBukkitEntity(player);
-    	}
+        Player[] online = getServer().getOnlinePlayers();
+        for (Player player : online) {
+            ContribCraftPlayer.removeBukkitEntity(player);
+        }
     }
 
     @Override
@@ -32,9 +32,9 @@ public class BukkitContrib extends JavaPlugin{
 
         Player[] online = getServer().getOnlinePlayers();
         for (Player player : online) {
-    		ContribCraftPlayer.removeBukkitEntity(player);
-    		ContribCraftPlayer.updateBukkitEntity(player);
-    	}
+            ContribCraftPlayer.removeBukkitEntity(player);
+            ContribCraftPlayer.updateBukkitEntity(player);
+        }
         
         Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
     }

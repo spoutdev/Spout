@@ -11,13 +11,13 @@ import org.bukkitcontrib.player.ContribCraftPlayer;
 
 public class ContribPlayerListener extends PlayerListener{
 
-	@Override
+    @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
         ContribCraftPlayer.updateNetServerHandler(event.getPlayer());
         ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
     }
     
-	@Override
+    @Override
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
         if (event.isCancelled()) {
             return;
@@ -31,21 +31,21 @@ public class ContribPlayerListener extends PlayerListener{
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update);
         }
     }
-	
-	@Override
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-			return;
-		}
-		if (event.getClickedBlock() != null) {
-			Material type = event.getClickedBlock().getType();
-			if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
-				ContribCraftPlayer player = (ContribCraftPlayer)event.getPlayer();
-				player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
-			}
-		}
-	}
+    
+    @Override
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        if (event.getClickedBlock() != null) {
+            Material type = event.getClickedBlock().getType();
+            if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
+                ContribCraftPlayer player = (ContribCraftPlayer)event.getPlayer();
+                player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
+            }
+        }
+    }
 }
