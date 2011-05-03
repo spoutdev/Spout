@@ -118,6 +118,19 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
            return false;
     }
     
+    public static void removeBukkitEntity(Player player) {
+    	CraftPlayer cp = (CraftPlayer)player;
+        EntityPlayer ep = cp.getHandle();
+        Field bukkitEntity;
+        try {
+            bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+            bukkitEntity.setAccessible(true);
+            bukkitEntity.set(ep, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static ContribPlayer getContribPlayer(Player player) {
         if (player instanceof ContribCraftPlayer) {
             return (ContribCraftPlayer)player;
