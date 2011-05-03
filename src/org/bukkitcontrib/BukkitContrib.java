@@ -15,8 +15,7 @@ public class BukkitContrib extends JavaPlugin{
     private static Server server;
     @Override
     public void onDisable() {
-        // TODO Auto-generated method stub
-        
+
     }
 
     @Override
