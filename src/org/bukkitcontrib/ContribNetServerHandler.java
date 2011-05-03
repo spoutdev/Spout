@@ -39,12 +39,12 @@ import net.minecraft.server.Slot;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
-public class BukkitContribNetServerHandler extends NetServerHandler{
+public class ContribNetServerHandler extends NetServerHandler{
     
     protected Map<Integer, Short> n = new HashMap<Integer, Short>();
     protected boolean activeInventory = false;
 
-    public BukkitContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
+    public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
         super(minecraftserver, networkmanager, entityplayer);
     }
     

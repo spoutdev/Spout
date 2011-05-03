@@ -19,7 +19,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkitcontrib.BukkitContrib;
-import org.bukkitcontrib.BukkitContribNetServerHandler;
+import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
 
@@ -79,17 +79,17 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         return getNetServerHandler().getCraftInventory(getNetServerHandler().getActiveInventory());
     }
     
-    public BukkitContribNetServerHandler getNetServerHandler() {
-        return (BukkitContribNetServerHandler) getHandle().netServerHandler;
+    public ContribNetServerHandler getNetServerHandler() {
+        return (ContribNetServerHandler) getHandle().netServerHandler;
     }
     
     public static boolean updateNetServerHandler(Player player) {
         CraftPlayer cp = (CraftPlayer)player;
         CraftServer server = (CraftServer)BukkitContrib.getMinecraftServer();
         
-        if (!(cp.getHandle().netServerHandler instanceof BukkitContribNetServerHandler)) {
+        if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
             Location loc = player.getLocation();
-            BukkitContribNetServerHandler handler = new BukkitContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
+            ContribNetServerHandler handler = new ContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
             handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
             cp.getHandle().netServerHandler = handler;
             return true;
