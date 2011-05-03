@@ -10,6 +10,7 @@ import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
 import org.bukitcontrib.inventory.ContribCraftInventory;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.CraftServer;
@@ -18,7 +19,6 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkitcontrib.BukkitContrib;
 import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
@@ -31,7 +31,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     public boolean closeActiveWindow() {
         InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory());
-        BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+        Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
@@ -41,7 +41,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     public boolean openInventoryWindow(Inventory inventory) {
         InventoryOpenEvent event = new InventoryOpenEvent(this, inventory);
-        BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+        Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
@@ -66,7 +66,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             ContainerWorkbench temp = new ContainerWorkbench(getHandle().inventory, ((CraftWorld)location.getWorld()).getHandle(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
             IInventory inventory = temp.b;
             InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory));
-            BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+            Bukkit.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;
             }
@@ -85,7 +85,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     public static boolean updateNetServerHandler(Player player) {
         CraftPlayer cp = (CraftPlayer)player;
-        CraftServer server = (CraftServer)BukkitContrib.getMinecraftServer();
+        CraftServer server = (CraftServer)Bukkit.getServer();
         
         if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
             Location loc = player.getLocation();
@@ -105,7 +105,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             try {
                 bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
                 bukkitEntity.setAccessible(true);
-                bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)BukkitContrib.getMinecraftServer(), ep));
+                bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)Bukkit.getServer(), ep));
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();

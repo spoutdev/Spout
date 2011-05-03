@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukitcontrib.inventory.ContribCraftInventory;
 import org.bukitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukitcontrib.inventory.ContribCraftItemStack;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -137,8 +138,9 @@ public class ContribNetServerHandler extends NetServerHandler{
     public void a(Packet101CloseWindow packet) {
         IInventory inventory = getActiveInventory();
         
+        
         InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), getCraftInventory(inventory));
-        BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+        Bukkit.getServer().getPluginManager().callEvent(event);
         
         if (event.isCancelled()) {
             inventory = ((ContribCraftInventory)event.getInventory()).getHandle();
@@ -189,7 +191,7 @@ public class ContribNetServerHandler extends NetServerHandler{
             if (!activeInventory) {
                 activeInventory = true;
                 InventoryOpenEvent event = new InventoryOpenEvent(player, getCraftInventory(inventory));
-                BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+                Bukkit.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     this.player.x();
                     activeInventory = false;
@@ -198,7 +200,7 @@ public class ContribNetServerHandler extends NetServerHandler{
             }
             
             InventoryClickEvent event = new InventoryClickEvent(player, getCraftInventory(inventory), type, slot, cursor, packet.b);
-            BukkitContrib.getMinecraftServer().getPluginManager().callEvent(event);
+            Bukkit.getServer().getPluginManager().callEvent(event);
             
             ItemStack itemstack = null;
             // NOTE: Successful means that its successful as-is; thus, only becomes true for default behaviour

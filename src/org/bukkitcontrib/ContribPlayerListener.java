@@ -1,5 +1,6 @@
 package org.bukkitcontrib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -22,7 +23,7 @@ public class ContribPlayerListener extends PlayerListener{
                     ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
                 }
             };
-            BukkitContrib.getMinecraftServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update);
         }
     }
 }
