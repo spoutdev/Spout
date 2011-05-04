@@ -21,6 +21,7 @@ public class BukkitContrib extends JavaPlugin{
         Player[] online = getServer().getOnlinePlayers();
         for (Player player : online) {
             ContribCraftPlayer.removeBukkitEntity(player);
+            ContribCraftPlayer.resetNetServerHandler(player);
         }
         ContribCraftChunk.resetAllBukkitChunks();
     }
@@ -37,6 +38,8 @@ public class BukkitContrib extends JavaPlugin{
         Player[] online = getServer().getOnlinePlayers();
         for (Player player : online) {
             ContribCraftPlayer.removeBukkitEntity(player);
+            ContribCraftPlayer.resetNetServerHandler(player);
+            ContribCraftPlayer.updateNetServerHandler(player);
             ContribCraftPlayer.updateBukkitEntity(player);
         }
         
