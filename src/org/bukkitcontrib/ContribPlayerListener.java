@@ -41,7 +41,6 @@ public class ContribPlayerListener extends PlayerListener{
             return;
         }
         if (event.getClickedBlock() != null) {
-            System.out.println(event.getClickedBlock().getClass());
             Material type = event.getClickedBlock().getType();
             if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
                 ContribCraftPlayer player = (ContribCraftPlayer)event.getPlayer();
