@@ -10,7 +10,6 @@ import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
-import org.bukitcontrib.inventory.ContribCraftInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,6 +22,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
+import org.bukkitcontrib.inventory.ContribCraftInventory;
 
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 

@@ -1,10 +1,10 @@
 package org.bukkitcontrib.event.inventory;
 
-import org.bukitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 
 public class InventoryClickEvent extends InventoryEvent{
     private static final long serialVersionUID = -5555208587016292520L;

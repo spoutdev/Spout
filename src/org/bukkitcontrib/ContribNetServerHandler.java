@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukitcontrib.inventory.ContribCraftInventory;
-import org.bukitcontrib.inventory.ContribCraftInventoryPlayer;
-import org.bukitcontrib.inventory.ContribCraftItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -18,6 +15,9 @@ import org.bukkitcontrib.event.inventory.InventoryClickEvent;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
 import org.bukkitcontrib.event.inventory.InventorySlotType;
+import org.bukkitcontrib.inventory.ContribCraftInventory;
+import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
+import org.bukkitcontrib.inventory.ContribCraftItemStack;
 
 
 import net.minecraft.server.EntityPlayer;

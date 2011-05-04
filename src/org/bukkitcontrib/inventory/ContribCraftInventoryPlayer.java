@@ -1,4 +1,4 @@
-package org.bukitcontrib.inventory;
+package org.bukkitcontrib.inventory;
 
 import net.minecraft.server.InventoryPlayer;
 
