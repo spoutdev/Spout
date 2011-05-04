@@ -51,6 +51,14 @@ public class ContribNetServerHandler extends NetServerHandler{
         super(minecraftserver, networkmanager, entityplayer);
     }
     
+    public void setActiveInventoryLocation(Location location) {
+    	activeLocation = location;
+    }
+    
+    public void setActiveInventory(boolean active) {
+    	activeInventory = active;
+    }
+    
     public IInventory getActiveInventory() {
         IInventory inventory = null;
         try {

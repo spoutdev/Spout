@@ -37,6 +37,8 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             return false;
         }
         getHandle().x();
+        getNetServerHandler().setActiveInventory(false);
+        getNetServerHandler().setActiveInventoryLocation(null);
         return true;
     }
     
@@ -50,6 +52,8 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         if (event.isCancelled()) {
             return false;
         }
+        getNetServerHandler().setActiveInventory(true);
+        getNetServerHandler().setActiveInventoryLocation(location);
         IInventory dialog = ((CraftInventory)event.getInventory()).getInventory();
         if (dialog instanceof TileEntityDispenser) {
             getHandle().a((TileEntityDispenser)dialog);
@@ -75,6 +79,8 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             if (event.isCancelled()) {
                 return false;
             }
+            getNetServerHandler().setActiveInventory(true);
+            getNetServerHandler().setActiveInventoryLocation(location);
             getHandle().a(location.getBlockX(), location.getBlockY(), location.getBlockZ());
             return true;
         }
