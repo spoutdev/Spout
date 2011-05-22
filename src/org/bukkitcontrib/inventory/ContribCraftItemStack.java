@@ -1,7 +1,5 @@
 package org.bukkitcontrib.inventory;
 
-import net.minecraft.server.ItemStack;
-
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 public class ContribCraftItemStack extends CraftItemStack{
@@ -10,8 +8,21 @@ public class ContribCraftItemStack extends CraftItemStack{
         super(type, amount, damage);
     }
     
-    public ItemStack getHandle() {
+    public net.minecraft.server.ItemStack getHandle() {
         return this.item;
+    }
+    
+    public static ContribCraftItemStack fromItemStack(net.minecraft.server.ItemStack item) {
+        if (item == null) return null;
+        return new ContribCraftItemStack(item.id, item.count, (short) item.damage);
+    }
+    
+    public static ContribCraftItemStack getContribCraftItemStack(org.bukkit.inventory.ItemStack item) {
+        if (item == null) return null;
+        if (item instanceof ContribCraftItemStack) {
+            return (ContribCraftItemStack)item;
+        }
+        return new ContribCraftItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
     }
 
 }

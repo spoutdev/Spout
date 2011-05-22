@@ -29,7 +29,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
     }
-    
+
     public boolean closeActiveWindow() {
         InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory());
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -41,11 +41,11 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         getNetServerHandler().setActiveInventoryLocation(null);
         return true;
     }
-    
+
     public boolean openInventoryWindow(Inventory inventory) {
         return openInventoryWindow(inventory, null);
     }
-    
+
     public boolean openInventoryWindow(Inventory inventory, Location location) {
         InventoryOpenEvent event = new InventoryOpenEvent(this, inventory, location);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -66,7 +66,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         }
         return true;
     }
-    
+
     public boolean openWorkbenchWindow(Location location) {
         if (location.getBlock().getType() != Material.WORKBENCH) {
             throw new UnsupportedOperationException("Must be a valid workbench!");
@@ -85,15 +85,15 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             return true;
         }
     }
-    
+
     public Inventory getActiveInventory() {
-        return getNetServerHandler().getCraftInventory(getNetServerHandler().getActiveInventory());
+        return getNetServerHandler().getActiveInventory();
     }
-    
+
     public ContribNetServerHandler getNetServerHandler() {
         return (ContribNetServerHandler) getHandle().netServerHandler;
     }
-    
+
     public static boolean resetNetServerHandler(Player player) {
         CraftPlayer cp = (CraftPlayer)player;
         CraftServer server = (CraftServer)Bukkit.getServer();
@@ -107,7 +107,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         }
         return false;
     }
-    
+
     public static boolean updateNetServerHandler(Player player) {
         CraftPlayer cp = (CraftPlayer)player;
         CraftServer server = (CraftServer)Bukkit.getServer();
@@ -121,7 +121,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         }
         return false;
     }
-    
+
     public static boolean updateBukkitEntity(Player player) {
         if (!(player instanceof ContribCraftPlayer)) {
             CraftPlayer cp = (CraftPlayer)player;
@@ -138,7 +138,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         }
            return false;
     }
-    
+
     public static void removeBukkitEntity(Player player) {
         CraftPlayer cp = (CraftPlayer)player;
         EntityPlayer ep = cp.getHandle();
@@ -151,7 +151,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             e.printStackTrace();
         }
     }
-    
+
     public static ContribPlayer getContribPlayer(Player player) {
         if (player instanceof ContribCraftPlayer) {
             return (ContribCraftPlayer)player;

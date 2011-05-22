@@ -4,7 +4,7 @@ import net.minecraft.server.IInventory;
 
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 
-public class ContribCraftInventory extends CraftInventory{
+public class ContribCraftInventory extends CraftInventory implements ContribInventory{
     public ContribCraftInventory(IInventory inventory) {
         super(inventory);
     }

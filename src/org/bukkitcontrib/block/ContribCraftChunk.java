@@ -26,6 +26,7 @@ public class ContribCraftChunk extends CraftChunk{
         return (ConcurrentSoftMap<Integer, Block>) cache.get(this);
     }
     
+    @Override
     public Block getBlock(int x, int y, int z) {
         try {
             int pos = (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);

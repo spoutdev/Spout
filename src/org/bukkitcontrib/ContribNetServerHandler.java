@@ -2,28 +2,34 @@ package org.bukkitcontrib;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.inventory.CraftInventory;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkitcontrib.event.inventory.InventoryClickEvent;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
+import org.bukkitcontrib.event.inventory.InventoryCraftEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
+import org.bukkitcontrib.event.inventory.InventoryPlayerClickEvent;
 import org.bukkitcontrib.event.inventory.InventorySlotType;
 import org.bukkitcontrib.inventory.ContribCraftInventory;
 import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkitcontrib.inventory.ContribCraftItemStack;
+import org.bukkitcontrib.inventory.ContribCraftingInventory;
+import org.bukkitcontrib.inventory.ContribInventory;
+import org.bukkitcontrib.inventory.CraftingInventory;
 
 
+import net.minecraft.server.CraftingManager;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.InventoryCraftResult;
-import net.minecraft.server.InventoryPlayer;
+import net.minecraft.server.InventoryCrafting;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
@@ -42,73 +48,83 @@ import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
 public class ContribNetServerHandler extends NetServerHandler{
-    
     protected Map<Integer, Short> n = new HashMap<Integer, Short>();
     protected boolean activeInventory = false;
     protected Location activeLocation = null;
+    protected ItemStack lastOverrideDisplayStack = null;
 
     public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
         super(minecraftserver, networkmanager, entityplayer);
     }
-    
+
     public void setActiveInventoryLocation(Location location) {
-    	activeLocation = location;
+        activeLocation = location;
     }
-    
+
     public void setActiveInventory(boolean active) {
-    	activeInventory = active;
+        activeInventory = active;
     }
-    
-    public IInventory getActiveInventory() {
-        IInventory inventory = null;
+
+    public ContribInventory getActiveInventory() {
         try {
             if (this.player.activeContainer instanceof ContainerChest) {
                 Field a = ContainerChest.class.getDeclaredField("a");
                 a.setAccessible(true);
-                inventory = (IInventory) a.get((ContainerChest)this.player.activeContainer);
+                return new ContribCraftInventory((IInventory) a.get((ContainerChest)this.player.activeContainer));
             }
-            else if (this.player.activeContainer instanceof ContainerPlayer) {
-                inventory = ((ContainerPlayer)this.player.activeContainer).b;
+            if (this.player.activeContainer instanceof ContainerPlayer) {
+               return new ContribCraftInventoryPlayer(this.player.inventory, new ContribCraftingInventory(((ContainerPlayer)this.player.activeContainer).a, ((ContainerPlayer)this.player.activeContainer).b));
             }
-            else if (this.player.activeContainer instanceof ContainerFurnace) {
+            if (this.player.activeContainer instanceof ContainerFurnace) {
                 Field a = ContainerFurnace.class.getDeclaredField("a");
                 a.setAccessible(true);
-                inventory = (TileEntityFurnace)a.get((ContainerFurnace)this.player.activeContainer);
+                return new ContribCraftInventory((TileEntityFurnace)a.get((ContainerFurnace)this.player.activeContainer));
             }
-            else if (this.player.activeContainer instanceof ContainerDispenser) {
+            if (this.player.activeContainer instanceof ContainerDispenser) {
                 Field a = ContainerDispenser.class.getDeclaredField("a");
                 a.setAccessible(true);
-                inventory = (TileEntityDispenser)a.get((ContainerDispenser)this.player.activeContainer);
+               return new ContribCraftInventory((TileEntityDispenser)a.get((ContainerDispenser)this.player.activeContainer));
             }
-            else if (this.player.activeContainer instanceof ContainerWorkbench) {
-                inventory = ((ContainerWorkbench)this.player.activeContainer).b;
+            if (this.player.activeContainer instanceof ContainerWorkbench) {
+                return new ContribCraftingInventory(((ContainerWorkbench)this.player.activeContainer).a, ((ContainerWorkbench)this.player.activeContainer).b);
             }
         }
         catch (Exception e) {
             e.printStackTrace();
-            inventory = this.player.inventory;
+            return new ContribCraftInventory(this.player.inventory);
         }
-        return inventory;
+        return null;
     }
-    
+
+    public InventorySlotType getInventorySlotType(int clicked) {
+        System.out.println("Clicked: " + clicked);
+        if (clicked < 9) return InventorySlotType.QUICKBAR;
+        return InventorySlotType.CONTAINER;
+    }
+
     public InventorySlotType getActiveInventorySlotType(int clicked) {
         if (clicked == -999) {
             return InventorySlotType.OUTSIDE;
         }
-        IInventory active = getActiveInventory();
+        ContribInventory active = getActiveInventory();
         int size = active.getSize();
         if (this.player.activeContainer instanceof ContainerChest) {
             return InventorySlotType.CONTAINER;
         }
         else if (this.player.activeContainer instanceof ContainerPlayer) {
             if (clicked == 0) return InventorySlotType.RESULT;
-            if (clicked < size) return InventorySlotType.CRAFTING;
-            size += 4;
-            if (clicked < size) return InventorySlotType.ARMOR;
-            return InventorySlotType.CONTAINER;
+            if (clicked < 5) return InventorySlotType.CRAFTING;
+            if (clicked == 5) return InventorySlotType.HELMET;
+            if (clicked == 6) return InventorySlotType.ARMOR;
+            if (clicked == 7) return InventorySlotType.LEGGINGS;
+            if (clicked == 8) return InventorySlotType.BOOTS;
+            if (clicked < size) return InventorySlotType.CONTAINER;
+            return InventorySlotType.QUICKBAR;
         }
         else if (this.player.activeContainer instanceof ContainerFurnace) {
+            if (clicked == 0) return InventorySlotType.SMELTING;
             if (clicked == 1) return InventorySlotType.FUEL;
+            
             return InventorySlotType.RESULT;
         }
         else if (this.player.activeContainer instanceof ContainerDispenser) {
@@ -123,37 +139,16 @@ public class ContribNetServerHandler extends NetServerHandler{
         if (clicked >= size) return InventorySlotType.PACK;
         return InventorySlotType.CONTAINER;
     }
-    
-    public CraftItemStack fromItemStack(ItemStack item) {
-        if (item == null) return null;
-        return new CraftItemStack(item.id, item.count, (short) item.damage);
-    }
-    
-    public CraftInventory getCraftInventory(IInventory inventory) {
-        if (inventory instanceof InventoryPlayer) {
-            return new ContribCraftInventoryPlayer((InventoryPlayer)inventory);
-        }
-        return new ContribCraftInventory(inventory);
-    }
-    
-    public ContribCraftItemStack getContribCraftItemStack(org.bukkit.inventory.ItemStack item) {
-        if (item == null) return null;
-        if (item instanceof ContribCraftItemStack) {
-            return (ContribCraftItemStack)item;
-        }
-        return new ContribCraftItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
-    }
-    
+
     @Override
     public void a(Packet101CloseWindow packet) {
-        IInventory inventory = getActiveInventory();
-        
-        
-        InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), getCraftInventory(inventory), activeLocation);
+        ContribInventory inventory = getActiveInventory();
+
+        InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), inventory, activeLocation);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        
+
         if (event.isCancelled()) {
-            inventory = ((ContribCraftInventory)event.getInventory()).getHandle();
+            IInventory inv = ((ContribInventory)event.getInventory()).getHandle();
             if (inventory instanceof TileEntityFurnace) {
                 this.player.a((TileEntityFurnace)inventory);
             }
@@ -168,7 +163,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                 //There is no way to force a player's own inventory back open.
             }
             else {
-                this.player.a(inventory);
+                this.player.a(inv);
             }
         }
         else {
@@ -177,7 +172,7 @@ public class ContribNetServerHandler extends NetServerHandler{
             super.a(packet);
         }
     }
-    
+
     @Override
     public void a(Packet106Transaction packet) {
         Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.f));
@@ -186,22 +181,24 @@ public class ContribNetServerHandler extends NetServerHandler{
             this.player.activeContainer.a(this.player, true);
         }
     }
-    
+
     @Override
     public void a(Packet102WindowClick packet) {
         if (this.player.activeContainer.f == packet.a && this.player.activeContainer.c(this.player)) {
-            IInventory inventory = getActiveInventory();
+            ContribInventory inventory = getActiveInventory();
             CraftPlayer player = (CraftPlayer) this.player.getBukkitEntity();
             ItemStack before = ItemStack.b(packet.e);
             ItemStack cursorBefore = this.player.inventory.j();
-            CraftItemStack slot = fromItemStack(before);
-            CraftItemStack cursor = fromItemStack(cursorBefore);
+            ContribCraftItemStack slot = ContribCraftItemStack.fromItemStack(before);
+            ContribCraftItemStack cursor = ContribCraftItemStack.fromItemStack(cursorBefore);
             InventorySlotType type = getActiveInventorySlotType(packet.b);
-            
+            boolean clickSuccessful = true;
+            final int windowId = packet.a;
+
             //alert of a newly opened inventory
             if (!activeInventory) {
                 activeInventory = true;
-                InventoryOpenEvent event = new InventoryOpenEvent(player, getCraftInventory(inventory), activeLocation);
+                InventoryOpenEvent event = new InventoryOpenEvent(player, inventory, activeLocation);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     this.player.x();
@@ -210,76 +207,55 @@ public class ContribNetServerHandler extends NetServerHandler{
                     return;
                 }
             }
-            
-            InventoryClickEvent event = new InventoryClickEvent(player, getCraftInventory(inventory), type, slot, cursor, packet.b, activeLocation);
-            Bukkit.getServer().getPluginManager().callEvent(event);
-            
-            ItemStack itemstack = null;
-            // NOTE: Successful means that its successful as-is; thus, only becomes true for default behaviour
-            boolean clickSuccessful = false;
-            switch(event.getResult()) {
-            case DEFAULT: // Default behaviour
-                // CraftBukkit end
-                itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
-                // CraftBukkit start
-                clickSuccessful = ItemStack.equals(packet.e, itemstack);
-                break;
-            case DENY: // Deny default behaviour, but allow the handler to override
-                itemstack = getContribCraftItemStack(event.getItem()) != null ? getContribCraftItemStack(event.getItem()).getHandle() : null;
-                if(packet.b != -999) { // Only swap if target is not OUTSIDE
-                    if (itemstack != null) {
-                        this.player.activeContainer.b(packet.b).c(itemstack);
+
+            // Fire InventoryChange or InventoryCraft event
+            if (packet.b != -999) {
+                ItemStack onCursor = ItemStack.b(this.player.inventory.j()); // Copy the item on the cursor
+                if (inventory instanceof CraftingInventory) {
+                    CraftingInventory crafting = (CraftingInventory) inventory;
+                    InventoryCrafting recipe = (InventoryCrafting) crafting.getMatrixHandle();
+
+                    ContribCraftItemStack craftResult = ContribCraftItemStack.fromItemStack(CraftingManager.a().a(recipe));
+                    ContribCraftItemStack[] recipeContents = new ContribCraftItemStack[recipe.getSize()];
+                    for (int i = 0; i < recipe.getSize(); i++) {
+                        org.bukkit.inventory.ItemStack temp = crafting.getMatrix()[i];
+                        recipeContents[i] = temp == null ? null : new ContribCraftItemStack(temp.getTypeId(), temp.getAmount(), temp.getDurability());
                     }
-                    else if (event.getCursor() != null) {
-                          itemstack = new ItemStack(event.getCursor().getTypeId(), event.getCursor().getAmount(), event.getCursor().getDurability());
-                          this.player.activeContainer.b(packet.b).c(itemstack);
+
+                    ContribCraftItemStack[][] matrix = null;
+                    if (recipe.getSize() == 4) {
+                        matrix = new ContribCraftItemStack[][] {
+                            Arrays.copyOfRange(recipeContents, 0, 2),
+                            Arrays.copyOfRange(recipeContents, 2, 4)
+                        };
                     }
-                }
-                this.player.inventory.b((ItemStack) null);
-                break;
-            case ALLOW: // Allow the placement unconditionally
-                if (packet.b == -999) { // Clicked outside, just defer to default
-                    itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
-                }
-                else {
-                    itemstack = this.player.activeContainer.a(packet.b).j();
-                    ItemStack cursorstack = this.player.inventory.j();
-                    int click = packet.c, rclick = 1, lclick = 0;
-                    if(click == lclick && (itemstack != null && cursorstack != null && itemstack.a(cursorstack))) {
-                        // Left-click full slot with full cursor of same item; merge stacks
-                        itemstack.count += cursorstack.count;
-                        this.player.inventory.b((ItemStack) null);
+                    else if (recipe.getSize() == 9) {
+                        matrix = new ContribCraftItemStack[][] {
+                            Arrays.copyOfRange(recipeContents, 0, 3),
+                            Arrays.copyOfRange(recipeContents, 3, 6),
+                            Arrays.copyOfRange(recipeContents, 6, 9)
+                        };
                     }
-                    else if (click == lclick || (itemstack != null && cursorstack != null && !itemstack.a(cursorstack))) {
-                        // Either left-click, or right-click full slot with full cursor of different item; just swap contents
-                        this.player.activeContainer.b(packet.b).c(cursorstack);
-                        this.player.inventory.b(itemstack);
-                    }
-                    else if (click == rclick) { // Right-click with either slot or cursor empty
-                        if (itemstack == null) { // Slot empty; drop one
-                            this.player.activeContainer.b(packet.b).c(cursorstack.a(1));
-                            if(cursorstack.count == 0)
-                                this.player.inventory.b((ItemStack) null);
-                        }
-                        else if (cursorstack == null) { // Cursor empty; take half
-                            this.player.inventory.b(itemstack.a((itemstack.count + 1) / 2));
-                        }
-                        else { // Neither empty, but same item; drop one
-                            ItemStack drop = cursorstack.a(1);
-                            itemstack.count += drop.count;
-                            this.player.activeContainer.b(packet.b).c(itemstack);
-                            if (cursorstack.count == 0) {
-                                this.player.inventory.b((ItemStack) null);
-                            }
+                    //Clicking to grab the crafting result
+                    if (type == InventorySlotType.RESULT) {
+                        InventoryCraftEvent craftEvent = new InventoryCraftEvent(this.getPlayer(), crafting, this.activeLocation, type, packet.b,  matrix, craftResult);
+                        Bukkit.getServer().getPluginManager().callEvent(craftEvent);
+                        craftEvent.getInventory().setResult(craftEvent.getResult());
+                        if (craftEvent.isCancelled()) {
+                            craftEvent.getInventory().setMatrix(recipeContents);
+                            setCursorSlot(onCursor);
+                            clickSuccessful = false;
                         }
                     }
-                    itemstack = this.player.activeContainer.a(packet.b);
                 }
-                break;
             }
 
             if (clickSuccessful) {
-                this.player.netServerHandler.sendPacket(new Packet106Transaction(packet.a, packet.d, true));
+                clickSuccessful = handleInventoryClick(packet, type, slot, cursor, inventory);
+            }
+
+            if (clickSuccessful) {
+                this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, true));
                 this.player.h = true;
                 this.player.activeContainer.a();
                 this.player.y();
@@ -287,7 +263,7 @@ public class ContribNetServerHandler extends NetServerHandler{
             }
             else {
                 this.n.put(Integer.valueOf(this.player.activeContainer.f), Short.valueOf(packet.d));
-                this.player.netServerHandler.sendPacket(new Packet106Transaction(packet.a, packet.d, false));
+                this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, false));
                 this.player.activeContainer.a(this.player, false);
                 ArrayList<ItemStack> arraylist = new ArrayList<ItemStack>();
 
@@ -299,4 +275,109 @@ public class ContribNetServerHandler extends NetServerHandler{
             }
         }
     }
+    
+    public boolean handleInventoryClick(Packet102WindowClick packet, InventorySlotType type, ContribCraftItemStack slot, ContribCraftItemStack cursor, ContribInventory inventory) {
+        InventoryClickEvent event = null;
+        Result result = Result.DEFAULT;
+        boolean success = false;
+
+        //clicked on bottom player inventory
+        if (!(this.player.activeContainer instanceof ContainerPlayer) && this.player.defaultContainer instanceof ContainerPlayer && packet.b >= inventory.getSize()) {
+            int activeSlot = packet.b - inventory.getSize() + 9;
+            if (activeSlot > this.getPlayer().getInventory().getSize()) {
+                activeSlot -= this.getPlayer().getInventory().getSize();
+            }
+            type = getInventorySlotType(activeSlot);
+            event = new InventoryPlayerClickEvent(this.getPlayer(), this.getPlayer().getInventory(), type, slot, cursor, activeSlot, activeLocation);
+        }
+        else {
+            event = new InventoryClickEvent(this.getPlayer(), inventory, type, slot, cursor, packet.b, activeLocation);
+        }
+
+        if (event != null) {
+             Bukkit.getServer().getPluginManager().callEvent(event);
+             result = event.getResult();
+             cursor = ContribCraftItemStack.getContribCraftItemStack(event.getCursor());
+             slot = ContribCraftItemStack.getContribCraftItemStack(event.getItem());
+        }
+
+        //initialize setup
+        ItemStack itemstack = slot != null ? slot.getHandle() : null;
+        ItemStack cursorstack = cursor != null ? cursor.getHandle() : null;
+
+        // NOTE: Successful means that its successful as-is; thus, only becomes true for default behaviour
+
+        switch(result) {
+        case DEFAULT:
+            itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
+            success = ItemStack.equals(packet.e, itemstack);
+            break;
+        case DENY:
+            if(packet.b != -999) { // Only swap if target is not OUTSIDE
+                if (itemstack != null) {
+                    setActiveSlot(packet.b, itemstack);
+                }
+                else if (event.getCursor() != null) {
+                      itemstack = new ItemStack(event.getCursor().getTypeId(), event.getCursor().getAmount(), event.getCursor().getDurability());
+                      setActiveSlot(packet.b, itemstack);
+                }
+            }
+            setCursorSlot((ItemStack) null);
+            break;
+        case ALLOW: // Allow the placement unconditionally
+            if (packet.b == -999) { // Clicked outside, just defer to default
+                itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
+            }
+            else {
+                final int LEFT_CLICK = 0;
+                final int RIGHT_CLICK = 1;
+                int click = packet.c;
+                if(click == LEFT_CLICK && (itemstack != null && cursorstack != null && itemstack.a(cursorstack))) {
+                    // Left-click full slot with full cursor of same item; merge stacks
+                    itemstack.count += cursorstack.count;
+                    cursorstack = null;
+                }
+                else if (click == LEFT_CLICK || (itemstack != null && cursorstack != null && !itemstack.a(cursorstack))) {
+                    // Either left-click, or right-click full slot with full cursor of different item; just swap contents
+                    ItemStack temp = itemstack;
+                    itemstack = cursorstack;
+                    cursorstack = temp;
+                }
+                else if (click == RIGHT_CLICK) { // Right-click with either slot or cursor empty
+                    if (itemstack == null) { // Slot empty; drop one
+                        if (cursorstack != null) {
+                            itemstack = cursorstack.a(1);
+                            if (cursorstack.count == 0) {
+                               cursorstack = null;
+                            }
+                        }
+                    }
+                    else if (cursorstack == null) { // Cursor empty; take half
+                        cursorstack = itemstack.a((itemstack.count + 1) / 2);
+                    }
+                    else { // Neither empty, but same item; drop one
+                        ItemStack drop = cursorstack.a(1);
+                        itemstack.count += drop.count;
+                        if (cursorstack.count == 0) {
+                             cursorstack = null;
+                        }
+                    }
+                }
+                //update the stacks
+                setActiveSlot(packet.b, itemstack);
+                setCursorSlot(cursorstack);
+            }
+            break;
+        }
+        return success;
+    }
+
+    public void setActiveSlot(int slot, ItemStack item) {
+        this.player.activeContainer.b(slot).c(item);
+    }
+
+    public void setCursorSlot(ItemStack item) {
+        this.player.inventory.b(item);
+    }
+
 }
