@@ -25,6 +25,7 @@ import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
 
 
+import net.minecraft.server.Container;
 import net.minecraft.server.CraftingManager;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
@@ -66,38 +67,17 @@ public class ContribNetServerHandler extends NetServerHandler{
     }
 
     public ContribInventory getActiveInventory() {
-        try {
-            if (this.player.activeContainer instanceof ContainerChest) {
-                Field a = ContainerChest.class.getDeclaredField("a");
-                a.setAccessible(true);
-                return new ContribCraftInventory((IInventory) a.get((ContainerChest)this.player.activeContainer));
-            }
-            if (this.player.activeContainer instanceof ContainerPlayer) {
-               return new ContribCraftInventoryPlayer(this.player.inventory, new ContribCraftingInventory(((ContainerPlayer)this.player.activeContainer).a, ((ContainerPlayer)this.player.activeContainer).b));
-            }
-            if (this.player.activeContainer instanceof ContainerFurnace) {
-                Field a = ContainerFurnace.class.getDeclaredField("a");
-                a.setAccessible(true);
-                return new ContribCraftInventory((TileEntityFurnace)a.get((ContainerFurnace)this.player.activeContainer));
-            }
-            if (this.player.activeContainer instanceof ContainerDispenser) {
-                Field a = ContainerDispenser.class.getDeclaredField("a");
-                a.setAccessible(true);
-               return new ContribCraftInventory((TileEntityDispenser)a.get((ContainerDispenser)this.player.activeContainer));
-            }
-            if (this.player.activeContainer instanceof ContainerWorkbench) {
-                return new ContribCraftingInventory(((ContainerWorkbench)this.player.activeContainer).a, ((ContainerWorkbench)this.player.activeContainer).b);
-            }
+        return getInventoryFromContainer(this.player.activeContainer);
+    }
+
+    public ContribInventory getDefaultInventory() {
+        if (this.player.defaultContainer.equals(this.player.activeContainer)){
+            return null;
         }
-        catch (Exception e) {
-            e.printStackTrace();
-            return new ContribCraftInventory(this.player.inventory);
-        }
-        return null;
+        return getInventoryFromContainer(this.player.defaultContainer);
     }
 
     public InventorySlotType getInventorySlotType(int clicked) {
-        System.out.println("Clicked: " + clicked);
         if (clicked < 9) return InventorySlotType.QUICKBAR;
         return InventorySlotType.CONTAINER;
     }
@@ -144,7 +124,7 @@ public class ContribNetServerHandler extends NetServerHandler{
     public void a(Packet101CloseWindow packet) {
         ContribInventory inventory = getActiveInventory();
 
-        InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), inventory, activeLocation);
+        InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), inventory, getDefaultInventory(), activeLocation);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -198,7 +178,7 @@ public class ContribNetServerHandler extends NetServerHandler{
             //alert of a newly opened inventory
             if (!activeInventory) {
                 activeInventory = true;
-                InventoryOpenEvent event = new InventoryOpenEvent(player, inventory, activeLocation);
+                InventoryOpenEvent event = new InventoryOpenEvent(player, inventory, getDefaultInventory(), activeLocation);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     this.player.x();
@@ -379,5 +359,36 @@ public class ContribNetServerHandler extends NetServerHandler{
     public void setCursorSlot(ItemStack item) {
         this.player.inventory.b(item);
     }
+    
+    private ContribInventory getInventoryFromContainer(Container container) {
+        try {
+            if (container instanceof ContainerChest) {
+                Field a = ContainerChest.class.getDeclaredField("a");
+                a.setAccessible(true);
+                return new ContribCraftInventory((IInventory) a.get((ContainerChest)container));
+            }
+            if (container instanceof ContainerPlayer) {
+               return new ContribCraftInventoryPlayer(this.player.inventory, new ContribCraftingInventory(((ContainerPlayer)container).a, ((ContainerPlayer)container).b));
+            }
+            if (container instanceof ContainerFurnace) {
+                Field a = ContainerFurnace.class.getDeclaredField("a");
+                a.setAccessible(true);
+                return new ContribCraftInventory((TileEntityFurnace)a.get((ContainerFurnace)container));
+            }
+            if (container instanceof ContainerDispenser) {
+                Field a = ContainerDispenser.class.getDeclaredField("a");
+                a.setAccessible(true);
+               return new ContribCraftInventory((TileEntityDispenser)a.get((ContainerDispenser)container));
+            }
+            if (container instanceof ContainerWorkbench) {
+                return new ContribCraftingInventory(((ContainerWorkbench)container).a, ((ContainerWorkbench)container).b);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ContribCraftInventory(this.player.inventory);
+        }
+        return null;
+   }
 
 }
