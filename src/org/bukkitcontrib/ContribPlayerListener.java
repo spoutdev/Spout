@@ -47,8 +47,16 @@ public class ContribPlayerListener extends PlayerListener{
         }
         if (event.getClickedBlock() != null) {
             Material type = event.getClickedBlock().getType();
+            //Safety check
+            ContribCraftPlayer player;
+            if (!(event.getPlayer() instanceof  ContribCraftPlayer)) {
+            	player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
+            }
+            else {
+            	player = (ContribCraftPlayer)event.getPlayer();
+            }
             if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
-                ContribCraftPlayer player = (ContribCraftPlayer)event.getPlayer();
+                
                 player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
             }
         }
