@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ContribCraftInventoryPlayer extends CraftInventoryPlayer implements ContribInventory, CraftingInventory{
     protected CraftingInventory crafting;
+    protected String name = null;
     public ContribCraftInventoryPlayer(InventoryPlayer inventory, CraftingInventory crafting) {
         super(inventory);
         this.crafting = crafting;
@@ -25,23 +26,30 @@ public class ContribCraftInventoryPlayer extends CraftInventoryPlayer implements
         return this.crafting.getResultHandle();
     }
 
-    @Override
     public ItemStack getResult() {
         return crafting.getResult();
     }
 
-    @Override
     public ItemStack[] getMatrix() {
         return crafting.getMatrix();
     }
 
-    @Override
     public void setResult(ItemStack newResult) {
         crafting.setResult(newResult);
     }
 
-    @Override
     public void setMatrix(ItemStack[] contents) {
         crafting.setMatrix(contents);
+    }
+    
+    public String getName() {
+        if (name == null) {
+            return this.inventory.getName();
+        }
+        return name;
+    }
+    
+    public void setName(String title) {
+        this.name = title;
     }
 }

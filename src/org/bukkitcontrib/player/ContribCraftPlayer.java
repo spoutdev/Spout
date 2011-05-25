@@ -1,12 +1,17 @@
 package org.bukkitcontrib.player;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
+import net.minecraft.server.ContainerChest;
+import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.ICrafting;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
+import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
@@ -19,19 +24,30 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
 import org.bukkitcontrib.inventory.ContribCraftInventory;
+import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
+import org.bukkitcontrib.inventory.ContribCraftingInventory;
+import org.bukkitcontrib.inventory.ContribInventory;
 
+@SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
-
+    protected ContribCraftInventoryPlayer inventory;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
+        this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+    }
+
+    @Override
+    public PlayerInventory getInventory() {
+        return this.inventory;
     }
 
     public boolean closeActiveWindow() {
-        InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory());
+        InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory(), getDefaultInventory());
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -47,7 +63,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
 
     public boolean openInventoryWindow(Inventory inventory, Location location) {
-        InventoryOpenEvent event = new InventoryOpenEvent(this, inventory, location);
+        InventoryOpenEvent event = new InventoryOpenEvent(this, inventory, this.inventory, location);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -65,6 +81,27 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             getHandle().a(dialog);
         }
         return true;
+        /*int id;
+        if (dialog instanceof TileEntityDispenser) {
+            id = 3;
+        }
+        else if (dialog instanceof TileEntityFurnace) {
+            id = 2;
+        }
+        else {
+            id = 0;
+        }
+        String title = dialog.getName();
+        if (inventory instanceof ContribInventory) {
+            title = ((ContribInventory)inventory).getTitle();
+        }
+        
+        updateWindowId();
+        getNetServerHandler().sendPacket(new Packet100OpenWindow(getActiveWindowId(), id, title, dialog.getSize()));
+        getHandle().activeContainer = new ContainerChest(getHandle().inventory, dialog);
+        getHandle().activeContainer.f = getActiveWindowId();
+        getHandle().activeContainer.a((ICrafting) this);
+        return true;*/
     }
 
     public boolean openWorkbenchWindow(Location location) {
@@ -74,7 +111,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         else {
             ContainerWorkbench temp = new ContainerWorkbench(getHandle().inventory, ((CraftWorld)location.getWorld()).getHandle(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
             IInventory inventory = temp.b;
-            InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory), location);
+            InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory), this.inventory, location);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;
@@ -85,9 +122,36 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             return true;
         }
     }
+    
+    public int getActiveWindowId() {
+         Field id;
+         try {
+             id = EntityPlayer.class.getDeclaredField("bI");
+             id.setAccessible(true);
+             return (Integer)id.get(getHandle());
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+         return 0;
+    }
+    
+    public void updateWindowId() {
+        Method id;
+        try {
+            id = EntityPlayer.class.getDeclaredMethod("af");
+            id.setAccessible(true);
+            id.invoke(getHandle());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public Inventory getActiveInventory() {
         return getNetServerHandler().getActiveInventory();
+    }
+    
+    public Inventory getDefaultInventory() {
+        return getNetServerHandler().getDefaultInventory();
     }
 
     public ContribNetServerHandler getNetServerHandler() {
