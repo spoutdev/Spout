@@ -32,10 +32,21 @@ import org.bukkitcontrib.inventory.ContribCraftInventory;
 import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
+import org.bukkitcontrib.keyboard.Keyboard;
 
 @SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     protected ContribCraftInventoryPlayer inventory;
+    protected Keyboard forward = Keyboard.KEY_UNKNOWN;
+    protected Keyboard back = Keyboard.KEY_UNKNOWN;
+    protected Keyboard left = Keyboard.KEY_UNKNOWN;
+    protected Keyboard right = Keyboard.KEY_UNKNOWN;
+    protected Keyboard jump = Keyboard.KEY_UNKNOWN;
+    protected Keyboard inventoryKey = Keyboard.KEY_UNKNOWN;
+    protected Keyboard drop = Keyboard.KEY_UNKNOWN;
+    protected Keyboard chat = Keyboard.KEY_UNKNOWN;
+    protected Keyboard togglefog = Keyboard.KEY_UNKNOWN;
+    protected Keyboard sneak = Keyboard.KEY_UNKNOWN;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
         this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
@@ -222,6 +233,74 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         }
         updateBukkitEntity(player);
         return (ContribCraftPlayer)((CraftPlayer)player).getHandle().getBukkitEntity();
+    }
+    
+    public void updateKeys(short[] keys) {
+        this.forward = Keyboard.getKey(keys[0]);
+        this.back = Keyboard.getKey(keys[2]);
+        this.left = Keyboard.getKey(keys[1]);
+        this.right = Keyboard.getKey(keys[3]);
+        this.jump = Keyboard.getKey(keys[4]);
+        this.inventoryKey = Keyboard.getKey(keys[5]);
+        this.drop = Keyboard.getKey(keys[6]);
+        this.chat = Keyboard.getKey(keys[7]);
+        this.togglefog = Keyboard.getKey(keys[8]);
+        this.sneak = Keyboard.getKey(keys[9]);
+    }
+
+    @Override
+    public boolean isEnabledBukkitContribSinglePlayerMod() {
+        return forward != Keyboard.KEY_UNKNOWN;
+    }
+
+    @Override
+    public Keyboard getForwardKey() {
+        return forward;
+    }
+
+    @Override
+    public Keyboard getBackwardKey() {
+        return back;
+    }
+
+    @Override
+    public Keyboard getLeftKey() {
+        return left;
+    }
+
+    @Override
+    public Keyboard getRightKey() {
+        return right;
+    }
+
+    @Override
+    public Keyboard getJumpKey() {
+        return jump;
+    }
+
+    @Override
+    public Keyboard getInventoryKey() {
+        return inventoryKey;
+    }
+
+    @Override
+    public Keyboard getDropItemKey() {
+        return drop;
+    }
+
+    @Override
+    public Keyboard getChatKey() {
+        return chat;
+    }
+
+    @Override
+    public Keyboard getToggleFogKey() {
+        return togglefog;
+    }
+
+    @Override
+    public Keyboard getSneakKey() {
+        return sneak;
     }
 
 }

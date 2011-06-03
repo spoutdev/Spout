@@ -5,6 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
 public class InventoryListener extends CustomEventListener implements Listener{
+    
     public InventoryListener() {
 
     }
