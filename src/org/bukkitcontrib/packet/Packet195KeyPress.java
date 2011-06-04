@@ -3,7 +3,9 @@ package org.bukkitcontrib.packet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkitcontrib.ContribNetServerHandler;
@@ -70,10 +72,26 @@ public class Packet195KeyPress extends Packet{
             Method addClassMapping = Packet.class.getDeclaredMethod("a", params);
             addClassMapping.setAccessible(true);
             addClassMapping.invoke(null, 195, true, true, Packet195KeyPress.class);
-            System.out.println("Added Packet 195");
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+	@SuppressWarnings("rawtypes")
+	public static void removeClassMapping() {
+		try {
+			Field field = Packet.class.getDeclaredField("a");
+			field.setAccessible(true);
+			Map temp = (Map) field.get(null);
+			temp.remove(195);
+			field = Packet.class.getDeclaredField("b");
+			field.setAccessible(true);
+			temp = (Map) field.get(null);
+			temp.remove(Packet195KeyPress.class);
+		}
+		catch (Exception e) {
+			
+		}
+	}
 }

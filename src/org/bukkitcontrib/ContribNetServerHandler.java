@@ -296,13 +296,15 @@ public class ContribNetServerHandler extends NetServerHandler{
             if(packet.b != -999) { // Only swap if target is not OUTSIDE
                 if (itemstack != null) {
                     setActiveSlot(packet.b, itemstack);
+                    setCursorSlot((ItemStack) null);
                 }
-                else if (event.getCursor() != null) {
-                      itemstack = new ItemStack(event.getCursor().getTypeId(), event.getCursor().getAmount(), event.getCursor().getDurability());
+                if (event.getCursor() != null) {
                       setActiveSlot(packet.b, itemstack);
+                      //cursorstack = new ItemStack(event.getCursor().getTypeId(), event.getCursor().getAmount(), event.getCursor().getDurability());
+                      setCursorSlot(cursorstack);
                 }
             }
-            setCursorSlot((ItemStack) null);
+            
             break;
         case ALLOW: // Allow the placement unconditionally
             if (packet.b == -999) { // Clicked outside, just defer to default

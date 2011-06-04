@@ -33,6 +33,15 @@ public class InventoryClickEvent extends InventoryEvent{
         this.convertedSlot = convertSlot(this.slot);
     }
     
+    protected InventoryClickEvent(String name, Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, Location location) {
+        super(name, player, inventory, location);
+        this.type = type;
+        this.item = item;
+        this.cursor = cursor;
+        this.slot = slot;
+        this.convertedSlot = convertSlot(this.slot);
+    }
+    
     @Override
     public void setCancelled(boolean cancel){
         if (cancel) this.result = Result.DENY;
@@ -59,6 +68,9 @@ public class InventoryClickEvent extends InventoryEvent{
      */
     public void setResult(Result result) {
         this.result = result;
+        if (result == Result.DENY) {
+        	setCancelled(true);
+        }
     }
     
     /**

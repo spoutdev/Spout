@@ -29,6 +29,16 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
     public boolean openInventoryWindow(Inventory inventory, Location location);
     
     /**
+     * Opens an inventory dialog to the player, with the given inventory displayed in the upper pane, and the player's inventory in the lower pane.
+     * The location is not used, but is passed to other plugins when notifying them of the open window
+     * @param inventory to use in the dialog GUI
+     * @param location that represents this inventory in the world (e.g Chest, Furnace). Use null if there is no physical location.
+     * @param ignoreDistance whether the distance from the inventory should be considered (opening an inventory will fail if it's too far away, without ignoring distance)
+     * @return true if an inventory window was opened
+     */
+    public boolean openInventoryWindow(Inventory inventory, Location location, boolean ignoreDistance);
+    
+    /**
      * Opens an workbench dialog to the player, using the workbench at the given location
      * @param location of the workbench to use. Must be a valid workbench.
      * @return true if a workbench window was opened

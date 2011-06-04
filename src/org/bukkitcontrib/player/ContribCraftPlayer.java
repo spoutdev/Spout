@@ -54,6 +54,14 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 
     @Override
     public PlayerInventory getInventory() {
+    	if ((!(this.inventory instanceof ContribCraftInventoryPlayer))) {
+    		this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+    	}
+    	else if (!((ContribCraftInventoryPlayer)this.inventory).getHandle().equals(this.getHandle().inventory)) {
+    		String temp = this.inventory.getName();
+    		this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+    		((ContribCraftInventoryPlayer)this.inventory).setName(temp);
+    	}
         return this.inventory;
     }
 
@@ -70,10 +78,14 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
 
     public boolean openInventoryWindow(Inventory inventory) {
-        return openInventoryWindow(inventory, null);
+        return openInventoryWindow(inventory, null, false);
+    }
+    
+    public boolean openInventoryWindow(Inventory inventory, Location location) {
+        return openInventoryWindow(inventory, location, false);
     }
 
-    public boolean openInventoryWindow(Inventory inventory, Location location) {
+    public boolean openInventoryWindow(Inventory inventory, Location location, boolean ignoreDistance) {
         InventoryOpenEvent event = new InventoryOpenEvent(this, inventory, this.inventory, location);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
