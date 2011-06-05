@@ -44,7 +44,7 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      * @return true if a workbench window was opened
      */
     public boolean openWorkbenchWindow(Location location);
-    
+
     /**
      * Return's true if the player is using the bukkit contrib single player mod
      * @return bukkit contrib single player mod

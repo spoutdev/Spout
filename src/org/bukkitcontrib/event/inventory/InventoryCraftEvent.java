@@ -64,7 +64,7 @@ public class InventoryCraftEvent extends InventoryEvent{
 
     /**
      * Set's the current item at the slot
-     * @param newItem to set
+     * @param result to set
      */
     public void setResult(ItemStack result) {
         this.result = result;

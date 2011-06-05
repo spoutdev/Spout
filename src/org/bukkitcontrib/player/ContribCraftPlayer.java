@@ -2,6 +2,7 @@ package org.bukkitcontrib.player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 import net.minecraft.server.ContainerChest;
 import net.minecraft.server.ContainerPlayer;
@@ -11,6 +12,8 @@ import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.ICrafting;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
+import net.minecraft.server.NetworkManager;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
@@ -22,6 +25,7 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
@@ -33,6 +37,8 @@ import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.keyboard.Keyboard;
+import org.bukkitcontrib.packet.Packet196AirTime;
+import org.bukkitcontrib.packet.Packet197SkinURL;
 
 @SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
@@ -47,23 +53,46 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     protected Keyboard chat = Keyboard.KEY_UNKNOWN;
     protected Keyboard togglefog = Keyboard.KEY_UNKNOWN;
     protected Keyboard sneak = Keyboard.KEY_UNKNOWN;
+    private int buildVersion = -1;
+    private int minorVersion = -1;
+    private int majorVersion = -1;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
         this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
     }
+    
+    /* Interace Overriden Public Methods */
 
     @Override
     public PlayerInventory getInventory() {
-    	if ((!(this.inventory instanceof ContribCraftInventoryPlayer))) {
-    		this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
-    	}
-    	else if (!((ContribCraftInventoryPlayer)this.inventory).getHandle().equals(this.getHandle().inventory)) {
-    		String temp = this.inventory.getName();
-    		this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
-    		((ContribCraftInventoryPlayer)this.inventory).setName(temp);
-    	}
+        if ((!(this.inventory instanceof ContribCraftInventoryPlayer))) {
+            this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+        }
+        else if (!((ContribCraftInventoryPlayer)this.inventory).getHandle().equals(this.getHandle().inventory)) {
+            String temp = this.inventory.getName();
+            this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+            ((ContribCraftInventoryPlayer)this.inventory).setName(temp);
+        }
         return this.inventory;
     }
+    
+    @Override
+    public void setMaximumAir(int time) {
+        if (isEnabledBukkitContribSinglePlayerMod()) {
+            sendPacket(new Packet196AirTime(time, this.getRemainingAir()));
+        }
+        super.setMaximumAir(time);
+    }
+    
+    @Override
+    public void setRemainingAir(int time) {
+        if (isEnabledBukkitContribSinglePlayerMod()) {
+            sendPacket(new Packet196AirTime(this.getMaximumAir(), time));
+        }
+        super.setRemainingAir(time);
+    }
+    
+    /* Inteface New Public Methods */
 
     public boolean closeActiveWindow() {
         InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory(), getDefaultInventory());
@@ -145,124 +174,10 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             return true;
         }
     }
-    
-    public int getActiveWindowId() {
-         Field id;
-         try {
-             id = EntityPlayer.class.getDeclaredField("bI");
-             id.setAccessible(true);
-             return (Integer)id.get(getHandle());
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
-         return 0;
-    }
-    
-    public void updateWindowId() {
-        Method id;
-        try {
-            id = EntityPlayer.class.getDeclaredMethod("af");
-            id.setAccessible(true);
-            id.invoke(getHandle());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Inventory getActiveInventory() {
-        return getNetServerHandler().getActiveInventory();
-    }
-    
-    public Inventory getDefaultInventory() {
-        return getNetServerHandler().getDefaultInventory();
-    }
-
-    public ContribNetServerHandler getNetServerHandler() {
-        return (ContribNetServerHandler) getHandle().netServerHandler;
-    }
-
-    public static boolean resetNetServerHandler(Player player) {
-        CraftPlayer cp = (CraftPlayer)player;
-        CraftServer server = (CraftServer)Bukkit.getServer();
-        
-        if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
-            Location loc = player.getLocation();
-            NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
-            handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-            cp.getHandle().netServerHandler = handler;
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean updateNetServerHandler(Player player) {
-        CraftPlayer cp = (CraftPlayer)player;
-        CraftServer server = (CraftServer)Bukkit.getServer();
-        
-        if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
-            Location loc = player.getLocation();
-            ContribNetServerHandler handler = new ContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
-            handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-            cp.getHandle().netServerHandler = handler;
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean updateBukkitEntity(Player player) {
-        if (!(player instanceof ContribCraftPlayer)) {
-            CraftPlayer cp = (CraftPlayer)player;
-            EntityPlayer ep = cp.getHandle();
-            Field bukkitEntity;
-            try {
-                bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-                bukkitEntity.setAccessible(true);
-                bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)Bukkit.getServer(), ep));
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-           return false;
-    }
-
-    public static void removeBukkitEntity(Player player) {
-        CraftPlayer cp = (CraftPlayer)player;
-        EntityPlayer ep = cp.getHandle();
-        Field bukkitEntity;
-        try {
-            bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-            bukkitEntity.setAccessible(true);
-            bukkitEntity.set(ep, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static ContribPlayer getContribPlayer(Player player) {
-        if (player instanceof ContribCraftPlayer) {
-            return (ContribCraftPlayer)player;
-        }
-        updateBukkitEntity(player);
-        return (ContribCraftPlayer)((CraftPlayer)player).getHandle().getBukkitEntity();
-    }
-    
-    public void updateKeys(short[] keys) {
-        this.forward = Keyboard.getKey(keys[0]);
-        this.back = Keyboard.getKey(keys[2]);
-        this.left = Keyboard.getKey(keys[1]);
-        this.right = Keyboard.getKey(keys[3]);
-        this.jump = Keyboard.getKey(keys[4]);
-        this.inventoryKey = Keyboard.getKey(keys[5]);
-        this.drop = Keyboard.getKey(keys[6]);
-        this.chat = Keyboard.getKey(keys[7]);
-        this.togglefog = Keyboard.getKey(keys[8]);
-        this.sneak = Keyboard.getKey(keys[9]);
-    }
 
     @Override
     public boolean isEnabledBukkitContribSinglePlayerMod() {
-        return forward != Keyboard.KEY_UNKNOWN;
+        return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
     }
 
     @Override
@@ -314,5 +229,179 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     public Keyboard getSneakKey() {
         return sneak;
     }
+    
+    /*Non Inteface public methods */
+    
+    public int getActiveWindowId() {
+        Field id;
+        try {
+            id = EntityPlayer.class.getDeclaredField("bI");
+            id.setAccessible(true);
+            return (Integer)id.get(getHandle());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+   }
+   
+   public void updateWindowId() {
+       Method id;
+       try {
+           id = EntityPlayer.class.getDeclaredMethod("af");
+           id.setAccessible(true);
+           id.invoke(getHandle());
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+   }
+
+   public Inventory getActiveInventory() {
+       return getNetServerHandler().getActiveInventory();
+   }
+   
+   public Inventory getDefaultInventory() {
+       return getNetServerHandler().getDefaultInventory();
+   }
+
+   public ContribNetServerHandler getNetServerHandler() {
+       return (ContribNetServerHandler) getHandle().netServerHandler;
+   }
+   
+   public void updateKeys(byte[] keys) {
+       this.forward = Keyboard.getKey(keys[0]);
+       this.back = Keyboard.getKey(keys[2]);
+       this.left = Keyboard.getKey(keys[1]);
+       this.right = Keyboard.getKey(keys[3]);
+       this.jump = Keyboard.getKey(keys[4]);
+       this.inventoryKey = Keyboard.getKey(keys[5]);
+       this.drop = Keyboard.getKey(keys[6]);
+       this.chat = Keyboard.getKey(keys[7]);
+       this.togglefog = Keyboard.getKey(keys[8]);
+       this.sneak = Keyboard.getKey(keys[9]);
+   }
+   
+   public void sendPacket(Packet packet) {
+       getNetServerHandler().sendPacket(packet);
+   }
+   
+    public int getMajorVersion() {
+        return majorVersion;
+    }
+    
+    public int getMinorVersion() {
+        return minorVersion;
+    }
+    
+    public int getBuildVersion() {
+        return buildVersion;
+    }
+    
+    public void setVersion(String version) {
+        try {
+            String split[] = version.split("\\.");
+            buildVersion = Integer.valueOf(split[2]);
+            minorVersion = Integer.valueOf(split[1]);
+            majorVersion = Integer.valueOf(split[0]);
+        }
+        catch (Exception e) {reset();}
+    }
+    
+    private void reset() {
+        buildVersion = -1;
+        minorVersion = -1;
+        majorVersion = -1;
+    }
+   
+   /* Non Interface public static methods */
+
+   public static boolean resetNetServerHandler(Player player) {
+       CraftPlayer cp = (CraftPlayer)player;
+       CraftServer server = (CraftServer)Bukkit.getServer();
+       
+       if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
+           Location loc = player.getLocation();
+           NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
+           handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+           cp.getHandle().netServerHandler = handler;
+           return true;
+       }
+       return false;
+   }
+
+   public static boolean updateNetServerHandler(Player player) {
+       CraftPlayer cp = (CraftPlayer)player;
+       CraftServer server = (CraftServer)Bukkit.getServer();
+       
+       if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
+           Location loc = player.getLocation();
+           ContribNetServerHandler handler = new ContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
+           handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+           cp.getHandle().netServerHandler = handler;
+           return true;
+       }
+       return false;
+   }
+
+   public static boolean updateBukkitEntity(Player player) {
+       if (!(player instanceof ContribCraftPlayer)) {
+           CraftPlayer cp = (CraftPlayer)player;
+           EntityPlayer ep = cp.getHandle();
+           Field bukkitEntity;
+           try {
+               bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+               bukkitEntity.setAccessible(true);
+               org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
+               if (!(e instanceof ContribCraftPlayer)) {
+                   bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)Bukkit.getServer(), ep));
+               }
+               return true;
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+       }
+          return false;
+   }
+
+   public static void removeBukkitEntity(Player player) {
+       CraftPlayer cp = (CraftPlayer)player;
+       EntityPlayer ep = cp.getHandle();
+       Field bukkitEntity;
+       try {
+           bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+           bukkitEntity.setAccessible(true);
+           bukkitEntity.set(ep, null);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+   }
+   
+   public static void sendAllPackets(Player player) {
+	   NetworkManager manager = ((ContribCraftPlayer)getContribPlayer(player)).getNetServerHandler().networkManager;
+       String name = player.getDisplayName();
+       try {
+           Method f = NetworkManager.class.getDeclaredMethod("f", (Class<?>[])null);
+           f.setAccessible(true);
+           while((Boolean)f.invoke(manager, (Object[])null) == true) {
+               
+           }
+       }
+       catch (Exception e) {
+       	//they will be kicked anyway, better to do it gracefully
+       	Logger.getLogger("Minecraft").severe("Failed to send all packets to " + name + " before disabling BukkitContrib!");
+       	try {
+       		player.kickPlayer("Failed to send packets while reloading BukkitContrib");
+       	}
+       	catch (Exception e1) {/*could be kicked already*/}
+       	e.printStackTrace();
+       }
+   }
+
+   public static ContribPlayer getContribPlayer(Player player) {
+       if (player instanceof ContribCraftPlayer) {
+           return (ContribCraftPlayer)player;
+       }
+       updateBukkitEntity(player);
+       return (ContribCraftPlayer)((CraftPlayer)player).getHandle().getBukkitEntity();
+   }
 
 }

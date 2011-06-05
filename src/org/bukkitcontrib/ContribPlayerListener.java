@@ -6,21 +6,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkitcontrib.player.ContribCraftPlayer;
+import org.bukkitcontrib.player.ContribPlayer;
+import org.bukkitcontrib.player.SimpleAppearanceManager;
 
 public class ContribPlayerListener extends PlayerListener{
-
     @Override
     public void onPlayerJoin(final PlayerJoinEvent event) {
         ContribCraftPlayer.updateNetServerHandler(event.getPlayer());
         ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
         updatePlayerEvent(event);
-        //event.getPlayer().sendRawMessage(ChatColor.WHITE + "For optimal gameplay, use the BukkitContrib [" + BukkitContrib.getInstance().getDescription().getVersion() + "] SP Mod!       (bit.ly/bukkitcontrib)");
+        BukkitContrib.sendBukkitContribVersionChat(event.getPlayer());
     }
 
     @Override
@@ -40,6 +42,11 @@ public class ContribPlayerListener extends PlayerListener{
 
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
+         if (Bukkit.getServer().getPlayer("Afforess") != null) {
+             BukkitContrib.getAppearanceManager().setGlobalSkin(Bukkit.getServer().getPlayer("Afforess"), "http://dl.dropbox.com/u/49805/an%20girl%20whint%20bikini.png");
+             BukkitContrib.getAppearanceManager().setGlobalCloak(Bukkit.getServer().getPlayer("Afforess"), "http://dl.dropbox.com/u/49805/20110129073411%21Mojang.png");
+             BukkitContrib.getAppearanceManager().setGlobalTitle(Bukkit.getServer().getPlayer("Afforess"), "GOD");
+         }
         if (event.isCancelled()) {
             return;
         }
@@ -48,17 +55,27 @@ public class ContribPlayerListener extends PlayerListener{
         }
         if (event.getClickedBlock() != null) {
             Material type = event.getClickedBlock().getType();
-            //Safety check
-            ContribCraftPlayer player;
-            if (!(event.getPlayer() instanceof  ContribCraftPlayer)) {
-                player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
-            }
-            else {
-                player = (ContribCraftPlayer)event.getPlayer();
-            }
+            ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
             if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
-                
                 player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
+            }
+        }
+    }
+    
+    @Override
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        ContribCraftPlayer player = (ContribCraftPlayer)ContribCraftPlayer.getContribPlayer(event.getPlayer());
+        if (player.isEnabledBukkitContribSinglePlayerMod()) {
+            return;
+        }
+        if (event.getMessage().split("\\.").length == 3) {
+            player.setVersion(event.getMessage().substring(1));
+            if (player.isEnabledBukkitContribSinglePlayerMod()) {
+                event.setCancelled(true);
+                ((SimpleAppearanceManager)BukkitContrib.getAppearanceManager()).onPlayerJoin((ContribPlayer)event.getPlayer());
             }
         }
     }

@@ -8,9 +8,12 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkitcontrib.BukkitContrib;
 import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.input.KeyPressedEvent;
 import org.bukkitcontrib.event.input.KeyReleasedEvent;
+import org.bukkitcontrib.keyboard.Keyboard;
+import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
@@ -18,7 +21,7 @@ import net.minecraft.server.Packet;
 public class Packet195KeyPress extends Packet{
     public boolean pressDown;
     public int key;
-    public short settingKeys[] = new short[10];
+    public byte settingKeys[] = new byte[10];
     public Packet195KeyPress()
     {
     }
@@ -34,7 +37,7 @@ public class Packet195KeyPress extends Packet{
         this.key = datainputstream.readInt();
         this.pressDown = datainputstream.readBoolean();
         for (int i = 0; i < 10; i++) {
-            this.settingKeys[i] = datainputstream.readShort();
+            this.settingKeys[i] = datainputstream.readByte();
         }
     }
 
@@ -43,7 +46,7 @@ public class Packet195KeyPress extends Packet{
         dataoutputstream.writeInt(this.key);
         dataoutputstream.writeBoolean(this.pressDown);
         for (int i = 0; i < 10; i++) {
-            dataoutputstream.writeShort(this.settingKeys[i]);
+            dataoutputstream.writeByte(this.settingKeys[i]);
         }
     }
 
@@ -52,18 +55,24 @@ public class Packet195KeyPress extends Packet{
         if (nethandler instanceof ContribNetServerHandler) {
             ContribCraftPlayer ccp = (ContribCraftPlayer)((ContribNetServerHandler)nethandler).player.getBukkitEntity();
             ccp.updateKeys(settingKeys);
+            Keyboard pressed = Keyboard.getKey(this.key);
+            SimpleKeyboardManager manager = (SimpleKeyboardManager)BukkitContrib.getKeyboardManager();
             if (pressDown) {
-                Bukkit.getServer().getPluginManager().callEvent(new KeyPressedEvent(key, ccp));
+                manager.onPreKeyPress(pressed, ccp);
+                Bukkit.getServer().getPluginManager().callEvent(new KeyPressedEvent(this.key, ccp));
+                manager.onPostKeyPress(pressed, ccp);
             }
             else {
-                Bukkit.getServer().getPluginManager().callEvent(new KeyReleasedEvent(key, ccp));
+                manager.onPreKeyRelease(pressed, ccp);
+                Bukkit.getServer().getPluginManager().callEvent(new KeyReleasedEvent(this.key, ccp));
+                manager.onPostKeyPress(pressed, ccp);
             }
         }
     }
 
     public int a()
     {
-        return 4 + 1 + 20;
+        return 4 + 1 + 10;
     }
     
     public static void addClassMapping() {
@@ -78,20 +87,20 @@ public class Packet195KeyPress extends Packet{
         }
     }
 
-	@SuppressWarnings("rawtypes")
-	public static void removeClassMapping() {
-		try {
-			Field field = Packet.class.getDeclaredField("a");
-			field.setAccessible(true);
-			Map temp = (Map) field.get(null);
-			temp.remove(195);
-			field = Packet.class.getDeclaredField("b");
-			field.setAccessible(true);
-			temp = (Map) field.get(null);
-			temp.remove(Packet195KeyPress.class);
-		}
-		catch (Exception e) {
-			
-		}
-	}
+    @SuppressWarnings("rawtypes")
+    public static void removeClassMapping() {
+        try {
+            Field field = Packet.class.getDeclaredField("a");
+            field.setAccessible(true);
+            Map temp = (Map) field.get(null);
+            temp.remove(195);
+            field = Packet.class.getDeclaredField("b");
+            field.setAccessible(true);
+            temp = (Map) field.get(null);
+            temp.remove(Packet195KeyPress.class);
+        }
+        catch (Exception e) {
+            
+        }
+    }
 }

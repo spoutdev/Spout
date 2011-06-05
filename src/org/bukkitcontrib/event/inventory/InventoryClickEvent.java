@@ -14,32 +14,36 @@ public class InventoryClickEvent extends InventoryEvent{
     protected int slot;
     protected int convertedSlot;
     protected Result result = Result.DEFAULT;
+    protected boolean leftClick;
 
-    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot) {
+    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick) {
         super("InventoryClickEvent", player, inventory);
         this.type = type;
         this.item = item;
         this.cursor = cursor;
         this.slot = slot;
         this.convertedSlot = convertSlot(this.slot);
+        this.leftClick = leftClick;
     }
     
-    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, Location location) {
+    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, Location location) {
         super("InventoryClickEvent", player, inventory, location);
         this.type = type;
         this.item = item;
         this.cursor = cursor;
         this.slot = slot;
         this.convertedSlot = convertSlot(this.slot);
+        this.leftClick = leftClick;
     }
     
-    protected InventoryClickEvent(String name, Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, Location location) {
+    protected InventoryClickEvent(String name, Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, Location location) {
         super(name, player, inventory, location);
         this.type = type;
         this.item = item;
         this.cursor = cursor;
         this.slot = slot;
         this.convertedSlot = convertSlot(this.slot);
+        this.leftClick = leftClick;
     }
     
     @Override
@@ -64,12 +68,11 @@ public class InventoryClickEvent extends InventoryEvent{
      * Default: Allow for Minecraft to handle the inventory click normally
      * Allow: Allow the inventory click to continue, regardless of the consequences
      * Deny: Block the inventory click from occuring, reset the inventory state to the pre-click state
-     * @return result
      */
     public void setResult(Result result) {
         this.result = result;
         if (result == Result.DENY) {
-        	setCancelled(true);
+            setCancelled(true);
         }
     }
     
@@ -110,7 +113,7 @@ public class InventoryClickEvent extends InventoryEvent{
     }
     
     /**
-     * Set's the curosor being interacted with. Use null for an empty slot.
+     * Set's the cursor being interacted with. Use null for an empty slot.
      * Note: The cursor can not be changed unless the result has been set to Allow.
      * @param cursor to set
      */
@@ -133,10 +136,18 @@ public class InventoryClickEvent extends InventoryEvent{
     /**
      * Get's the raw slot index that the packet sent
      * If the slot is -999, the clicked region is outside of the inventory
-     * @return
+     * @return raw slot
      */
     public int getRawSlot() {
         return this.slot;
+    }
+    
+    /**
+     * Return's true if the click on the inventory window was a left click. If false, it was a right click.
+     * @return true if left click
+     */
+    public boolean isLeftClick() {
+        return leftClick;
     }
     
     protected int convertSlot(int slot) {

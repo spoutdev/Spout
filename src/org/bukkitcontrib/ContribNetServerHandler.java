@@ -260,6 +260,9 @@ public class ContribNetServerHandler extends NetServerHandler{
         InventoryClickEvent event = null;
         Result result = Result.DEFAULT;
         boolean success = false;
+        final int LEFT_CLICK = 0;
+        final int RIGHT_CLICK = 1;
+        int click = packet.c;
 
         //clicked on bottom player inventory
         if (!(this.player.activeContainer instanceof ContainerPlayer) && this.player.defaultContainer instanceof ContainerPlayer && packet.b >= inventory.getSize()) {
@@ -268,10 +271,10 @@ public class ContribNetServerHandler extends NetServerHandler{
                 activeSlot -= this.getPlayer().getInventory().getSize();
             }
             type = getInventorySlotType(activeSlot);
-            event = new InventoryPlayerClickEvent(this.getPlayer(), this.getPlayer().getInventory(), type, slot, cursor, activeSlot, activeLocation);
+            event = new InventoryPlayerClickEvent(this.getPlayer(), this.getPlayer().getInventory(), type, slot, cursor, activeSlot, click == LEFT_CLICK,  activeLocation);
         }
         else {
-            event = new InventoryClickEvent(this.getPlayer(), inventory, type, slot, cursor, packet.b, activeLocation);
+            event = new InventoryClickEvent(this.getPlayer(), inventory, type, slot, cursor, packet.b, click == LEFT_CLICK, activeLocation);
         }
 
         if (event != null) {
@@ -311,9 +314,6 @@ public class ContribNetServerHandler extends NetServerHandler{
                 itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
             }
             else {
-                final int LEFT_CLICK = 0;
-                final int RIGHT_CLICK = 1;
-                int click = packet.c;
                 if(click == LEFT_CLICK && (itemstack != null && cursorstack != null && itemstack.a(cursorstack))) {
                     // Left-click full slot with full cursor of same item; merge stacks
                     itemstack.count += cursorstack.count;
