@@ -42,9 +42,9 @@ public class Packet1Login extends Packet
 
     public void processPacket(NetHandler nethandler)
     {
-		//System.out.println("Resetting BukkitContrib " + BukkitContrib.getBukkitContribLoginCounter());
-		BukkitContrib.resetBukkitContrib(); //BukkitContrib
-		//System.out.println("Reset BukkitContrib " + BukkitContrib.getBukkitContribLoginCounter());
+        //System.out.println("Resetting BukkitContrib " + BukkitContrib.getBukkitContribLoginCounter());
+        BukkitContrib.resetBukkitContrib(); //BukkitContrib
+        //System.out.println("Reset BukkitContrib " + BukkitContrib.getBukkitContribLoginCounter());
         nethandler.handleLogin(this);
     }
 

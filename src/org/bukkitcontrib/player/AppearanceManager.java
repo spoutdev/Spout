@@ -5,11 +5,11 @@ import org.bukkit.entity.LivingEntity;
 
 public interface AppearanceManager {
     
-	/**
-	 * Set's the skin for the target human that is visible to all players
-	 * @param target to change the skin for
-	 * @param Url for the new skin
-	 */
+    /**
+     * Set's the skin for the target human that is visible to all players
+     * @param target to change the skin for
+     * @param Url for the new skin
+     */
     public void setGlobalSkin(HumanEntity target, String Url);
     
     /**

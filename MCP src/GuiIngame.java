@@ -130,10 +130,10 @@ public class GuiIngame extends Gui
 
             if(mc.thePlayer.isInsideOfMaterial(Material.water))
             {
-				//BukkitContrib Start
+                //BukkitContrib Start
                 int k2 = (int)Math.ceil(((double)(mc.thePlayer.air - 2) * 10D) / (mc.thePlayer.maxAir * 1D));
                 int l3 = (int)Math.ceil(((double)mc.thePlayer.air * 10D) / (mc.thePlayer.maxAir * 1D)) - k2;
-				//BukkitContrib End
+                //BukkitContrib End
                 for(int l5 = 0; l5 < k2 + l3; l5++)
                 {
                     if(l5 < k2)

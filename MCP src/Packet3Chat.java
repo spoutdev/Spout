@@ -39,19 +39,19 @@ public class Packet3Chat extends Packet
 
     public void processPacket(NetHandler nethandler)
     {
-		//BukkitContrib Start
-		String processed = BukkitContrib.colorToString(message);
-		if (processed.split("\\.").length == 3) {
-			BukkitContrib.setVersion(processed);
-			if (BukkitContrib.isEnabled()) {
-				((NetClientHandler)nethandler).addToSendQueue(new Packet3Chat("/" + BukkitContrib.getClientVersionString()));
-			}
-		}
-		else {
-			//Normal message handling
-			nethandler.handleChat(this);
-		}
-		//BukkitContrib End
+        //BukkitContrib Start
+        String processed = BukkitContrib.colorToString(message);
+        if (processed.split("\\.").length == 3) {
+            BukkitContrib.setVersion(processed);
+            if (BukkitContrib.isEnabled()) {
+                ((NetClientHandler)nethandler).addToSendQueue(new Packet3Chat("/" + BukkitContrib.getClientVersionString()));
+            }
+        }
+        else {
+            //Normal message handling
+            nethandler.handleChat(this);
+        }
+        //BukkitContrib End
     }
 
     public int getPacketSize()

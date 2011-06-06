@@ -33,7 +33,7 @@ public class BukkitContrib extends JavaPlugin{
         //Force ALL packets to be sent before continuing
         //Can't have custom packets in the queue when the plugin disables
         for (Player player : online) {
-        	ContribCraftPlayer.sendAllPackets(player);
+            ContribCraftPlayer.sendAllPackets(player);
         }
         for (Player player : online) {
             ContribCraftPlayer.removeBukkitEntity(player);
