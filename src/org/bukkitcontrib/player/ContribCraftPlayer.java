@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
+import net.minecraft.server.Container;
 import net.minecraft.server.ContainerChest;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
@@ -58,7 +59,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     private int majorVersion = -1;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
-        this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+        createInventory(null);
     }
     
     /* Interace Overriden Public Methods */
@@ -66,12 +67,10 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     @Override
     public PlayerInventory getInventory() {
         if ((!(this.inventory instanceof ContribCraftInventoryPlayer))) {
-            this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+            createInventory(null);
         }
         else if (!((ContribCraftInventoryPlayer)this.inventory).getHandle().equals(this.getHandle().inventory)) {
-            String temp = this.inventory.getName();
-            this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
-            ((ContribCraftInventoryPlayer)this.inventory).setName(temp);
+            createInventory(this.inventory.getName());
         }
         return this.inventory;
     }
@@ -232,6 +231,28 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     /*Non Inteface public methods */
     
+    public void createInventory(String name) {
+        if (this.getHandle().activeContainer instanceof ContainerPlayer) {
+            this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, 
+                    new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+            if (name != null) {
+                this.inventory.setName(name);
+            }
+        }
+        else if (this.getHandle().defaultContainer instanceof ContainerPlayer) {
+            this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, 
+                    new ContribCraftingInventory(((ContainerPlayer)this.getHandle().defaultContainer).a, ((ContainerPlayer)this.getHandle().defaultContainer).b));
+            if (name != null) {
+                this.inventory.setName(name);
+            }
+        }
+        else {
+            //something is terribly wrong
+            this.inventory = null;
+            throw new UnsupportedOperationException("Attempted to create a ContribCraftPlayerInventory, but both the active and default containers were unsuitable candidates. Error in ContribCraftPlayer.createInventory(...).");
+        }
+    }
+    
     public int getActiveWindowId() {
         Field id;
         try {
@@ -376,7 +397,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
    }
    
    public static void sendAllPackets(Player player) {
-	   NetworkManager manager = ((ContribCraftPlayer)getContribPlayer(player)).getNetServerHandler().networkManager;
+       NetworkManager manager = ((ContribCraftPlayer)getContribPlayer(player)).getNetServerHandler().networkManager;
        String name = player.getDisplayName();
        try {
            Method f = NetworkManager.class.getDeclaredMethod("f", (Class<?>[])null);
@@ -386,13 +407,13 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
            }
        }
        catch (Exception e) {
-       	//they will be kicked anyway, better to do it gracefully
-       	Logger.getLogger("Minecraft").severe("Failed to send all packets to " + name + " before disabling BukkitContrib!");
-       	try {
-       		player.kickPlayer("Failed to send packets while reloading BukkitContrib");
-       	}
-       	catch (Exception e1) {/*could be kicked already*/}
-       	e.printStackTrace();
+           //they will be kicked anyway, better to do it gracefully
+           Logger.getLogger("Minecraft").severe("Failed to send all packets to " + name + " before disabling BukkitContrib!");
+           try {
+               player.kickPlayer("Failed to send packets while reloading BukkitContrib");
+           }
+           catch (Exception e1) {/*could be kicked already*/}
+           e.printStackTrace();
        }
    }
 
@@ -401,7 +422,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
            return (ContribCraftPlayer)player;
        }
        updateBukkitEntity(player);
-       return (ContribCraftPlayer)((CraftPlayer)player).getHandle().getBukkitEntity();
+       return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
    }
 
 }
