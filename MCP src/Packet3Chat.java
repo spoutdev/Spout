@@ -39,19 +39,29 @@ public class Packet3Chat extends Packet
 
     public void processPacket(NetHandler nethandler)
     {
-        //BukkitContrib Start
-        String processed = BukkitContrib.colorToString(message);
-        if (processed.split("\\.").length == 3) {
-            BukkitContrib.setVersion(processed);
-            if (BukkitContrib.isEnabled()) {
-                ((NetClientHandler)nethandler).addToSendQueue(new Packet3Chat("/" + BukkitContrib.getClientVersionString()));
-            }
-        }
-        else {
-            //Normal message handling
-            nethandler.handleChat(this);
-        }
-        //BukkitContrib End
+		//BukkitContrib Start
+		boolean proc = false;
+		if (!BukkitContrib.isEnabled() || BukkitContrib.getReloadPacket() != null) {
+			String processed = BukkitContrib.colorToString(message);
+			System.out.println(processed);
+			if (processed.split("\\.").length == 3) {
+				BukkitContrib.setVersion(processed);
+				if (BukkitContrib.isEnabled()) {
+					proc = true;
+					System.out.println("BukkitContrib SP Enabled");
+					((NetClientHandler)nethandler).addToSendQueue(new Packet3Chat("/" + BukkitContrib.getClientVersionString()));
+					if (BukkitContrib.getReloadPacket() != null) {
+						((NetClientHandler)nethandler).addToSendQueue(new CustomPacket(BukkitContrib.getReloadPacket()));
+						BukkitContrib.setReloadPacket(null);
+					}
+				}
+			}
+		}
+		if (!proc) {
+			//Normal message handling
+			nethandler.handleChat(this);
+		}
+		//BukkitContrib End
     }
 
     public int getPacketSize()

@@ -2,20 +2,20 @@ package org.bukkitcontrib;
 
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkitcontrib.block.ContribCraftChunk;
+import org.bukkitcontrib.event.input.InputListener;
 import org.bukkitcontrib.keyboard.KeyboardManager;
 import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
-import org.bukkitcontrib.packet.Packet195KeyPress;
-import org.bukkitcontrib.packet.Packet196AirTime;
-import org.bukkitcontrib.packet.Packet197SkinURL;
-import org.bukkitcontrib.packet.Packet198EntityTitle;
+import org.bukkitcontrib.packet.CustomPacket;
 import org.bukkitcontrib.player.AppearanceManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
+import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
 
 public class BukkitContrib extends JavaPlugin{
@@ -33,6 +33,7 @@ public class BukkitContrib extends JavaPlugin{
         //Force ALL packets to be sent before continuing
         //Can't have custom packets in the queue when the plugin disables
         for (Player player : online) {
+        	//TODO send plugin reload packet
             ContribCraftPlayer.sendAllPackets(player);
         }
         for (Player player : online) {
@@ -41,10 +42,7 @@ public class BukkitContrib extends JavaPlugin{
         }
         ContribCraftChunk.resetAllBukkitChunks();
         
-        Packet195KeyPress.removeClassMapping();
-        Packet196AirTime.removeClassMapping();
-        Packet197SkinURL.removeClassMapping();
-        Packet198EntityTitle.removeClassMapping();
+        CustomPacket.removeClassMapping();
     }
 
     @Override
@@ -72,10 +70,7 @@ public class BukkitContrib extends JavaPlugin{
         //Remove mappings from previous loads
         //Can not remove them on disable because the packets will still be in the send queue
         
-        Packet195KeyPress.addClassMapping();
-        Packet196AirTime.addClassMapping();
-        Packet197SkinURL.addClassMapping();
-        Packet198EntityTitle.addClassMapping();
+        CustomPacket.addClassMapping();
         Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
     }
 
@@ -89,6 +84,16 @@ public class BukkitContrib extends JavaPlugin{
     
     public static AppearanceManager getAppearanceManager() {
         return appearanceManager;
+    }
+    
+    public static ContribPlayer getPlayerFromId(int entityId) {
+    	Player[] online = Bukkit.getServer().getOnlinePlayers();
+        for (Player player : online) {
+        	if (player.getEntityId() == entityId) {
+        		return (ContribPlayer)player;
+        	}
+        }
+        return null;
     }
     
     private static String versionToString(String version) {

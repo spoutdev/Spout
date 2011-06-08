@@ -1,16 +1,17 @@
-//BukkitContrib
 package net.minecraft.src;
+//BukkitContrib
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import java.io.*;
-
-public class Packet195KeyPress extends Packet
-{
-
-    public Packet195KeyPress()
-    {
+public class PacketKeyPress implements BukkitContribPacket{
+    public boolean pressDown;
+    public byte key;
+    public byte settingKeys[] = new byte[10];
+    public PacketKeyPress(){
     }
 
-    public Packet195KeyPress(int key, boolean pressDown, MovementInputFromOptions input)
+    public PacketKeyPress(byte key, boolean pressDown, MovementInputFromOptions input)
     {
         this.key = key;
         this.pressDown = pressDown;
@@ -26,39 +27,33 @@ public class Packet195KeyPress extends Packet
         this.settingKeys[9] = (byte)input.gameSettings.keyBindSneak.keyCode;
     }
 
-    public void readPacketData(DataInputStream datainputstream) throws IOException
-    {
-        this.key = datainputstream.readInt();
+    public void readData(DataInputStream datainputstream) throws IOException {
+        this.key = datainputstream.readByte();
         this.pressDown = datainputstream.readBoolean();
         for (int i = 0; i < 10; i++) {
             this.settingKeys[i] = datainputstream.readByte();
         }
     }
 
-    public void writePacketData(DataOutputStream dataoutputstream) throws IOException
-    {
-        dataoutputstream.writeInt(this.key);
+    public void writeData(DataOutputStream dataoutputstream) throws IOException {
+        dataoutputstream.writeByte(this.key);
         dataoutputstream.writeBoolean(this.pressDown);
         for (int i = 0; i < 10; i++) {
             dataoutputstream.writeByte(this.settingKeys[i]);
         }
     }
 
-    public void processPacket(NetHandler nethandler)
-    {
-        
+    public void run(int id) {
+
     }
 
-    public int getPacketSize()
+    public int getNumBytes()
     {
-        return 4 + 1 + 10;
+        return 1 + 1 + 10;
     }
 
-    public boolean pressDown;
-    public int key;
-    public byte settingKeys[] = new byte[10];
-    static 
-    {
-        addIdClassMapping(195, true, true, net.minecraft.src.Packet195KeyPress.class);
-    }
+	@Override
+	public PacketType getPacketType() {
+		return PacketType.PacketKeyPress;
+	}
 }

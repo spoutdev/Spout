@@ -61,6 +61,10 @@ public class ContribNetServerHandler extends NetServerHandler{
     public void setActiveInventoryLocation(Location location) {
         activeLocation = location;
     }
+    
+    public Location getActiveInventoryLocation() {
+    	return activeLocation;
+    }
 
     public void setActiveInventory(boolean active) {
         activeInventory = active;

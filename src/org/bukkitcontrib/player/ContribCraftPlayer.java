@@ -38,8 +38,10 @@ import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.keyboard.Keyboard;
-import org.bukkitcontrib.packet.Packet196AirTime;
-import org.bukkitcontrib.packet.Packet197SkinURL;
+import org.bukkitcontrib.packet.BukkitContribPacket;
+import org.bukkitcontrib.packet.CustomPacket;
+import org.bukkitcontrib.packet.PacketAirTime;
+import org.bukkitcontrib.packet.PacketSkinURL;
 
 @SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
@@ -78,7 +80,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     @Override
     public void setMaximumAir(int time) {
         if (isEnabledBukkitContribSinglePlayerMod()) {
-            sendPacket(new Packet196AirTime(time, this.getRemainingAir()));
+            sendPacket(new PacketAirTime(time, this.getRemainingAir()));
         }
         super.setMaximumAir(time);
     }
@@ -86,7 +88,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     @Override
     public void setRemainingAir(int time) {
         if (isEnabledBukkitContribSinglePlayerMod()) {
-            sendPacket(new Packet196AirTime(this.getMaximumAir(), time));
+            sendPacket(new PacketAirTime(this.getMaximumAir(), time));
         }
         super.setRemainingAir(time);
     }
@@ -301,8 +303,8 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
        this.sneak = Keyboard.getKey(keys[9]);
    }
    
-   public void sendPacket(Packet packet) {
-       getNetServerHandler().sendPacket(packet);
+   public void sendPacket(BukkitContribPacket packet) {
+       getNetServerHandler().sendPacket(new CustomPacket(packet));
    }
    
     public int getMajorVersion() {

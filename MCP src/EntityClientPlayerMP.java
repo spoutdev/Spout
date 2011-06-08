@@ -205,23 +205,24 @@ public class EntityClientPlayerMP extends EntityPlayerSP
             super.addStat(statbase, i);
         }
     }
-    
-    public void handleKeyPress(int i, boolean flag) {
-        //BukkitContrib Start
-        if (BukkitContrib.getBuildVersion() > 2) {
-            sendQueue.addToSendQueue(new Packet195KeyPress(i, flag, (MovementInputFromOptions)movementInput));
-        }
-        //BukkitContrib End
-        super.handleKeyPress(i, flag);
-    }
-    
-    //BukkitContrib Start
-    public void updateCloak() {
-        if (this.cloakUrl == null || this.playerCloakUrl == null) {
-            super.updateCloak();
-        }
-    }
-    //BukkitContrib End
+	
+	public void handleKeyPress(int i, boolean flag) {
+		//BukkitContrib Start
+		if (BukkitContrib.isEnabled()) {
+			sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, flag, (MovementInputFromOptions)movementInput)));
+		}
+		//BukkitContrib End
+		super.handleKeyPress(i, flag);
+	}
+	
+	//BukkitContrib Start
+	public void updateCloak() {
+		if (this.cloakUrl == null || this.playerCloakUrl == null) {
+			super.updateCloak();
+			System.out.println("UpdateCloak");
+		}
+	}
+	//BukkitContrib End
 
     public NetClientHandler sendQueue;
     private int field_9380_bx;
