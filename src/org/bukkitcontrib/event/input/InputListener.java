@@ -11,11 +11,11 @@ public class InputListener extends CustomEventListener implements Listener{
     }
     
     public void onKeyPressedEvent(KeyPressedEvent event) {
-        System.out.println(event.getKey());
+	
     }
     
     public void onKeyReleasedEvent(KeyReleasedEvent event) {
-        
+
     }
     
     @Deprecated

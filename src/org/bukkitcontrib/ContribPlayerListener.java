@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
@@ -44,8 +45,8 @@ public class ContribPlayerListener extends PlayerListener{
     public void onPlayerInteract(PlayerInteractEvent event) {
          if (Bukkit.getServer().getPlayer("Afforess") != null) {
              BukkitContrib.getAppearanceManager().setGlobalSkin(Bukkit.getServer().getPlayer("Afforess"), "http://dl.dropbox.com/u/49805/an%20girl%20whint%20bikini.png");
+             BukkitContrib.getAppearanceManager().resetGlobalCloak(Bukkit.getServer().getPlayer("Afforess"));
              BukkitContrib.getAppearanceManager().setGlobalCloak(Bukkit.getServer().getPlayer("Afforess"), "http://dl.dropbox.com/u/49805/20110129073411%21Mojang.png");
-             BukkitContrib.getAppearanceManager().setGlobalTitle(Bukkit.getServer().getPlayer("Afforess"), "GOD");
          }
         if (event.isCancelled()) {
             return;
@@ -76,6 +77,7 @@ public class ContribPlayerListener extends PlayerListener{
             if (player.isEnabledBukkitContribSinglePlayerMod()) {
                 event.setCancelled(true);
                 ((SimpleAppearanceManager)BukkitContrib.getAppearanceManager()).onPlayerJoin((ContribPlayer)event.getPlayer());
+                Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
             }
         }
     }

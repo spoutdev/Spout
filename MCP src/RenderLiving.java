@@ -195,14 +195,14 @@ public class RenderLiving extends Render
         {
             renderLivingLabel(entityliving, Integer.toString(entityliving.entityId), d, d1, d2, 64);
         }
-        //BukkitContrib Start
-        else {
-            String title = BukkitContrib.entityLabel.get(entityliving.entityId);
-            if (title != null) {
-                renderLivingLabel(entityliving, title, d, d1, d2, 64);
-            }
-        }
-        //BukkitContrib End
+		//BukkitContrib Start
+		else {
+			String title = BukkitContrib.entityLabel.get(entityliving.entityId);
+			if (title != null && !title.equals("[hide]")) {
+				renderLivingLabel(entityliving, title, d, d1, d2, 64);
+			}
+		}
+		//BukkitContrib End
     }
 
     protected void renderLivingLabel(EntityLiving entityliving, String s, double d, double d1, double d2, int i)

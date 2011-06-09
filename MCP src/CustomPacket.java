@@ -32,7 +32,7 @@ public class CustomPacket extends Packet{
 			try {
 				this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
 				packet.readData(input);
-				System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
+				//System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -42,7 +42,7 @@ public class CustomPacket extends Packet{
 
 	@Override
 	public void writePacketData(DataOutputStream output) throws IOException {
-		System.out.println("Writing Packet Data for " + packet.getPacketType());
+		//System.out.println("Writing Packet Data for " + packet.getPacketType());
 		output.writeInt(packet.getPacketType().getId());
 		packet.writeData(output);
 	}

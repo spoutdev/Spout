@@ -101,7 +101,6 @@ public class BukkitContrib {
 	}
 	
 	public static boolean isEnabled() {
-		System.out.println(getVersionString());
 		return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
 	}
 	

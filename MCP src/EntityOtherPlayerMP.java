@@ -125,14 +125,14 @@ public class EntityOtherPlayerMP extends EntityPlayer
     public void func_6420_o()
     {
     }
-    
-    //BukkitContrib Start
-    public void updateCloak() {
-        if (this.cloakUrl == null || this.playerCloakUrl == null) {
-            super.updateCloak();
-        }
-    }
-    //BukkitContrib End
+	
+	//BukkitContrib Start
+	public void updateCloak() {
+		if (this.cloakUrl == null || this.playerCloakUrl == null) {
+			super.updateCloak();
+		}
+	}
+	//BukkitContrib End
 
     private int field_785_bg;
     private double field_784_bh;

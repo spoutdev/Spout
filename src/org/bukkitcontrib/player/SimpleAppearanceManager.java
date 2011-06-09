@@ -330,6 +330,16 @@ public class SimpleAppearanceManager implements AppearanceManager{
                 player.sendPacket(new PacketEntityTitle(target.getEntityId(), title));
         }
     }
+    
+    @Override
+    public void hidePlayerTitle(ContribPlayer viewingPlayer, LivingEntity target) {
+       setPlayerTitle(viewingPlayer, target, "[hide]");
+    }
+    
+    @Override
+    public void hideGlobalTitle(LivingEntity target) {
+    	setGlobalTitle(target, "[hide]");
+    }
 
     @Override
     public void resetPlayerTitle(ContribPlayer viewingPlayer, LivingEntity target) {

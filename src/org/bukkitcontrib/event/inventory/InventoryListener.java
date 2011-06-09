@@ -41,5 +41,6 @@ public class InventoryListener extends CustomEventListener implements Listener{
             onInventoryCraft((InventoryCraftEvent)event);
         }
     }
+    
 
 }

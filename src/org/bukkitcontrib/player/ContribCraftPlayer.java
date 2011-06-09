@@ -37,6 +37,7 @@ import org.bukkitcontrib.inventory.ContribCraftInventory;
 import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
+import org.bukkitcontrib.inventory.ContribPlayerInventory;
 import org.bukkitcontrib.keyboard.Keyboard;
 import org.bukkitcontrib.packet.BukkitContribPacket;
 import org.bukkitcontrib.packet.CustomPacket;
@@ -67,14 +68,14 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     /* Interace Overriden Public Methods */
 
     @Override
-    public PlayerInventory getInventory() {
+    public ContribPlayerInventory getInventory() {
         if ((!(this.inventory instanceof ContribCraftInventoryPlayer))) {
             createInventory(null);
         }
         else if (!((ContribCraftInventoryPlayer)this.inventory).getHandle().equals(this.getHandle().inventory)) {
             createInventory(this.inventory.getName());
         }
-        return this.inventory;
+        return (ContribPlayerInventory)this.inventory;
     }
     
     @Override

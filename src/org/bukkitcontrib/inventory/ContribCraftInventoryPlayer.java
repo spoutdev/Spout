@@ -6,7 +6,7 @@ import net.minecraft.server.InventoryPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer;
 import org.bukkit.inventory.ItemStack;
 
-public class ContribCraftInventoryPlayer extends CraftInventoryPlayer implements ContribInventory, CraftingInventory{
+public class ContribCraftInventoryPlayer extends CraftInventoryPlayer implements ContribPlayerInventory{
     protected CraftingInventory crafting;
     protected String name = null;
     public ContribCraftInventoryPlayer(InventoryPlayer inventory, CraftingInventory crafting) {
