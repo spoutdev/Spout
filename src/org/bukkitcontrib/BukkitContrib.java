@@ -41,7 +41,7 @@ public class BukkitContrib extends JavaPlugin{
         }
         ContribCraftChunk.resetAllBukkitChunks();
         
-        CustomPacket.removeClassMapping();
+        
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BukkitContrib extends JavaPlugin{
         
         //Remove mappings from previous loads
         //Can not remove them on disable because the packets will still be in the send queue
-        
+        CustomPacket.removeClassMapping();
         CustomPacket.addClassMapping();
         Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
     }

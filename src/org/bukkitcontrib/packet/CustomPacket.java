@@ -50,8 +50,13 @@ public class CustomPacket extends Packet{
 
 	@Override
 	public void a(NetHandler netHandler) {
-		ContribNetServerHandler handler = (ContribNetServerHandler)netHandler;
-		packet.run(handler.getPlayer().getEntityId());
+		if (netHandler.getClass().hashCode() == ContribNetServerHandler.class.hashCode()) {
+			ContribNetServerHandler handler = (ContribNetServerHandler)netHandler;
+			packet.run(handler.getPlayer().getEntityId());
+		}
+		else {
+			//System.out.println("Invalid hash!");
+		}
 	}
 	
 	public static void addClassMapping() {
