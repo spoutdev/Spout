@@ -9,6 +9,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkitcontrib.block.ContribCraftChunk;
+import org.bukkitcontrib.event.bukkitcontrib.ServerTickEvent;
 import org.bukkitcontrib.keyboard.KeyboardManager;
 import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
 import org.bukkitcontrib.packet.CustomPacket;
@@ -32,7 +33,7 @@ public class BukkitContrib extends JavaPlugin{
         //Force ALL packets to be sent before continuing
         //Can't have custom packets in the queue when the plugin disables
         for (Player player : online) {
-        	//TODO send plugin reload packet
+            //TODO send plugin reload packet
             ContribCraftPlayer.sendAllPackets(player);
         }
         for (Player player : online) {
@@ -41,7 +42,7 @@ public class BukkitContrib extends JavaPlugin{
         }
         ContribCraftChunk.resetAllBukkitChunks();
         
-        
+        getServer().getScheduler().cancelTasks(this);
     }
 
     @Override
@@ -66,6 +67,9 @@ public class BukkitContrib extends JavaPlugin{
         ContribCraftChunk.replaceAllBukkitChunks();
         appearanceManager.onPluginEnable();
         
+        //Start counting ticks
+        Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
+
         //Remove mappings from previous loads
         //Can not remove them on disable because the packets will still be in the send queue
         CustomPacket.removeClassMapping();
@@ -86,11 +90,11 @@ public class BukkitContrib extends JavaPlugin{
     }
     
     public static ContribPlayer getPlayerFromId(int entityId) {
-    	Player[] online = Bukkit.getServer().getOnlinePlayers();
+        Player[] online = Bukkit.getServer().getOnlinePlayers();
         for (Player player : online) {
-        	if (player.getEntityId() == entityId) {
-        		return (ContribPlayer)player;
-        	}
+            if (player.getEntityId() == entityId) {
+                return (ContribPlayer)player;
+            }
         }
         return null;
     }

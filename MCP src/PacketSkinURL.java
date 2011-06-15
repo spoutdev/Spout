@@ -49,24 +49,24 @@ public class PacketSkinURL implements BukkitContribPacket{
         PacketUtil.writeString(output, cloakURL);
     }
 
-	@Override
-	public void run(int PlayerId) {
-		EntityPlayer e = BukkitContrib.getPlayerFromId(entityId);
-		if (e != null && e instanceof EntityPlayer) {
-			if (!this.skinURL.equals("none")) {
-				e.skinUrl = this.skinURL;
-			}
-			if (!this.cloakURL.equals("none")) {
-				e.cloakUrl = this.cloakURL;
-				e.playerCloakUrl = this.cloakURL;
-			}
-			BukkitContrib.getGameInstance().theWorld.releaseEntitySkin(e);
-			BukkitContrib.getGameInstance().theWorld.obtainEntitySkin(e);
-		}
-	}
+    @Override
+    public void run(int PlayerId) {
+        EntityPlayer e = BukkitContrib.getPlayerFromId(entityId);
+        if (e != null && e instanceof EntityPlayer) {
+            if (!this.skinURL.equals("none")) {
+                e.skinUrl = this.skinURL;
+            }
+            if (!this.cloakURL.equals("none")) {
+                e.cloakUrl = this.cloakURL;
+                e.playerCloakUrl = this.cloakURL;
+            }
+            BukkitContrib.getGameInstance().theWorld.releaseEntitySkin(e);
+            BukkitContrib.getGameInstance().theWorld.obtainEntitySkin(e);
+        }
+    }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketSkinURL;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketSkinURL;
+    }
 }

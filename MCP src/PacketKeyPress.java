@@ -52,8 +52,8 @@ public class PacketKeyPress implements BukkitContribPacket{
         return 1 + 1 + 10;
     }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketKeyPress;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketKeyPress;
+    }
 }

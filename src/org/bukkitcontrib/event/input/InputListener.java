@@ -11,7 +11,7 @@ public class InputListener extends CustomEventListener implements Listener{
     }
     
     public void onKeyPressedEvent(KeyPressedEvent event) {
-	
+    
     }
     
     public void onKeyReleasedEvent(KeyReleasedEvent event) {
@@ -23,6 +23,10 @@ public class InputListener extends CustomEventListener implements Listener{
 
     }
     
+    public void onRenderDistanceChange(RenderDistanceChangeEvent event) {
+        
+    }
+    
     @Override
     public void onCustomEvent(Event event) {
         if (event instanceof KeyPressedEvent) {
@@ -30,6 +34,9 @@ public class InputListener extends CustomEventListener implements Listener{
         }
         else if (event instanceof KeyReleasedEvent) {
             onKeyReleasedEvent((KeyReleasedEvent)event);
+        }
+        else if (event instanceof RenderDistanceChangeEvent) {
+            onRenderDistanceChange((RenderDistanceChangeEvent)event);
         }
     }
 }

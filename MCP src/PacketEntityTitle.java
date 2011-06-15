@@ -35,15 +35,15 @@ public class PacketEntityTitle implements BukkitContribPacket{
     @Override
     public void run(int id) {
         if (title.equals("reset")) {
-			BukkitContrib.entityLabel.remove(entityId);
-		}
-		else {
-			BukkitContrib.entityLabel.put(entityId, title);
-		}
+            BukkitContrib.entityLabel.remove(entityId);
+        }
+        else {
+            BukkitContrib.entityLabel.put(entityId, title);
+        }
     }
     
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketEntityTitle;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketEntityTitle;
+    }
 }

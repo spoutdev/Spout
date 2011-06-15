@@ -77,13 +77,13 @@ public class RenderPlayer extends RenderLiving
             if(f2 < f3)
             {
                 String s = entityplayer.username;
-				//BukkitContrib Start
-				String title = BukkitContrib.entityLabel.get(entityplayer.entityId);
-				if (title != null) {
-					s = title;
-				}
-				if (!s.equals("[hide]")) {
-				//BukkitContrib End
+                //BukkitContrib Start
+                String title = BukkitContrib.entityLabel.get(entityplayer.entityId);
+                if (title != null) {
+                    s = title;
+                }
+                if (!s.equals("[hide]")) {
+                //BukkitContrib End
                 if(!entityplayer.isSneaking())
                 {
                     if(entityplayer.isPlayerSleeping())
@@ -125,9 +125,9 @@ public class RenderPlayer extends RenderLiving
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                     GL11.glPopMatrix();
                 }
-				//BukkitContrib Start
-				}
-				//BukkitContrib End
+                //BukkitContrib Start
+                }
+                //BukkitContrib End
             }
         }
     }

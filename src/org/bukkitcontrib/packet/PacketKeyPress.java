@@ -42,19 +42,19 @@ public class PacketKeyPress implements BukkitContribPacket{
     public void run(int id) {
         ContribCraftPlayer ccp = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(id);
         if (ccp != null) {
-	        ccp.updateKeys(settingKeys);
-	        Keyboard pressed = Keyboard.getKey(this.key);
-	        SimpleKeyboardManager manager = (SimpleKeyboardManager)BukkitContrib.getKeyboardManager();
-	        if (pressDown) {
-	            manager.onPreKeyPress(pressed, ccp);
-	            Bukkit.getServer().getPluginManager().callEvent(new KeyPressedEvent(this.key, ccp));
-	            manager.onPostKeyPress(pressed, ccp);
-	        }
-	        else {
-	            manager.onPreKeyRelease(pressed, ccp);
-	            Bukkit.getServer().getPluginManager().callEvent(new KeyReleasedEvent(this.key, ccp));
-	            manager.onPostKeyPress(pressed, ccp);
-	        }
+            ccp.updateKeys(settingKeys);
+            Keyboard pressed = Keyboard.getKey(this.key);
+            SimpleKeyboardManager manager = (SimpleKeyboardManager)BukkitContrib.getKeyboardManager();
+            if (pressDown) {
+                manager.onPreKeyPress(pressed, ccp);
+                Bukkit.getServer().getPluginManager().callEvent(new KeyPressedEvent(this.key, ccp));
+                manager.onPostKeyPress(pressed, ccp);
+            }
+            else {
+                manager.onPreKeyRelease(pressed, ccp);
+                Bukkit.getServer().getPluginManager().callEvent(new KeyReleasedEvent(this.key, ccp));
+                manager.onPostKeyPress(pressed, ccp);
+            }
         }
     }
 
@@ -63,8 +63,8 @@ public class PacketKeyPress implements BukkitContribPacket{
         return 1 + 1 + 10;
     }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketKeyPress;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketKeyPress;
+    }
 }

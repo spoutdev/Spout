@@ -2,6 +2,7 @@ package org.bukkitcontrib.player;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;
+import org.bukkitcontrib.event.input.RenderDistance;
 import org.bukkitcontrib.keyboard.Keyboard;
 
 public interface ContribPlayer extends org.bukkit.entity.Player{
@@ -50,6 +51,12 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      * @return bukkit contrib single player mod
      */
     public boolean isEnabledBukkitContribSinglePlayerMod();
+    
+    /**
+     * Gets the version of the bukkitcontrib SP client mod in use, or -1 if none.
+     * @return version
+     */
+    public int getVersion();
     
     /**
      * Return's the key bound to forward movement for this player, or unknown if not known.
@@ -110,5 +117,41 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      * @return sneak key
      */
     public Keyboard getSneakKey();
+    
+    /**
+     * Gets the render distance that the player views, or null if unknown
+     * @return render distance
+     */
+    public RenderDistance getRenderDistance();
+    
+    /**
+     * Sets the render distance that the player views
+     * @param distance to set
+     */
+    public void setRenderDistance(RenderDistance distance);
+    
+    /**
+     * Gets the maximum render distance that the player can view, or null if unknown
+     * @return maximum distance
+     */
+    public RenderDistance getMaximumRenderDistance();
+    
+    /**
+     * Sets the maximum render distance that the player can view
+     * @param maximum distance
+     */
+    public void setMaximumRenderDistance(RenderDistance maximum);
+    
+    /**
+     * Gets the minimum render distance that the player can view, or null if unknown
+     * @return minimum distance
+     */
+    public RenderDistance getMinimumRenderDistance();
+    
+    /**
+     * Sets the minimum render distance that the player can view
+     * @param minimum distance
+     */
+    public void setMinimumRenderDistance(RenderDistance minimum);
 
 }

@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkitcontrib.ContribNetServerHandler;
+import org.bukkitcontrib.event.input.RenderDistance;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
 import org.bukkitcontrib.inventory.ContribCraftInventory;
@@ -42,6 +43,7 @@ import org.bukkitcontrib.keyboard.Keyboard;
 import org.bukkitcontrib.packet.BukkitContribPacket;
 import org.bukkitcontrib.packet.CustomPacket;
 import org.bukkitcontrib.packet.PacketAirTime;
+import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.packet.PacketSkinURL;
 
 @SuppressWarnings("unused")
@@ -60,6 +62,9 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     private int buildVersion = -1;
     private int minorVersion = -1;
     private int majorVersion = -1;
+    public RenderDistance currentRender = null;
+    protected RenderDistance maximumRender = null;
+    protected RenderDistance minimumRender = null;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
         createInventory(null);
@@ -320,6 +325,13 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         return buildVersion;
     }
     
+    public int getVersion() {
+        if (isEnabledBukkitContribSinglePlayerMod()) {
+            return majorVersion * 100 + minorVersion * 10 + buildVersion;
+        }
+        return -1;
+    }
+    
     public void setVersion(String version) {
         try {
             String split[] = version.split("\\.");
@@ -427,5 +439,46 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
        updateBukkitEntity(player);
        return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
    }
+
+@Override
+public RenderDistance getRenderDistance() {
+    return currentRender;
+}
+
+@Override
+public void setRenderDistance(RenderDistance distance) {
+    if (getVersion() > 5) {
+        currentRender = distance;
+        sendPacket(new PacketRenderDistance(distance, null, null));
+    }
+}
+
+@Override
+public RenderDistance getMaximumRenderDistance() {
+    return maximumRender;
+}
+
+@Override
+public void setMaximumRenderDistance(RenderDistance maximum) {
+    if (getVersion() > 5) {
+        maximumRender = maximum;
+        sendPacket(new PacketRenderDistance(null, maximum, null));
+    }
+}
+
+@Override
+public RenderDistance getMinimumRenderDistance() {
+    return minimumRender;
+}
+
+@Override
+public void setMinimumRenderDistance(RenderDistance minimum) {
+    if (getVersion() > 5) {
+        minimumRender = minimum;
+        sendPacket(new PacketRenderDistance(null, null, minimum));
+    }
+}
+   
+   
 
 }

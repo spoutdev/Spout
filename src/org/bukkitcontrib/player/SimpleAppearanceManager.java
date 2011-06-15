@@ -33,7 +33,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
             }
             map.put(target.getName(), Url);
             ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(p);
-            if (player.isEnabledBukkitContribSinglePlayerMod())
+            if (player.getVersion() > 4)
                 player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
         }
     }
@@ -48,7 +48,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
         }
         map.put(target.getName(), Url);
         ContribCraftPlayer player = (ContribCraftPlayer) viewingPlayer;
-        if (player.isEnabledBukkitContribSinglePlayerMod())
+        if (player.getVersion() > 4)
             player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
     }
 
@@ -115,7 +115,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
             }
             map.put(target.getName(), Url);
             ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(p);
-            if (player.isEnabledBukkitContribSinglePlayerMod())
+            if (player.getVersion() > 4)
                 player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
         }
     }
@@ -130,7 +130,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
         String Url = getDefaultSkin(target);
         map.put(target.getName(), Url);
         ContribCraftPlayer player = (ContribCraftPlayer)viewingPlayer;
-        if (player.isEnabledBukkitContribSinglePlayerMod())
+        if (player.getVersion() > 4)
             player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
     }
 
@@ -157,7 +157,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
             }
             map.put(target.getName(), Url);
             ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(p);
-            if (player.isEnabledBukkitContribSinglePlayerMod())
+            if (player.getVersion() > 4)
                 player.sendPacket(new PacketSkinURL(Url, target.getEntityId()));
         }
     }
@@ -188,7 +188,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
             }
             map.put(target.getName(), Url);
             ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(p);
-            if (player.isEnabledBukkitContribSinglePlayerMod())
+            if (player.getVersion() > 4)
                 player.sendPacket(new PacketSkinURL(Url, target.getEntityId()));
         }
     }
@@ -203,7 +203,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
         String Url = getDefaultCloak(target);
         map.put(target.getName(), Url);
         ContribCraftPlayer player = (ContribCraftPlayer)viewingPlayer;
-        if (player.isEnabledBukkitContribSinglePlayerMod())
+        if (player.getVersion() > 4)
             player.sendPacket(new PacketSkinURL(Url, target.getEntityId()));
     }
 
@@ -226,7 +226,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
     }
     
     public void onPlayerJoin(ContribPlayer player) {
-        if (player.isEnabledBukkitContribSinglePlayerMod()) {
+        if (player.getVersion() > 4) {
             for (World w : Bukkit.getServer().getWorlds()) {
                 for (LivingEntity lv : w.getLivingEntities()) {
                     HashMap<Integer, String> tmap = titleMap.get(player.getName());
@@ -311,7 +311,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
         }
         map.put(target.getEntityId(), title);
         ContribCraftPlayer player = (ContribCraftPlayer) viewingPlayer;
-        if (player.isEnabledBukkitContribSinglePlayerMod())
+        if (player.getVersion() > 4)
             player.sendPacket(new PacketEntityTitle(target.getEntityId(), title));
     }
 
@@ -326,7 +326,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
             }
             map.put(target.getEntityId(), title);
             ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(p);
-            if (player.isEnabledBukkitContribSinglePlayerMod())
+            if (player.getVersion() > 4)
                 player.sendPacket(new PacketEntityTitle(target.getEntityId(), title));
         }
     }
@@ -338,7 +338,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
     
     @Override
     public void hideGlobalTitle(LivingEntity target) {
-    	setGlobalTitle(target, "[hide]");
+        setGlobalTitle(target, "[hide]");
     }
 
     @Override
@@ -350,7 +350,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
         }
         map.remove(target.getEntityId());
         ContribCraftPlayer player = (ContribCraftPlayer)viewingPlayer;
-        if (player.isEnabledBukkitContribSinglePlayerMod())
+        if (player.getVersion() > 4)
             player.sendPacket(new PacketEntityTitle(target.getEntityId(), "reset"));
     }
 
@@ -365,7 +365,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
             }
             map.remove(target.getEntityId());
             ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(p);
-            if (player.isEnabledBukkitContribSinglePlayerMod()) {
+            if (player.getVersion() > 4){
                 player.sendPacket(new PacketEntityTitle(target.getEntityId(), "reset"));
             }
         }

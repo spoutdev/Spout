@@ -49,13 +49,13 @@ public class PacketSkinURL implements BukkitContribPacket{
         PacketUtil.writeString(output, cloakURL);
     }
 
-	@Override
-	public void run(int PlayerId) {
-		
-	}
+    @Override
+    public void run(int PlayerId) {
+        
+    }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketSkinURL;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketSkinURL;
+    }
 }

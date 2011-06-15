@@ -36,12 +36,12 @@ public class PacketAirTime implements BukkitContribPacket{
 
     @Override
     public void run(int id) {
-		BukkitContrib.getGameInstance().thePlayer.maxAir = airTime;
-		BukkitContrib.getGameInstance().thePlayer.air = air;
+        BukkitContrib.getGameInstance().thePlayer.maxAir = airTime;
+        BukkitContrib.getGameInstance().thePlayer.air = air;
     }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketAirTime;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketAirTime;
+    }
 }

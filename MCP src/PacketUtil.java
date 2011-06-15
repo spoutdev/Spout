@@ -6,22 +6,22 @@ import java.io.IOException;
 
 
 public abstract class PacketUtil {
-	
-	public static void writeString(DataOutputStream output, String string) {
-		try {
-			Packet.func_27049_a(string, output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static String readString(DataInputStream input, int maxSize) {
-		try {
-			return Packet.func_27048_a(input, maxSize);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    
+    public static void writeString(DataOutputStream output, String string) {
+        try {
+            Packet.func_27049_a(string, output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static String readString(DataInputStream input, int maxSize) {
+        try {
+            return Packet.func_27048_a(input, maxSize);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

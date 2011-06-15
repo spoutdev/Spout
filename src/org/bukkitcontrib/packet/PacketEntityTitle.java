@@ -37,8 +37,8 @@ public class PacketEntityTitle implements BukkitContribPacket{
         
     }
     
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketEntityTitle;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketEntityTitle;
+    }
 }

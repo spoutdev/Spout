@@ -205,24 +205,48 @@ public class EntityClientPlayerMP extends EntityPlayerSP
             super.addStat(statbase, i);
         }
     }
-	
-	public void handleKeyPress(int i, boolean flag) {
-		//BukkitContrib Start
-		if (BukkitContrib.isEnabled()) {
-			sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, flag, (MovementInputFromOptions)movementInput)));
-		}
-		//BukkitContrib End
-		super.handleKeyPress(i, flag);
-	}
-	
-	//BukkitContrib Start
-	public void updateCloak() {
-		if (this.cloakUrl == null || this.playerCloakUrl == null) {
-			super.updateCloak();
-			System.out.println("UpdateCloak");
-		}
-	}
-	//BukkitContrib End
+    
+    public void handleKeyPress(int i, boolean flag) {
+        //BukkitContrib Start
+        if (BukkitContrib.isEnabled()) {
+            sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, flag, (MovementInputFromOptions)movementInput)));
+            Minecraft game = BukkitContrib.getGameInstance();
+            if (game != null) {
+                final GameSettings settings = game.gameSettings;
+                if (i == settings.keyBindToggleFog.keyCode) {
+                    byte view = (byte)settings.renderDistance;
+                    byte newView = (byte)((view + 1) & 3);
+                    final KeyBinding old = settings.keyBindToggleFog;
+                    settings.keyBindToggleFog = new KeyBinding("key.fog", -1);
+                    System.out.println("Current: " + view + " New View: " + newView + " Max View: " + BukkitContrib.maxView + " Min View: " + BukkitContrib.minView);
+                    if ((BukkitContrib.maxView > -1 && newView > BukkitContrib.maxView) || (BukkitContrib.minView > -1 && newView < BukkitContrib.minView)) {
+                        (new Thread() {
+                            public void run() {
+                                try {
+                                    sleep(5);
+                                } catch (Exception e) {}
+                                settings.keyBindToggleFog = old;
+                            }
+                        }).start();
+                    }
+                    else {
+                        sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)view)));
+                    }
+                }
+            }
+        }
+        //BukkitContrib End
+        super.handleKeyPress(i, flag);
+    }
+    
+    //BukkitContrib Start
+    public void updateCloak() {
+        if (this.cloakUrl == null || this.playerCloakUrl == null) {
+            super.updateCloak();
+            System.out.println("UpdateCloak");
+        }
+    }
+    //BukkitContrib End
 
     public NetClientHandler sendQueue;
     private int field_9380_bx;

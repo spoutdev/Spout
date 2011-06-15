@@ -44,8 +44,8 @@ public class PacketAirTime implements BukkitContribPacket{
         player.setMaximumAir(airTime);
     }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketAirTime;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketAirTime;
+    }
 }
