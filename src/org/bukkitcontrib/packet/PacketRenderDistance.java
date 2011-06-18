@@ -18,6 +18,13 @@ public class PacketRenderDistance implements BukkitContribPacket{
         
     }
     
+    public PacketRenderDistance(boolean resetMax, boolean resetMin) {
+        if (resetMax)
+            max = -2;
+        if (resetMin)
+            min = -2;
+    }
+    
     public PacketRenderDistance(RenderDistance view, RenderDistance max, RenderDistance min) {
         if (view != null)
             this.view = (byte) view.getValue();

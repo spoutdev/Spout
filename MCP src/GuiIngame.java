@@ -177,6 +177,11 @@ public class GuiIngame extends Gui
             GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
             GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
         }
+        //BukkitContrib Start Zans Minimap Compatibility
+        if (BukkitContrib.getZanMinimap() != null) {
+            ((ZanMinimap)BukkitContrib.getZanMinimap()).OnTickInGame(mc);
+        }
+        //BukkitContrib End
         if(mc.gameSettings.showDebugInfo)
         {
             GL11.glPushMatrix();

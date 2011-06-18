@@ -1,7 +1,9 @@
 package org.bukkitcontrib.player;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
+import org.bukkitcontrib.ClientOnly;
 import org.bukkitcontrib.event.input.RenderDistance;
 import org.bukkitcontrib.keyboard.Keyboard;
 
@@ -62,18 +64,21 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      * Return's the key bound to forward movement for this player, or unknown if not known.
      * @return forward key
      */
+    @ClientOnly
     public Keyboard getForwardKey();
     
     /**
      * Return's the key bound to backward movement for this player, or unknown if not known.
      * @return backward key
      */
+    @ClientOnly
     public Keyboard getBackwardKey();
     
     /**
      * Return's the key bound to left movement for this player, or unknown if not known.
      * @return left key
      */
+    @ClientOnly
     public Keyboard getLeftKey();
     
     /**
@@ -86,72 +91,107 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      * Return's the key bound to jumping for this player, or unknown if not known.
      * @return jump key
      */
+    @ClientOnly
     public Keyboard getJumpKey();
     
     /**
      * Return's the key bound to opening and closing inventories for this player, or unknown if not known.
      * @return inventory key
      */
+    @ClientOnly
     public Keyboard getInventoryKey();
     
     /**
      * Return's the key bound to forward movement for this player, or unknown if not known.
      * @return forward key
      */
+    @ClientOnly
     public Keyboard getDropItemKey();
     
     /**
      * Return's the key bound to opening the chat bar for this player, or unknown if not known.
      * @return chat key
      */
+    @ClientOnly
     public Keyboard getChatKey();
     
     /**
      * Return's the key bound to toggle view fog for this player, or unknown if not known.
      * @return toggle fog key
      */
+    @ClientOnly
     public Keyboard getToggleFogKey();
     
     /**
      * Return's the key bound to sneaking for this player, or unknown if not known.
      * @return sneak key
      */
+    @ClientOnly
     public Keyboard getSneakKey();
     
     /**
      * Gets the render distance that the player views, or null if unknown
      * @return render distance
      */
+    @ClientOnly
     public RenderDistance getRenderDistance();
     
     /**
      * Sets the render distance that the player views
      * @param distance to set
      */
+    @ClientOnly
     public void setRenderDistance(RenderDistance distance);
     
     /**
      * Gets the maximum render distance that the player can view, or null if unknown
      * @return maximum distance
      */
+    @ClientOnly
     public RenderDistance getMaximumRenderDistance();
     
     /**
      * Sets the maximum render distance that the player can view
      * @param maximum distance
      */
+    @ClientOnly
     public void setMaximumRenderDistance(RenderDistance maximum);
+    
+    /**
+     * Releases the maximum render distance, and allows the player to change the distance with no maximum restriction
+     */
+    @ClientOnly
+    public void resetMaximumRenderDistance();
     
     /**
      * Gets the minimum render distance that the player can view, or null if unknown
      * @return minimum distance
      */
+    @ClientOnly
     public RenderDistance getMinimumRenderDistance();
+    
+    /**
+     * Releases the minimum render distance, and allows the player to change the distance with no minimum restriction
+     */
+    @ClientOnly
+    public void resetMinimumRenderDistance();
     
     /**
      * Sets the minimum render distance that the player can view
      * @param minimum distance
      */
+    @ClientOnly
     public void setMinimumRenderDistance(RenderDistance minimum);
+    
+    /**
+     * Send's the player a notification (using the existing Achievement Get window), with the given title, message, and item to render as a graphic
+     * The title and message may not exceed 26 characters in length
+     * The item to render may not be null
+     * @param title to send
+     * @param message to send
+     * @param toRender to render
+     */
+    @ClientOnly
+    public void sendNotification(String title, String message, Material toRender);
 
 }

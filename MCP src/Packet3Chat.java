@@ -3,6 +3,7 @@
 // Decompiler options: packimports(3) braces deadcode 
 
 package net.minecraft.src;
+import net.minecraft.client.Minecraft; //BukkitContrib
 
 import java.io.*;
 
@@ -50,9 +51,16 @@ public class Packet3Chat extends Packet
                     proc = true;
                     System.out.println("BukkitContrib SP Enabled");
                     ((NetClientHandler)nethandler).addToSendQueue(new Packet3Chat("/" + BukkitContrib.getClientVersionString()));
+                    //Let BukkitContrib know we just reloaded
                     if (BukkitContrib.getReloadPacket() != null) {
                         ((NetClientHandler)nethandler).addToSendQueue(new CustomPacket(BukkitContrib.getReloadPacket()));
                         BukkitContrib.setReloadPacket(null);
+                    }
+                    //Also need to send the render distance
+                    Minecraft game = BukkitContrib.getGameInstance();
+                    if (game != null) {
+                        final GameSettings settings = game.gameSettings;
+                        ((NetClientHandler)nethandler).addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)settings.renderDistance)));
                     }
                 }
             }

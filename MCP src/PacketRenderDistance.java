@@ -51,6 +51,10 @@ public class PacketRenderDistance implements BukkitContribPacket{
             BukkitContrib.minView = min;
         if (max > -1 && max < 4)
             BukkitContrib.maxView = max;
+        if (min == -2)
+            BukkitContrib.minView = -1;
+        if (max == -2)
+            BukkitContrib.maxView = -1;
     }
 
     @Override

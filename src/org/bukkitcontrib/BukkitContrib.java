@@ -13,6 +13,8 @@ import org.bukkitcontrib.event.bukkitcontrib.ServerTickEvent;
 import org.bukkitcontrib.keyboard.KeyboardManager;
 import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
 import org.bukkitcontrib.packet.CustomPacket;
+import org.bukkitcontrib.packet.PacketPluginReload;
+import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.player.AppearanceManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
@@ -30,11 +32,17 @@ public class BukkitContrib extends JavaPlugin{
         //order matters
         appearanceManager.onPluginDisable();
         Player[] online = getServer().getOnlinePlayers();
-        //Force ALL packets to be sent before continuing
-        //Can't have custom packets in the queue when the plugin disables
         for (Player player : online) {
-            //TODO send plugin reload packet
-            ContribCraftPlayer.sendAllPackets(player);
+            try {
+                ContribCraftPlayer ccp = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(player);
+                if (ccp.getVersion() > 5)
+                    ccp.sendPacket(new PacketRenderDistance(true, true));
+                if (ccp.getVersion() > 4)
+                    ccp.sendPacket(new PacketPluginReload((ContribCraftPlayer)player));
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         for (Player player : online) {
             ContribCraftPlayer.removeBukkitEntity(player);
@@ -93,7 +101,7 @@ public class BukkitContrib extends JavaPlugin{
         Player[] online = Bukkit.getServer().getOnlinePlayers();
         for (Player player : online) {
             if (player.getEntityId() == entityId) {
-                return (ContribPlayer)player;
+                return (ContribPlayer)ContribCraftPlayer.getContribPlayer(player);
             }
         }
         return null;

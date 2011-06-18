@@ -211,26 +211,17 @@ public class EntityClientPlayerMP extends EntityPlayerSP
         if (BukkitContrib.isEnabled()) {
             sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, flag, (MovementInputFromOptions)movementInput)));
             Minecraft game = BukkitContrib.getGameInstance();
-            if (game != null) {
+            if (game != null && BukkitContrib.getVersion() > 5 && flag) {
                 final GameSettings settings = game.gameSettings;
                 if (i == settings.keyBindToggleFog.keyCode) {
                     byte view = (byte)settings.renderDistance;
-                    byte newView = (byte)((view + 1) & 3);
+                    byte newView = BukkitContrib.getNextRenderDistance(view);
                     final KeyBinding old = settings.keyBindToggleFog;
                     settings.keyBindToggleFog = new KeyBinding("key.fog", -1);
-                    System.out.println("Current: " + view + " New View: " + newView + " Max View: " + BukkitContrib.maxView + " Min View: " + BukkitContrib.minView);
-                    if ((BukkitContrib.maxView > -1 && newView > BukkitContrib.maxView) || (BukkitContrib.minView > -1 && newView < BukkitContrib.minView)) {
-                        (new Thread() {
-                            public void run() {
-                                try {
-                                    sleep(5);
-                                } catch (Exception e) {}
-                                settings.keyBindToggleFog = old;
-                            }
-                        }).start();
-                    }
-                    else {
-                        sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)view)));
+                    (new BukkitContribResetKeyThread(settings, old)).start();
+                    if (view != newView) {
+                        settings.renderDistance = newView;
+                        sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)newView)));
                     }
                 }
             }

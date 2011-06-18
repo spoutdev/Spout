@@ -8,7 +8,8 @@ public enum PacketType {
     PacketSkinURL(2, PacketSkinURL.class),
     PacketEntityTitle(3, PacketEntityTitle.class),
     PacketPluginReload(4, PacketPluginReload.class),
-    PacketRenderDistance(5, PacketRenderDistance.class)
+    PacketRenderDistance(5, PacketRenderDistance.class),
+    PacketBukkitContribAlert(6, PacketBukkitContribAlert.class)
     
     ;
     

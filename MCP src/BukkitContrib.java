@@ -13,6 +13,8 @@ public class BukkitContrib {
     private static int clientMajorVersion = 0;
     private static Minecraft game = null;
     private static PacketPluginReload reloadPacket = null;
+    private static Object zanMinimap = null;
+    private static boolean zanFailed = false;
     public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
     public static boolean runOnce = false;
     public static byte minView = -1;
@@ -67,6 +69,10 @@ public class BukkitContrib {
     
     public static int getBuildVersion() {
         return BukkitContrib.buildVersion;
+    }
+    
+    public static int getVersion() {
+        return  BukkitContrib.buildVersion +  BukkitContrib.minorVersion * 10 + BukkitContrib.majorVersion * 100;
     }
     
     public static int getClientMajorVersion() {
@@ -160,6 +166,40 @@ public class BukkitContrib {
     
     public static void setReloadPacket(PacketPluginReload packet) {
         reloadPacket = packet;
+    }
+    
+    public static void createBukkitContribAlert(String title, String message, int toRender) {
+        if (getGameInstance() != null) {
+            getGameInstance().guiAchievement.queueNotification(title, message, toRender);
+        }
+    }
+    
+    public static Object getZanMinimap() {
+        if (zanMinimap == null && !zanFailed) {
+            try {
+                Class<?> c = Class.forName("ZanMinimap");
+                zanMinimap = c.getDeclaredConstructors()[0].newInstance((Object[])null);
+            }
+            catch (Exception e) {
+                zanFailed = true;
+            }
+        }
+        return zanMinimap;
+    }
+    
+    
+    public static byte getNextRenderDistance(int current) {
+        //default behavior
+        if (BukkitContrib.minView == -1 && BukkitContrib.maxView == -1) return (byte)((current + 1) & 3);
+        int minView = BukkitContrib.minView == -1 ? 3 : BukkitContrib.minView;
+        int maxView = BukkitContrib.maxView == -1 ? 0 : BukkitContrib.maxView;
+        //System.out.println("Current: " + current);
+        current++;
+        if (current > minView) {
+            current = Math.max(0, maxView);
+        }
+        //System.out.println("Max: " + maxView + " Min: " + minView + " New View: " + current);
+        return (byte)current;
     }
 
 }

@@ -43,6 +43,7 @@ import org.bukkitcontrib.keyboard.Keyboard;
 import org.bukkitcontrib.packet.BukkitContribPacket;
 import org.bukkitcontrib.packet.CustomPacket;
 import org.bukkitcontrib.packet.PacketAirTime;
+import org.bukkitcontrib.packet.PacketBukkitContribAlert;
 import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.packet.PacketSkinURL;
 
@@ -186,6 +187,13 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     public boolean isEnabledBukkitContribSinglePlayerMod() {
         return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
     }
+    
+    public int getVersion() {
+        if (isEnabledBukkitContribSinglePlayerMod()) {
+            return majorVersion * 100 + minorVersion * 10 + buildVersion;
+        }
+        return -1;
+    }
 
     @Override
     public Keyboard getForwardKey() {
@@ -235,6 +243,75 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     @Override
     public Keyboard getSneakKey() {
         return sneak;
+    }
+    
+
+    @Override
+    public RenderDistance getRenderDistance() {
+        return currentRender;
+    }
+
+    @Override
+    public void setRenderDistance(RenderDistance distance) {
+        if (getVersion() > 5) {
+            currentRender = distance;
+            sendPacket(new PacketRenderDistance(distance, null, null));
+        }
+    }
+
+    @Override
+    public RenderDistance getMaximumRenderDistance() {
+        return maximumRender;
+    }
+
+    @Override
+    public void setMaximumRenderDistance(RenderDistance maximum) {
+        if (getVersion() > 5) {
+            maximumRender = maximum;
+            sendPacket(new PacketRenderDistance(null, maximum, null));
+        }
+    }
+    
+    @Override
+    public void resetMaximumRenderDistance() {
+        if (getVersion() > 5) {
+            maximumRender = null;
+            sendPacket(new PacketRenderDistance(true, false));
+        }
+    }
+
+    @Override
+    public RenderDistance getMinimumRenderDistance() {
+        return minimumRender;
+    }
+
+    @Override
+    public void setMinimumRenderDistance(RenderDistance minimum) {
+        if (getVersion() > 5) {
+            minimumRender = minimum;
+            sendPacket(new PacketRenderDistance(null, null, minimum));
+        }
+    }
+    
+    @Override
+    public void resetMinimumRenderDistance() {
+        if (getVersion() > 5) {
+            minimumRender = null;
+            sendPacket(new PacketRenderDistance(false, true));
+        }
+    }
+    
+    @Override
+    public void sendNotification(String title, String message, Material toRender) {
+        if (getVersion() > 5) {
+            if (title.length() > 26) {
+                throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
+            }
+            if (message.length() > 26) {
+                throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars");
+            }
+            sendPacket(new PacketBukkitContribAlert(title, message, toRender.getId()));
+        }
     }
     
     /*Non Inteface public methods */
@@ -323,13 +400,6 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     public int getBuildVersion() {
         return buildVersion;
-    }
-    
-    public int getVersion() {
-        if (isEnabledBukkitContribSinglePlayerMod()) {
-            return majorVersion * 100 + minorVersion * 10 + buildVersion;
-        }
-        return -1;
     }
     
     public void setVersion(String version) {
@@ -439,46 +509,4 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
        updateBukkitEntity(player);
        return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
    }
-
-@Override
-public RenderDistance getRenderDistance() {
-    return currentRender;
-}
-
-@Override
-public void setRenderDistance(RenderDistance distance) {
-    if (getVersion() > 5) {
-        currentRender = distance;
-        sendPacket(new PacketRenderDistance(distance, null, null));
-    }
-}
-
-@Override
-public RenderDistance getMaximumRenderDistance() {
-    return maximumRender;
-}
-
-@Override
-public void setMaximumRenderDistance(RenderDistance maximum) {
-    if (getVersion() > 5) {
-        maximumRender = maximum;
-        sendPacket(new PacketRenderDistance(null, maximum, null));
-    }
-}
-
-@Override
-public RenderDistance getMinimumRenderDistance() {
-    return minimumRender;
-}
-
-@Override
-public void setMinimumRenderDistance(RenderDistance minimum) {
-    if (getVersion() > 5) {
-        minimumRender = minimum;
-        sendPacket(new PacketRenderDistance(null, null, minimum));
-    }
-}
-   
-   
-
 }

@@ -24,7 +24,7 @@ public class PacketPluginReload implements BukkitContribPacket{
         activeInventoryX = input.readInt();
         activeInventoryY = input.readInt();
         activeInventoryZ = input.readInt();
-        PacketUtil.readString(input, 64);
+        worldName = PacketUtil.readString(input, 64);
     }
 
     @Override

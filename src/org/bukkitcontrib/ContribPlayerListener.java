@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
-import org.bukkitcontrib.event.input.RenderDistance;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
@@ -44,16 +43,6 @@ public class ContribPlayerListener extends PlayerListener{
 
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
-        System.out.println("Render Distance: " + ((ContribPlayer)event.getPlayer()).getRenderDistance());
-        ((ContribPlayer)(ContribPlayer)event.getPlayer()).setMaximumRenderDistance(RenderDistance.SHORT);
-        ((ContribPlayer)(ContribPlayer)event.getPlayer()).setRenderDistance(RenderDistance.SHORT);
-         if (Bukkit.getServer().getPlayer("Afforess") != null) {
-             BukkitContrib.getAppearanceManager().setGlobalSkin(Bukkit.getServer().getPlayer("Afforess"), "http://dl.dropbox.com/u/49805/an%20girl%20whint%20bikini.png");
-             BukkitContrib.getAppearanceManager().resetGlobalCloak(Bukkit.getServer().getPlayer("Afforess"));
-             BukkitContrib.getAppearanceManager().setGlobalCloak(Bukkit.getServer().getPlayer("Afforess"), "http://dl.dropbox.com/u/49805/20110129073411%21Mojang.png");
-             
-             
-         }
         if (event.isCancelled()) {
             return;
         }
