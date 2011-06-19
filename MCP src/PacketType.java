@@ -9,7 +9,9 @@ public enum PacketType {
     PacketEntityTitle(3, PacketEntityTitle.class),
     PacketPluginReload(4, PacketPluginReload.class),
     PacketRenderDistance(5, PacketRenderDistance.class),
-    PacketBukkitContribAlert(6, PacketBukkitContribAlert.class)
+    PacketBukkitContribAlert(6, PacketBukkitContribAlert.class),
+    PacketPlaySound(7, PacketPlaySound.class),
+    PacketDownloadMusic(8, PacketDownloadMusic.class),
     
     ;
     

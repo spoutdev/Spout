@@ -52,7 +52,7 @@ public class PacketSkinURL implements BukkitContribPacket{
     @Override
     public void run(int PlayerId) {
         EntityPlayer e = BukkitContrib.getPlayerFromId(entityId);
-        if (e != null && e instanceof EntityPlayer) {
+        if (e != null) {
             if (!this.skinURL.equals("none")) {
                 e.skinUrl = this.skinURL;
             }

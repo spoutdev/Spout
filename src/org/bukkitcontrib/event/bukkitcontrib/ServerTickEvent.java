@@ -29,6 +29,7 @@ public class ServerTickEvent extends Event{
                 } catch (InterruptedException e) {}
                 Runnable update = new Runnable() {
                     public void run() {
+                        BukkitContrib.playerListener.manager.onServerTick();
                         Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
                     }
                 };

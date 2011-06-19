@@ -3,12 +3,16 @@ package net.minecraft.src;
 import java.lang.reflect.Field;
 import net.minecraft.client.Minecraft;
 import java.util.HashMap;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.io.BufferedReader;
 
 public class BukkitContrib {
     private static int buildVersion = -1;
     private static int minorVersion = -1;
     private static int majorVersion = -1;
-    private static int clientBuildVersion = 6;
+    private static int clientBuildVersion = 7;
     private static int clientMinorVersion = 0;
     private static int clientMajorVersion = 0;
     private static Minecraft game = null;
@@ -33,6 +37,9 @@ public class BukkitContrib {
         if (!runOnce) {
             CustomPacket.addClassMapping();
             runOnce = true;
+        }
+        if (isUpdateAvailable() && getVersion() > -1) {
+            createBukkitContribAlert("Update Available!", "bit.ly/bukkitcontrib", 323);
         }
     }
     
@@ -85,6 +92,10 @@ public class BukkitContrib {
     
     public static int getClientBuildVersion() {
         return BukkitContrib.clientBuildVersion;
+    }
+    
+    public static int getClientVersion() {
+        return  BukkitContrib.clientBuildVersion +  BukkitContrib.clientMinorVersion * 10 + BukkitContrib.clientMajorVersion * 100;
     }
     
     public static String getClientVersionString() {
@@ -200,6 +211,26 @@ public class BukkitContrib {
         }
         //System.out.println("Max: " + maxView + " Min: " + minView + " New View: " + current);
         return (byte)current;
+    }
+    
+    public static boolean isUpdateAvailable() {
+        try {
+            URL url = new URL("http://dl.dropbox.com/u/49805/BukkitContribVersion.txt");
+             
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String str;
+            while ((str = in.readLine()) != null) {
+                String[] split = str.split("\\.");
+                int version = Integer.parseInt(split[0]) * 100 + Integer.parseInt(split[1]) * 10 + Integer.parseInt(split[2]);
+                if (version > getClientVersion()){
+                    in.close();
+                    return true;
+                }
+            }
+            in.close();
+        }
+        catch (Exception e) {}
+        return false;
     }
 
 }

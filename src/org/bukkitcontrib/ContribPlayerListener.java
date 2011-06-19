@@ -1,7 +1,6 @@
 package org.bukkitcontrib;
 
 import java.lang.reflect.Field;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -18,12 +17,14 @@ import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
 
 public class ContribPlayerListener extends PlayerListener{
+    public PlayerManager manager = new PlayerManager();
     @Override
     public void onPlayerJoin(final PlayerJoinEvent event) {
         ContribCraftPlayer.updateNetServerHandler(event.getPlayer());
         ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
         updatePlayerEvent(event);
         BukkitContrib.sendBukkitContribVersionChat(event.getPlayer());
+        manager.onPlayerJoin(event.getPlayer());
     }
 
     @Override
@@ -72,6 +73,7 @@ public class ContribPlayerListener extends PlayerListener{
             if (player.isEnabledBukkitContribSinglePlayerMod()) {
                 event.setCancelled(true);
                 ((SimpleAppearanceManager)BukkitContrib.getAppearanceManager()).onPlayerJoin((ContribPlayer)event.getPlayer());
+                manager.onBukkitContribSPEnable(player);
                 Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
             }
         }

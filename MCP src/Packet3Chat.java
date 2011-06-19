@@ -58,7 +58,7 @@ public class Packet3Chat extends Packet
                     }
                     //Also need to send the render distance
                     Minecraft game = BukkitContrib.getGameInstance();
-                    if (game != null) {
+                    if (game != null && BukkitContrib.getVersion() > 5) {
                         final GameSettings settings = game.gameSettings;
                         ((NetClientHandler)nethandler).addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)settings.renderDistance)));
                     }
