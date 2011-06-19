@@ -91,6 +91,12 @@ public class SimpleSoundManager implements SoundManager{
 
     @Override
     public void playCustomMusic(ContribPlayer target, String Url, int volumePercent) {
+    	if (!Url.substring(Url.length() - 4, Url.length()).equalsIgnoreCase(".ogg")) {
+            throw new UnsupportedOperationException("All audio files must be ogg vorbis type");
+        }
+        if (Url.length() > 255) {
+            throw new UnsupportedOperationException("All Url's must be shorter than 256 characters");
+        }
         ContribCraftPlayer ccp = (ContribCraftPlayer) target;
         ccp.sendPacket(new PacketDownloadMusic(Url, null, volumePercent));
     }
