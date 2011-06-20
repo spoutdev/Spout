@@ -212,7 +212,7 @@ public class BukkitContrib extends JavaPlugin{
             }
             File plugin = new File(directory.getPath(), "BukkitContrib.jar");
             if (!plugin.exists()) {
-                URL bukkitContrib = new URL("http://dl.dropbox.com/u/49805/BukkitContrib.jar");
+                URL bukkitContrib = new URL("http://bit.ly/autoupdateBukkitContrib");
                 ReadableByteChannel rbc = Channels.newChannel(bukkitContrib.openStream());
                 FileOutputStream fos = new FileOutputStream(plugin);
                 fos.getChannel().transferFrom(rbc, 0, 1 << 24);
