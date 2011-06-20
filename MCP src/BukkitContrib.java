@@ -215,7 +215,7 @@ public class BukkitContrib {
     
     public static boolean isUpdateAvailable() {
         try {
-            URL url = new URL("http://dl.dropbox.com/u/49805/BukkitContribVersion.txt");
+            URL url = new URL("http://bit.ly/clientBukkitContribVersionCheck");
              
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String str;
