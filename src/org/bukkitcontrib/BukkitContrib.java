@@ -19,6 +19,8 @@ import org.bukkit.util.FileUtil;
 import org.bukkitcontrib.block.ContribCraftChunk;
 import org.bukkitcontrib.config.ConfigReader;
 import org.bukkitcontrib.event.bukkitcontrib.ServerTickEvent;
+import org.bukkitcontrib.gui.ScreenManager;
+import org.bukkitcontrib.gui.SimpleScreenManager;
 import org.bukkitcontrib.keyboard.KeyboardManager;
 import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
 import org.bukkitcontrib.packet.CustomPacket;
@@ -38,6 +40,7 @@ public class BukkitContrib extends JavaPlugin{
     private static final SimpleKeyboardManager keyManager = new SimpleKeyboardManager();
     private static final SimpleAppearanceManager appearanceManager = new SimpleAppearanceManager();
     private static final SimpleSoundManager soundManager = new SimpleSoundManager();
+    private static final SimpleScreenManager screenManager = new SimpleScreenManager();
     private static BukkitContrib instance;
     @Override
     public void onDisable() {
@@ -132,6 +135,10 @@ public class BukkitContrib extends JavaPlugin{
     
     public static SoundManager getSoundManager() {
         return soundManager;
+    }
+    
+    public static ScreenManager getScreenManager() {
+    	return screenManager;
     }
     
     public static ContribPlayer getPlayerFromId(int entityId) {
