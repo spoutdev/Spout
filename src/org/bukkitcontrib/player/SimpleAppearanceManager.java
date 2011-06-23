@@ -286,6 +286,9 @@ public class SimpleAppearanceManager implements AppearanceManager{
     }
     
     private void checkUrl(String Url) {
+        if (Url == null || Url.length() < 5) {
+            throw new UnsupportedOperationException("Invalid URL");
+        }
         if (!Url.substring(Url.length() - 4, Url.length()).equalsIgnoreCase(".png")) {
             throw new UnsupportedOperationException("All skins must be a PNG image");
         }
