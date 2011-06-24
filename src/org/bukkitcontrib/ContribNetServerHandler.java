@@ -194,7 +194,6 @@ public class ContribNetServerHandler extends NetServerHandler{
 
             // Fire InventoryChange or InventoryCraft event
             if (packet.b != -999) {
-                ItemStack onCursor = ItemStack.b(this.player.inventory.j()); // Copy the item on the cursor
                 if (inventory instanceof CraftingInventory) {
                     CraftingInventory crafting = (CraftingInventory) inventory;
                     InventoryCrafting recipe = (InventoryCrafting) crafting.getMatrixHandle();
@@ -222,12 +221,13 @@ public class ContribNetServerHandler extends NetServerHandler{
                     }
                     //Clicking to grab the crafting result
                     if (type == InventorySlotType.RESULT) {
-                        InventoryCraftEvent craftEvent = new InventoryCraftEvent(this.getPlayer(), crafting, this.activeLocation, type, packet.b,  matrix, craftResult);
+                        InventoryCraftEvent craftEvent = new InventoryCraftEvent(this.getPlayer(), crafting, this.activeLocation, type, packet.b,  matrix, craftResult, cursor, packet.c == 0);
                         Bukkit.getServer().getPluginManager().callEvent(craftEvent);
                         craftEvent.getInventory().setResult(craftEvent.getResult());
+                        cursor = craftEvent.getCursor() == null ? null : new ContribCraftItemStack(craftEvent.getCursor().getTypeId(), craftEvent.getCursor().getAmount(), craftEvent.getCursor().getDurability());
                         if (craftEvent.isCancelled()) {
                             craftEvent.getInventory().setMatrix(recipeContents);
-                            setCursorSlot(onCursor);
+                            setCursorSlot(cursor.getHandle());
                             clickSuccessful = false;
                         }
                     }

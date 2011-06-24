@@ -7,13 +7,14 @@ import org.bukkitcontrib.inventory.CraftingInventory;
 
 public class InventoryCraftEvent extends InventoryEvent{
     private static final long serialVersionUID = 2252453296883258337L;
-    private ItemStack result;
+    private ItemStack result, cursor;
     private InventorySlotType slotType;
     private int slotNum;
-    protected ItemStack[][] matrix;
-    int width, height;
+    private ItemStack[][] matrix;
+    private int width, height;
+    private boolean left;
 
-    public InventoryCraftEvent(Player player, CraftingInventory inventory, Location location, InventorySlotType slotType, int slot, ItemStack[][] recipe, ItemStack result) {
+    public InventoryCraftEvent(Player player, CraftingInventory inventory, Location location, InventorySlotType slotType, int slot, ItemStack[][] recipe, ItemStack result, ItemStack cursor, boolean leftClick) {
         super("InventoryCraftEvent", player, inventory, location);
         this.matrix = recipe;
         this.width = recipe.length;
@@ -21,6 +22,8 @@ public class InventoryCraftEvent extends InventoryEvent{
         this.result = result;
         this.slotType = slotType;
         this.slotNum = slot;
+        this.cursor = cursor;
+        this.left = leftClick;
     }
 
     /**
@@ -53,6 +56,22 @@ public class InventoryCraftEvent extends InventoryEvent{
     public ItemStack[][] getRecipe() {
         return matrix;
     }
+    
+    /**
+     * Get's the itemstack at the cursor
+     * @return
+     */
+    public ItemStack getCursor() {
+    	return cursor;
+    }
+    
+    /**
+     * Set's the itemstack at the cursor
+     * @param cursor to set
+     */
+    public void setCursor(ItemStack cursor) {
+    	this.cursor = cursor;
+    }
 
     /**
      * Get's the current (new) item at the slot
@@ -84,5 +103,13 @@ public class InventoryCraftEvent extends InventoryEvent{
      */
     public InventorySlotType getSlotType() {
         return slotType;
+    }
+    
+    /**
+     * Return's true if the click on the inventory crafting slot was a left click. If false, it was a right click.
+     * @return true if left click
+     */
+    public boolean isLeftClick() {
+        return left;
     }
 }
