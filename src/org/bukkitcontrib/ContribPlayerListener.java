@@ -36,9 +36,10 @@ public class ContribPlayerListener extends PlayerListener{
             Runnable update = new Runnable() {
                 public void run() {
                     ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
+                    ((SimpleAppearanceManager)BukkitContrib.getAppearanceManager()).onPlayerJoin((ContribPlayer)event.getPlayer());
                 }
             };
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update, 5);
         }
     }
 

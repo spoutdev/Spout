@@ -6,24 +6,27 @@ import java.util.HashMap;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.HttpURLConnection;
 import java.io.BufferedReader;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 
 public class BukkitContrib {
     private static int buildVersion = -1;
     private static int minorVersion = -1;
     private static int majorVersion = -1;
-    private static int clientBuildVersion = 7;
+    private static int clientBuildVersion = 8;
     private static int clientMinorVersion = 0;
     private static int clientMajorVersion = 0;
     private static Minecraft game = null;
     private static PacketPluginReload reloadPacket = null;
     private static Object zanMinimap = null;
     private static boolean zanFailed = false;
+	private static ClipboardThread clipThread = null;
     public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
     public static boolean runOnce = false;
     public static byte minView = -1;
     public static byte maxView = -1;
-    
     public static void setVersion(String version) {
         try {
         
@@ -41,6 +44,11 @@ public class BukkitContrib {
         if (isUpdateAvailable() && getVersion() > -1) {
             createBukkitContribAlert("Update Available!", "bit.ly/bukkitcontrib", 323);
         }
+		EntityPlayer player = getGameInstance().thePlayer;
+		if (getVersion() > 7 && player instanceof EntityClientPlayerMP){
+			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
+			clipThread.start();
+		}
     }
     
     public static String versionToString(String version) {
@@ -216,8 +224,10 @@ public class BukkitContrib {
     public static boolean isUpdateAvailable() {
         try {
             URL url = new URL("http://bit.ly/clientBukkitContribVersionCheck");
-             
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            HttpURLConnection con = (HttpURLConnection)(url .openConnection());
+            System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String str;
             while ((str = in.readLine()) != null) {
                 String[] split = str.split("\\.");
@@ -232,5 +242,20 @@ public class BukkitContrib {
         catch (Exception e) {}
         return false;
     }
-
+	
+	public static void setClipboardText(String text) {
+		clipThread.prevClipboardText = text;
+		StringSelection selection = new StringSelection(text);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+	}
+	
+	public static String getNumber(String s) {
+		String n = "";
+		for (int i = 0; i < s.length(); i++){
+			char c = s.charAt(i);
+			if (Character.isDigit(c) || c == '.' || c == '-')
+				n += c;
+		}
+		return n;
+	}
 }

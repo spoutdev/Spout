@@ -6,9 +6,14 @@ import java.io.IOException;
 
 import org.bukkitcontrib.packet.PacketUtil;
 
-public abstract class GenericLabel extends GenericWidget implements Label{
+public class GenericLabel extends GenericWidget implements Label{
+	protected String text = "";
 	public GenericLabel(){
 		
+	}
+	
+	public GenericLabel(String text) {
+		this.text = text;
 	}
 	
 	@Override
@@ -27,5 +32,16 @@ public abstract class GenericLabel extends GenericWidget implements Label{
 		output.writeInt(width);
 		output.writeInt(height);
 		PacketUtil.writeString(output, getText());
+	}
+
+	@Override
+	public String getText() {
+		return text;
+	}
+
+	@Override
+	public Label setText(String text) {
+		this.text = text;
+		return this;
 	}
 }

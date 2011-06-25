@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -191,7 +192,6 @@ public class BukkitContrib extends JavaPlugin{
         }
         try {
             URL url = new URL("http://dl.dropbox.com/u/49805/BukkitContribVersion.txt");
-             
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String str;
             while ((str = in.readLine()) != null) {
@@ -219,8 +219,11 @@ public class BukkitContrib extends JavaPlugin{
             }
             File plugin = new File(directory.getPath(), "BukkitContrib.jar");
             if (!plugin.exists()) {
-                URL bukkitContrib = new URL("http://bit.ly/autoupdateBukkitContrib");
-                ReadableByteChannel rbc = Channels.newChannel(bukkitContrib.openStream());
+            	URL bukkitContrib = new URL("http://bit.ly/autoupdateBukkitContrib");
+            	HttpURLConnection con = (HttpURLConnection)(bukkitContrib.openConnection());
+            	System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
+            	con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
+                ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
                 FileOutputStream fos = new FileOutputStream(plugin);
                 fos.getChannel().transferFrom(rbc, 0, 1 << 24);
             }

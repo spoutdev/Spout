@@ -8,50 +8,56 @@ import org.bukkit.Location;
 
 public class PacketDownloadMusic implements BukkitContribPacket{
     int x, y, z;
-    int volume;
-    boolean loc;
+    int volume, distance;
+    boolean soundEffect, notify;
     String URL;
     public PacketDownloadMusic() {
         
     }
     
-    public PacketDownloadMusic(String URL, Location loc, int volume) {
+    public PacketDownloadMusic(String URL, Location loc, int distance, int volume, boolean soundEffect, boolean notify) {
         this.URL = URL;
         this.volume = volume;
+        this.soundEffect = soundEffect;
+        this.notify = notify;
         if (loc != null) {
             x = loc.getBlockX();
             y = loc.getBlockY();
             z = loc.getBlockZ();
-            this.loc = true;
+            this.distance = distance;
         }
         else {
-            this.loc = false;
+            this.distance = -1;
         }
     }
 
     @Override
     public int getNumBytes() {
-        return 17 + URL.length();
+        return 22 + URL.length();
     }
 
     @Override
     public void readData(DataInputStream input) throws IOException {
         URL = PacketUtil.readString(input, 255);
-        loc = input.readBoolean();
+        distance = input.readInt();
         x = input.readInt();
         y = input.readInt();
         z = input.readInt();
         volume = input.readInt();
+        soundEffect = input.readBoolean();
+        notify = input.readBoolean();
     }
 
     @Override
     public void writeData(DataOutputStream output) throws IOException {
         PacketUtil.writeString(output, URL);
-        output.writeBoolean(loc);
+        output.writeInt(distance);
         output.writeInt(x);
         output.writeInt(y);
         output.writeInt(z);
         output.writeInt(volume);
+        output.writeBoolean(soundEffect);
+        output.writeBoolean(notify);
     }
 
     @Override

@@ -227,13 +227,23 @@ public class SimpleAppearanceManager implements AppearanceManager{
     
     public void onPlayerJoin(ContribPlayer player) {
         if (player.getVersion() > 4) {
+        	HashMap<Integer, String> tmap = titleMap.get(player.getName());
+            if (tmap == null) {
+                tmap = new HashMap<Integer, String>();
+                titleMap.put(player.getName(), tmap);
+            }
+            HashMap<String, String> smap = skinMap.get(player.getName());
+            if (smap == null) {
+            	smap = new HashMap<String, String>();
+                skinMap.put(player.getName(), smap);
+            }
+            HashMap<String, String> cmap = cloakMap.get(player.getName());
+            if (cmap == null) {
+            	cmap = new HashMap<String, String>();
+                cloakMap.put(player.getName(), cmap);
+            }
             for (World w : Bukkit.getServer().getWorlds()) {
                 for (LivingEntity lv : w.getLivingEntities()) {
-                    HashMap<Integer, String> tmap = titleMap.get(player.getName());
-                    if (tmap == null) {
-                        tmap = new HashMap<Integer, String>();
-                        titleMap.put(player.getName(), tmap);
-                    }
                     String title = tmap.get(lv.getEntityId());
                     if (title == null) {
                         title = globalTitleMap.get(lv.getEntityId());
@@ -242,24 +252,15 @@ public class SimpleAppearanceManager implements AppearanceManager{
                         ((ContribCraftPlayer)player).sendPacket(new PacketEntityTitle(lv.getEntityId(), title));
                     }
                     if (lv instanceof HumanEntity) {
-                        HashMap<String, String> map = skinMap.get(player.getName());
-                        if (map == null) {
-                            map = new HashMap<String, String>();
-                            skinMap.put(player.getName(), map);
-                        }
-                        String Url = map.get(((HumanEntity)lv).getName());
+                        String Url = smap.get(((HumanEntity)lv).getName());
                         if (Url == null) {
                             Url = globalSkinMap.get(((HumanEntity)lv).getName());
                             if (Url == null) {
                                 Url = "none";
                             }
                         }
-                        map = cloakMap.get(player.getName());
-                        if (map == null) {
-                            map = new HashMap<String, String>();
-                            cloakMap.put(player.getName(), map);
-                        }
-                        String cloakUrl = map.get(((HumanEntity)lv).getName());
+                        
+                        String cloakUrl = cmap.get(((HumanEntity)lv).getName());
                         if (cloakUrl == null) {
                             cloakUrl = globalCloakMap.get(((HumanEntity)lv).getName());
                             if (cloakUrl == null) {

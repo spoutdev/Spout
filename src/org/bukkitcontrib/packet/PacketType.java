@@ -12,6 +12,8 @@ public enum PacketType {
     PacketBukkitContribAlert(6, PacketBukkitContribAlert.class),
     PacketPlaySound(7, PacketPlaySound.class),
     PacketDownloadMusic(8, PacketDownloadMusic.class),
+    PacketClipboardText(9, PacketClipboardText.class),
+    PacketMusicChange(10, PacketMusicChange.class),
     
     ;
     

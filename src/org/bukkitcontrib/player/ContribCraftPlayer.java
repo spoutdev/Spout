@@ -44,6 +44,7 @@ import org.bukkitcontrib.packet.BukkitContribPacket;
 import org.bukkitcontrib.packet.CustomPacket;
 import org.bukkitcontrib.packet.PacketAirTime;
 import org.bukkitcontrib.packet.PacketBukkitContribAlert;
+import org.bukkitcontrib.packet.PacketClipboardText;
 import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.packet.PacketSkinURL;
 
@@ -66,6 +67,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     public RenderDistance currentRender = null;
     protected RenderDistance maximumRender = null;
     protected RenderDistance minimumRender = null;
+    protected String clipboard = null;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
         createInventory(null);
@@ -312,6 +314,25 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             }
             sendPacket(new PacketBukkitContribAlert(title, message, toRender.getId()));
         }
+    }
+    
+    @Override
+    public String getClipboardText() {
+    	return clipboard;
+    }
+    
+    @Override
+    public void setClipboardText(String text) {
+    	setClipboardText(text, true);
+    }
+    
+    public void setClipboardText(String text, boolean updateClient) {
+    	if (getVersion() > 7) {
+	    	clipboard = text;
+	    	if (updateClient){
+	    		sendPacket(new PacketClipboardText(text));
+	    	}
+    	}
     }
     
     /*Non Inteface public methods */

@@ -40,7 +40,6 @@ public class GuiVideoSettings extends GuiScreen
             }
             i++;
         }
-
         controlList.add(new GuiButton(200, width / 2 - 100, height / 6 + 168, stringtranslate.translateKey("gui.done")));
     }
 
@@ -59,14 +58,16 @@ public class GuiVideoSettings extends GuiScreen
                 byte newView = BukkitContrib.getNextRenderDistance(view);
                 field_22109_i.renderDistance = newView;
                 change = 0;
-                if (view != newView)
+                if (view != newView) {
                     ((EntityClientPlayerMP)BukkitContrib.getGameInstance().thePlayer).sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)newView)));
+				}
             }
-            if (change != 0)
-                field_22109_i.setOptionValue(((GuiSmallButton)guibutton).returnEnumOptions(), change);
-            guibutton.displayString = field_22109_i.getKeyBinding(EnumOptions.getEnumOptions(guibutton.id));
-            //BukkitContrib End
+            if (change != 0) {
+				field_22109_i.setOptionValue(((GuiSmallButton)guibutton).returnEnumOptions(), change);
+				guibutton.displayString = field_22109_i.getKeyBinding(EnumOptions.getEnumOptions(guibutton.id));
+			}
         }
+		 //BukkitContrib End
         if(guibutton.id == 200)
         {
             mc.gameSettings.saveOptions();

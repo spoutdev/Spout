@@ -12,26 +12,26 @@ public class PacketPlaySound implements BukkitContribPacket{
     short soundId;
     boolean location = false;
     int x, y, z;
-    int volume, intensity;
+    int volume, distance;
     
     public PacketPlaySound() {
         
     }
     
-    public PacketPlaySound(SoundEffect sound, int volume) {
+    public PacketPlaySound(SoundEffect sound, int distance, int volume) {
         soundId = (short) sound.getId();
         this.volume = volume;
-        this.intensity = 16;
+        this.distance = distance;
     }
     
-    public PacketPlaySound(SoundEffect sound, Location loc, int volume) {
+    public PacketPlaySound(SoundEffect sound, Location loc, int distance, int volume) {
         soundId = (short) sound.getId();
         location = true;
         x = loc.getBlockX();
         y = loc.getBlockY();
         z = loc.getBlockZ();
         this.volume = volume;
-        this.intensity = 16;
+        this.distance = distance;
     }
     
     public PacketPlaySound(Music music, int volume) {
@@ -51,7 +51,7 @@ public class PacketPlaySound implements BukkitContribPacket{
         x = input.readInt();
         y = input.readInt();
         z = input.readInt();
-        intensity = input.readInt();
+        distance = input.readInt();
         volume = input.readInt();
     }
 
@@ -69,7 +69,7 @@ public class PacketPlaySound implements BukkitContribPacket{
             output.writeInt(x);
             output.writeInt(y);
             output.writeInt(z);
-            output.writeInt(intensity);
+            output.writeInt(distance);
         }
         output.writeInt(volume);
     }

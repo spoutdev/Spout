@@ -193,5 +193,19 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      */
     @ClientOnly
     public void sendNotification(String title, String message, Material toRender);
+    
+    /**
+     * Get's the clipboard text from the player, or null if unknown
+     * @return clipboard text
+     */
+    @ClientOnly
+    public String getClipboardText();
+    
+    /**
+     * Sets the clipboard text for the player
+     * @param text to set
+     */
+    @ClientOnly
+    public void setClipboardText(String text);
 
 }
