@@ -1,7 +1,9 @@
+
 package org.bukkitcontrib.block;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.Chunk;
 import net.minecraft.server.ChunkProviderServer;
@@ -14,7 +16,8 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.util.ConcurrentSoftMap;
 
 public class ContribCraftChunk extends CraftChunk{
-
+	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
+	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
     public ContribCraftChunk(Chunk chunk) {
         super(chunk);
     }
