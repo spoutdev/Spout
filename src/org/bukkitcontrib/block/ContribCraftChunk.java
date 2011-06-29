@@ -82,11 +82,13 @@ public class ContribCraftChunk extends CraftChunk{
     }
     
     public static boolean replaceBukkitChunk(org.bukkit.Chunk chunk) {
-        if (!(((CraftChunk)chunk).getHandle().bukkitChunk instanceof ContribCraftChunk)) {
-            ((CraftChunk)chunk).getHandle().bukkitChunk = new ContribCraftChunk(((CraftChunk)chunk).getHandle());
-            return true;
+        if (((CraftChunk)chunk).getHandle().bukkitChunk.getClass().hashCode() == ContribCraftChunk.class.hashCode()) {
+                return false; //hashcodes will differ if the class was constructed by a different version of this plugin
+                              //or is a different class
         }
-        return false;
+        ((CraftChunk)chunk).getHandle().bukkitChunk = new ContribCraftChunk(((CraftChunk)chunk).getHandle());
+        return true;
+
     }
     
     public static void resetBukkitChunk(org.bukkit.Chunk chunk) {
