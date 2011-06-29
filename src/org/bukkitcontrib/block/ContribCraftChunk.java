@@ -47,6 +47,30 @@ public class ContribCraftChunk extends CraftChunk{
         }
     }
 
+    public boolean isLoaded() {
+        return getWorld().isChunkLoaded(this);
+    }
+
+    public boolean load() {
+        return getWorld().loadChunk(getX(), getZ(), true);
+    }
+
+    public boolean load(boolean generate) {
+        return getWorld().loadChunk(getX(), getZ(), generate);
+    }
+
+    public boolean unload() {
+        return getWorld().unloadChunk(getX(), getZ());
+    }
+
+    public boolean unload(boolean save) {
+        return getWorld().unloadChunk(getX(), getZ(), save);
+    }
+
+    public boolean unload(boolean save, boolean safe) {
+        return getWorld().unloadChunk(getX(), getZ(), save, safe);
+    }
+
     protected void onReset() {
         //TODO finalize queuing
     }
