@@ -46,7 +46,11 @@ public class ContribCraftChunk extends CraftChunk{
             return super.getBlock(x, y, z);
         }
     }
-    
+
+    protected void onReset() {
+        //TODO finalize queuing
+    }
+
     public static void replaceAllBukkitChunks() {
         replaceAllBukkitChunks(false);
     }
@@ -67,13 +71,12 @@ public class ContribCraftChunk extends CraftChunk{
                     Chunk chunk = (Chunk)c;
                     if (reset) {
                         if (chunk.bukkitChunk instanceof ContribCraftChunk) {
-                            chunk.bukkitChunk = new CraftChunk(chunk);
+                            ((ContribCraftChunk)chunk.bukkitChunk).onReset();
                         }
+                        resetBukkitChunk(chunk.bukkitChunk);
                     }
                     else {
-                        if (!(chunk.bukkitChunk instanceof ContribCraftChunk)) {
-                            chunk.bukkitChunk = new ContribCraftChunk(chunk);
-                        }
+                        replaceBukkitChunk(chunk.bukkitChunk);
                     }
                 }
             }
