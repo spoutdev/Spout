@@ -1,4 +1,3 @@
-
 package org.bukkitcontrib.block;
 
 import java.lang.reflect.Field;
@@ -7,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.Chunk;
 import net.minecraft.server.ChunkProviderServer;
+import net.minecraft.server.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -16,8 +16,8 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.util.ConcurrentSoftMap;
 
 public class ContribCraftChunk extends CraftChunk implements ContribChunk {
-	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
-	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
+    protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
+    protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
     public ContribCraftChunk(Chunk chunk) {
         super(chunk);
     }
@@ -91,9 +91,9 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
         for (World world : worlds) {
             try {
                 CraftWorld cw = (CraftWorld)world;
-                Field provider = CraftWorld.class.getDeclaredField("provider");
-                provider.setAccessible(true);
-                ChunkProviderServer cps = (ChunkProviderServer) provider.get(cw);
+                Field worldServer = CraftWorld.class.getDeclaredField("world");
+                worldServer.setAccessible(true);
+                ChunkProviderServer cps = ((WorldServer)worldServer.get(cw)).chunkProviderServer;
                 for (Object c : cps.chunkList) {
                     Chunk chunk = (Chunk)c;
                     if (reset) {
@@ -107,7 +107,7 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
                     }
                 }
             }
-            catch (Exception e) {}
+            catch (Exception e) {e.printStackTrace();}
         }
     }
     
