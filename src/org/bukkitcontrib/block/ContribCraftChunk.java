@@ -15,7 +15,7 @@ import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.util.ConcurrentSoftMap;
 
-public class ContribCraftChunk extends CraftChunk{
+public class ContribCraftChunk extends CraftChunk implements ContribChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
     public ContribCraftChunk(Chunk chunk) {
