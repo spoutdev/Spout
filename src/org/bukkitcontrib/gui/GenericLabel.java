@@ -17,20 +17,24 @@ public class GenericLabel extends GenericWidget implements Label{
 	}
 	
 	@Override
+	public WidgetType getType() {
+		return WidgetType.Label;
+	}
+	
+	@Override
+	public int getNumBytes() {
+		return super.getNumBytes() + getText().length();
+	}
+	
+	@Override
 	public void readData(DataInputStream input) throws IOException {
-		upperRightX = input.readInt();
-		upperRightY = input.readInt();
-		width = input.readInt();
-		height = input.readInt();
+		super.readData(input);
 		this.setText(PacketUtil.readString(input));
 	}
 
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
-		output.writeInt(upperRightX);
-		output.writeInt(upperRightY);
-		output.writeInt(width);
-		output.writeInt(height);
+		super.writeData(output);
 		PacketUtil.writeString(output, getText());
 	}
 
@@ -43,5 +47,9 @@ public class GenericLabel extends GenericWidget implements Label{
 	public Label setText(String text) {
 		this.text = text;
 		return this;
+	}
+	
+	public void render() {
+		
 	}
 }

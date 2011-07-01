@@ -3,16 +3,24 @@ package org.bukkitcontrib.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 public abstract class GenericWidget implements Widget{
-	protected int upperRightX;
-	protected int upperRightY;
-	protected int width;
-	protected int height;
+	protected int upperRightX = 0;
+	protected int upperRightY = 0;
+	protected int width = 0;
+	protected int height = 0;
 	protected boolean visible = true;
+	protected boolean dirty = true;
+	protected Screen screen = null;
+	protected UUID id = UUID.randomUUID();
 	
-	public GenericWidget(){
+	public GenericWidget() {
 		
+	}
+	
+	public int getNumBytes() {
+		return 33;
 	}
 	
 	public GenericWidget(int upperRightX, int upperRightY, int width, int height) {
@@ -24,18 +32,50 @@ public abstract class GenericWidget implements Widget{
 
 	@Override
 	public void readData(DataInputStream input) throws IOException {
-		upperRightX = input.readInt();
-		upperRightY = input.readInt();
-		width = input.readInt();
-		height = input.readInt();
+		setUpperRightX(input.readInt());
+		setUpperRightY(input.readInt());
+		setWidth(input.readInt());
+		setHeight(input.readInt());
+		setVisible(input.readBoolean());
+		long msb = input.readLong();
+		long lsb = input.readLong();
+		id = new UUID(msb, lsb);
 	}
 
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
-		output.writeInt(upperRightX);
-		output.writeInt(upperRightY);
-		output.writeInt(width);
-		output.writeInt(height);
+		output.writeInt(getUpperRightX());
+		output.writeInt(getUpperRightY());
+		output.writeInt(getWidth());
+		output.writeInt(getHeight());
+		output.writeBoolean(isVisible());
+		output.writeLong(getId().getMostSignificantBits());
+		output.writeLong(getId().getLeastSignificantBits());
+	}
+	
+	@Override
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+	}
+	
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
+	
+	@Override
+	public UUID getId() {
+		return id;
+	}
+	@Override
+	public Screen getScreen() {
+		return screen;
+	}
+	
+	@Override
+	public Widget setScreen(Screen screen) {
+		this.screen = screen;
+		return this;
 	}
 	
 	@Override
@@ -148,22 +188,36 @@ public abstract class GenericWidget implements Widget{
 		return this;
 	}
 	
+	@Override
 	public Widget shiftXPos(int x) {
 		setUpperRightX(getUpperRightX() + x);
 		return this;
 	}
 	
+	@Override
 	public Widget shiftYPos(int y) {
 		setUpperRightY(getUpperRightY() + y);
 		return this;
 	}
 	
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 	
+	@Override
 	public Widget setVisible(boolean enable) {
 		visible = enable;
 		return this;
+	}
+	
+	@Override
+	public int hashCode() {
+		return getId().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		return other instanceof Widget && other.hashCode() == hashCode();
 	}
 }

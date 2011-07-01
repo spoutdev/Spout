@@ -159,16 +159,19 @@ public class ContribNetServerHandler extends NetServerHandler{
 
     @Override
     public void a(Packet106Transaction packet) {
-        Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.f));
+    	if (this.player.dead){
+    		return;
+    	}
+        Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.windowId));
 
-        if (oshort != null && packet.b == oshort.shortValue() && this.player.activeContainer.f == packet.a && !this.player.activeContainer.c(this.player)) {
+        if (oshort != null && packet.b == oshort.shortValue() && this.player.activeContainer.windowId == packet.a && !this.player.activeContainer.c(this.player)) {
             this.player.activeContainer.a(this.player, true);
         }
     }
 
     @Override
     public void a(Packet102WindowClick packet) {
-        if (this.player.activeContainer.f == packet.a && this.player.activeContainer.c(this.player)) {
+        if (this.player.activeContainer.windowId == packet.a && this.player.activeContainer.c(this.player)) {
             ContribInventory inventory = getActiveInventory();
             CraftPlayer player = (CraftPlayer) this.player.getBukkitEntity();
             ItemStack before = ItemStack.b(packet.e);
@@ -198,7 +201,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                     CraftingInventory crafting = (CraftingInventory) inventory;
                     InventoryCrafting recipe = (InventoryCrafting) crafting.getMatrixHandle();
 
-                    ContribCraftItemStack craftResult = ContribCraftItemStack.fromItemStack(CraftingManager.a().a(recipe));
+                    ContribCraftItemStack craftResult = ContribCraftItemStack.fromItemStack(CraftingManager.getInstance().craft(recipe));
                     ContribCraftItemStack[] recipeContents = new ContribCraftItemStack[recipe.getSize()];
                     for (int i = 0; i < recipe.getSize(); i++) {
                         org.bukkit.inventory.ItemStack temp = crafting.getMatrix()[i];
@@ -227,7 +230,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                         cursor = craftEvent.getCursor() == null ? null : new ContribCraftItemStack(craftEvent.getCursor().getTypeId(), craftEvent.getCursor().getAmount(), craftEvent.getCursor().getDurability());
                         if (craftEvent.isCancelled()) {
                             craftEvent.getInventory().setMatrix(recipeContents);
-                            setCursorSlot(cursor.getHandle());
+                            setCursorSlot(cursor != null ? cursor.getHandle() : null);
                             clickSuccessful = false;
                         }
                     }
@@ -246,7 +249,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                 this.player.h = false;
             }
             else {
-                this.n.put(Integer.valueOf(this.player.activeContainer.f), Short.valueOf(packet.d));
+                this.n.put(Integer.valueOf(this.player.activeContainer.windowId), Short.valueOf(packet.d));
                 this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, false));
                 this.player.activeContainer.a(this.player, false);
                 ArrayList<ItemStack> arraylist = new ArrayList<ItemStack>();
@@ -318,12 +321,12 @@ public class ContribNetServerHandler extends NetServerHandler{
                 itemstack = this.player.activeContainer.a(packet.b, packet.c, packet.f, this.player);
             }
             else {
-                if(click == LEFT_CLICK && (itemstack != null && cursorstack != null && itemstack.a(cursorstack))) {
+                if(click == LEFT_CLICK && (itemstack != null && cursorstack != null && itemstack.doMaterialsMatch(cursorstack))) {
                     // Left-click full slot with full cursor of same item; merge stacks
                     itemstack.count += cursorstack.count;
                     cursorstack = null;
                 }
-                else if (click == LEFT_CLICK || (itemstack != null && cursorstack != null && !itemstack.a(cursorstack))) {
+                else if (click == LEFT_CLICK || (itemstack != null && cursorstack != null && !itemstack.doMaterialsMatch(cursorstack))) {
                     // Either left-click, or right-click full slot with full cursor of different item; just swap contents
                     ItemStack temp = itemstack;
                     itemstack = cursorstack;
@@ -369,25 +372,25 @@ public class ContribNetServerHandler extends NetServerHandler{
     private ContribInventory getInventoryFromContainer(Container container) {
         try {
             if (container instanceof ContainerChest) {
-                Field a = ContainerChest.class.getDeclaredField("a");
+                Field a = ContainerChest.class.getDeclaredField("craftInventory");
                 a.setAccessible(true);
                 return new ContribCraftInventory((IInventory) a.get((ContainerChest)container));
             }
             if (container instanceof ContainerPlayer) {
-               return new ContribCraftInventoryPlayer(this.player.inventory, new ContribCraftingInventory(((ContainerPlayer)container).a, ((ContainerPlayer)container).b));
+               return new ContribCraftInventoryPlayer(this.player.inventory, new ContribCraftingInventory(((ContainerPlayer)container).craftInventory, ((ContainerPlayer)container).resultInventory));
             }
             if (container instanceof ContainerFurnace) {
-                Field a = ContainerFurnace.class.getDeclaredField("a");
+                Field a = ContainerFurnace.class.getDeclaredField("craftInventory");
                 a.setAccessible(true);
                 return new ContribCraftInventory((TileEntityFurnace)a.get((ContainerFurnace)container));
             }
             if (container instanceof ContainerDispenser) {
-                Field a = ContainerDispenser.class.getDeclaredField("a");
+                Field a = ContainerDispenser.class.getDeclaredField("craftInventory");
                 a.setAccessible(true);
                return new ContribCraftInventory((TileEntityDispenser)a.get((ContainerDispenser)container));
             }
             if (container instanceof ContainerWorkbench) {
-                return new ContribCraftingInventory(((ContainerWorkbench)container).a, ((ContainerWorkbench)container).b);
+                return new ContribCraftingInventory(((ContainerWorkbench)container).craftInventory, ((ContainerWorkbench)container).resultInventory);
             }
         }
         catch (Exception e) {

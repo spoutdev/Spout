@@ -1,8 +1,10 @@
 package org.bukkitcontrib.event.bukkitcontrib;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkitcontrib.BukkitContrib;
+import org.bukkitcontrib.player.ContribCraftPlayer;
 
 public class ServerTickEvent extends Event{
     protected static long lastTickTime = System.currentTimeMillis();
@@ -30,6 +32,12 @@ public class ServerTickEvent extends Event{
                 Runnable update = new Runnable() {
                     public void run() {
                         BukkitContrib.playerListener.manager.onServerTick();
+                        Player[] online = Bukkit.getServer().getOnlinePlayers();
+                        for (Player player : online) {
+                        	if (player instanceof ContribCraftPlayer) {
+                        		((ContribCraftPlayer)player).onTick();
+                        	}
+                        }
                         Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
                     }
                 };

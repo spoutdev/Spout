@@ -12,6 +12,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
+import org.bukkitcontrib.gui.GenericTexture;
+import org.bukkitcontrib.gui.TimeLabel;
+import org.bukkitcontrib.gui.Widget;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
@@ -51,9 +54,17 @@ public class ContribPlayerListener extends PlayerListener{
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+        ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
+        if (player.getVersion() > 7) {
+	        Widget[] list = player.getMainScreen().getAttachedWidgets();
+	        for (Widget w : list) {
+	        	System.out.println(w.getClass());
+	        	w.setVisible(!w.isVisible());
+	        	w.setDirty(true);
+	        }
+        }
         if (event.getClickedBlock() != null) {
             Material type = event.getClickedBlock().getType();
-            ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
             if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
                 player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
             }
@@ -76,6 +87,8 @@ public class ContribPlayerListener extends PlayerListener{
                 ((SimpleAppearanceManager)BukkitContrib.getAppearanceManager()).onPlayerJoin((ContribPlayer)event.getPlayer());
                 manager.onBukkitContribSPEnable(player);
                 Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
+                player.getMainScreen().attachWidget(new TimeLabel(player.getMainScreen()));
+                player.getMainScreen().attachWidget((new GenericTexture("http://dl.dropbox.com/u/49805/fire-icon.png")).setScreen(player.getMainScreen()).setHeight(64).setWidth(64).setUpperRightX(200).setUpperRightY(150));
             }
         }
     }

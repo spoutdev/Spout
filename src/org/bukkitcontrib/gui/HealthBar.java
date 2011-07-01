@@ -1,15 +1,23 @@
 package org.bukkitcontrib.gui;
 
-import org.bukkitcontrib.player.ContribPlayer;
+import java.util.UUID;
 
 public class HealthBar extends GenericWidget{
-	protected final ContribPlayer player;
-	
-	public HealthBar(ContribPlayer player) {
-		this.player = player;
+
+	public HealthBar() {
+		
 	}
 	
-	public void update() {
+	@Override
+	public WidgetType getType() {
+		return WidgetType.HealthBar;
+	}
+	
+	public UUID getId() {
+		return new UUID(0, 4);
+	}
+	
+	public void render() {
 		//TODO send health packet
 	}
 

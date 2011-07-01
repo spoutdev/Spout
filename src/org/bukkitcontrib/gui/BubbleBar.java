@@ -1,14 +1,22 @@
 package org.bukkitcontrib.gui;
 
-import org.bukkitcontrib.player.ContribPlayer;
+import java.util.UUID;
 
 public class BubbleBar extends GenericWidget implements Widget{
-	protected final ContribPlayer player;
-	public BubbleBar(ContribPlayer player) {
-		this.player = player;
+	public BubbleBar() {
+
 	}
 	
-	public void update() {
+	@Override
+	public WidgetType getType() {
+		return WidgetType.BubbleBar;
+	}
+	
+	public UUID getId() {
+		return new UUID(0, 1);
+	}
+	
+	public void render() {
 		//TODO send update packet?
 	}
 }

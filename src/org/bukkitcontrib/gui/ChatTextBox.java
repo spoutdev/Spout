@@ -1,11 +1,23 @@
 package org.bukkitcontrib.gui;
 
-import org.bukkitcontrib.player.ContribPlayer;
+import java.util.UUID;
 
 public class ChatTextBox extends GenericWidget implements Widget{
-	protected final ContribPlayer player;
-	public ChatTextBox(ContribPlayer player) {
-		this.player = player;
+	public ChatTextBox() {
+
+	}
+	
+	@Override
+	public WidgetType getType() {
+		return WidgetType.ChatTextBox;
+	}
+	
+	public UUID getId() {
+		return new UUID(0, 3);
+	}
+	
+	public void render() {
+		
 	}
 
 }

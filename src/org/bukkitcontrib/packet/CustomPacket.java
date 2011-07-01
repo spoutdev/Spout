@@ -24,13 +24,14 @@ public class CustomPacket extends Packet{
 
     @Override
     public int a() {
-        return packet.getNumBytes();
+        return packet.getNumBytes() + 4;
     }
 
     @Override
     public void a(DataInputStream input) throws IOException {
         int packetId = -1;
         packetId = input.readInt();
+        input.readInt(); //packet size
         if (packetId > -1) {
             try {
                 this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
@@ -45,6 +46,7 @@ public class CustomPacket extends Packet{
     @Override
     public void a(DataOutputStream output) throws IOException {
         output.writeInt(packet.getPacketType().getId());
+        output.writeInt(a());
         packet.writeData(output);
     }
 

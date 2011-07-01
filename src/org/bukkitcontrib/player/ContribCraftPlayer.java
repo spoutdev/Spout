@@ -34,6 +34,7 @@ import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.input.RenderDistance;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryOpenEvent;
+import org.bukkitcontrib.gui.InGameScreen;
 import org.bukkitcontrib.inventory.ContribCraftInventory;
 import org.bukkitcontrib.inventory.ContribCraftInventoryPlayer;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
@@ -68,9 +69,11 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     protected RenderDistance maximumRender = null;
     protected RenderDistance minimumRender = null;
     protected String clipboard = null;
+    protected InGameScreen mainScreen;
     public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
         super(server, entity);
         createInventory(null);
+        mainScreen = new InGameScreen(this.getEntityId());
     }
     
     /* Interace Overriden Public Methods */
@@ -172,7 +175,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
         }
         else {
             ContainerWorkbench temp = new ContainerWorkbench(getHandle().inventory, ((CraftWorld)location.getWorld()).getHandle(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-            IInventory inventory = temp.b;
+            IInventory inventory = temp.resultInventory;
             InventoryOpenEvent event = new InventoryOpenEvent(this, new ContribCraftInventory(inventory), this.inventory, location);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -183,6 +186,11 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             getHandle().a(location.getBlockX(), location.getBlockY(), location.getBlockZ());
             return true;
         }
+    }
+    
+    @Override
+    public InGameScreen getMainScreen() {
+    	return mainScreen;
     }
 
     @Override
@@ -340,14 +348,14 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     public void createInventory(String name) {
         if (this.getHandle().activeContainer instanceof ContainerPlayer) {
             this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, 
-                    new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).a, ((ContainerPlayer)this.getHandle().activeContainer).b));
+                    new ContribCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).craftInventory, ((ContainerPlayer)this.getHandle().activeContainer).resultInventory));
             if (name != null) {
                 this.inventory.setName(name);
             }
         }
         else if (this.getHandle().defaultContainer instanceof ContainerPlayer) {
             this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, 
-                    new ContribCraftingInventory(((ContainerPlayer)this.getHandle().defaultContainer).a, ((ContainerPlayer)this.getHandle().defaultContainer).b));
+                    new ContribCraftingInventory(((ContainerPlayer)this.getHandle().defaultContainer).craftInventory, ((ContainerPlayer)this.getHandle().defaultContainer).resultInventory));
             if (name != null) {
                 this.inventory.setName(name);
             }
@@ -431,6 +439,10 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
             majorVersion = Integer.valueOf(split[0]);
         }
         catch (Exception e) {reset();}
+    }
+    
+    public void onTick() {
+    	mainScreen.onTick();
     }
     
     private void reset() {
