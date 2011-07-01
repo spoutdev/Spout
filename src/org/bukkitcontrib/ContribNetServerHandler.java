@@ -188,7 +188,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                 InventoryOpenEvent event = new InventoryOpenEvent(player, inventory, getDefaultInventory(), activeLocation);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
-                    this.player.x();
+                    this.player.y();
                     activeInventory = false;
                     activeLocation = null;
                     return;
@@ -245,7 +245,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                 this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, true));
                 this.player.h = true;
                 this.player.activeContainer.a();
-                this.player.y();
+                this.player.z();
                 this.player.h = false;
             }
             else {
@@ -372,7 +372,7 @@ public class ContribNetServerHandler extends NetServerHandler{
     private ContribInventory getInventoryFromContainer(Container container) {
         try {
             if (container instanceof ContainerChest) {
-                Field a = ContainerChest.class.getDeclaredField("craftInventory");
+                Field a = ContainerChest.class.getDeclaredField("a");
                 a.setAccessible(true);
                 return new ContribCraftInventory((IInventory) a.get((ContainerChest)container));
             }
@@ -380,12 +380,12 @@ public class ContribNetServerHandler extends NetServerHandler{
                return new ContribCraftInventoryPlayer(this.player.inventory, new ContribCraftingInventory(((ContainerPlayer)container).craftInventory, ((ContainerPlayer)container).resultInventory));
             }
             if (container instanceof ContainerFurnace) {
-                Field a = ContainerFurnace.class.getDeclaredField("craftInventory");
+                Field a = ContainerFurnace.class.getDeclaredField("a");
                 a.setAccessible(true);
                 return new ContribCraftInventory((TileEntityFurnace)a.get((ContainerFurnace)container));
             }
             if (container instanceof ContainerDispenser) {
-                Field a = ContainerDispenser.class.getDeclaredField("craftInventory");
+                Field a = ContainerDispenser.class.getDeclaredField("a");
                 a.setAccessible(true);
                return new ContribCraftInventory((TileEntityDispenser)a.get((ContainerDispenser)container));
             }
