@@ -224,7 +224,7 @@ public class ContribNetServerHandler extends NetServerHandler{
                     }
                     //Clicking to grab the crafting result
                     if (type == InventorySlotType.RESULT) {
-                        InventoryCraftEvent craftEvent = new InventoryCraftEvent(this.getPlayer(), crafting, this.activeLocation, type, packet.b,  matrix, craftResult, cursor, packet.c == 0);
+                        InventoryCraftEvent craftEvent = new InventoryCraftEvent(this.getPlayer(), crafting, this.activeLocation, type, packet.b,  matrix, craftResult, cursor, packet.c == 0, packet.f);
                         Bukkit.getServer().getPluginManager().callEvent(craftEvent);
                         craftEvent.getInventory().setResult(craftEvent.getResult());
                         cursor = craftEvent.getCursor() == null ? null : new ContribCraftItemStack(craftEvent.getCursor().getTypeId(), craftEvent.getCursor().getAmount(), craftEvent.getCursor().getDurability());
@@ -278,10 +278,10 @@ public class ContribNetServerHandler extends NetServerHandler{
                 activeSlot -= this.getPlayer().getInventory().getSize();
             }
             type = getInventorySlotType(activeSlot);
-            event = new InventoryPlayerClickEvent(this.getPlayer(), this.getPlayer().getInventory(), type, slot, cursor, activeSlot, click == LEFT_CLICK,  activeLocation);
+            event = new InventoryPlayerClickEvent(this.getPlayer(), this.getPlayer().getInventory(), type, slot, cursor, activeSlot, click == LEFT_CLICK, packet.f, activeLocation);
         }
         else {
-            event = new InventoryClickEvent(this.getPlayer(), inventory, type, slot, cursor, packet.b, click == LEFT_CLICK, activeLocation);
+            event = new InventoryClickEvent(this.getPlayer(), inventory, type, slot, cursor, packet.b, click == LEFT_CLICK, packet.f, activeLocation);
         }
 
         if (event != null) {

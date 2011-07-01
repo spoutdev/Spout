@@ -15,8 +15,9 @@ public class InventoryClickEvent extends InventoryEvent{
     protected int convertedSlot;
     protected Result result = Result.DEFAULT;
     protected boolean leftClick;
+    protected boolean shift;
 
-    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick) {
+    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, boolean shift) {
         super("InventoryClickEvent", player, inventory);
         this.type = type;
         this.item = item;
@@ -24,9 +25,10 @@ public class InventoryClickEvent extends InventoryEvent{
         this.slot = slot;
         this.convertedSlot = convertSlot(this.slot);
         this.leftClick = leftClick;
+        this.shift = shift;
     }
     
-    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, Location location) {
+    public InventoryClickEvent(Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, boolean shift, Location location) {
         super("InventoryClickEvent", player, inventory, location);
         this.type = type;
         this.item = item;
@@ -34,9 +36,10 @@ public class InventoryClickEvent extends InventoryEvent{
         this.slot = slot;
         this.convertedSlot = convertSlot(this.slot);
         this.leftClick = leftClick;
+        this.shift = shift;
     }
     
-    protected InventoryClickEvent(String name, Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, Location location) {
+    protected InventoryClickEvent(String name, Player player, Inventory inventory, InventorySlotType type, ItemStack item, ItemStack cursor, int slot, boolean leftClick, boolean shift, Location location) {
         super(name, player, inventory, location);
         this.type = type;
         this.item = item;
@@ -44,6 +47,7 @@ public class InventoryClickEvent extends InventoryEvent{
         this.slot = slot;
         this.convertedSlot = convertSlot(this.slot);
         this.leftClick = leftClick;
+        this.shift = shift;
     }
     
     @Override
@@ -148,6 +152,14 @@ public class InventoryClickEvent extends InventoryEvent{
      */
     public boolean isLeftClick() {
         return leftClick;
+    }
+    
+    /**
+     * Return's true if the click on the inventory crafting slow was a shift click. 
+     * @return true if shift click
+     */
+    public boolean isShiftClick() {
+    	return shift;
     }
     
     protected int convertSlot(int slot) {

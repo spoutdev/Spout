@@ -13,8 +13,9 @@ public class InventoryCraftEvent extends InventoryEvent{
     private ItemStack[][] matrix;
     private int width, height;
     private boolean left;
+    private boolean shift;
 
-    public InventoryCraftEvent(Player player, CraftingInventory inventory, Location location, InventorySlotType slotType, int slot, ItemStack[][] recipe, ItemStack result, ItemStack cursor, boolean leftClick) {
+    public InventoryCraftEvent(Player player, CraftingInventory inventory, Location location, InventorySlotType slotType, int slot, ItemStack[][] recipe, ItemStack result, ItemStack cursor, boolean leftClick, boolean shift) {
         super("InventoryCraftEvent", player, inventory, location);
         this.matrix = recipe;
         this.width = recipe.length;
@@ -24,6 +25,7 @@ public class InventoryCraftEvent extends InventoryEvent{
         this.slotNum = slot;
         this.cursor = cursor;
         this.left = leftClick;
+        this.shift = shift;
     }
 
     /**
@@ -111,5 +113,13 @@ public class InventoryCraftEvent extends InventoryEvent{
      */
     public boolean isLeftClick() {
         return left;
+    }
+    
+    /**
+     * Return's true if the click on the inventory crafting slow was a shift click. 
+     * @return true if shift click
+     */
+    public boolean isShiftClick() {
+    	return shift;
     }
 }
