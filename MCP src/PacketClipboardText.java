@@ -5,41 +5,41 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class PacketClipboardText implements BukkitContribPacket{
-	
-	public PacketClipboardText() {
-		
-	}
-	
-	public PacketClipboardText(String text) {
-		this.text = text;
-	}
-	protected String text;
-	@Override
-	public int getNumBytes() {
-		return text.length();
-	}
+    
+    public PacketClipboardText() {
+        
+    }
+    
+    public PacketClipboardText(String text) {
+        this.text = text;
+    }
+    protected String text;
+    @Override
+    public int getNumBytes() {
+        return text.length();
+    }
 
-	@Override
-	public void readData(DataInputStream input) throws IOException {
-		text = PacketUtil.readString(input);
-	}
+    @Override
+    public void readData(DataInputStream input) throws IOException {
+        text = PacketUtil.readString(input);
+    }
 
-	@Override
-	public void writeData(DataOutputStream output) throws IOException {
-		if (text.length() > PacketUtil.maxString) {
-			text = text.substring(0, PacketUtil.maxString - 1);
-		}
-		PacketUtil.writeString(output, text);
-	}
+    @Override
+    public void writeData(DataOutputStream output) throws IOException {
+        if (text.length() > PacketUtil.maxString) {
+            text = text.substring(0, PacketUtil.maxString - 1);
+        }
+        PacketUtil.writeString(output, text);
+    }
 
-	@Override
-	public void run(int playerId) {
-		BukkitContrib.setClipboardText(text);
-	}
+    @Override
+    public void run(int playerId) {
+        BukkitContrib.setClipboardText(text);
+    }
 
-	@Override
-	public PacketType getPacketType() {
-		return PacketType.PacketClipboardText;
-	}
+    @Override
+    public PacketType getPacketType() {
+        return PacketType.PacketClipboardText;
+    }
 
 }

@@ -80,11 +80,11 @@ public class SimpleSoundManager implements SoundManager{
 
     @Override
     public void playMusic(ContribPlayer target, Music music, int volumePercent) {
-    	BackgroundMusicEvent event = new BackgroundMusicEvent(music, volumePercent, target);
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
-			return;
-		}
+        BackgroundMusicEvent event = new BackgroundMusicEvent(music, volumePercent, target);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
         ((ContribCraftPlayer) target).sendPacket(new PacketPlaySound(music, event.getVolumePercent()));
     }
 
@@ -127,7 +127,7 @@ public class SimpleSoundManager implements SoundManager{
 
     @Override
     public void playCustomMusic(ContribPlayer target, String Url, boolean notify, Location location, int distance, int volumePercent) {
-    	playCustomFile(target, Url, notify, location, distance, volumePercent, false);
+        playCustomFile(target, Url, notify, location, distance, volumePercent, false);
     }
     
     @Override
@@ -169,33 +169,33 @@ public class SimpleSoundManager implements SoundManager{
     
     @Override
     public void playCustomSoundEffect(ContribPlayer target, String Url, boolean notify, Location location, int distance, int volumePercent) {
-    	playCustomFile(target, Url, notify, location, distance, volumePercent, true);
+        playCustomFile(target, Url, notify, location, distance, volumePercent, true);
     }
     
     private void playCustomFile(ContribPlayer target, String Url, boolean notify, Location location, int distance, int volumePercent, boolean soundEffect) {
-    	if (target.getVersion() > 7) {
-	    	if (Url.length() > 255 || Url.length() < 5) {
-	            throw new UnsupportedOperationException("All Url's must be between 5 and 256 characters");
-	        }
-	    	String extension = Url.substring(Url.length() - 4, Url.length());
-	    	if (extension.equalsIgnoreCase(".ogg") || extension.equalsIgnoreCase(".wav") || extension.matches(".*[mM][iI][dD][iI]?$")) {
-	    		if (location == null || location.getWorld().equals(target.getWorld())) {
-	    			if (!soundEffect) {
-	    				BackgroundMusicEvent event = new BackgroundMusicEvent(Url, volumePercent, target);
-	    				Bukkit.getServer().getPluginManager().callEvent(event);
-	    				if (event.isCancelled()) {
-	    					return;
-	    				}
-	    				volumePercent = event.getVolumePercent();
-	    			}
-		            ContribCraftPlayer ccp = (ContribCraftPlayer) target;
-		            ccp.sendPacket(new PacketDownloadMusic(Url, location, distance, volumePercent, soundEffect, notify));
-	    		}
-	        }
-	    	else {
-	    		throw new UnsupportedOperationException("All audio files must be ogg vorbis, wav, or midi type");
-	    	}
-    	}
+        if (target.getVersion() > 7) {
+            if (Url.length() > 255 || Url.length() < 5) {
+                throw new UnsupportedOperationException("All Url's must be between 5 and 256 characters");
+            }
+            String extension = Url.substring(Url.length() - 4, Url.length());
+            if (extension.equalsIgnoreCase(".ogg") || extension.equalsIgnoreCase(".wav") || extension.matches(".*[mM][iI][dD][iI]?$")) {
+                if (location == null || location.getWorld().equals(target.getWorld())) {
+                    if (!soundEffect) {
+                        BackgroundMusicEvent event = new BackgroundMusicEvent(Url, volumePercent, target);
+                        Bukkit.getServer().getPluginManager().callEvent(event);
+                        if (event.isCancelled()) {
+                            return;
+                        }
+                        volumePercent = event.getVolumePercent();
+                    }
+                    ContribCraftPlayer ccp = (ContribCraftPlayer) target;
+                    ccp.sendPacket(new PacketDownloadMusic(Url, location, distance, volumePercent, soundEffect, notify));
+                }
+            }
+            else {
+                throw new UnsupportedOperationException("All audio files must be ogg vorbis, wav, or midi type");
+            }
+        }
     }
 
 }

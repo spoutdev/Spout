@@ -7,7 +7,7 @@ import java.io.IOException;
 import net.minecraft.server.Packet;
 
 public abstract class PacketUtil {
-	public static final int maxString = 32767;
+    public static final int maxString = 32767;
     
     public static void writeString(DataOutputStream output, String string) {
         try {
@@ -18,7 +18,7 @@ public abstract class PacketUtil {
     }
     
     public static String readString(DataInputStream input) {
-    	return readString(input, maxString);
+        return readString(input, maxString);
     }
     
     public static String readString(DataInputStream input, int maxSize) {

@@ -159,9 +159,9 @@ public class ContribNetServerHandler extends NetServerHandler{
 
     @Override
     public void a(Packet106Transaction packet) {
-    	if (this.player.dead){
-    		return;
-    	}
+        if (this.player.dead){
+            return;
+        }
         Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.windowId));
 
         if (oshort != null && packet.b == oshort.shortValue() && this.player.activeContainer.windowId == packet.a && !this.player.activeContainer.c(this.player)) {

@@ -60,14 +60,14 @@ public class GuiVideoSettings extends GuiScreen
                 change = 0;
                 if (view != newView) {
                     ((EntityClientPlayerMP)BukkitContrib.getGameInstance().thePlayer).sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)newView)));
-				}
+                }
             }
             if (change != 0) {
-				field_22109_i.setOptionValue(((GuiSmallButton)guibutton).returnEnumOptions(), change);
-				guibutton.displayString = field_22109_i.getKeyBinding(EnumOptions.getEnumOptions(guibutton.id));
-			}
+                field_22109_i.setOptionValue(((GuiSmallButton)guibutton).returnEnumOptions(), change);
+                guibutton.displayString = field_22109_i.getKeyBinding(EnumOptions.getEnumOptions(guibutton.id));
+            }
         }
-		 //BukkitContrib End
+         //BukkitContrib End
         if(guibutton.id == 200)
         {
             mc.gameSettings.saveOptions();

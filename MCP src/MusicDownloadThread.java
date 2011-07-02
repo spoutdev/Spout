@@ -20,8 +20,8 @@ public class MusicDownloadThread extends Thread{
         this.y = y;
         this.z = z;
         this.volume = volume;
-		this.soundEffect = soundEffect;
-		this.notify = notify;
+        this.soundEffect = soundEffect;
+        this.notify = notify;
     }
     
     @Override
@@ -37,38 +37,38 @@ public class MusicDownloadThread extends Thread{
         catch (Exception e) {return;}
         try {
             if (!song.exists()) {
-				if (notify)
-					BukkitContrib.createBukkitContribAlert("Downloading Music...", file, 2256 /*Gold Record*/);
+                if (notify)
+                    BukkitContrib.createBukkitContribAlert("Downloading Music...", file, 2256 /*Gold Record*/);
                 URL songUrl = new URL(URL);
                 ReadableByteChannel rbc = Channels.newChannel(songUrl.openStream());
                 FileOutputStream fos = new FileOutputStream(song);
                 fos.getChannel().transferFrom(rbc, 0, 1 << 24);
-				
-				if (notify)
-					BukkitContrib.createBukkitContribAlert("Download Complete!", file, 2256 /*Gold Record*/);
+                
+                if (notify)
+                    BukkitContrib.createBukkitContribAlert("Download Complete!", file, 2256 /*Gold Record*/);
             }
         }
         catch (Exception e) {
             if (song.exists()) {
                 song.delete();
             }
-			if (notify)
-				BukkitContrib.createBukkitContribAlert("Download Failed!", file, 2256 /*Gold Record*/);
+            if (notify)
+                BukkitContrib.createBukkitContribAlert("Download Failed!", file, 2256 /*Gold Record*/);
         }
         if (song.exists() && volume > 0) {
             SoundManager sndManager = BukkitContrib.getGameInstance().sndManager;
             if (!sndManager.hasSoundEffect(song.getName().toString(), 0) && soundEffect) {
-				sndManager.addCustomSoundEffect(song.getName().toString(), song);
+                sndManager.addCustomSoundEffect(song.getName().toString(), song);
             }
-			if (!sndManager.hasMusic(song.getName().toString(), 0) && !soundEffect) {
-				sndManager.addCustomMusic(song.getName().toString(), song);
-			}
-			if (!soundEffect) {
-				sndManager.playMusic(song.getName().toString(), 0, x, y, z, volume / 100F, distance);
-			}
-			else {
-				sndManager.playCustomSoundEffect(song.getName().toString(), x, y, z, volume / 100F, distance);
-			}
+            if (!sndManager.hasMusic(song.getName().toString(), 0) && !soundEffect) {
+                sndManager.addCustomMusic(song.getName().toString(), song);
+            }
+            if (!soundEffect) {
+                sndManager.playMusic(song.getName().toString(), 0, x, y, z, volume / 100F, distance);
+            }
+            else {
+                sndManager.playCustomSoundEffect(song.getName().toString(), x, y, z, volume / 100F, distance);
+            }
         }
     }
 }

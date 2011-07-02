@@ -190,7 +190,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public InGameScreen getMainScreen() {
-    	return mainScreen;
+        return mainScreen;
     }
 
     @Override
@@ -326,21 +326,21 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public String getClipboardText() {
-    	return clipboard;
+        return clipboard;
     }
     
     @Override
     public void setClipboardText(String text) {
-    	setClipboardText(text, true);
+        setClipboardText(text, true);
     }
     
     public void setClipboardText(String text, boolean updateClient) {
-    	if (getVersion() > 7) {
-	    	clipboard = text;
-	    	if (updateClient){
-	    		sendPacket(new PacketClipboardText(text));
-	    	}
-    	}
+        if (getVersion() > 7) {
+            clipboard = text;
+            if (updateClient){
+                sendPacket(new PacketClipboardText(text));
+            }
+        }
     }
     
     /*Non Inteface public methods */
@@ -442,7 +442,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     }
     
     public void onTick() {
-    	mainScreen.onTick();
+        mainScreen.onTick();
     }
     
     private void reset() {

@@ -22,7 +22,7 @@ public class BukkitContrib {
     private static PacketPluginReload reloadPacket = null;
     private static Object zanMinimap = null;
     private static boolean zanFailed = false;
-	private static ClipboardThread clipThread = null;
+    private static ClipboardThread clipThread = null;
     public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
     public static boolean runOnce = false;
     public static byte minView = -1;
@@ -44,11 +44,11 @@ public class BukkitContrib {
         if (isUpdateAvailable() && getVersion() > -1) {
             createBukkitContribAlert("Update Available!", "bit.ly/bukkitcontrib", 323);
         }
-		EntityPlayer player = getGameInstance().thePlayer;
-		if (getVersion() > 7 && player instanceof EntityClientPlayerMP){
-			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
-			clipThread.start();
-		}
+        EntityPlayer player = getGameInstance().thePlayer;
+        if (getVersion() > 7 && player instanceof EntityClientPlayerMP){
+            clipThread = new ClipboardThread((EntityClientPlayerMP)player);
+            clipThread.start();
+        }
     }
     
     public static String versionToString(String version) {
@@ -242,20 +242,20 @@ public class BukkitContrib {
         catch (Exception e) {}
         return false;
     }
-	
-	public static void setClipboardText(String text) {
-		clipThread.prevClipboardText = text;
-		StringSelection selection = new StringSelection(text);
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
-	}
-	
-	public static String getNumber(String s) {
-		String n = "";
-		for (int i = 0; i < s.length(); i++){
-			char c = s.charAt(i);
-			if (Character.isDigit(c) || c == '.' || c == '-')
-				n += c;
-		}
-		return n;
-	}
+    
+    public static void setClipboardText(String text) {
+        clipThread.prevClipboardText = text;
+        StringSelection selection = new StringSelection(text);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+    }
+    
+    public static String getNumber(String s) {
+        String n = "";
+        for (int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+            if (Character.isDigit(c) || c == '.' || c == '-')
+                n += c;
+        }
+        return n;
+    }
 }

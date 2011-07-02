@@ -159,7 +159,7 @@ public class InventoryClickEvent extends InventoryEvent{
      * @return true if shift click
      */
     public boolean isShiftClick() {
-    	return shift;
+        return shift;
     }
     
     protected int convertSlot(int slot) {

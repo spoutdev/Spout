@@ -227,19 +227,19 @@ public class SimpleAppearanceManager implements AppearanceManager{
     
     public void onPlayerJoin(ContribPlayer player) {
         if (player.getVersion() > 4) {
-        	HashMap<Integer, String> tmap = titleMap.get(player.getName());
+            HashMap<Integer, String> tmap = titleMap.get(player.getName());
             if (tmap == null) {
                 tmap = new HashMap<Integer, String>();
                 titleMap.put(player.getName(), tmap);
             }
             HashMap<String, String> smap = skinMap.get(player.getName());
             if (smap == null) {
-            	smap = new HashMap<String, String>();
+                smap = new HashMap<String, String>();
                 skinMap.put(player.getName(), smap);
             }
             HashMap<String, String> cmap = cloakMap.get(player.getName());
             if (cmap == null) {
-            	cmap = new HashMap<String, String>();
+                cmap = new HashMap<String, String>();
                 cloakMap.put(player.getName(), cmap);
             }
             for (World w : Bukkit.getServer().getWorlds()) {

@@ -64,7 +64,7 @@ public class InventoryCraftEvent extends InventoryEvent{
      * @return
      */
     public ItemStack getCursor() {
-    	return cursor;
+        return cursor;
     }
     
     /**
@@ -72,7 +72,7 @@ public class InventoryCraftEvent extends InventoryEvent{
      * @param cursor to set
      */
     public void setCursor(ItemStack cursor) {
-    	this.cursor = cursor;
+        this.cursor = cursor;
     }
 
     /**
@@ -120,6 +120,6 @@ public class InventoryCraftEvent extends InventoryEvent{
      * @return true if shift click
      */
     public boolean isShiftClick() {
-    	return shift;
+        return shift;
     }
 }

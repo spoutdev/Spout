@@ -3,10 +3,10 @@ package org.bukkitcontrib.block;
 import org.bukkit.Chunk;
 
 public interface ContribChunk extends Chunk{
-	/**
-	 *  Checks if this Chunk is loaded
-	 * @return loaded
-	 */
+    /**
+     *  Checks if this Chunk is loaded
+     * @return loaded
+     */
     public boolean isLoaded();
 
     /**

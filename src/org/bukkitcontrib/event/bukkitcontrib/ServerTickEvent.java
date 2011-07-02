@@ -39,13 +39,13 @@ public class ServerTickEvent extends Event{
                         BukkitContrib.playerListener.manager.onServerTick();
                         Player[] online = Bukkit.getServer().getOnlinePlayers();
                         for (Player player : online) {
-                        	if (player instanceof ContribCraftPlayer) {
-                        		((ContribCraftPlayer)player).onTick();
-                        	}
+                            if (player instanceof ContribCraftPlayer) {
+                                ((ContribCraftPlayer)player).onTick();
+                            }
                         }
                         ArrayList<ContribChunk> chunks = ChunkUtil.getAllLoadedChunks();
                         for (ContribChunk chunk : chunks) {
-                        	((ContribCraftChunk)chunk).onTick();
+                            ((ContribCraftChunk)chunk).onTick();
                         }
                         Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
                     }

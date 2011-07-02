@@ -26,8 +26,8 @@ public class PacketDownloadMusic implements BukkitContribPacket{
         y = input.readInt();
         z = input.readInt();
         volume = input.readInt();
-		soundEffect = input.readBoolean();
-		notify = input.readBoolean();
+        soundEffect = input.readBoolean();
+        notify = input.readBoolean();
     }
 
     @Override
@@ -38,8 +38,8 @@ public class PacketDownloadMusic implements BukkitContribPacket{
         output.writeInt(y);
         output.writeInt(z);
         output.writeInt(volume);
-		output.writeBoolean(soundEffect);
-		output.writeBoolean(notify);
+        output.writeBoolean(soundEffect);
+        output.writeBoolean(notify);
     }
 
 

@@ -56,12 +56,12 @@ public class ContribPlayerListener extends PlayerListener{
         }
         ContribCraftPlayer player = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
         if (player.getVersion() > 7) {
-	        Widget[] list = player.getMainScreen().getAttachedWidgets();
-	        for (Widget w : list) {
-	        	System.out.println(w.getClass());
-	        	w.setVisible(!w.isVisible());
-	        	w.setDirty(true);
-	        }
+            Widget[] list = player.getMainScreen().getAttachedWidgets();
+            for (Widget w : list) {
+                System.out.println(w.getClass());
+                w.setVisible(!w.isVisible());
+                w.setDirty(true);
+            }
         }
         if (event.getClickedBlock() != null) {
             Material type = event.getClickedBlock().getType();

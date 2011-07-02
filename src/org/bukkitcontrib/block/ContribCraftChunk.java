@@ -77,28 +77,28 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
     }
     
     public void onTick() {
-    	Iterator<Entry<Integer, Integer>> i = queuedId.entrySet().iterator();
-    	while(i.hasNext()) {
-    		Entry<Integer, Integer> entry = i.next();
-    		try {
-    			Block block = getCache().get(entry.getKey());
-    			block.setTypeId(entry.getValue());
-    		}
-    		catch (Exception e) {
-    			
-    		}
-    	}
-    	Iterator<Entry<Integer, Byte>> j = queuedData.entrySet().iterator();
-    	while(i.hasNext()) {
-    		Entry<Integer, Byte> entry = j.next();
-    		try {
-    			Block block = getCache().get(entry.getKey());
-    			block.setData(entry.getValue());
-    		}
-    		catch (Exception e) {
-    			
-    		}
-    	}
+        Iterator<Entry<Integer, Integer>> i = queuedId.entrySet().iterator();
+        while(i.hasNext()) {
+            Entry<Integer, Integer> entry = i.next();
+            try {
+                Block block = getCache().get(entry.getKey());
+                block.setTypeId(entry.getValue());
+            }
+            catch (Exception e) {
+                
+            }
+        }
+        Iterator<Entry<Integer, Byte>> j = queuedData.entrySet().iterator();
+        while(i.hasNext()) {
+            Entry<Integer, Byte> entry = j.next();
+            try {
+                Block block = getCache().get(entry.getKey());
+                block.setData(entry.getValue());
+            }
+            catch (Exception e) {
+                
+            }
+        }
     }
 
     protected void onReset() {
