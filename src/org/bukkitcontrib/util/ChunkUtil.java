@@ -1,12 +1,9 @@
 package org.bukkitcontrib.util;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import net.minecraft.server.Chunk;
 import net.minecraft.server.ChunkProviderServer;
-import net.minecraft.server.WorldServer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -19,9 +16,7 @@ public abstract class ChunkUtil {
         ArrayList<ContribChunk> chunkList = null;
         try {
             CraftWorld cw = (CraftWorld)world;
-            Field worldServer = CraftWorld.class.getDeclaredField("world");
-            worldServer.setAccessible(true);
-            ChunkProviderServer cps = ((WorldServer)worldServer.get(cw)).chunkProviderServer;
+            ChunkProviderServer cps = cw.getHandle().chunkProviderServer;
             chunkList = new ArrayList<ContribChunk>(cps.chunkList.size());
             for (Object c : cps.chunkList) {
                 Chunk chunk = (Chunk)c;
