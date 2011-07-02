@@ -2,3 +2,4 @@ name: BukkitContrib
 main: org.bukkitcontrib.BukkitContrib
 version: 0.0.9
 author: Afforess
+load: postworld

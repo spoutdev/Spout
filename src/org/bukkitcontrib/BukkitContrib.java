@@ -77,7 +77,6 @@ public class BukkitContrib extends JavaPlugin{
             }
         }
         catch (Exception e) {}
-        
     }
 
     @Override
@@ -119,22 +118,43 @@ public class BukkitContrib extends JavaPlugin{
         Logger.getLogger("Minecraft").info("BukkitContrib " + this.getDescription().getVersion() + " has been initialized");
     }
 
+    /**
+     * Gets the singleton instance of the bukkitcontrib plugin
+     * @return bukkitcontrib plugin
+     */
     public static BukkitContrib getInstance() {
         return instance;
     }
     
+    /**
+     * Gets the keyboard manager
+     * @return keyboard manager
+     */
     public static KeyboardManager getKeyboardManager() {
         return keyManager;
     }
     
+    /**
+     * Gets the appearance manager
+     * @return appearance manager
+     */
     public static AppearanceManager getAppearanceManager() {
         return appearanceManager;
     }
     
+    /**
+     * Gets the sound manager
+     * @return sound manager
+     */
     public static SoundManager getSoundManager() {
         return soundManager;
     }
     
+    /**
+     * Gets the contrib player from the given player id, or null if no such player exists
+     * @param entityId of the player
+     * @return contrib player
+     */
     public static ContribPlayer getPlayerFromId(int entityId) {
         Player[] online = Bukkit.getServer().getOnlinePlayers();
         for (Player player : online) {
