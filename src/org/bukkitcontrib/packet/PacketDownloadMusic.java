@@ -10,12 +10,13 @@ public class PacketDownloadMusic implements BukkitContribPacket{
     int x, y, z;
     int volume, distance;
     boolean soundEffect, notify;
-    String URL;
+    String URL, plugin;
     public PacketDownloadMusic() {
         
     }
     
-    public PacketDownloadMusic(String URL, Location loc, int distance, int volume, boolean soundEffect, boolean notify) {
+    public PacketDownloadMusic(String plugin, String URL, Location loc, int distance, int volume, boolean soundEffect, boolean notify) {
+    	this.plugin = plugin;
         this.URL = URL;
         this.volume = volume;
         this.soundEffect = soundEffect;
@@ -33,12 +34,13 @@ public class PacketDownloadMusic implements BukkitContribPacket{
 
     @Override
     public int getNumBytes() {
-        return 22 + URL.length();
+        return 22 + URL.length() + plugin.length();
     }
 
     @Override
     public void readData(DataInputStream input) throws IOException {
         URL = PacketUtil.readString(input, 255);
+        plugin = PacketUtil.readString(input, 255);
         distance = input.readInt();
         x = input.readInt();
         y = input.readInt();
@@ -51,6 +53,7 @@ public class PacketDownloadMusic implements BukkitContribPacket{
     @Override
     public void writeData(DataOutputStream output) throws IOException {
         PacketUtil.writeString(output, URL);
+        PacketUtil.writeString(output, plugin);
         output.writeInt(distance);
         output.writeInt(x);
         output.writeInt(y);

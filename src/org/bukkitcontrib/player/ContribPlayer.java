@@ -210,5 +210,13 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      */
     @ClientOnly
     public void setClipboardText(String text);
+    
+    /**
+     * Sets the texture pack for this player to the given url
+     * The texture pack must be a standard texture pack (non-HD), in .zip format, and must be loadable by normal minecraft interface when offline
+     * @param url to set
+     */
+    @ClientOnly
+    public void setTexturePack(String url);
 
 }

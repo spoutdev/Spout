@@ -23,7 +23,7 @@ public class PacketEntityTitle implements BukkitContribPacket{
     @Override
     public void readData(DataInputStream input) throws IOException {
         entityId = input.readInt();
-        title = PacketUtil.readString(input, 32);
+        title = PacketUtil.readString(input);
     }
 
     @Override

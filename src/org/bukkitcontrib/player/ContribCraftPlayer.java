@@ -48,6 +48,7 @@ import org.bukkitcontrib.packet.PacketBukkitContribAlert;
 import org.bukkitcontrib.packet.PacketClipboardText;
 import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.packet.PacketSkinURL;
+import org.bukkitcontrib.packet.PacketTexturePack;
 
 @SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
@@ -190,7 +191,8 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public InGameScreen getMainScreen() {
-        return mainScreen;
+    	throw new UnsupportedOperationException("Not yet implemented!");
+        //return mainScreen;
     }
 
     @Override
@@ -332,6 +334,19 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     @Override
     public void setClipboardText(String text) {
         setClipboardText(text, true);
+    }
+    
+    @Override
+    public void setTexturePack(String url) {
+    	 if (getVersion() > 8) {
+    		 if (url == null || url.length() < 5) {
+    			 throw new IllegalArgumentException("Invalid URL!");
+    		 }
+    		 if (!url.toLowerCase().endsWith(".zip")) {
+    			 throw new IllegalArgumentException("A Texture Pack must be in a .zip format");
+    		 }
+    		 sendPacket(new PacketTexturePack(url));
+    	 }
     }
     
     public void setClipboardText(String text, boolean updateClient) {

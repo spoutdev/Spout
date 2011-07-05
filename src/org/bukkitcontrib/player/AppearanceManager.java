@@ -42,6 +42,7 @@ public interface AppearanceManager {
     
     /**
      * Sets the title for the target living entity that is only visible to the viewingPlayer
+     * Note: if the title has newline characters ('\n') in it, it will be rendered over multiple lines
      * @param viewingPlayer that will see the new title
      * @param target to change the title for
      * @param title to set to the target
@@ -51,6 +52,7 @@ public interface AppearanceManager {
     
     /**
      * Sets the title for the target living entity that is visible to all players
+     * Note: if the title has newline characters ('\n') in it, it will be rendered over multiple lines
      * @param target to change the title for
      * @param title to set to the target
      */

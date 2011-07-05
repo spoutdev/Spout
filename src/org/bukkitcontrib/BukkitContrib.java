@@ -20,6 +20,8 @@ import org.bukkit.util.FileUtil;
 import org.bukkitcontrib.block.ContribCraftChunk;
 import org.bukkitcontrib.config.ConfigReader;
 import org.bukkitcontrib.event.bukkitcontrib.ServerTickEvent;
+import org.bukkitcontrib.inventory.ItemManager;
+import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.keyboard.KeyboardManager;
 import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
 import org.bukkitcontrib.packet.CustomPacket;
@@ -29,6 +31,8 @@ import org.bukkitcontrib.player.AppearanceManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
+import org.bukkitcontrib.player.SimpleSkyManager;
+import org.bukkitcontrib.player.SkyManager;
 import org.bukkitcontrib.sound.SimpleSoundManager;
 import org.bukkitcontrib.sound.SoundManager;
 
@@ -39,11 +43,15 @@ public class BukkitContrib extends JavaPlugin{
     private static final SimpleKeyboardManager keyManager = new SimpleKeyboardManager();
     private static final SimpleAppearanceManager appearanceManager = new SimpleAppearanceManager();
     private static final SimpleSoundManager soundManager = new SimpleSoundManager();
+    private static final SimpleItemManager itemManager = new SimpleItemManager();
+    private static final SimpleSkyManager skyManager = new SimpleSkyManager();
     private static BukkitContrib instance;
     @Override
     public void onDisable() {
         //order matters
         appearanceManager.onPluginDisable();
+        itemManager.reset();
+        skyManager.reset();
         Player[] online = getServer().getOnlinePlayers();
         for (Player player : online) {
             try {
@@ -148,6 +156,22 @@ public class BukkitContrib extends JavaPlugin{
      */
     public static SoundManager getSoundManager() {
         return soundManager;
+    }
+    
+    /**
+     * Gets the item manager
+     * @return item manager
+     */
+    public static ItemManager getItemManager() {
+    	return itemManager;
+    }
+    
+    /**
+     * Gets the sky manager
+     * @return sky manager
+     */
+    public static SkyManager getSkyManager() {
+    	return skyManager;
     }
     
     /**

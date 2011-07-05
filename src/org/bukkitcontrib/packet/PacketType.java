@@ -15,6 +15,10 @@ public enum PacketType {
     PacketClipboardText(9, PacketClipboardText.class),
     PacketMusicChange(10, PacketMusicChange.class),
     PacketWidget(11, PacketWidget.class),
+    PacketStopMusic(12, PacketStopMusic.class),
+    PacketItemName(13, PacketItemName.class),
+    PacketSky(14, PacketSky.class),
+    PacketTexturePack(15, PacketTexturePack.class),
     
     ;
     
