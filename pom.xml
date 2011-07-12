@@ -26,40 +26,19 @@
         </license>
     </licenses>
 
-    <!-- Continuous integration -->
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.craftfire.com</url>
-    </ciManagement>
-
-    <!-- Distribution -->
-    <!-- <distributionManagement>
-        <repository>
-            <id>craftfire-ssh</id>
-            <url>scpexe://repo.craftfire.com</url>
-        </repository>
-    </distributionManagement> -->
-
     <!-- Repository locations -->
     <repositories>
-        <repository>
-            <id>craftfire-repo</id>
-            <url>http://repo.craftfire.com/repo</url>
-        </repository>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/artifactory/repo</url>
         </repository>
+        <repository>
+            <id>craftfire-repo</id>
+            <url>http://repo.craftfire.com/repo</url>
+        </repository>
     </repositories>
 
     <dependencies>
-        <!-- Required component -->
-        <!-- <dependency>
-            <groupId>com.craftfire</groupId>
-            <artifactId>util</artifactId>
-            <version>1.0.0</version>
-        </dependency> -->
-
         <!-- Bukkit -->
         <dependency>
             <groupId>org.bukkit</groupId>
@@ -72,18 +51,6 @@
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Third-party plugins -->
-        <dependency>
-            <groupId>com.nijikokun.bukkit</groupId>
-            <artifactId>permissions</artifactId>
-            <version>3.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.afforess</groupId>
-            <artifactId>minecartmaniacore</artifactId>
-            <version>1.2.8</version>
         </dependency>
     </dependencies>
 
@@ -127,26 +94,6 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
-
-            <!-- Assembly -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.1</version>
-                <configuration>
-                    <descriptor>${basedir}/src/main/assembly/default.xml</descriptor>
-                </configuration>
-            </plugin>
-
-            <!-- Release -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <preparationGoals>assembly:assembly</preparationGoals>
-                    <goals>assembly:assembly</goals>
-               </configuration>
             </plugin>
         </plugins>
 
