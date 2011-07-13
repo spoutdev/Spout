@@ -16,7 +16,7 @@ public class ContribChunkListener extends WorldListener{
         try {
             Field chunk = ChunkEvent.class.getDeclaredField("chunk");
             chunk.setAccessible(true);
-            chunk.set(event, event.getChunk().getWorld().getChunkAt(event.getChunk().getX(), event.getChunk().getY()));
+            chunk.set(event, event.getChunk().getWorld().getChunkAt(event.getChunk().getX(), event.getChunk().getZ()));
         } catch (Exception e) {
             e.printStackTrace();
         }
