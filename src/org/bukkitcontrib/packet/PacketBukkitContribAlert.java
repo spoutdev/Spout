@@ -18,7 +18,7 @@ public class PacketBukkitContribAlert implements BukkitContribPacket{
 
     @Override
     public int getNumBytes() {
-        return 4 + title.length() + message.length();
+        return 4 + PacketUtil.getNumBytes(title) + PacketUtil.getNumBytes(message);
     }
 
     @Override

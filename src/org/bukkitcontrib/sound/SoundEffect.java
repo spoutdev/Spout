@@ -75,7 +75,9 @@ public enum SoundEffect {
     /* Block Sound Effects */
     PORTAL(65, "portal.portal"),
     PORTAL_TRAVEL(66, "portal.travel"),
+    @Deprecated
     PROTAL_TRIGGER(67, "portal.trigger"),
+    PORTAL_TRIGGER(67, "portal.trigger"),
     CLOTH(68, "step.cloth"),
     GRASS(69, "step.grass"),
     GRAVEL(70, "step.gravel"),

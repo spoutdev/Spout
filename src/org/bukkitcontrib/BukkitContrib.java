@@ -263,6 +263,7 @@ public class BukkitContrib extends JavaPlugin{
                 ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
                 FileOutputStream fos = new FileOutputStream(plugin);
                 fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+                fos.close();
             }
         }
         catch (Exception e) {}

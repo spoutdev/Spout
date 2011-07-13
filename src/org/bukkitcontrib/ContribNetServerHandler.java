@@ -123,7 +123,7 @@ public class ContribNetServerHandler extends NetServerHandler{
         if (clicked >= size) return InventorySlotType.PACK;
         return InventorySlotType.CONTAINER;
     }
-
+    
     @Override
     public void a(Packet101CloseWindow packet) {
         ContribInventory inventory = getActiveInventory();

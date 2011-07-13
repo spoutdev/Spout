@@ -24,7 +24,7 @@ public class CustomPacket extends Packet{
 
     @Override
     public int a() {
-        return packet.getNumBytes() + 4;
+        return packet.getNumBytes();
     }
 
     @Override

@@ -32,7 +32,7 @@ public class PacketSkinURL implements BukkitContribPacket{
 
     @Override
     public int getNumBytes() {
-        return 4 + skinURL.length() + cloakURL.length();
+        return 4 + PacketUtil.getNumBytes(skinURL) + PacketUtil.getNumBytes(cloakURL);
     }
 
     @Override

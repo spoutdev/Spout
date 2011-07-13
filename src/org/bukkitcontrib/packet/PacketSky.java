@@ -39,7 +39,7 @@ public class PacketSky implements BukkitContribPacket{
 
 	@Override
 	public int getNumBytes() {
-		return 16 + sun.length() + moon.length();
+		return 16 + PacketUtil.getNumBytes(sun) + PacketUtil.getNumBytes(moon);
 	}
 
 	@Override

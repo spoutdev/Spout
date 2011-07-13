@@ -172,7 +172,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
         }
         map.put(target.getName(), Url);
         ContribCraftPlayer player = (ContribCraftPlayer) viewingPlayer;
-        if (player.isEnabledBukkitContribSinglePlayerMod())
+        if (player.isBukkitContribEnabled())
             player.sendPacket(new PacketSkinURL(Url, target.getEntityId()));
     }
 

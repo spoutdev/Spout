@@ -10,6 +10,7 @@ import org.bukkitcontrib.BukkitContrib;
 public class ConfigReader {
     private static boolean forceClient = false;
     private static boolean autoUpdate = false;
+    private static String kickMessage = "This server requires the BukkitContrib SP mod! http://bit.ly/bukkitcontrib";
     
     public void read() {
         try {
@@ -23,18 +24,28 @@ public class ConfigReader {
             }
             Configuration configuration = BukkitContrib.getInstance().getConfiguration();
             configuration.load();
+            
             if (configuration.getProperty("ForceSinglePlayerClient") != null) {
                 forceClient = configuration.getBoolean("ForceSinglePlayerClient", false);
             }
             else {
                 configuration.setProperty("ForceSinglePlayerClient", false);
             }
+            
+            if (configuration.getProperty("ForceSinglePlayerClientKickMessage") != null) {
+            	kickMessage = configuration.getString("ForceSinglePlayerClientKickMessage");
+            }
+            else {
+            	 configuration.setProperty("ForceSinglePlayerClientKickMessage", kickMessage);
+            }
+            
             if (configuration.getProperty("AutoUpdate") != null) {
                 autoUpdate = configuration.getBoolean("AutoUpdate", true);
             }
             else {
                 configuration.setProperty("AutoUpdate", true);
             }
+            
             if (!configuration.save()) {
                 throw new IOException();
             }
@@ -49,6 +60,10 @@ public class ConfigReader {
     
     public static boolean isAutoUpdate() {
         return autoUpdate;
+    }
+    
+    public static String getKickMessage() {
+    	return kickMessage;
     }
 
 }

@@ -55,7 +55,14 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
      * Return's true if the player is using the bukkit contrib single player mod
      * @return bukkit contrib single player mod
      */
+    @Deprecated
     public boolean isEnabledBukkitContribSinglePlayerMod();
+    
+    /**
+     * Return's true if the player is using the bukkit contrib single player mod
+     * @return bukkit contrib single player mod enabled
+     */
+    public boolean isBukkitContribEnabled();
     
     /**
      * Gets the version of the bukkitcontrib SP client mod in use, or -1 if none.

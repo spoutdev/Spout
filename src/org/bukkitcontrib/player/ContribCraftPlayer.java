@@ -191,17 +191,23 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public InGameScreen getMainScreen() {
-    	throw new UnsupportedOperationException("Not yet implemented!");
-        //return mainScreen;
+    	//throw new UnsupportedOperationException("Not yet implemented!");
+        return mainScreen;
     }
 
     @Override
+    @Deprecated
     public boolean isEnabledBukkitContribSinglePlayerMod() {
         return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
     }
     
+    @Override
+    public boolean isBukkitContribEnabled() {
+    	return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
+    }
+    
     public int getVersion() {
-        if (isEnabledBukkitContribSinglePlayerMod()) {
+        if (isBukkitContribEnabled()) {
             return majorVersion * 100 + minorVersion * 10 + buildVersion;
         }
         return -1;
@@ -431,6 +437,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
    }
    
    public void sendPacket(BukkitContribPacket packet) {
+	   System.out.println("Sending: " + packet.getPacketType());
        getNetServerHandler().sendPacket(new CustomPacket(packet));
    }
    

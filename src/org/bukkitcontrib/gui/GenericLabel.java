@@ -50,6 +50,6 @@ public class GenericLabel extends GenericWidget implements Label{
     }
     
     public void render() {
-        
+
     }
 }

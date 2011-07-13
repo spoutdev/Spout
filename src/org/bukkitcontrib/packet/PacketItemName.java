@@ -20,7 +20,7 @@ public class PacketItemName implements BukkitContribPacket{
 
 	@Override
 	public int getNumBytes() {
-		return 5 + name.length();
+		return 5 + PacketUtil.getNumBytes(name);
 	}
 
 	@Override

@@ -34,7 +34,7 @@ public class PacketDownloadMusic implements BukkitContribPacket{
 
     @Override
     public int getNumBytes() {
-        return 22 + URL.length() + plugin.length();
+        return 22 + PacketUtil.getNumBytes(URL) + PacketUtil.getNumBytes(plugin);
     }
 
     @Override

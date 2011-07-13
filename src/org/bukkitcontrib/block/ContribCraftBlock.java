@@ -1,6 +1,7 @@
 package org.bukkitcontrib.block;
 
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Player;
 
@@ -45,6 +46,17 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
         chunk.queuedData.put(getIndex(), data);
         for (Player player : chunk.getWorld().getPlayers()) {
             player.sendBlockChange(getLocation(), type, data);
+        }
+    }
+    
+    public BlockState getState() {
+    	Material material = getType();
+
+        switch (material) {
+            case CHEST:
+                return new ContribCraftChest(this);
+            default:
+                return super.getState();
         }
     }
     

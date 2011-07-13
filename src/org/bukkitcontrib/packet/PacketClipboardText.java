@@ -20,7 +20,7 @@ public class PacketClipboardText implements BukkitContribPacket{
     protected String text;
     @Override
     public int getNumBytes() {
-        return text.length();
+        return PacketUtil.getNumBytes(text);
     }
 
     @Override

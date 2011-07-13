@@ -1,263 +1,237 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.Entity;
+import net.minecraft.src.EntityLiving;
+import net.minecraft.src.FontRenderer;
+import net.minecraft.src.MathHelper;
+import net.minecraft.src.ModelBase;
+import net.minecraft.src.Render;
+import net.minecraft.src.Tessellator;
 import org.lwjgl.opengl.GL11;
 
-// Referenced classes of package net.minecraft.src:
-//            Render, ModelBase, EntityLiving, MathHelper, 
-//            RenderManager, Tessellator, FontRenderer, Entity
+public class RenderLiving extends Render {
 
-public class RenderLiving extends Render
-{
+	protected ModelBase mainModel;
+	protected ModelBase renderPassModel;
 
-    public RenderLiving(ModelBase modelbase, float f)
-    {
-        mainModel = modelbase;
-        shadowSize = f;
-    }
 
-    public void setRenderPassModel(ModelBase modelbase)
-    {
-        renderPassModel = modelbase;
-    }
+	public RenderLiving(ModelBase var1, float var2) {
+		this.mainModel = var1;
+		this.shadowSize = var2;
+	}
 
-    public void doRenderLiving(EntityLiving entityliving, double d, double d1, double d2, 
-            float f, float f1)
-    {
-        GL11.glPushMatrix();
-        GL11.glDisable(2884 /*GL_CULL_FACE*/);
-        mainModel.onGround = func_167_c(entityliving, f1);
-        if(renderPassModel != null)
-        {
-            renderPassModel.onGround = mainModel.onGround;
-        }
-        mainModel.isRiding = entityliving.isRiding();
-        if(renderPassModel != null)
-        {
-            renderPassModel.isRiding = mainModel.isRiding;
-        }
-        try
-        {
-            float f2 = entityliving.prevRenderYawOffset + (entityliving.renderYawOffset - entityliving.prevRenderYawOffset) * f1;
-            float f3 = entityliving.prevRotationYaw + (entityliving.rotationYaw - entityliving.prevRotationYaw) * f1;
-            float f4 = entityliving.prevRotationPitch + (entityliving.rotationPitch - entityliving.prevRotationPitch) * f1;
-            func_22012_b(entityliving, d, d1, d2);
-            float f5 = func_170_d(entityliving, f1);
-            rotateCorpse(entityliving, f5, f2, f1);
-            float f6 = 0.0625F;
-            GL11.glEnable(32826 /*GL_RESCALE_NORMAL_EXT*/);
-            GL11.glScalef(-1F, -1F, 1.0F);
-            preRenderCallback(entityliving, f1);
-            GL11.glTranslatef(0.0F, -24F * f6 - 0.0078125F, 0.0F);
-            float f7 = entityliving.field_705_Q + (entityliving.field_704_R - entityliving.field_705_Q) * f1;
-            float f8 = entityliving.field_703_S - entityliving.field_704_R * (1.0F - f1);
-            if(f7 > 1.0F)
-            {
-                f7 = 1.0F;
-            }
-            loadDownloadableImageTexture(entityliving.skinUrl, entityliving.getEntityTexture());
-            GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
-            mainModel.setLivingAnimations(entityliving, f8, f7, f1);
-            mainModel.render(f8, f7, f5, f3 - f2, f4, f6);
-            for(int i = 0; i < 4; i++)
-            {
-                if(shouldRenderPass(entityliving, i, f1))
-                {
-                    renderPassModel.render(f8, f7, f5, f3 - f2, f4, f6);
-                    GL11.glDisable(3042 /*GL_BLEND*/);
-                    GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
-                }
-            }
+	public void setRenderPassModel(ModelBase var1) {
+		this.renderPassModel = var1;
+	}
 
-            renderEquippedItems(entityliving, f1);
-            float f9 = entityliving.getEntityBrightness(f1);
-            int j = getColorMultiplier(entityliving, f9, f1);
-            if((j >> 24 & 0xff) > 0 || entityliving.hurtTime > 0 || entityliving.deathTime > 0)
-            {
-                GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
-                GL11.glDisable(3008 /*GL_ALPHA_TEST*/);
-                GL11.glEnable(3042 /*GL_BLEND*/);
-                GL11.glBlendFunc(770, 771);
-                GL11.glDepthFunc(514);
-                if(entityliving.hurtTime > 0 || entityliving.deathTime > 0)
-                {
-                    GL11.glColor4f(f9, 0.0F, 0.0F, 0.4F);
-                    mainModel.render(f8, f7, f5, f3 - f2, f4, f6);
-                    for(int k = 0; k < 4; k++)
-                    {
-                        if(func_27005_b(entityliving, k, f1))
-                        {
-                            GL11.glColor4f(f9, 0.0F, 0.0F, 0.4F);
-                            renderPassModel.render(f8, f7, f5, f3 - f2, f4, f6);
-                        }
-                    }
+	public void doRenderLiving(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
+		GL11.glPushMatrix();
+		GL11.glDisable(2884 /*GL_CULL_FACE*/);
+		this.mainModel.onGround = this.func_167_c(var1, var9);
+		if(this.renderPassModel != null) {
+			this.renderPassModel.onGround = this.mainModel.onGround;
+		}
 
-                }
-                if((j >> 24 & 0xff) > 0)
-                {
-                    float f10 = (float)(j >> 16 & 0xff) / 255F;
-                    float f11 = (float)(j >> 8 & 0xff) / 255F;
-                    float f12 = (float)(j & 0xff) / 255F;
-                    float f13 = (float)(j >> 24 & 0xff) / 255F;
-                    GL11.glColor4f(f10, f11, f12, f13);
-                    mainModel.render(f8, f7, f5, f3 - f2, f4, f6);
-                    for(int l = 0; l < 4; l++)
-                    {
-                        if(func_27005_b(entityliving, l, f1))
-                        {
-                            GL11.glColor4f(f10, f11, f12, f13);
-                            renderPassModel.render(f8, f7, f5, f3 - f2, f4, f6);
-                        }
-                    }
+		this.mainModel.isRiding = var1.isRiding();
+		if(this.renderPassModel != null) {
+			this.renderPassModel.isRiding = this.mainModel.isRiding;
+		}
 
-                }
-                GL11.glDepthFunc(515);
-                GL11.glDisable(3042 /*GL_BLEND*/);
-                GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
-                GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
-            }
-            GL11.glDisable(32826 /*GL_RESCALE_NORMAL_EXT*/);
-        }
-        catch(Exception exception)
-        {
-            exception.printStackTrace();
-        }
-        GL11.glEnable(2884 /*GL_CULL_FACE*/);
-        GL11.glPopMatrix();
-        passSpecialRender(entityliving, d, d1, d2);
-    }
+		try {
+			float var10 = var1.prevRenderYawOffset + (var1.renderYawOffset - var1.prevRenderYawOffset) * var9;
+			float var11 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var9;
+			float var12 = var1.prevRotationPitch + (var1.rotationPitch - var1.prevRotationPitch) * var9;
+			this.func_22012_b(var1, var2, var4, var6);
+			float var13 = this.func_170_d(var1, var9);
+			this.rotateCorpse(var1, var13, var10, var9);
+			float var14 = 0.0625F;
+			GL11.glEnable('\u803a');
+			GL11.glScalef(-1.0F, -1.0F, 1.0F);
+			this.preRenderCallback(var1, var9);
+			GL11.glTranslatef(0.0F, -24.0F * var14 - 0.0078125F, 0.0F);
+			float var15 = var1.field_705_Q + (var1.field_704_R - var1.field_705_Q) * var9;
+			float var16 = var1.field_703_S - var1.field_704_R * (1.0F - var9);
+			if(var15 > 1.0F) {
+				var15 = 1.0F;
+			}
 
-    protected void func_22012_b(EntityLiving entityliving, double d, double d1, double d2)
-    {
-        GL11.glTranslatef((float)d, (float)d1, (float)d2);
-    }
+			this.loadDownloadableImageTexture(var1.skinUrl, var1.getEntityTexture());
+			GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
+			this.mainModel.setLivingAnimations(var1, var16, var15, var9);
+			this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
-    protected void rotateCorpse(EntityLiving entityliving, float f, float f1, float f2)
-    {
-        GL11.glRotatef(180F - f1, 0.0F, 1.0F, 0.0F);
-        if(entityliving.deathTime > 0)
-        {
-            float f3 = ((((float)entityliving.deathTime + f2) - 1.0F) / 20F) * 1.6F;
-            f3 = MathHelper.sqrt_float(f3);
-            if(f3 > 1.0F)
-            {
-                f3 = 1.0F;
-            }
-            GL11.glRotatef(f3 * getDeathMaxRotation(entityliving), 0.0F, 0.0F, 1.0F);
-        }
-    }
+			for(int var17 = 0; var17 < 4; ++var17) {
+				if(this.shouldRenderPass(var1, var17, var9)) {
+					this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
+					GL11.glDisable(3042 /*GL_BLEND*/);
+					GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
+				}
+			}
 
-    protected float func_167_c(EntityLiving entityliving, float f)
-    {
-        return entityliving.getSwingProgress(f);
-    }
+			this.renderEquippedItems(var1, var9);
+			float var25 = var1.getEntityBrightness(var9);
+			int var18 = this.getColorMultiplier(var1, var25, var9);
+			if((var18 >> 24 & 255) > 0 || var1.hurtTime > 0 || var1.deathTime > 0) {
+				GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
+				GL11.glDisable(3008 /*GL_ALPHA_TEST*/);
+				GL11.glEnable(3042 /*GL_BLEND*/);
+				GL11.glBlendFunc(770, 771);
+				GL11.glDepthFunc(514);
+				if(var1.hurtTime > 0 || var1.deathTime > 0) {
+					GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
+					this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
-    protected float func_170_d(EntityLiving entityliving, float f)
-    {
-        return (float)entityliving.ticksExisted + f;
-    }
+					for(int var19 = 0; var19 < 4; ++var19) {
+						if(this.func_27005_b(var1, var19, var9)) {
+							GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
+							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
+						}
+					}
+				}
 
-    protected void renderEquippedItems(EntityLiving entityliving, float f)
-    {
-    }
+				if((var18 >> 24 & 255) > 0) {
+					float var26 = (float)(var18 >> 16 & 255) / 255.0F;
+					float var20 = (float)(var18 >> 8 & 255) / 255.0F;
+					float var21 = (float)(var18 & 255) / 255.0F;
+					float var22 = (float)(var18 >> 24 & 255) / 255.0F;
+					GL11.glColor4f(var26, var20, var21, var22);
+					this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
-    protected boolean func_27005_b(EntityLiving entityliving, int i, float f)
-    {
-        return shouldRenderPass(entityliving, i, f);
-    }
+					for(int var23 = 0; var23 < 4; ++var23) {
+						if(this.func_27005_b(var1, var23, var9)) {
+							GL11.glColor4f(var26, var20, var21, var22);
+							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
+						}
+					}
+				}
 
-    protected boolean shouldRenderPass(EntityLiving entityliving, int i, float f)
-    {
-        return false;
-    }
+				GL11.glDepthFunc(515);
+				GL11.glDisable(3042 /*GL_BLEND*/);
+				GL11.glEnable(3008 /*GL_ALPHA_TEST*/);
+				GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
+			}
 
-    protected float getDeathMaxRotation(EntityLiving entityliving)
-    {
-        return 90F;
-    }
+			GL11.glDisable('\u803a');
+		} catch (Exception var24) {
+			var24.printStackTrace();
+		}
 
-    protected int getColorMultiplier(EntityLiving entityliving, float f, float f1)
-    {
-        return 0;
-    }
+		GL11.glEnable(2884 /*GL_CULL_FACE*/);
+		GL11.glPopMatrix();
+		this.passSpecialRender(var1, var2, var4, var6);
+	}
 
-    protected void preRenderCallback(EntityLiving entityliving, float f)
-    {
-    }
+	protected void func_22012_b(EntityLiving var1, double var2, double var4, double var6) {
+		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
+	}
 
-    protected void passSpecialRender(EntityLiving entityliving, double d, double d1, double d2)
-    {
-        if(Minecraft.isDebugInfoEnabled())
-        {
-            renderLivingLabel(entityliving, Integer.toString(entityliving.entityId), d, d1, d2, 64);
-        }
-        //BukkitContrib Start
+	protected void rotateCorpse(EntityLiving var1, float var2, float var3, float var4) {
+		GL11.glRotatef(180.0F - var3, 0.0F, 1.0F, 0.0F);
+		if(var1.deathTime > 0) {
+			float var5 = ((float)var1.deathTime + var4 - 1.0F) / 20.0F * 1.6F;
+			var5 = MathHelper.sqrt_float(var5);
+			if(var5 > 1.0F) {
+				var5 = 1.0F;
+			}
+
+			GL11.glRotatef(var5 * this.getDeathMaxRotation(var1), 0.0F, 0.0F, 1.0F);
+		}
+
+	}
+
+	protected float func_167_c(EntityLiving var1, float var2) {
+		return var1.getSwingProgress(var2);
+	}
+
+	protected float func_170_d(EntityLiving var1, float var2) {
+		return (float)var1.ticksExisted + var2;
+	}
+
+	protected void renderEquippedItems(EntityLiving var1, float var2) {}
+
+	protected boolean func_27005_b(EntityLiving var1, int var2, float var3) {
+		return this.shouldRenderPass(var1, var2, var3);
+	}
+
+	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
+		return false;
+	}
+
+	protected float getDeathMaxRotation(EntityLiving var1) {
+		return 90.0F;
+	}
+
+	protected int getColorMultiplier(EntityLiving var1, float var2, float var3) {
+		return 0;
+	}
+
+	protected void preRenderCallback(EntityLiving var1, float var2) {}
+
+	protected void passSpecialRender(EntityLiving var1, double var2, double var4, double var6) {
+		if(Minecraft.isDebugInfoEnabled()) {
+			this.renderLivingLabel(var1, Integer.toString(var1.entityId), var2, var4, var6, 64);
+		}
+		 //BukkitContrib Start
         else {
-            String title = BukkitContrib.entityLabel.get(entityliving.entityId);
+            String title = BukkitContrib.entityLabel.get(var1.entityId);
             if (title != null && !title.equals("[hide]")) {
-                renderLivingLabel(entityliving, title, d, d1, d2, 64);
+				String lines[] = title.split("\\n");
+				for (int i = 0; i < lines.length; i++){
+					renderLivingLabel(var1, lines[i], var2, var4 + (0.275D * (lines.length - i - 1)), var6, 64);
+				}
             }
         }
         //BukkitContrib End
-    }
+	}
 
-    protected void renderLivingLabel(EntityLiving entityliving, String s, double d, double d1, double d2, int i)
-    {
-        float f = entityliving.getDistanceToEntity(renderManager.livingPlayer);
-        if(f > (float)i)
-        {
-            return;
-        }
-        FontRenderer fontrenderer = getFontRendererFromRenderManager();
-        float f1 = 1.6F;
-        float f2 = 0.01666667F * f1;
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float)d + 0.0F, (float)d1 + 2.3F, (float)d2);
-        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        GL11.glScalef(-f2, -f2, f2);
-        GL11.glDisable(2896 /*GL_LIGHTING*/);
-        GL11.glDepthMask(false);
-        GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-        GL11.glEnable(3042 /*GL_BLEND*/);
-        GL11.glBlendFunc(770, 771);
-        Tessellator tessellator = Tessellator.instance;
-        byte byte0 = 0;
-        if(s.equals("deadmau5"))
-        {
-            byte0 = -10;
-        }
-        GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
-        tessellator.startDrawingQuads();
-        int j = fontrenderer.getStringWidth(s) / 2;
-        tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-        tessellator.addVertex(-j - 1, -1 + byte0, 0.0D);
-        tessellator.addVertex(-j - 1, 8 + byte0, 0.0D);
-        tessellator.addVertex(j + 1, 8 + byte0, 0.0D);
-        tessellator.addVertex(j + 1, -1 + byte0, 0.0D);
-        tessellator.draw();
-        GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
-        fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, byte0, 0x20ffffff);
-        GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-        GL11.glDepthMask(true);
-        fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, byte0, -1);
-        GL11.glEnable(2896 /*GL_LIGHTING*/);
-        GL11.glDisable(3042 /*GL_BLEND*/);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glPopMatrix();
-    }
+	protected void renderLivingLabel(EntityLiving var1, String var2, double var3, double var5, double var7, int var9) {
+		float var10 = var1.getDistanceToEntity(this.renderManager.livingPlayer);
+		if(var10 <= (float)var9) {
+			FontRenderer var11 = this.getFontRendererFromRenderManager();
+			float var12 = 1.6F;
+			float var13 = 0.016666668F * var12;
+			GL11.glPushMatrix();
+			GL11.glTranslatef((float)var3 + 0.0F, (float)var5 + 2.3F, (float)var7);
+			GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+			GL11.glScalef(-var13, -var13, var13);
+			GL11.glDisable(2896 /*GL_LIGHTING*/);
+			GL11.glDepthMask(false);
+			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+			GL11.glEnable(3042 /*GL_BLEND*/);
+			GL11.glBlendFunc(770, 771);
+			Tessellator var14 = Tessellator.instance;
+			byte var15 = 0;
+			if(var2.equals("deadmau5")) {
+				var15 = -10;
+			}
 
-    public void doRender(Entity entity, double d, double d1, double d2, 
-            float f, float f1)
-    {
-        doRenderLiving((EntityLiving)entity, d, d1, d2, f, f1);
-    }
+			GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
+			var14.startDrawingQuads();
+			int var16 = var11.getStringWidth(var2) / 2;
+			var14.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+			var14.addVertex((double)(-var16 - 1), (double)(-1 + var15), 0.0D);
+			var14.addVertex((double)(-var16 - 1), (double)(8 + var15), 0.0D);
+			var14.addVertex((double)(var16 + 1), (double)(8 + var15), 0.0D);
+			var14.addVertex((double)(var16 + 1), (double)(-1 + var15), 0.0D);
+			var14.draw();
+			GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
+			var11.drawString(var2, -var11.getStringWidth(var2) / 2, var15, 553648127);
+			GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+			GL11.glDepthMask(true);
+			var11.drawString(var2, -var11.getStringWidth(var2) / 2, var15, -1);
+			GL11.glEnable(2896 /*GL_LIGHTING*/);
+			GL11.glDisable(3042 /*GL_BLEND*/);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glPopMatrix();
+		}
+	}
 
-    protected ModelBase mainModel;
-    protected ModelBase renderPassModel;
+	// $FF: synthetic method
+	// $FF: bridge method
+	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
+		this.doRenderLiving((EntityLiving)var1, var2, var4, var6, var8, var9);
+	}
 }

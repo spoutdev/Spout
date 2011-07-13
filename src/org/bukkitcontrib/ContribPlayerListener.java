@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
+import org.bukkitcontrib.gui.GenericTexture;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
@@ -68,19 +69,19 @@ public class ContribPlayerListener extends PlayerListener{
             return;
         }
         ContribCraftPlayer player = (ContribCraftPlayer)ContribCraftPlayer.getContribPlayer(event.getPlayer());
-        if (player.isEnabledBukkitContribSinglePlayerMod()) {
+        if (player.isBukkitContribEnabled()) {
             return;
         }
         if (event.getMessage().split("\\.").length == 3) {
             player.setVersion(event.getMessage().substring(1));
-            if (player.isEnabledBukkitContribSinglePlayerMod()) {
+            if (player.isBukkitContribEnabled()) {
                 event.setCancelled(true);
                 ((SimpleAppearanceManager)BukkitContrib.getAppearanceManager()).onPlayerJoin(player);
                 manager.onBukkitContribSPEnable(player);
                 ((SimpleItemManager)BukkitContrib.getItemManager()).onPlayerJoin(player);
                 ((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
                 Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
-                
+                player.getMainScreen().attachWidget((new GenericTexture("http://dl.dropbox.com/u/49805/fire-icon.png")).setScreen(player.getMainScreen()).setHeight(64).setWidth(64).setUpperRightX(200).setUpperRightY(150));
             }
         }
     }

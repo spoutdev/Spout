@@ -16,7 +16,7 @@ public class PacketTexturePack implements BukkitContribPacket{
 
 	@Override
 	public int getNumBytes() {
-		return url.length();
+		return PacketUtil.getNumBytes(url);
 	}
 
 	@Override

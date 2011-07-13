@@ -1,93 +1,83 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.GameSettings;
+import net.minecraft.src.MovementInput;
 
-// Referenced classes of package net.minecraft.src:
-//            MovementInput, GameSettings, KeyBinding, EntityPlayer
+public class MovementInputFromOptions extends MovementInput {
 
-public class MovementInputFromOptions extends MovementInput
-{
+	private boolean[] movementKeyStates = new boolean[10];
+	public GameSettings gameSettings; //BukkitContrib
 
-    public MovementInputFromOptions(GameSettings gamesettings)
-    {
-        movementKeyStates = new boolean[10];
-        gameSettings = gamesettings;
-    }
 
-    public void checkKeyForMovementInput(int i, boolean flag)
-    {
-        byte byte0 = -1;
-        if(i == gameSettings.keyBindForward.keyCode)
-        {
-            byte0 = 0;
-        }
-        if(i == gameSettings.keyBindBack.keyCode)
-        {
-            byte0 = 1;
-        }
-        if(i == gameSettings.keyBindLeft.keyCode)
-        {
-            byte0 = 2;
-        }
-        if(i == gameSettings.keyBindRight.keyCode)
-        {
-            byte0 = 3;
-        }
-        if(i == gameSettings.keyBindJump.keyCode)
-        {
-            byte0 = 4;
-        }
-        if(i == gameSettings.keyBindSneak.keyCode)
-        {
-            byte0 = 5;
-        }
-        if(byte0 >= 0)
-        {
-            movementKeyStates[byte0] = flag;
-        }
-    }
+	public MovementInputFromOptions(GameSettings var1) {
+		this.gameSettings = var1;
+	}
 
-    public void resetKeyState()
-    {
-        for(int i = 0; i < 10; i++)
-        {
-            movementKeyStates[i] = false;
-        }
+	public void checkKeyForMovementInput(int var1, boolean var2) {
+		byte var3 = -1;
+		if(var1 == this.gameSettings.keyBindForward.keyCode) {
+			var3 = 0;
+		}
 
-    }
+		if(var1 == this.gameSettings.keyBindBack.keyCode) {
+			var3 = 1;
+		}
 
-    public void updatePlayerMoveState(EntityPlayer entityplayer)
-    {
-        moveStrafe = 0.0F;
-        moveForward = 0.0F;
-        if(movementKeyStates[0])
-        {
-            moveForward++;
-        }
-        if(movementKeyStates[1])
-        {
-            moveForward--;
-        }
-        if(movementKeyStates[2])
-        {
-            moveStrafe++;
-        }
-        if(movementKeyStates[3])
-        {
-            moveStrafe--;
-        }
-        jump = movementKeyStates[4];
-        sneak = movementKeyStates[5];
-        if(sneak)
-        {
-            moveStrafe *= 0.29999999999999999D;
-            moveForward *= 0.29999999999999999D;
-        }
-    }
+		if(var1 == this.gameSettings.keyBindLeft.keyCode) {
+			var3 = 2;
+		}
 
-    private boolean movementKeyStates[];
-    public GameSettings gameSettings; //BukkitContrib
+		if(var1 == this.gameSettings.keyBindRight.keyCode) {
+			var3 = 3;
+		}
+
+		if(var1 == this.gameSettings.keyBindJump.keyCode) {
+			var3 = 4;
+		}
+
+		if(var1 == this.gameSettings.keyBindSneak.keyCode) {
+			var3 = 5;
+		}
+
+		if(var3 >= 0) {
+			this.movementKeyStates[var3] = var2;
+		}
+
+	}
+
+	public void resetKeyState() {
+		for(int var1 = 0; var1 < 10; ++var1) {
+			this.movementKeyStates[var1] = false;
+		}
+
+	}
+
+	public void updatePlayerMoveState(EntityPlayer var1) {
+		this.moveStrafe = 0.0F;
+		this.moveForward = 0.0F;
+		if(this.movementKeyStates[0]) {
+			++this.moveForward;
+		}
+
+		if(this.movementKeyStates[1]) {
+			--this.moveForward;
+		}
+
+		if(this.movementKeyStates[2]) {
+			++this.moveStrafe;
+		}
+
+		if(this.movementKeyStates[3]) {
+			--this.moveStrafe;
+		}
+
+		this.jump = this.movementKeyStates[4];
+		this.sneak = this.movementKeyStates[5];
+		if(this.sneak) {
+			this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
+			this.moveForward = (float)((double)this.moveForward * 0.3D);
+		}
+
+	}
 }

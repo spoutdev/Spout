@@ -28,7 +28,7 @@ public class PlayerManager {
                 }
                 else {
                     timer.remove(player.getName());
-                    player.kickPlayer("This server requires the BukkitContrib SP mod! http://bit.ly/bukkitcontrib");
+                    player.kickPlayer(ConfigReader.getKickMessage());
                 }
             }
         }

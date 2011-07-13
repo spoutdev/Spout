@@ -1,144 +1,135 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) braces deadcode 
-
 package net.minecraft.src;
 
+import net.minecraft.src.Entity;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.MathHelper;
+import net.minecraft.src.World;
 
-// Referenced classes of package net.minecraft.src:
-//            EntityPlayer, MathHelper, ItemStack, InventoryPlayer, 
-//            World, Entity
+public class EntityOtherPlayerMP extends EntityPlayer {
 
-public class EntityOtherPlayerMP extends EntityPlayer
-{
+	private int field_785_bg;
+	private double field_784_bh;
+	private double field_783_bi;
+	private double field_782_bj;
+	private double field_780_bk;
+	private double field_786_bl;
+	float field_20924_a = 0.0F;
 
-    public EntityOtherPlayerMP(World world, String s)
-    {
-        super(world);
-        field_20924_a = 0.0F;
-        username = s;
-        yOffset = 0.0F;
-        stepHeight = 0.0F;
-        if(s != null && s.length() > 0)
-        {
-            skinUrl = (new StringBuilder()).append("http://s3.amazonaws.com/MinecraftSkins/").append(s).append(".png").toString();
-        }
-        noClip = true;
-        field_22062_y = 0.25F;
-        renderDistanceWeight = 10D;
-    }
 
-    protected void resetHeight()
-    {
-        yOffset = 0.0F;
-    }
+	public EntityOtherPlayerMP(World var1, String var2) {
+		super(var1);
+		this.username = var2;
+		this.yOffset = 0.0F;
+		this.stepHeight = 0.0F;
+		if(var2 != null && var2.length() > 0) {
+			this.skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + var2 + ".png";
+		}
 
-    public boolean attackEntityFrom(Entity entity, int i)
-    {
-        return true;
-    }
+		this.noClip = true;
+		this.field_22062_y = 0.25F;
+		this.renderDistanceWeight = 10.0D;
+	}
 
-    public void setPositionAndRotation2(double d, double d1, double d2, float f, 
-            float f1, int i)
-    {
-        field_784_bh = d;
-        field_783_bi = d1;
-        field_782_bj = d2;
-        field_780_bk = f;
-        field_786_bl = f1;
-        field_785_bg = i;
-    }
+	protected void resetHeight() {
+		this.yOffset = 0.0F;
+	}
 
-    public void onUpdate()
-    {
-        field_22062_y = 0.0F;
-        super.onUpdate();
-        field_705_Q = field_704_R;
-        double d = posX - prevPosX;
-        double d1 = posZ - prevPosZ;
-        float f = MathHelper.sqrt_double(d * d + d1 * d1) * 4F;
-        if(f > 1.0F)
-        {
-            f = 1.0F;
-        }
-        field_704_R += (f - field_704_R) * 0.4F;
-        field_703_S += field_704_R;
-    }
+	public boolean attackEntityFrom(Entity var1, int var2) {
+		return true;
+	}
 
-    public float getShadowSize()
-    {
-        return 0.0F;
-    }
+	public void setPositionAndRotation2(double var1, double var3, double var5, float var7, float var8, int var9) {
+		this.field_784_bh = var1;
+		this.field_783_bi = var3;
+		this.field_782_bj = var5;
+		this.field_780_bk = (double)var7;
+		this.field_786_bl = (double)var8;
+		this.field_785_bg = var9;
+	}
 
-    public void onLivingUpdate()
-    {
-        super.updatePlayerActionState();
-        if(field_785_bg > 0)
-        {
-            double d = posX + (field_784_bh - posX) / (double)field_785_bg;
-            double d1 = posY + (field_783_bi - posY) / (double)field_785_bg;
-            double d2 = posZ + (field_782_bj - posZ) / (double)field_785_bg;
-            double d3;
-            for(d3 = field_780_bk - (double)rotationYaw; d3 < -180D; d3 += 360D) { }
-            for(; d3 >= 180D; d3 -= 360D) { }
-            rotationYaw += d3 / (double)field_785_bg;
-            rotationPitch += (field_786_bl - (double)rotationPitch) / (double)field_785_bg;
-            field_785_bg--;
-            setPosition(d, d1, d2);
-            setRotation(rotationYaw, rotationPitch);
-        }
-        field_775_e = field_774_f;
-        float f = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ);
-        float f1 = (float)Math.atan(-motionY * 0.20000000298023224D) * 15F;
-        if(f > 0.1F)
-        {
-            f = 0.1F;
-        }
-        if(!onGround || health <= 0)
-        {
-            f = 0.0F;
-        }
-        if(onGround || health <= 0)
-        {
-            f1 = 0.0F;
-        }
-        field_774_f += (f - field_774_f) * 0.4F;
-        field_9328_R += (f1 - field_9328_R) * 0.8F;
-    }
+	public void onUpdate() {
+		this.field_22062_y = 0.0F;
+		super.onUpdate();
+		this.field_705_Q = this.field_704_R;
+		double var1 = this.posX - this.prevPosX;
+		double var3 = this.posZ - this.prevPosZ;
+		float var5 = MathHelper.sqrt_double(var1 * var1 + var3 * var3) * 4.0F;
+		if(var5 > 1.0F) {
+			var5 = 1.0F;
+		}
 
-    public void outfitWithItem(int i, int j, int k)
-    {
-        ItemStack itemstack = null;
-        if(j >= 0)
-        {
-            itemstack = new ItemStack(j, 1, k);
-        }
-        if(i == 0)
-        {
-            inventory.mainInventory[inventory.currentItem] = itemstack;
-        } else
-        {
-            inventory.armorInventory[i - 1] = itemstack;
-        }
-    }
+		this.field_704_R += (var5 - this.field_704_R) * 0.4F;
+		this.field_703_S += this.field_704_R;
+	}
 
-    public void func_6420_o()
-    {
-    }
-    
-    //BukkitContrib Start
-    public void updateCloak() {
-        if (this.cloakUrl == null || this.playerCloakUrl == null) {
-            super.updateCloak();
-        }
-    }
-    //BukkitContrib End
+	public float getShadowSize() {
+		return 0.0F;
+	}
 
-    private int field_785_bg;
-    private double field_784_bh;
-    private double field_783_bi;
-    private double field_782_bj;
-    private double field_780_bk;
-    private double field_786_bl;
-    float field_20924_a;
+	public void onLivingUpdate() {
+		super.updatePlayerActionState();
+		if(this.field_785_bg > 0) {
+			double var1 = this.posX + (this.field_784_bh - this.posX) / (double)this.field_785_bg;
+			double var3 = this.posY + (this.field_783_bi - this.posY) / (double)this.field_785_bg;
+			double var5 = this.posZ + (this.field_782_bj - this.posZ) / (double)this.field_785_bg;
+
+			double var7;
+			for(var7 = this.field_780_bk - (double)this.rotationYaw; var7 < -180.0D; var7 += 360.0D) {
+				;
+			}
+
+			while(var7 >= 180.0D) {
+				var7 -= 360.0D;
+			}
+
+			this.rotationYaw = (float)((double)this.rotationYaw + var7 / (double)this.field_785_bg);
+			this.rotationPitch = (float)((double)this.rotationPitch + (this.field_786_bl - (double)this.rotationPitch) / (double)this.field_785_bg);
+			--this.field_785_bg;
+			this.setPosition(var1, var3, var5);
+			this.setRotation(this.rotationYaw, this.rotationPitch);
+		}
+
+		this.field_775_e = this.field_774_f;
+		float var9 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+		float var2 = (float)Math.atan(-this.motionY * 0.20000000298023224D) * 15.0F;
+		if(var9 > 0.1F) {
+			var9 = 0.1F;
+		}
+
+		if(!this.onGround || this.health <= 0) {
+			var9 = 0.0F;
+		}
+
+		if(this.onGround || this.health <= 0) {
+			var2 = 0.0F;
+		}
+
+		this.field_774_f += (var9 - this.field_774_f) * 0.4F;
+		this.field_9328_R += (var2 - this.field_9328_R) * 0.8F;
+	}
+
+	public void outfitWithItem(int var1, int var2, int var3) {
+		ItemStack var4 = null;
+		if(var2 >= 0) {
+			var4 = new ItemStack(var2, 1, var3);
+		}
+
+		if(var1 == 0) {
+			this.inventory.mainInventory[this.inventory.currentItem] = var4;
+		} else {
+			this.inventory.armorInventory[var1 - 1] = var4;
+		}
+
+	}
+
+	public void func_6420_o() {}
+	
+	 //BukkitContrib Start
+	 public void updateCloak() {
+		  if (this.cloakUrl == null || this.playerCloakUrl == null) {
+				super.updateCloak();
+		  }
+	 }
+	 //BukkitContrib End
 }
