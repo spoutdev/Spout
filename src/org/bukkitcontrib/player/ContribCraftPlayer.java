@@ -437,7 +437,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
    }
    
    public void sendPacket(BukkitContribPacket packet) {
-       System.out.println("Sending: " + packet.getPacketType());
+       //System.out.println("Sending: " + packet.getPacketType());
        getNetServerHandler().sendPacket(new CustomPacket(packet));
    }
    
@@ -561,6 +561,11 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
        if (player instanceof ContribCraftPlayer) {
            return (ContribCraftPlayer)player;
        }
+       if ((((CraftPlayer)player).getHandle()).getBukkitEntity() instanceof ContribCraftPlayer) {
+           return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
+       }
+       //We should never get here
+       Logger.getLogger("Minecraft").severe("Player: " + player.getName() + " was not properly updated during login!");
        updateBukkitEntity(player);
        return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
    }

@@ -13,7 +13,7 @@ public class PlayerManager {
         if (!ConfigReader.isForceClient()) {
             return;
         }
-        timer.put(player.getName(), 200);
+        timer.put(player.getName(), ConfigReader.getAuthenticateTicks());
     }
     
     public void onServerTick() {

@@ -24,37 +24,28 @@ public class ServerTickEvent extends Event{
             first = false;
         }
         lastTickTime = createdTime;
-        
-        //Start a task while already executing this task will cause it to be executed too soon,
-        //hence the 5ms delay
-        (new Thread() {
+
+        Runnable update = new Runnable() {
             public void run() {
-                try {
-                    sleep(5);
-                } catch (InterruptedException e) {}
-                Runnable update = new Runnable() {
-                    public void run() {
-                        BukkitContrib.playerListener.manager.onServerTick();
-                        Player[] online = Bukkit.getServer().getOnlinePlayers();
-                        for (Player player : online) {
-                            if (player instanceof ContribCraftPlayer) {
-                                ((ContribCraftPlayer)player).onTick();
-                            }
-                        }
-                        for (World w : Bukkit.getServer().getWorlds()) {
-                            Chunk[] chunks = w.getLoadedChunks();
-                            for (Chunk chunk : chunks) {
-                                if (chunk instanceof ContribCraftChunk) {
-                                    ((ContribCraftChunk)chunk).onTick();
-                                }
-                            }
-                        }
-                        Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
+                BukkitContrib.playerListener.manager.onServerTick();
+                Player[] online = Bukkit.getServer().getOnlinePlayers();
+                for (Player player : online) {
+                    if (player instanceof ContribCraftPlayer) {
+                        ((ContribCraftPlayer)player).onTick();
                     }
-                };
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BukkitContrib.getInstance(), update, 0);
+                }
+                for (World w : Bukkit.getServer().getWorlds()) {
+                    Chunk[] chunks = w.getLoadedChunks();
+                    for (Chunk chunk : chunks) {
+                        if (chunk instanceof ContribCraftChunk) {
+                            ((ContribCraftChunk)chunk).onTick();
+                        }
+                    }
+                }
+                Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
             }
-        }).start();
+        };
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(BukkitContrib.getInstance(), update, 0, 1);
         
     }
     

@@ -10,6 +10,7 @@ import org.bukkitcontrib.BukkitContrib;
 public class ConfigReader {
     private static boolean forceClient = false;
     private static boolean autoUpdate = false;
+    private static int authTicks = 200;
     private static String kickMessage = "This server requires the BukkitContrib SP mod! http://bit.ly/bukkitcontrib";
     
     public void read() {
@@ -39,6 +40,13 @@ public class ConfigReader {
                  configuration.setProperty("ForceSinglePlayerClientKickMessage", kickMessage);
             }
             
+            if (configuration.getProperty("AuthenticateTicks") != null) {
+                authTicks = configuration.getInt("AuthenticateTicks", 200);
+            }
+            else {
+                 configuration.setProperty("AuthenticateTicks", authTicks);
+            }
+            
             if (configuration.getProperty("AutoUpdate") != null) {
                 autoUpdate = configuration.getBoolean("AutoUpdate", true);
             }
@@ -65,5 +73,8 @@ public class ConfigReader {
     public static String getKickMessage() {
         return kickMessage;
     }
-
+    
+    public static int getAuthenticateTicks() {
+        return authTicks;
+    }
 }
