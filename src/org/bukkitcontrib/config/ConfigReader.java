@@ -41,7 +41,7 @@ public class ConfigReader {
             }
             
             if (configuration.getProperty("AuthenticateTicks") != null) {
-                authTicks = configuration.getInt("AuthenticateTicks");
+                authTicks = configuration.getInt("AuthenticateTicks", 200);
             }
             else {
                  configuration.setProperty("AuthenticateTicks", authTicks);
