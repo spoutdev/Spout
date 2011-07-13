@@ -21,6 +21,7 @@ public class CustomMCInventory implements IInventory{
                 this.items[i] = item == null ? null : item.getHandle();
             }
         }
+        this.name = name;
     }
     
     public CustomMCInventory(Collection<org.bukkit.inventory.ItemStack> items, String name) {
@@ -36,6 +37,7 @@ public class CustomMCInventory implements IInventory{
             }
             pos++;
         }
+        this.name = name;
     }
     
     public CustomMCInventory(int size, String name) {
@@ -43,6 +45,7 @@ public class CustomMCInventory implements IInventory{
         for (int i = 0; i < size; i++) {
             this.items[i] = null;
         }
+        this.name = name;
     }
 
     @Override
