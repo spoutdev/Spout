@@ -2,7 +2,7 @@
   Maven build file for BukkitContrib
 
   Copyright (c) 2011 Afforess <http://www.afforess.com>
-  BukkitContrib is licensed under Creative Commons CC BY-NC-SA 3.0
+  BukkitContrib is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -19,10 +19,9 @@
     <!-- License -->
     <licenses>
         <license>
-            <name>Creative Commons CC BY-NC-SA 3.0</name>
-            <url>http://creativecommons.org/licenses/by-nc-na/3.0/</url>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE Version 3</name>
+            <url>http://www.gnu.org/licenses/lgpl.html</url>
             <distribution>repo</distribution>
-            <comments>This license lets others remix, tweak, and build upon your work non-commercially, as long as they credit you and license their new creations under the identical terms.</comments>
         </license>
     </licenses>
 
