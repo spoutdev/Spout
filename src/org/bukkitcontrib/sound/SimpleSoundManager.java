@@ -53,17 +53,17 @@ public class SimpleSoundManager implements SoundManager{
 
     @Override
     public void playSoundEffect(ContribPlayer target, SoundEffect effect, Location location, int distance, int volumePercent) {
-    	if (target.getVersion() > 7) {
-	        ContribCraftPlayer ccp = (ContribCraftPlayer) target;
-	        if (location == null || ccp.getWorld().equals(location.getWorld())) {
-	            if (location == null) {
-	                ccp.sendPacket(new PacketPlaySound(effect, distance, volumePercent));
-	            }
-	            else {
-	                ccp.sendPacket(new PacketPlaySound(effect, location, distance, volumePercent));
-	            }
-	        }
-    	}
+        if (target.getVersion() > 7) {
+            ContribCraftPlayer ccp = (ContribCraftPlayer) target;
+            if (location == null || ccp.getWorld().equals(location.getWorld())) {
+                if (location == null) {
+                    ccp.sendPacket(new PacketPlaySound(effect, distance, volumePercent));
+                }
+                else {
+                    ccp.sendPacket(new PacketPlaySound(effect, location, distance, volumePercent));
+                }
+            }
+        }
     }
 
     @Override
@@ -85,32 +85,32 @@ public class SimpleSoundManager implements SoundManager{
 
     @Override
     public void playMusic(ContribPlayer target, Music music, int volumePercent) {
-    	if (target.getVersion() > 7) {
-	        BackgroundMusicEvent event = new BackgroundMusicEvent(music, volumePercent, target);
-	        Bukkit.getServer().getPluginManager().callEvent(event);
-	        if (event.isCancelled()) {
-	            return;
-	        }
-	        
-	        ((ContribCraftPlayer) target).sendPacket(new PacketPlaySound(music, event.getVolumePercent()));
-    	}
+        if (target.getVersion() > 7) {
+            BackgroundMusicEvent event = new BackgroundMusicEvent(music, volumePercent, target);
+            Bukkit.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+            
+            ((ContribCraftPlayer) target).sendPacket(new PacketPlaySound(music, event.getVolumePercent()));
+        }
     }
     
     @Override
     public void stopMusic(ContribPlayer target) {
-    	stopMusic(target, true);
+        stopMusic(target, true);
     }
     
     @Override
     public void stopMusic(ContribPlayer target, boolean resetTimer) {
-    	stopMusic(target, true, -1);
+        stopMusic(target, true, -1);
     }
     
     @Override
     public void stopMusic(ContribPlayer target, boolean resetTimer, int fadeOutTime) {
-    	if (target.getVersion() > 8) {
-    		((ContribCraftPlayer) target).sendPacket(new PacketStopMusic(resetTimer, fadeOutTime));
-    	}
+        if (target.getVersion() > 8) {
+            ((ContribCraftPlayer) target).sendPacket(new PacketStopMusic(resetTimer, fadeOutTime));
+        }
     }
 
     @Override

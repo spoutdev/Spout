@@ -163,7 +163,7 @@ public class BukkitContrib extends JavaPlugin{
      * @return item manager
      */
     public static ItemManager getItemManager() {
-    	return itemManager;
+        return itemManager;
     }
     
     /**
@@ -171,7 +171,7 @@ public class BukkitContrib extends JavaPlugin{
      * @return sky manager
      */
     public static SkyManager getSkyManager() {
-    	return skyManager;
+        return skyManager;
     }
     
     /**

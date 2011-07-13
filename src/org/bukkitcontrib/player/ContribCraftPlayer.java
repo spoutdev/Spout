@@ -191,7 +191,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public InGameScreen getMainScreen() {
-    	//throw new UnsupportedOperationException("Not yet implemented!");
+        //throw new UnsupportedOperationException("Not yet implemented!");
         return mainScreen;
     }
 
@@ -203,7 +203,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public boolean isBukkitContribEnabled() {
-    	return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
+        return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
     }
     
     public int getVersion() {
@@ -344,15 +344,15 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
     
     @Override
     public void setTexturePack(String url) {
-    	 if (getVersion() > 8) {
-    		 if (url == null || url.length() < 5) {
-    			 throw new IllegalArgumentException("Invalid URL!");
-    		 }
-    		 if (!url.toLowerCase().endsWith(".zip")) {
-    			 throw new IllegalArgumentException("A Texture Pack must be in a .zip format");
-    		 }
-    		 sendPacket(new PacketTexturePack(url));
-    	 }
+         if (getVersion() > 8) {
+             if (url == null || url.length() < 5) {
+                 throw new IllegalArgumentException("Invalid URL!");
+             }
+             if (!url.toLowerCase().endsWith(".zip")) {
+                 throw new IllegalArgumentException("A Texture Pack must be in a .zip format");
+             }
+             sendPacket(new PacketTexturePack(url));
+         }
     }
     
     public void setClipboardText(String text, boolean updateClient) {
@@ -437,7 +437,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
    }
    
    public void sendPacket(BukkitContribPacket packet) {
-	   System.out.println("Sending: " + packet.getPacketType());
+       System.out.println("Sending: " + packet.getPacketType());
        getNetServerHandler().sendPacket(new CustomPacket(packet));
    }
    

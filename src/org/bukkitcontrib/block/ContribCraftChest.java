@@ -15,69 +15,69 @@ import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.DoubleChestInventory;
 
 public class ContribCraftChest extends CraftChest implements ContribChest{
-	protected TileEntityChest chest;
-	public ContribCraftChest(Block block) {
-		super(block);
-		chest = getTileEntity();
-	}
+    protected TileEntityChest chest;
+    public ContribCraftChest(Block block) {
+        super(block);
+        chest = getTileEntity();
+    }
 
-	@Override
-	public boolean isDoubleChest() {
-		return getOtherSide() != null;
-	}
-	
-	public ContribChest getOtherSide() {
-		if (getBlock().getRelative(1, 0, 0).getType() == Material.CHEST) {
-			BlockState bs = getBlock().getRelative(1, 0, 0).getState();
-			if (bs instanceof ContribChest) {
-				return ((ContribChest)bs);
-			}
-		}
-		if (getBlock().getRelative(-1, 0, 0).getType() == Material.CHEST) {
-			BlockState bs = getBlock().getRelative(-1, 0, 0).getState();
-			if (bs instanceof ContribChest) {
-				return ((ContribChest)bs);
-			}
-		}
-		if (getBlock().getRelative(0, 0, 1).getType() == Material.CHEST) {
-			BlockState bs = getBlock().getRelative(0, 0, 1).getState();
-			if (bs instanceof ContribChest) {
-				return ((ContribChest)bs);
-			}
-		}
-		if (getBlock().getRelative(0, 0, -1).getType() == Material.CHEST) {
-			BlockState bs = getBlock().getRelative(0, 0, -1).getState();
-			if (bs instanceof ContribChest) {
-				return ((ContribChest)bs);
-			}
-		}
-		return null;
-	}
+    @Override
+    public boolean isDoubleChest() {
+        return getOtherSide() != null;
+    }
+    
+    public ContribChest getOtherSide() {
+        if (getBlock().getRelative(1, 0, 0).getType() == Material.CHEST) {
+            BlockState bs = getBlock().getRelative(1, 0, 0).getState();
+            if (bs instanceof ContribChest) {
+                return ((ContribChest)bs);
+            }
+        }
+        if (getBlock().getRelative(-1, 0, 0).getType() == Material.CHEST) {
+            BlockState bs = getBlock().getRelative(-1, 0, 0).getState();
+            if (bs instanceof ContribChest) {
+                return ((ContribChest)bs);
+            }
+        }
+        if (getBlock().getRelative(0, 0, 1).getType() == Material.CHEST) {
+            BlockState bs = getBlock().getRelative(0, 0, 1).getState();
+            if (bs instanceof ContribChest) {
+                return ((ContribChest)bs);
+            }
+        }
+        if (getBlock().getRelative(0, 0, -1).getType() == Material.CHEST) {
+            BlockState bs = getBlock().getRelative(0, 0, -1).getState();
+            if (bs instanceof ContribChest) {
+                return ((ContribChest)bs);
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public DoubleChestInventory getFullInventory() {
-		if (isDoubleChest()){
-			ContribCraftChest other = (ContribCraftChest)getOtherSide();
-			return new ContribDoubleChestInventory(new InventoryLargeChest("Double Chest", chest, other.chest), getBlock(), other.getBlock());
-		}
-		return null;
-	}
-	
-	@Override
-	public ContribInventory getInventory() {
-		return new ContribCraftInventory(chest);
-	}
-	
-	public TileEntityChest getTileEntity() {
-		try {
-			Field chest = CraftChest.class.getDeclaredField("chest");
-			chest.setAccessible(true);
-			return (TileEntityChest) chest.get(this);
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
-	}
+    @Override
+    public DoubleChestInventory getFullInventory() {
+        if (isDoubleChest()){
+            ContribCraftChest other = (ContribCraftChest)getOtherSide();
+            return new ContribDoubleChestInventory(new InventoryLargeChest("Double Chest", chest, other.chest), getBlock(), other.getBlock());
+        }
+        return null;
+    }
+    
+    @Override
+    public ContribInventory getInventory() {
+        return new ContribCraftInventory(chest);
+    }
+    
+    public TileEntityChest getTileEntity() {
+        try {
+            Field chest = CraftChest.class.getDeclaredField("chest");
+            chest.setAccessible(true);
+            return (TileEntityChest) chest.get(this);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

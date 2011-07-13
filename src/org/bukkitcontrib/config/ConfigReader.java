@@ -33,10 +33,10 @@ public class ConfigReader {
             }
             
             if (configuration.getProperty("ForceSinglePlayerClientKickMessage") != null) {
-            	kickMessage = configuration.getString("ForceSinglePlayerClientKickMessage");
+                kickMessage = configuration.getString("ForceSinglePlayerClientKickMessage");
             }
             else {
-            	 configuration.setProperty("ForceSinglePlayerClientKickMessage", kickMessage);
+                 configuration.setProperty("ForceSinglePlayerClientKickMessage", kickMessage);
             }
             
             if (configuration.getProperty("AutoUpdate") != null) {
@@ -63,7 +63,7 @@ public class ConfigReader {
     }
     
     public static String getKickMessage() {
-    	return kickMessage;
+        return kickMessage;
     }
 
 }

@@ -16,7 +16,7 @@ public class PacketDownloadMusic implements BukkitContribPacket{
     }
     
     public PacketDownloadMusic(String plugin, String URL, Location loc, int distance, int volume, boolean soundEffect, boolean notify) {
-    	this.plugin = plugin;
+        this.plugin = plugin;
         this.URL = URL;
         this.volume = volume;
         this.soundEffect = soundEffect;

@@ -50,7 +50,7 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
     }
     
     public BlockState getState() {
-    	Material material = getType();
+        Material material = getType();
 
         switch (material) {
             case CHEST:

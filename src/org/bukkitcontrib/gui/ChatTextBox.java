@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class ChatTextBox extends GenericWidget implements Widget{
-	protected int visibleLines = 10;
-	protected int visibleChatLines = 20;
+    protected int visibleLines = 10;
+    protected int visibleChatLines = 20;
     public ChatTextBox() {
 
     }
@@ -45,21 +45,21 @@ public class ChatTextBox extends GenericWidget implements Widget{
     }
     
     public int getNumVisibleLines() {
-    	return visibleLines;
+        return visibleLines;
     }
     
     public ChatTextBox setNumVisibleLines(int lines) {
-    	visibleLines = lines;
-    	return this;
+        visibleLines = lines;
+        return this;
     }
     
     public int getNumVisibleChatLines() {
-    	return visibleChatLines;
+        return visibleChatLines;
     }
     
     public ChatTextBox setNumVisibleChatLines(int lines) {
-    	visibleChatLines = lines;
-    	return this;
+        visibleChatLines = lines;
+        return this;
     }
 
 }
