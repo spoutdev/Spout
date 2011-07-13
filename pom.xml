@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Project information -->
-    <groupId>com.afforess</groupId>
+    <groupId>org</groupId>
     <artifactId>bukkitcontrib</artifactId>
     <version>dev-SNAPSHOT</version>
     <name>BukkitContrib</name>
@@ -63,6 +63,7 @@
                 <filtering>true</filtering>
                 <directory>${basedir}/src/</directory>
                 <includes>
+                    <include>README</include>
                     <include>plugin.yml</include>
                 </includes>
             </resource>
