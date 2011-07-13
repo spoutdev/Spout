@@ -1,15 +1,13 @@
 package org.bukkitcontrib.event.bukkitcontrib;
 
-import java.util.ArrayList;
-
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkitcontrib.BukkitContrib;
-import org.bukkitcontrib.block.ContribChunk;
 import org.bukkitcontrib.block.ContribCraftChunk;
 import org.bukkitcontrib.player.ContribCraftPlayer;
-import org.bukkitcontrib.util.ChunkUtil;
 
 public class ServerTickEvent extends Event{
     protected static long lastTickTime = System.currentTimeMillis();
@@ -43,9 +41,13 @@ public class ServerTickEvent extends Event{
                                 ((ContribCraftPlayer)player).onTick();
                             }
                         }
-                        ArrayList<ContribChunk> chunks = ChunkUtil.getAllLoadedChunks();
-                        for (ContribChunk chunk : chunks) {
-                            ((ContribCraftChunk)chunk).onTick();
+                        for (World w : Bukkit.getServer().getWorlds()) {
+                            Chunk[] chunks = w.getLoadedChunks();
+                            for (Chunk chunk : chunks) {
+                                if (chunk instanceof ContribCraftChunk) {
+                                    ((ContribCraftChunk)chunk).onTick();
+                                }
+                            }
                         }
                         Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
                     }
