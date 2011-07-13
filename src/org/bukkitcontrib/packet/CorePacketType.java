@@ -117,7 +117,7 @@ public enum CorePacketType {
 	TRANSACTION(100, Packet106Transaction.class),
 	UPDATE_SIGN(130, Packet130UpdateSign.class),
 	MAP_DATA(131, Packet131.class),
-	INCREMENT_STATISTIC(200, Packet200Statistic.class),
+	STATISTIC(200, Packet200Statistic.class),
 	KICK_DISCONNECT(255, Packet255KickDisconnect.class),
 	;
 
