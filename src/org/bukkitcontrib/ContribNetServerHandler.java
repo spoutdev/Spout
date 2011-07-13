@@ -23,6 +23,8 @@ import org.bukkitcontrib.inventory.ContribCraftItemStack;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
+import org.bukkitcontrib.packet.CorePacketType;
+import org.bukkitcontrib.packet.listener.PacketListenerHandler;
 
 
 import net.minecraft.server.Container;
@@ -35,6 +37,7 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.Packet101CloseWindow;
 import net.minecraft.server.Packet102WindowClick;
@@ -44,6 +47,18 @@ import net.minecraft.server.ContainerChest;
 import net.minecraft.server.ContainerDispenser;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.Packet106Transaction;
+import net.minecraft.server.Packet10Flying;
+import net.minecraft.server.Packet130UpdateSign;
+import net.minecraft.server.Packet14BlockDig;
+import net.minecraft.server.Packet15Place;
+import net.minecraft.server.Packet16BlockItemSwitch;
+import net.minecraft.server.Packet18ArmAnimation;
+import net.minecraft.server.Packet19EntityAction;
+import net.minecraft.server.Packet255KickDisconnect;
+import net.minecraft.server.Packet27;
+import net.minecraft.server.Packet3Chat;
+import net.minecraft.server.Packet7UseEntity;
+import net.minecraft.server.Packet9Respawn;
 import net.minecraft.server.Slot;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
@@ -162,6 +177,9 @@ public class ContribNetServerHandler extends NetServerHandler{
         if (this.player.dead){
             return;
         }
+        if (!PacketListenerHandler.checkPacket(CorePacketType.TRANSACTION, packet)) {
+        	return;
+        }
         Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.windowId));
 
         if (oshort != null && packet.b == oshort.shortValue() && this.player.activeContainer.windowId == packet.a && !this.player.activeContainer.c(this.player)) {
@@ -258,6 +276,9 @@ public class ContribNetServerHandler extends NetServerHandler{
                     arraylist.add(((Slot) this.player.activeContainer.e.get(i)).getItem());
                 }
 
+                if (!PacketListenerHandler.checkPacket(CorePacketType.WINDOW_CLICK, packet)) {
+                	return;
+                }
                 this.player.a(this.player.activeContainer, arraylist);
             }
         }
@@ -400,4 +421,87 @@ public class ContribNetServerHandler extends NetServerHandler{
         return null;
    }
 
+	@Override
+	public void a(Packet10Flying packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.FLYING, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet130UpdateSign packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.UPDATE_SIGN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet14BlockDig packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.BLOCK_DIG, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet15Place packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.PLACE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet16BlockItemSwitch packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.BLOCK_ITEM_SWITCH, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet18ArmAnimation packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ARM_ANIMATION, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet19EntityAction packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_ACTION, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet255KickDisconnect packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.KICK_DISCONNECT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet27 packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.STANCE_UPDATE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet3Chat packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.CHAT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet7UseEntity packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.USE_ENTITY, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet9Respawn packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.RESPAWN, packet)) {
+			super.a(packet);
+		}
+	}
 }
