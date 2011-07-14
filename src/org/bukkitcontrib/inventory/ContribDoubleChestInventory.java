@@ -5,7 +5,7 @@ import net.minecraft.server.IInventory;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 
-public class ContribDoubleChestInventory extends CraftInventory implements DoubleChestInventory{
+public class ContribDoubleChestInventory extends ContribCraftInventory implements DoubleChestInventory{
     protected Block left;
     protected Block right;
     public ContribDoubleChestInventory(IInventory inventory, Block left, Block right) {
