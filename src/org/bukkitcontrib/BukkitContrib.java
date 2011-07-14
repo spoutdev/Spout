@@ -19,7 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
 import org.bukkitcontrib.block.ContribCraftChunk;
 import org.bukkitcontrib.config.ConfigReader;
-import org.bukkitcontrib.event.bukkitcontrib.ServerTickEvent;
 import org.bukkitcontrib.inventory.ItemManager;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.keyboard.KeyboardManager;
@@ -117,7 +116,7 @@ public class BukkitContrib extends JavaPlugin{
         appearanceManager.onPluginEnable();
         
         //Start counting ticks
-        Bukkit.getServer().getPluginManager().callEvent(new ServerTickEvent());
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new ServerTickTask(), 0, 1);
 
         //Remove mappings from previous loads
         //Can not remove them on disable because the packets will still be in the send queue
