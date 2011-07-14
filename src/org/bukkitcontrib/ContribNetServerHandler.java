@@ -6,6 +6,75 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.server.Container;
+import net.minecraft.server.ContainerChest;
+import net.minecraft.server.ContainerDispenser;
+import net.minecraft.server.ContainerFurnace;
+import net.minecraft.server.ContainerPlayer;
+import net.minecraft.server.ContainerWorkbench;
+import net.minecraft.server.CraftingManager;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.IInventory;
+import net.minecraft.server.InventoryCraftResult;
+import net.minecraft.server.InventoryCrafting;
+import net.minecraft.server.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.NetServerHandler;
+import net.minecraft.server.NetworkManager;
+import net.minecraft.server.Packet100OpenWindow;
+import net.minecraft.server.Packet101CloseWindow;
+import net.minecraft.server.Packet102WindowClick;
+import net.minecraft.server.Packet103SetSlot;
+import net.minecraft.server.Packet104WindowItems;
+import net.minecraft.server.Packet105CraftProgressBar;
+import net.minecraft.server.Packet106Transaction;
+import net.minecraft.server.Packet10Flying;
+import net.minecraft.server.Packet130UpdateSign;
+import net.minecraft.server.Packet131;
+import net.minecraft.server.Packet14BlockDig;
+import net.minecraft.server.Packet15Place;
+import net.minecraft.server.Packet16BlockItemSwitch;
+import net.minecraft.server.Packet17;
+import net.minecraft.server.Packet18ArmAnimation;
+import net.minecraft.server.Packet19EntityAction;
+import net.minecraft.server.Packet1Login;
+import net.minecraft.server.Packet200Statistic;
+import net.minecraft.server.Packet20NamedEntitySpawn;
+import net.minecraft.server.Packet21PickupSpawn;
+import net.minecraft.server.Packet22Collect;
+import net.minecraft.server.Packet23VehicleSpawn;
+import net.minecraft.server.Packet24MobSpawn;
+import net.minecraft.server.Packet255KickDisconnect;
+import net.minecraft.server.Packet25EntityPainting;
+import net.minecraft.server.Packet27;
+import net.minecraft.server.Packet28EntityVelocity;
+import net.minecraft.server.Packet29DestroyEntity;
+import net.minecraft.server.Packet2Handshake;
+import net.minecraft.server.Packet30Entity;
+import net.minecraft.server.Packet34EntityTeleport;
+import net.minecraft.server.Packet38EntityStatus;
+import net.minecraft.server.Packet39AttachEntity;
+import net.minecraft.server.Packet3Chat;
+import net.minecraft.server.Packet40EntityMetadata;
+import net.minecraft.server.Packet4UpdateTime;
+import net.minecraft.server.Packet50PreChunk;
+import net.minecraft.server.Packet51MapChunk;
+import net.minecraft.server.Packet52MultiBlockChange;
+import net.minecraft.server.Packet53BlockChange;
+import net.minecraft.server.Packet54PlayNoteBlock;
+import net.minecraft.server.Packet5EntityEquipment;
+import net.minecraft.server.Packet60Explosion;
+import net.minecraft.server.Packet61;
+import net.minecraft.server.Packet6SpawnPosition;
+import net.minecraft.server.Packet70Bed;
+import net.minecraft.server.Packet71Weather;
+import net.minecraft.server.Packet7UseEntity;
+import net.minecraft.server.Packet8UpdateHealth;
+import net.minecraft.server.Packet9Respawn;
+import net.minecraft.server.Slot;
+import net.minecraft.server.TileEntityDispenser;
+import net.minecraft.server.TileEntityFurnace;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -23,30 +92,8 @@ import org.bukkitcontrib.inventory.ContribCraftItemStack;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
-
-
-import net.minecraft.server.Container;
-import net.minecraft.server.CraftingManager;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.IInventory;
-import net.minecraft.server.InventoryCraftResult;
-import net.minecraft.server.InventoryCrafting;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.NetServerHandler;
-import net.minecraft.server.NetworkManager;
-import net.minecraft.server.Packet100OpenWindow;
-import net.minecraft.server.Packet101CloseWindow;
-import net.minecraft.server.Packet102WindowClick;
-import net.minecraft.server.ContainerPlayer;
-import net.minecraft.server.ContainerFurnace;
-import net.minecraft.server.ContainerChest;
-import net.minecraft.server.ContainerDispenser;
-import net.minecraft.server.ContainerWorkbench;
-import net.minecraft.server.Packet106Transaction;
-import net.minecraft.server.Slot;
-import net.minecraft.server.TileEntityDispenser;
-import net.minecraft.server.TileEntityFurnace;
+import org.bukkitcontrib.packet.CorePacketType;
+import org.bukkitcontrib.packet.listener.PacketListenerHandler;
 
 public class ContribNetServerHandler extends NetServerHandler{
     protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -126,6 +173,9 @@ public class ContribNetServerHandler extends NetServerHandler{
     
     @Override
     public void a(Packet101CloseWindow packet) {
+    	if (!PacketListenerHandler.checkPacket(CorePacketType.CLOSE_WINDOW, packet))
+    		return;
+
         ContribInventory inventory = getActiveInventory();
 
         InventoryCloseEvent event = new InventoryCloseEvent((Player)this.player.getBukkitEntity(), inventory, getDefaultInventory(), activeLocation);
@@ -159,7 +209,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 
     @Override
     public void a(Packet106Transaction packet) {
-        if (this.player.dead){
+        if (this.player.dead || !PacketListenerHandler.checkPacket(CorePacketType.TRANSACTION, packet)){
             return;
         }
         Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.windowId));
@@ -171,6 +221,9 @@ public class ContribNetServerHandler extends NetServerHandler{
 
     @Override
     public void a(Packet102WindowClick packet) {
+		if (!PacketListenerHandler.checkPacket(CorePacketType.WINDOW_CLICK, packet))
+			return;
+    	
         if (this.player.activeContainer.windowId == packet.a && this.player.activeContainer.c(this.player)) {
             ContribInventory inventory = getActiveInventory();
             CraftPlayer player = (CraftPlayer) this.player.getBukkitEntity();
@@ -400,4 +453,332 @@ public class ContribNetServerHandler extends NetServerHandler{
         return null;
    }
 
+	@Override
+	public void a(Packet10Flying packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.FLYING, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet130UpdateSign packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.UPDATE_SIGN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet14BlockDig packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.BLOCK_DIG, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet15Place packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.PLACE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet16BlockItemSwitch packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.BLOCK_ITEM_SWITCH, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet18ArmAnimation packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ARM_ANIMATION, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet19EntityAction packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_ACTION, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet255KickDisconnect packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.KICK_DISCONNECT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet27 packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.STANCE_UPDATE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet3Chat packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.CHAT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet7UseEntity packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.USE_ENTITY, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet9Respawn packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.RESPAWN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet100OpenWindow packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.OPEN_WINDOW, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet103SetSlot packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.SET_SLOT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet104WindowItems packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.WINDOW_ITEMS, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet105CraftProgressBar packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.CRAFT_PROGRESS_BAR, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet131 packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.MAP_DATA, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet17 packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.NEW_STATE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet1Login packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.LOGIN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet200Statistic packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.STATISTIC, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet20NamedEntitySpawn packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.NAMED_ENTITY_SPAWN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet21PickupSpawn packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.PICKUP_SPAWN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet22Collect packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.COLLECT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet23VehicleSpawn packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.VEHICLE_SPAWN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet24MobSpawn packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.MOB_SPAWN, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet25EntityPainting packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_PAINTING, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet28EntityVelocity packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_VELOCITY, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet29DestroyEntity packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.DESTROY_ENTITY, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet2Handshake packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.HANDSHAKE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet30Entity packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet34EntityTeleport packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_TELEPORT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet38EntityStatus packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_STATUS, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet39AttachEntity packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ATTACH_ENTITY, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet40EntityMetadata packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_METADATA, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet4UpdateTime packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.UPDATE_TIME, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet50PreChunk packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.PRE_CHUNK, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet51MapChunk packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.MAP_CHUNK, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet52MultiBlockChange packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.MULTI_BLOCK_CHANGE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet53BlockChange packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.BLOCK_CHANGE, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet54PlayNoteBlock packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.PLAY_NOTE_BLOCK, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet5EntityEquipment packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.ENTITY_EQUIPMENT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet60Explosion packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.EXPLOSION, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet61 packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.SOUND_EFFECT, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet6SpawnPosition packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.SPAWN_POSITION, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet70Bed packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.BED, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet71Weather packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.WEATHER, packet)) {
+			super.a(packet);
+		}
+	}
+
+	@Override
+	public void a(Packet8UpdateHealth packet) {
+		if (PacketListenerHandler.checkPacket(CorePacketType.UPDATE_HEALTH, packet)) {
+			super.a(packet);
+		}
+	}
 }
