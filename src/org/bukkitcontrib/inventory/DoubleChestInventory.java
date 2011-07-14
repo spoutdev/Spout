@@ -3,7 +3,7 @@ package org.bukkitcontrib.inventory;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 
-public interface DoubleChestInventory extends Inventory{
+public interface DoubleChestInventory extends ContribInventory{
     /**
      * Gets the left half of the double chest
      * @return left side
