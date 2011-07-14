@@ -25,9 +25,16 @@ public interface ContribChest extends Chest{
     public DoubleChestInventory getFullInventory();
     
     /**
+     * Gets the largest possible inventory associated with this block
+     * If this block is part of a double chest, it will return the double inventory
+     * otherwise it will return the single inventory for this chest block
+     * @return largest inventory
+     */
+    public ContribInventory getLargestInventory();
+    
+    /**
      * Gets the inventory for this single chest block
      * @return inventory
      */
     public ContribInventory getInventory();
-
 }
