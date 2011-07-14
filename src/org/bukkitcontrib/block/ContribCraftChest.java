@@ -64,6 +64,14 @@ public class ContribCraftChest extends CraftChest implements ContribChest{
     }
     
     @Override
+    public ContribInventory getLargestInventory() {
+        if (isDoubleChest()){
+            return getFullInventory();
+        }
+        return getInventory();
+    }
+    
+    @Override
     public ContribInventory getInventory() {
         return new ContribCraftInventory(chest);
     }
@@ -79,5 +87,4 @@ public class ContribCraftChest extends CraftChest implements ContribChest{
         }
         return null;
     }
-
 }
