@@ -83,6 +83,7 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
             try {
                 Block block = getCache().get(entry.getKey());
                 block.setTypeId(entry.getValue());
+				i.remove();
             }
             catch (Exception e) {
                 
@@ -94,6 +95,7 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
             try {
                 Block block = getCache().get(entry.getKey());
                 block.setData(entry.getValue());
+				j.remove();
             }
             catch (Exception e) {
                 
