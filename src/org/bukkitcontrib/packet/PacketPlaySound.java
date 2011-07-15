@@ -41,7 +41,7 @@ public class PacketPlaySound implements BukkitContribPacket{
 
     @Override
     public int getNumBytes() {
-        return 19;
+        return 23;
     }
 
     @Override
