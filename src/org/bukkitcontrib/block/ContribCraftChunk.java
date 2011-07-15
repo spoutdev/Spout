@@ -3,6 +3,7 @@ package org.bukkitcontrib.block;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +16,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.util.ConcurrentSoftMap;
 
 public class ContribCraftChunk extends CraftChunk implements ContribChunk {
     protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
@@ -25,20 +25,21 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
     }
     
     @SuppressWarnings("unchecked")
-    public ConcurrentSoftMap<Integer, Block> getCache() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public Map<Integer, Block> getCache() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Field cache = CraftChunk.class.getDeclaredField("cache");
         cache.setAccessible(true);
-        return (ConcurrentSoftMap<Integer, Block>) cache.get(this);
+        return (Map<Integer, Block>) cache.get(this);
     }
     
     @Override
     public Block getBlock(int x, int y, int z) {
         try {
             int pos = (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
-            Block block = getCache().get( pos );
+            Map<Integer, Block> cache = getCache();
+            Block block = cache.get( pos );
             if (block == null) {
                 Block newBlock = new ContribCraftBlock( this, (getX() << 4) | (x & 0xF), y & 0x7F, (getZ() << 4) | (z & 0xF) );
-                Block oldBlock = getCache().put( pos, newBlock );
+                Block oldBlock = cache.put( pos, newBlock );
                 if(oldBlock == null) {
                     block = newBlock;
                 } else {
