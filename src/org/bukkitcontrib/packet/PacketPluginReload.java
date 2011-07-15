@@ -37,7 +37,7 @@ public class PacketPluginReload implements BukkitContribPacket{
 
     @Override
     public int getNumBytes() {
-        return 9 + worldName.length();
+        return 12 + PacketUtil.getNumBytes(worldName);
     }
 
     @Override
