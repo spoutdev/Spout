@@ -12,7 +12,6 @@ public class ServerTickTask implements Runnable {
 
 	@Override
 	public void run() {
-		ServerTickEvent event = new ServerTickEvent();
 		BukkitContrib.playerListener.manager.onServerTick();
         Player[] online = Bukkit.getServer().getOnlinePlayers();
         for (Player player : online) {
@@ -28,6 +27,7 @@ public class ServerTickTask implements Runnable {
                 }
             }
         }
+        ServerTickEvent event = new ServerTickEvent();
         Bukkit.getServer().getPluginManager().callEvent(event);
 	}
 

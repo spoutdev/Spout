@@ -1,7 +1,6 @@
 package org.bukkitcontrib.inventory;
 
 import org.bukkit.block.Block;
-import org.bukkit.inventory.Inventory;
 
 public interface DoubleChestInventory extends ContribInventory{
     /**

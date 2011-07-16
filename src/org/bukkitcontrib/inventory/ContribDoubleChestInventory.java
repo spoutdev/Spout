@@ -3,7 +3,6 @@ package org.bukkitcontrib.inventory;
 import net.minecraft.server.IInventory;
 
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.inventory.CraftInventory;
 
 public class ContribDoubleChestInventory extends ContribCraftInventory implements DoubleChestInventory{
     protected Block left;
