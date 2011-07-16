@@ -4,10 +4,10 @@ import java.io.File;
 import net.minecraft.src.SoundManager;
 import net.minecraft.src.BukkitContrib;
 
-public class QueuedSound {
+public class QueuedSound implements Runnable{
 	File song;
 	int x,y, z, volume, distance;
-	boolean soundEffect;
+	boolean soundEffect, notify;
 	public QueuedSound(File song, int x, int y, int z, int volume, int distance, boolean soundEffect) {
 		this.song = song;
 		this.x = x;
@@ -18,8 +18,19 @@ public class QueuedSound {
 		this.soundEffect = soundEffect;
 	}
 	
-	public boolean play() {
+	public void setNotify(boolean notify) {
+		this.notify = notify;
+	}
+	
+	public void run() {
+		play();
+	}
+	
+	private boolean play() {
 		if (song.exists()) {
+			if (notify) {
+				BukkitContrib.createBukkitContribAlert("Download Complete!", song.getName(), 2256 /*Gold Record*/);
+			}
 			SoundManager sndManager = BukkitContrib.getGameInstance().sndManager;
 			if (!sndManager.hasSoundEffect(song.getName().toString(), 0) && soundEffect) {
 				sndManager.addCustomSoundEffect(song.getName().toString(), song);

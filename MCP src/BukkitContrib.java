@@ -17,6 +17,7 @@ import org.bukkit.*;
 import org.bukkitcontrib.packet.*;
 import org.bukkitcontrib.player.*;
 import org.bukkitcontrib.sound.*;
+import org.bukkitcontrib.io.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Iterator;
 
@@ -24,7 +25,7 @@ public class BukkitContrib {
 	private static int buildVersion = -1;
 	private static int minorVersion = -1;
 	private static int majorVersion = -1;
-	private static int clientBuildVersion = 3;
+	private static int clientBuildVersion = 4;
 	private static int clientMinorVersion = 1;
 	private static int clientMajorVersion = 0;
 	private static Minecraft game = null;
@@ -34,15 +35,13 @@ public class BukkitContrib {
 	private static ClipboardThread clipThread = null;
 	private static SimpleItemManager itemManager = new SimpleItemManager();
 	private static SimpleSkyManager skyManager = new SimpleSkyManager();
+	private static ChatManager chatManager = new ChatManager();
 	public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
 	public static boolean runOnce = false;
 	public static byte minView = -1;
 	public static InGameScreen mainScreen = new InGameScreen();
 	public static byte maxView = -1;
 	public static final DataMiningThread dataMining = new DataMiningThread();
-	public static volatile File updateTextureFile = null;
-	public static final ConcurrentLinkedQueue<QueuedSound> queuedAudio = new ConcurrentLinkedQueue<QueuedSound>();
-	public static boolean dirtyTextures = false;
 	
 	static {
 		dataMining.start();
@@ -64,13 +63,11 @@ public class BukkitContrib {
 		 }
 		EntityPlayer player = getGameInstance().thePlayer;
 		if (getVersion() > -1 && player instanceof EntityClientPlayerMP){
-			dirtyTextures = true;
 			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
 			clipThread.start();
 			itemManager = new SimpleItemManager();
 			skyManager = new SimpleSkyManager();
-			BukkitContribCache.deleteTempAudioCache();
-			BukkitContribCache.deleteTempTextureCache();
+			FileUtil.deleteTempDirectory();
 		}
 	}
 	
@@ -162,6 +159,10 @@ public class BukkitContrib {
 		return skyManager;
 	}
 	
+	public static ChatManager getChatManager() {
+		return chatManager;
+	}
+
 	public static Minecraft getGameInstance() {
 		 if (game == null) {
 				Field f = null;
@@ -237,16 +238,6 @@ public class BukkitContrib {
 		 return zanMinimap;
 	}
 	
-	public static String getFileName(String Url) {
-		 int slashIndex = Url.lastIndexOf('/');
-		 int dotIndex = Url.lastIndexOf('.', slashIndex);
-		 if (dotIndex == -1 || dotIndex < slashIndex) {
-				return Url.substring(slashIndex + 1).replaceAll("%20", " ");
-		 }
-		 return Url.substring(slashIndex + 1, dotIndex).replaceAll("%20", " ");
-	}
-	
-	
 	public static byte getNextRenderDistance(int current) {
 		 //default behavior
 		 if (BukkitContrib.minView == -1 && BukkitContrib.maxView == -1) return (byte)((current + 1) & 3);
@@ -259,28 +250,7 @@ public class BukkitContrib {
 		 return (byte)current;
 	}
 	
-	public static void setClipboardText(String text) {
-		clipThread.prevClipboardText = text;
-		StringSelection selection = new StringSelection(text);
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
-	}
-	
 	public static void onTick() {
-		if (updateTextureFile != null) {
-			TexturePackCustom pack = new TexturePackCustom(updateTextureFile);
-			BukkitContrib.getGameInstance().renderEngine.texturePack.setTexturePack(pack);
-			BukkitContrib.getGameInstance().renderEngine.refreshTextures();
-			//BukkitContrib.getGameInstance().renderGlobal.loadRenderers();
-			updateTextureFile = null;
-		}
-		
-		Iterator<QueuedSound> i = queuedAudio.iterator();
-		while(i.hasNext()) {
-			QueuedSound next = i.next();
-			i.remove();
-			next.play();
-		}
-		
-		CustomTextureManager.onTick();
+		FileDownloadThread.getInstance().onTick();
 	}
 }

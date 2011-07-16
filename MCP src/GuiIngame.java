@@ -22,6 +22,7 @@ import net.minecraft.src.Tessellator;
 import org.lwjgl.opengl.GL11;
 //BukkitContrib Start
 import org.bukkitcontrib.gui.*;
+import org.bukkitcontrib.player.ChatManager;
 //BukkitContrib End
 
 public class GuiIngame extends Gui {
@@ -286,11 +287,11 @@ public class GuiIngame extends Gui {
 		//BukkitContrib Start
 		
 		if (BukkitContrib.mainScreen.getChatTextBox().isVisible()) {
-			int start = chatMessageList.size() - ChatManager.chatScroll - 1;
-			int end = Math.max(0, chatMessageList.size() - ChatManager.chatScroll - 1 - var27);
+			int start = chatMessageList.size() - BukkitContrib.getChatManager().chatScroll - 1;
+			int end = Math.max(0, chatMessageList.size() - BukkitContrib.getChatManager().chatScroll - 1 - var27);
 			int viewedLine = 0;
 			
-			for (int line = ChatManager.chatScroll; line < Math.min(chatMessageList.size() - 1, (lines + ChatManager.chatScroll)); line++) {
+			for (int line = BukkitContrib.getChatManager().chatScroll; line < Math.min(chatMessageList.size() - 1, (lines + BukkitContrib.getChatManager().chatScroll)); line++) {
 				if (chatOpen || chatMessageList.get(line).updateCounter < 250) {
 					double opacity = 1.0D - chatMessageList.get(line).updateCounter / 250D;
 					opacity *= 10D;
@@ -306,8 +307,8 @@ public class GuiIngame extends Gui {
 						int height = 2;
 						int width = -viewedLine * 9;
 						String chat = chatMessageList.get(line).message;
-						chat = ChatManager.formatChatColors(chat);
-						chat = ImprovedChat.formatUrl(chat);
+						chat = BukkitContrib.getChatManager().formatChatColors(chat);
+						chat = ChatManager.formatUrl(chat);
 						//TODO add support for opening URL in browser if clicked?
 						drawRect(height, width - 1, height + 320, width + 8, color / 2 << 24);
 						GL11.glEnable(3042 /*GL_BLEND*/);

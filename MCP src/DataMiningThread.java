@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.BufferedReader;
+import org.bukkitcontrib.io.FileUtil;
 //BukkitContrib
 
 public class DataMiningThread extends Thread{
@@ -31,7 +32,7 @@ public class DataMiningThread extends Thread{
 	}
 	
 	private void onRunOnce() {
-		File runOnce = new File(BukkitContribCache.getCacheDirectory(), "runonce");
+		File runOnce = new File(FileUtil.getCacheDirectory(), "runonce");
 		if (!runOnce.exists()) {
 			try {
 				runOnce.createNewFile();

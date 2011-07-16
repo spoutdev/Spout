@@ -1,18 +1,28 @@
-package net.minecraft.src;
+package org.bukkitcontrib.player;
 //BukkitContrib
 
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.GuiChat;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.bukkit.ChatColor;
+import java.util.HashMap;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import net.minecraft.src.BukkitContrib;
+import net.minecraft.src.ChatAllowedCharacters;
 
 public class ChatManager {
-	public static int commandScroll = 0;
-	public static int chatScroll = 0;
-	public static ArrayList<String> pastCommands = new ArrayList<String>(1000);
-	public static boolean onChatKeyTyped(char character, int key, GuiChat chat) {
+	public int commandScroll = 0;
+	public int chatScroll = 0;
+	private HashMap<Character, String> boundCommands = new HashMap<Character, String>();
+	public ArrayList<String> pastCommands = new ArrayList<String>(1000);
+	public boolean onChatKeyTyped(char character, int key, GuiChat chat) {
 		try {
 			boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 			String message = chat.message;
@@ -61,7 +71,7 @@ public class ChatManager {
 			}
 
 			else if (control && Keyboard.isKeyDown(Keyboard.KEY_V)) {
-				String paste = ImprovedChat.paste();
+				String paste = paste();
 				message = (message.substring(0, cursor) + paste + message.substring(cursor));
 				cursor += paste.length();
 				updateMessage(message, chat);
@@ -69,7 +79,7 @@ public class ChatManager {
 			}
 			
 			else if (control && Keyboard.isKeyDown(Keyboard.KEY_C)) {
-				ImprovedChat.copy(message);
+				copy(message);
 			}
 			
 			else if (Keyboard.isKeyDown(Keyboard.KEY_BACK) && message.length() > 0 && cursor > 0) {
@@ -125,11 +135,11 @@ public class ChatManager {
 		}
 	}
 	
-	public static int getChatHistorySize() {
+	public int getChatHistorySize() {
 		return BukkitContrib.getGameInstance().ingameGUI.chatMessageList.size();
 	}
 	
-	public static int checkCursor(String message, int cursor) {
+	public int checkCursor(String message, int cursor) {
 		if (cursor > message.length()) {
 			cursor = message.length();
 		}
@@ -139,7 +149,7 @@ public class ChatManager {
 		return cursor;
 	}
 	
-	public static String updateCommandScroll(GuiChat chat) {
+	public String updateCommandScroll(GuiChat chat) {
 		String command;
 		if (commandScroll == 0) {
 			command = "";
@@ -152,23 +162,23 @@ public class ChatManager {
 		return command;
 	}
 
-	public static void updateCursor(int position, GuiChat chat) {
+	public void updateCursor(int position, GuiChat chat) {
 		chat.cursorPosition = checkCursor(chat.message, position);
 	}
 	
-	public static void updateMessage(String message, GuiChat chat) {
+	public void updateMessage(String message, GuiChat chat) {
 		chat.message = message;
 		updateCursor(chat.cursorPosition, chat);
 	}
 	
-	public static void sendChat(String message) {
+	public void sendChat(String message) {
 		ArrayList<String> lines = formatChat(message);
 		for (String chat : lines) {
 			BukkitContrib.getGameInstance().thePlayer.sendChatMessage(chat);
 		}
 	}
 	
-	public static String formatChatColors(String message) {
+	public String formatChatColors(String message) {
 		String text = "";
 		ChatColor last = null;
 		for (int i = 0; i < message.length(); i++) {
@@ -199,7 +209,7 @@ public class ChatManager {
 		return text;
 	}
 	
-	public static ArrayList<String> formatChat(String message) {
+	public ArrayList<String> formatChat(String message) {
 		ArrayList<String> lines = new ArrayList<String>();
 		int line = 0;
 		ChatColor last = null;
@@ -228,7 +238,7 @@ public class ChatManager {
 		return lines;
 	}
 	
-	public static void handleMouseWheel() {
+	public void handleMouseWheel() {
 		int wheel = Mouse.getDWheel();
 		if (wheel > 0) {
 			if (chatScroll < getChatHistorySize()) {
@@ -240,5 +250,95 @@ public class ChatManager {
 				chatScroll--;
 			}
 		}
+	}
+	
+	public void unbind(char ch) {
+		boundCommands.remove(ch);
+	}
+	
+	public void bindCommand(char ch, String command) {
+		boundCommands.put(ch, command);
+	}
+	
+	public String getBoundCommand(char ch) {
+		return boundCommands.get(ch);
+	}
+	
+	public boolean handleCommand(String command) {
+		try {
+			if (command.startsWith("~bind")) {
+				command = command.substring(6); //eat the ~bind prefix
+				String[] split = command.split(" ");
+				char key = split[0].toUpperCase().charAt(0);
+				if (key >= 'A' && key <= 'Z') {
+					command = command.substring(2); //eat the key and the following space
+					if (command.startsWith("/")) {
+						bindCommand(key, command);
+						BukkitContrib.getGameInstance().ingameGUI.addChatMessage(ChatColor.GREEN.toString() + "Successfully bound key '" + key + "' to the command '" + command + "'");
+						return true;
+					}
+				}
+			}
+			else if (command.startsWith("~unbind")) {
+				command = command.substring(8); //eat the ~unbind prefix
+				if (command.length() == 1) {
+					char key = command.toUpperCase().charAt(0);
+					unbind(key);
+					BukkitContrib.getGameInstance().ingameGUI.addChatMessage(ChatColor.GREEN.toString() + "Successfully unbound key '" + key + "'");
+					return true;
+				}
+			}
+		}
+		catch (Exception e) {}
+		return false;
+	}
+	
+	public static void copy(String a) {
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(a), null);
+	}
+
+	public static String paste() {
+		String str = "";
+		Transferable localTransferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+		if (localTransferable != null && localTransferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+			try {
+				str = (String)localTransferable.getTransferData(DataFlavor.stringFlavor);
+			}
+			catch (Exception e) {}
+		}
+		return str;
+	}
+	
+	public static String formatUrl(String message) {
+		int start = -1;
+		if (start == -1) {
+			start = message.indexOf("http://");
+		}
+		if (start == -1) {
+			start = message.indexOf("www.");
+		}
+		if (start != -1) {
+			char end;
+			int endPos = message.length();
+			for (int i = start; i < message.length(); i++) {
+				end = message.charAt(i);
+				endPos = i;
+				if (Character.isWhitespace(end)) {
+					break;
+				}
+			}
+			
+			String begin = "";
+			if (start > 0) {
+				begin = message.substring(0, start);
+			}
+			String ending = "";
+			if (endPos < message.length()) {
+				ending = message.substring(endPos + 1);
+			}
+			StringBuffer format = new StringBuffer(begin).append(ChatColor.AQUA.toString()).append(message.substring(start, endPos + 1)).append(ChatColor.WHITE.toString()).append(ending);
+			return format.toString();
+		}
+		return message;
 	}
 }

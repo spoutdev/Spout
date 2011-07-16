@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.bukkitcontrib.io.FileUtil;
 
 public class VersionFile {
 	private String version;
@@ -13,7 +14,7 @@ public class VersionFile {
 	}
 	
 	public boolean create() {
-		File vFile = new File(net.minecraft.src.BukkitContribCache.getCacheDirectory(), "version");
+		File vFile = new File(FileUtil.getCacheDirectory(), "version");
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(vFile));
 			out.write(this.version);

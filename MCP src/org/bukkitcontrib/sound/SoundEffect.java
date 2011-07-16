@@ -1,5 +1,4 @@
-package net.minecraft.src;
-//BukkitContrib
+package org.bukkitcontrib.sound;
 
 import java.util.HashMap;
 import java.util.Map;

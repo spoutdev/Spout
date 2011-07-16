@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import net.minecraft.src.*;
+import org.bukkitcontrib.player.ChatManager;
 
 public class PacketClipboardText implements BukkitContribPacket{
 	
@@ -35,7 +36,7 @@ public class PacketClipboardText implements BukkitContribPacket{
 
 	@Override
 	public void run(int playerId) {
-		BukkitContrib.setClipboardText(text);
+		ChatManager.copy(text);
 	}
 
 	@Override

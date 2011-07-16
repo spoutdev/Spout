@@ -18,6 +18,8 @@ import paulscode.sound.libraries.LibraryLWJGLOpenAL;
 import paulscode.sound.CommandObject;
 import paulscode.sound.FilenameURL;
 import org.bukkitcontrib.packet.*;
+import org.bukkitcontrib.sound.Music;
+import org.bukkitcontrib.sound.SoundEffect;
 //BukkitContrib End
 
 public class SoundManager {

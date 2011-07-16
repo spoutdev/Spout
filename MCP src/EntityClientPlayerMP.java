@@ -36,6 +36,9 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 	private boolean field_9382_bF = false;
 	private boolean wasSneaking = false;
 	private int field_12242_bI = 0;
+	//BukkitContrib Start
+	private KeyBinding fogKey = null;
+	//BukkitContrib End
 
 
 	public EntityClientPlayerMP(Minecraft var1, World var2, Session var3, NetClientHandler var4) {
@@ -54,6 +57,12 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 			super.onUpdate();
 			this.func_4056_N();
 		}
+		//BukkitContrib Start
+		if (fogKey != null) {
+			BukkitContrib.getGameInstance().gameSettings.keyBindToggleFog = fogKey;
+			fogKey = null;
+		}
+		//BukkitContrib End
 	}
 
 	public void func_4056_N() {
@@ -188,22 +197,20 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 			String keyName = org.lwjgl.input.Keyboard.getKeyName(i);
 			if (keyName != null && keyName.length() == 1) {
 				char ch = keyName.charAt(0);
-				if (ImprovedChat.getBoundCommand(ch) != null) {
-					ChatManager.sendChat(ImprovedChat.getBoundCommand(ch));
+				if (BukkitContrib.getChatManager().getBoundCommand(ch) != null) {
+					BukkitContrib.getChatManager().sendChat(BukkitContrib.getChatManager().getBoundCommand(ch));
 				}
 			}
 		}
 		  if (BukkitContrib.isEnabled()) {
 				sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, keyReleased, (MovementInputFromOptions)movementInput)));
-				Minecraft game = BukkitContrib.getGameInstance();
-				if (game != null && BukkitContrib.getVersion() > 5 && keyReleased) {
-					 final GameSettings settings = game.gameSettings;
+				if (BukkitContrib.getVersion() > 5 && keyReleased) {
+					final GameSettings settings = BukkitContrib.getGameInstance().gameSettings;
 					 if (i == settings.keyBindToggleFog.keyCode) {
 						  byte view = (byte)settings.renderDistance;
 						  byte newView = BukkitContrib.getNextRenderDistance(view);
-						  final KeyBinding old = settings.keyBindToggleFog;
+						fogKey = settings.keyBindToggleFog;
 						  settings.keyBindToggleFog = new KeyBinding("key.fog", -1);
-						  (new BukkitContribResetKeyThread(settings, old)).start();
 						  if (view != newView) {
 								settings.renderDistance = newView;
 								sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)newView)));

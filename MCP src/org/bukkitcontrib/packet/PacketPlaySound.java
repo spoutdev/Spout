@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import net.minecraft.src.*;
+import org.bukkitcontrib.sound.Music;
+import org.bukkitcontrib.sound.SoundEffect;
 
 public class PacketPlaySound implements BukkitContribPacket{
 	 short soundId;

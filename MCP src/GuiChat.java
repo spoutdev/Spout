@@ -5,15 +5,15 @@ import net.minecraft.src.GuiScreen;
 import org.lwjgl.input.Keyboard;
 
 public class GuiChat extends GuiScreen {
-
-	protected String message = "";
-	private int updateCounter = 0;
-	private static final String allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 	//BukkitContrib Improved Chat Start
+	public String message = "";
+	public int updateCounter = 0;
+	public static final String allowedCharacters = ChatAllowedCharacters.allowedCharacters;
+
 	public int cursorPosition = 0;
 	public GuiChat() {
-		ChatManager.chatScroll = 0;
-		ChatManager.commandScroll = 0;
+		BukkitContrib.getChatManager().chatScroll = 0;
+		BukkitContrib.getChatManager().commandScroll = 0;
 	}
 	//BukkitContrib Improved Chat End
 
@@ -31,7 +31,7 @@ public class GuiChat extends GuiScreen {
 
 	protected void keyTyped(char var1, int var2) {
 		//BukkitContrib Improved ChatStart
-		if (ChatManager.onChatKeyTyped(var1, var2, this)) {
+		if (BukkitContrib.getChatManager().onChatKeyTyped(var1, var2, this)) {
 			return;
 		}
 		//BukkitContrib Improved Chat End
@@ -43,13 +43,13 @@ public class GuiChat extends GuiScreen {
 				String var4 = this.message.trim();
 				//BukkitContrib Improved Chat Start
 				if (var4.startsWith("/")) {
-					ChatManager.pastCommands.add(var4);
+					BukkitContrib.getChatManager().pastCommands.add(var4);
 				}
 				//BukkitContrib Improved Chat End
 				//if(!this.mc.lineIsCommand(var4)) {
-				if (!ImprovedChat.handleCommand(var4)) {
+				if (!BukkitContrib.getChatManager().handleCommand(var4)) {
 					//BukkitContrib Improved Chat  Start
-					ChatManager.sendChat(var4);
+					BukkitContrib.getChatManager().sendChat(var4);
 					//BukkitContrib Improved Chat End
 					//this.mc.thePlayer.sendChatMessage(var4);
 					
@@ -71,7 +71,7 @@ public class GuiChat extends GuiScreen {
 
 	public void drawScreen(int i, int j, float f) {
 		//BukkitContrib Improved Chat Start
-		ChatManager.handleMouseWheel();
+		BukkitContrib.getChatManager().handleMouseWheel();
 		boolean blink = ((updateCounter / 6) % 2 != 0);
 		String text = message;
 		if (cursorPosition > 0 && cursorPosition < message.length()) {
@@ -85,7 +85,7 @@ public class GuiChat extends GuiScreen {
 		else if (cursorPosition == message.length() && blink) {
 			text += "_";
 		}
-		java.util.ArrayList<String> lines = ChatManager.formatChat(text);
+		java.util.ArrayList<String> lines = BukkitContrib.getChatManager().formatChat(text);
 		drawRect(2, height - 2 - (lines.size() * 12), width - 2, height - 2, 0x80000000);
 		int size = lines.size();
 		for (int k = 0; k < lines.size(); k++) {
