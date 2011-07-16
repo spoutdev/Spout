@@ -14,7 +14,7 @@ public class ChatManager {
 	public static ArrayList<String> pastCommands = new ArrayList<String>(1000);
 	public static boolean onChatKeyTyped(char character, int key, GuiChat chat) {
 		try {
-			boolean ctrlPressed = (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) || (Keyboard.isKeyDown(Keyboard.KEY_RCONTROL));
+			boolean control = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 			String message = chat.message;
 			int cursor = chat.cursorPosition;
 			if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) && cursor > 0) {
@@ -60,7 +60,7 @@ public class ChatManager {
 				updateMessage(message, chat);
 			}
 
-			else if (ctrlPressed && Keyboard.isKeyDown(Keyboard.KEY_V)) {
+			else if (control && Keyboard.isKeyDown(Keyboard.KEY_V)) {
 				String paste = ImprovedChat.paste();
 				message = (message.substring(0, cursor) + paste + message.substring(cursor));
 				cursor += paste.length();
@@ -68,7 +68,7 @@ public class ChatManager {
 				updateCursor(cursor, chat);
 			}
 			
-			else if (ctrlPressed && Keyboard.isKeyDown(Keyboard.KEY_C)) {
+			else if (control && Keyboard.isKeyDown(Keyboard.KEY_C)) {
 				ImprovedChat.copy(message);
 			}
 			

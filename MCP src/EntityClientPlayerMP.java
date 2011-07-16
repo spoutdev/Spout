@@ -182,11 +182,21 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 		}
 	}
 	 //BukkitContrib Start
-	 public void handleKeyPress(int i, boolean flag) {
+	public void handleKeyPress(int i, boolean keyReleased) {
+		//key bindings
+		if (keyReleased) {
+			String keyName = org.lwjgl.input.Keyboard.getKeyName(i);
+			if (keyName != null && keyName.length() == 1) {
+				char ch = keyName.charAt(0);
+				if (ImprovedChat.getBoundCommand(ch) != null) {
+					ChatManager.sendChat(ImprovedChat.getBoundCommand(ch));
+				}
+			}
+		}
 		  if (BukkitContrib.isEnabled()) {
-				sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, flag, (MovementInputFromOptions)movementInput)));
+				sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, keyReleased, (MovementInputFromOptions)movementInput)));
 				Minecraft game = BukkitContrib.getGameInstance();
-				if (game != null && BukkitContrib.getVersion() > 5 && flag) {
+				if (game != null && BukkitContrib.getVersion() > 5 && keyReleased) {
 					 final GameSettings settings = game.gameSettings;
 					 if (i == settings.keyBindToggleFog.keyCode) {
 						  byte view = (byte)settings.renderDistance;
@@ -202,7 +212,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 				}
 		  }
 		  
-		  super.handleKeyPress(i, flag);
+		super.handleKeyPress(i, keyReleased);
 	 }
 	//BukkitContrib End
 	

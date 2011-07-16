@@ -169,10 +169,10 @@ public class RenderLiving extends Render {
 	protected void preRenderCallback(EntityLiving var1, float var2) {}
 
 	protected void passSpecialRender(EntityLiving var1, double var2, double var4, double var6) {
-		if(Minecraft.isDebugInfoEnabled()) {
+		//BukkitContrib Start
+		if(Minecraft.isDebugInfoEnabled() && !BukkitContrib.getGameInstance().isMultiplayerWorld()) {
 			this.renderLivingLabel(var1, Integer.toString(var1.entityId), var2, var4, var6, 64);
 		}
-		 //BukkitContrib Start
 		else {
 			String title = BukkitContrib.entityLabel.get(var1.entityId);
 			if (title != null && !title.equals("[hide]")) {

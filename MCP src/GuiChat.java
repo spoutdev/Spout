@@ -46,7 +46,8 @@ public class GuiChat extends GuiScreen {
 					ChatManager.pastCommands.add(var4);
 				}
 				//BukkitContrib Improved Chat End
-				if(!this.mc.lineIsCommand(var4)) {
+				//if(!this.mc.lineIsCommand(var4)) {
+				if (!ImprovedChat.handleCommand(var4)) {
 					//BukkitContrib Improved Chat  Start
 					ChatManager.sendChat(var4);
 					//BukkitContrib Improved Chat End

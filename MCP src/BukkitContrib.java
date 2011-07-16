@@ -59,6 +59,7 @@ public class BukkitContrib {
 		 System.out.println("Set BukkitContrib v. " + getVersionString());
 		 if (!runOnce) {
 				CustomPacket.addClassMapping();
+				(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
 				runOnce = true;
 		 }
 		EntityPlayer player = getGameInstance().thePlayer;

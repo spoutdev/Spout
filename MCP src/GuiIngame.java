@@ -229,10 +229,15 @@ public class GuiIngame extends Gui {
 			this.drawString(var8, var23, var6 - var8.getStringWidth(var23) - 2, 2, 14737632);
 			var23 = "Allocated memory: " + var30 * 100L / var25 + "% (" + var30 / 1024L / 1024L + "MB)";
 			this.drawString(var8, var23, var6 - var8.getStringWidth(var23) - 2, 12, 14737632);
+			//BukkitContrib Start
+			//No Cheating!
+			if (!mc.isMultiplayerWorld()) {
 			this.drawString(var8, "x: " + this.mc.thePlayer.posX, 2, 64, 14737632);
 			this.drawString(var8, "y: " + this.mc.thePlayer.posY, 2, 72, 14737632);
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
 			this.drawString(var8, "f: " + (MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
+			}
+			//BukkitContrib End
 			GL11.glPopMatrix();
 		}
 
@@ -268,6 +273,8 @@ public class GuiIngame extends Gui {
 				var28 = true;
 			}
 		}
+		boolean chatOpen = var28;
+		int lines = chatOpen ? BukkitContrib.mainScreen.getChatTextBox().getNumVisibleChatLines() : BukkitContrib.mainScreen.getChatTextBox().getNumVisibleLines();
 		//BukkitContrib End
 
 		GL11.glEnable(3042 /*GL_BLEND*/);
@@ -277,12 +284,12 @@ public class GuiIngame extends Gui {
 		GL11.glTranslatef(0.0F, (float)(var7 - 48), 0.0F);
 
 		//BukkitContrib Start
-		boolean chatOpen = var28;
+		
 		if (BukkitContrib.mainScreen.getChatTextBox().isVisible()) {
 			int start = chatMessageList.size() - ChatManager.chatScroll - 1;
 			int end = Math.max(0, chatMessageList.size() - ChatManager.chatScroll - 1 - var27);
 			int viewedLine = 0;
-			int lines = chatOpen ? BukkitContrib.mainScreen.getChatTextBox().getNumVisibleChatLines() : BukkitContrib.mainScreen.getChatTextBox().getNumVisibleLines();
+			
 			for (int line = ChatManager.chatScroll; line < Math.min(chatMessageList.size() - 1, (lines + ChatManager.chatScroll)); line++) {
 				if (chatOpen || chatMessageList.get(line).updateCounter < 250) {
 					double opacity = 1.0D - chatMessageList.get(line).updateCounter / 250D;
@@ -300,6 +307,8 @@ public class GuiIngame extends Gui {
 						int width = -viewedLine * 9;
 						String chat = chatMessageList.get(line).message;
 						chat = ChatManager.formatChatColors(chat);
+						chat = ImprovedChat.formatUrl(chat);
+						//TODO add support for opening URL in browser if clicked?
 						drawRect(height, width - 1, height + 320, width + 8, color / 2 << 24);
 						GL11.glEnable(3042 /*GL_BLEND*/);
 						var8.drawStringWithShadow(chat, height, width, 0xffffff + (color << 24));
