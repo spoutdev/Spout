@@ -34,6 +34,9 @@ public class ContribPlayerListener extends PlayerListener{
 		if (event.isCancelled()) {
 			return;
 		}
+		if (event.getFrom() == null || event.getTo() == null || event.getFrom().getWorld() == null || event.getTo().getWorld()== null) {
+			return;
+		}
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
 			Runnable update = new Runnable() {
 				public void run() {

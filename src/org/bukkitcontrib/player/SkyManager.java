@@ -97,7 +97,7 @@ public interface SkyManager {
 	
 	/**
 	 * Sets the texture of the sun to the picture in the given format, or if the url is null, resets the sun to the default texture
-	 * The texture must be a 32x32 png to render correctly
+	 * The texture must be a square png to render correctly (e.g 32x32, 64x64, etc)
 	 * @param player to set the custom texture of
 	 * @param Url of the texture
 	 */
@@ -142,7 +142,7 @@ public interface SkyManager {
 	
 	/**
 	 * Sets the texture of the moon to the picture in the given format, or if the url is null, resets the moon to the default texture
-	 * The texture must be a 256x256 png to render correctly
+	 * The texture must be a square png to render correctly (e.g 32x32, 64x64, etc)
 	 * @param player to set the custom texture of
 	 * @param Url of the texture
 	 */
