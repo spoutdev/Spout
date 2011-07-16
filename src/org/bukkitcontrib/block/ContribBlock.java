@@ -2,6 +2,7 @@ package org.bukkitcontrib.block;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 public interface ContribBlock extends Block{
     
@@ -33,5 +34,20 @@ public interface ContribBlock extends Block{
      * @param data to set the block to
      */
     public void setTypeIdAndDataAsync(int type, byte data);
+    
+    @Override
+    public ContribBlock getFace(BlockFace face);
+    
+    @Override
+    public ContribBlock getFace(BlockFace face, int distance);
+    
+    @Override
+    public ContribBlock getRelative(int modX, int modY, int modZ);
+    
+    @Override
+    public ContribBlock getRelative(BlockFace face);
+    
+    @Override
+    public ContribChunk getChunk();
 
 }
