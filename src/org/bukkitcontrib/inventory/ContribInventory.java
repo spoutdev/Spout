@@ -6,10 +6,10 @@ import net.minecraft.server.IInventory;
 
 public interface ContribInventory extends Inventory{
 
-    /**
-     * Get's the IInventory wrapped by this Bukkit Inventory
-     * @return handle
-     */
-    public IInventory getHandle();
+	/**
+	 * Get's the IInventory wrapped by this Bukkit Inventory
+	 * @return handle
+	 */
+	public IInventory getHandle();
 
 }

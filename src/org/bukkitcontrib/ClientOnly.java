@@ -13,9 +13,9 @@ import java.lang.annotation.RetentionPolicy;
 @Target(value=ElementType.METHOD)
 @Retention(value=RetentionPolicy.RUNTIME)
 public @interface ClientOnly {
-    
-    public String author() default "Afforess";
-    public String version() default "1.0";
-    public String shortDescription() default "Indicates that the function requires the use of the BukkitContrib SinglePlayer client mod to have any effect";
+	
+	public String author() default "Afforess";
+	public String version() default "1.0";
+	public String shortDescription() default "Indicates that the function requires the use of the BukkitContrib SinglePlayer client mod to have any effect";
 
 }
