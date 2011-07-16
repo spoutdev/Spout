@@ -14,7 +14,7 @@ public class GuiChat extends GuiScreen {
 	public GuiChat() {
 		ChatManager.chatScroll = 0;
 		ChatManager.commandScroll = 0;
-    }
+	}
 	//BukkitContrib Improved Chat End
 
 	public void initGui() {
@@ -50,7 +50,7 @@ public class GuiChat extends GuiScreen {
 					//BukkitContrib Improved Chat  Start
 					ChatManager.sendChat(var4);
 					//BukkitContrib Improved Chat End
-                    //this.mc.thePlayer.sendChatMessage(var4);
+					//this.mc.thePlayer.sendChatMessage(var4);
 					
 				}
 			}

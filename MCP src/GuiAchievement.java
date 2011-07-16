@@ -51,14 +51,14 @@ public class GuiAchievement extends Gui {
 	
 	//BukkiContrib Start
 	public void queueNotification(String title, String message, int toRender) {
-        field_25085_d = title;
-        field_25084_e = message;
-        field_25083_f = System.currentTimeMillis();
-        theAchievement = null;
-        field_27103_i = false;
-        customNotification = true;
-        this.itemId = toRender;
-    }
+		field_25085_d = title;
+		field_25084_e = message;
+		field_25083_f = System.currentTimeMillis();
+		theAchievement = null;
+		field_27103_i = false;
+		customNotification = true;
+		this.itemId = toRender;
+	}
 	//BukkitContrib End
 
 	private void updateAchievementWindowScale() {

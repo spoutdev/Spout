@@ -174,7 +174,7 @@ public class RenderGlobal implements IWorldAccess {
 		var2.startDrawingQuads();
 
 		//BukkitContrib Start
-        for(int i = 0; i < BukkitContrib.getSkyManager().getStarFrequency(); i++) {
+		for(int i = 0; i < BukkitContrib.getSkyManager().getStarFrequency(); i++) {
 		//BukkitContrib End
 			double var4 = (double)(var1.nextFloat() * 2.0F - 1.0F);
 			double var6 = (double)(var1.nextFloat() * 2.0F - 1.0F);
@@ -440,9 +440,9 @@ public class RenderGlobal implements IWorldAccess {
 		//Performance Change
 		//Do not reload if we already can see farther than the new distance
 		if(mc.gameSettings.renderDistance < renderDistance)
-        {
-            loadRenderers();
-        }
+		{
+			loadRenderers();
+		}
 		//Do not bother with this if we are resetting the renderers, loadRenderers clears the list anyway
 		else {
 			for(int var5 = 0; var5 < 10; ++var5) {
@@ -879,7 +879,7 @@ public class RenderGlobal implements IWorldAccess {
 		double var6 = (this.mc.renderViewEntity.prevPosX + (this.mc.renderViewEntity.posX - this.mc.renderViewEntity.prevPosX) * (double)var1 + (double)(((float)this.cloudOffsetX + var1) * 0.03F)) / (double)var4;
 		double var8 = (this.mc.renderViewEntity.prevPosZ + (this.mc.renderViewEntity.posZ - this.mc.renderViewEntity.prevPosZ) * (double)var1) / (double)var4 + 0.33000001311302185D;
 		//BukkitContrib Start
-        //float var10 = this.worldObj.worldProvider.getCloudHeight() - var2 + 0.33F;
+		//float var10 = this.worldObj.worldProvider.getCloudHeight() - var2 + 0.33F;
 		float var10 = BukkitContrib.getSkyManager().getCloudHeight() - var2 + 0.33F;
 		//BukkitContrib End
 		int var11 = MathHelper.floor_double(var6 / 2048.0D);

@@ -29,9 +29,9 @@ public class TextureDownloadThread extends Thread {
 		File download = new File(tempDir, name);
 		try {
 			URL texture = new URL(url);
-	        ReadableByteChannel rbc = Channels.newChannel(texture.openStream());
-	        FileOutputStream fos = new FileOutputStream(download);
-	        fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+			ReadableByteChannel rbc = Channels.newChannel(texture.openStream());
+			FileOutputStream fos = new FileOutputStream(download);
+			fos.getChannel().transferFrom(rbc, 0, 1 << 24);
 			System.out.println("Downloading: " + name);
 			fos.close();
 			FileUtils.moveFile(download, new File(directory, download.getName()));

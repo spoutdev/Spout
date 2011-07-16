@@ -199,83 +199,83 @@ public class SoundManager {
 		}
 	}	
 	//BukkitContrib start
-    public void playSound(String s, float f, float f1, float f2, float f3, float f4) {
-        playSound(s, f, f1, f2, f3, f4, -1, 1.0F);
-    }
-    
-    public void playSound(String s, float f, float f1, float f2, float f3, float f4, int soundId, float volume)
-    {
-        if(!loaded || options.soundVolume == 0.0F)
-        {
-            return;
-        }
-        SoundPoolEntry soundpoolentry = soundPoolSounds.getRandomSoundFromSoundPool(s);
-        if(soundpoolentry != null && f3 > 0.0F)
-        {
-            field_587_e = (field_587_e + 1) % 256;
-            String s1;
-            if (soundId == -1) s1 = (new StringBuilder()).append("sound_").append(field_587_e).toString();
-            else s1 = (new StringBuilder()).append("sound_").append(soundId).toString();
-            float f5 = 16F;
-            if(f3 > 1.0F)
-            {
-                f5 *= f3;
-            }
-            sndSystem.newSource(f3 > 1.0F, s1, soundpoolentry.soundUrl, soundpoolentry.soundName, false, f, f1, f2, 2, f5);
-            sndSystem.setPitch(s1, f4);
-            if(f3 > 1.0F)
-            {
-                f3 = 1.0F;
-            }
-            f3 *= volume;
-            sndSystem.setVolume(s1, f3 * options.soundVolume);
-            sndSystem.play(s1);
-        }
-    }
+	public void playSound(String s, float f, float f1, float f2, float f3, float f4) {
+		playSound(s, f, f1, f2, f3, f4, -1, 1.0F);
+	}
+	
+	public void playSound(String s, float f, float f1, float f2, float f3, float f4, int soundId, float volume)
+	{
+		if(!loaded || options.soundVolume == 0.0F)
+		{
+			return;
+		}
+		SoundPoolEntry soundpoolentry = soundPoolSounds.getRandomSoundFromSoundPool(s);
+		if(soundpoolentry != null && f3 > 0.0F)
+		{
+			field_587_e = (field_587_e + 1) % 256;
+			String s1;
+			if (soundId == -1) s1 = (new StringBuilder()).append("sound_").append(field_587_e).toString();
+			else s1 = (new StringBuilder()).append("sound_").append(soundId).toString();
+			float f5 = 16F;
+			if(f3 > 1.0F)
+			{
+				f5 *= f3;
+			}
+			sndSystem.newSource(f3 > 1.0F, s1, soundpoolentry.soundUrl, soundpoolentry.soundName, false, f, f1, f2, 2, f5);
+			sndSystem.setPitch(s1, f4);
+			if(f3 > 1.0F)
+			{
+				f3 = 1.0F;
+			}
+			f3 *= volume;
+			sndSystem.setVolume(s1, f3 * options.soundVolume);
+			sndSystem.play(s1);
+		}
+	}
 
-    public void playSoundFX(String s, float f, float f1) {
-        playSoundFX(s, f, f1, -1, 1.0F);
-    }
+	public void playSoundFX(String s, float f, float f1) {
+		playSoundFX(s, f, f1, -1, 1.0F);
+	}
 
-    public void playSoundFX(String s, float f, float f1, int soundId, float volume)
-    {
-        if(!loaded || options.soundVolume == 0.0F)
-        {
-            return;
-        }
-        SoundPoolEntry soundpoolentry = soundPoolSounds.getRandomSoundFromSoundPool(s);
-        if(soundpoolentry != null)
-        {
-            field_587_e = (field_587_e + 1) % 256;
-            String s1;
-            if (soundId == -1) s1 = (new StringBuilder()).append("sound_").append(field_587_e).toString();
-            else s1 = (new StringBuilder()).append("sound_").append(soundId).toString();
-            sndSystem.newSource(false, s1, soundpoolentry.soundUrl, soundpoolentry.soundName, false, 0.0F, 0.0F, 0.0F, 0, 0.0F);
-            if(f > 1.0F)
-            {
-                f = 1.0F;
-            }
-            f *= 0.25F;
-            f *= volume;
-            sndSystem.setPitch(s1, f1);
-            sndSystem.setVolume(s1, f * options.soundVolume);
-            sndSystem.play(s1);
-        }
-    }
-    
-    public void playMusic(String music, int id, float volume) {
-        playMusic(music, id, 0, 0, 0, volume, 0F);
-    }
-    
-    public void playMusic(String music, int id, int x, int y, int z, float volume, float distance) {
-        if(!loaded || options.musicVolume == 0.0F)
-        {
-            return;
-        }
-        stopMusic();
-        SoundPoolEntry soundpoolentry = soundPoolMusic.getSoundFromSoundPool(music, id);
-        if(soundpoolentry != null) {
-            ticksBeforeMusic = rand.nextInt(12000) + 12000;
+	public void playSoundFX(String s, float f, float f1, int soundId, float volume)
+	{
+		if(!loaded || options.soundVolume == 0.0F)
+		{
+			return;
+		}
+		SoundPoolEntry soundpoolentry = soundPoolSounds.getRandomSoundFromSoundPool(s);
+		if(soundpoolentry != null)
+		{
+			field_587_e = (field_587_e + 1) % 256;
+			String s1;
+			if (soundId == -1) s1 = (new StringBuilder()).append("sound_").append(field_587_e).toString();
+			else s1 = (new StringBuilder()).append("sound_").append(soundId).toString();
+			sndSystem.newSource(false, s1, soundpoolentry.soundUrl, soundpoolentry.soundName, false, 0.0F, 0.0F, 0.0F, 0, 0.0F);
+			if(f > 1.0F)
+			{
+				f = 1.0F;
+			}
+			f *= 0.25F;
+			f *= volume;
+			sndSystem.setPitch(s1, f1);
+			sndSystem.setVolume(s1, f * options.soundVolume);
+			sndSystem.play(s1);
+		}
+	}
+	
+	public void playMusic(String music, int id, float volume) {
+		playMusic(music, id, 0, 0, 0, volume, 0F);
+	}
+	
+	public void playMusic(String music, int id, int x, int y, int z, float volume, float distance) {
+		if(!loaded || options.musicVolume == 0.0F)
+		{
+			return;
+		}
+		stopMusic();
+		SoundPoolEntry soundpoolentry = soundPoolMusic.getSoundFromSoundPool(music, id);
+		if(soundpoolentry != null) {
+			ticksBeforeMusic = rand.nextInt(12000) + 12000;
 			if (distance > 0F) {
 				sndSystem.removeSource("BgMusic");
 				sndSystem.newStreamingSource(false, "BgMusic", soundpoolentry.soundUrl, soundpoolentry.soundName, false, x, y, z, 2, distance);
@@ -283,10 +283,10 @@ public class SoundManager {
 			else {
 				sndSystem.backgroundMusic("BgMusic", soundpoolentry.soundUrl, soundpoolentry.soundName, false);
 			}
-            sndSystem.setVolume("BgMusic", options.musicVolume * volume);
-            sndSystem.play("BgMusic");
-        }
-    }
+			sndSystem.setVolume("BgMusic", options.musicVolume * volume);
+			sndSystem.play("BgMusic");
+		}
+	}
 	
 	public void playCustomSoundEffect(String effect, float volume) {
 		playCustomSoundEffect(effect, 0, 0, 0, volume, 0F);
@@ -294,20 +294,20 @@ public class SoundManager {
 	
 	public void playCustomSoundEffect(String music, int x, int y, int z, float volume, float distance) {
 		if(!loaded || options.soundVolume == 0.0F)
-        {
-            return;
-        }
+		{
+			return;
+		}
 		SoundPoolEntry soundpoolentry = soundPoolSounds.getRandomSoundFromSoundPool(music);
 		if (soundpoolentry != null) {
-            String source;
+			String source;
 			if (distance > 0F) {
 				source = sndSystem.quickStream(false, soundpoolentry.soundUrl, soundpoolentry.soundName, false, x, y, z, 2, distance);
 			}
 			else {
 				source = sndSystem.quickStream(false, soundpoolentry.soundUrl, soundpoolentry.soundName, false, 0.0F, 0.0F, 0.0F, 0, 0.0F);
 			}
-            sndSystem.setVolume(source, volume * options.soundVolume);
-            sndSystem.play(source);
+			sndSystem.setVolume(source, volume * options.soundVolume);
+			sndSystem.play(source);
 		}
 	}
 	
@@ -315,38 +315,38 @@ public class SoundManager {
 		sndSystem.loadSound(music);
 	}
 	
-    public boolean hasMusic(String sound, int id) {
-        return soundPoolMusic.getSoundFromSoundPool(sound, id) != null;
-    }
+	public boolean hasMusic(String sound, int id) {
+		return soundPoolMusic.getSoundFromSoundPool(sound, id) != null;
+	}
 	
 	public boolean hasSoundEffect(String sound, int id) {
-        return soundPoolSounds.getSoundFromSoundPool(sound, id) != null;
-    }
-    
-    public void addCustomSoundEffect(String sound, File song) {
-        soundPoolSounds.addCustomSound(sound, song);
-    }
+		return soundPoolSounds.getSoundFromSoundPool(sound, id) != null;
+	}
+	
+	public void addCustomSoundEffect(String sound, File song) {
+		soundPoolSounds.addCustomSound(sound, song);
+	}
 	
 	 public void addCustomMusic(String sound, File song) {
-        soundPoolMusic.addCustomSound(sound, song);
-    }
+		soundPoolMusic.addCustomSound(sound, song);
+	}
 	
 	public void stopMusic() {
 		if(sndSystem.playing("BgMusic")) {
-            sndSystem.stop("BgMusic");
-        }
-        if(sndSystem.playing("streaming")){
-            sndSystem.stop("streaming");
-        }
+			sndSystem.stop("BgMusic");
+		}
+		if(sndSystem.playing("streaming")){
+			sndSystem.stop("streaming");
+		}
 	}
 	
 	public void fadeOut(int time){
 		if(sndSystem.playing("BgMusic")) {
-            sndSystem.fadeOut("BgMusic", null, time);
-        }
-        if(sndSystem.playing("streaming")){
-            sndSystem.fadeOut("streaming", null, time);
-        }
+			sndSystem.fadeOut("BgMusic", null, time);
+		}
+		if(sndSystem.playing("streaming")){
+			sndSystem.fadeOut("streaming", null, time);
+		}
 	}
 	
 	public void resetTime() {
@@ -356,5 +356,5 @@ public class SoundManager {
 	public SoundPoolEntry waitingSound = null;
 	public boolean allowed = false;
 	public boolean cancelled = false;
-    //BukkitContrib end
+	//BukkitContrib end
 }

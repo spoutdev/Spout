@@ -17,7 +17,7 @@ public class PacketClipboardText implements BukkitContribPacket{
 	protected String text;
 	@Override
 	public int getNumBytes() {
-        return PacketUtil.getNumBytes(text);
+		return PacketUtil.getNumBytes(text);
 	}
 
 	@Override

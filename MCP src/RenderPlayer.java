@@ -78,11 +78,11 @@ public class RenderPlayer extends RenderLiving {
 			if(var10 < var11) {
 				String var12 = var1.username;
 				//BukkitContrib Start
-                String title = BukkitContrib.entityLabel.get(var1.entityId);
-                if (title != null) {
-                    var12 = title;
-                }
-                if (!var12.equals("[hide]")) {
+				String title = BukkitContrib.entityLabel.get(var1.entityId);
+				if (title != null) {
+					var12 = title;
+				}
+				if (!var12.equals("[hide]")) {
 					String lines[] = var12.split("\\n");
 					double y = var4;
 					for (int line = 0; line < lines.length; line++) {

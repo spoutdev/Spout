@@ -53,17 +53,17 @@ public class GenericTexture extends GenericWidget implements Texture {
 		GL11.glTranslatef(0, 0, 0);
 		GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
 		GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, BukkitContrib.getGameInstance().renderEngine.getTexture(path));
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
+		Tessellator tessellator = Tessellator.instance;
+		tessellator.startDrawingQuads();
 		int i = 150;//getUpperRightX();
 		int j = 150;//getUpperRightY();
 		//double rotation = -1 * 
-        tessellator.addVertexWithUV(0.0D, j, 0D, 0.0D, 0.0D);
-        tessellator.addVertexWithUV(i, j, 0D, -0.5D, 0.0D);
-        tessellator.addVertexWithUV(i, 0.0D, 0D, -0.5D, -0.5D);
-        tessellator.addVertexWithUV(0.0D, 0.0D, 0D, 0.0D, -0.5D);
-        tessellator.draw();
-        GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
+		tessellator.addVertexWithUV(0.0D, j, 0D, 0.0D, 0.0D);
+		tessellator.addVertexWithUV(i, j, 0D, -0.5D, 0.0D);
+		tessellator.addVertexWithUV(i, 0.0D, 0D, -0.5D, -0.5D);
+		tessellator.addVertexWithUV(0.0D, 0.0D, 0D, 0.0D, -0.5D);
+		tessellator.draw();
+		GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
 		GL11.glPopMatrix();
 	}
 	

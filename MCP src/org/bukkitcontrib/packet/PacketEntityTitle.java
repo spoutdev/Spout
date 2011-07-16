@@ -18,7 +18,7 @@ public class PacketEntityTitle implements BukkitContribPacket{
 	 }
 	 @Override
 	 public int getNumBytes() {
-        return 4 + PacketUtil.getNumBytes(title);
+		return 4 + PacketUtil.getNumBytes(title);
 	 }
 
 	 @Override

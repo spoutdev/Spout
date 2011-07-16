@@ -151,8 +151,8 @@ public class GuiIngame extends Gui {
 
 			if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
 				//BukkitContrib Start
-                var16 = (int)Math.ceil(((double)(mc.thePlayer.air - 2) * 10D) / (mc.thePlayer.maxAir * 1D));
-                var17 = (int)Math.ceil(((double)mc.thePlayer.air * 10D) / (mc.thePlayer.maxAir * 1D)) - var16;
+				var16 = (int)Math.ceil(((double)(mc.thePlayer.air - 2) * 10D) / (mc.thePlayer.maxAir * 1D));
+				var17 = (int)Math.ceil(((double)mc.thePlayer.air * 10D) / (mc.thePlayer.maxAir * 1D)) - var16;
 				if (BukkitContrib.mainScreen.getBubbleBar().isVisible()) {
 					for(var18 = 0; var18 < var16 + var17; ++var18) {
 						if(var18 < var16) {
@@ -447,7 +447,7 @@ public class GuiIngame extends Gui {
 		//BukkitContrib Improved Chat Start
 		//Prevent clearing of chat list
 		/*
-        while(this.chatMessageList.size() > 50) {
+		while(this.chatMessageList.size() > 50) {
 			this.chatMessageList.remove(this.chatMessageList.size() - 1);
 		}
 		*/

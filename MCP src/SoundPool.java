@@ -54,27 +54,27 @@ public class SoundPool {
 	}
 	
 	//BukkitContrib Start
-    public SoundPoolEntry getSoundFromSoundPool(String s, int id) {
-        List list = (List)nameToSoundPoolEntriesMapping.get(s);
-        if (list == null) {
-            return null;
-        }
-        return (SoundPoolEntry)list.get(id);
-    }
-    
-    public SoundPoolEntry addCustomSound(String sound, File file) {
-        try {
-            if(!nameToSoundPoolEntriesMapping.containsKey(sound)) {
-                nameToSoundPoolEntriesMapping.put(sound, new ArrayList());
-            }
-            SoundPoolEntry soundpoolentry = new SoundPoolEntry(sound, file.toURI().toURL());
-            ((List)nameToSoundPoolEntriesMapping.get(sound)).add(soundpoolentry);
-            return soundpoolentry;
-        }
-        catch(MalformedURLException malformedurlexception) {
-            return null;
-        }
-    }
-    
-    //BukkitContrib End
+	public SoundPoolEntry getSoundFromSoundPool(String s, int id) {
+		List list = (List)nameToSoundPoolEntriesMapping.get(s);
+		if (list == null) {
+			return null;
+		}
+		return (SoundPoolEntry)list.get(id);
+	}
+	
+	public SoundPoolEntry addCustomSound(String sound, File file) {
+		try {
+			if(!nameToSoundPoolEntriesMapping.containsKey(sound)) {
+				nameToSoundPoolEntriesMapping.put(sound, new ArrayList());
+			}
+			SoundPoolEntry soundpoolentry = new SoundPoolEntry(sound, file.toURI().toURL());
+			((List)nameToSoundPoolEntriesMapping.get(sound)).add(soundpoolentry);
+			return soundpoolentry;
+		}
+		catch(MalformedURLException malformedurlexception) {
+			return null;
+		}
+	}
+	
+	//BukkitContrib End
 }
