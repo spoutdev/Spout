@@ -8,7 +8,7 @@ public class GuiChat extends GuiScreen {
 
 	protected String message = "";
 	private int updateCounter = 0;
-	private static final String field_20082_i = ChatAllowedCharacters.allowedCharacters;
+	private static final String allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 	//BukkitContrib Improved Chat Start
 	public int cursorPosition = 0;
 	public GuiChat() {
@@ -62,7 +62,7 @@ public class GuiChat extends GuiScreen {
 				this.message = this.message.substring(0, this.message.length() - 1);
 			}
 
-			if(field_20082_i.indexOf(var1) >= 0 && this.message.length() < 100) {
+			if(allowedCharacters.indexOf(var1) >= 0 && this.message.length() < 100) {
 				this.message = this.message + var1;
 			}
 

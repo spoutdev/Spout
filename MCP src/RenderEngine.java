@@ -58,7 +58,7 @@ public class RenderEngine {
 		var3.dispose();
 	}
 
-	public int[] func_28149_a(String var1) {
+	public int[] getTextureContents(String var1) {
 		TexturePackBase var2 = this.texturePack.selectedTexturePack;
 		int[] var3 = (int[])this.field_28151_c.get(var1);
 		if(var3 != null) {
@@ -68,26 +68,26 @@ public class RenderEngine {
 				Object var6 = null;
 				if(var1.startsWith("##")) {
 				//BukkitContrib HD Start
-					var3 = this.func_28148_b(this.unwrapImageByColumns(TextureUtils.getResourceAsBufferedImage(var1.substring(2))));
+					var3 = this.getImageContentsAndAllocate(this.unwrapImageByColumns(TextureUtils.getResourceAsBufferedImage(var1.substring(2))));
 				//BukkitContrib HD End
 				} else if(var1.startsWith("%clamp%")) {
 					this.clampTexture = true;
 				//BukkitContrib HD Start
-					var3 = this.func_28148_b(TextureUtils.getResourceAsBufferedImage(var1.substring(7)));
+					var3 = this.getImageContentsAndAllocate(TextureUtils.getResourceAsBufferedImage(var1.substring(7)));
 				//BukkitContrib HD End
 					this.clampTexture = false;
 				} else if(var1.startsWith("%blur%")) {
 					this.blurTexture = true;
 				//BukkitContrib HD Start
-					var3 = this.func_28148_b(TextureUtils.getResourceAsBufferedImage(var1.substring(6)));
+					var3 = this.getImageContentsAndAllocate(TextureUtils.getResourceAsBufferedImage(var1.substring(6)));
 				//BukkitContrib HD End
 					this.blurTexture = false;
 				} else {
 					InputStream var7 = var2.getResourceAsStream(var1);
 					if(var7 == null) {
-						var3 = this.func_28148_b(this.missingTextureImage);
+						var3 = this.getImageContentsAndAllocate(this.missingTextureImage);
 					} else {
-						var3 = this.func_28148_b(this.readTextureImage(var7));
+						var3 = this.getImageContentsAndAllocate(this.readTextureImage(var7));
 					}
 				}
 
@@ -95,14 +95,14 @@ public class RenderEngine {
 				return var3;
 			} catch (IOException var5) {
 				var5.printStackTrace();
-				int[] var4 = this.func_28148_b(this.missingTextureImage);
+				int[] var4 = this.getImageContentsAndAllocate(this.missingTextureImage);
 				this.field_28151_c.put(var1, var4);
 				return var4;
 			}
 		}
 	}
 
-	private int[] func_28148_b(BufferedImage var1) {
+	private int[] getImageContentsAndAllocate(BufferedImage var1) {
 		int var2 = var1.getWidth();
 		int var3 = var1.getHeight();
 		int[] var4 = new int[var2 * var3];
@@ -110,7 +110,7 @@ public class RenderEngine {
 		return var4;
 	}
 
-	private int[] func_28147_a(BufferedImage var1, int[] var2) {
+	private int[] getImageContents(BufferedImage var1, int[] var2) {
 		int var3 = var1.getWidth();
 		int var4 = var1.getHeight();
 		var1.getRGB(0, 0, var3, var4, var2, 0, var3);
@@ -259,7 +259,7 @@ public class RenderEngine {
 						var14 = this.imageData.getInt((var11 * 2 + 1 + (var12 * 2 + 0) * var8) * 4);
 						int var15 = this.imageData.getInt((var11 * 2 + 1 + (var12 * 2 + 1) * var8) * 4);
 						int var16 = this.imageData.getInt((var11 * 2 + 0 + (var12 * 2 + 1) * var8) * 4);
-						int var17 = this.weightedAverageColor(this.weightedAverageColor(var13, var14), this.weightedAverageColor(var15, var16));
+						int var17 = this.alphaBlend(this.alphaBlend(var13, var14), this.alphaBlend(var15, var16));
 						this.imageData.putInt((var11 + var12 * var9) * 4, var17);
 					}
 				}
@@ -270,7 +270,7 @@ public class RenderEngine {
 
 	}
 
-	public void func_28150_a(int[] var1, int var2, int var3, int var4) {
+	public void createTextureFromBytes(int[] var1, int var2, int var3, int var4) {
 		GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, var4);
 		if(useMipmaps) {
 			GL11.glTexParameteri(3553 /*GL_TEXTURE_2D*/, 10241 /*GL_TEXTURE_MIN_FILTER*/, 9986 /*GL_NEAREST_MIPMAP_LINEAR*/);
@@ -463,7 +463,7 @@ public class RenderEngine {
 		return (var3 + var4 >> 1 << 24) + ((var1 & 16711422) + (var2 & 16711422) >> 1);
 	}
 
-	private int weightedAverageColor(int var1, int var2) {
+	private int alphaBlend(int var1, int var2) {
 		int var3 = (var1 & -16777216) >> 24 & 255;
 		int var4 = (var2 & -16777216) >> 24 & 255;
 		short var5 = 255;
@@ -562,7 +562,7 @@ public class RenderEngine {
 				}
 //BukkitContrib HD End
 
-				this.func_28147_a(var4, (int[])this.field_28151_c.get(var9));
+				this.getImageContents(var4, (int[])this.field_28151_c.get(var9));
 				this.blurTexture = false;
 				this.clampTexture = false;
 			} catch (IOException var6) {
