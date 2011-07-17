@@ -174,7 +174,7 @@ public class GuiConnecting extends GuiScreen {
 			this.drawCenteredString(this.fontRenderer, this.clientHandler.field_1209_a, this.width / 2, this.height / 2 - 10, 16777215);
 		}
 		//BukkitContrib Start
-		if (counter == 3000 || currentMsg == null) {
+		if (counter == 4500 || currentMsg == null) {
 			counter = 0;
 			currentMsg = highlyInformativeMessages[(new java.util.Random()).nextInt(highlyInformativeMessages.length)];
 			currentMsg = org.bukkit.ChatColor.GREEN.toString() + currentMsg.trim() + "...";
