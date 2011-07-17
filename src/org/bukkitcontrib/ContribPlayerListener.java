@@ -67,9 +67,9 @@ public class ContribPlayerListener extends PlayerListener{
 	
 	@Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.isCancelled()) {
+		/*if (event.isCancelled()) {
 			return;
-		}
+		}*/
 		ContribCraftPlayer player = (ContribCraftPlayer)ContribCraftPlayer.getContribPlayer(event.getPlayer());
 		if (player.isBukkitContribEnabled()) {
 			return;
