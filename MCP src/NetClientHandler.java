@@ -565,11 +565,7 @@ public class NetClientHandler extends NetHandler {
 		if (seedUpdated || var1.respawnDimension != this.mc.thePlayer.dimension) {
 			// BukkitContrib end
 			this.field_1210_g = false;
-			this.worldClient = new WorldClient(this, newSeed, var1.respawnDimension); // BukkitContrib
-																						// -
-																						// use
-																						// updated
-																						// seed
+			this.worldClient = new WorldClient(this, newSeed, var1.respawnDimension); // BukkitContrib - use updated seed
 			this.worldClient.multiplayerWorld = true;
 			this.mc.changeWorld1(this.worldClient);
 			this.mc.thePlayer.dimension = var1.respawnDimension;
