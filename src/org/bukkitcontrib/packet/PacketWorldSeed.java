@@ -4,10 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.bukkitcontrib.ContribNetServerHandler;
-import net.minecraft.server.NetHandler;
-import net.minecraft.server.Packet;
-
 
 public class PacketWorldSeed implements BukkitContribPacket{
 	 public long newSeed;

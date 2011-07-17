@@ -10,7 +10,6 @@ public class ServerTickTask implements Runnable {
 
 	@Override
 	public void run() {
-		long start = System.currentTimeMillis();
 		BukkitContrib.playerListener.manager.onServerTick();
 		Player[] online = Bukkit.getServer().getOnlinePlayers();
 		for (Player player : online) {
@@ -21,7 +20,6 @@ public class ServerTickTask implements Runnable {
 		ContribCraftChunk.updateTicks();
 		ServerTickEvent event = new ServerTickEvent();
 		Bukkit.getServer().getPluginManager().callEvent(event);
-		System.out.println("Time: " + (System.currentTimeMillis() - start));
 	}
 
 }
