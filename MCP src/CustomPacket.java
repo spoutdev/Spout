@@ -46,7 +46,7 @@ public class CustomPacket extends Packet{
 	 public void writePacketData(DataOutputStream output) throws IOException {
 		  //System.out.println("Writing Packet Data for " + packet.getPacketType());
 		  output.writeInt(packet.getPacketType().getId());
-		  output.writeInt(getPacketSize());
+		  output.writeInt(getPacketSize() - 8);
 		  packet.writeData(output);
 	 }
 
