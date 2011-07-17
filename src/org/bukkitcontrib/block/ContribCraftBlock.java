@@ -90,7 +90,15 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
 		if (result instanceof ContribBlock) {
 			return (ContribBlock)result;
 		}
-		System.out.println("[BukkitContrib] Unexpected Behavior in ContribCraftBlock.getRelative(...)!");
+		System.out.println("[BukkitContrib] Unexpected Behavior in ContribCraftBlock.getRelative(...)! Attempting to compensate.");
+		//XXX Last resort
+		ContribCraftChunk.resetBukkitChunk(result.getChunk());
+		ContribCraftChunk.replaceBukkitChunk(result.getChunk());
+		result = super.getRelative(modX, modY, modZ);
+		if (result instanceof ContribBlock) {
+			return (ContribBlock)result;
+		}
+		System.out.println("[BukkitContrib] Unexpected Behavior in ContribCraftBlock.getRelative(...)! Failed to compensate!");
 		return new ContribCraftBlock((ContribCraftChunk)result.getWorld().getChunkAt(result.getChunk().getX(), result.getChunk().getZ()), result.getX(), result.getY(), result.getZ());
 
 	}
