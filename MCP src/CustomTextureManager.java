@@ -22,7 +22,7 @@ public class CustomTextureManager {
 		return (new File(FileUtil.getTextureCacheDirectory(), FileUtil.getFileName(url))).exists();
 		}
 	
-	public static String getTextureFromUrl(String ul) {
+	public static String getTextureFromUrl(String url) {
 		if (!isTextureDownloaded(url)) {
 			return null;
 		}
