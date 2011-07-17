@@ -2,6 +2,7 @@ package org.bukkitcontrib.player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import net.minecraft.server.Container;
@@ -25,11 +26,17 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.permissions.PermissibleBase;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.plugin.Plugin;
 import org.bukkitcontrib.ContribNetServerHandler;
 import org.bukkitcontrib.event.input.RenderDistance;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
@@ -71,13 +78,77 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	protected RenderDistance minimumRender = null;
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
+	protected PermissibleBase perm;
 	public ContribCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
+		try {
+			CraftPlayer cp = entity.netServerHandler.getPlayer();
+			Field permissionBase = CraftHumanEntity.class.getDeclaredField("perm");
+			permissionBase.setAccessible(true);
+			perm = (PermissibleBase) permissionBase.get(cp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		mainScreen = new InGameScreen(this.getEntityId());
 	}
-	
 	/* Interace Overriden Public Methods */
+
+	@Override
+	public boolean isPermissionSet(String name) {
+		return perm.isPermissionSet(name);
+	}
+
+	@Override
+	public boolean isPermissionSet(Permission perm) {
+		return this.perm.isPermissionSet(perm);
+	}
+
+	@Override
+	public boolean hasPermission(String name) {
+		return perm.hasPermission(name);
+	}
+
+	@Override
+	public boolean hasPermission(Permission perm) {
+		return this.perm.hasPermission(perm);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {
+		return perm.addAttachment(plugin, name, value);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin) {
+		return perm.addAttachment(plugin);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) {
+		return perm.addAttachment(plugin, name, value, ticks);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
+		return perm.addAttachment(plugin, ticks);
+	}
+
+	@Override
+	public void removeAttachment(PermissionAttachment attachment) {
+		perm.removeAttachment(attachment);
+	}
+
+	@Override
+	public void recalculatePermissions() {
+		perm.recalculatePermissions();
+	}
+
+	@Override
+	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+		return perm.getEffectivePermissions();
+	}
 
 	@Override
 	public ContribPlayerInventory getInventory() {
@@ -464,7 +535,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	}
 	
 	public void onTick() {
-		mainScreen.onTick();
+		//mainScreen.onTick();
 	}
 	
 	private void reset() {
