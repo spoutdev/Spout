@@ -31,6 +31,7 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
 	@Override
 	public void setTypeIdAsync(int type) {
 		chunk.queuedId.put(getIndex(), type);
+		ContribCraftChunk.queuedChunks.add(chunk);
 		final byte data = getData();
 		for (Player player : chunk.getWorld().getPlayers()) {
 			player.sendBlockChange(getLocation(), type, data);
@@ -40,6 +41,7 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
 	@Override
 	public void setDataAsync(byte data) {
 		chunk.queuedData.put(getIndex(), data);
+		ContribCraftChunk.queuedChunks.add(chunk);
 		final int type = getTypeId();
 		for (Player player : chunk.getWorld().getPlayers()) {
 			player.sendBlockChange(getLocation(), type, data);
@@ -50,6 +52,7 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
 	public void setTypeIdAndDataAsync(int type, byte data) {
 		chunk.queuedId.put(getIndex(), type);
 		chunk.queuedData.put(getIndex(), data);
+		ContribCraftChunk.queuedChunks.add(chunk);
 		for (Player player : chunk.getWorld().getPlayers()) {
 			player.sendBlockChange(getLocation(), type, data);
 		}

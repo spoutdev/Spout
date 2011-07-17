@@ -1,10 +1,12 @@
 package org.bukkitcontrib.block;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.Chunk;
@@ -20,6 +22,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 public class ContribCraftChunk extends CraftChunk implements ContribChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
+	protected static final Set<ContribCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<ContribCraftChunk,Boolean>());
 	public ContribCraftChunk(Chunk chunk) {
 		super(chunk);
 	}
@@ -106,6 +109,15 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
 
 	protected void onReset() {
 		//TODO finalize queuing
+	}
+	
+	public static void updateTicks() {
+		Iterator<ContribCraftChunk> i = ContribCraftChunk.queuedChunks.iterator();
+		while(i.hasNext()) {
+			ContribCraftChunk chunk = i.next();
+			chunk.onTick();
+			i.remove();
+		}
 	}
 
 	public static void replaceAllBukkitChunks() {

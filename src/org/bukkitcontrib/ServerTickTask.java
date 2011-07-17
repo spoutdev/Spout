@@ -1,8 +1,6 @@
 package org.bukkitcontrib;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkitcontrib.block.ContribCraftChunk;
 import org.bukkitcontrib.event.bukkitcontrib.ServerTickEvent;
@@ -12,6 +10,7 @@ public class ServerTickTask implements Runnable {
 
 	@Override
 	public void run() {
+		long start = System.currentTimeMillis();
 		BukkitContrib.playerListener.manager.onServerTick();
 		Player[] online = Bukkit.getServer().getOnlinePlayers();
 		for (Player player : online) {
@@ -19,16 +18,10 @@ public class ServerTickTask implements Runnable {
 				((ContribCraftPlayer)player).onTick();
 			}
 		}
-		for (World w : Bukkit.getServer().getWorlds()) {
-			Chunk[] chunks = w.getLoadedChunks();
-			for (Chunk chunk : chunks) {
-				if (chunk instanceof ContribCraftChunk) {
-					((ContribCraftChunk)chunk).onTick();
-				}
-			}
-		}
+		ContribCraftChunk.updateTicks();
 		ServerTickEvent event = new ServerTickEvent();
 		Bukkit.getServer().getPluginManager().callEvent(event);
+		System.out.println("Time: " + (System.currentTimeMillis() - start));
 	}
 
 }
