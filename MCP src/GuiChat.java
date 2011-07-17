@@ -10,7 +10,7 @@ public class GuiChat extends GuiScreen {
 	public String message = "";
 	public int updateCounter = 0;
 	public static final String allowedCharacters = ChatAllowedCharacters.allowedCharacters;
-
+	
 	public int cursorPosition = 0;
 	public GuiChat() {
 		BukkitContrib.getChatManager().chatScroll = 0;

@@ -199,7 +199,7 @@ public class SoundManager {
 
 			}
 		}
-	}	
+	}
 	//BukkitContrib start
 	public void playSound(String s, float f, float f1, float f2, float f3, float f4) {
 		playSound(s, f, f1, f2, f3, f4, -1, 1.0F);
@@ -289,7 +289,7 @@ public class SoundManager {
 			sndSystem.play("BgMusic");
 		}
 	}
-	
+
 	public void playCustomSoundEffect(String effect, float volume) {
 		playCustomSoundEffect(effect, 0, 0, 0, volume, 0F);
 	}

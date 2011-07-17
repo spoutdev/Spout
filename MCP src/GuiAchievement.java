@@ -48,7 +48,7 @@ public class GuiAchievement extends Gui {
 		this.field_27103_i = true;
 		customNotification = false; //BukkitContrib
 	}
-	
+
 	//BukkiContrib Start
 	public void queueNotification(String title, String message, int toRender) {
 		field_25085_d = title;

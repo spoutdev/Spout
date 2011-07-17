@@ -16,11 +16,11 @@ public class CustomTextureManager {
 	
 	public static boolean isTextureDownloading(String url) {
 		return FileDownloadThread.getInstance().isDownloading(url);
-			}
+	}
 	
 	public static boolean isTextureDownloaded(String url) {
 		return (new File(FileUtil.getTextureCacheDirectory(), FileUtil.getFileName(url))).exists();
-		}
+	}
 	
 	public static String getTextureFromUrl(String url) {
 		if (!isTextureDownloaded(url)) {

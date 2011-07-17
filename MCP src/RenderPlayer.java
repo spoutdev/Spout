@@ -192,7 +192,7 @@ public class RenderPlayer extends RenderLiving {
 				var16 = 0.0F;
 			}
 
-			float var18 = var1.field_775_e + (var1.field_774_f - var1.field_775_e) * var2;
+			float var18 = var1.prevCameraYaw + (var1.cameraYaw - var1.prevCameraYaw) * var2;
 			var15 += MathHelper.sin((var1.prevDistanceWalkedModified + (var1.distanceWalkedModified - var1.prevDistanceWalkedModified) * var2) * 6.0F) * 32.0F * var18;
 			if(var1.isSneaking()) {
 				var15 += 25.0F;

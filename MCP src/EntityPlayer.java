@@ -45,8 +45,8 @@ public abstract class EntityPlayer extends EntityLiving {
 	public Container craftingInventory;
 	public byte field_9371_f = 0;
 	public int score = 0;
-	public float field_775_e;
-	public float field_774_f;
+	public float prevCameraYaw;
+	public float cameraYaw;
 	public boolean isSwinging = false;
 	public int swingProgressInt = 0;
 	public String username;
@@ -179,8 +179,8 @@ public abstract class EntityPlayer extends EntityLiving {
 		double var3 = this.posY;
 		double var5 = this.posZ;
 		super.updateRidden();
-		this.field_775_e = this.field_774_f;
-		this.field_774_f = 0.0F;
+		this.prevCameraYaw = this.cameraYaw;
+		this.cameraYaw = 0.0F;
 		this.addMountedMovementStat(this.posX - var1, this.posY - var3, this.posZ - var5);
 	}
 
@@ -212,7 +212,7 @@ public abstract class EntityPlayer extends EntityLiving {
 		}
 
 		this.inventory.decrementAnimations();
-		this.field_775_e = this.field_774_f;
+		this.prevCameraYaw = this.cameraYaw;
 		super.onLivingUpdate();
 		float var1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
 		float var2 = (float)Math.atan(-this.motionY * 0.20000000298023224D) * 15.0F;
@@ -228,8 +228,8 @@ public abstract class EntityPlayer extends EntityLiving {
 			var2 = 0.0F;
 		}
 
-		this.field_774_f += (var1 - this.field_774_f) * 0.4F;
-		this.field_9328_R += (var2 - this.field_9328_R) * 0.8F;
+		this.cameraYaw += (var1 - this.cameraYaw) * 0.4F;
+		this.cameraPitch += (var2 - this.cameraPitch) * 0.8F;
 		if(this.health > 0) {
 			List var3 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
 			if(var3 != null) {

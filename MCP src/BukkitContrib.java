@@ -154,11 +154,11 @@ public class BukkitContrib {
 	public static ItemManager getItemManager() {
 		return itemManager;
 	}
-	
+
 	public static SkyManager getSkyManager() {
 		return skyManager;
 	}
-	
+
 	public static ChatManager getChatManager() {
 		return chatManager;
 	}
@@ -190,7 +190,7 @@ public class BukkitContrib {
 		 }
 		 return game;
 	}
-	
+
 	public static Entity getEntityFromId(int id) {
 		 if (getGameInstance().thePlayer.entityId == id) {
 				return getGameInstance().thePlayer;
@@ -198,7 +198,7 @@ public class BukkitContrib {
 		 WorldClient world = (WorldClient)getGameInstance().theWorld;
 		 return world.func_709_b(id);
 	}
-	
+
 	public static EntityPlayer getPlayerFromId(int id) {
 		 if (getGameInstance().thePlayer.entityId == id) {
 				return getGameInstance().thePlayer;
@@ -214,17 +214,17 @@ public class BukkitContrib {
 	public static PacketPluginReload getReloadPacket() {
 		 return reloadPacket;
 	}
-	
+
 	public static void setReloadPacket(PacketPluginReload packet) {
 		 reloadPacket = packet;
 	}
-	
+
 	public static void createBukkitContribAlert(String title, String message, int toRender) {
 		 if (getGameInstance() != null) {
 				getGameInstance().guiAchievement.queueNotification(title, message, toRender);
 		 }
 	}
-	
+
 	public static Object getZanMinimap() {
 		 if (zanMinimap == null && !zanFailed) {
 				try {
@@ -237,7 +237,7 @@ public class BukkitContrib {
 		 }
 		 return zanMinimap;
 	}
-	
+
 	public static byte getNextRenderDistance(int current) {
 		 //default behavior
 		 if (BukkitContrib.minView == -1 && BukkitContrib.maxView == -1) return (byte)((current + 1) & 3);
@@ -249,7 +249,7 @@ public class BukkitContrib {
 		 }
 		 return (byte)current;
 	}
-	
+
 	public static void onTick() {
 		FileDownloadThread.getInstance().onTick();
 	}

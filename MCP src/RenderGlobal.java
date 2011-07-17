@@ -731,7 +731,7 @@ public class RenderGlobal implements IWorldAccess {
 			GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
 			GL11.glBlendFunc(770, 1);
 			GL11.glPushMatrix();
-			var7 = 1.0F - this.worldObj.func_27162_g(var1);
+			var7 = 1.0F - this.worldObj.getRainStrength(var1);
 			var8 = 0.0F;
 			var9 = 0.0F;
 			var10 = 0.0F;
@@ -1287,7 +1287,7 @@ public class RenderGlobal implements IWorldAccess {
 		var2.draw();
 	}
 
-	public void func_949_a(int var1, int var2, int var3, int var4, int var5, int var6) {
+	public void markBlocksForUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
 		int var7 = MathHelper.bucketInt(var1, 16);
 		int var8 = MathHelper.bucketInt(var2, 16);
 		int var9 = MathHelper.bucketInt(var3, 16);
@@ -1326,11 +1326,11 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public void markBlockAndNeighborsNeedsUpdate(int var1, int var2, int var3) {
-		this.func_949_a(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
+		this.markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
 	}
 
 	public void markBlockRangeNeedsUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
-		this.func_949_a(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
+		this.markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
 	}
 
 	public void clipRenderersByFrustrum(ICamera var1, float var2) {
@@ -1445,7 +1445,7 @@ public class RenderGlobal implements IWorldAccess {
 		GLAllocation.func_28194_b(this.glRenderListBase);
 	}
 
-	public void func_28136_a(EntityPlayer var1, int var2, int var3, int var4, int var5, int var6) {
+	public void playAuxSFX(EntityPlayer var1, int var2, int var3, int var4, int var5, int var6) {
 		Random var7 = this.worldObj.rand;
 		int var16;
 		switch(var2) {

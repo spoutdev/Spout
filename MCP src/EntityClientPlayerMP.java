@@ -176,7 +176,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 	public void addStat(StatBase var1, int var2) {
 		if(var1 != null) {
-			if(var1.field_27088_g) {
+			if(var1.isIndependent) {
 				super.addStat(var1, var2);
 			}
 
@@ -185,13 +185,13 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 	public void func_27027_b(StatBase var1, int var2) {
 		if(var1 != null) {
-			if(!var1.field_27088_g) {
+			if(!var1.isIndependent) {
 				super.addStat(var1, var2);
 			}
 
 		}
 	}
-	 //BukkitContrib Start
+	//BukkitContrib Start
 	public void handleKeyPress(int i, boolean keyReleased) {
 		//key bindings
 		if (keyReleased) {
@@ -203,33 +203,33 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 				}
 			}
 		}
-		  if (BukkitContrib.isEnabled()) {
+		if (BukkitContrib.isEnabled()) {
 				sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, keyReleased, (MovementInputFromOptions)movementInput)));
 				if (BukkitContrib.getVersion() > 5 && keyReleased) {
 					final GameSettings settings = BukkitContrib.getGameInstance().gameSettings;
-					 if (i == settings.keyBindToggleFog.keyCode) {
-						  byte view = (byte)settings.renderDistance;
-						  byte newView = BukkitContrib.getNextRenderDistance(view);
+					if (i == settings.keyBindToggleFog.keyCode) {
+						byte view = (byte)settings.renderDistance;
+						byte newView = BukkitContrib.getNextRenderDistance(view);
 						fogKey = settings.keyBindToggleFog;
-						  settings.keyBindToggleFog = new KeyBinding("key.fog", -1);
-						  if (view != newView) {
-								settings.renderDistance = newView;
-								sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)newView)));
-						  }
-					 }
+						settings.keyBindToggleFog = new KeyBinding("key.fog", -1);
+						if (view != newView) {
+							settings.renderDistance = newView;
+							sendQueue.addToSendQueue(new CustomPacket(new PacketRenderDistance((byte)newView)));
+						}
+					}
 				}
-		  }
-		  
+		}
+		
 		super.handleKeyPress(i, keyReleased);
-	 }
+	}
 	//BukkitContrib End
 	
 	//BukkitContrib Start
-	 public void updateCloak() {
-		  if (this.cloakUrl == null || this.playerCloakUrl == null) {
+	public void updateCloak() {
+		if (this.cloakUrl == null || this.playerCloakUrl == null) {
 				super.updateCloak();
 				System.out.println("UpdateCloak");
-		  }
-	 }
-	 //BukkitContrib End
+		}
+	}
+	//BukkitContrib End
 }
