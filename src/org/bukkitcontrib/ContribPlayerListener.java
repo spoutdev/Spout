@@ -17,6 +17,7 @@ import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
 import org.bukkitcontrib.player.SimpleAppearanceManager;
 import org.bukkitcontrib.player.SimpleSkyManager;
+import org.bukkitcontrib.packet.PacketWorldSeed;
 
 public class ContribPlayerListener extends PlayerListener{
 	public PlayerManager manager = new PlayerManager();
@@ -38,6 +39,11 @@ public class ContribPlayerListener extends PlayerListener{
 			return;
 		}
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
+			ContribCraftPlayer ccp = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
+			if(ccp.getVersion() >= 14) {
+				long newSeed = event.getTo().getWorld().getSeed();
+				ccp.sendPacket(new PacketWorldSeed(newSeed));
+			}
 			Runnable update = new Runnable() {
 				public void run() {
 					ContribCraftPlayer.updateBukkitEntity(event.getPlayer());
