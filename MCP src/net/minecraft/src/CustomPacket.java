@@ -22,28 +22,50 @@ public class CustomPacket extends Packet{
 
 	 @Override
 	 public int getPacketSize() {
-		  return packet.getNumBytes() + 8;
+		  if(packet == null) {
+			  return 8;
+		  } else {
+			  return packet.getNumBytes() + 8;
+		  }
 	 }
 
 	 @Override
 	 public void readPacketData(DataInputStream input) throws IOException {
 		  int packetId = -1;
 		  packetId = input.readInt();
-		  input.readInt(); //packet size
+		  int length = input.readInt(); //packet size
 		  if (packetId > -1) {
 				try {
 					 this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
-					 packet.readData(input);
-					 //System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
+				}
+				catch (Exception e) {
+				}
+				try {
+					 if(this.packet == null) {
+						 input.skipBytes(length);
+						 return;
+					 } else {
+						 packet.readData(input);
+						 //System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
+					 }
+				}
+				catch (IOException e) {
+					 throw new IOException(e);
 				}
 				catch (Exception e) {
 					 e.printStackTrace();
+					 throw new IllegalStateException("readData() threw an exception");
 				}
 		  }
 	 }
 
 	 @Override
 	 public void writePacketData(DataOutputStream output) throws IOException {
+		  if(packet == null) {
+			  output.writeInt(-1);
+			  output.writeInt(0);;
+			  return;
+		  }
 		  //System.out.println("Writing Packet Data for " + packet.getPacketType());
 		  output.writeInt(packet.getPacketType().getId());
 		  output.writeInt(getPacketSize() - 8);
@@ -53,7 +75,9 @@ public class CustomPacket extends Packet{
 	 @Override
 	 public void processPacket(NetHandler netHandler) {
 		  NetClientHandler handler = (NetClientHandler)netHandler;
-		  packet.run(BukkitContrib.getGameInstance().thePlayer.entityId);
+		  if(packet != null) {
+			  packet.run(BukkitContrib.getGameInstance().thePlayer.entityId);
+		  }
 	 }
 	 
 	 public static void addClassMapping() {
