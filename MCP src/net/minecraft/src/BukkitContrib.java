@@ -256,7 +256,7 @@ public class BukkitContrib {
 		boolean activeGame = getGameInstance().theWorld != null;
 		if (activeGame != inGame) {
 			inGame = activeGame;
-			getGameInstance().soundManager.stopMusic();
+			getGameInstance().sndManager.stopMusic();
 		}
 	}
 }
