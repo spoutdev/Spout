@@ -76,9 +76,15 @@ import net.minecraft.src.StatList;
 import net.minecraft.src.StatStringFormatKeyInv;
 import net.minecraft.src.Teleporter;
 import net.minecraft.src.Tessellator;
+import net.minecraft.src.TextureCompassFX;
+import net.minecraft.src.TextureFlamesFX;
 import net.minecraft.src.TextureLavaFX;
+import net.minecraft.src.TextureLavaFlowFX;
 import net.minecraft.src.TexturePackList;
+import net.minecraft.src.TexturePortalFX;
+import net.minecraft.src.TextureWatchFX;
 import net.minecraft.src.TextureWaterFX;
+import net.minecraft.src.TextureWaterFlowFX;
 import net.minecraft.src.ThreadCheckHasPaid;
 import net.minecraft.src.ThreadDownloadResources;
 import net.minecraft.src.ThreadSleepForever;
@@ -97,12 +103,6 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 //BukkitContrib Start
-import net.minecraft.src.TextureCompassFX;
-import net.minecraft.src.TextureFlamesFX;
-import net.minecraft.src.TextureLavaFlowFX;
-import net.minecraft.src.TexturePortalFX;
-import net.minecraft.src.TextureWatchFX;
-import net.minecraft.src.TextureWaterFlowFX;
 import com.pclewis.mcpatcher.mod.TextureUtils;
 //BukkitContrib End
 
@@ -286,7 +286,6 @@ public abstract class Minecraft implements Runnable {
 		this.checkGLError("Startup");
 		this.glCapabilities = new OpenGlCapsChecker();
 		this.sndManager.loadSoundSettings(this.gameSettings);
-	  //BukkitContrib Start
 		this.renderEngine.registerTextureFX(this.textureLavaFX);
 		this.renderEngine.registerTextureFX(this.textureWaterFX);
 		this.renderEngine.registerTextureFX(new TexturePortalFX());
@@ -296,7 +295,6 @@ public abstract class Minecraft implements Runnable {
 		this.renderEngine.registerTextureFX(new TextureLavaFlowFX());
 		this.renderEngine.registerTextureFX(new TextureFlamesFX(0));
 		this.renderEngine.registerTextureFX(new TextureFlamesFX(1));
-      //BukkitContrib End
 		this.renderGlobal = new RenderGlobal(this, this.renderEngine);
 		GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
 		this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
@@ -323,7 +321,7 @@ public abstract class Minecraft implements Runnable {
 		GL11.glClear(16640);
 		GL11.glMatrixMode(5889 /*GL_PROJECTION*/);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0D, var1.field_25121_a, var1.field_25120_b, 0.0D, 1000.0D, 3000.0D);
+		GL11.glOrtho(0.0D, var1.scaledWidthD, var1.scaledHeightD, 0.0D, 1000.0D, 3000.0D);
 		GL11.glMatrixMode(5888 /*GL_MODELVIEW0_ARB*/);
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
@@ -857,7 +855,7 @@ public abstract class Minecraft implements Runnable {
 
 			if(var2 && var1 == 1) {
 				ItemStack var9 = this.thePlayer.inventory.getCurrentItem();
-				if(var9 != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, var9)) {
+				if(this.playerController.sendUseItem(this.thePlayer, this.theWorld, var9) && var9 != null) { //BukkitContrib reordered
 					this.entityRenderer.itemRenderer.func_9450_c();
 				}
 			}
@@ -999,7 +997,7 @@ public abstract class Minecraft implements Runnable {
 		if(this.currentScreen != null) {
 			this.currentScreen.handleInput();
 			if(this.currentScreen != null) {
-				this.currentScreen.field_25091_h.func_25088_a();
+				this.currentScreen.guiParticles.update();
 				this.currentScreen.updateScreen();
 			}
 		}

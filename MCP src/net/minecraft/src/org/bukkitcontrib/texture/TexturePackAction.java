@@ -14,6 +14,6 @@ public class TexturePackAction implements Runnable {
 	public void run() {
 		TexturePackCustom pack = new TexturePackCustom(texturePackFile);
 		BukkitContrib.getGameInstance().renderEngine.texturePack.setTexturePack(pack);
-		BukkitContrib.getGameInstance().renderEngine.refreshTextures();
+		//BukkitContrib.getGameInstance().renderEngine.refreshTextures();
 	}
 }
