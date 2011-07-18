@@ -36,6 +36,7 @@ public class BukkitContrib {
 	private static SimpleItemManager itemManager = new SimpleItemManager();
 	private static SimpleSkyManager skyManager = new SimpleSkyManager();
 	private static ChatManager chatManager = new ChatManager();
+	private static boolean inGame = false;
 	public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
 	public static boolean runOnce = false;
 	public static byte minView = -1;
@@ -252,5 +253,10 @@ public class BukkitContrib {
 
 	public static void onTick() {
 		FileDownloadThread.getInstance().onTick();
+		boolean activeGame = getGameInstance().theWorld != null;
+		if (activeGame != inGame) {
+			inGame = activeGame;
+			getGameInstance().soundManager.stopMusic();
+		}
 	}
 }
