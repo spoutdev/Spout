@@ -25,7 +25,7 @@ public class BukkitContrib {
 	private static int buildVersion = -1;
 	private static int minorVersion = -1;
 	private static int majorVersion = -1;
-	private static int clientBuildVersion = 6;
+	private static int clientBuildVersion = 7;
 	private static int clientMinorVersion = 1;
 	private static int clientMajorVersion = 0;
 	private static Minecraft game = null;
