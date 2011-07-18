@@ -3,5 +3,6 @@
 /bin
 /.classpath
 /.project
+/target
 /doc
 .DS_Store

@@ -98,7 +98,7 @@ public class GuiAchievement extends Gui {
 		}
 
 		if(this.theAchievement != null && this.field_25083_f != 0L || customNotification) { //BukkitContrib
-			double var8 = (double)(System.currentTimeMillis() - this.field_25083_f) / 3000.0D;
+			double var8 = (double)(System.currentTimeMillis() - this.field_25083_f) / (customNotification ? 9000D : 3000.0D); //BukkitContrib
 			if(!this.field_27103_i && !this.field_27103_i && (var8 < 0.0D || var8 > 1.0D)) {
 				this.field_25083_f = 0L;
 			} else {

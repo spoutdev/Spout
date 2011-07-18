@@ -25,7 +25,7 @@ public class BukkitContrib {
 	private static int buildVersion = -1;
 	private static int minorVersion = -1;
 	private static int majorVersion = -1;
-	private static int clientBuildVersion = 5;
+	private static int clientBuildVersion = 6;
 	private static int clientMinorVersion = 1;
 	private static int clientMajorVersion = 0;
 	private static Minecraft game = null;
@@ -48,19 +48,19 @@ public class BukkitContrib {
 	}
 	
 	public static void setVersion(String version) {
-		 try {
-				String split[] = version.split("\\.");
-				BukkitContrib.buildVersion = Integer.valueOf(split[2]);
-				BukkitContrib.minorVersion = Integer.valueOf(split[1]);
-				BukkitContrib.majorVersion = Integer.valueOf(split[0]);
-		 }
-		 catch (Exception e) {}
-		 System.out.println("Set BukkitContrib v. " + getVersionString());
-		 if (!runOnce) {
-				CustomPacket.addClassMapping();
-				(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
-				runOnce = true;
-		 }
+		try {
+			String split[] = version.split("\\.");
+			BukkitContrib.buildVersion = Integer.valueOf(split[2]);
+			BukkitContrib.minorVersion = Integer.valueOf(split[1]);
+			BukkitContrib.majorVersion = Integer.valueOf(split[0]);
+		}
+		catch (Exception e) {}
+		System.out.println("Set BukkitContrib v. " + getVersionString());
+		if (!runOnce) {
+			CustomPacket.addClassMapping();
+			(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
+			runOnce = true;
+		}
 		EntityPlayer player = getGameInstance().thePlayer;
 		if (getVersion() > -1 && player instanceof EntityClientPlayerMP){
 			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
@@ -72,16 +72,16 @@ public class BukkitContrib {
 	}
 	
 	public static String versionToString(String version) {
-		 String split[] = version.split("\\.");
-		 return ChatColor.getByCode(Integer.parseInt(split[0])).toString() + ChatColor.WHITE.toString() +
-				ChatColor.getByCode(Integer.parseInt(split[1])) + ChatColor.WHITE.toString() + 
-				ChatColor.getByCode(Integer.parseInt(split[2]));
+		String split[] = version.split("\\.");
+		return ChatColor.getByCode(Integer.parseInt(split[0])).toString() + ChatColor.WHITE.toString() +
+			ChatColor.getByCode(Integer.parseInt(split[1])) + ChatColor.WHITE.toString() + 
+			ChatColor.getByCode(Integer.parseInt(split[2]));
 	}
 	
 	public static String colorToString(String color) {
-		 String s = "";
-		 String split[] = color.split(ChatColor.WHITE.toString());
-		 for (int i = 0; i < split.length; i++) {
+		String s = "";
+		String split[] = color.split(ChatColor.WHITE.toString());
+		for (int i = 0; i < split.length; i++) {
 				int code = 0;
 				for (int j = 0; j < split[i].length(); j++) {
 					code += (int)(split[i].charAt(j));
@@ -90,65 +90,65 @@ public class BukkitContrib {
 				if (i < color.length() -1) {
 					s += ".";
 				}
-		 }
-		 return s;
+		}
+		return s;
 	}
 	
 	public static int getMajorVersion() {
-		 return BukkitContrib.majorVersion;
+		return BukkitContrib.majorVersion;
 	}
 	
 	public static int getMinorVersion() {
-		 return BukkitContrib.minorVersion;
+		return BukkitContrib.minorVersion;
 	}
 	
 	public static int getBuildVersion() {
-		 return BukkitContrib.buildVersion;
+		return BukkitContrib.buildVersion;
 	}
 	
 	public static int getVersion() {
-		 return  BukkitContrib.buildVersion +  BukkitContrib.minorVersion * 10 + BukkitContrib.majorVersion * 100;
+		return  BukkitContrib.buildVersion +  BukkitContrib.minorVersion * 10 + BukkitContrib.majorVersion * 100;
 	}
 	
 	public static int getClientMajorVersion() {
-		 return BukkitContrib.clientMajorVersion;
+		return BukkitContrib.clientMajorVersion;
 	}
 	
 	public static int getClientMinorVersion() {
-		 return BukkitContrib.clientMinorVersion;
+		return BukkitContrib.clientMinorVersion;
 	}
 	
 	public static int getClientBuildVersion() {
-		 return BukkitContrib.clientBuildVersion;
+		return BukkitContrib.clientBuildVersion;
 	}
 	
 	public static int getClientVersion() {
-		 return  BukkitContrib.clientBuildVersion +  BukkitContrib.clientMinorVersion * 10 + BukkitContrib.clientMajorVersion * 100;
+		return  BukkitContrib.clientBuildVersion +  BukkitContrib.clientMinorVersion * 10 + BukkitContrib.clientMajorVersion * 100;
 	}
 	
 	public static String getClientVersionString() {
-		 return "" + BukkitContrib.clientMajorVersion + "." + BukkitContrib.clientMinorVersion + "." + BukkitContrib.clientBuildVersion;
+		return "" + BukkitContrib.clientMajorVersion + "." + BukkitContrib.clientMinorVersion + "." + BukkitContrib.clientBuildVersion;
 	}
 	
 	public static String getVersionString() {
-		 return "" + BukkitContrib.majorVersion + "." + BukkitContrib.minorVersion + "." + BukkitContrib.buildVersion;
+		return "" + BukkitContrib.majorVersion + "." + BukkitContrib.minorVersion + "." + BukkitContrib.buildVersion;
 	}
 	
 	public static void resetBukkitContrib() {
-		 reset();
-		 game = null;
-		 entityLabel = new HashMap<Integer, String>();
+		reset();
+		game = null;
+		entityLabel = new HashMap<Integer, String>();
 	}
 	
 	private static void reset() {
-		 BukkitContrib.buildVersion = -1;
-		 BukkitContrib.minorVersion = -1;
-		 BukkitContrib.majorVersion = -1;
-		 System.out.println("Reset BukkitContrib");
+		BukkitContrib.buildVersion = -1;
+		BukkitContrib.minorVersion = -1;
+		BukkitContrib.majorVersion = -1;
+		System.out.println("Reset BukkitContrib");
 	}
 	
 	public static boolean isEnabled() {
-		 return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
+		return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
 	}
 	
 	public static ItemManager getItemManager() {
@@ -164,90 +164,90 @@ public class BukkitContrib {
 	}
 
 	public static Minecraft getGameInstance() {
-		 if (game == null) {
-				Field f = null;
+		if (game == null) {
+			Field f = null;
+			try {
+				//Try MC native method signature
+				f = Minecraft.class.getDeclaredField("a");
+			}
+			catch (Exception e) {
+				//Try MCP method signature
 				try {
-					//Try MC native method signature
-					f = Minecraft.class.getDeclaredField("a");
+					f = Minecraft.class.getDeclaredField("theMinecraft");
 				}
-				catch (Exception e) {
-					//Try MCP method signature
-					try {
-						 f = Minecraft.class.getDeclaredField("theMinecraft");
-					}
-					catch (Exception e1) {
-						 //Failed both
-						 e.printStackTrace();
-					}
+				catch (Exception e1) {
+					//Failed both
+					e.printStackTrace();
 				}
-				if (f != null) {
-					f.setAccessible(true);
-					try {
-						 game = (Minecraft)f.get(null);
-					} 
-					catch (Exception e) {game = null;}
-				}
-		 }
-		 return game;
+			}
+			if (f != null) {
+				f.setAccessible(true);
+				try {
+					game = (Minecraft)f.get(null);
+				} 
+				catch (Exception e) {game = null;}
+			}
+		}
+		return game;
 	}
 
 	public static Entity getEntityFromId(int id) {
-		 if (getGameInstance().thePlayer.entityId == id) {
+		if (getGameInstance().thePlayer.entityId == id) {
 				return getGameInstance().thePlayer;
-		 }
-		 WorldClient world = (WorldClient)getGameInstance().theWorld;
-		 return world.func_709_b(id);
+		}
+		WorldClient world = (WorldClient)getGameInstance().theWorld;
+		return world.func_709_b(id);
 	}
 
 	public static EntityPlayer getPlayerFromId(int id) {
-		 if (getGameInstance().thePlayer.entityId == id) {
+		if (getGameInstance().thePlayer.entityId == id) {
 				return getGameInstance().thePlayer;
-		 }
-		 WorldClient world = (WorldClient)getGameInstance().theWorld;
-		 Entity e = world.func_709_b(id);
-		 if (e instanceof EntityPlayer) {
-				return (EntityPlayer)e;
-		 }
-		 return null;
+		}
+		WorldClient world = (WorldClient)getGameInstance().theWorld;
+		Entity e = world.func_709_b(id);
+		if (e instanceof EntityPlayer) {
+			return (EntityPlayer)e;
+		}
+		return null;
 	}
 
 	public static PacketPluginReload getReloadPacket() {
-		 return reloadPacket;
+		return reloadPacket;
 	}
 
 	public static void setReloadPacket(PacketPluginReload packet) {
-		 reloadPacket = packet;
+		reloadPacket = packet;
 	}
 
 	public static void createBukkitContribAlert(String title, String message, int toRender) {
-		 if (getGameInstance() != null) {
-				getGameInstance().guiAchievement.queueNotification(title, message, toRender);
-		 }
+		if (getGameInstance() != null) {
+			getGameInstance().guiAchievement.queueNotification(title, message, toRender);
+		}
 	}
 
 	public static Object getZanMinimap() {
 		 if (zanMinimap == null && !zanFailed) {
-				try {
-					Class<?> c = Class.forName("ZanMinimap");
-					zanMinimap = c.getDeclaredConstructors()[0].newInstance((Object[])null);
-				}
-				catch (Exception e) {
-					zanFailed = true;
-				}
+			try {
+				Class<?> c = Class.forName("ZanMinimap");
+				zanMinimap = c.getDeclaredConstructors()[0].newInstance((Object[])null);
+			}
+			catch (Exception e) {
+				zanFailed = true;
+			}
 		 }
 		 return zanMinimap;
 	}
 
 	public static byte getNextRenderDistance(int current) {
-		 //default behavior
-		 if (BukkitContrib.minView == -1 && BukkitContrib.maxView == -1) return (byte)((current + 1) & 3);
-		 int minView = BukkitContrib.minView == -1 ? 3 : BukkitContrib.minView;
-		 int maxView = BukkitContrib.maxView == -1 ? 0 : BukkitContrib.maxView;
-		 current++;
-		 if (current > minView) {
+		//default behavior
+		if (BukkitContrib.minView == -1 && BukkitContrib.maxView == -1) return (byte)((current + 1) & 3);
+		int minView = BukkitContrib.minView == -1 ? 3 : BukkitContrib.minView;
+		int maxView = BukkitContrib.maxView == -1 ? 0 : BukkitContrib.maxView;
+		current++;
+		if (current > minView) {
 				current = Math.max(0, maxView);
-		 }
-		 return (byte)current;
+		}
+		return (byte)current;
 	}
 
 	public static void onTick() {
