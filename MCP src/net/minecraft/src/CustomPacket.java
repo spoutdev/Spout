@@ -39,12 +39,16 @@ public class CustomPacket extends Packet{
 					 this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
 				}
 				catch (Exception e) {
+					System.out.println("Failed to identify packet id: " + packetId);
+					e.printStackTrace();
 				}
 				try {
 					 if(this.packet == null) {
 						 input.skipBytes(length);
+						 System.out.println("Unknown packet " + packetId + ". Skipping contents.");
 						 return;
-					 } else {
+					 }
+					 else {
 						 packet.readData(input);
 						 //System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
 					 }
@@ -54,7 +58,7 @@ public class CustomPacket extends Packet{
 				}
 				catch (Exception e) {
 					 e.printStackTrace();
-					 throw new IllegalStateException("readData() threw an exception");
+					 throw new IllegalStateException("readData() for packetId " + packetId + " threw an exception");
 				}
 		  }
 	 }
