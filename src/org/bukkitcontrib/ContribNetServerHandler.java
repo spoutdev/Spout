@@ -23,6 +23,7 @@ import org.bukkitcontrib.inventory.ContribCraftItemStack;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
+import org.bukkitcontrib.packet.listener.PacketListenerHandler;
 
 
 import net.minecraft.server.Container;
@@ -35,6 +36,7 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.Packet101CloseWindow;
 import net.minecraft.server.Packet102WindowClick;
@@ -53,11 +55,21 @@ public class ContribNetServerHandler extends NetServerHandler{
 	protected boolean activeInventory = false;
 	protected Location activeLocation = null;
 	protected ItemStack lastOverrideDisplayStack = null;
-
+    protected PacketListenerHandler plh = new PacketListenerHandler();
 	public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
 	}
 
+	public void sendPacket(Packet packet) {
+		//All listeners say it can be sent, so, we send it
+		if(plh.checkPacket(packet)) {
+			super.a(packet);
+		}
+		//One of them said false, so, we son't send it.
+		else {
+			return;
+		}
+	}
 	public void setActiveInventoryLocation(Location location) {
 		activeLocation = location;
 	}
