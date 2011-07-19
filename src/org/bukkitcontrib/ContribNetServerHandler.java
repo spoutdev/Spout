@@ -4,7 +4,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.Collections;
+import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,6 +40,14 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
+import net.minecraft.server.ChunkCoordIntPair;
+import net.minecraft.server.Packet;
+import net.minecraft.server.Packet9Respawn;
+import net.minecraft.server.Packet10Flying;
+import net.minecraft.server.Packet11PlayerPosition;
+import net.minecraft.server.Packet13PlayerLookMove;
+import net.minecraft.server.Packet50PreChunk;
+import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.Packet101CloseWindow;
 import net.minecraft.server.Packet102WindowClick;
@@ -53,6 +66,8 @@ public class ContribNetServerHandler extends NetServerHandler{
 	protected boolean activeInventory = false;
 	protected Location activeLocation = null;
 	protected ItemStack lastOverrideDisplayStack = null;
+
+	private final int teleportZoneSize = 3; // grid size is a square of chunks with an edge of (2*teleportZoneSize - 1)
 
 	public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
@@ -368,7 +383,145 @@ public class ContribNetServerHandler extends NetServerHandler{
 	public void setCursorSlot(ItemStack item) {
 		this.player.inventory.b(item);
 	}
-	
+
+	@Override
+	public void sendPacket(Packet packet) {
+		if(packet instanceof Packet51MapChunk) {
+			sendPacket((Packet51MapChunk)packet);
+		} else if(packet instanceof Packet50PreChunk) {
+			sendPacket((Packet50PreChunk)packet);
+		} else if(packet instanceof Packet11PlayerPosition) {
+			sendPacket((Packet11PlayerPosition)packet);
+		} else if(packet instanceof Packet13PlayerLookMove) {
+			sendPacket((Packet13PlayerLookMove)packet);
+		} else if(packet instanceof Packet9Respawn) {
+			sendPacket((Packet9Respawn)packet);
+		} else {
+			super.sendPacket(packet);
+		}
+	}
+
+	public void sendPacket(Packet50PreChunk packet) {
+		int cx = packet.a;
+		int cz = packet.b;
+		boolean init = packet.c;
+		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(cx, cz);
+
+		if(init) {
+			unloadQueue.remove(chunkPos);
+			if(activeChunks.add(chunkPos)) {
+				//System.out.println("Packet50: Sending initialize for " + chunkPos.x + " " + chunkPos.z);
+				super.sendPacket(packet);
+			} else {
+				//System.out.println("Packet50: Already initialized " + chunkPos.x + " " + chunkPos.z);
+			}
+		} else {
+			if(!nearPlayer(cx, cz, teleportZoneSize)) {
+				if(activeChunks.remove(chunkPos)) {
+					//System.out.println("Packet50: unloading " + chunkPos.x + " " + chunkPos.z);
+					super.sendPacket(packet);
+				} else {
+					//System.out.println("Packet50: already unloaded " + chunkPos.x + " " + chunkPos.z);
+				}
+			} else {
+				//System.out.println("Packet 50: Queuing for unload " + chunkPos.x + " " + chunkPos.z);
+				unloadQueue.add(new ChunkCoordIntPair(cx, cz));
+			}
+		}
+		synchronized(unloadQueue) {
+			Iterator<ChunkCoordIntPair> i = unloadQueue.iterator();
+			while(i.hasNext()) {
+				ChunkCoordIntPair coord = i.next();
+				if(!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
+					if(activeChunks.remove(chunkPos)) {
+						//System.out.println("Packet 50: Unloading from queue " + chunkPos.x + " " + chunkPos.z);
+						super.sendPacket(new Packet50PreChunk(coord.x, coord.z, false));
+					}
+					i.remove();
+				}
+			}
+		}
+	}
+
+	public void sendPacket(Packet51MapChunk packet) {
+		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(packet.a >> 4, packet.c >> 4);
+		if(!activeChunks.contains(chunkPos)) {
+			//System.out.println("Packet51: Sending emergency initialize for " + chunkPos.x + " " + chunkPos.z);
+			sendPacket(new Packet50PreChunk(chunkPos.x, chunkPos.z, true));
+		}
+		super.sendPacket(packet);
+	}
+
+	public void sendPacket(Packet11PlayerPosition packet) {
+		playerTeleported(((int)packet.x) >> 4, ((int)packet.z) >> 4);
+		super.sendPacket(packet);
+	}
+
+	public void sendPacket(Packet13PlayerLookMove packet) {
+		playerTeleported(((int)packet.x) >> 4, ((int)packet.z) >> 4);
+		super.sendPacket(packet);
+	}
+
+	public void sendPacket(Packet9Respawn packet) {
+		activeChunks.clear();
+		super.sendPacket(packet);
+	}
+
+	@Override
+	public void a(Packet10Flying packet) {
+		if(packet instanceof Packet11PlayerPosition || packet instanceof Packet13PlayerLookMove) {
+			setPlayerChunk(((int)packet.x) >> 4, ((int)packet.z) >> 4);
+		}
+		super.a(packet);
+	}
+
+	private ChunkCoordIntPair currentChunk = new ChunkCoordIntPair(Integer.MAX_VALUE, Integer.MIN_VALUE);
+
+	private final Set<ChunkCoordIntPair> activeChunks = Collections.synchronizedSet(new HashSet<ChunkCoordIntPair>());
+
+	private final Set<ChunkCoordIntPair> unloadQueue =  Collections.synchronizedSet(new LinkedHashSet<ChunkCoordIntPair>());
+
+	private void playerTeleported(int cx, int cz) {
+		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(cx, cz);
+		if(!activeChunks.contains(chunkPos)) {
+			for(int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
+				for(int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
+					sendPacket(getFastPacket51(cx + x, cz + z));
+				}
+			}
+		}
+	}
+
+	private void setPlayerChunk(int cx, int cz) {
+		synchronized(currentChunk) {
+			if(currentChunk.x != cx || currentChunk.z != cz) {
+				currentChunk = new ChunkCoordIntPair(cx, cz);
+			}
+		}
+	}
+
+	private boolean nearPlayer(int cx, int cz, int d) {
+		int currentX;
+		int currentZ;
+		synchronized(currentChunk) {
+			currentX = currentChunk.x;
+			currentZ = currentChunk.z;
+		}
+		return currentX - cx < d && currentX - cx > -d && currentZ - cz < d && currentZ - cz > -d;
+	}
+
+	private Packet getFastPacket51(int cx, int cz) {
+		Packet packet = new Packet51MapChunk(cx << 4, 0, cz << 4, 16, 128, 16, this.player.world);
+		try {
+			Field k = Packet.class.getDeclaredField("k");
+			k.setAccessible(true);
+			k.setBoolean(packet, false);
+		} catch (NoSuchFieldException e) {
+		} catch (IllegalAccessException e) {
+		}
+		return packet;
+	}
+
 	private ContribInventory getInventoryFromContainer(Container container) {
 		try {
 			if (container instanceof ContainerChest) {
