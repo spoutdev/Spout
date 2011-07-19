@@ -55,21 +55,20 @@ public class ContribNetServerHandler extends NetServerHandler{
 	protected boolean activeInventory = false;
 	protected Location activeLocation = null;
 	protected ItemStack lastOverrideDisplayStack = null;
-    protected PacketListenerHandler plh = new PacketListenerHandler();
-	public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
+    public ContribNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
 	}
 
-	public void sendPacket(Packet packet) {
+    public void sendPacket(Packet packet) {
 		//All listeners say it can be sent, so, we send it
-		if(plh.checkPacket(packet)) {
-			super.a(packet);
-		}
+        if(PacketListenerHandler.checkPacket(packet)) {
+            super.a(packet);
+        }
 		//One of them said false, so, we son't send it.
-		else {
-			return;
-		}
-	}
+        else {
+            return;
+        }
+    }
 	public void setActiveInventoryLocation(Location location) {
 		activeLocation = location;
 	}
