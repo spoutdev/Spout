@@ -1,7 +1,9 @@
 package org.bukkitcontrib.packet.listener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.server.Packet;
@@ -40,14 +42,30 @@ public class PacketListenerHandler {
 		return false;
     }
 
-    
+    //Checks if there are any listeners at all.
     public static boolean hasListeners() {
     	return !listenerMap.isEmpty();
     }
     
-    //Method to check if a packetlistner pl can listen to packet
+    //Checks if there are any listeners registered to that packetid
+	public static boolean hasListeners(int packetId) {
+		return listenerMap.containsKey(packetId);
+	}
+    
+	
+	public static List<PacketListener> getListeners(int packetId) {
+		if (hasListeners(packetId))
+			return listenerMap.get(packetId);
+		return Collections.emptyList();
+	}
+	
+	//Method to check if a packetlistner pl can listen to packet
     public static boolean checkPacket(Packet packet) {
-    	return false;
+		for (PacketListener listener : getListeners(packet.b())) {
+			if (!listener.outGoingPacket(packet, packet.b()))
+				return false;
+		}
+		return true;
     }
 
  }
