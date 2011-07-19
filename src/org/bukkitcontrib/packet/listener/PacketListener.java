@@ -4,6 +4,6 @@ import net.minecraft.server.Packet;
 
 public interface PacketListener {
 
-    public boolean outGoingPacket(Packet packet, int packetId);
+	public boolean outGoingPacket(Packet packet, int packetId);
 
 }
