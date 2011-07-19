@@ -40,7 +40,7 @@ public class ContribPlayerListener extends PlayerListener{
 		}
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
 			ContribCraftPlayer ccp = (ContribCraftPlayer) ContribCraftPlayer.getContribPlayer(event.getPlayer());
-			if(ccp.getVersion() > 15) {
+			if(ccp.getVersion() > 16) {
 				long newSeed = event.getTo().getWorld().getSeed();
 				ccp.sendPacket(new PacketWorldSeed(newSeed));
 			}

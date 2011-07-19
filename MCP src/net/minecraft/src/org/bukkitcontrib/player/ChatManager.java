@@ -1,5 +1,4 @@
 package org.bukkitcontrib.player;
-//BukkitContrib
 
 import java.util.ArrayList;
 import java.util.List;
