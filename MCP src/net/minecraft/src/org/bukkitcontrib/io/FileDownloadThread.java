@@ -57,7 +57,7 @@ public class FileDownloadThread extends Thread{
 						URL url = new URL(next.getDownloadUrl());
 						ReadableByteChannel rbc = Channels.newChannel(url.openStream());
 						FileOutputStream fos = new FileOutputStream(next.getTempFile());
-						fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+						fos.getChannel().transferFrom(rbc, 0, 1 << 28);
 						fos.close();
 						next.move();
 						try {
