@@ -127,7 +127,7 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
 	public static void resetAllBukkitChunks() {
 		replaceAllBukkitChunks(true);
 	}
-	
+
 	private static void replaceAllBukkitChunks(boolean reset) {
 		List<World> worlds = Bukkit.getServer().getWorlds();
 		for (World world : worlds) {
@@ -152,7 +152,7 @@ public class ContribCraftChunk extends CraftChunk implements ContribChunk {
 			catch (Exception e) {e.printStackTrace();}
 		}
 	}
-	
+
 	public static boolean replaceBukkitChunk(org.bukkit.Chunk chunk) {
 		if (((CraftChunk)chunk).getHandle().bukkitChunk.getClass().hashCode() == ContribCraftChunk.class.hashCode()) {
 				return false; //hashcodes will differ if the class was constructed by a different version of this plugin

@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Player;
 
@@ -87,23 +88,9 @@ public class ContribCraftBlock extends CraftBlock implements ContribBlock {
 			return (ContribBlock)result;
 		}
 		//XXX should not happen!
-		ContribCraftChunk.replaceBukkitChunk(result.getChunk());
-		//Try again!
-		result = super.getRelative(modX, modY, modZ);
-		if (result instanceof ContribBlock) {
-			return (ContribBlock)result;
-		}
-		System.out.println("[BukkitContrib] Unexpected Behavior in ContribCraftBlock.getRelative(...)! Attempting to compensate.");
-		//XXX Last resort
-		ContribCraftChunk.resetBukkitChunk(result.getChunk());
-		ContribCraftChunk.replaceBukkitChunk(result.getChunk());
-		result = super.getRelative(modX, modY, modZ);
-		if (result instanceof ContribBlock) {
-			return (ContribBlock)result;
-		}
-		System.out.println("[BukkitContrib] Unexpected Behavior in ContribCraftBlock.getRelative(...)! Failed to compensate!");
-		return new ContribCraftBlock((ContribCraftChunk)result.getWorld().getChunkAt(result.getChunk().getX(), result.getChunk().getZ()), result.getX(), result.getY(), result.getZ());
-
+		net.minecraft.server.Chunk chunk = ((CraftChunk)result.getChunk()).getHandle();
+		chunk.bukkitChunk = new ContribCraftChunk(chunk);
+		return (ContribBlock)chunk.bukkitChunk.getBlock(result.getX() & 0xF, result.getY() & 0x7F, result.getZ() & 0xF);
 	}
 	
 	@Override
