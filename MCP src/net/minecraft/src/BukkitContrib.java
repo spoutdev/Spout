@@ -62,6 +62,7 @@ public class BukkitContrib {
 			(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
 			runOnce = true;
 		}
+		mainScreen = new InGameScreen();
 		EntityPlayer player = getGameInstance().thePlayer;
 		if (getVersion() > -1 && player instanceof EntityClientPlayerMP){
 			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
@@ -69,6 +70,7 @@ public class BukkitContrib {
 			itemManager = new SimpleItemManager();
 			skyManager = new SimpleSkyManager();
 			FileUtil.deleteTempDirectory();
+			getGameInstance().renderEngine.refreshTextures();
 		}
 	}
 	

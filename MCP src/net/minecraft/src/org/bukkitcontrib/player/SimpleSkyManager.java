@@ -2,7 +2,8 @@ package org.bukkitcontrib.player;
 
 import java.util.HashMap;
 import org.bukkitcontrib.packet.PacketSky;
-import net.minecraft.src.*;
+import net.minecraft.src.BukkitContrib;
+import org.bukkitcontrib.io.CustomTextureManager;
 
 public class SimpleSkyManager implements SkyManager{
 	private int cloudHeight = -999;
@@ -89,12 +90,11 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setSunTextureUrl(String Url) {
 		if (sunUrl != null) {
-			//BukkitContrib.getGameInstance().renderEngine.releaseImageData(sunUrl);
+			//TODO release image?
 		}
 		sunUrl = Url;
 		if (Url != null) {
 			CustomTextureManager.downloadTexture(Url);
-			//BukkitContrib.getGameInstance().renderEngine.obtainImageData(Url, new ImageBufferDownload());
 		}
 	}
 
@@ -128,12 +128,11 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setMoonTextureUrl(String Url) {
 		if (moonUrl != null) {
-			//BukkitContrib.getGameInstance().renderEngine.releaseImageData(moonUrl);
+			//TODO release image?
 		}
 		moonUrl = Url;
 		if (Url != null) {
 			CustomTextureManager.downloadTexture(Url);
-			//BukkitContrib.getGameInstance().renderEngine.obtainImageData(Url, new ImageBufferDownload());
 		}
 	}
 

@@ -535,7 +535,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	}
 	
 	public void onTick() {
-		//mainScreen.onTick();
+		mainScreen.onTick();
 	}
 	
 	private void reset() {

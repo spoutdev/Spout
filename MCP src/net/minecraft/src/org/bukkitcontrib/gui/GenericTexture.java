@@ -1,10 +1,12 @@
 package org.bukkitcontrib.gui;
-//BukkitContrib
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
-import net.minecraft.src.*;
+import net.minecraft.src.Tessellator;
+import net.minecraft.src.BukkitContrib;
+import org.bukkitcontrib.io.CustomTextureManager;
 import org.bukkitcontrib.packet.PacketUtil;
 
 public class GenericTexture extends GenericWidget implements Texture {
@@ -39,10 +41,6 @@ public class GenericTexture extends GenericWidget implements Texture {
 		PacketUtil.writeString(output, getUrl());
 	}
 	
-	public int getRotation() {
-		return 360;
-	}
-
 	@Override
 	public void render() {
 		String path = CustomTextureManager.getTextureFromUrl(getUrl());
@@ -50,18 +48,15 @@ public class GenericTexture extends GenericWidget implements Texture {
 			return;
 		}
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0, 0, 0);
+		GL11.glTranslatef(getUpperRightX(), getUpperRightY(), 50); //moves texture into place
 		GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
 		GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, BukkitContrib.getGameInstance().renderEngine.getTexture(path));
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
-		int i = 150;//getUpperRightX();
-		int j = 150;//getUpperRightY();
-		//double rotation = -1 * 
-		tessellator.addVertexWithUV(0.0D, j, 0D, 0.0D, 0.0D);
-		tessellator.addVertexWithUV(i, j, 0D, -0.5D, 0.0D);
-		tessellator.addVertexWithUV(i, 0.0D, 0D, -0.5D, -0.5D);
-		tessellator.addVertexWithUV(0.0D, 0.0D, 0D, 0.0D, -0.5D);
+		tessellator.addVertexWithUV(0.0D, getHeight(), -90, 0.0D, 0.0D); //draw corners
+		tessellator.addVertexWithUV(getHeight(), getWidth(), -90, -1, 0.0D);
+		tessellator.addVertexWithUV(getHeight(), 0.0D, -90, -1, -1);
+		tessellator.addVertexWithUV(0.0D, 0.0D, -90, 0.0D, -1);
 		tessellator.draw();
 		GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
 		GL11.glPopMatrix();
@@ -75,20 +70,6 @@ public class GenericTexture extends GenericWidget implements Texture {
 		}
 		return getUrl().substring(slashIndex + 1, dotIndex).replaceAll("%20", " ");
 	 }
-	
-	public void drawTexturedModalRect(int i, int j, int k, int l, int i1, int j1)
-	 {
-		float f = 0.00390625F;
-		float f1 = 0.00390625F;
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		int zLevel = -90;
-		tessellator.addVertexWithUV(i + 0, j + j1, zLevel, (float)(k + 0) * f, (float)(l + j1) * f1);
-		tessellator.addVertexWithUV(i + i1, j + j1, zLevel, (float)(k + i1) * f, (float)(l + j1) * f1);
-		tessellator.addVertexWithUV(i + i1, j + 0, zLevel, (float)(k + i1) * f, (float)(l + 0) * f1);
-		tessellator.addVertexWithUV(i + 0, j + 0, zLevel, (float)(k + 0) * f, (float)(l + 0) * f1);
-		tessellator.draw();
-	 }
 
 	@Override
 	public String getUrl() {
@@ -98,12 +79,11 @@ public class GenericTexture extends GenericWidget implements Texture {
 	@Override
 	public Texture setUrl(String Url) {
 		if (getUrl() != null) {
-			//BukkitContrib.getGameInstance().renderEngine.releaseImageData(getUrl());
+			//TODO release image?
 		}
 		this.Url = Url;
 		if (getUrl() != null) {
 			CustomTextureManager.downloadTexture(Url);
-			//BukkitContrib.getGameInstance().renderEngine.obtainImageData(getUrl(), new ImageBufferDownload());
 		}
 		return this;
 	}
