@@ -23,6 +23,7 @@ import org.bukkitcontrib.inventory.ContribCraftItemStack;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
+import org.bukkitcontrib.packet.listener.PacketListenerHandler;
 
 
 import net.minecraft.server.Container;
@@ -35,6 +36,7 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.Packet101CloseWindow;
 import net.minecraft.server.Packet102WindowClick;
@@ -58,10 +60,16 @@ public class ContribNetServerHandler extends NetServerHandler{
 		super(minecraftserver, networkmanager, entityplayer);
 	}
 
+	public void sendPacket(Packet packet) {
+		if (PacketListenerHandler.checkPacket(packet)) {
+			super.a(packet);
+		}
+	}
+
 	public void setActiveInventoryLocation(Location location) {
 		activeLocation = location;
 	}
-	
+
 	public Location getActiveInventoryLocation() {
 		return activeLocation;
 	}
@@ -108,7 +116,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 		else if (this.player.activeContainer instanceof ContainerFurnace) {
 			if (clicked == 0) return InventorySlotType.SMELTING;
 			if (clicked == 1) return InventorySlotType.FUEL;
-			
+
 			return InventorySlotType.RESULT;
 		}
 		else if (this.player.activeContainer instanceof ContainerDispenser) {
@@ -123,7 +131,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 		if (clicked >= size) return InventorySlotType.PACK;
 		return InventorySlotType.CONTAINER;
 	}
-	
+
 	@Override
 	public void a(Packet101CloseWindow packet) {
 		ContribInventory inventory = getActiveInventory();
@@ -262,7 +270,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 			}
 		}
 	}
-	
+
 	public boolean handleInventoryClick(Packet102WindowClick packet, InventorySlotType type, ContribCraftItemStack slot, ContribCraftItemStack cursor, ContribInventory inventory) {
 		InventoryClickEvent event = null;
 		Result result = Result.DEFAULT;
@@ -314,7 +322,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 					  setCursorSlot(cursorstack);
 				}
 			}
-			
+
 			break;
 		case ALLOW: // Allow the placement unconditionally
 			if (packet.b == -999) { // Clicked outside, just defer to default
@@ -368,7 +376,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 	public void setCursorSlot(ItemStack item) {
 		this.player.inventory.b(item);
 	}
-	
+
 	private ContribInventory getInventoryFromContainer(Container container) {
 		try {
 			if (container instanceof ContainerChest) {
