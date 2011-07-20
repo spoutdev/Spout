@@ -105,7 +105,7 @@ public interface SkyManager {
 	
 	/**
 	 * Gets the size percent of the moon, relative to the default size.
-	 * 100 percent is the default size. 200 percent is double isze. 50 percent is half size.
+	 * 100 percent is the default size. 200 percent is double size. 50 percent is half size.
 	 * @param player to get the size from
 	 * @return percent size
 	 */
@@ -113,7 +113,7 @@ public interface SkyManager {
 	
 	/**
 	 * Sets the percent size of the moon, relative to the default size.
-	 * 100 percent is the default size. 200 percent is double isze. 50 percent is half size.
+	 * 100 percent is the default size. 200 percent is double size. 50 percent is half size.
 	 * @param player to set the size for
 	 * @param percent to set
 	 */
@@ -127,7 +127,7 @@ public interface SkyManager {
 	public boolean isMoonVisible(ContribPlayer player);
 	
 	/**
-	 * Enables or disables rendering of the sun during nighttme
+	 * Enables or disables rendering of the moon during nighttime
 	 * @param player
 	 * @param visible
 	 */
