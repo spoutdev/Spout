@@ -194,7 +194,7 @@ public class SimpleSkyManager implements SkyManager{
 			moon = moon == null ? "" : moon;
 			String sun = getSunTextureUrl(player);
 			sun = sun == null ? "" : sun;
-			((ContribCraftPlayer)player).sendPacket(new PacketSky(getCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), sun, moon));
+			((ContribCraftPlayer)player).sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), sun, moon));
 		}
 	}
 	
@@ -212,6 +212,13 @@ public class SimpleSkyManager implements SkyManager{
 				}
 			}
 		}
+	}
+	
+	private int getRealCloudHeight(ContribPlayer player) {
+		if (cloudHeight.containsKey(player.getName())) {
+			return cloudHeight.get(player.getName());
+		}
+		return -999; //special value tells the client to use the default client values
 	}
 	
 	private void checkUrl(String Url) {

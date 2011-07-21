@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
+import org.bukkitcontrib.gui.TimeLabel;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
@@ -90,7 +91,7 @@ public class ContribPlayerListener extends PlayerListener{
 				((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
 				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s BukkitContrib client. Running client version: " + player.getVersion());
 				Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
-				//player.getMainScreen().attachWidget((new GenericTexture("http://dl.dropbox.com/u/49805/fire-icon.png")).setScreen(player.getMainScreen()).setHeight(64).setWidth(64).setUpperRightX(200).setUpperRightY(150));
+				player.getMainScreen().attachWidget(new TimeLabel(player.getMainScreen(), player));
 			}
 		}
 	}
