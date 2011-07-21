@@ -205,6 +205,19 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
 	public void sendNotification(String title, String message, Material toRender);
 	
 	/**
+	 * Send's the player a notification (using the existing Achievement Get window), with the given title, message, and item to render as a graphic
+	 * The title and message may not exceed 26 characters in length
+	 * The item to render may not be null
+	 * @param title to send
+	 * @param message to send
+	 * @param toRender to render
+	 * @param data for the item to render
+	 * @param time for the notification to remain in milliseconds
+	 */
+	@ClientOnly
+	public void sendNotification(String title, String message, Material toRender, short data, int time);
+	
+	/**
 	 * Get's the clipboard text from the player, or null if unknown
 	 * @return clipboard text
 	 */
