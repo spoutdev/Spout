@@ -560,7 +560,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 		return currentChunk.get();
 	}
 
-	private void setPlayerChunk(int cx, int cz) {
+	public void setPlayerChunk(int cx, int cz) {
 		ChunkCoordIntPair cur = currentChunk.get();
 		if(cur.x != cx || cur.z != cz) {
 			currentChunk.set(new ChunkCoordIntPair(cx, cz));
