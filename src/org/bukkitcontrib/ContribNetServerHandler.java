@@ -10,12 +10,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkitcontrib.event.inventory.InventoryClickEvent;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryCraftEvent;
@@ -60,6 +64,7 @@ import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Slot;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
+import net.minecraft.server.AxisAlignedBB;
 
 public class ContribNetServerHandler extends NetServerHandler{
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -386,22 +391,32 @@ public class ContribNetServerHandler extends NetServerHandler{
 
 	@Override
 	public void sendPacket(Packet packet) {
+		if(packet != null) {
+			if(packet.k) {
+				MapChunkThread.sendPacket(this.player, packet);
+			} else {
+				sendPacket2(packet);
+			}
+		}
+	}
+
+	public void sendPacket2(Packet packet) {
 		if(packet instanceof Packet51MapChunk) {
-			sendPacket((Packet51MapChunk)packet);
+			sendPacket2((Packet51MapChunk)packet);
 		} else if(packet instanceof Packet50PreChunk) {
-			sendPacket((Packet50PreChunk)packet);
+			sendPacket2((Packet50PreChunk)packet);
 		} else if(packet instanceof Packet11PlayerPosition) {
-			sendPacket((Packet11PlayerPosition)packet);
+			sendPacket2((Packet11PlayerPosition)packet);
 		} else if(packet instanceof Packet13PlayerLookMove) {
-			sendPacket((Packet13PlayerLookMove)packet);
+			sendPacket2((Packet13PlayerLookMove)packet);
 		} else if(packet instanceof Packet9Respawn) {
-			sendPacket((Packet9Respawn)packet);
+			sendPacket2((Packet9Respawn)packet);
 		} else {
 			super.sendPacket(packet);
 		}
 	}
 
-	public void sendPacket(Packet50PreChunk packet) {
+	public void sendPacket2(Packet50PreChunk packet) {
 		int cx = packet.a;
 		int cz = packet.b;
 		boolean init = packet.c;
@@ -443,26 +458,26 @@ public class ContribNetServerHandler extends NetServerHandler{
 		}
 	}
 
-	public void sendPacket(Packet51MapChunk packet) {
+	public void sendPacket2(Packet51MapChunk packet) {
 		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(packet.a >> 4, packet.c >> 4);
 		if(!activeChunks.contains(chunkPos)) {
-			//System.out.println("Packet51: Sending emergency initialize for " + chunkPos.x + " " + chunkPos.z);
-			sendPacket(new Packet50PreChunk(chunkPos.x, chunkPos.z, true));
+			//System.out.println("Packet51: dropping data packet being sent to uninitialized chunk " + chunkPos.x + " " + chunkPos.z);
+			return;
 		}
 		super.sendPacket(packet);
 	}
 
-	public void sendPacket(Packet11PlayerPosition packet) {
+	public void sendPacket2(Packet11PlayerPosition packet) {
 		playerTeleported(((int)packet.x) >> 4, ((int)packet.z) >> 4);
 		super.sendPacket(packet);
 	}
 
-	public void sendPacket(Packet13PlayerLookMove packet) {
+	public void sendPacket2(Packet13PlayerLookMove packet) {
 		playerTeleported(((int)packet.x) >> 4, ((int)packet.z) >> 4);
 		super.sendPacket(packet);
 	}
 
-	public void sendPacket(Packet9Respawn packet) {
+	public void sendPacket2(Packet9Respawn packet) {
 		activeChunks.clear();
 		super.sendPacket(packet);
 	}
@@ -472,10 +487,55 @@ public class ContribNetServerHandler extends NetServerHandler{
 		if(packet instanceof Packet11PlayerPosition || packet instanceof Packet13PlayerLookMove) {
 			setPlayerChunk(((int)packet.x) >> 4, ((int)packet.z) >> 4);
 		}
+		manageChunkQueue(true);
 		super.a(packet);
 	}
 
-	private ChunkCoordIntPair currentChunk = new ChunkCoordIntPair(Integer.MAX_VALUE, Integer.MIN_VALUE);
+	private final LinkedHashSet<ChunkCoordIntPair> chunkUpdateQueue = new LinkedHashSet<ChunkCoordIntPair>();
+
+	private final AtomicInteger updateCounter = new AtomicInteger();
+
+	private final int[] spiralx = new int[] {0, -1, -1, -1,  0,  1,  1,  1,  0, -2, -2, -2, -2, -2, -1,  0,  1,  2,  2,  2,  2,  2,   1,  0, -1};
+	private final int[] spiralz = new int[] {0, -1,  0,  1,  1,  1,  0, -1, -1, -2, -1,  0,  1,  2,  2,  2,  2,  2,  1,  0, -1, -2,  -2, -2, -2};
+
+	// This may not catch 100% of packets, but should get most of them, a small number may end up being compressed by main thread
+	public void manageChunkQueue(boolean flag) {
+		List<ChunkCoordIntPair> playerChunkQueue = player.chunkCoordIntPairQueue;
+
+		if(!playerChunkQueue.isEmpty()) {
+			Iterator<ChunkCoordIntPair> i =  playerChunkQueue.iterator();
+			while(i.hasNext()) {
+				ChunkCoordIntPair next = i.next();
+				chunkUpdateQueue.add(next);
+			} 
+			playerChunkQueue.clear();
+		}
+
+                if(!chunkUpdateQueue.isEmpty() && (b() + MapChunkThread.getQueueLength(this.player)) < 4) {
+			ChunkCoordIntPair playerChunk = getPlayerChunk();
+			ChunkCoordIntPair first = chunkUpdateQueue.iterator().next();
+			if(updateCounter.get() > 0) {
+				int cx = playerChunk.x;
+				int cz = playerChunk.z;
+				boolean chunkFound = false;
+				for(int c = 0; c < spiralx.length; c++) {
+					ChunkCoordIntPair testChunk = new ChunkCoordIntPair(spiralx[c] + cx, spiralz[c] + cz);
+					if(chunkUpdateQueue.contains(testChunk)) {
+						first = testChunk;
+						chunkFound = true;
+						break;
+					}
+				}
+				if(!chunkFound) {
+					updateCounter.decrementAndGet();
+				}
+			}
+			chunkUpdateQueue.remove(first);
+                       	MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
+                }
+	}
+
+	private final AtomicReference<ChunkCoordIntPair> currentChunk =  new AtomicReference<ChunkCoordIntPair>(new ChunkCoordIntPair(Integer.MAX_VALUE, Integer.MIN_VALUE));
 
 	private final Set<ChunkCoordIntPair> activeChunks = Collections.synchronizedSet(new HashSet<ChunkCoordIntPair>());
 
@@ -486,28 +546,28 @@ public class ContribNetServerHandler extends NetServerHandler{
 		if(!activeChunks.contains(chunkPos)) {
 			for(int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
 				for(int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
+					sendPacket(new Packet50PreChunk(cx + x, cz + z , true));
 					sendPacket(getFastPacket51(cx + x, cz + z));
 				}
 			}
 		}
 	}
 
+	private ChunkCoordIntPair getPlayerChunk() {
+		return currentChunk.get();
+	}
+
 	private void setPlayerChunk(int cx, int cz) {
-		synchronized(currentChunk) {
-			if(currentChunk.x != cx || currentChunk.z != cz) {
-				currentChunk = new ChunkCoordIntPair(cx, cz);
-			}
+		ChunkCoordIntPair cur = currentChunk.get();
+		if(cur.x != cx || cur.z != cz) {
+			currentChunk.set(new ChunkCoordIntPair(cx, cz));
+			updateCounter.incrementAndGet();
 		}
 	}
 
 	private boolean nearPlayer(int cx, int cz, int d) {
-		int currentX;
-		int currentZ;
-		synchronized(currentChunk) {
-			currentX = currentChunk.x;
-			currentZ = currentChunk.z;
-		}
-		return currentX - cx < d && currentX - cx > -d && currentZ - cz < d && currentZ - cz > -d;
+		ChunkCoordIntPair cur = currentChunk.get();
+		return cur.x - cx < d && cur.x - cx > -d && cur.z - cz < d && cur.z - cz > -d;
 	}
 
 	private Packet getFastPacket51(int cx, int cz) {
