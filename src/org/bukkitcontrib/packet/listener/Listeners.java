@@ -41,7 +41,7 @@ public class Listeners {
 	}
 
 	public static void addListener(int packetId, Listener listener) {
-		if (packetId > 255)
+		if (packetId < 0 || packetId > 255)
 			return;
 
 		lockWrite.lock();
@@ -54,7 +54,7 @@ public class Listeners {
 	}
 
 	public static boolean removeListener(int packetId, Listener listener) {
-		if (packetId > 255)
+		if (packetId < 0 || packetId > 255)
 			return false;
 
 		lockWrite.lock();
@@ -80,7 +80,7 @@ public class Listeners {
 	}
 
 	public static boolean hasListeners(int packetId) {
-		if (packetId > 255)
+		if (packetId < 0 || packetId > 255)
 			return false;
 
 		lockRead.lock();
@@ -105,7 +105,7 @@ public class Listeners {
 	}
 
 	public static boolean hasListener(int packetId, Listener listener) {
-		if (packetId > 255)
+		if (packetId < 0 || packetId > 255)
 			return false;
 
 		lockRead.lock();
