@@ -26,7 +26,7 @@ public class GenericTexture extends GenericWidget implements Texture {
 	
 	@Override
 	public int getNumBytes() {
-		return super.getNumBytes() + getUrl().length();
+		return super.getNumBytes() + PacketUtil.getNumBytes(getUrl());
 	}
 	
 	@Override

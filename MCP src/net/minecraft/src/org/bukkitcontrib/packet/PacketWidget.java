@@ -56,9 +56,10 @@ public class PacketWidget implements BukkitContribPacket {
 	public void run(int PlayerId) {
 		if (BukkitContrib.mainScreen.containsWidget(widget)) {
 			BukkitContrib.mainScreen.updateWidget(widget);
+			//System.out.println(widget.getType() + " updated");
 		}
 		else {
-			System.out.println(widget.getType() + " added");
+			//System.out.println(widget.getType() + " added");
 			BukkitContrib.mainScreen.attachWidget(widget);
 		}
 	}

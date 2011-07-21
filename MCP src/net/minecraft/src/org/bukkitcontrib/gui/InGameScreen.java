@@ -1,5 +1,5 @@
 package org.bukkitcontrib.gui;
-//BukkitContrib
+
 import java.util.UUID;
 
 public class InGameScreen extends GenericScreen implements Screen{
