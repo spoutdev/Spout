@@ -28,6 +28,7 @@ import org.bukkitcontrib.inventory.ContribCraftItemStack;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
+import org.bukkitcontrib.packet.listener.Listeners;
 
 
 import net.minecraft.server.Container;
@@ -386,6 +387,8 @@ public class ContribNetServerHandler extends NetServerHandler{
 
 	@Override
 	public void sendPacket(Packet packet) {
+		if (!Listeners.canSend(packet))
+			return;
 		if(packet instanceof Packet51MapChunk) {
 			sendPacket((Packet51MapChunk)packet);
 		} else if(packet instanceof Packet50PreChunk) {
