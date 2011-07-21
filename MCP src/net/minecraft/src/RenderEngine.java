@@ -532,9 +532,10 @@ public class RenderEngine {
 				this.clampTexture = false;
 			} catch (IOException var7) {
 				//BukkitContrib HD Start
+				//Gracefully handle errors
 				var2.remove();
+				//var7.printStackTrace();
 				//BukkitContrib HD End
-				var7.printStackTrace();
 			}
 		}
 
@@ -567,9 +568,10 @@ public class RenderEngine {
 				this.clampTexture = false;
 			} catch (IOException var6) {
 				//BukkitContrib HD Start
+				//Gracefully handle errors
 				var2.remove();
+				//var6.printStackTrace();
 				//BukkitContrib HD End
-				var6.printStackTrace();
 			}
 		}
 

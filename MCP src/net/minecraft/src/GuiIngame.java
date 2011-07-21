@@ -200,15 +200,17 @@ public class GuiIngame extends Gui {
 		if (BukkitContrib.getZanMinimap() != null) {
 			((ZanMinimap)BukkitContrib.getZanMinimap()).OnTickInGame(mc);
 		}
-		GL11.glPushMatrix();
-		for (Widget widget : BukkitContrib.mainScreen.getAttachedWidgets()){
-			if (!InGameScreen.isCustomWidget(widget)) {
-				if (widget.isVisible()) {
-					widget.render();
+		for (RenderPriority priority : RenderPriority.values()) {
+			for (Widget widget : BukkitContrib.mainScreen.getAttachedWidgets()){
+				if (widget.getPriority() == priority && !InGameScreen.isCustomWidget(widget)) {
+					if (widget.isVisible()) {
+						GL11.glPushMatrix();
+						widget.render();
+						GL11.glPopMatrix();
+					}
 				}
 			}
 		}
-		GL11.glPopMatrix();
 		//BukkitContrib End
 		String var23;
 		if(this.mc.gameSettings.showDebugInfo) {

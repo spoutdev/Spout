@@ -32,6 +32,7 @@ import org.bukkitcontrib.inventory.ContribCraftItemStack;
 import org.bukkitcontrib.inventory.ContribCraftingInventory;
 import org.bukkitcontrib.inventory.ContribInventory;
 import org.bukkitcontrib.inventory.CraftingInventory;
+import org.bukkitcontrib.packet.listener.Listeners;
 
 
 import net.minecraft.server.Container;
@@ -400,8 +401,11 @@ public class ContribNetServerHandler extends NetServerHandler{
 		}
 	}
 
+	// MapChunkThread sends packets to the method.  All packets should pass through this method before being sent to the client
 	public void sendPacket2(Packet packet) {
-		if(packet instanceof Packet51MapChunk) {
+		if (!Listeners.canSend(packet)) {
+			return;
+		} else if(packet instanceof Packet51MapChunk) {
 			sendPacket2((Packet51MapChunk)packet);
 		} else if(packet instanceof Packet50PreChunk) {
 			sendPacket2((Packet50PreChunk)packet);
@@ -428,7 +432,6 @@ public class ContribNetServerHandler extends NetServerHandler{
 				//System.out.println("Packet50: Sending initialize for " + chunkPos.x + " " + chunkPos.z);
 				super.sendPacket(packet);
 			} else {
-				//System.out.println("Packet50: Already initialized " + chunkPos.x + " " + chunkPos.z);
 			}
 		} else {
 			if(!nearPlayer(cx, cz, teleportZoneSize)) {

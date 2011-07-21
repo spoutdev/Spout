@@ -79,8 +79,11 @@ public abstract class GuiContainer extends GuiScreen {
 			if (custom != null) {
 				var13 = custom;
 			}
+			else if (var13 == null || var13.trim().equals("")) {
+				var13 = BukkitContrib.getItemManager().getItemName(var6.getStack().itemID, (byte)(var6.getStack().getItemDamage()));
+			}
+			if(var13 != null && var13.length() > 0) {
 			//BukkitContrib End
-			if(var13.length() > 0) {
 				var9 = var1 - var4 + 12;
 				var10 = var2 - var5 - 12;
 				int var11 = this.fontRenderer.getStringWidth(var13);

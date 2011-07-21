@@ -53,6 +53,7 @@ import org.bukkitcontrib.packet.CustomPacket;
 import org.bukkitcontrib.packet.PacketAirTime;
 import org.bukkitcontrib.packet.PacketBukkitContribAlert;
 import org.bukkitcontrib.packet.PacketClipboardText;
+import org.bukkitcontrib.packet.PacketNotification;
 import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.packet.PacketSkinURL;
 import org.bukkitcontrib.packet.PacketTexturePack;
@@ -393,13 +394,22 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
 		if (getVersion() > 5) {
-			if (title.length() > 26) {
+			if (title.length() > 26)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
-			}
-			if (message.length() > 26) {
+			if (message.length() > 26)
 				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars");
-			}
 			sendPacket(new PacketBukkitContribAlert(title, message, toRender.getId()));
+		}
+	}
+	
+	@Override
+	public void sendNotification(String title, String message, Material toRender, short data, int time) {
+		if (getVersion() > 17) {
+			if (title.length() > 26)
+				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
+			if (message.length() > 26)
+				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars");
+			sendPacket(new PacketNotification(title, message, toRender.getId(), data, time));
 		}
 	}
 	
@@ -535,7 +545,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	}
 	
 	public void onTick() {
-		//mainScreen.onTick();
+		mainScreen.onTick();
 	}
 	
 	private void reset() {

@@ -11,8 +11,9 @@ public abstract class GenericWidget implements Widget{
 	protected int width = 0;
 	protected int height = 0;
 	protected boolean visible = true;
-	protected boolean dirty = true;
-	protected Screen screen = null;
+	protected transient boolean dirty = true;
+	protected transient Screen screen = null;
+	protected RenderPriority priority = RenderPriority.Normal;
 	protected UUID id = UUID.randomUUID();
 	
 	public GenericWidget() {
@@ -20,7 +21,7 @@ public abstract class GenericWidget implements Widget{
 	}
 	
 	public int getNumBytes() {
-		return 33;
+		return 37;
 	}
 	
 	public GenericWidget(int upperRightX, int upperRightY, int width, int height) {
@@ -37,6 +38,7 @@ public abstract class GenericWidget implements Widget{
 		setWidth(input.readInt());
 		setHeight(input.readInt());
 		setVisible(input.readBoolean());
+		setPriority(RenderPriority.getRenderPriorityFromId(input.readInt()));
 		long msb = input.readLong();
 		long lsb = input.readLong();
 		id = new UUID(msb, lsb);
@@ -49,6 +51,7 @@ public abstract class GenericWidget implements Widget{
 		output.writeInt(getWidth());
 		output.writeInt(getHeight());
 		output.writeBoolean(isVisible());
+		output.writeInt(priority.getId());
 		output.writeLong(getId().getMostSignificantBits());
 		output.writeLong(getId().getLeastSignificantBits());
 	}
@@ -75,6 +78,17 @@ public abstract class GenericWidget implements Widget{
 	@Override
 	public Widget setScreen(Screen screen) {
 		this.screen = screen;
+		return this;
+	}
+	
+	@Override
+	public RenderPriority getPriority() {
+		return priority;
+	}
+	
+	@Override
+	public Widget setPriority(RenderPriority priority) {
+		this.priority = priority;
 		return this;
 	}
 	
@@ -111,36 +125,6 @@ public abstract class GenericWidget implements Widget{
 	}
 
 	@Override
-	public int getUpperLeftX() {
-		return getUpperRightX() - getWidth();
-	}
-
-	@Override
-	public int getUpperLeftY() {
-		return getUpperRightY() - getWidth();
-	}
-
-	@Override
-	public int getLowerRightX() {
-		return getUpperRightX() - getHeight();
-	}
-
-	@Override
-	public int getLowerRightY() {
-		return getUpperRightY() - getHeight();
-	}
-
-	@Override
-	public int getLowerLeftX() {
-		return getLowerRightX() - getWidth();
-	}
-
-	@Override
-	public int getLowerLeftY() {
-		return getLowerRightY() - getWidth();
-	}
-
-	@Override
 	public Widget setUpperRightX(int pos) {
 		this.upperRightX = pos;
 		return this;
@@ -153,50 +137,14 @@ public abstract class GenericWidget implements Widget{
 	}
 
 	@Override
-	public Widget setUpperLeftX(int pos) {
-		setUpperRightX(pos + getWidth());
-		return this;
-	}
-
-	@Override
-	public Widget setUpperLeftY(int pos) {
-		setUpperRightY(pos + getWidth());
-		return this;
-	}
-
-	@Override
-	public Widget setLowerRightX(int pos) {
-		setUpperRightX(pos + getHeight());
-		return this;
-	}
-
-	@Override
-	public Widget setLowerRightY(int pos) {
-		setUpperRightY(pos + getHeight());
-		return this;
-	}
-
-	@Override
-	public Widget setLowerLeftX(int pos) {
-		setUpperRightX(pos + getWidth());
-		return this;
-	}
-
-	@Override
-	public Widget setLowerLeftY(int pos) {
-		setUpperRightY(pos + getWidth());
+	public Widget shiftXPos(int modX) {
+		setUpperRightX(getUpperRightX() + modX);
 		return this;
 	}
 	
 	@Override
-	public Widget shiftXPos(int x) {
-		setUpperRightX(getUpperRightX() + x);
-		return this;
-	}
-	
-	@Override
-	public Widget shiftYPos(int y) {
-		setUpperRightY(getUpperRightY() + y);
+	public Widget shiftYPos(int modY) {
+		setUpperRightY(getUpperRightY() + modY);
 		return this;
 	}
 	

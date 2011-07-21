@@ -1,10 +1,7 @@
-package net.minecraft.src;
+package org.bukkitcontrib.io;
 
 import java.io.File;
 import java.io.IOException;
-import org.bukkitcontrib.io.FileDownloadThread;
-import org.bukkitcontrib.io.FileUtil;
-import org.bukkitcontrib.io.Download;
 
 public class CustomTextureManager {
 	public static void downloadTexture(String url) {
@@ -18,15 +15,15 @@ public class CustomTextureManager {
 		return FileDownloadThread.getInstance().isDownloading(url);
 	}
 	
-	public static boolean isTextureDownloaded(String url) {
-		return (new File(FileUtil.getTextureCacheDirectory(), FileUtil.getFileName(url))).exists();
+	public static boolean isTextureDownloaded(String Url) {
+		return (new File(FileUtil.getTextureCacheDirectory(), FileUtil.getFileName(Url))).exists();
 	}
 	
-	public static String getTextureFromUrl(String url) {
-		if (!isTextureDownloaded(url)) {
+	public static String getTextureFromUrl(String Url) {
+		if (!isTextureDownloaded(Url)) {
 			return null;
 		}
-		File download = new File(FileUtil.getTextureCacheDirectory(), FileUtil.getFileName(url));
+		File download = new File(FileUtil.getTextureCacheDirectory(), FileUtil.getFileName(Url));
 		try {
 			return download.getCanonicalPath();
 		}

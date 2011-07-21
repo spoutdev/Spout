@@ -23,6 +23,10 @@ public interface Widget{
 	
 	public boolean isDirty();
 	
+	public RenderPriority getPriority();
+	
+	public Widget setPriority(RenderPriority priority);
+	
 	public int getWidth();
 	
 	public Widget setWidth(int width);
@@ -39,33 +43,9 @@ public interface Widget{
 	
 	public int getUpperRightY();
 	
-	public int getUpperLeftX();
-	
-	public int getUpperLeftY();	
-	
-	public int getLowerRightX();
-	
-	public int getLowerRightY();
-	
-	public int getLowerLeftX();
-	
-	public int getLowerLeftY();
-	
 	public Widget setUpperRightX(int pos);
 	
 	public Widget setUpperRightY(int pos);
-	
-	public Widget setUpperLeftX(int pos);
-	
-	public Widget setUpperLeftY(int pos);	
-	
-	public Widget setLowerRightX(int pos);
-	
-	public Widget setLowerRightY(int pos);
-	
-	public Widget setLowerLeftX(int pos);
-	
-	public Widget setLowerLeftY(int pos);
 	
 	public Widget shiftXPos(int x);
 	

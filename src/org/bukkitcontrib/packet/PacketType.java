@@ -20,6 +20,7 @@ public enum PacketType {
 	PacketSky(14, PacketSky.class),
 	PacketTexturePack(15, PacketTexturePack.class),
 	PacketWorldSeed(16, PacketWorldSeed.class),
+	PacketNotification(17, PacketNotification.class),
 	
 	;
 	

@@ -25,7 +25,7 @@ public class BukkitContrib {
 	private static int buildVersion = -1;
 	private static int minorVersion = -1;
 	private static int majorVersion = -1;
-	private static int clientBuildVersion = 7;
+	private static int clientBuildVersion = 8;
 	private static int clientMinorVersion = 1;
 	private static int clientMajorVersion = 0;
 	private static Minecraft game = null;
@@ -62,6 +62,7 @@ public class BukkitContrib {
 			(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
 			runOnce = true;
 		}
+		mainScreen = new InGameScreen();
 		EntityPlayer player = getGameInstance().thePlayer;
 		if (getVersion() > -1 && player instanceof EntityClientPlayerMP){
 			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
@@ -69,6 +70,7 @@ public class BukkitContrib {
 			itemManager = new SimpleItemManager();
 			skyManager = new SimpleSkyManager();
 			FileUtil.deleteTempDirectory();
+			getGameInstance().renderEngine.refreshTextures();
 		}
 	}
 	

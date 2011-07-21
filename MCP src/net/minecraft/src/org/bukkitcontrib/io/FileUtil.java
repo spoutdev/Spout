@@ -22,9 +22,12 @@ public class FileUtil {
 	}
 
 	public static void deleteTempDirectory() {
-		File temp = getTempDirectory();
 		try {
-			FileUtils.deleteDirectory(temp);
+			FileUtils.deleteDirectory(getTempDirectory());
+		}
+		catch (Exception e) {}
+		try {
+			FileUtils.deleteDirectory(getTextureCacheDirectory());
 		}
 		catch (Exception e) {}
 	}

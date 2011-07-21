@@ -90,7 +90,6 @@ public class ContribPlayerListener extends PlayerListener{
 				((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
 				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s BukkitContrib client. Running client version: " + player.getVersion());
 				Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
-				//player.getMainScreen().attachWidget((new GenericTexture("http://dl.dropbox.com/u/49805/fire-icon.png")).setScreen(player.getMainScreen()).setHeight(64).setWidth(64).setUpperRightX(200).setUpperRightY(150));
 			}
 		}
 	}
