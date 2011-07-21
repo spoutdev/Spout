@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
-import org.bukkitcontrib.gui.TimeLabel;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;

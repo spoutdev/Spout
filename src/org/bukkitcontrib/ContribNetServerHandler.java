@@ -416,7 +416,6 @@ public class ContribNetServerHandler extends NetServerHandler{
 				//System.out.println("Packet50: Sending initialize for " + chunkPos.x + " " + chunkPos.z);
 				super.sendPacket(packet);
 			} else {
-				//System.out.println("Packet50: Already initialized " + chunkPos.x + " " + chunkPos.z);
 			}
 		} else {
 			if(!nearPlayer(cx, cz, teleportZoneSize)) {
