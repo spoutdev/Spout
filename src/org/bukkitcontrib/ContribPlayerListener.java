@@ -91,7 +91,6 @@ public class ContribPlayerListener extends PlayerListener{
 				((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
 				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s BukkitContrib client. Running client version: " + player.getVersion());
 				Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
-				player.getMainScreen().attachWidget(new TimeLabel(player.getMainScreen(), player));
 			}
 		}
 	}
