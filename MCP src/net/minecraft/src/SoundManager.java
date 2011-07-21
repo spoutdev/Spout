@@ -334,11 +334,13 @@ public class SoundManager {
 	}
 	
 	public void stopMusic() {
-		if(sndSystem.playing("BgMusic")) {
-			sndSystem.stop("BgMusic");
-		}
-		if(sndSystem.playing("streaming")){
-			sndSystem.stop("streaming");
+		if (sndSystem != null) {
+			if(sndSystem.playing("BgMusic")) {
+				sndSystem.stop("BgMusic");
+			}
+			if(sndSystem.playing("streaming")){
+				sndSystem.stop("streaming");
+			}
 		}
 	}
 	
