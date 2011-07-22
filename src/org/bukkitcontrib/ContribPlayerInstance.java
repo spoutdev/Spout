@@ -37,11 +37,8 @@ class ContribPlayerInstance {
 
 		List<Object> updatedPlayerInstances = new ArrayList<Object>();
 		for (Object instance : playerInstances) {
-			if (instance.getClass().getName().equals("PlayerInstance")) {
+			if (!instance.getClass().equals(ContribPlayerInstance.class)) {
 				updatedPlayerInstances.add(new ContribPlayerInstance(manager, instance));
-				System.out.println("Updating player instance");
-			} else {
-				updatedPlayerInstances.add(instance);
 			}
 		}
 		try {
