@@ -544,16 +544,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 				chunkUpdateQueue.remove(first);
 				MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
 				WorldServer worldserver = (WorldServer) player.world;
-				List tileEntities = worldserver.getTileEntities(first.x * 16, 0, first.z * 16, first.x * 16 + 16, 128, first.z * 16 + 16);
-				for(Object tileEntityObject : tileEntities) {
-					if(tileEntityObject != null && tileEntityObject instanceof TileEntity) {
-						TileEntity tileEntity = (TileEntity) tileEntityObject;
-						Packet tilePacket = tileEntity.f();
-						if(tilePacket != null) {
-							MapChunkThread.sendPacket(this.player, tilePacket);
-						}
-					}
-				}
+				sendChunkTiles(first.x, first.z);
 			}
                 }
 	}
@@ -564,6 +555,20 @@ public class ContribNetServerHandler extends NetServerHandler{
 
 	private final Set<ChunkCoordIntPair> unloadQueue =  Collections.synchronizedSet(new LinkedHashSet<ChunkCoordIntPair>());
 
+	private void sendChunkTiles(int cx, int cz) {
+		WorldServer worldserver = (WorldServer) player.world;
+		List tileEntities = worldserver.getTileEntities(cx << 4, 0, cz << 4, (cx << 4) + 16, 128, (cz << 4) + 16);
+		for(Object tileEntityObject : tileEntities) {
+			if(tileEntityObject != null && tileEntityObject instanceof TileEntity) {
+				TileEntity tileEntity = (TileEntity) tileEntityObject;
+				Packet tilePacket = tileEntity.f();
+				if(tilePacket != null) {
+					MapChunkThread.sendPacket(this.player, tilePacket);
+				}
+			}
+		}
+	}
+
 	private void playerTeleported(int cx, int cz) {
 		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(cx, cz);
 		if(!activeChunks.contains(chunkPos)) {
@@ -571,6 +576,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 				for(int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
 					sendPacket(new Packet50PreChunk(cx + x, cz + z , true));
 					sendPacket(getFastPacket51(cx + x, cz + z));
+					sendChunkTiles(cx + x, cz + z);
 				}
 			}
 		}
