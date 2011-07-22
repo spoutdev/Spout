@@ -9,16 +9,15 @@ import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
 import net.minecraft.server.Block;
-import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet53BlockChange;
 import net.minecraft.server.Packet52MultiBlockChange;
 import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.TileEntity;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.WorldServer;
 
 class ContribPlayerInstance {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void replacePlayerInstances(ContribPlayerManager manager) {
 		List<Object> playerInstances;
 		try {
@@ -87,6 +86,7 @@ class ContribPlayerInstance {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private List b;
 	private int chunkX;
 	private int chunkZ;
@@ -102,6 +102,7 @@ class ContribPlayerInstance {
 
 	final ContribPlayerManager playerManager;
 
+	@SuppressWarnings("rawtypes")
 	public ContribPlayerInstance(ContribPlayerManager playermanager, int i, int j) {
 		this.playerManager = playermanager;
 		this.b = new ArrayList();
@@ -113,6 +114,7 @@ class ContribPlayerInstance {
 		playermanager.a().chunkProviderServer.getChunkAt(i, j);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void a(EntityPlayer entityplayer) {
 		if (this.b.contains(entityplayer)) {
 			throw new IllegalStateException("Failed to add player. " + entityplayer + " already is in chunk " + this.chunkX + ", " + this.chunkZ);
@@ -150,6 +152,7 @@ class ContribPlayerInstance {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void a(int i, int j, int k) {
 		if (this.dirtyCount == 0) {
 			ContribPlayerManager.b(this.playerManager).add(this);
@@ -195,10 +198,12 @@ class ContribPlayerInstance {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void sendAll(Packet packet) {
 		MapChunkThread.sendPacket(this.location, this.b, packet);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void a() {
 		WorldServer worldserver = this.playerManager.a();
 

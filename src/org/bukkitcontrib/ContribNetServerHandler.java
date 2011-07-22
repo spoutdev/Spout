@@ -19,7 +19,6 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkitcontrib.event.inventory.InventoryClickEvent;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryCraftEvent;
@@ -65,7 +64,6 @@ import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Slot;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
-import net.minecraft.server.AxisAlignedBB;
 
 public class ContribNetServerHandler extends NetServerHandler{
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -502,6 +500,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 	private final int[] spiralz = new int[] {0, -1,  0,  1,  1,  1,  0, -1, -1, -2, -1,  0,  1,  2,  2,  2,  2,  2,  1,  0, -1, -2,  -2, -2, -2};
 
 	// This may not catch 100% of packets, but should get most of them, a small number may end up being compressed by main thread
+	@SuppressWarnings("unchecked")
 	public void manageChunkQueue(boolean flag) {
 		List<ChunkCoordIntPair> playerChunkQueue = player.chunkCoordIntPairQueue;
 

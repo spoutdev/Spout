@@ -15,7 +15,6 @@ import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
-import net.minecraft.server.WorldServer;
 
 public final class MapChunkThread implements Runnable {
 

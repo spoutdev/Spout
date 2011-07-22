@@ -1,9 +1,7 @@
 package org.bukkitcontrib;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldServer;
 import net.minecraft.server.PlayerList;
-//import net.minecraft.server.PlayerInstance;
 import net.minecraft.server.PlayerManager;
 
 import java.util.List;
@@ -17,7 +15,7 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 	public static void replacePlayerManager(WorldServer world) {
 		if (!(world.manager instanceof ContribPlayerManager)) {
 			world.manager = new ContribPlayerManager(world.manager);
-			System.out.println("Replaced " + world.worldData.name);
+			//System.out.println("Replaced " + world.worldData.name);
 			ContribPlayerInstance.replacePlayerInstances((ContribPlayerManager) world.manager);
 		}
 	}
@@ -32,6 +30,7 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 		transferField(manager, this, "g");
 	}
 
+	@SuppressWarnings({ "unused", "rawtypes" })
 	private static void transferField(Object src, Object dest, String fieldName) {
 		try {
 			Class clazz = Class.forName("net.minecraft.server.PlayerManager");
@@ -49,6 +48,7 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 		}
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Object runMethod(String methodName, Class clazz, Object input, Class inputClass) {
 		try {
 			Method m = clazz.getDeclaredMethod(methodName, new Class[] { inputClass });
@@ -67,6 +67,7 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 		return (PlayerList) runMethod("a", PlayerManager.class, manager, PlayerManager.class);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static List b(ContribPlayerManager manager) {
 		return (List) runMethod("b", PlayerManager.class, manager, PlayerManager.class);
 	}
