@@ -9,14 +9,17 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Logger;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.World;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkitcontrib.block.ContribCraftChunk;
 import org.bukkitcontrib.config.ConfigReader;
 import org.bukkitcontrib.inventory.ItemManager;
@@ -111,9 +114,16 @@ public class BukkitContrib extends JavaPlugin{
 			sendBukkitContribVersionChat(player);
 			playerListener.manager.onPlayerJoin(player);
 		}
+
+		List<World> worlds = getServer().getWorlds();
+		for (World world : worlds) {
+			ContribPlayerManager.replacePlayerManager(((CraftWorld)world).getHandle());
+		}
 		
 		ContribCraftChunk.replaceAllBukkitChunks();
 		appearanceManager.onPluginEnable();
+
+		MapChunkThread.startThread(); // Always on
 		
 		//Start counting ticks
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new ServerTickTask(), 0, 1);
