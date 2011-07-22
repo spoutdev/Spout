@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 
 	public static void replacePlayerManager(WorldServer world) {
-		if (!world.manager.getClass().equals(ContribPlayerManager.class)) {
+		if (!world.manager.getClass().equals(ContribPlayerManager.class.hashCode())) {
 			world.manager = new ContribPlayerManager(world.manager);
 			ContribPlayerInstance.replacePlayerInstances((ContribPlayerManager) world.manager);
 		}
@@ -21,6 +21,8 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 
 	public ContribPlayerManager(PlayerManager manager) {
 		super(null, 0, 10);
+		this.managedPlayers = manager.managedPlayers;
+		System.out.println("Tracking " + managedPlayers.size() + " players");
 		transferField(manager, this, "b");
 		transferField(manager, this, "c");
 		transferField(manager, this, "server");
@@ -29,11 +31,10 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 		transferField(manager, this, "g");
 	}
 
-	@SuppressWarnings({ "unused", "rawtypes" })
+	@SuppressWarnings( "rawtypes" )
 	private static void transferField(Object src, Object dest, String fieldName) {
 		try {
 			Class clazz = Class.forName("net.minecraft.server.PlayerManager");
-			Field[] fields = clazz.getDeclaredFields();
 			Field field = clazz.getDeclaredField(fieldName);
 			field.setAccessible(true);
 			Object temp = field.get(src);
