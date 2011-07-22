@@ -110,6 +110,10 @@ public class ContribPlayerListener extends PlayerListener{
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
 
+		if(event.isCancelled()) {
+			return;
+		}
+
 		ContribCraftPlayer player = (ContribCraftPlayer)event.getPlayer();
 		ContribNetServerHandler netServerHandler = player.getNetServerHandler();
 
