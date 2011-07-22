@@ -24,7 +24,6 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 	public ContribPlayerManager(PlayerManager manager) {
 		super(null, 0, 10);
 		this.managedPlayers = manager.managedPlayers;
-		System.out.println("Tracking " + managedPlayers.size() + " players");
 		ReflectUtil.transferField(manager, this, "b");
 		ReflectUtil.transferField(manager, this, "c");
 		ReflectUtil.transferField(manager, this, "server");
