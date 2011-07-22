@@ -81,7 +81,7 @@ public final class MapChunkThread implements Runnable {
 
 	// consumer thread
 	public void run() {
-		while (!thread.isInterrupted()) {
+		while (thread != null && !thread.isInterrupted()) {
 			try {
 				handle(queue.take());
 			} catch (InterruptedException ie) {
