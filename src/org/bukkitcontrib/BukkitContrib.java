@@ -87,6 +87,9 @@ public class BukkitContrib extends JavaPlugin{
 			}
 		}
 		catch (Exception e) {}
+		
+		//end the thread
+		MapChunkThread.endThread();
 	}
 
 	@Override

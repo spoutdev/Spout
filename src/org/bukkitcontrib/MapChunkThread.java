@@ -29,13 +29,22 @@ public final class MapChunkThread implements Runnable {
 
 	// singleton
 	private static final MapChunkThread instance = new MapChunkThread();
+	private static Thread thread = null;
 	private static boolean runs = false;
 
 	public static void startThread() {
 		if (!runs) {
 			runs = true;
-			new Thread(instance).start();
+			thread = new Thread(instance);
+			thread.start();
 		}
+	}
+	
+	public static void endThread() {
+		if (thread != null) {
+			thread.interrupt();
+		}
+		thread = null;
 	}
 
 	// deflater stuff
@@ -72,7 +81,7 @@ public final class MapChunkThread implements Runnable {
 
 	// consumer thread
 	public void run() {
-		while (true) {
+		while (!thread.isInterrupted()) {
 			try {
 				handle(queue.take());
 			} catch (InterruptedException ie) {
