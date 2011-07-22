@@ -2,9 +2,12 @@ package org.bukkitcontrib;
 
 import java.lang.reflect.Field;
 
+import org.bukkit.craftbukkit.CraftWorld;
+
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.ChunkEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkitcontrib.block.ContribCraftChunk;
 
 public class ContribChunkListener extends WorldListener{
@@ -20,5 +23,11 @@ public class ContribChunkListener extends WorldListener{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onWorldLoad(WorldLoadEvent event) {
+		net.minecraft.server.World world = ((CraftWorld)event.getWorld()).getHandle();
+		ContribPlayerManager.replacePlayerManager((net.minecraft.server.WorldServer)world);
 	}
 }

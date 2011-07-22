@@ -64,6 +64,8 @@ import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Slot;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
+import net.minecraft.server.TileEntity;
+import net.minecraft.server.WorldServer;
 
 public class ContribNetServerHandler extends NetServerHandler{
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -485,9 +487,6 @@ public class ContribNetServerHandler extends NetServerHandler{
 
 	@Override
 	public void a(Packet10Flying packet) {
-		if(packet instanceof Packet11PlayerPosition || packet instanceof Packet13PlayerLookMove) {
-			setPlayerChunk(((int)packet.x) >> 4, ((int)packet.z) >> 4);
-		}
 		manageChunkQueue(true);
 		super.a(packet);
 	}
@@ -513,27 +512,49 @@ public class ContribNetServerHandler extends NetServerHandler{
 			playerChunkQueue.clear();
 		}
 
-                if(!chunkUpdateQueue.isEmpty() && (b() + MapChunkThread.getQueueLength(this.player)) < 4) {
+		if(!chunkUpdateQueue.isEmpty() && (b() + MapChunkThread.getQueueLength(this.player)) < 4) {
 			ChunkCoordIntPair playerChunk = getPlayerChunk();
-			ChunkCoordIntPair first = chunkUpdateQueue.iterator().next();
-			if(updateCounter.get() > 0) {
-				int cx = playerChunk.x;
-				int cz = playerChunk.z;
-				boolean chunkFound = false;
-				for(int c = 0; c < spiralx.length; c++) {
-					ChunkCoordIntPair testChunk = new ChunkCoordIntPair(spiralx[c] + cx, spiralz[c] + cz);
-					if(chunkUpdateQueue.contains(testChunk)) {
-						first = testChunk;
-						chunkFound = true;
-						break;
-					}
-				}
-				if(!chunkFound) {
-					updateCounter.decrementAndGet();
+			Iterator<ChunkCoordIntPair> i = chunkUpdateQueue.iterator();
+			ChunkCoordIntPair first = i.next();
+			while(first != null && !activeChunks.contains(first)) {
+				i.remove();
+				if(i.hasNext()) {
+					first = i.next();
+				} else {
+					first = null;
 				}
 			}
-			chunkUpdateQueue.remove(first);
-                       	MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
+			if(first != null) {
+				if(updateCounter.get() > 0) {
+					int cx = playerChunk.x;
+					int cz = playerChunk.z;
+					boolean chunkFound = false;
+					for(int c = 0; c < spiralx.length; c++) {
+						ChunkCoordIntPair testChunk = new ChunkCoordIntPair(spiralx[c] + cx, spiralz[c] + cz);
+						if(chunkUpdateQueue.contains(testChunk)) {
+							first = testChunk;
+							chunkFound = true;
+							break;
+						}
+					}
+					if(!chunkFound) {
+						updateCounter.decrementAndGet();
+					}
+				}
+				chunkUpdateQueue.remove(first);
+				MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
+				WorldServer worldserver = (WorldServer) player.world;
+				List tileEntities = worldserver.getTileEntities(first.x * 16, 0, first.z * 16, first.x * 16 + 16, 128, first.z * 16 + 16);
+				for(Object tileEntityObject : tileEntities) {
+					if(tileEntityObject != null && tileEntityObject instanceof TileEntity) {
+						TileEntity tileEntity = (TileEntity) tileEntityObject;
+						Packet tilePacket = tileEntity.f();
+						if(tilePacket != null) {
+							MapChunkThread.sendPacket(this.player, tilePacket);
+						}
+					}
+				}
+			}
                 }
 	}
 

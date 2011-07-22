@@ -3,6 +3,7 @@ package org.bukkitcontrib;
 import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -11,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
@@ -104,4 +106,24 @@ public class ContribPlayerListener extends PlayerListener{
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void onPlayerMove(PlayerMoveEvent event) {
+
+		if(event.isCancelled()) {
+			return;
+		}
+
+		ContribCraftPlayer player = (ContribCraftPlayer)event.getPlayer();
+		ContribNetServerHandler netServerHandler = player.getNetServerHandler();
+
+		Location loc = event.getTo();
+
+		int cx = ((int)loc.getX()) >> 4;
+		int cz = ((int)loc.getZ()) >> 4;
+
+		netServerHandler.setPlayerChunk(cx, cz);
+
+	}
+
 }
