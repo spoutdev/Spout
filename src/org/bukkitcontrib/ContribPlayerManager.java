@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 
 	public static void replacePlayerManager(WorldServer world) {
-		if (world.manager.getClass().equals(ContribPlayerManager.class)) {
+		if (!world.manager.getClass().equals(ContribPlayerManager.class)) {
 			world.manager = new ContribPlayerManager(world.manager);
 			ContribPlayerInstance.replacePlayerInstances((ContribPlayerManager) world.manager);
 		}
