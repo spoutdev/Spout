@@ -10,10 +10,12 @@ import java.lang.reflect.Method;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.bukkitcontrib.util.ReflectUtil;
+
 public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 
 	public static void replacePlayerManager(WorldServer world) {
-		if (!world.manager.getClass().equals(ContribPlayerManager.class.hashCode())) {
+		if (!world.manager.getClass().equals(ContribPlayerManager.class)) {
 			world.manager = new ContribPlayerManager(world.manager);
 			ContribPlayerInstance.replacePlayerInstances((ContribPlayerManager) world.manager);
 		}
@@ -23,29 +25,12 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager {
 		super(null, 0, 10);
 		this.managedPlayers = manager.managedPlayers;
 		System.out.println("Tracking " + managedPlayers.size() + " players");
-		transferField(manager, this, "b");
-		transferField(manager, this, "c");
-		transferField(manager, this, "server");
-		transferField(manager, this, "e");
-		transferField(manager, this, "f");
-		transferField(manager, this, "g");
-	}
-
-	@SuppressWarnings( "rawtypes" )
-	private static void transferField(Object src, Object dest, String fieldName) {
-		try {
-			Class clazz = Class.forName("net.minecraft.server.PlayerManager");
-			Field field = clazz.getDeclaredField(fieldName);
-			field.setAccessible(true);
-			Object temp = field.get(src);
-			field.set(dest, temp);
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		ReflectUtil.transferField(manager, this, "b");
+		ReflectUtil.transferField(manager, this, "c");
+		ReflectUtil.transferField(manager, this, "server");
+		ReflectUtil.transferField(manager, this, "e");
+		ReflectUtil.transferField(manager, this, "f");
+		ReflectUtil.transferField(manager, this, "g");
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})

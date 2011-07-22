@@ -15,6 +15,8 @@ import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.TileEntity;
 import net.minecraft.server.WorldServer;
 
+import org.bukkitcontrib.util.ReflectUtil;
+
 class ContribPlayerInstance {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -59,31 +61,18 @@ class ContribPlayerInstance {
 
 	public ContribPlayerInstance(ContribPlayerManager manager, Object instance) {
 		this(manager, 0, 0);
-		transferField(instance, this, "b");
-		transferField(instance, this, "chunkX");
-		transferField(instance, this, "chunkY");
-		transferField(instance, this, "location");
-		transferField(instance, this, "dirtyBlocks");
-		transferField(instance, this, "dirtyCount");
-		transferField(instance, this, "h");
-		transferField(instance, this, "i");
-		transferField(instance, this, "j");
-		transferField(instance, this, "k");
-		transferField(instance, this, "l");
-		transferField(instance, this, "m");
-	}
-
-	private static void transferField(Object src, Object dest, String fieldName) {
-		try {
-			Field field = src.getClass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			Object temp = field.get(src);
-			field.set(dest, temp);
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
+		ReflectUtil.transferField(instance, this, "b");
+		ReflectUtil.transferField(instance, this, "chunkX");
+		ReflectUtil.transferField(instance, this, "chunkY");
+		ReflectUtil.transferField(instance, this, "location");
+		ReflectUtil.transferField(instance, this, "dirtyBlocks");
+		ReflectUtil.transferField(instance, this, "dirtyCount");
+		ReflectUtil.transferField(instance, this, "h");
+		ReflectUtil.transferField(instance, this, "i");
+		ReflectUtil.transferField(instance, this, "j");
+		ReflectUtil.transferField(instance, this, "k");
+		ReflectUtil.transferField(instance, this, "l");
+		ReflectUtil.transferField(instance, this, "m");
 	}
 
 	@SuppressWarnings("rawtypes")
