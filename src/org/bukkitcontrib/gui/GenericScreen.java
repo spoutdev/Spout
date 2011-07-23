@@ -8,7 +8,7 @@ import org.bukkitcontrib.BukkitContrib;
 import org.bukkitcontrib.packet.PacketWidget;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 
-public class GenericScreen implements Screen{
+public abstract class GenericScreen extends GenericWidget implements Screen{
 	protected List<Widget> widgets = new ArrayList<Widget>();
 	protected UUID id = UUID.randomUUID();
 	protected int playerId;

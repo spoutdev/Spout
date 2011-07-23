@@ -33,7 +33,7 @@ public interface Widget{
 	
 	public int getHeight();
 	
-	public Widget setHeight(int heigh);
+	public Widget setHeight(int height);
 	
 	public Screen getScreen();
 	

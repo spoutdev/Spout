@@ -48,8 +48,8 @@ public class GenericTexture extends GenericWidget implements Texture {
 			return;
 		}
 		GL11.glPushMatrix();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslatef(getUpperRightX(), getUpperRightY(), 50); //moves texture into place
-		GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
 		GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, BukkitContrib.getGameInstance().renderEngine.getTexture(path));
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
@@ -58,7 +58,6 @@ public class GenericTexture extends GenericWidget implements Texture {
 		tessellator.addVertexWithUV(getHeight(), 0.0D, -90, -1, -1);
 		tessellator.addVertexWithUV(0.0D, 0.0D, -90, 0.0D, -1);
 		tessellator.draw();
-		GL11.glDisable(3553 /*GL_TEXTURE_2D*/);
 		GL11.glPopMatrix();
 	}
 	

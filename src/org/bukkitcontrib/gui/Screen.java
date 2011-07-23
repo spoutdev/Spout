@@ -2,7 +2,7 @@ package org.bukkitcontrib.gui;
 
 import java.util.UUID;
 
-public interface Screen {
+public interface Screen extends Widget{
 	
 	public Widget[] getAttachedWidgets();
 	
@@ -17,5 +17,4 @@ public interface Screen {
 	public UUID getId();
 	
 	public void onTick();
-
 }

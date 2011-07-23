@@ -1,0 +1,12 @@
+diff -r -U 3 minecraft_server\net\minecraft\src\ItemMap.java minecraft_server_patched\net\minecraft\src\ItemMap.java
+--- minecraft_server\net\minecraft\src\ItemMap.java	Tue Jul 05 01:00:46 2011
++++ minecraft_server_patched\net\minecraft\src\ItemMap.java	Tue Jul 05 01:02:44 2011
+@@ -22,7 +22,7 @@
+    }
+ 
+    public MapData func_28023_a(ItemStack var1, World var2) {
+-      "map_" + var1.func_21125_h();
++//      "map_" + var1.func_21125_h();
+       MapData var4 = (MapData)var2.func_28103_a(MapData.class, "map_" + var1.func_21125_h());
+       if(var4 == null) {
+          var1.func_28145_b(var2.func_28104_b("map"));

@@ -85,5 +85,6 @@ public class GenericLabel extends GenericWidget implements Label{
 		for (int i = 0; i < lines.length; i++) {
 			font.drawStringWithShadow(lines[i], getUpperRightX() - (isCentered() ? font.getStringWidth(lines[i]) / 2 : 0), getUpperRightY() - (i * 10), getHexColor());
 		}
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

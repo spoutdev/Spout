@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.bukkitcontrib.packet.PacketWidget;
 
-public class GenericScreen implements Screen{
+public abstract class GenericScreen extends GenericWidget implements Screen{
 	protected List<Widget> widgets = new ArrayList<Widget>();
 	protected UUID id = UUID.randomUUID();
 	protected int playerId;

@@ -49,14 +49,17 @@ public class InGameScreen extends GenericScreen implements Screen{
 		return super.removeWidget(widget);
 	}
 	
+	@Override
 	public UUID getId() {
 		return new UUID(0, 0);
 	}
 	
+	@Override
 	public int getHeight() {
 		return 240;
 	}
 	
+	@Override
 	public int getWidth() {
 		return 427;
 	}
@@ -84,5 +87,13 @@ public class InGameScreen extends GenericScreen implements Screen{
 	public ArmorBar getArmorBar() {
 		return armor;
 	}
+
+	@Override
+	public WidgetType getType() {
+		return WidgetType.InGameScreen;
+	}
+
+	@Override
+	public void render() {}
 
 }

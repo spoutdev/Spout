@@ -10,6 +10,9 @@ public enum WidgetType {
 	ChatTextBox(4, ChatTextBox.class),
 	ArmorBar(5, ArmorBar.class),
 	Texture(6, GenericTexture.class),
+	Screen(7, GenericScreen.class),
+	InGameScreen(8, InGameScreen.class),
+	ItemWidget(9, GenericItemWidget.class),
 	
 	;
 	

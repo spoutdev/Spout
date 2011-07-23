@@ -57,6 +57,7 @@ public class BukkitContrib {
 		}
 		catch (Exception e) {}
 		System.out.println("Set BukkitContrib v. " + getVersionString());
+		Minecraft.hasPaidCheckTime = 0L;
 		if (!runOnce) {
 			CustomPacket.addClassMapping();
 			(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
