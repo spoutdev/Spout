@@ -12,7 +12,7 @@ public interface BukkitContribPacket {
 	
 	public void writeData(DataOutputStream output) throws IOException;
 	
-	public void run(int PlayerId);
+	public void run(int playerId);
 	
 	public PacketType getPacketType();
 

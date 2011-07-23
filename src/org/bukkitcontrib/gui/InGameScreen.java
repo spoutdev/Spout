@@ -2,12 +2,19 @@ package org.bukkitcontrib.gui;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkitcontrib.BukkitContrib;
+import org.bukkitcontrib.event.screen.ScreenOpenEvent;
+import org.bukkitcontrib.packet.PacketWidget;
+import org.bukkitcontrib.player.ContribCraftPlayer;
+
 public class InGameScreen extends GenericScreen implements Screen{
 	protected HealthBar health;
 	protected BubbleBar bubble;
 	protected ChatBar chat;
 	protected ChatTextBox chatText;
 	protected ArmorBar armor;
+	protected PopupScreen activePopup = null;
 	
 	public InGameScreen(int playerId) {
 		super(playerId);
@@ -19,6 +26,56 @@ public class InGameScreen extends GenericScreen implements Screen{
 		
 		attachWidget(health).attachWidget(bubble).attachWidget(chat).attachWidget(chatText).attachWidget(armor);
 	}
+	
+	public PopupScreen getActivePopupScreen() {
+		return activePopup;
+	}
+	
+	public void closeActivePopupScreen() {
+		activePopup = null;
+	}
+	
+	public boolean attachPopupScreen(PopupScreen screen) {
+		if (getActivePopupScreen() == null) {
+			ScreenOpenEvent event = new ScreenOpenEvent(screen);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				return false;
+			}
+			activePopup = screen;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean canAttachWidget(Widget widget) {
+		if (widget instanceof Screen) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public void onTick() {
+		super.onTick();
+		ContribCraftPlayer player = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId);
+		if (player != null && player.getVersion() > 17) {
+			if (getActivePopupScreen() != null && getActivePopupScreen().isDirty()) {
+				player.sendPacket(new PacketWidget(getActivePopupScreen(), getId()));
+				getActivePopupScreen().setDirty(false);
+			}
+		}
+	}
+	
+	@Override
+	public InGameScreen attachWidget(Widget widget) {
+		if (canAttachWidget(widget)) {
+			super.attachWidget(widget);
+			return this;
+		}
+		throw new UnsupportedOperationException("Unsupported widget type");
+	}
+	
 	
 	@Override
 	public boolean updateWidget(Widget widget) {

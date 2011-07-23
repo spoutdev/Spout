@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
+import org.bukkitcontrib.gui.GenericPopup;
+import org.bukkitcontrib.gui.PopupScreen;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
@@ -92,6 +94,7 @@ public class ContribPlayerListener extends PlayerListener{
 				((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
 				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s BukkitContrib client. Running client version: " + player.getVersion());
 				Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
+				player.getMainScreen().attachPopupScreen((PopupScreen)(new GenericPopup().setHeight(200).setWidth(200)));
 			}
 		}
 	}
