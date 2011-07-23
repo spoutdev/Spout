@@ -3,7 +3,6 @@ package org.bukkitcontrib.event.bukkitcontrib;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
-import org.bukkitcontrib.event.input.KeyPressedEvent;
 
 public class BukkitContribListener extends CustomEventListener implements Listener{
 
@@ -21,7 +20,7 @@ public class BukkitContribListener extends CustomEventListener implements Listen
 
 	@Override
 	public void onCustomEvent(Event event) {
-		if (event instanceof KeyPressedEvent) {
+		if (event instanceof BukkitContribSPEnable) {
 			onBukkitContribSPEnable((BukkitContribSPEnable)event);
 		}
 		else if (event instanceof ServerTickEvent) {

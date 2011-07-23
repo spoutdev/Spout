@@ -9,7 +9,7 @@ public class BackgroundMusicEvent extends Event implements Cancellable {
 	protected Music music = null;
 	protected int volume;
 	protected ContribPlayer target;
-	protected String Url = null;
+	protected String url = null;
 	protected boolean cancel = false;
 	public BackgroundMusicEvent(Music music, int volume, ContribPlayer target) {
 		super("BackgroundMusicEvent");
@@ -18,9 +18,9 @@ public class BackgroundMusicEvent extends Event implements Cancellable {
 		this.target = target;
 	}
 	
-	public BackgroundMusicEvent(String Url, int volume, ContribPlayer target) {
+	public BackgroundMusicEvent(String url, int volume, ContribPlayer target) {
 		super("BackgroundMusicEvent");
-		this.Url = Url;
+		this.url = url;
 		this.volume = volume;
 		this.target = target;
 	}
@@ -38,7 +38,7 @@ public class BackgroundMusicEvent extends Event implements Cancellable {
 	 * @return music url
 	 */
 	public String getMusicUrl() {
-		return Url;
+		return url;
 	}
 	
 	/**

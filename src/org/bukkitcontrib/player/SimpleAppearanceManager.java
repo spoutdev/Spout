@@ -95,7 +95,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		}
 		String title = map.get(target.getEntityId());
 		if (title == null) {
-			title = globalSkinMap.get(target.getEntityId());
+			title = globalTitleMap.get(target.getEntityId());
 			if (title == null) {
 				return viewingPlayer.getName();
 			}

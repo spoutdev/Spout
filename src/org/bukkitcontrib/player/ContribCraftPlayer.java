@@ -60,7 +60,7 @@ import org.bukkitcontrib.packet.PacketTexturePack;
 
 @SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
-	protected ContribCraftInventoryPlayer inventory;
+	protected ContribCraftInventoryPlayer inventory = null;
 	protected Keyboard forward = Keyboard.KEY_UNKNOWN;
 	protected Keyboard back = Keyboard.KEY_UNKNOWN;
 	protected Keyboard left = Keyboard.KEY_UNKNOWN;
@@ -153,7 +153,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 
 	@Override
 	public ContribPlayerInventory getInventory() {
-		if ((!(this.inventory instanceof ContribCraftInventoryPlayer))) {
+		if (this.inventory == null) {
 			createInventory(null);
 		}
 		else if (!((ContribCraftInventoryPlayer)this.inventory).getHandle().equals(this.getHandle().inventory)) {
@@ -164,7 +164,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	
 	@Override
 	public void setMaximumAir(int time) {
-		if (isEnabledBukkitContribSinglePlayerMod()) {
+		if (isBukkitContribEnabled()) {
 			sendPacket(new PacketAirTime(time, this.getRemainingAir()));
 		}
 		super.setMaximumAir(time);
@@ -172,7 +172,7 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	
 	@Override
 	public void setRemainingAir(int time) {
-		if (isEnabledBukkitContribSinglePlayerMod()) {
+		if (isBukkitContribEnabled()) {
 			sendPacket(new PacketAirTime(this.getMaximumAir(), time));
 		}
 		super.setRemainingAir(time);
@@ -455,17 +455,12 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 				this.inventory.setName(name);
 			}
 		}
-		else if (this.getHandle().defaultContainer instanceof ContainerPlayer) {
+		else {
 			this.inventory = new ContribCraftInventoryPlayer(this.getHandle().inventory, 
 					new ContribCraftingInventory(((ContainerPlayer)this.getHandle().defaultContainer).craftInventory, ((ContainerPlayer)this.getHandle().defaultContainer).resultInventory));
 			if (name != null) {
 				this.inventory.setName(name);
 			}
-		}
-		else {
-			//something is terribly wrong
-			this.inventory = null;
-			throw new UnsupportedOperationException("Attempted to create a ContribCraftPlayerInventory, but both the active and default containers were unsuitable candidates. Error in ContribCraftPlayer.createInventory(...).");
 		}
 	}
 	
@@ -613,27 +608,6 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 		   bukkitEntity.setAccessible(true);
 		   bukkitEntity.set(ep, null);
 	   } catch (Exception e) {
-		   e.printStackTrace();
-	   }
-   }
-   
-   public static void sendAllPackets(Player player) {
-	   NetworkManager manager = ((ContribCraftPlayer)getContribPlayer(player)).getNetServerHandler().networkManager;
-	   String name = player.getDisplayName();
-	   try {
-		   Method f = NetworkManager.class.getDeclaredMethod("f", (Class<?>[])null);
-		   f.setAccessible(true);
-		   while((Boolean)f.invoke(manager, (Object[])null) == true) {
-			   
-		   }
-	   }
-	   catch (Exception e) {
-		   //they will be kicked anyway, better to do it gracefully
-		   Logger.getLogger("Minecraft").severe("Failed to send all packets to " + name + " before disabling BukkitContrib!");
-		   try {
-			   player.kickPlayer("Failed to send packets while reloading BukkitContrib");
-		   }
-		   catch (Exception e1) {/*could be kicked already*/}
 		   e.printStackTrace();
 	   }
    }

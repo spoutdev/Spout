@@ -7,13 +7,13 @@ import java.io.IOException;
 import org.bukkitcontrib.packet.PacketUtil;
 
 public class GenericTexture extends GenericWidget implements Texture {
-	protected String Url = null;
+	protected String url = null;
 	public GenericTexture() {
 		
 	}
 	
-	public GenericTexture(String Url) {
-		this.Url = Url;
+	public GenericTexture(String url) {
+		this.url = url;
 	}
 
 	@Override
@@ -46,12 +46,12 @@ public class GenericTexture extends GenericWidget implements Texture {
 
 	@Override
 	public String getUrl() {
-		return Url;
+		return url;
 	}
 
 	@Override
 	public Texture setUrl(String Url) {
-		this.Url = Url;
+		this.url = Url;
 		return this;
 	}
 

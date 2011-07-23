@@ -19,13 +19,13 @@ import net.minecraft.server.World;
 public final class MapChunkThread implements Runnable {
 
 	// configuration
-	private final int QUEUE_CAPACITY = 1024 * 10; // how many packets can be queued before the main thread blocks
+	private static final int QUEUE_CAPACITY = 1024 * 10; // how many packets can be queued before the main thread blocks
 
-	private final int CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
-	private final int REDUCED_DEFLATE_THRESHOLD = CHUNK_SIZE / 4;
+	private static final int CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
+	private static final int REDUCED_DEFLATE_THRESHOLD = CHUNK_SIZE / 4;
 
-	private final int DEFLATE_LEVEL_CHUNKS = 6; // big chunks gets compressed well
-	private final int DEFLATE_LEVEL_PARTS = 1; // small data gets compressed fast (reduced CPU load)
+	private static final int DEFLATE_LEVEL_CHUNKS = 6; // big chunks gets compressed well
+	private static final int DEFLATE_LEVEL_PARTS = 1; // small data gets compressed fast (reduced CPU load)
 
 	// singleton
 	private static final MapChunkThread instance = new MapChunkThread();

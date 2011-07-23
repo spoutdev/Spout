@@ -3,6 +3,7 @@ package org.bukkitcontrib;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -82,7 +83,10 @@ public class BukkitContrib extends JavaPlugin{
 				File plugin = new File(directory.getPath(), "BukkitContrib.jar");
 				if (plugin.exists()) {
 					FileUtil.copy(plugin, this.getFile());
-					plugin.delete();
+					try {
+						plugin.delete();
+					}
+					catch (SecurityException e1) {}
 				}
 			}
 		}
@@ -212,16 +216,16 @@ public class BukkitContrib extends JavaPlugin{
 	
 	@SuppressWarnings("unused")
 	private static String colorToString(String color) {
-		String s = "";
+		StringBuffer buffer = new StringBuffer();
 		String split[] = color.split(ChatColor.WHITE.toString());
 		for (int i = 0; i < split.length; i++) {
 			int code = 0;
 			for (int j = 0; j < split[i].length(); j++) {
 				code += (int)(split[i].charAt(j));
 			}
-			s += (char)(code - ChatColor.BLACK.toString().charAt(0));
+			buffer.append((char)(code - ChatColor.BLACK.toString().charAt(0)));
 		}
-		return s;
+		return buffer.toString();
 	}
 	
 	protected static void sendBukkitContribVersionChat(Player player) {
@@ -263,10 +267,14 @@ public class BukkitContrib extends JavaPlugin{
 		if (!isUpdateAvailable()) {
 			return;
 		}
+		FileOutputStream fos = null;
 		try {
 			File directory = new File(Bukkit.getServer().getUpdateFolder());
 			if (!directory.exists()) {
-				directory.mkdir();
+				try {
+					directory.mkdir();
+				}
+				catch (SecurityException e1) {}
 			}
 			File plugin = new File(directory.getPath(), "BukkitContrib.jar");
 			if (!plugin.exists()) {
@@ -275,11 +283,17 @@ public class BukkitContrib extends JavaPlugin{
 				System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 				ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
-				FileOutputStream fos = new FileOutputStream(plugin);
+				fos = new FileOutputStream(plugin);
 				fos.getChannel().transferFrom(rbc, 0, 1 << 24);
-				fos.close();
 			}
 		}
 		catch (Exception e) {}
+		finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {}
+			}
+		}
 	}
 }

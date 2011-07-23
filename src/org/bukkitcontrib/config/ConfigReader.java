@@ -17,11 +17,17 @@ public class ConfigReader {
 		try {
 			File directory = BukkitContrib.getInstance().getDataFolder();
 			if (!directory.exists()) {
-				directory.mkdir();
+				try {
+					directory.mkdir();
+				}
+				catch (SecurityException e1) {}
 			}
 			File config = new File(directory, "config.yml");
 			if (!config.exists()) {
-				config.createNewFile();
+				try {
+					config.createNewFile();
+				}
+				catch (SecurityException e1) {}
 			}
 			Configuration configuration = BukkitContrib.getInstance().getConfiguration();
 			configuration.load();

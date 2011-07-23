@@ -3,10 +3,10 @@ package org.bukkitcontrib.event.bukkitcontrib;
 import org.bukkit.event.Event;
 
 public class ServerTickEvent extends Event{
-	protected static long lastTickTime = System.currentTimeMillis();
 	protected long lastTick;
 	protected long createdTime = System.currentTimeMillis();
-	protected static boolean first = true;
+	private static boolean first = true;
+	private static long lastTickTime = System.currentTimeMillis();
 	public ServerTickEvent() {
 		super("ServerTickEvent");
 		if (!first) {
