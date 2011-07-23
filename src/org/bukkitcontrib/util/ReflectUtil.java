@@ -23,12 +23,12 @@ public class ReflectUtil {
 		return getField(o.getClass(), fieldName);
 	}
 
-	public static Field getField(Class clazz, String fieldName) throws NoSuchFieldException {
+	public static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);
 			return field;
 		} catch (NoSuchFieldException e) {
-			Class superclass = clazz.getSuperclass();
+			Class<?> superclass = clazz.getSuperclass();
 			if(superclass == null) {
 				throw e;
 			} else {

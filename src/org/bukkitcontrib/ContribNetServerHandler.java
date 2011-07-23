@@ -543,7 +543,6 @@ public class ContribNetServerHandler extends NetServerHandler{
 				}
 				chunkUpdateQueue.remove(first);
 				MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
-				WorldServer worldserver = (WorldServer) player.world;
 				sendChunkTiles(first.x, first.z);
 			}
                 }
@@ -555,6 +554,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 
 	private final Set<ChunkCoordIntPair> unloadQueue =  Collections.synchronizedSet(new LinkedHashSet<ChunkCoordIntPair>());
 
+	@SuppressWarnings("rawtypes")
 	private void sendChunkTiles(int cx, int cz) {
 		WorldServer worldserver = (WorldServer) player.world;
 		List tileEntities = worldserver.getTileEntities(cx << 4, 0, cz << 4, (cx << 4) + 16, 128, (cz << 4) + 16);
