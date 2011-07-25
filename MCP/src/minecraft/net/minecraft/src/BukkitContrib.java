@@ -39,13 +39,15 @@ public class BukkitContrib {
 	private static boolean inGame = false;
 	private static InGameScreen mainScreen = new InGameScreen();
 	public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
-	public static boolean runOnce = false;
 	public static byte minView = -1;
 	public static byte maxView = -1;
 	public static final DataMiningThread dataMining = new DataMiningThread();
 	
 	static {
 		dataMining.start();
+		CustomPacket.addClassMapping();
+		(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
+		Minecraft.hasPaidCheckTime = 0L;
 	}
 	
 	public static void setVersion(String version) {
@@ -57,12 +59,6 @@ public class BukkitContrib {
 		}
 		catch (Exception e) {}
 		System.out.println("Set BukkitContrib v. " + getVersionString());
-		Minecraft.hasPaidCheckTime = 0L;
-		if (!runOnce) {
-			CustomPacket.addClassMapping();
-			(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
-			runOnce = true;
-		}
 		mainScreen = new InGameScreen();
 		EntityPlayer player = getGameInstance().thePlayer;
 		if (getVersion() > -1 && player instanceof EntityClientPlayerMP){
@@ -172,11 +168,11 @@ public class BukkitContrib {
 		if (game == null) {
 			Field f = null;
 			try {
-				//Try MC native method signature
+				//Try MC native field signature
 				f = Minecraft.class.getDeclaredField("a");
 			}
 			catch (Exception e) {
-				//Try MCP method signature
+				//Try MCP field signature
 				try {
 					f = Minecraft.class.getDeclaredField("theMinecraft");
 				}
