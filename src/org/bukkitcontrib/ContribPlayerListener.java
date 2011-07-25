@@ -99,13 +99,14 @@ public class ContribPlayerListener extends PlayerListener{
 				((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
 				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s BukkitContrib client. Running client version: " + player.getVersion());
 				Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
-				PopupScreen popup = new GenericPopup();
+				/*PopupScreen popup = new GenericPopup();
 				player.getMainScreen().attachPopupScreen(popup);
 				player.getMainScreen().attachWidget((new GenericTexture("http://dl.dropbox.com/u/49805/fire-icon.png")).setX(250).setY(75).setHeight(128).setWidth(64));
 				popup.attachWidget((new GenericTexture("http://dl.dropbox.com/u/49805/fire-icon.png")).setX(50).setY(75).setHeight(64).setWidth(128));
 				popup.attachWidget((new GenericItemWidget(new ItemStack(Material.DIAMOND_SWORD))).setDepth(64).setWidth(64).setHeight(64).setX(250).setY(100));
 				popup.attachWidget((new GenericItemWidget(new ItemStack(Material.COBBLESTONE))).setDepth(64).setWidth(64).setHeight(64).setX(50).setY(100));
 				popup.attachWidget((new GenericButton()).setText("Testing!").setWidth(200).setHeight(20).setX(100).setY(100));
+				*/
 			}
 		}
 	}
