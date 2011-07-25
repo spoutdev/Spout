@@ -5,7 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkitcontrib.ClientOnly;
 import org.bukkitcontrib.event.input.RenderDistance;
-import org.bukkitcontrib.gui.InGameScreen;
+import org.bukkitcontrib.gui.InGameHUD;
 import org.bukkitcontrib.keyboard.Keyboard;
 
 public interface ContribPlayer extends org.bukkit.entity.Player{
@@ -49,7 +49,7 @@ public interface ContribPlayer extends org.bukkit.entity.Player{
 	 */
 	public boolean openWorkbenchWindow(Location location);
 	
-	public InGameScreen getMainScreen();
+	public InGameHUD getMainScreen();
 
 	/**
 	 * Return's true if the player is using the bukkit contrib single player mod

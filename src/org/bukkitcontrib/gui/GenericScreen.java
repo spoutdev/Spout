@@ -10,7 +10,6 @@ import org.bukkitcontrib.player.ContribCraftPlayer;
 
 public abstract class GenericScreen extends GenericWidget implements Screen{
 	protected List<Widget> widgets = new ArrayList<Widget>();
-	protected UUID id = UUID.randomUUID();
 	protected int playerId;
 	public GenericScreen() {
 		
@@ -41,12 +40,22 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	
 	@Override
 	public boolean containsWidget(Widget widget) {
+		return containsWidget(widget.getId());
+	}
+	
+	@Override
+	public boolean containsWidget(UUID id) {
+		return getWidget(id) != null;
+	}
+	
+	@Override
+	public Widget getWidget(UUID id) {
 		for (Widget w : widgets) {
-			if (w.equals(widget)) {
-				return true;
+			if (w.getId().equals(id)) {
+				return w;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	@Override
@@ -74,7 +83,5 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	}
 	
 	@Override
-	public UUID getId() {
-		return id;
-	}
+	public void render() {}
 }

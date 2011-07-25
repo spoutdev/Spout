@@ -37,6 +37,7 @@ public class BukkitContrib {
 	private static SimpleSkyManager skyManager = new SimpleSkyManager();
 	private static ChatManager chatManager = new ChatManager();
 	private static boolean inGame = false;
+	private static InGameScreen mainScreen = new InGameScreen();
 	public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
 	public static boolean runOnce = false;
 	public static byte minView = -1;
@@ -68,10 +69,6 @@ public class BukkitContrib {
 		if (getVersion() > -1 && player instanceof EntityClientPlayerMP){
 			clipThread = new ClipboardThread((EntityClientPlayerMP)player);
 			clipThread.start();
-			itemManager = new SimpleItemManager();
-			skyManager = new SimpleSkyManager();
-			FileUtil.deleteTempDirectory();
-			getGameInstance().renderEngine.refreshTextures();
 		}
 	}
 	
@@ -142,6 +139,11 @@ public class BukkitContrib {
 		reset();
 		game = null;
 		entityLabel = new HashMap<Integer, String>();
+		mainScreen = new InGameScreen();
+		itemManager = new SimpleItemManager();
+		skyManager = new SimpleSkyManager();
+		FileUtil.deleteTempDirectory();
+		getGameInstance().renderEngine.refreshTextures();
 	}
 	
 	private static void reset() {
@@ -253,9 +255,14 @@ public class BukkitContrib {
 		}
 		return (byte)current;
 	}
+	
+	public static InGameScreen getMainScreen() {
+		return mainScreen;
+	}
 
 	public static void onTick() {
 		FileDownloadThread.getInstance().onTick();
+		mainScreen.onTick();
 		boolean activeGame = getGameInstance().theWorld != null;
 		if (activeGame != inGame) {
 			inGame = activeGame;

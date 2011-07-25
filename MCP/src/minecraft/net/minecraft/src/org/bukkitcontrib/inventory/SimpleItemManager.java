@@ -254,11 +254,11 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public String getItemName(int item) {
-		return getItemName(item, (byte)0);
+		return getItemName(item, (short)0);
 	}
 
 	@Override
-	public String getItemName(int item, byte data) {
+	public String getItemName(int item, short data) {
 		ItemData info = new ItemData(item, data);
 		if (customNames.containsKey(info)) {
 			return customNames.get(info);
@@ -268,11 +268,11 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public void setItemName(int item, String name) {
-		setItemName(item, (byte)0, name);
+		setItemName(item, (short)0, name);
 	}
 
 	@Override
-	public void setItemName(int item, byte data, String name) {
+	public void setItemName(int item, short data, String name) {
 		customNames.put(new ItemData(item, data), name);
 	}
 	
@@ -282,7 +282,7 @@ public class SimpleItemManager implements ItemManager{
 	}
 
 	@Override
-	public void resetName(int item, byte data) {
+	public void resetName(int item, short data) {
 		ItemData info = new ItemData(item, data);
 		if (customNames.containsKey(info)) {
 			customNames.remove(info);
@@ -296,11 +296,11 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public String getCustomItemName(int item) {
-		return getCustomItemName(item, (byte)0);
+		return getCustomItemName(item, (short)0);
 	}
 
 	@Override
-	public String getCustomItemName(int item, byte data) {
+	public String getCustomItemName(int item, short data) {
 		ItemData info = new ItemData(item, data);
 		if (customNames.containsKey(info)) {
 			return customNames.get(info);

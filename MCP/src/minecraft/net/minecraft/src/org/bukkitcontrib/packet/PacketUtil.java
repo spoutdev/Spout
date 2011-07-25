@@ -11,9 +11,9 @@ public abstract class PacketUtil {
 	
 	public static void writeString(DataOutputStream output, String string) {
 		try {
-				Packet.writeString(string, output);
+			Packet.writeString(string, output);
 		} catch (IOException e) {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -27,9 +27,9 @@ public abstract class PacketUtil {
 	
 	public static String readString(DataInputStream input, int maxSize) {
 		try {
-				return Packet.readString(input, maxSize);
+			return Packet.readString(input, maxSize);
 		} catch (IOException e) {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
 		return null;
 	}

@@ -12,7 +12,7 @@ public class TimeLabel extends GenericLabel implements Widget, Label{
 	private final ContribPlayer player;
 	public TimeLabel(InGameScreen screen, ContribPlayer player) {
 		this.player = player;
-		setHeight(10).setWidth(10).setScreen(screen).setUpperRightX(screen.getWidth() / 2).setUpperRightY(screen.getHeight() / 2);
+		setHeight(10).setWidth(10).setScreen(screen).setX(screen.getWidth() / 2).setY(screen.getHeight() / 2);
 	}
 
 	@Override

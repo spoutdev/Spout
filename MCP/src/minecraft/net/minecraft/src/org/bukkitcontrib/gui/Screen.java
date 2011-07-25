@@ -12,6 +12,10 @@ public interface Screen extends Widget{
 	
 	public boolean containsWidget(Widget widget);
 	
+	public boolean containsWidget(UUID id);
+	
+	public Widget getWidget(UUID id);
+	
 	public boolean updateWidget(Widget widget);
 	
 	public UUID getId();

@@ -3,12 +3,11 @@ package org.bukkitcontrib.gui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import org.lwjgl.opengl.GL11;
 import org.bukkitcontrib.packet.PacketWidget;
 
 public abstract class GenericScreen extends GenericWidget implements Screen{
 	protected List<Widget> widgets = new ArrayList<Widget>();
-	protected UUID id = UUID.randomUUID();
 	protected int playerId;
 	public GenericScreen() {
 		
@@ -39,12 +38,22 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	
 	@Override
 	public boolean containsWidget(Widget widget) {
+		return containsWidget(widget.getId());
+	}
+	
+	@Override
+	public boolean containsWidget(UUID id) {
+		return getWidget(id) != null;
+	}
+	
+	@Override
+	public Widget getWidget(UUID id) {
 		for (Widget w : widgets) {
-			if (w.equals(widget)) {
-				return true;
+			if (w.getId().equals(id)) {
+				return w;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	@Override
@@ -60,11 +69,22 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	
 	@Override
 	public void onTick() {
-
+		
 	}
 	
-	@Override
-	public UUID getId() {
-		return id;
+	protected boolean canRender(Widget widget) {
+		return widget.isVisible();
+	}
+	
+	public void render() {
+		for (RenderPriority priority : RenderPriority.values()) {
+			for (Widget widget : getAttachedWidgets()){
+				if (widget.getPriority() == priority && canRender(widget)) {
+					GL11.glPushMatrix();
+					widget.render();
+					GL11.glPopMatrix();
+				}
+			}
+		}
 	}
 }

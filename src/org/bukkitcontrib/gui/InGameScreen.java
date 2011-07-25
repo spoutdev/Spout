@@ -4,11 +4,14 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkitcontrib.BukkitContrib;
+import org.bukkitcontrib.event.screen.ScreenCloseEvent;
 import org.bukkitcontrib.event.screen.ScreenOpenEvent;
+import org.bukkitcontrib.packet.PacketScreenAction;
 import org.bukkitcontrib.packet.PacketWidget;
+import org.bukkitcontrib.packet.ScreenAction;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 
-public class InGameScreen extends GenericScreen implements Screen{
+public class InGameScreen extends GenericScreen implements InGameHUD{
 	protected HealthBar health;
 	protected BubbleBar bubble;
 	protected ChatBar chat;
@@ -26,45 +29,19 @@ public class InGameScreen extends GenericScreen implements Screen{
 		
 		attachWidget(health).attachWidget(bubble).attachWidget(chat).attachWidget(chatText).attachWidget(armor);
 	}
-	
-	public PopupScreen getActivePopupScreen() {
-		return activePopup;
-	}
-	
-	public void closeActivePopupScreen() {
-		activePopup = null;
-	}
-	
-	public boolean attachPopupScreen(PopupScreen screen) {
-		if (getActivePopupScreen() == null) {
-			ScreenOpenEvent event = new ScreenOpenEvent(screen);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			if (event.isCancelled()) {
-				return false;
-			}
-			activePopup = screen;
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean canAttachWidget(Widget widget) {
-		if (widget instanceof Screen) {
-			return false;
-		}
-		return true;
-	}
-	
 	@Override
 	public void onTick() {
-		super.onTick();
 		ContribCraftPlayer player = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId);
 		if (player != null && player.getVersion() > 17) {
-			if (getActivePopupScreen() != null && getActivePopupScreen().isDirty()) {
-				player.sendPacket(new PacketWidget(getActivePopupScreen(), getId()));
-				getActivePopupScreen().setDirty(false);
+			if (getActivePopup() != null) {
+				if (getActivePopup().isDirty()) {
+					player.sendPacket(new PacketWidget(getActivePopup(), getId()));
+					getActivePopup().setDirty(false);
+				}
+				getActivePopup().onTick();
 			}
 		}
+		super.onTick();
 	}
 	
 	@Override
@@ -122,8 +99,19 @@ public class InGameScreen extends GenericScreen implements Screen{
 		return 427;
 	}
 	
-	public static boolean isCustomWidget(Widget widget) {
-		return widget instanceof HealthBar || widget instanceof BubbleBar || widget instanceof ChatTextBox || widget instanceof ChatBar || widget instanceof ArmorBar;
+	public boolean closePopup() {
+		if (getActivePopup() == null) {
+			return false;
+		}
+		ScreenCloseEvent event = new ScreenCloseEvent(getActivePopup());
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		if (event.isCancelled()) {
+			return false;
+		}
+		ContribCraftPlayer player = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId);
+		player.sendPacket(new PacketScreenAction(ScreenAction.ScreenClose));
+		activePopup = null;
+		return true;
 	}
 	
 	public HealthBar getHealthBar() {
@@ -145,13 +133,47 @@ public class InGameScreen extends GenericScreen implements Screen{
 	public ArmorBar getArmorBar() {
 		return armor;
 	}
+	
+	public PopupScreen getActivePopup() {
+		return activePopup;
+	}
+	
+	public boolean attachPopupScreen(PopupScreen screen) {
+		if (getActivePopup() == null) {
+			ScreenOpenEvent event = new ScreenOpenEvent(screen);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				return false;
+			}
+			activePopup = screen;
+			screen.setScreen(this);
+			((GenericPopup)screen).playerId = this.playerId;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean canAttachWidget(Widget widget) {
+		if (widget instanceof Screen) {
+			return false;
+		}
+		if (widget instanceof Control) {
+			return false;
+		}
+		return true;
+	}
+	
 
 	@Override
 	public WidgetType getType() {
 		return WidgetType.InGameScreen;
 	}
-
-	@Override
-	public void render() {}
-
+	
+	public void clearPopup() {
+		activePopup = null;
+	}
+	
+	public static boolean isCustomWidget(Widget widget) {
+		return widget instanceof HealthBar || widget instanceof BubbleBar || widget instanceof ChatTextBox || widget instanceof ChatBar || widget instanceof ArmorBar;
+	}
 }

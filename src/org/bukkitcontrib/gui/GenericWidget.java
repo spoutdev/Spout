@@ -17,7 +17,7 @@ public abstract class GenericWidget implements Widget{
 	protected UUID id = UUID.randomUUID();
 	
 	public GenericWidget() {
-		
+
 	}
 	
 	public int getNumBytes() {
@@ -33,21 +33,21 @@ public abstract class GenericWidget implements Widget{
 
 	@Override
 	public void readData(DataInputStream input) throws IOException {
-		setUpperRightX(input.readInt());
-		setUpperRightY(input.readInt());
+		setX(input.readInt());
+		setY(input.readInt());
 		setWidth(input.readInt());
 		setHeight(input.readInt());
 		setVisible(input.readBoolean());
 		setPriority(RenderPriority.getRenderPriorityFromId(input.readInt()));
 		long msb = input.readLong();
 		long lsb = input.readLong();
-		id = new UUID(msb, lsb);
+		this.id = new UUID(msb, lsb);
 	}
 
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
-		output.writeInt(getUpperRightX());
-		output.writeInt(getUpperRightY());
+		output.writeInt(getX());
+		output.writeInt(getY());
 		output.writeInt(getWidth());
 		output.writeInt(getHeight());
 		output.writeBoolean(isVisible());
@@ -115,36 +115,36 @@ public abstract class GenericWidget implements Widget{
 	}
 
 	@Override
-	public int getUpperRightX() {
+	public int getX() {
 		return upperRightX;
 	}
 
 	@Override
-	public int getUpperRightY() {
+	public int getY() {
 		return upperRightY;
 	}
 
 	@Override
-	public Widget setUpperRightX(int pos) {
+	public Widget setX(int pos) {
 		this.upperRightX = pos;
 		return this;
 	}
 
 	@Override
-	public Widget setUpperRightY(int pos) {
+	public Widget setY(int pos) {
 		this.upperRightY = pos;
 		return this;
 	}
 
 	@Override
 	public Widget shiftXPos(int modX) {
-		setUpperRightX(getUpperRightX() + modX);
+		setX(getX() + modX);
 		return this;
 	}
 	
 	@Override
 	public Widget shiftYPos(int modY) {
-		setUpperRightY(getUpperRightY() + modY);
+		setY(getY() + modY);
 		return this;
 	}
 	

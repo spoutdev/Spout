@@ -39,13 +39,13 @@ public interface Widget{
 	
 	public Widget setScreen(Screen screen);
 
-	public int getUpperRightX();
+	public int getX();
 	
-	public int getUpperRightY();
+	public int getY();
 	
-	public Widget setUpperRightX(int pos);
+	public Widget setX(int pos);
 	
-	public Widget setUpperRightY(int pos);
+	public Widget setY(int pos);
 	
 	public Widget shiftXPos(int x);
 	

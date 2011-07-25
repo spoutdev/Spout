@@ -47,28 +47,17 @@ public class GenericTexture extends GenericWidget implements Texture {
 		if (path == null) {
 			return;
 		}
-		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glTranslatef(getUpperRightX(), getUpperRightY(), 50); //moves texture into place
+		GL11.glTranslatef(getX(), getY(), 0); //moves texture into place
 		GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, BukkitContrib.getGameInstance().renderEngine.getTexture(path));
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV(0.0D, getHeight(), -90, 0.0D, 0.0D); //draw corners
-		tessellator.addVertexWithUV(getHeight(), getWidth(), -90, -1, 0.0D);
-		tessellator.addVertexWithUV(getHeight(), 0.0D, -90, -1, -1);
-		tessellator.addVertexWithUV(0.0D, 0.0D, -90, 0.0D, -1);
+		tessellator.addVertexWithUV(0.0D, getHeight(), 90, 0.0D, 0.0D); //draw corners
+		tessellator.addVertexWithUV(getWidth(), getHeight(), 90, -1, 0.0D);
+		tessellator.addVertexWithUV(getWidth(), 0.0D, 90, -1, -1);
+		tessellator.addVertexWithUV(0.0D, 0.0D, 90, 0.0D, -1);
 		tessellator.draw();
-		GL11.glPopMatrix();
 	}
-	
-	private String getFileName() {
-		int slashIndex = getUrl().lastIndexOf('/');
-		int dotIndex = getUrl().lastIndexOf('.', slashIndex);
-		if (dotIndex == -1 || dotIndex < slashIndex) {
-				return getUrl().substring(slashIndex + 1).replaceAll("%20", " ");
-		}
-		return getUrl().substring(slashIndex + 1, dotIndex).replaceAll("%20", " ");
-	 }
 
 	@Override
 	public String getUrl() {

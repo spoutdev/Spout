@@ -22,6 +22,7 @@ public enum PacketType {
 	PacketTexturePack(15, PacketTexturePack.class),
 	PacketWorldSeed(16, PacketWorldSeed.class),
 	PacketNotification(17, PacketNotification.class),
+	PacketScreenAction(18, PacketScreenAction.class),
 	
 	;
 	

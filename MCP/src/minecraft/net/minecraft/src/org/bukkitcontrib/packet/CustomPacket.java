@@ -6,10 +6,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
-
-import org.bukkitcontrib.ContribNetServerHandler;
-import net.minecraft.server.NetHandler;
-import net.minecraft.server.Packet;
+import org.bukkitcontrib.packet.*;
+import net.minecraft.src.Packet;
+import net.minecraft.src.NetClientHandler;
+import net.minecraft.src.NetHandler;
+import net.minecraft.src.BukkitContrib;
 
 public class CustomPacket extends Packet{
 	BukkitContribPacket packet;
@@ -23,7 +24,7 @@ public class CustomPacket extends Packet{
 	}
 
 	@Override
-	public int a() {
+	public int getPacketSize() {
 		if(packet == null) {
 			return 8;
 		} else {
@@ -32,7 +33,7 @@ public class CustomPacket extends Packet{
 	}
 
 	@Override
-	public void a(DataInputStream input) throws IOException {
+	public void readPacketData(DataInputStream input) throws IOException {
 		int packetId = -1;
 		packetId = input.readInt();
 		int length = input.readInt(); //packet size
@@ -66,7 +67,7 @@ public class CustomPacket extends Packet{
 	}
 
 	@Override
-	public void a(DataOutputStream output) throws IOException {
+	public void writePacketData(DataOutputStream output) throws IOException {
 		if(packet == null) {
 			output.writeInt(-1);
 			output.writeInt(0);;
@@ -74,48 +75,19 @@ public class CustomPacket extends Packet{
 		}
 		//System.out.println("Writing Packet Data for " + packet.getPacketType());
 		output.writeInt(packet.getPacketType().getId());
-		output.writeInt(a() - 8);
+		output.writeInt(getPacketSize() - 8);
 		packet.writeData(output);
 	}
 
 	@Override
-	public void a(NetHandler netHandler) {
-		if (netHandler.getClass().hashCode() == ContribNetServerHandler.class.hashCode()) {
-			ContribNetServerHandler handler = (ContribNetServerHandler)netHandler;
-			packet.run(handler.getPlayer().getEntityId());
-		}
-		else {
-			//System.out.println("Invalid hash!");
+	public void processPacket(NetHandler netHandler) {
+		NetClientHandler handler = (NetClientHandler)netHandler;
+		if(packet != null) {
+			packet.run(BukkitContrib.getGameInstance().thePlayer.entityId);
 		}
 	}
 	
 	public static void addClassMapping() {
-		try {
-			Class<?>[] params = {int.class, boolean.class, boolean.class, Class.class};
-			Method addClassMapping = Packet.class.getDeclaredMethod("a", params);
-			addClassMapping.setAccessible(true);
-			addClassMapping.invoke(null, 195, true, true, CustomPacket.class);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		addIdClassMapping(195, true, true, CustomPacket.class);
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void removeClassMapping() {
-		try {
-			Field field = Packet.class.getDeclaredField("a");
-			field.setAccessible(true);
-			Map temp = (Map) field.get(null);
-			temp.remove(195);
-			field = Packet.class.getDeclaredField("b");
-			field.setAccessible(true);
-			temp = (Map) field.get(null);
-			temp.remove(CustomPacket.class);
-		}
-		catch (Exception e) {
-			
-		}
-	}
-
 }

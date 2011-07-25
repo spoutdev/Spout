@@ -4,22 +4,24 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import net.minecraft.src.RenderItem;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.BukkitContrib;
 import net.minecraft.src.RenderHelper;
 import net.minecraft.src.Block;
+import net.minecraft.src.EntityItem;
+import net.minecraft.src.RenderManager;
 import org.lwjgl.opengl.GL11;
 
 public class GenericItemWidget extends GenericWidget implements ItemWidget{
 	protected int material = -1;
 	protected short data = -1;
-	protected int depth;
-	protected final RenderItem renderer = new RenderItem();
+	protected int depth = 8;
+	protected final RenderItemCustom renderer;
 	protected ItemStack toRender = null;
 	
 	public GenericItemWidget() {
-		
+		renderer = new RenderItemCustom();
+		renderer.setRenderManager(RenderManager.instance);
 	}
 	
 	public int getNumBytes() {
@@ -32,6 +34,7 @@ public class GenericItemWidget extends GenericWidget implements ItemWidget{
 		this.setTypeId(input.readInt());
 		this.setData(input.readShort());
 		this.setDepth(input.readInt());
+
 	}
 
 	@Override
@@ -98,23 +101,35 @@ public class GenericItemWidget extends GenericWidget implements ItemWidget{
 		}
 		if (toRender != null) {
 			GL11.glDepthFunc(515);
-			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-			GL11.glEnable(3553 /*GL_TEXTURE_2D*/);
-			GL11.glEnable(2903 /*GL_COLOR_MATERIAL*/);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+			GL11.glDisable(GL11.GL_LIGHTING);
 			RenderHelper.enableStandardItemLighting();
-			Block block = Block.blocksList[getTypeId()];
-			double oldX = block.maxX;
-			double oldY = block.maxY;
-			double oldZ = block.maxZ;
-			block.maxX = block.maxX * (getWidth() / 8);
-			block.maxY = block.maxY * (getHeight() / 8);
-			block.maxZ = block.maxZ * (getDepth() / 8);
-			renderer.renderItemIntoGUI(BukkitContrib.getGameInstance().fontRenderer, BukkitContrib.getGameInstance().renderEngine, toRender, getUpperRightX(), getUpperRightY());
-			block.maxX = oldX;
-			block.maxY = oldY;
-			block.maxZ = oldZ;
-			GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-			GL11.glEnable(2896 /*GL_LIGHTING*/);
+			double oldX = 1;
+			double oldY = 1;
+			double oldZ = 1;
+			Block block = null;
+			if (getTypeId() < 255) {
+				block = Block.blocksList[getTypeId()];
+				oldX = block.maxX;
+				oldY = block.maxY;
+				oldZ = block.maxZ;
+				block.maxX = block.maxX * (getWidth() / 8);
+				block.maxY = block.maxY * (getHeight() / 8);
+				block.maxZ = block.maxZ * (getDepth() / 8);
+			}
+			else {
+				renderer.setScale(1 + (getWidth() / 200D), 1 + (getHeight() / 200D), 1);
+			}
+			renderer.renderItemIntoGUI(BukkitContrib.getGameInstance().fontRenderer, BukkitContrib.getGameInstance().renderEngine, toRender, getX(), getY());
+			if (getTypeId() < 255){
+				block.maxX = oldX;
+				block.maxY = oldY;
+				block.maxZ = oldZ;
+			}
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_LIGHTING);
 			RenderHelper.disableStandardItemLighting();
 		}
 	}

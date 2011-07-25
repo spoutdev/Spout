@@ -17,5 +17,4 @@ public interface ItemWidget extends Widget{
 	public ItemWidget setWidth(int width);
 	
 	public ItemWidget setHeight(int height);
-	
 }

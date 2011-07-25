@@ -6,12 +6,5 @@ public interface PopupScreen extends Screen{
 	
 	public PopupScreen setTransparent(boolean value);
 	
-	public String getBackgroundTextureUrl();
-	
-	public PopupScreen setBackgroundTextureUrl(String url);
-	
-	public int getBackgroundSolidColor();
-	
-	public PopupScreen setBackgroundSolidColor(int hexCode);
-
+	public void close();
 }

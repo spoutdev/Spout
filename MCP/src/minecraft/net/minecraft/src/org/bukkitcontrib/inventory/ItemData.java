@@ -2,7 +2,7 @@ package org.bukkitcontrib.inventory;
 
 public class ItemData {
 	public final int id;
-	public final byte data;
+	public final short data;
 	protected ItemData(int id) {
 		this.id = id;
 		this.data = 0;
@@ -10,7 +10,7 @@ public class ItemData {
 	
 	protected ItemData(int id, int data) {
 		this.id = id;
-		this.data = (byte)data;
+		this.data = (short)data;
 	}
 	
 	public boolean equals(Object obj) {

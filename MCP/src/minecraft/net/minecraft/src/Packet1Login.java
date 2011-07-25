@@ -41,7 +41,6 @@ public class Packet1Login extends Packet {
 	public void processPacket(NetHandler var1) {
 		//BukkitContrib Start
 		BukkitContrib.resetBukkitContrib();
-		BukkitContrib.mainScreen = new InGameScreen();
 		BukkitContrib.dataMining.onLogin();
 		//BukkitContrib End
 		var1.handleLogin(this);

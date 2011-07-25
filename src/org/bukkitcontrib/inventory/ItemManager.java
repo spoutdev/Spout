@@ -24,7 +24,7 @@ public interface ItemManager {
 	 * @param data for the item
 	 * @return name
 	 */
-	public String getItemName(Material item, byte data);
+	public String getItemName(Material item, short data);
 	
 	/**
 	 * Gets  the custom name of the item, or null if none exists
@@ -32,7 +32,7 @@ public interface ItemManager {
 	 * @param data for the item
 	 * @return name
 	 */
-	public String getCustomItemName(Material item, byte data);
+	public String getCustomItemName(Material item, short data);
 	
 	/**
 	 * Sets the name of the item
@@ -47,7 +47,7 @@ public interface ItemManager {
 	 * @param data of the item
 	 * @param name to set
 	 */
-	public void setItemName(Material item, byte data, String name);
+	public void setItemName(Material item, short data, String name);
 	
 	/**
 	 * Resets the name of the item back to the notchian default
@@ -60,7 +60,7 @@ public interface ItemManager {
 	 * @param item to reset
 	 * @param data of the item
 	 */
-	public void resetName(Material item, byte data);
+	public void resetName(Material item, short data);
 	
 	/**
 	 * Resets the names of all items to the notchian defaults. Use with care.

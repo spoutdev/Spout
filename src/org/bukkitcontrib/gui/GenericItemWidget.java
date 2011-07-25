@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 public class GenericItemWidget extends GenericWidget implements ItemWidget{
 	protected int material = -1;
 	protected short data = -1;
-	protected int depth;
+	protected int depth = 8;
 
 	public GenericItemWidget() {
 		

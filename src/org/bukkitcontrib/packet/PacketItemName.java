@@ -6,13 +6,13 @@ import java.io.IOException;
 
 public class PacketItemName implements BukkitContribPacket{
 	private int id;
-	private byte data;
+	private short data;
 	private String name;
 	public PacketItemName() {
 		
 	}
 	
-	public PacketItemName(int id, byte data, String name) {
+	public PacketItemName(int id, short data, String name) {
 		this.id = id;
 		this.data = data;
 		this.name = name;
@@ -20,20 +20,20 @@ public class PacketItemName implements BukkitContribPacket{
 
 	@Override
 	public int getNumBytes() {
-		return 5 + PacketUtil.getNumBytes(name);
+		return 6 + PacketUtil.getNumBytes(name);
 	}
 
 	@Override
 	public void readData(DataInputStream input) throws IOException {
 		id = input.readInt();
-		data = input.readByte();
+		data = input.readShort();
 		name = PacketUtil.readString(input);
 	}
 
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
 		output.writeInt(id);
-		output.writeByte(data);
+		output.writeShort(data);
 		PacketUtil.writeString(output, name);
 	}
 

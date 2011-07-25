@@ -13,6 +13,7 @@ public enum WidgetType {
 	PopupScreen(7, GenericPopup.class),
 	InGameScreen(8, InGameScreen.class),
 	ItemWidget(9, GenericItemWidget.class),
+	Button(10, GenericButton.class),
 	
 	;
 	

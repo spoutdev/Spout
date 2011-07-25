@@ -100,7 +100,7 @@ public class GuiIngame extends Gui {
 			for(var16 = 0; var16 < 10; ++var16) {
 				var17 = var7 - 32;
 				//BukkitContrib Start
-				if (BukkitContrib.mainScreen.getArmorBar().isVisible()) {
+				if (BukkitContrib.getMainScreen().getArmorBar().isVisible()) {
 					if(var15 > 0) {
 						var18 = var6 / 2 + 91 - var16 * 8 - 9;
 						if(var16 * 2 + 1 < var15) {
@@ -127,7 +127,7 @@ public class GuiIngame extends Gui {
 					var17 += this.rand.nextInt(2);
 				}
 				//BukkitContrib Start
-				if (BukkitContrib.mainScreen.getHealthBar().isVisible()) {
+				if (BukkitContrib.getMainScreen().getHealthBar().isVisible()) {
 					this.drawTexturedModalRect(var19, var17, 16 + var31 * 9, 0, 9, 9);
 					if(var12) {
 						if(var16 * 2 + 1 < var14) {
@@ -154,7 +154,7 @@ public class GuiIngame extends Gui {
 				//BukkitContrib Start
 				var16 = (int)Math.ceil(((double)(mc.thePlayer.air - 2) * 10D) / (mc.thePlayer.maxAir * 1D));
 				var17 = (int)Math.ceil(((double)mc.thePlayer.air * 10D) / (mc.thePlayer.maxAir * 1D)) - var16;
-				if (BukkitContrib.mainScreen.getBubbleBar().isVisible()) {
+				if (BukkitContrib.getMainScreen().getBubbleBar().isVisible()) {
 					for(var18 = 0; var18 < var16 + var17; ++var18) {
 						if(var18 < var16) {
 							this.drawTexturedModalRect(var6 / 2 - 91 + var18 * 8, var7 - 32 - 9, 16, 18, 9, 9);
@@ -200,17 +200,7 @@ public class GuiIngame extends Gui {
 		if (BukkitContrib.getZanMinimap() != null) {
 			((ZanMinimap)BukkitContrib.getZanMinimap()).OnTickInGame(mc);
 		}
-		for (RenderPriority priority : RenderPriority.values()) {
-			for (Widget widget : BukkitContrib.mainScreen.getAttachedWidgets()){
-				if (widget.getPriority() == priority && !InGameScreen.isCustomWidget(widget)) {
-					if (widget.isVisible()) {
-						GL11.glPushMatrix();
-						widget.render();
-						GL11.glPopMatrix();
-					}
-				}
-			}
-		}
+		BukkitContrib.getMainScreen().render();
 		//BukkitContrib End
 		String var23;
 		if(this.mc.gameSettings.showDebugInfo) {
@@ -270,14 +260,14 @@ public class GuiIngame extends Gui {
 		byte var27 = 10;
 		boolean var28 = false;
 		//BukkitContrib Start
-		if (BukkitContrib.mainScreen.getChatBar().isVisible()) {
+		if (BukkitContrib.getMainScreen().getChatBar().isVisible()) {
 			if(mc.currentScreen instanceof GuiChat) {
 				var27 = 20;
 				var28 = true;
 			}
 		}
 		boolean chatOpen = var28;
-		int lines = chatOpen ? BukkitContrib.mainScreen.getChatTextBox().getNumVisibleChatLines() : BukkitContrib.mainScreen.getChatTextBox().getNumVisibleLines();
+		int lines = chatOpen ? BukkitContrib.getMainScreen().getChatTextBox().getNumVisibleChatLines() : BukkitContrib.getMainScreen().getChatTextBox().getNumVisibleLines();
 		//BukkitContrib End
 
 		GL11.glEnable(3042 /*GL_BLEND*/);
@@ -288,7 +278,7 @@ public class GuiIngame extends Gui {
 
 		//BukkitContrib Start
 		
-		if (BukkitContrib.mainScreen.getChatTextBox().isVisible()) {
+		if (BukkitContrib.getMainScreen().getChatTextBox().isVisible()) {
 			int start = chatMessageList.size() - BukkitContrib.getChatManager().chatScroll - 1;
 			int end = Math.max(0, chatMessageList.size() - BukkitContrib.getChatManager().chatScroll - 1 - var27);
 			int viewedLine = 0;

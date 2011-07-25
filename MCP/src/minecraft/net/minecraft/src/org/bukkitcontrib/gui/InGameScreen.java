@@ -1,13 +1,15 @@
 package org.bukkitcontrib.gui;
 
 import java.util.UUID;
+import net.minecraft.src.BukkitContrib;
 
-public class InGameScreen extends GenericScreen implements Screen{
+public class InGameScreen extends GenericScreen implements InGameHUD{
 	protected HealthBar health;
 	protected BubbleBar bubble;
 	protected ChatBar chat;
 	protected ChatTextBox chatText;
 	protected ArmorBar armor;
+	protected PopupScreen activePopup = null;
 	
 	public InGameScreen() {
 		this.health = new HealthBar();
@@ -18,6 +20,24 @@ public class InGameScreen extends GenericScreen implements Screen{
 		
 		attachWidget(health).attachWidget(bubble).attachWidget(chat).attachWidget(chatText).attachWidget(armor);
 	}
+
+	@Override
+	public void onTick() {
+		if (BukkitContrib.getGameInstance().currentScreen == null) {
+			activePopup = null;
+		}
+		super.onTick();
+	}
+	
+	@Override
+	public InGameScreen attachWidget(Widget widget) {
+		if (canAttachWidget(widget)) {
+			super.attachWidget(widget);
+			return this;
+		}
+		throw new UnsupportedOperationException("Unsupported widget type");
+	}
+	
 	
 	@Override
 	public boolean updateWidget(Widget widget) {
@@ -64,8 +84,12 @@ public class InGameScreen extends GenericScreen implements Screen{
 		return 427;
 	}
 	
-	public static boolean isCustomWidget(Widget widget) {
-		return widget instanceof HealthBar || widget instanceof BubbleBar || widget instanceof ChatTextBox || widget instanceof ChatBar || widget instanceof ArmorBar;
+	public boolean closePopup() {
+		if (getActivePopup() == null) {
+			return false;
+		}
+		activePopup = null;
+		return true;
 	}
 	
 	public HealthBar getHealthBar() {
@@ -87,13 +111,46 @@ public class InGameScreen extends GenericScreen implements Screen{
 	public ArmorBar getArmorBar() {
 		return armor;
 	}
+	
+	public PopupScreen getActivePopup() {
+		return activePopup;
+	}
+	
+	public boolean attachPopupScreen(PopupScreen screen) {
+		if (getActivePopup() == null) {
+			activePopup = screen;
+			BukkitContrib.getGameInstance().displayGuiScreen(new CustomScreen(screen));
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean canAttachWidget(Widget widget) {
+		if (widget instanceof Screen) {
+			return false;
+		}
+		if (widget instanceof Control) {
+			return false;
+		}
+		return true;
+	}
+	
 
 	@Override
 	public WidgetType getType() {
 		return WidgetType.InGameScreen;
 	}
-
+	
+	public void clearPopup() {
+		activePopup = null;
+	}
+	
 	@Override
-	public void render() {}
+	protected boolean canRender(Widget widget) {
+		return super.canRender(widget) && !isCustomWidget(widget);
+	}
 
+	public static boolean isCustomWidget(Widget widget) {
+		return widget instanceof HealthBar || widget instanceof BubbleBar || widget instanceof ChatTextBox || widget instanceof ChatBar || widget instanceof ArmorBar;
+	}
 }

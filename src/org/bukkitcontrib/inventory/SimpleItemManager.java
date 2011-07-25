@@ -261,11 +261,11 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public String getItemName(Material item) {
-		return getItemName(item, (byte)0);
+		return getItemName(item, (short)0);
 	}
 
 	@Override
-	public String getItemName(Material item, byte data) {
+	public String getItemName(Material item, short data) {
 		ItemData info = new ItemData(item.getId(), data);
 		if (customNames.containsKey(info)) {
 			return customNames.get(info);
@@ -275,16 +275,16 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public void setItemName(Material item, String name) {
-		setItemName(item, (byte)0, name);
+		setItemName(item, (short)0, name);
 	}
 
 	@Override
-	public void setItemName(Material item, byte data, String name) {
+	public void setItemName(Material item, short data, String name) {
 		customNames.put(new ItemData(item.getId(), data), name);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof ContribCraftPlayer){
 				if (((ContribCraftPlayer)player).getVersion() > 8) {
-					((ContribCraftPlayer)player).sendPacket(new PacketItemName(item.getId(), (byte) 0, "[reset]"));
+					((ContribCraftPlayer)player).sendPacket(new PacketItemName(item.getId(), (short) 0, "[reset]"));
 				}
 			}
 		}
@@ -296,7 +296,7 @@ public class SimpleItemManager implements ItemManager{
 	}
 
 	@Override
-	public void resetName(Material item, byte data) {
+	public void resetName(Material item, short data) {
 		ItemData info = new ItemData(item.getId(), data);
 		if (customNames.containsKey(info)) {
 			customNames.remove(info);
@@ -316,7 +316,7 @@ public class SimpleItemManager implements ItemManager{
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof ContribCraftPlayer){
 				if (((ContribCraftPlayer)player).getVersion() > 8) {
-					((ContribCraftPlayer)player).sendPacket(new PacketItemName(0, (byte) 0, "[resetall]"));
+					((ContribCraftPlayer)player).sendPacket(new PacketItemName(0, (short) 0, "[resetall]"));
 				}
 			}
 		}
@@ -324,11 +324,11 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public String getCustomItemName(Material item) {
-		return getCustomItemName(item, (byte)0);
+		return getCustomItemName(item, (short)0);
 	}
 
 	@Override
-	public String getCustomItemName(Material item, byte data) {
+	public String getCustomItemName(Material item, short data) {
 		ItemData info = new ItemData(item.getId(), data);
 		if (customNames.containsKey(info)) {
 			return customNames.get(info);

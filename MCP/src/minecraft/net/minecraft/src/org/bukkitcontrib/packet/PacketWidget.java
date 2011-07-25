@@ -53,14 +53,39 @@ public class PacketWidget implements BukkitContribPacket {
 	}
 
 	@Override
-	public void run(int PlayerId) {
-		if (BukkitContrib.mainScreen.containsWidget(widget)) {
-			BukkitContrib.mainScreen.updateWidget(widget);
-			//System.out.println(widget.getType() + " updated");
+	public void run(int playerId) {
+		InGameScreen mainScreen = BukkitContrib.getMainScreen();
+		PopupScreen popup = mainScreen.getActivePopup();
+		//Determine if this is a popup screen and if we need to update it
+		if (widget instanceof PopupScreen) {
+			if (popup != null){
+				if (widget.getId().equals(popup)) {
+					if (BukkitContrib.getGameInstance().currentScreen instanceof CustomScreen) {
+						((CustomScreen)BukkitContrib.getGameInstance().currentScreen).update((PopupScreen)widget);
+					}
+				}
+			}
+			else {
+				mainScreen.attachPopupScreen((PopupScreen)widget);
+			}
 		}
-		else {
-			//System.out.println(widget.getType() + " added");
-			BukkitContrib.mainScreen.attachWidget(widget);
+		//Determine if this is a widget on the main screen
+		else if (screen.equals(mainScreen.getId())) {
+			if (mainScreen.containsWidget(widget)) {
+				mainScreen.updateWidget(widget);
+			}
+			else {
+				mainScreen.attachWidget(widget);
+			}
+		}
+		//Determine if this is a widget on the popup screen
+		else if (popup != null && screen.equals(popup.getId())) {
+			if (popup.containsWidget(widget)) {
+				popup.updateWidget(widget);
+			}
+			else {
+				popup.attachWidget(widget);
+			}
 		}
 	}
 
