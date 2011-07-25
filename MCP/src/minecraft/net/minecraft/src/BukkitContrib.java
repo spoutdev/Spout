@@ -41,7 +41,6 @@ public class BukkitContrib {
 	public static HashMap<Integer, String> entityLabel = new HashMap<Integer, String>();
 	public static boolean runOnce = false;
 	public static byte minView = -1;
-	public static InGameScreen mainScreen = new InGameScreen();
 	public static byte maxView = -1;
 	public static final DataMiningThread dataMining = new DataMiningThread();
 	
