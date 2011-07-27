@@ -17,7 +17,7 @@ import net.minecraft.server.WorldServer;
 
 import org.bukkitcontrib.util.ReflectUtil;
 
-class ContribPlayerInstance {
+class ContribPlayerInstance{
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void replacePlayerInstances(ContribPlayerManager manager) {
@@ -36,11 +36,14 @@ class ContribPlayerInstance {
 		}
 
 		List<Object> updatedPlayerInstances = new ArrayList<Object>();
+		//System.out.println("Updating Player Instances");
 		for (Object instance : playerInstances) {
 			if (!instance.getClass().equals(ContribPlayerInstance.class)) {
 				updatedPlayerInstances.add(new ContribPlayerInstance(manager, instance));
+				//System.out.println("Updated Player Instances");
 			}
 		}
+		//System.out.println("Finished Updating Player Instances");
 		try {
 			Class clazz = Class.forName("net.minecraft.server.PlayerManager");
 			Field fc = clazz.getDeclaredField("c");
@@ -60,7 +63,7 @@ class ContribPlayerInstance {
 		this(manager, 0, 0);
 		ReflectUtil.transferField(instance, this, "b");
 		ReflectUtil.transferField(instance, this, "chunkX");
-		ReflectUtil.transferField(instance, this, "chunkY");
+		ReflectUtil.transferField(instance, this, "chunkZ");
 		ReflectUtil.transferField(instance, this, "location");
 		ReflectUtil.transferField(instance, this, "dirtyBlocks");
 		ReflectUtil.transferField(instance, this, "dirtyCount");

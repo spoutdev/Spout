@@ -52,4 +52,8 @@ public class ContribCraftInventoryPlayer extends CraftInventoryPlayer implements
 	public void setName(String title) {
 		this.name = title;
 	}
+	
+	public int getItemInHandSlot() {
+		return this.getHandle().itemInHandIndex;
+	}
 }
