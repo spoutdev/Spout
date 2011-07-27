@@ -112,7 +112,7 @@ public enum Keyboard {
 	KEY_NUMPADCOMMA(179),
 	KEY_DIVIDE(181),
 	KEY_SYSRQ(183),
-	KEY_RMENU(184),
+	KEY_RMENU(184, -72),
 	KEY_PAUSE(197),
 	KEY_HOME(199),
 	KEY_UP(200),
@@ -123,21 +123,31 @@ public enum Keyboard {
 	KEY_DOWN(208),
 	KEY_NEXT(209),
 	KEY_INSERT(210),
-	KEY_DELETE(211),
-	KEY_LMETA(219),
-	KEY_LWIN(219),
-	KEY_RMETA(220),
-	KEY_RWIN(220),
+	KEY_DELETE(211, -45),
+	/**
+	 * Equals Left Windows, Command and Super Key
+	 */
+	KEY_LMETA(219, -37),
+	/**
+	 * Equals right Windows, Command and Super Key
+	 */
+	KEY_RMETA(220, -36),
 	KEY_APPS(221),
 	KEY_POWER(222),
 	KEY_SLEEP(223),
-	KEYBOARD_SIZE(256),	
+	KEYBOARD_SIZE(256),
 	KEY_UNKNOWN(-1);
 
 	private final int keyCode;
+	private final int allKeyCodes[];
 	private static final Map<Integer, Keyboard> lookupKeyCode = new HashMap<Integer, Keyboard>();
-	Keyboard(final int i) {
-		this.keyCode = i;
+	Keyboard(final int ... keys) {
+		if(keys.length>=1){
+			this.keyCode = keys[0];
+		} else {
+			this.keyCode = -1;
+		}
+		this.allKeyCodes = keys;
 	}
 
 	public int getKeyCode() {
@@ -153,7 +163,9 @@ public enum Keyboard {
 
 	static {
 		for (Keyboard key : values()) {
-			lookupKeyCode.put(key.keyCode, key);
+			for(int k : key.allKeyCodes){
+				lookupKeyCode.put(k, key);
+			}
 		}
 	}
 }
