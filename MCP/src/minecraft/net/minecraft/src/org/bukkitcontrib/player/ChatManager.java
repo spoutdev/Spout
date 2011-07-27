@@ -213,7 +213,6 @@ public class ChatManager {
 		int line = 0;
 		ChatColor last = null; //TODO this is not implemented
 		String text = "";
-		message = 
 		for (int i = 0; i < message.length(); i++) {
 			char ch = message.charAt(i);
 			boolean newline = ch == '\n';
