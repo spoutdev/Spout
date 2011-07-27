@@ -220,7 +220,7 @@ public class ChatManager {
 				i++;
 				newline = true;
 			}
-			if ((line > 80 && Character.isWhitespace(ch)) || line > 99 || newline) {
+			if ((line > 90 && Character.isWhitespace(ch)) || line > 95 || newline) {
 				lines.add(text);
 				line = 0;
 				text = "";
