@@ -1,25 +1,44 @@
+[![][Project Logo]][Website]
+
 Spout
-=============
+=====
+Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.
 
-An API bridge between the Minecraft client and Bukkit Server API
+Copyright &copy; 2011, Afforess <afforess@gmail.com>
+Spout is licensed under [![]GNU LESSER GENERAL PUBLIC LICENSE Version 3][License]
 
-Spoutis licensed under the LGPL. Please read the License file for details.
+Website: [Website]
+Forum Thread: [Forum Thread]
+Issue Tracker: [Issues]
 
-Javadocs: [http://afforess.com/BukkitContrib](http://afforess.com/BukkitContrib)  
-Website: [http://bit.ly/bukkitcontrib](Main Discussion Thread)
+Follow the dev [![]@Afforess][Twitter]
 
-Compilation
------------
+Source
+------
+The latest and greatest source of Spout can be found on [GitHub].
+JavaDocs: [JavaDocs]
 
-The Spout server plugin requires CraftBukkit (preferrably the latest version) to compile against.
+Compiling
+---------
+Spout requires CraftBukkit (preferrably the latest version).
+Spout SP requires the Minecraft Coder Pack.
 
-The Spout SP Mod requires the Minecraft Coder pack to compile against.
-
-Formatting
-----------
+Coding and Pull Request Formatting
+----------------------------------
 * Generally follows the Oracle coding standards.
 * Spout uses tabs, no spaces.
 * No 80 column limit or midstatement newlines.
-* Pull requests must compile and work
-* Pull requests must be formatted properly
-* When modifying Notch code (Minecraft vanilla code) include <code>//Spout Start</code> and <code>//Spout end </code>
+* Pull requests must compile and work.
+* Pull requests must be formatted properly.
+* When modifying Notch code (Minecraft vanilla code), include <code>//Spout Start</code> and <code>//Spout end </code>
+
+Please follow the above conventions if you want your pull requests accepted.
+
+[Project Logo]: http://assets.craftfire.com/img/logo/spout.png
+[License]: http://www.gnu.org/licenses/lgpl.html
+[Website]: http://getspout.org
+[Forum Thread]: http://bit.ly/getspout
+[GitHub]: https://github.com/Afforess/Spout
+[JavaDocs]: http://jd.getspout.org
+[Issues]: https://github.com/Afforess/Spout/issues
+[Twitter]: http://twitter.com/Afforess
