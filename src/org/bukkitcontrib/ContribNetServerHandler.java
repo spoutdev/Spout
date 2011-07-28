@@ -429,20 +429,15 @@ public class ContribNetServerHandler extends NetServerHandler{
 		if(init) {
 			unloadQueue.remove(chunkPos);
 			if(activeChunks.add(chunkPos)) {
-				//System.out.println("Packet50: Sending initialize for " + chunkPos.x + " " + chunkPos.z);
 				super.sendPacket(packet);
 			} else {
 			}
 		} else {
 			if(!nearPlayer(cx, cz, teleportZoneSize)) {
 				if(activeChunks.remove(chunkPos)) {
-					//System.out.println("Packet50: unloading " + chunkPos.x + " " + chunkPos.z);
 					super.sendPacket(packet);
-				} else {
-					//System.out.println("Packet50: already unloaded " + chunkPos.x + " " + chunkPos.z);
 				}
 			} else {
-				//System.out.println("Packet 50: Queuing for unload " + chunkPos.x + " " + chunkPos.z);
 				unloadQueue.add(new ChunkCoordIntPair(cx, cz));
 			}
 		}
@@ -451,8 +446,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 			while(i.hasNext()) {
 				ChunkCoordIntPair coord = i.next();
 				if(!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
-					if(activeChunks.remove(chunkPos)) {
-						//System.out.println("Packet 50: Unloading from queue " + chunkPos.x + " " + chunkPos.z);
+					if(activeChunks.remove(coord)) {
 						super.sendPacket(new Packet50PreChunk(coord.x, coord.z, false));
 					}
 					i.remove();
@@ -464,7 +458,6 @@ public class ContribNetServerHandler extends NetServerHandler{
 	public void sendPacket2(Packet51MapChunk packet) {
 		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(packet.a >> 4, packet.c >> 4);
 		if(!activeChunks.contains(chunkPos)) {
-			//System.out.println("Packet51: dropping data packet being sent to uninitialized chunk " + chunkPos.x + " " + chunkPos.z);
 			return;
 		}
 		super.sendPacket(packet);
@@ -545,6 +538,27 @@ public class ContribNetServerHandler extends NetServerHandler{
 				MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
 				sendChunkTiles(first.x, first.z);
 			}
+                }
+	}
+
+	public Set<ChunkCoordIntPair> getChunkUpdateQueue() {
+		return chunkUpdateQueue;
+	}
+
+	public void addActiveChunk(ChunkCoordIntPair c) {
+		activeChunks.add(c);
+	}
+
+	public void flushUnloadQueue() {
+                synchronized(unloadQueue) {
+                        Iterator<ChunkCoordIntPair> i = unloadQueue.iterator();
+                        while(i.hasNext()) {
+                                ChunkCoordIntPair coord = i.next();
+                                if(activeChunks.remove(coord)) {
+                                        super.sendPacket(new Packet50PreChunk(coord.x, coord.z, false));
+                                }
+                                i.remove();
+                        }
                 }
 	}
 

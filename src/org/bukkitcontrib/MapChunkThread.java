@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
 
 import java.lang.reflect.Field;
@@ -39,12 +40,20 @@ public final class MapChunkThread implements Runnable {
 			thread.start();
 		}
 	}
-	
+
 	public static void endThread() {
+		instance.kill.set(true);
 		if (thread != null) {
 			thread.interrupt();
 		}
+		try {
+			thread.join();
+		} catch (InterruptedException ie) {
+		}
 		thread = null;
+		while(!instance.queue.isEmpty()) {
+			instance.handle(instance.queue.poll());
+		}
 	}
 
 	// deflater stuff
@@ -54,6 +63,8 @@ public final class MapChunkThread implements Runnable {
 	// worker thread queue
 	private final HashMap<EntityPlayer, Integer> queueSizePerPlayer = new HashMap<EntityPlayer, Integer>();
 	private final BlockingQueue<QueuedPacket> queue = new LinkedBlockingQueue<QueuedPacket>(QUEUE_CAPACITY);
+
+	private final AtomicBoolean kill = new AtomicBoolean(false);
 
 	private static class QueuedPacket {
 		final ChunkCoordIntPair coords;
@@ -81,11 +92,11 @@ public final class MapChunkThread implements Runnable {
 
 	// consumer thread
 	public void run() {
-		while (thread != null && !thread.isInterrupted()) {
+		while (thread != null && !thread.isInterrupted() && !kill.get()) {
 			try {
 				handle(queue.take());
 			} catch (InterruptedException ie) {
-				// ignore
+				thread.interrupt();
 			} catch (Exception e) {
 				e.printStackTrace(); // print & ignore
 			}
@@ -134,13 +145,16 @@ public final class MapChunkThread implements Runnable {
 	private void sendToNetworkQueue(QueuedPacket task) {
 		for (EntityPlayer player : task.players) {
 			if (task.coords == null || player.playerChunkCoordIntPairs.contains(task.coords)) {
-				((ContribNetServerHandler)player.netServerHandler).sendPacket2(task.packet);
+				((ContribNetServerHandler) player.netServerHandler).sendPacket2(task.packet);
 			}
 		}
 	}
 
 	// producer
 	private void putTask(QueuedPacket task) {
+		if(instance.kill.get()) {
+			throw new RuntimeException("MapChunkData: attempting to add task to queue after thread has been killed");
+		}
 		addToQueueSize(task.players, +1);
 
 		while (true) {

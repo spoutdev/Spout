@@ -28,6 +28,6 @@ public class ContribChunkListener extends WorldListener{
 	@Override
 	public void onWorldLoad(WorldLoadEvent event) {
 		net.minecraft.server.World world = ((CraftWorld)event.getWorld()).getHandle();
-		ContribPlayerManager.replacePlayerManager((net.minecraft.server.WorldServer)world);
+		ContribPlayerManagerTransfer.replacePlayerManager((net.minecraft.server.WorldServer)world);
 	}
 }
