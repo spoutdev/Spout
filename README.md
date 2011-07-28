@@ -4,14 +4,14 @@ Spout
 =====
 Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.
 
-Copyright &copy; 2011, Afforess <afforess@gmail.com>
+Copyright &copy; 2011, Afforess <afforess@gmail.com>  
 Spout is licensed under [GNU LESSER GENERAL PUBLIC LICENSE Version 3][License]
 
-Website: [Website] 
-Forum Thread: [Forum Thread] 
-Issue Tracker: [Issues]
+[Website]  
+[Forum Thread]  
+[Issues]
 
-Follow the dev [@Afforess][Twitter]
+Follow the dev on Twitter [@Afforess][Twitter]
 
 Source
 ------
@@ -20,7 +20,7 @@ JavaDocs: [JavaDocs]
 
 Compiling
 ---------
-Spout requires CraftBukkit (preferrably the latest version).
+Spout requires CraftBukkit (preferrably the latest version).  
 Spout SP requires the Minecraft Coder Pack.
 
 Coding and Pull Request Formatting
