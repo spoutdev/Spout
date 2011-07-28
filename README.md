@@ -15,8 +15,8 @@ Follow Spout on Twitter [@Afforess][Twitter]
 
 Source
 ------
-The latest and greatest source of Spout can be found on [GitHub]. 
-Download the latest builds from [Jenkins]. 
+The latest and greatest source of Spout can be found on [GitHub].  
+Download the latest builds from [Jenkins].  
 View the latest [Javadoc].
 
 Compiling
@@ -24,16 +24,16 @@ Compiling
 Spout uses Maven to handle it's dependencies.
 
 Spout requires CraftBukkit (preferrably the latest version or source).  
-* Install [Maven 2 or 3](http://maven.apache.org/download.html)
+* Install [Maven 2 or 3](http://maven.apache.org/download.html)  
 * Checkout this repo and run: `mvn clean package`
 
-Spout SP requires the Minecraft Coder Pack.
-* Download and extract the latest version of [Minecraft Coder Pack][MCP].
-* Copy the latest complete Minecraft bin directory from your computer.
-* Place the Minecraft bin directory under MCP's `jars` directory.
-* Checkout or copy the latest source fro the Spout SP repo.
-* Checkout or copy the conf directory of files from the Spout SP repo to MCP's `conf` directory.
-* Run cleanup, decompile, recompile, and reobfuscate (.bat for Windows or .sh for Linux).
+Spout SP requires the Minecraft Coder Pack.  
+* Download and extract the latest version of [Minecraft Coder Pack][MCP].  
+* Copy the latest complete Minecraft bin directory from your computer.  
+* Place the Minecraft bin directory under MCP's `jars` directory.  
+* Checkout or copy the latest source fro the Spout SP repo.  
+* Checkout or copy the conf directory of files from the Spout SP repo to MCP's `conf` directory.  
+* Run cleanup, decompile, recompile, and reobfuscate (.bat for Windows or .sh for Linux).  
 * When tasks are finished, the compiled Spout class files will be located in reobf.
 
 Coding and Pull Request Formatting
