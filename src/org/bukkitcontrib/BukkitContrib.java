@@ -233,14 +233,14 @@ public class BukkitContrib extends JavaPlugin{
 		player.sendRawMessage(versionToString(getVersionString()));
 	}
 	
-	protected int getVersionString() {
+	protected static int getVersionString() {
 		int version = getVersion();
 		return (version / 100) + "." + ((version / 10) % 10) + "." + (version % 10);
 	}
 	
-	protected int getVersion() {
+	protected static int getVersion() {
 		try {
-			String[] split = this.getDescription().getVersion().split("\\.");
+			String[] split = BukkitContrib.getInstance().getDescription().getVersion().split("\\.");
 			return Integer.parseInt(split[0]) * 100 + Integer.parseInt(split[1]) * 10 + Integer.parseInt(split[2]);
 		}
 		catch (Exception e) {}
