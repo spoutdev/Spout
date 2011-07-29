@@ -6,5 +6,5 @@ public interface PopupScreen extends Screen{
 	
 	public PopupScreen setTransparent(boolean value);
 	
-	public void close();
+	public boolean close();
 }
