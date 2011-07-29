@@ -140,7 +140,7 @@ public class InGameScreen extends GenericScreen implements InGameHUD{
 	
 	public boolean attachPopupScreen(PopupScreen screen) {
 		if (getActivePopup() == null) {
-			ScreenOpenEvent event = new ScreenOpenEvent(screen);
+			ScreenOpenEvent event = new ScreenOpenEvent(BukkitContrib.getPlayerFromId(playerId), screen);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) {
 				return false;
