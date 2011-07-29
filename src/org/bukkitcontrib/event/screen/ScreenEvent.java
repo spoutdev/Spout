@@ -12,6 +12,7 @@ public abstract class ScreenEvent extends Event implements Cancellable{
 	protected ScreenEvent(String name, ContribPlayer player, Screen screen) {
 		super(name);
 		this.screen = screen;
+		this.player = player;
 	}
 	
 	public Screen getScreen() {
@@ -19,7 +20,7 @@ public abstract class ScreenEvent extends Event implements Cancellable{
 	}
 	
 	public ContribPlayer getPlayer() {
-		return screen;
+		return player;
 	}
 	
 	public boolean isCancelled(){
