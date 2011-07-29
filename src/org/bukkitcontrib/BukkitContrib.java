@@ -229,7 +229,7 @@ public class BukkitContrib extends JavaPlugin{
 	}
 	
 	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(BukkitContrib.getInstance().getDescription().getVersion()));
+		player.sendRawMessage(versionToString(BukkitContrib.getInstance().getDescription().getVersion().substring(0, 5)));
 	}
 	
 	protected int getVersion() {
