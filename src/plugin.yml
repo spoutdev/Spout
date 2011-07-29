@@ -1,5 +1,5 @@
 name: BukkitContrib
 main: org.bukkitcontrib.BukkitContrib
-version: 0.1.7
+version: ${project.version}
 author: Afforess
 load: postworld

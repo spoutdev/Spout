@@ -103,12 +103,12 @@ public class InGameScreen extends GenericScreen implements InGameHUD{
 		if (getActivePopup() == null) {
 			return false;
 		}
-		ScreenCloseEvent event = new ScreenCloseEvent(getActivePopup());
+		ContribCraftPlayer player = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId);
+		ScreenCloseEvent event = new ScreenCloseEvent(player, getActivePopup());
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			return false;
 		}
-		ContribCraftPlayer player = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId);
 		player.sendPacket(new PacketScreenAction(ScreenAction.ScreenClose));
 		activePopup = null;
 		return true;
@@ -140,7 +140,7 @@ public class InGameScreen extends GenericScreen implements InGameHUD{
 	
 	public boolean attachPopupScreen(PopupScreen screen) {
 		if (getActivePopup() == null) {
-			ScreenOpenEvent event = new ScreenOpenEvent(screen);
+			ScreenOpenEvent event = new ScreenOpenEvent(BukkitContrib.getPlayerFromId(playerId), screen);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) {
 				return false;

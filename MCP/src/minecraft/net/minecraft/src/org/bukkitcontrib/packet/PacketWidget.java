@@ -73,6 +73,7 @@ public class PacketWidget implements BukkitContribPacket {
 		else if (screen.equals(mainScreen.getId())) {
 			if (mainScreen.containsWidget(widget)) {
 				mainScreen.updateWidget(widget);
+				widget.setScreen(mainScreen);
 			}
 			else {
 				mainScreen.attachWidget(widget);
@@ -82,6 +83,7 @@ public class PacketWidget implements BukkitContribPacket {
 		else if (popup != null && screen.equals(popup.getId())) {
 			if (popup.containsWidget(widget)) {
 				popup.updateWidget(widget);
+				widget.setScreen(popup);
 			}
 			else {
 				popup.attachWidget(widget);

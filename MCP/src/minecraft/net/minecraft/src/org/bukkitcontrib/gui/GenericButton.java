@@ -11,14 +11,19 @@ public class GenericButton extends GenericControl implements Button {
 
 	protected GenericLabel label = new GenericLabel();
 	protected String disabledText = "";
-	private GuiButton button = null;
+	protected int hoverColor = 0xffffa0;
+	private CustomGuiButton button = null;
 	public GenericButton() {
 		
 	}
 	
+	public GenericButton(String text) {
+		setText(text);
+	}
+	
 	@Override
 	public int getNumBytes() {
-		return super.getNumBytes() + label.getNumBytes() + PacketUtil.getNumBytes(getDisabledText());
+		return super.getNumBytes() + label.getNumBytes() + PacketUtil.getNumBytes(getDisabledText()) + 4;
 	}
 
 	@Override
@@ -26,6 +31,7 @@ public class GenericButton extends GenericControl implements Button {
 		super.readData(input);
 		label.readData(input);
 		setDisabledText(PacketUtil.readString(input));
+		setHoverColor(input.readInt());
 	}
 
 	@Override
@@ -33,6 +39,7 @@ public class GenericButton extends GenericControl implements Button {
 		super.writeData(output);
 		label.writeData(output);
 		PacketUtil.writeString(output, getDisabledText());
+		output.writeInt(getHoverColor());
 	}
 
 	@Override
@@ -80,35 +87,51 @@ public class GenericButton extends GenericControl implements Button {
 	}
 	
 	@Override
+	public int getHoverColor() {
+		return hoverColor;
+	}
+	
+	@Override
+	public Button setHoverColor(int hexColor) {
+		this.hoverColor = hexColor;
+		return this;
+	}
+	
+	@Override
 	public WidgetType getType() {
 		return WidgetType.Button;
 	}
 	
+	protected void setup(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	private int x;
+	private int y;
+	
 	@Override
 	public void render() {
 		if (button == null) {
-			button = new GuiButton(hashCode(), getX(), getY(), getWidth(), getHeight(), getText());
-			if (button.enabled != isEnabled()){
-				button.enabled = isEnabled();
-				if (!isEnabled()) {
-					button.displayString = getDisabledText();
-				}
-				else {
-					button.displayString = getText();
-				}
-			}
+			boolean success = false;
 			if (BukkitContrib.getGameInstance().currentScreen instanceof CustomScreen) {
 				CustomScreen popup = (CustomScreen)BukkitContrib.getGameInstance().currentScreen;
-				int index = popup.getControlList().indexOf(button);
-				if (index > -1) {
-					popup.getControlList().remove(index);
-					popup.getControlList().add(index, button);
+				for (GuiButton control : popup.getControlList()) {
+					if (control instanceof CustomGuiButton) {
+						if (control.equals(this)) {
+							button = (CustomGuiButton)control;
+							button.updateWidget(this);
+							success = true;
+							break;
+						}
+					}
 				}
-				else {
+				if (!success) {
+					button = new CustomGuiButton(getScreen(), this);
 					popup.getControlList().add(button);
 				}
 			}
 		}
+		button.drawButton(BukkitContrib.getGameInstance(), x, y);
 	}
 
 }

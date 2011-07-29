@@ -27,12 +27,14 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	@Override
 	public Screen attachWidget(Widget widget) {
 		widgets.add(widget);
+		widget.setScreen(this);
 		return this;
 	}
 
 	@Override
 	public Screen removeWidget(Widget widget) {
 		widgets.remove(widget);
+		widget.setScreen(null);
 		return this;
 	}
 	
@@ -77,7 +79,7 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	}
 	
 	public void render() {
-		for (RenderPriority priority : RenderPriority.values()) {
+		for (RenderPriority priority : RenderPriority.values()) {	
 			for (Widget widget : getAttachedWidgets()){
 				if (widget.getPriority() == priority && canRender(widget)) {
 					GL11.glPushMatrix();

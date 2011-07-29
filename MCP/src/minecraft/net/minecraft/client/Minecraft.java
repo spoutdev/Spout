@@ -365,7 +365,7 @@ public abstract class Minecraft implements Runnable {
 
 	public static File getMinecraftDir() {
 		if(minecraftDir == null) {
-			minecraftDir = getAppDir("minecraft");
+			minecraftDir = getAppDir("spoutcraft");
 		}
 
 		return minecraftDir;

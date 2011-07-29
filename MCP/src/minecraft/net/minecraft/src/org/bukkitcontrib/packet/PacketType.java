@@ -1,7 +1,6 @@
 package org.bukkitcontrib.packet;
 
 import java.util.HashMap;
-import net.minecraft.src.*;
 
 public enum PacketType {
 	PacketKeyPress(0, PacketKeyPress.class),
@@ -23,6 +22,7 @@ public enum PacketType {
 	PacketWorldSeed(16, PacketWorldSeed.class),
 	PacketNotification(17, PacketNotification.class),
 	PacketScreenAction(18, PacketScreenAction.class),
+	PacketControlAction(19, PacketControlAction.class),
 	
 	;
 	

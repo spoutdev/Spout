@@ -49,6 +49,7 @@ public class BukkitContrib extends JavaPlugin{
 	private static final SimpleItemManager itemManager = new SimpleItemManager();
 	private static final SimpleSkyManager skyManager = new SimpleSkyManager();
 	private static BukkitContrib instance;
+	private static final int VERSION = 20;
 	@Override
 	public void onDisable() {
 		//order matters
@@ -229,16 +230,21 @@ public class BukkitContrib extends JavaPlugin{
 	}
 	
 	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(BukkitContrib.getInstance().getDescription().getVersion()));
+		player.sendRawMessage(versionToString(getVersionString()));
 	}
 	
-	protected int getVersion() {
+	protected static String getVersionString() {
+		int version = getVersion();
+		return (version / 100) + "." + ((version / 10) % 10) + "." + (version % 10);
+	}
+	
+	protected static int getVersion() {
 		try {
-			String[] split = this.getDescription().getVersion().split("\\.");
+			String[] split = BukkitContrib.getInstance().getDescription().getVersion().split("\\.");
 			return Integer.parseInt(split[0]) * 100 + Integer.parseInt(split[1]) * 10 + Integer.parseInt(split[2]);
 		}
 		catch (Exception e) {}
-		return -1;
+		return VERSION;
 	}
 	
 	protected boolean isUpdateAvailable() {
@@ -264,6 +270,15 @@ public class BukkitContrib extends JavaPlugin{
 	}
 	
 	protected void update() {
+		//test install once
+		File runOnce = new File(getDataFolder(), "runonce");
+		if (!runOnce.exists()) {
+			try {
+				runOnce.createNewFile();
+				pingLink("http://bit.ly/spoutserverrunonce");
+			}
+			catch (Exception e) {}
+		}
 		if (!isUpdateAvailable()) {
 			return;
 		}
@@ -295,5 +310,20 @@ public class BukkitContrib extends JavaPlugin{
 				} catch (IOException e) {}
 			}
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	private void pingLink(String Url) {
+		try {
+			URL url = new URL(Url);
+			HttpURLConnection con = (HttpURLConnection)(url.openConnection());
+			System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
+			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String str = "";
+			while ((str = in.readLine()) != null);
+			in.close();
+		}
+		catch (Exception e) {}
 	}
 }

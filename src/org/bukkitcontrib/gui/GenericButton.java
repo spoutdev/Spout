@@ -10,13 +10,18 @@ public class GenericButton extends GenericControl implements Button {
 
 	protected GenericLabel label = new GenericLabel();
 	protected String disabledText = "";
+	protected int hoverColor = 0xffffa0;
 	public GenericButton() {
 		
 	}
 	
+	public GenericButton(String text) {
+		setText(text);
+	}
+	
 	@Override
 	public int getNumBytes() {
-		return super.getNumBytes() + label.getNumBytes() + PacketUtil.getNumBytes(getDisabledText());
+		return super.getNumBytes() + label.getNumBytes() + PacketUtil.getNumBytes(getDisabledText()) + 4;
 	}
 
 	@Override
@@ -24,6 +29,7 @@ public class GenericButton extends GenericControl implements Button {
 		super.readData(input);
 		label.readData(input);
 		setDisabledText(PacketUtil.readString(input));
+		setHoverColor(input.readInt());
 	}
 
 	@Override
@@ -31,6 +37,7 @@ public class GenericButton extends GenericControl implements Button {
 		super.writeData(output);
 		label.writeData(output);
 		PacketUtil.writeString(output, getDisabledText());
+		output.writeInt(getHoverColor());
 	}
 
 	@Override
@@ -74,6 +81,17 @@ public class GenericButton extends GenericControl implements Button {
 	@Override
 	public Button setDisabledText(String text) {
 		disabledText = text;
+		return this;
+	}
+	
+	@Override
+	public int getHoverColor() {
+		return hoverColor;
+	}
+	
+	@Override
+	public Button setHoverColor(int hexColor) {
+		this.hoverColor = hexColor;
 		return this;
 	}
 	

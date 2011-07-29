@@ -43,7 +43,7 @@ public class PacketScreenAction implements BukkitContribPacket{
 		ContribPlayer player = BukkitContrib.getPlayerFromId(playerId);
 		if (player != null && action == ScreenAction.ScreenClose.getId()) {
 			if (player.getMainScreen().getActivePopup() != null) {
-				ScreenCloseEvent event = new ScreenCloseEvent(player.getMainScreen().getActivePopup());
+				ScreenCloseEvent event = new ScreenCloseEvent(player, player.getMainScreen().getActivePopup());
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) {
 					accepted = 0;
