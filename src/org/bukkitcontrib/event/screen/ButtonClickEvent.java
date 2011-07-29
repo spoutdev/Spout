@@ -2,7 +2,7 @@ package org.bukkitcontrib.event.screen;
 
 import org.bukkitcontrib.gui.Button;
 import org.bukkitcontrib.gui.Screen;
-import org.bukkitcontrib.player.ContribPlayer
+import org.bukkitcontrib.player.ContribPlayer;
 
 public class ButtonClickEvent extends ScreenEvent{
 
