@@ -235,7 +235,7 @@ public class BukkitContrib extends JavaPlugin{
 	
 	protected int getVersionString() {
 		int version = getVersion();
-		return (version / 100) + "." + (version / 10) + "." + version;
+		return (version / 100) + "." + ((version / 10) % 10) + "." + (version % 10);
 	}
 	
 	protected int getVersion() {
