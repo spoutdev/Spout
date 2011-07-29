@@ -3,9 +3,7 @@ package org.bukkitcontrib.gui;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.bukkitcontrib.packet.CustomPacket;
-import org.bukkitcontrib.packet.PacketScreenAction;
-import org.bukkitcontrib.packet.ScreenAction;
+import org.bukkitcontrib.packet.*;
 import net.minecraft.src.*;
 import java.util.ArrayList;
 
@@ -46,7 +44,12 @@ public class CustomScreen extends GuiScreen {
 	
 	@Override
 	public void actionPerformed(GuiButton button){
-		System.out.println("button pressed!");
+		if (button instanceof CustomGuiButton){
+			((EntityClientPlayerMP)this.mc.thePlayer).sendQueue.addToSendQueue(new CustomPacket(new PacketControlAction(screen, ((CustomGuiButton)button).getWidget(), 1)));
+		}
+		else if (button instanceof CustomGuiSlider) {
+			//This fires before the new position is set, so no good
+		}	
 	}
 	
 	@Override
@@ -56,6 +59,17 @@ public class CustomScreen extends GuiScreen {
 			if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 				handled = true;
 				testScreenClose();
+			}
+			else {
+				for (GuiButton control : getControlList()) {
+					if (control instanceof CustomTextField) {
+						if (((CustomTextField)control).isFocused()) {
+							((CustomTextField)control).textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+							handled = true;
+							break;
+						}
+					}
+				}
 			}
 		}
 		if (!handled) {
@@ -67,11 +81,21 @@ public class CustomScreen extends GuiScreen {
 		return (ArrayList<GuiButton>)this.controlList;
 	}
 	
-	public void drawScreen(int var1, int var2, float var3) {
+	public void drawScreen(int x, int y, float z) {
 		if (screen.isTransparent()) {
 			this.drawDefaultBackground();
 		}
+		for (Widget widget : screen.getAttachedWidgets()) {
+			if (widget instanceof GenericButton) {
+				((GenericButton)widget).setup(x, y);
+			}
+			else if (widget instanceof GenericTextField) {
+				((GenericTextField)widget).setup(x, y);
+			}
+			else if (widget instanceof GenericSlider) {
+				((GenericSlider)widget).setup(x, y);
+			}
+		}
 		screen.render();
-		super.drawScreen(var1, var2, var3);
 	}
 }

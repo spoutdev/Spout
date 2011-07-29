@@ -29,12 +29,14 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	@Override
 	public Screen attachWidget(Widget widget) {
 		widgets.add(widget);
+		widget.setScreen(this);
 		return this;
 	}
 
 	@Override
 	public Screen removeWidget(Widget widget) {
 		widgets.remove(widget);
+		widget.setScreen(null);
 		return this;
 	}
 	

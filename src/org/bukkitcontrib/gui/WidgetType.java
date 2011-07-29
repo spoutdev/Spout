@@ -14,6 +14,8 @@ public enum WidgetType {
 	InGameScreen(8, InGameScreen.class),
 	ItemWidget(9, GenericItemWidget.class),
 	Button(10, GenericButton.class),
+	Slider(11, GenericSlider.class),
+	TextField(12, GenericTextField.class),
 	
 	;
 	
