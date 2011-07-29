@@ -233,7 +233,7 @@ public class BukkitContrib extends JavaPlugin{
 		player.sendRawMessage(versionToString(getVersionString()));
 	}
 	
-	protected static int getVersionString() {
+	protected static String getVersionString() {
 		int version = getVersion();
 		return (version / 100) + "." + ((version / 10) % 10) + "." + (version % 10);
 	}
