@@ -49,6 +49,7 @@ public class BukkitContrib extends JavaPlugin{
 	private static final SimpleItemManager itemManager = new SimpleItemManager();
 	private static final SimpleSkyManager skyManager = new SimpleSkyManager();
 	private static BukkitContrib instance;
+	private static final int VERSION = 20;
 	@Override
 	public void onDisable() {
 		//order matters
@@ -229,7 +230,12 @@ public class BukkitContrib extends JavaPlugin{
 	}
 	
 	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(BukkitContrib.getInstance().getDescription().getVersion().substring(0, 5)));
+		player.sendRawMessage(versionToString(getVersionString()));
+	}
+	
+	protected int getVersionString() {
+		int version = getVersion();
+		return (version / 100) + "." + (version / 10) + "." + version;
 	}
 	
 	protected int getVersion() {
@@ -238,7 +244,7 @@ public class BukkitContrib extends JavaPlugin{
 			return Integer.parseInt(split[0]) * 100 + Integer.parseInt(split[1]) * 10 + Integer.parseInt(split[2]);
 		}
 		catch (Exception e) {}
-		return -1;
+		return VERSION;
 	}
 	
 	protected boolean isUpdateAvailable() {
