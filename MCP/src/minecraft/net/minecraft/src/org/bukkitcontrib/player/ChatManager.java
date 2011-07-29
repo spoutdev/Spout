@@ -211,7 +211,7 @@ public class ChatManager {
 	public ArrayList<String> formatChat(String message) {
 		ArrayList<String> lines = new ArrayList<String>();
 		int line = 0;
-		ChatColor last = null;
+		ChatColor last = null; //TODO this is not implemented
 		String text = "";
 		for (int i = 0; i < message.length(); i++) {
 			char ch = message.charAt(i);
@@ -220,7 +220,7 @@ public class ChatManager {
 				i++;
 				newline = true;
 			}
-			if ((line > 80 && Character.isWhitespace(ch)) || line > 99 || newline) {
+			if ((line > 90 && Character.isWhitespace(ch)) || line > 95 || newline) {
 				lines.add(text);
 				line = 0;
 				text = "";
