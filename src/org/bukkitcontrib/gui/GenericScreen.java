@@ -36,7 +36,11 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	@Override
 	public Screen removeWidget(Widget widget) {
 		widgets.remove(widget);
+		boolean visibility = widget.isVisible();
+		widget.setVisible(false);
+		player.sendPacket(new PacketWidget(widget, getId()));
 		widget.setScreen(null);
+		widget.setVisible(visibility );
 		return this;
 	}
 	
