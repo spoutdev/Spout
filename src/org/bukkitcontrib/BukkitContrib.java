@@ -127,7 +127,7 @@ public class BukkitContrib extends JavaPlugin{
 
 		List<World> worlds = getServer().getWorlds();
 		for (World world : worlds) {
-			ContribPlayerManager.replacePlayerManager(((CraftWorld)world).getHandle());
+			ContribPlayerManagerTransfer.replacePlayerManager(((CraftWorld)world).getHandle());
 		}
 		
 		ContribCraftChunk.replaceAllBukkitChunks();
