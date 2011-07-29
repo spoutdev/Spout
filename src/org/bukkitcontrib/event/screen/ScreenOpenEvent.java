@@ -1,7 +1,7 @@
 package org.bukkitcontrib.event.screen;
 
 import org.bukkitcontrib.gui.Screen;
-import org.bukkitcontrib.player.ContribPlayer
+import org.bukkitcontrib.player.ContribPlayer;
 
 public class ScreenOpenEvent extends ScreenEvent{
 	protected Screen screen;
