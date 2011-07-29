@@ -2,7 +2,7 @@ package org.bukkitcontrib.event.screen;
 
 import org.bukkitcontrib.gui.Screen;
 import org.bukkitcontrib.gui.TextField;
-import org.bukkitcontrib.player.ContribPlayer
+import org.bukkitcontrib.player.ContribPlayer;
 
 public class TextFieldChangeEvent extends ScreenEvent{
 
