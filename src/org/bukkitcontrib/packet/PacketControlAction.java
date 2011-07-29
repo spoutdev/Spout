@@ -103,7 +103,6 @@ public class PacketControlAction implements BukkitContribPacket{
 					else if (control instanceof TextField) {
 						TextFieldChangeEvent event = new TextFieldChangeEvent(player, screen, (TextField)control, data);
 						Bukkit.getServer().getPluginManager().callEvent(event);
-						event.setCancelled(true);
 						if (event.isCancelled()) {
 							((TextField)control).setText(event.getOldText());
 							control.setDirty(true);
