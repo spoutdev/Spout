@@ -19,6 +19,7 @@ import net.minecraft.server.Packet;
 import net.minecraft.server.Packet100OpenWindow;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
+import net.minecraft.server.ChunkCoordIntPair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -57,6 +58,7 @@ import org.bukkitcontrib.packet.PacketNotification;
 import org.bukkitcontrib.packet.PacketRenderDistance;
 import org.bukkitcontrib.packet.PacketSkinURL;
 import org.bukkitcontrib.packet.PacketTexturePack;
+import org.bukkitcontrib.util.ReflectUtil;
 
 @SuppressWarnings("unused")
 public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
@@ -513,7 +515,6 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
    }
    
    public void sendPacket(BukkitContribPacket packet) {
-	   //System.out.println("Sending: " + packet.getPacketType());
 	   getNetServerHandler().sendPacket(new CustomPacket(packet));
    }
    
@@ -555,7 +556,12 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	   CraftPlayer cp = (CraftPlayer)player;
 	   CraftServer server = (CraftServer)Bukkit.getServer();
 	   
-	   if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
+	   if ((cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
+                   Set<ChunkCoordIntPair> chunkUpdateQueue = ((ContribNetServerHandler)cp.getHandle().netServerHandler).getChunkUpdateQueue();
+	           for(ChunkCoordIntPair c : chunkUpdateQueue) {
+	                   cp.getHandle().chunkCoordIntPairQueue.add(c);
+	           }
+	           ((ContribNetServerHandler)cp.getHandle().netServerHandler).flushUnloadQueue();
 		   Location loc = player.getLocation();
 		   NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
 		   handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
@@ -569,10 +575,14 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 	   CraftPlayer cp = (CraftPlayer)player;
 	   CraftServer server = (CraftServer)Bukkit.getServer();
 	   
-	   if (!(cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
+	   if (!(cp.getHandle().netServerHandler.getClass().equals(ContribNetServerHandler.class))) {
 		   Location loc = player.getLocation();
 		   ContribNetServerHandler handler = new ContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
 		   handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+	           for(Object o : cp.getHandle().playerChunkCoordIntPairs) {
+	                   ChunkCoordIntPair c = (ChunkCoordIntPair) o;
+	                   handler.addActiveChunk(c);
+	           }
 		   cp.getHandle().netServerHandler = handler;
 		   return true;
 	   }
