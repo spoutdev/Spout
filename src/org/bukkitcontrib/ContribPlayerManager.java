@@ -4,8 +4,9 @@ import net.minecraft.server.*; // BukkitContrib
 
 import java.util.ArrayList;
 import java.util.List;
-
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ContribPlayerManager extends net.minecraft.server.PlayerManager { // BukkitContrib
+
 
 	public List managedPlayers = new ArrayList();
 	private PlayerList b = new PlayerList();
@@ -61,6 +62,7 @@ public class ContribPlayerManager extends net.minecraft.server.PlayerManager { /
 			playerinstance.a(i & 15, j, k & 15);
 		}
 	}
+
 
 	public void addPlayer(EntityPlayer entityplayer) {
 		int i = (int) entityplayer.locX >> 4;

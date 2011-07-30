@@ -3,14 +3,12 @@ package org.bukkitcontrib;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.PlayerList;
 import net.minecraft.server.WorldServer;
 
 import org.bukkitcontrib.util.ReflectUtil;
-
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ContribPlayerManagerTransfer {
 
 	public static ContribPlayerManager copyPlayerManager(PlayerManager manager) {
@@ -66,7 +64,6 @@ public class ContribPlayerManagerTransfer {
 		replacePlayerInstances((ContribPlayerManager) world.manager);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void replacePlayerInstances(ContribPlayerManager manager) {
 
 		ArrayList<Object> oldPlayerInstances = new ArrayList<Object>();

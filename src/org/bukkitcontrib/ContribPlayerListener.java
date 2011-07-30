@@ -14,14 +14,6 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkitcontrib.event.bukkitcontrib.BukkitContribSPEnable;
-import org.bukkitcontrib.gui.GenericButton;
-import org.bukkitcontrib.gui.GenericLabel;
-import org.bukkitcontrib.gui.GenericPopup;
-import org.bukkitcontrib.gui.GenericSlider;
-import org.bukkitcontrib.gui.GenericTextField;
-import org.bukkitcontrib.gui.GenericTexture;
-import org.bukkitcontrib.gui.PopupScreen;
-import org.bukkitcontrib.gui.RenderPriority;
 import org.bukkitcontrib.inventory.SimpleItemManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
 import org.bukkitcontrib.player.ContribPlayer;
@@ -98,18 +90,8 @@ public class ContribPlayerListener extends PlayerListener{
 				manager.onBukkitContribSPEnable(player);
 				((SimpleItemManager)BukkitContrib.getItemManager()).onPlayerJoin(player);
 				((SimpleSkyManager)BukkitContrib.getSkyManager()).onPlayerJoin(player);
-				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s BukkitContrib client. Running client version: " + player.getVersion());
+				System.out.println("[BukkitContrib] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + player.getVersion());
 				Bukkit.getServer().getPluginManager().callEvent(new BukkitContribSPEnable(player));
-				PopupScreen popup = new GenericPopup();
-				player.getMainScreen().attachPopupScreen(popup);
-				
-				popup.attachWidget((new GenericButton()).setHexColor(0x0033CC).setText("Create Rail Network").setWidth(150).setHeight(20).setX(35).setY(player.getMainScreen().getHeight() / 6 - 20));
-				popup.attachWidget((new GenericButton()).setHexColor(0x0033CC).setText("View Existing Rail Networks").setWidth(150).setHeight(20).setX(35).setY(player.getMainScreen().getHeight() / 6 + 20));
-				popup.attachWidget((new GenericButton()).setHexColor(0x0033CC).setText("View Schematics").setWidth(150).setHeight(20).setX(35).setY(player.getMainScreen().getHeight() / 6 + 60));
-				popup.attachWidget((new GenericButton()).setHexColor(0x0033CC).setText("Autocart Mode: On").setWidth(150).setHeight(20).setX(35).setY(player.getMainScreen().getHeight() / 6 + 100));
-				popup.attachWidget((new GenericLabel()).setHexColor(0x0033CC).setText("Autocart Speed:").setWidth(150).setHeight(20).setX(35).setY(player.getMainScreen().getHeight() / 6 + 130));
-				popup.attachWidget((new GenericSlider()).setWidth(150).setHeight(20).setX(35).setY(player.getMainScreen().getHeight() / 6 + 140));
-				popup.attachWidget((new GenericTexture()).setUrl("http://dl.dropbox.com/u/49805/Minecart_Mania.png").setWidth(256).setHeight(128).setX(player.getMainScreen().getWidth() / 2 - 40).setY(10).setPriority(RenderPriority.Highest));
 			}
 		}
 	}

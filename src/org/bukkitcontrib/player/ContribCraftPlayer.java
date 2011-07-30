@@ -476,48 +476,48 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 			e.printStackTrace();
 		}
 		return 0;
-   }
-   
-   public void updateWindowId() {
-	   Method id;
-	   try {
-		   id = EntityPlayer.class.getDeclaredMethod("af");
-		   id.setAccessible(true);
-		   id.invoke(getHandle());
-	   } catch (Exception e) {
-		   e.printStackTrace();
-	   }
-   }
+	}
+	
+	public void updateWindowId() {
+		Method id;
+		try {
+			id = EntityPlayer.class.getDeclaredMethod("af");
+			id.setAccessible(true);
+			id.invoke(getHandle());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-   public Inventory getActiveInventory() {
-	   return getNetServerHandler().getActiveInventory();
-   }
-   
-   public Inventory getDefaultInventory() {
-	   return getNetServerHandler().getDefaultInventory();
-   }
+	public Inventory getActiveInventory() {
+		return getNetServerHandler().getActiveInventory();
+	}
+	
+	public Inventory getDefaultInventory() {
+		return getNetServerHandler().getDefaultInventory();
+	}
 
-   public ContribNetServerHandler getNetServerHandler() {
-	   return (ContribNetServerHandler) getHandle().netServerHandler;
-   }
-   
-   public void updateKeys(byte[] keys) {
-	   this.forward = Keyboard.getKey(keys[0]);
-	   this.back = Keyboard.getKey(keys[2]);
-	   this.left = Keyboard.getKey(keys[1]);
-	   this.right = Keyboard.getKey(keys[3]);
-	   this.jump = Keyboard.getKey(keys[4]);
-	   this.inventoryKey = Keyboard.getKey(keys[5]);
-	   this.drop = Keyboard.getKey(keys[6]);
-	   this.chat = Keyboard.getKey(keys[7]);
-	   this.togglefog = Keyboard.getKey(keys[8]);
-	   this.sneak = Keyboard.getKey(keys[9]);
-   }
-   
-   public void sendPacket(BukkitContribPacket packet) {
-	   getNetServerHandler().sendPacket(new CustomPacket(packet));
-   }
-   
+	public ContribNetServerHandler getNetServerHandler() {
+		return (ContribNetServerHandler) getHandle().netServerHandler;
+	}
+	
+	public void updateKeys(byte[] keys) {
+		this.forward = Keyboard.getKey(keys[0]);
+		this.back = Keyboard.getKey(keys[2]);
+		this.left = Keyboard.getKey(keys[1]);
+		this.right = Keyboard.getKey(keys[3]);
+		this.jump = Keyboard.getKey(keys[4]);
+		this.inventoryKey = Keyboard.getKey(keys[5]);
+		this.drop = Keyboard.getKey(keys[6]);
+		this.chat = Keyboard.getKey(keys[7]);
+		this.togglefog = Keyboard.getKey(keys[8]);
+		this.sneak = Keyboard.getKey(keys[9]);
+	}
+	
+	public void sendPacket(BukkitContribPacket packet) {
+		getNetServerHandler().sendPacket(new CustomPacket(packet));
+	}
+	
 	public int getMajorVersion() {
 		return majorVersion;
 	}
@@ -549,89 +549,90 @@ public class ContribCraftPlayer extends CraftPlayer implements ContribPlayer{
 		minorVersion = -1;
 		majorVersion = -1;
 	}
-   
-   /* Non Interface public static methods */
+	
+	/* Non Interface public static methods */
 
-   public static boolean resetNetServerHandler(Player player) {
-	   CraftPlayer cp = (CraftPlayer)player;
-	   CraftServer server = (CraftServer)Bukkit.getServer();
-	   
-	   if ((cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
-                   Set<ChunkCoordIntPair> chunkUpdateQueue = ((ContribNetServerHandler)cp.getHandle().netServerHandler).getChunkUpdateQueue();
-	           for(ChunkCoordIntPair c : chunkUpdateQueue) {
-	                   cp.getHandle().chunkCoordIntPairQueue.add(c);
-	           }
-	           ((ContribNetServerHandler)cp.getHandle().netServerHandler).flushUnloadQueue();
-		   Location loc = player.getLocation();
-		   NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
-		   handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-		   cp.getHandle().netServerHandler = handler;
-		   return true;
-	   }
-	   return false;
-   }
+	@SuppressWarnings("unchecked")
+	public static boolean resetNetServerHandler(Player player) {
+		CraftPlayer cp = (CraftPlayer)player;
+		CraftServer server = (CraftServer)Bukkit.getServer();
+		
+		if ((cp.getHandle().netServerHandler instanceof ContribNetServerHandler)) {
+			Set<ChunkCoordIntPair> chunkUpdateQueue = ((ContribNetServerHandler)cp.getHandle().netServerHandler).getChunkUpdateQueue();
+			for(ChunkCoordIntPair c : chunkUpdateQueue) {
+					cp.getHandle().chunkCoordIntPairQueue.add(c);
+			}
+			((ContribNetServerHandler)cp.getHandle().netServerHandler).flushUnloadQueue();
+			Location loc = player.getLocation();
+			NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
+			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+			cp.getHandle().netServerHandler = handler;
+			return true;
+		}
+		return false;
+	}
 
-   public static boolean updateNetServerHandler(Player player) {
-	   CraftPlayer cp = (CraftPlayer)player;
-	   CraftServer server = (CraftServer)Bukkit.getServer();
-	   
-	   if (!(cp.getHandle().netServerHandler.getClass().equals(ContribNetServerHandler.class))) {
-		   Location loc = player.getLocation();
-		   ContribNetServerHandler handler = new ContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
-		   handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-	           for(Object o : cp.getHandle().playerChunkCoordIntPairs) {
-	                   ChunkCoordIntPair c = (ChunkCoordIntPair) o;
-	                   handler.addActiveChunk(c);
-	           }
-		   cp.getHandle().netServerHandler = handler;
-		   return true;
-	   }
-	   return false;
-   }
+	public static boolean updateNetServerHandler(Player player) {
+		CraftPlayer cp = (CraftPlayer)player;
+		CraftServer server = (CraftServer)Bukkit.getServer();
+		
+		if (!(cp.getHandle().netServerHandler.getClass().equals(ContribNetServerHandler.class))) {
+			Location loc = player.getLocation();
+			ContribNetServerHandler handler = new ContribNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
+			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+			for(Object o : cp.getHandle().playerChunkCoordIntPairs) {
+				ChunkCoordIntPair c = (ChunkCoordIntPair) o;
+				handler.addActiveChunk(c);
+			}
+			cp.getHandle().netServerHandler = handler;
+			return true;
+		}
+		return false;
+	}
 
-   public static boolean updateBukkitEntity(Player player) {
-	   if (!(player instanceof ContribCraftPlayer)) {
-		   CraftPlayer cp = (CraftPlayer)player;
-		   EntityPlayer ep = cp.getHandle();
-		   Field bukkitEntity;
-		   try {
-			   bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-			   bukkitEntity.setAccessible(true);
-			   org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
-			   if (!(e instanceof ContribCraftPlayer)) {
-				   bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)Bukkit.getServer(), ep));
-			   }
-			   return true;
-		   } catch (Exception e) {
-			   e.printStackTrace();
-		   }
-	   }
+	public static boolean updateBukkitEntity(Player player) {
+		if (!(player instanceof ContribCraftPlayer)) {
+			CraftPlayer cp = (CraftPlayer)player;
+			EntityPlayer ep = cp.getHandle();
+			Field bukkitEntity;
+			try {
+				bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+				bukkitEntity.setAccessible(true);
+				org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
+				if (!(e instanceof ContribCraftPlayer)) {
+					bukkitEntity.set(ep, new ContribCraftPlayer((CraftServer)Bukkit.getServer(), ep));
+				}
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		  return false;
-   }
+	}
 
-   public static void removeBukkitEntity(Player player) {
-	   CraftPlayer cp = (CraftPlayer)player;
-	   EntityPlayer ep = cp.getHandle();
-	   Field bukkitEntity;
-	   try {
-		   bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-		   bukkitEntity.setAccessible(true);
-		   bukkitEntity.set(ep, null);
-	   } catch (Exception e) {
-		   e.printStackTrace();
-	   }
-   }
+	public static void removeBukkitEntity(Player player) {
+		CraftPlayer cp = (CraftPlayer)player;
+		EntityPlayer ep = cp.getHandle();
+		Field bukkitEntity;
+		try {
+			bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+			bukkitEntity.setAccessible(true);
+			bukkitEntity.set(ep, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-   public static ContribPlayer getContribPlayer(Player player) {
-	   if (player instanceof ContribCraftPlayer) {
-		   return (ContribCraftPlayer)player;
-	   }
-	   if ((((CraftPlayer)player).getHandle()).getBukkitEntity() instanceof ContribCraftPlayer) {
-		   return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
-	   }
-	   //We should never get here
-	   Logger.getLogger("Minecraft").severe("Player: " + player.getName() + " was not properly updated during login!");
-	   updateBukkitEntity(player);
-	   return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
-   }
+	public static ContribPlayer getContribPlayer(Player player) {
+		if (player instanceof ContribCraftPlayer) {
+			return (ContribCraftPlayer)player;
+		}
+		if ((((CraftPlayer)player).getHandle()).getBukkitEntity() instanceof ContribCraftPlayer) {
+			return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
+		}
+		//We should never get here
+		Logger.getLogger("Minecraft").severe("Player: " + player.getName() + " was not properly updated during login!");
+		updateBukkitEntity(player);
+		return (ContribCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
+	}
 }

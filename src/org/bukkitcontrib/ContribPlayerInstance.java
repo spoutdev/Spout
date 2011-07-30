@@ -7,6 +7,7 @@ import net.minecraft.server.*; // BukkitContrib
 
 class ContribPlayerInstance { // BukkitContrib
 
+	@SuppressWarnings("rawtypes")
 	private List b;
 	private int chunkX;
 	private int chunkZ;
@@ -22,6 +23,7 @@ class ContribPlayerInstance { // BukkitContrib
 
 	final ContribPlayerManager playerManager; // BukkitContrib
 
+	@SuppressWarnings("rawtypes")
 	public ContribPlayerInstance(ContribPlayerManager playermanager, int i, int j) { // BukkitContrib
 		this.playerManager = playermanager;
 		this.b = new ArrayList();
@@ -33,6 +35,7 @@ class ContribPlayerInstance { // BukkitContrib
 		playermanager.a().chunkProviderServer.getChunkAt(i, j);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void a(EntityPlayer entityplayer) {
 		if (this.b.contains(entityplayer)) {
 			throw new IllegalStateException("Failed to add player. " + entityplayer + " already is in chunk " + this.chunkX + ", " + this.chunkZ);
@@ -70,6 +73,7 @@ class ContribPlayerInstance { // BukkitContrib
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void a(int i, int j, int k) {
 		if (this.dirtyCount == 0) {
 			ContribPlayerManager.b(this.playerManager).add(this); // BukkitContrib
@@ -125,6 +129,7 @@ class ContribPlayerInstance { // BukkitContrib
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void a() {
 		WorldServer worldserver = this.playerManager.a();
 
