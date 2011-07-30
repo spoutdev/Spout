@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
+import org.bukkit.entity.Player;
 import org.bukkitcontrib.event.inventory.InventoryClickEvent;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryCraftEvent;
@@ -403,7 +404,7 @@ public class ContribNetServerHandler extends NetServerHandler{
 
 	// MapChunkThread sends packets to the method.  All packets should pass through this method before being sent to the client
 	public void sendPacket2(Packet packet) {
-		if (!Listeners.canSend(packet)) {
+		if (!Listeners.canSend((Player)player.getBukkitEntity(), packet)) {
 			return;
 		} else if(packet instanceof Packet51MapChunk) {
 			sendPacket2((Packet51MapChunk)packet);
