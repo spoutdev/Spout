@@ -11,12 +11,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * Keeps track of packet listeners
  * 
  */
+@SuppressWarnings( {"rawtypes", "unchecked" })
 public class Listeners {
 	/**
 	 * Private constructor to avoid initialization
 	 */
 	private Listeners() {}
 
+	
 	private final static AtomicReference[] listeners;
 
 	static {
