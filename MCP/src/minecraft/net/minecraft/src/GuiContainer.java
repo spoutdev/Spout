@@ -75,12 +75,12 @@ public abstract class GuiContainer extends GuiScreen {
 		if(var12.getItemStack() == null && var6 != null && var6.getHasStack()) {
 			String var13 = ("" + StringTranslate.getInstance().translateNamedKey(var6.getStack().getItemName())).trim();
 			//BukkitContrib Start
-			String custom = BukkitContrib.getItemManager().getCustomItemName(var6.getStack().itemID, (byte)(var6.getStack().getItemDamage()));
+			String custom = BukkitContrib.getItemManager().getCustomItemName(var6.getStack().itemID, (short)(var6.getStack().getItemDamage()));
 			if (custom != null) {
 				var13 = custom;
 			}
 			else if (var13 == null || var13.trim().equals("")) {
-				var13 = BukkitContrib.getItemManager().getItemName(var6.getStack().itemID, (byte)(var6.getStack().getItemDamage()));
+				var13 = BukkitContrib.getItemManager().getItemName(var6.getStack().itemID, (short)(var6.getStack().getItemDamage()));
 			}
 			if(var13 != null && var13.length() > 0) {
 			//BukkitContrib End
