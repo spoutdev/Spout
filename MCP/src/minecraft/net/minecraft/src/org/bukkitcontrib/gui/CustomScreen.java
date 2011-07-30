@@ -17,7 +17,6 @@ public class CustomScreen extends GuiScreen {
 	
 	public void update(PopupScreen screen) {
 		this.screen = screen;
-		field_948_f = screen.isFocus();
 	}
 	
 	public void testScreenClose() {
@@ -80,10 +79,6 @@ public class CustomScreen extends GuiScreen {
 	
 	public ArrayList<GuiButton> getControlList() {
 		return (ArrayList<GuiButton>)this.controlList;
-	}
-	
-	public PopupScreen getScreen() {
-		return screen;
 	}
 	
 	public void drawScreen(int x, int y, float z) {

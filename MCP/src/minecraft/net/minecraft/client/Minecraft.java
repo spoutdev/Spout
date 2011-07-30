@@ -756,26 +756,18 @@ public abstract class Minecraft implements Runnable {
 	public void shutdown() {
 		this.running = false;
 	}
-	
-//Spout Start
-	public void setIngameFocus() {
-		setIngameFocus(true);
-	}
 
-	public void setIngameFocus(boolean closeScreen) {
+	public void setIngameFocus() {
 		if(Display.isActive()) {
 			if(!this.inGameHasFocus) {
 				this.inGameHasFocus = true;
 				this.mouseHelper.grabMouseCursor();
-				if (closeScreen) {
-					this.displayGuiScreen((GuiScreen)null);
-				}
+				this.displayGuiScreen((GuiScreen)null);
 				this.leftClickCounter = 10000;
 				this.mouseTicksRan = this.ticksRan + 10000;
 			}
 		}
 	}
-//Spout End
 
 	public void setIngameNotInFocus() {
 		if(this.inGameHasFocus) {
