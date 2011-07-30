@@ -82,11 +82,11 @@ public class PacketControlAction implements BukkitContribPacket{
 				Widget control = screen.getWidget(widget);
 				if (control != null) {
 					if (control instanceof Button) {
-						ButtonClickEvent event = new ButtonClickEvent(screen, (Button)control);
+						ButtonClickEvent event = new ButtonClickEvent(player, screen, (Button)control);
 						Bukkit.getServer().getPluginManager().callEvent(event);
 					}
 					else if (control instanceof Slider) {
-						SliderDragEvent event = new SliderDragEvent(screen, (Slider)control, state);
+						SliderDragEvent event = new SliderDragEvent(player, screen, (Slider)control, state);
 						Bukkit.getServer().getPluginManager().callEvent(event);
 						if (event.isCancelled()) {
 							((Slider)control).setSliderPosition(event.getOldPosition());
@@ -101,9 +101,8 @@ public class PacketControlAction implements BukkitContribPacket{
 						}
 					}
 					else if (control instanceof TextField) {
-						TextFieldChangeEvent event = new TextFieldChangeEvent(screen, (TextField)control, data);
+						TextFieldChangeEvent event = new TextFieldChangeEvent(player, screen, (TextField)control, data);
 						Bukkit.getServer().getPluginManager().callEvent(event);
-						event.setCancelled(true);
 						if (event.isCancelled()) {
 							((TextField)control).setText(event.getOldText());
 							control.setDirty(true);

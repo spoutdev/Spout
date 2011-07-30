@@ -44,11 +44,12 @@ public class GenericPopup extends GenericScreen implements PopupScreen{
 	}
 	
 	@Override
-	public void close() {
+	public boolean close() {
 		if (getScreen() != null) {
 			if (getScreen() instanceof InGameScreen) {
-				((InGameScreen)getScreen()).clearPopup();
+				return ((InGameScreen)getScreen()).closePopup();
 			}
 		}
+		return false;
 	}
 }

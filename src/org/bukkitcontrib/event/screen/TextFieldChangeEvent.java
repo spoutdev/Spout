@@ -2,14 +2,15 @@ package org.bukkitcontrib.event.screen;
 
 import org.bukkitcontrib.gui.Screen;
 import org.bukkitcontrib.gui.TextField;
+import org.bukkitcontrib.player.ContribPlayer;
 
 public class TextFieldChangeEvent extends ScreenEvent{
 
 	protected TextField field;
 	protected String oldVal;
 	protected String newVal;
-	public TextFieldChangeEvent(Screen screen, TextField field, String newVal) {
-		super("TextFieldChangeEvent", screen);
+	public TextFieldChangeEvent(ContribPlayer player, Screen screen, TextField field, String newVal) {
+		super("TextFieldChangeEvent", player, screen);
 		this.field = field;
 		this.oldVal = field.getText();
 		this.newVal = newVal;
