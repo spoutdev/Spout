@@ -2,6 +2,10 @@
 
 package org.bukkitcontrib;
 
+import org.bukkitcontrib.packet.listener.Listeners;
+
+import org.bukkit.entity.Player;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -106,6 +110,10 @@ public final class MapChunkThread implements Runnable {
 	private void handle(QueuedPacket task) {
 		addToQueueSize(task.players, -1);
 		if (task.compress) {
+			Player p = task.players.length == 1 ? (Player)task.players[0].getBukkitEntity() : null;
+			if (!Listeners.canSendUncompressedPacket(p, task.packet)) {
+				return;
+			}
 			handleMapChunk(task);
 		}
 		sendToNetworkQueue(task);

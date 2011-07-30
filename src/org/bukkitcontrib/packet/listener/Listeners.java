@@ -22,11 +22,21 @@ public class Listeners {
 	private final static AtomicReference[] listeners;
 
 	static {
-		listeners = new AtomicReference[256];
+		listeners = new AtomicReference[257];
 		for(int i = 0; i < listeners.length; i++) {
 			listeners[i] = new AtomicReference<Listener[]>();
 		}
 		clearAllListeners();
+	}
+
+	public static boolean canSendUncompressedPacket(Player player, Packet packet) {
+		AtomicReference<Listener[]> listenerReference = (AtomicReference<Listener[]>)listeners[256];
+		Listener[] listenerArray = listenerReference.get();
+		for (Listener listener : listenerArray) {
+			if (!listener.checkPacket(player, packet))
+				return false;
+		}
+		return true;
 	}
 
 	public static boolean canSend(Player player, Packet packet) {
@@ -39,8 +49,19 @@ public class Listeners {
 		return true;
 	}
 
+	public static void addListenerUncompressedChunk(Listener listener) {
+		addListener2(256, listener);
+	}
+
 	public static void addListener(int packetId, Listener listener) {
-		if (packetId < 0 || packetId > 255)
+		if (packetId > 255) {
+			return;
+		}
+		addListener2(packetId, listener);
+	}
+
+	private static void addListener2(int packetId, Listener listener) {
+		if (packetId < 0)
 			return;
 
 		AtomicReference<Listener[]> listenerReference = (AtomicReference<Listener[]>)listeners[packetId];
@@ -54,8 +75,19 @@ public class Listeners {
 		}
 	}
 
+	public static boolean removeListenerUncompressedChunk(Listener listener) {
+		return removeListener2(256, listener);
+	}
+
 	public static boolean removeListener(int packetId, Listener listener) {
-		if (packetId < 0 || packetId > 255)
+		if (packetId > 255) {
+			return false;
+		}
+		return removeListener2(packetId, listener);
+	}
+
+	private static boolean removeListener2(int packetId, Listener listener) {
+		if (packetId < 0)
 			return false;
 
 		AtomicReference<Listener[]> listenerReference = (AtomicReference<Listener[]>)listeners[packetId];
@@ -82,7 +114,7 @@ public class Listeners {
 	}
 
 	public static boolean hasListeners(int packetId) {
-		if (packetId < 0 || packetId > 255)
+		if (packetId < 0 || packetId > 256)
 			return false;
 
 		AtomicReference<Listener[]> listenerReference = (AtomicReference<Listener[]>)listeners[packetId];
@@ -92,7 +124,7 @@ public class Listeners {
 
 	public static boolean hasListeners() {
 		for(int i = 0; i < listeners.length; i++) {
-			if(hasListeners(i)) {
+			if (hasListeners(i)) {
 				return true;
 			}
 		}
@@ -100,7 +132,7 @@ public class Listeners {
 	}
 
 	public static boolean hasListener(int packetId, Listener listener) {
-		if (packetId < 0 || packetId > 255)
+		if (packetId < 0 || packetId > 256)
 			return false;
 
 		AtomicReference<Listener[]> listenerReference = (AtomicReference<Listener[]>)listeners[packetId];
