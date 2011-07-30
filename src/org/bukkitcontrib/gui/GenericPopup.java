@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class GenericPopup extends GenericScreen implements PopupScreen{
-	protected boolean transparent = true;
+	protected boolean transparent = false;
 	public GenericPopup() {
 		
 	}

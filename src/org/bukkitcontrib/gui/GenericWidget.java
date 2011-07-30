@@ -168,4 +168,9 @@ public abstract class GenericWidget implements Widget{
 	public boolean equals(Object other) {
 		return other instanceof Widget && other.hashCode() == hashCode();
 	}
+	
+	@Override
+	public void onTick() {
+		
+	}
 }

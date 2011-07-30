@@ -54,4 +54,6 @@ public interface Widget{
 	public boolean isVisible();
 	
 	public Widget setVisible(boolean enable);
+	
+	public void onTick();
 }

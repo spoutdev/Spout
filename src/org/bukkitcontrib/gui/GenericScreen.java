@@ -76,6 +76,7 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 		ContribCraftPlayer player = (ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId);
 		if (player != null && player.getVersion() > 17) {
 			for (Widget widget : widgets) {
+				widget.onTick();
 				if (widget.isDirty()) {
 					player.sendPacket(new PacketWidget(widget, getId()));
 					widget.setDirty(false);
