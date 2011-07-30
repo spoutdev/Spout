@@ -47,7 +47,7 @@ Coding and Pull Request Formatting
 
 Please follow the above conventions if you want your pull requests accepted.
 
-[Project Logo]: http://assets.craftfire.com/img/logo/spout.png
+[Project Logo]: http://assets.craftfire.com/img/logo/spout_327x150.png
 [License]: http://www.gnu.org/licenses/lgpl.html
 [Website]: http://getspout.org
 [Forum]: http://bit.ly/getspout
