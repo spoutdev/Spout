@@ -120,6 +120,10 @@ public class InGameScreen extends GenericScreen implements InGameHUD{
 		if (getActivePopup() == null) {
 			activePopup = screen;
 			BukkitContrib.getGameInstance().displayGuiScreen(new CustomScreen(screen));
+			if (screen.isFocus()) {
+				BukkitContrib.getGameInstance().setIngameFocus(false);
+			}
+			
 			return true;
 		}
 		return false;

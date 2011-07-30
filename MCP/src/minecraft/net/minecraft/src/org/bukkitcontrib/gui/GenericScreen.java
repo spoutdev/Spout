@@ -71,7 +71,9 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 	
 	@Override
 	public void onTick() {
-		
+		for (Widget widget : widgets) {
+			widget.onTick();
+		}
 	}
 	
 	protected boolean canRender(Widget widget) {
