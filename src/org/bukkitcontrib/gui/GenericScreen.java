@@ -38,7 +38,7 @@ public abstract class GenericScreen extends GenericWidget implements Screen{
 		widgets.remove(widget);
 		boolean visibility = widget.isVisible();
 		widget.setVisible(false);
-		player.sendPacket(new PacketWidget(widget, getId()));
+		((ContribCraftPlayer)BukkitContrib.getPlayerFromId(playerId)).sendPacket(new PacketWidget(widget, getId()));
 		widget.setScreen(null);
 		widget.setVisible(visibility );
 		return this;
