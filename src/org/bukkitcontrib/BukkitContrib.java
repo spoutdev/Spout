@@ -56,6 +56,7 @@ public class BukkitContrib extends JavaPlugin{
 		appearanceManager.onPluginDisable();
 		itemManager.reset();
 		skyManager.reset();
+		MapChunkThread.endThread(); // must happen before NetServerHandlers are converted back to standard
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
@@ -93,8 +94,6 @@ public class BukkitContrib extends JavaPlugin{
 		}
 		catch (Exception e) {}
 		
-		//end the thread
-		MapChunkThread.endThread();
 	}
 
 	@Override
