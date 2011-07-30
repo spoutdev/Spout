@@ -1,8 +1,13 @@
 package net.minecraft.src;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.ChatAllowedCharacters;
 import net.minecraft.src.GuiScreen;
+//Spout Start
+import net.minecraft.src.GuiSleepMP;
+//Spout End
 import org.lwjgl.input.Keyboard;
+import org.bukkitcontrib.gui.ScreenType;
 import org.bukkitcontrib.player.*; //bukkitcontrib
 
 public class GuiChat extends GuiScreen {
@@ -122,4 +127,13 @@ public class GuiChat extends GuiScreen {
 
 	}
 
+	//Spout start
+	@Override
+	public void handleKeyboardInput(){
+		super.handleKeyboardInput();
+		if(!(this instanceof GuiSleepMP)){
+			Minecraft.handleKeyPress(Keyboard.getEventKey(), Keyboard.getEventKeyState(), ScreenType.CHAT);
+		}
+	}
+	//Spout end
 }

@@ -10,11 +10,13 @@ import org.bukkitcontrib.event.input.KeyReleasedEvent;
 import org.bukkitcontrib.keyboard.Keyboard;
 import org.bukkitcontrib.keyboard.SimpleKeyboardManager;
 import org.bukkitcontrib.player.ContribCraftPlayer;
+import org.bukkitcontrib.gui.ScreenType;
 
 public class PacketKeyPress implements BukkitContribPacket{
 	public boolean pressDown;
 	public byte key;
 	public byte settingKeys[] = new byte[10];
+	public int screenType = 0;
 	public PacketKeyPress(){
 	}
 
@@ -26,6 +28,7 @@ public class PacketKeyPress implements BukkitContribPacket{
 	public void readData(DataInputStream datainputstream) throws IOException {
 		this.key = datainputstream.readByte();
 		this.pressDown = datainputstream.readBoolean();
+		this.screenType = datainputstream.readInt();
 		for (int i = 0; i < 10; i++) {
 			this.settingKeys[i] = datainputstream.readByte();
 		}
@@ -34,6 +37,7 @@ public class PacketKeyPress implements BukkitContribPacket{
 	public void writeData(DataOutputStream dataoutputstream) throws IOException {
 		dataoutputstream.writeByte(this.key);
 		dataoutputstream.writeBoolean(this.pressDown);
+		dataoutputstream.writeInt(this.screenType);
 		for (int i = 0; i < 10; i++) {
 			dataoutputstream.writeByte(this.settingKeys[i]);
 		}
@@ -47,12 +51,12 @@ public class PacketKeyPress implements BukkitContribPacket{
 			SimpleKeyboardManager manager = (SimpleKeyboardManager)BukkitContrib.getKeyboardManager();
 			if (pressDown) {
 				manager.onPreKeyPress(pressed, ccp);
-				Bukkit.getServer().getPluginManager().callEvent(new KeyPressedEvent(this.key, ccp));
+				Bukkit.getServer().getPluginManager().callEvent(new KeyPressedEvent(this.key, ccp, ScreenType.getType(this.screenType)));
 				manager.onPostKeyPress(pressed, ccp);
 			}
 			else {
 				manager.onPreKeyRelease(pressed, ccp);
-				Bukkit.getServer().getPluginManager().callEvent(new KeyReleasedEvent(this.key, ccp));
+				Bukkit.getServer().getPluginManager().callEvent(new KeyReleasedEvent(this.key, ccp, ScreenType.getType(this.screenType)));
 				manager.onPostKeyPress(pressed, ccp);
 			}
 		}
@@ -60,7 +64,7 @@ public class PacketKeyPress implements BukkitContribPacket{
 
 	public int getNumBytes()
 	{
-		return 1 + 1 + 10;
+		return 1 + 1 + 1 + 10;
 	}
 
 	@Override

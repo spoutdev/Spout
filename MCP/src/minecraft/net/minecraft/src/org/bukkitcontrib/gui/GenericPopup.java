@@ -52,4 +52,15 @@ public class GenericPopup extends GenericScreen implements PopupScreen{
 		}
 		return false;
 	}
+    
+    @Override
+    public PopupScreen setFocus(boolean focus){
+        System.out.println("Can't set the focus for now!");
+        return this;
+    }
+    
+    @Override
+    public boolean isFocus(){
+        return true;
+    }
 }

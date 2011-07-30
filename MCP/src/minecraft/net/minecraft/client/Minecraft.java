@@ -104,6 +104,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 //BukkitContrib Start
 import com.pclewis.mcpatcher.mod.TextureUtils;
+import org.bukkitcontrib.gui.ScreenType;
 //BukkitContrib End
 
 public abstract class Minecraft implements Runnable {
@@ -1546,5 +1547,13 @@ public abstract class Minecraft implements Runnable {
 
 		return false;
 	}
-
+    
+    //Spout start
+    public static void handleKeyPress(int i, boolean keyReleased, ScreenType type){
+    	if(theMinecraft.thePlayer instanceof EntityClientPlayerMP){
+    		EntityClientPlayerMP player = (EntityClientPlayerMP)theMinecraft.thePlayer;
+    		player.handleScreenKeyPress(i, keyReleased, type);
+    	}
+    }
+    //Spout end
 }
