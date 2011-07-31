@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.bukkitcontrib.packet.*;
 import net.minecraft.src.*;
 import java.util.ArrayList;
+import net.minecraft.client.Minecraft;
 
 public class CustomScreen extends GuiScreen {
 	protected PopupScreen screen;
@@ -55,7 +56,11 @@ public class CustomScreen extends GuiScreen {
 	@Override
 	public void handleKeyboardInput() {
 		boolean handled = false;
+		//Spout start
+		Minecraft.handleKeyPress(Keyboard.getEventKey(), Keyboard.getEventKeyState(), ScreenType.CUSTOM_SCREEN);
+		//Spout end
 		if(Keyboard.getEventKeyState()) {
+            
 			if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 				handled = true;
 				testScreenClose();

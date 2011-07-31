@@ -20,6 +20,8 @@ import net.minecraft.src.Packet9Respawn;
 import net.minecraft.src.Session;
 import net.minecraft.src.StatBase;
 import net.minecraft.src.World;
+
+import org.bukkitcontrib.gui.ScreenType;
 import org.bukkitcontrib.packet.*; //BukkitContrib
 import org.bukkitcontrib.player.*; //BukkitContrib
 
@@ -232,4 +234,10 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 		}
 	}
 	//BukkitContrib End
+	
+	//Spout Start
+	public void handleScreenKeyPress(int i, boolean keyReleased, ScreenType type){
+		sendQueue.addToSendQueue(new CustomPacket(new PacketKeyPress((byte)i, keyReleased, (MovementInputFromOptions)movementInput, type)));
+	}
+	//Spout End
 }

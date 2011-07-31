@@ -11,6 +11,11 @@ import net.minecraft.src.StringTranslate;
 //BukkitContrib Start
 import org.bukkitcontrib.packet.*;
 //BukkitContrib End
+//Spout Start
+import org.bukkitcontrib.gui.ScreenType;
+import org.lwjgl.input.Keyboard;
+import net.minecraft.client.Minecraft;
+//Spout End
 
 public class GuiVideoSettings extends GuiScreen {
 
@@ -85,5 +90,13 @@ public class GuiVideoSettings extends GuiScreen {
 		this.drawCenteredString(this.fontRenderer, this.field_22107_a, this.width / 2, 20, 16777215);
 		super.drawScreen(var1, var2, var3);
 	}
+	
+    //Spout Start
+	@Override
+	public void handleKeyboardInput() {
+		super.handleKeyboardInput();
+		Minecraft.handleKeyPress(Keyboard.getEventKey(), Keyboard.getEventKeyState(), ScreenType.VIDEO_SETTINGS_MENU);
+	}
+	//Spout End
 
 }
