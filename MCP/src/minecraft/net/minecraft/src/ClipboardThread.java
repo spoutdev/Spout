@@ -5,7 +5,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import org.bukkitcontrib.packet.*;
+import org.getspout.packet.*;
 
 public class ClipboardThread extends Thread {
 	public ClipboardThread(EntityClientPlayerMP player) {

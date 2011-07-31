@@ -1,4 +1,4 @@
-package org.bukkitcontrib.inventory;
+package org.getspout.inventory;
 
 import java.util.HashMap;
 import java.util.Iterator;

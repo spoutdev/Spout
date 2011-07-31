@@ -1,4 +1,4 @@
-package org.bukkitcontrib.player;
+package org.getspout.player;
 
 public interface SkyManager {
 	

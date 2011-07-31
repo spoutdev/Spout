@@ -20,8 +20,8 @@ import net.minecraft.src.Packet9Respawn;
 import net.minecraft.src.Session;
 import net.minecraft.src.StatBase;
 import net.minecraft.src.World;
-import org.bukkitcontrib.packet.*; //BukkitContrib
-import org.bukkitcontrib.player.*; //BukkitContrib
+import org.getspout.packet.*; //BukkitContrib
+import org.getspout.player.*; //BukkitContrib
 
 public class EntityClientPlayerMP extends EntityPlayerSP {
 

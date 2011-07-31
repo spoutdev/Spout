@@ -1,10 +1,10 @@
-package org.bukkitcontrib;
+package org.getspout;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import org.bukkitcontrib.io.FileUtil;
+import org.getspout.io.FileUtil;
 
 public class VersionFile {
 	private String version;

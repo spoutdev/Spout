@@ -1,10 +1,10 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import org.lwjgl.opengl.GL11;
 import net.minecraft.src.*;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
-import org.bukkitcontrib.packet.*;
+import org.getspout.packet.*;
 import java.util.UUID;
 
 public class CustomTextField extends GuiButton {

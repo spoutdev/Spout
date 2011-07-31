@@ -1,9 +1,9 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.bukkitcontrib.packet.*;
+import org.getspout.packet.*;
 import net.minecraft.src.*;
 import java.util.ArrayList;
 

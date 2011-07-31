@@ -52,7 +52,7 @@ import net.minecraft.src.WorldRenderer;
 import org.lwjgl.opengl.ARBOcclusionQuery;
 import org.lwjgl.opengl.GL11;
 //BukkitContrib Start
-import org.bukkitcontrib.io.CustomTextureManager;
+import org.getspout.io.CustomTextureManager;
 //BukkitContrib End
 
 public class RenderGlobal implements IWorldAccess {

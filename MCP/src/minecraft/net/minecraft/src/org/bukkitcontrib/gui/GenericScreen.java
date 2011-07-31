@@ -1,10 +1,10 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.lwjgl.opengl.GL11;
-import org.bukkitcontrib.packet.PacketWidget;
+import org.getspout.packet.PacketWidget;
 
 public abstract class GenericScreen extends GenericWidget implements Screen{
 	protected List<Widget> widgets = new ArrayList<Widget>();

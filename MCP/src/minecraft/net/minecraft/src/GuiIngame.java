@@ -21,8 +21,8 @@ import net.minecraft.src.StringTranslate;
 import net.minecraft.src.Tessellator;
 import org.lwjgl.opengl.GL11;
 //BukkitContrib Start
-import org.bukkitcontrib.gui.*;
-import org.bukkitcontrib.player.ChatManager;
+import org.getspout.gui.*;
+import org.getspout.player.ChatManager;
 //BukkitContrib End
 
 public class GuiIngame extends Gui {

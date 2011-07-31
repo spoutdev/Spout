@@ -1,4 +1,4 @@
-package org.bukkitcontrib.packet;
+package org.getspout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

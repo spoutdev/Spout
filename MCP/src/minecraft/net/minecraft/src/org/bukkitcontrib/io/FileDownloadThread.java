@@ -1,4 +1,4 @@
-package org.bukkitcontrib.io;
+package org.getspout.io;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;

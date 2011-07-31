@@ -1,4 +1,4 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import org.lwjgl.opengl.GL11;
 import net.minecraft.src.*;

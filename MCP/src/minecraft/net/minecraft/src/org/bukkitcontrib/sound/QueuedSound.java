@@ -1,4 +1,4 @@
-package org.bukkitcontrib.sound;
+package org.getspout.sound;
 
 import java.io.File;
 import net.minecraft.src.SoundManager;

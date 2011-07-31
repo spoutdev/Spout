@@ -1,4 +1,4 @@
-package org.bukkitcontrib.io;
+package org.getspout.io;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;

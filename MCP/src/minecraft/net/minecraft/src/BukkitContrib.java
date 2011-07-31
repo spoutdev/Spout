@@ -11,13 +11,13 @@ import java.net.HttpURLConnection;
 import java.io.BufferedReader;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import org.bukkitcontrib.gui.*;
-import org.bukkitcontrib.inventory.*;
+import org.getspout.gui.*;
+import org.getspout.inventory.*;
 import org.bukkit.*;
-import org.bukkitcontrib.packet.*;
-import org.bukkitcontrib.player.*;
-import org.bukkitcontrib.sound.*;
-import org.bukkitcontrib.io.*;
+import org.getspout.packet.*;
+import org.getspout.player.*;
+import org.getspout.sound.*;
+import org.getspout.io.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Iterator;
 
@@ -46,7 +46,7 @@ public class BukkitContrib {
 	static {
 		dataMining.start();
 		CustomPacket.addClassMapping();
-		(new org.bukkitcontrib.VersionFile(getClientVersionString())).create();
+		(new org.getspout.VersionFile(getClientVersionString())).create();
 		Minecraft.hasPaidCheckTime = 0L;
 	}
 	

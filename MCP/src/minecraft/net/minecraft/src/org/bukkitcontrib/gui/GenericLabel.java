@@ -1,10 +1,10 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
-import org.bukkitcontrib.packet.PacketUtil;
+import org.getspout.packet.PacketUtil;
 import net.minecraft.src.BukkitContrib;
 import net.minecraft.src.FontRenderer;
 

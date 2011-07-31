@@ -1,4 +1,4 @@
-package org.bukkitcontrib.player;
+package org.getspout.player;
 
 import java.util.ArrayList;
 import java.util.List;

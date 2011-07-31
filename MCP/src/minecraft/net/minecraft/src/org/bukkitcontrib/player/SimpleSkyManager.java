@@ -1,9 +1,9 @@
-package org.bukkitcontrib.player;
+package org.getspout.player;
 
 import java.util.HashMap;
-import org.bukkitcontrib.packet.PacketSky;
+import org.getspout.packet.PacketSky;
 import net.minecraft.src.BukkitContrib;
-import org.bukkitcontrib.io.CustomTextureManager;
+import org.getspout.io.CustomTextureManager;
 
 public class SimpleSkyManager implements SkyManager{
 	private int cloudHeight = -999;

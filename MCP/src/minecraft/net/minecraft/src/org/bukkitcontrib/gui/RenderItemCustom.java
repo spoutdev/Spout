@@ -1,4 +1,4 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import net.minecraft.src.*;
 

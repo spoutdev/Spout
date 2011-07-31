@@ -1,4 +1,4 @@
-package org.bukkitcontrib.texture;
+package org.getspout.texture;
 
 import java.io.File;
 import net.minecraft.src.TexturePackCustom;

@@ -1,9 +1,9 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import org.lwjgl.opengl.GL11;
 import net.minecraft.src.*;
 import net.minecraft.client.Minecraft;
-import org.bukkitcontrib.packet.*;
+import org.getspout.packet.*;
 
 public class CustomGuiSlider extends GuiSlider {
 	protected Screen screen;

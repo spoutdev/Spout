@@ -6,7 +6,7 @@ import java.io.IOException;
 import net.minecraft.src.NetHandler;
 import net.minecraft.src.Packet;
 //BukkitContrib Start
-import org.bukkitcontrib.gui.*;
+import org.getspout.gui.*;
 //BukkitContrib End
 
 public class Packet1Login extends Packet {

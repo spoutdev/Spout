@@ -1,11 +1,11 @@
-package org.bukkitcontrib.gui;
+package org.getspout.gui;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.BukkitContrib;
-import org.bukkitcontrib.packet.PacketUtil;
+import org.getspout.packet.PacketUtil;
 
 public class GenericButton extends GenericControl implements Button {
 

@@ -9,7 +9,7 @@ import net.minecraft.src.GuiSmallButton;
 import net.minecraft.src.ScaledResolution;
 import net.minecraft.src.StringTranslate;
 //BukkitContrib Start
-import org.bukkitcontrib.packet.*;
+import org.getspout.packet.*;
 //BukkitContrib End
 
 public class GuiVideoSettings extends GuiScreen {

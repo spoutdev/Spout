@@ -17,9 +17,9 @@ import paulscode.sound.libraries.LibraryLWJGLOpenAL;
 //BukkitContrib Start
 import paulscode.sound.CommandObject;
 import paulscode.sound.FilenameURL;
-import org.bukkitcontrib.packet.*;
-import org.bukkitcontrib.sound.Music;
-import org.bukkitcontrib.sound.SoundEffect;
+import org.getspout.packet.*;
+import org.getspout.sound.Music;
+import org.getspout.sound.SoundEffect;
 //BukkitContrib End
 
 public class SoundManager {

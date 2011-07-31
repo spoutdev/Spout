@@ -1,4 +1,4 @@
-package org.bukkitcontrib.sound;
+package org.getspout.sound;
 
 import java.util.HashMap;
 import java.util.Map;

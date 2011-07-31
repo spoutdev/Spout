@@ -1,4 +1,4 @@
-package org.bukkitcontrib.inventory;
+package org.getspout.inventory;
 
 public interface ItemManager {
 	

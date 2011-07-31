@@ -1,10 +1,10 @@
-package org.bukkitcontrib.packet;
+package org.getspout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import net.minecraft.src.*;
-import org.bukkitcontrib.player.ChatManager;
+import org.getspout.player.ChatManager;
 
 public class PacketClipboardText implements BukkitContribPacket{
 	
