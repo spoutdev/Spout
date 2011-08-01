@@ -127,7 +127,12 @@
                                     <include>org.getspout:spoutapi</include>
                                 </includes>
                                 <excludes>
-                                    <exclude>*</exclude>
+                                    <exclude>com.avaje:*</exclude>
+                                    <exclude>com.google:*</exclude>
+                                    <exclude>javax:*</exclude>
+                                    <exclude>org.bukkit:*</exclude>
+                                    <exclude>org.json:*</exclude>
+                                    <exclude>org.yaml:*</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>
