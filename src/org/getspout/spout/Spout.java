@@ -24,6 +24,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SpoutInventoryBuilder;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SimpleAppearanceManager;
@@ -38,11 +39,6 @@ public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
 	private final SpoutWorldListener chunkListener;
 	private final PluginListener pluginListener;
-	private final SimpleKeyboardManager keyManager;
-	private final SimpleAppearanceManager appearanceManager;
-	private final SimpleSoundManager soundManager;
-	private final SimpleItemManager itemManager;
-	private final SimpleSkyManager skyManager;
 	private static Spout instance;
 	private final static int VERSION = 100;
 	
@@ -51,23 +47,19 @@ public class Spout extends JavaPlugin{
 		playerListener = new SpoutPlayerListener();
 		chunkListener = new SpoutWorldListener();
 		pluginListener = new PluginListener();
-		keyManager = new SimpleKeyboardManager();
-		SpoutManager.getInstance().setKeyboardManager(keyManager);
-		appearanceManager = new SimpleAppearanceManager();
-		SpoutManager.getInstance().setAppearanceManager(appearanceManager);
-		soundManager = new SimpleSoundManager();
-		SpoutManager.getInstance().setSoundManager(soundManager);
-		itemManager = new SimpleItemManager();
-		SpoutManager.getInstance().setItemManager(itemManager);
-		skyManager = new SimpleSkyManager();
-		SpoutManager.getInstance().setSkyManager(skyManager);
+		SpoutManager.getInstance().setKeyboardManager(new SimpleKeyboardManager());
+		SpoutManager.getInstance().setAppearanceManager(new SimpleAppearanceManager());
+		SpoutManager.getInstance().setSoundManager(new SimpleSoundManager());
+		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
+		SpoutManager.getInstance().setSkyManager(new SimpleSkyManager());
+		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
 	}
 	@Override
 	public void onDisable() {
 		//order matters
-		appearanceManager.onPluginDisable();
-		itemManager.reset();
-		skyManager.reset();
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
+		((SimpleItemManager)SpoutManager.getItemManager()).reset();
+		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
@@ -143,7 +135,7 @@ public class Spout extends JavaPlugin{
 		}
 		
 		SpoutCraftChunk.replaceAllBukkitChunks();
-		appearanceManager.onPluginEnable();
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
 
 		MapChunkThread.startThread(); // Always on
 		
