@@ -13,8 +13,12 @@
     <artifactId>spout</artifactId>
     <version>dev-SNAPSHOT</version>
     <name>Spout</name>
-    <url>http://getspout.org</url>
+    <url>http://www.getspout.org</url>
     <description>Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <!-- License -->
     <licenses>
@@ -25,41 +29,51 @@
         </license>
     </licenses>
 
+    <!-- Source code -->
+    <scm>
+        <developerConnection>scm:git:git@github.com:SpoutDev/${project.name}.git</developerConnection>
+        <connection>scm:git:git://github.com/SpoutDev/${project.name}.git</connection>
+        <url>https://github.com/SpoutDev/${project.name}</url>
+    </scm>
+
+    <!-- Continuous integration -->
+    <ciManagement>
+        <system>jenkins</system>
+        <url>http://ci.getspout.org</url>
+    </ciManagement>
+
     <!-- Repository locations -->
     <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/artifactory/repo</url>
-        </repository>
-        <repository>
+        <!-- <repository>
             <id>craftfire-repo</id>
-            <url>http://repo.craftfire.com/repo</url>
+            <url>http://repo.craftfire.com</url>
+        </repository> -->
+        <repository>
+            <id>craftfire-dbrepo</id>
+            <url>http://db.craftfire.com/repo</url>
         </repository>
     </repositories>
 
     <dependencies>
-		 <!-- SpoutAPI -->
-        <dependency>
-            <groupId>org.getspout</groupId>
-            <artifactId>spoutapi</artifactId>
-            <version>dev-SNAPSHOT</version>
-        </dependency>
-		
-        <!-- Bukkit -->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
         <!-- CraftBukkit -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- SpoutAPI -->
+        <dependency>
+            <groupId>org.getspout</groupId>
+            <artifactId>spoutapi</artifactId>
+            <version>dev-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
-
+   
     <build>
         <sourceDirectory>${basedir}/src/</sourceDirectory>
 
@@ -70,7 +84,6 @@
                 <filtering>true</filtering>
                 <directory>${basedir}/src/</directory>
                 <includes>
-                    <include>README</include>
                     <include>plugin.yml</include>
                 </includes>
             </resource>
@@ -95,24 +108,40 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                        <pomPropertiesFile>false</pomPropertiesFile>
-                        <manifest>
-                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
             </plugin>
+            
+            <!-- JAR dependency addition plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.getspout:spoutapi</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>com.avaje:*</exclude>
+                                    <exclude>com.google:*</exclude>
+                                    <exclude>javax:*</exclude>
+                                    <exclude>org.bukkit:*</exclude>
+                                    <exclude>org.json:*</exclude>
+                                    <exclude>org.yaml:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
     </build>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skipTests>true</skipTests>
-    </properties>
 
 </project>
