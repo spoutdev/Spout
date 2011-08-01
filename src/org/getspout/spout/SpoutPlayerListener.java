@@ -35,6 +35,9 @@ public class SpoutPlayerListener extends PlayerListener{
 
 	@Override
 	public void onPlayerTeleport(final PlayerTeleportEvent event) {
+		if (!(event.getPlayer() instanceof SpoutPlayer)) {
+			updatePlayerEvent(event);
+		}
 		if (event.isCancelled()) {
 			return;
 		}
@@ -58,7 +61,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		else {
 			update = new Runnable() {
 				public void run() {
-					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin((SpoutPlayer)event.getPlayer());
+					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
 				}
 			};
 		}
@@ -67,6 +70,9 @@ public class SpoutPlayerListener extends PlayerListener{
 
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (!(event.getPlayer() instanceof SpoutPlayer)) {
+			updatePlayerEvent(event);
+		}
 		if (event.isCancelled()) {
 			return;
 		}
@@ -84,9 +90,9 @@ public class SpoutPlayerListener extends PlayerListener{
 	
 	@Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		/*if (event.isCancelled()) {
-			return;
-		}*/
+		if (!(event.getPlayer() instanceof SpoutPlayer)) {
+			updatePlayerEvent(event);
+		}
 		SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getContribPlayer(event.getPlayer());
 		if (player.isSpoutCraftEnabled()) {
 			return;
@@ -107,6 +113,7 @@ public class SpoutPlayerListener extends PlayerListener{
 	
 	private void updatePlayerEvent(PlayerEvent event) {
 		try {
+			System.out.println("Updating Event");
 			Field player = PlayerEvent.class.getDeclaredField("player");
 			player.setAccessible(true);
 			player.set(event, ((SpoutCraftPlayer)((CraftPlayer)event.getPlayer()).getHandle().getBukkitEntity()));
@@ -118,7 +125,9 @@ public class SpoutPlayerListener extends PlayerListener{
 
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
-
+		if (!(event.getPlayer() instanceof SpoutPlayer)) {
+			updatePlayerEvent(event);
+		}
 		if(event.isCancelled()) {
 			return;
 		}
