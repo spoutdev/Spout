@@ -9,8 +9,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Project information -->
-    <groupId>org</groupId>
-    <artifactId>getspout</artifactId>
+    <groupId>org.getspout</groupId>
+    <artifactId>spout</artifactId>
     <version>dev-SNAPSHOT</version>
     <name>Spout</name>
     <url>http://www.getspout.org</url>
@@ -60,6 +60,8 @@
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SpoutAPI -->
