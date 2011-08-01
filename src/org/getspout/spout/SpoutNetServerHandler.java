@@ -25,7 +25,7 @@ import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
-import org.getspout.spout.packet.listener.Listeners;
+import org.getspout.spoutapi.packet.listener.Listeners;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;

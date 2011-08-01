@@ -11,6 +11,9 @@ import java.util.zip.Deflater;
 
 import java.lang.reflect.Field;
 
+import org.bukkit.entity.Player;
+import org.getspout.spoutapi.packet.listener.Listeners;
+
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
@@ -106,6 +109,10 @@ public final class MapChunkThread implements Runnable {
 	private void handle(QueuedPacket task) {
 		addToQueueSize(task.players, -1);
 		if (task.compress) {
+			Player p = task.players.length == 1 ? (Player)task.players[0].getBukkitEntity() : null;
+			if (!Listeners.canSendUncompressedPacket(p, task.packet)) {
+				return;
+			}
 			handleMapChunk(task);
 		}
 		sendToNetworkQueue(task);
