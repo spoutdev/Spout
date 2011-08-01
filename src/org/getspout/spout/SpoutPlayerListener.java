@@ -42,16 +42,16 @@ public class SpoutPlayerListener extends PlayerListener{
 			return;
 		}
 		Runnable update = null;
+		final SpoutPlayer scp = SpoutCraftPlayer.getContribPlayer(event.getPlayer());
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
-			SpoutCraftPlayer ccp = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(event.getPlayer());
-			if(ccp.getVersion() > 16) {
+			if(scp.isSpoutCraftEnabled()) {
 				long newSeed = event.getTo().getWorld().getSeed();
-				ccp.sendPacket(new PacketWorldSeed(newSeed));
+				scp.sendPacket(new PacketWorldSeed(newSeed));
 			}
 			update = new Runnable() {
 				public void run() {
 					SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
-					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin((SpoutPlayer)event.getPlayer());
+					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
 				}
 			};
 		}

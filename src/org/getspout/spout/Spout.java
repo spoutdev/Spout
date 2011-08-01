@@ -63,11 +63,11 @@ public class Spout extends JavaPlugin{
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
-				SpoutCraftPlayer ccp = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player);
-				if (ccp.getVersion() > 5)
-					ccp.sendPacket(new PacketRenderDistance(true, true));
-				if (ccp.getVersion() > 4)
-					ccp.sendPacket(new PacketPluginReload((SpoutCraftPlayer)player));
+				SpoutCraftPlayer scp = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player);
+				if (scp.isSpoutCraftEnabled()) {
+					scp.sendPacket(new PacketRenderDistance(true, true));
+					scp.sendPacket(new PacketPluginReload((SpoutCraftPlayer)player));
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();

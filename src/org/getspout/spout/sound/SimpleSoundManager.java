@@ -56,7 +56,7 @@ public class SimpleSoundManager implements SoundManager{
 
 	@Override
 	public void playSoundEffect(SpoutPlayer target, SoundEffect effect, Location location, int distance, int volumePercent) {
-		if (target.getVersion() > 7) {
+		if (target.isSpoutCraftEnabled()) {
 			SpoutCraftPlayer ccp = (SpoutCraftPlayer) target;
 			if (location == null || ccp.getWorld().equals(location.getWorld())) {
 				if (location == null) {
@@ -88,7 +88,7 @@ public class SimpleSoundManager implements SoundManager{
 
 	@Override
 	public void playMusic(SpoutPlayer target, Music music, int volumePercent) {
-		if (target.getVersion() > 7) {
+		if (target.isSpoutCraftEnabled()) {
 			BackgroundMusicEvent event = new BackgroundMusicEvent(music, volumePercent, target);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) {
@@ -111,7 +111,7 @@ public class SimpleSoundManager implements SoundManager{
 	
 	@Override
 	public void stopMusic(SpoutPlayer target, boolean resetTimer, int fadeOutTime) {
-		if (target.getVersion() > 8) {
+		if (target.isSpoutCraftEnabled()) {
 			((SpoutCraftPlayer) target).sendPacket(new PacketStopMusic(resetTimer, fadeOutTime));
 		}
 	}
@@ -201,7 +201,7 @@ public class SimpleSoundManager implements SoundManager{
 	}
 	
 	private void playCustomFile(Plugin plugin, SpoutPlayer target, String Url, boolean notify, Location location, int distance, int volumePercent, boolean soundEffect) {
-		if (target.getVersion() > 7) {
+		if (target.isSpoutCraftEnabled()) {
 			if (Url.length() > 255 || Url.length() < 5) {
 				throw new UnsupportedOperationException("All Url's must be between 5 and 256 characters");
 			}

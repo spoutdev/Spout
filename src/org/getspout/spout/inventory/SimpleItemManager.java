@@ -284,8 +284,8 @@ public class SimpleItemManager implements ItemManager{
 		customNames.put(new ItemData(item.getId(), data), name);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer){
-				if (((SpoutCraftPlayer)player).getVersion() > 8) {
-					((SpoutCraftPlayer)player).sendPacket(new PacketItemName(item.getId(), (short) 0, "[reset]"));
+				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
+					((SpoutPlayer)player).sendPacket(new PacketItemName(item.getId(), (short) 0, "[reset]"));
 				}
 			}
 		}
@@ -303,8 +303,8 @@ public class SimpleItemManager implements ItemManager{
 			customNames.remove(info);
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 				if (player instanceof SpoutCraftPlayer){
-					if (((SpoutCraftPlayer)player).getVersion() > 8) {
-						((SpoutCraftPlayer)player).sendPacket(new PacketItemName(info.id, info.data, "[reset]"));
+					if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
+						((SpoutPlayer)player).sendPacket(new PacketItemName(info.id, info.data, "[reset]"));
 					}
 				}
 			}
@@ -316,8 +316,8 @@ public class SimpleItemManager implements ItemManager{
 		customNames.clear();
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer){
-				if (((SpoutCraftPlayer)player).getVersion() > 8) {
-					((SpoutCraftPlayer)player).sendPacket(new PacketItemName(0, (short) 0, "[resetall]"));
+				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
+					((SpoutPlayer)player).sendPacket(new PacketItemName(0, (short) 0, "[resetall]"));
 				}
 			}
 		}
@@ -338,13 +338,12 @@ public class SimpleItemManager implements ItemManager{
 	}
 	
 	public void onPlayerJoin(SpoutPlayer player) {
-		if (((SpoutCraftPlayer)player).getVersion() > 8) {
+		if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
 			Iterator<Entry<ItemData, String>> i = customNames.entrySet().iterator();
 			while (i.hasNext()) {
 				Entry<ItemData, String> e = i.next();
-				((SpoutCraftPlayer)player).sendPacket(new PacketItemName(e.getKey().id, e.getKey().data, e.getValue()));
+				((SpoutPlayer)player).sendPacket(new PacketItemName(e.getKey().id, e.getKey().data, e.getValue()));
 			}
-			
 		}
 	}
 }

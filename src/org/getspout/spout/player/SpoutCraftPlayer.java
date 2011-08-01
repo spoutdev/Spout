@@ -338,7 +338,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void setRenderDistance(RenderDistance distance) {
-		if (getVersion() > 5) {
+		if (isSpoutCraftEnabled()) {
 			currentRender = distance;
 			sendPacket(new PacketRenderDistance(distance, null, null));
 		}
@@ -361,7 +361,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void setMaximumRenderDistance(RenderDistance maximum) {
-		if (getVersion() > 5) {
+		if (isSpoutCraftEnabled()) {
 			maximumRender = maximum;
 			sendPacket(new PacketRenderDistance(null, maximum, null));
 		}
@@ -369,7 +369,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void resetMaximumRenderDistance() {
-		if (getVersion() > 5) {
+		if (isSpoutCraftEnabled()) {
 			maximumRender = null;
 			sendPacket(new PacketRenderDistance(true, false));
 		}
@@ -382,7 +382,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void setMinimumRenderDistance(RenderDistance minimum) {
-		if (getVersion() > 5) {
+		if (isSpoutCraftEnabled()) {
 			minimumRender = minimum;
 			sendPacket(new PacketRenderDistance(null, null, minimum));
 		}
@@ -390,7 +390,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void resetMinimumRenderDistance() {
-		if (getVersion() > 5) {
+		if (isSpoutCraftEnabled()) {
 			minimumRender = null;
 			sendPacket(new PacketRenderDistance(false, true));
 		}
@@ -398,7 +398,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
-		if (getVersion() > 5) {
+		if (isSpoutCraftEnabled()) {
 			if (title.length() > 26)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
 			if (message.length() > 26)
@@ -409,7 +409,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void sendNotification(String title, String message, Material toRender, short data, int time) {
-		if (getVersion() > 17) {
+		if (isSpoutCraftEnabled()) {
 			if (title.length() > 26)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
 			if (message.length() > 26)
@@ -430,7 +430,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void setTexturePack(String url) {
-		 if (getVersion() > 8) {
+		 if (isSpoutCraftEnabled()) {
 			 if (url == null || url.length() < 5) {
 				 throw new IllegalArgumentException("Invalid URL!");
 			 }
@@ -442,7 +442,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	}
 	
 	public void setClipboardText(String text, boolean updateClient) {
-		if (getVersion() > 7) {
+		if (isSpoutCraftEnabled()) {
 			clipboard = text;
 			if (updateClient){
 				sendPacket(new PacketClipboardText(text));

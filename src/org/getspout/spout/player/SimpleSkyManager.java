@@ -27,8 +27,8 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setCloudHeight(SpoutPlayer player, int y) {
 		cloudHeight.put(player.getName(), y);
-		if (player.getVersion() > 8) {
-			((SpoutCraftPlayer)player).sendPacket(new PacketSky(y, 0, 0 ,0));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(y, 0, 0 ,0));
 		}
 	}
 
@@ -58,8 +58,8 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setStarFrequency(SpoutPlayer player, int frequency) {
 		starFrequency.put(player.getName(), frequency);
-		if (player.getVersion() > 8) {
-			((SpoutCraftPlayer)player).sendPacket(new PacketSky(0, frequency, 0 ,0));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(0, frequency, 0 ,0));
 		}
 	}
 
@@ -89,8 +89,8 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setSunSizePercent(SpoutPlayer player, int percent) {
 		sunPercent.put(player.getName(), percent);
-		if (player.getVersion() > 8) {
-			((SpoutCraftPlayer)player).sendPacket(new PacketSky(0, 0, percent, 0));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(0, 0, percent, 0));
 		}
 	}
 
@@ -121,15 +121,15 @@ public class SimpleSkyManager implements SkyManager{
 	public void setSunTextureUrl(SpoutPlayer player, String Url) {
 		if (Url == null) {
 			sunUrl.remove(player.getName());
-			if (player.getVersion() > 8) {
-				((SpoutCraftPlayer)player).sendPacket(new PacketSky("[reset]", ""));
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(new PacketSky("[reset]", ""));
 			}
 		}
 		else {
 			checkUrl(Url);
 			sunUrl.put(player.getName(), Url);
-			if (player.getVersion() > 8) {
-				((SpoutCraftPlayer)player).sendPacket(new PacketSky(Url, ""));
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(new PacketSky(Url, ""));
 			}
 		}
 	}
@@ -145,8 +145,8 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setMoonSizePercent(SpoutPlayer player, int percent) {
 		moonPercent.put(player.getName(), percent);
-		if (player.getVersion() > 8) {
-			((SpoutCraftPlayer)player).sendPacket(new PacketSky(0, 0, 0, percent));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(0, 0, 0, percent));
 		}
 	}
 
@@ -177,26 +177,26 @@ public class SimpleSkyManager implements SkyManager{
 	public void setMoonTextureUrl(SpoutPlayer player, String Url) {
 		if (Url == null) {
 			moonUrl.remove(player.getName());
-			if (player.getVersion() > 8) {
-				((SpoutCraftPlayer)player).sendPacket(new PacketSky("", "[reset]"));
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(new PacketSky("", "[reset]"));
 			}
 		}
 		else {
 			checkUrl(Url);
 			moonUrl.put(player.getName(), Url);
-			if (player.getVersion() > 8) {
-				((SpoutCraftPlayer)player).sendPacket(new PacketSky("", Url));
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(new PacketSky("", Url));
 			}
 		}
 	}
 	
 	public void onPlayerJoin(SpoutPlayer player) {
-		if (player.getVersion() > 8) {
+		if (player.isSpoutCraftEnabled()) {
 			String moon = getMoonTextureUrl(player);
 			moon = moon == null ? "" : moon;
 			String sun = getSunTextureUrl(player);
 			sun = sun == null ? "" : sun;
-			((SpoutCraftPlayer)player).sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), sun, moon));
+			player.sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), sun, moon));
 		}
 	}
 	
@@ -209,8 +209,8 @@ public class SimpleSkyManager implements SkyManager{
 		moonUrl.clear();
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutPlayer) {
-				if (((SpoutCraftPlayer)player).getVersion() > 8) {
-					((SpoutCraftPlayer)player).sendPacket(new PacketSky(108, 1500, 100, 100, "[reset]", "[reset]"));
+				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
+					((SpoutPlayer)player).sendPacket(new PacketSky(108, 1500, 100, 100, "[reset]", "[reset]"));
 				}
 			}
 		}
