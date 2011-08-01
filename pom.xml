@@ -123,8 +123,11 @@
                         </goals>
                         <configuration>
                             <artifactSet>
+                                <includes>
+                                    <include>org.getspout:spoutapi</exclude>
+                                </includes>
                                 <excludes>
-                                    <exclude>org.bukkit:bukkit</exclude>
+                                    <exclude>*</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>
