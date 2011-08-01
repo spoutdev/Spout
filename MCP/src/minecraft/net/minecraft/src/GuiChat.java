@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.minecraft.src.ChatAllowedCharacters;
 import net.minecraft.src.GuiScreen;
 import org.lwjgl.input.Keyboard;
-import org.getspout.player.*; //bukkitcontrib
+import org.getspout.spout.player.*; //bukkitcontrib
 
 public class GuiChat extends GuiScreen {
 	//BukkitContrib Improved Chat Start

@@ -1,4 +1,4 @@
-package org.getspout.io;
+package org.getspout.Spout.io;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;

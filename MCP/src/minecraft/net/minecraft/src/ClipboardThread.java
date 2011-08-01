@@ -5,7 +5,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import org.getspout.packet.*;
+import org.getspout.spout.packet.*;
 
 public class ClipboardThread extends Thread {
 	public ClipboardThread(EntityClientPlayerMP player) {

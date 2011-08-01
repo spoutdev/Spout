@@ -1,4 +1,4 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
-import org.getspout.packet.*;
+import org.getspout.Spout.packet.*;
 import net.minecraft.src.Packet;
 import net.minecraft.src.NetClientHandler;
 import net.minecraft.src.NetHandler;

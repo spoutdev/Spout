@@ -1,4 +1,4 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.UUID;
 import net.minecraft.src.*;
 
-import org.getspout.gui.*;
+import org.getspout.Spout.gui.*;
 
 public class PacketWidget implements BukkitContribPacket {
 	protected Widget widget;

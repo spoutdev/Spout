@@ -1,4 +1,4 @@
-package org.getspout.gui;
+package org.getspout.Spout.gui;
 
 public enum RenderPriority {
 	/**

@@ -1,4 +1,4 @@
-package org.getspout.gui;
+package org.getspout.Spout.gui;
 
 import java.util.UUID;
 import net.minecraft.src.BukkitContrib;

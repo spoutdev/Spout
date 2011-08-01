@@ -1,11 +1,11 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import net.minecraft.src.*;
-import org.getspout.sound.Music;
-import org.getspout.sound.SoundEffect;
+import org.getspout.Spout.sound.Music;
+import org.getspout.Spout.sound.SoundEffect;
 
 public class PacketPlaySound implements BukkitContribPacket{
 	short soundId;

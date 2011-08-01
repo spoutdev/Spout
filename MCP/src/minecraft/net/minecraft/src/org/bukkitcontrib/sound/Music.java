@@ -1,4 +1,4 @@
-package org.getspout.sound;
+package org.getspout.Spout.sound;
 
 import java.util.HashMap;
 import java.util.Map;

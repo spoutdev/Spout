@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.BufferedReader;
-import org.getspout.io.FileUtil;
+import org.getspout.spout.io.FileUtil;
 //BukkitContrib
 
 public class DataMiningThread extends Thread{

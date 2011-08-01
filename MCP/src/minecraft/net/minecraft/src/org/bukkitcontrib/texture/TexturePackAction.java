@@ -1,4 +1,4 @@
-package org.getspout.texture;
+package org.getspout.Spout.texture;
 
 import java.io.File;
 import net.minecraft.src.TexturePackCustom;

@@ -1,4 +1,4 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

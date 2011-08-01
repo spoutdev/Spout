@@ -1,4 +1,4 @@
-package org.getspout.gui;
+package org.getspout.Spout.gui;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.src.Tessellator;
 import net.minecraft.src.BukkitContrib;
-import org.getspout.io.CustomTextureManager;
-import org.getspout.packet.PacketUtil;
+import org.getspout.Spout.io.CustomTextureManager;
+import org.getspout.Spout.packet.PacketUtil;
 
 public class GenericTexture extends GenericWidget implements Texture {
 	protected String Url = null;

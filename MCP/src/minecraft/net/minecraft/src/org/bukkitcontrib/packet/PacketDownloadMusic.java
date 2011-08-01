@@ -1,14 +1,14 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.File;
 import net.minecraft.src.*;
-import org.getspout.io.Download;
-import org.getspout.io.FileUtil;
-import org.getspout.io.FileDownloadThread;
-import org.getspout.sound.QueuedSound;
+import org.getspout.Spout.io.Download;
+import org.getspout.Spout.io.FileUtil;
+import org.getspout.Spout.io.FileDownloadThread;
+import org.getspout.Spout.sound.QueuedSound;
 
 public class PacketDownloadMusic implements BukkitContribPacket{
 	int x, y, z;

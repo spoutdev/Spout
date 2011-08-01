@@ -1,4 +1,4 @@
-package org.getspout.inventory;
+package org.getspout.Spout.inventory;
 
 public interface ItemManager {
 	

@@ -1,12 +1,12 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.getspout.gui.Widget;
-import org.getspout.gui.Screen;
+import org.getspout.Spout.gui.Widget;
+import org.getspout.Spout.gui.Screen;
 
 public class PacketControlAction implements BukkitContribPacket{
 	protected UUID screen;

@@ -1,4 +1,4 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import net.minecraft.src.*;
 
-import org.getspout.gui.CustomScreen;
+import org.getspout.Spout.gui.CustomScreen;
 
 public class PacketScreenAction implements BukkitContribPacket{
 	protected byte action = -1;

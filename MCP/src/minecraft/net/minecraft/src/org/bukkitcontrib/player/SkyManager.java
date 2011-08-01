@@ -1,4 +1,4 @@
-package org.getspout.player;
+package org.getspout.Spout.player;
 
 public interface SkyManager {
 	

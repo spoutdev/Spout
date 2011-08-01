@@ -1,4 +1,4 @@
-package org.getspout.gui;
+package org.getspout.Spout.gui;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

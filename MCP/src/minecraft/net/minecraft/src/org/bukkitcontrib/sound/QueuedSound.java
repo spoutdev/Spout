@@ -1,4 +1,4 @@
-package org.getspout.sound;
+package org.getspout.Spout.sound;
 
 import java.io.File;
 import net.minecraft.src.SoundManager;

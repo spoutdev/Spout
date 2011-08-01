@@ -1,20 +1,20 @@
 <!--
-  Maven build file for BukkitContrib
+  Maven build file for Spout
 
   Copyright (c) 2011 Afforess <http://www.afforess.com>
-  BukkitContrib is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
+  Spout is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Project information -->
-    <groupId>org</groupId>
-    <artifactId>bukkitcontrib</artifactId>
+    <groupId>org.getspout</groupId>
+    <artifactId>spout</artifactId>
     <version>dev-SNAPSHOT</version>
-    <name>BukkitContrib</name>
-    <url>http://afforess.com</url>
-    <description>BukkitContrib is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.</description>
+    <name>Spout</name>
+    <url>http://getspout.org</url>
+    <description>Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.</description>
 
     <!-- License -->
     <licenses>
@@ -38,6 +38,13 @@
     </repositories>
 
     <dependencies>
+		 <!-- SpoutAPI -->
+        <dependency>
+            <groupId>org.getspout</groupId>
+            <artifactId>spoutapi</artifactId>
+            <version>dev-SNAPSHOT</version>
+        </dependency>
+		
         <!-- Bukkit -->
         <dependency>
             <groupId>org.bukkit</groupId>

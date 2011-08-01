@@ -1,4 +1,4 @@
-package org.getspout.packet;
+package org.getspout.Spout.packet;
 
 public enum ScreenAction {
 	ScreenOpen(0),

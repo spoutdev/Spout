@@ -1,9 +1,9 @@
-package org.getspout.gui;
+package org.getspout.Spout.gui;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.getspout.packet.*;
+import org.getspout.Spout.packet.*;
 import net.minecraft.src.*;
 import java.util.ArrayList;
 

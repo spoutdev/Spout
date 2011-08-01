@@ -1,4 +1,4 @@
-package org.getspout.inventory;
+package org.getspout.Spout.inventory;
 
 import java.util.HashMap;
 import java.util.Iterator;

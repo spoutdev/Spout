@@ -7,7 +7,7 @@ import net.minecraft.src.NetHandler;
 import net.minecraft.src.Packet;
 //BukkitContrib Start
 import net.minecraft.client.Minecraft;
-import org.getspout.packet.*;
+import org.getspout.spout.packet.*;
 //BukkitContrib End
 
 public class Packet3Chat extends Packet {

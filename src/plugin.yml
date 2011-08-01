@@ -1,5 +1,5 @@
-name: BukkitContrib
-main: org.getspout.BukkitContrib
+name: Spout
+main: org.getspout.spout.Spout
 version: ${project.version}
-author: Afforess
+authors: [Afforess, alta189, WulfSpider]
 load: postworld

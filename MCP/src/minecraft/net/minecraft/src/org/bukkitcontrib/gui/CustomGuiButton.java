@@ -1,4 +1,4 @@
-package org.getspout.gui;
+package org.getspout.Spout.gui;
 
 import org.lwjgl.opengl.GL11;
 import net.minecraft.src.*;
