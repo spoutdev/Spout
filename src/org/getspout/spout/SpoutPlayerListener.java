@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -116,7 +115,7 @@ public class SpoutPlayerListener extends PlayerListener{
 			System.out.println("Updating Event");
 			Field player = PlayerEvent.class.getDeclaredField("player");
 			player.setAccessible(true);
-			player.set(event, ((SpoutCraftPlayer)((CraftPlayer)event.getPlayer()).getHandle().getBukkitEntity()));
+			player.set(event, (SpoutCraftPlayer)SpoutCraftPlayer.getContribPlayer(event.getPlayer()));
 		}
 		catch (Exception e) {
 			e.printStackTrace();

@@ -634,7 +634,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
 		}
 		//We should never get here
-		Logger.getLogger("Minecraft").severe("Player: " + player.getName() + " was not properly updated during login!");
+		Logger.getLogger("Minecraft").warning("Player: " + player.getName() + " was not properly updated during login!");
 		updateBukkitEntity(player);
 		return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
 	}

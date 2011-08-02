@@ -201,7 +201,7 @@ public class Spout extends JavaPlugin{
 			return false;
 		}
 		try {
-			URL url = new URL("http://dl.dropbox.com/u/49805/BukkitContribVersion.txt");
+			URL url = new URL("http://dl.dropbox.com/u/49805/SpoutCraftVersion.txt");
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 			String str;
 			while ((str = in.readLine()) != null) {
@@ -242,7 +242,7 @@ public class Spout extends JavaPlugin{
 			}
 			File plugin = new File(directory.getPath(), "Spout.jar");
 			if (!plugin.exists()) {
-				URL bukkitContrib = new URL("http://bit.ly/autoupdateBukkitContrib");
+				URL bukkitContrib = new URL("http://bit.ly/spoutautoupdate  ");
 				HttpURLConnection con = (HttpURLConnection)(bukkitContrib.openConnection());
 				System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
