@@ -7,12 +7,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.getspout.spout.SpoutNetServerHandler;
-import org.getspout.spoutapi.packet.SpoutPacket;
-import org.getspout.spoutapi.packet.PacketType;
-
 import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
+
+import org.getspout.spout.SpoutNetServerHandler;
+import org.getspout.spoutapi.packet.PacketType;
+import org.getspout.spoutapi.packet.SpoutPacket;
 
 public class CustomPacket extends Packet{
 	SpoutPacket packet;

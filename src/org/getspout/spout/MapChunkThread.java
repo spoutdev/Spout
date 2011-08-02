@@ -2,6 +2,7 @@
 
 package org.getspout.spout;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -9,16 +10,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
 
-import java.lang.reflect.Field;
-
-import org.bukkit.entity.Player;
-import org.getspout.spoutapi.packet.listener.Listeners;
-
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
+
+import org.bukkit.entity.Player;
+import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
+import org.getspout.spoutapi.packet.listener.Listeners;
 
 public final class MapChunkThread implements Runnable {
 
@@ -35,6 +35,8 @@ public final class MapChunkThread implements Runnable {
 	private static final MapChunkThread instance = new MapChunkThread();
 	private static Thread thread = null;
 	private static boolean runs = false;
+	
+	private static MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
 
 	public static void startThread() {
 		if (!runs) {
@@ -110,7 +112,8 @@ public final class MapChunkThread implements Runnable {
 		addToQueueSize(task.players, -1);
 		if (task.compress) {
 			Player p = task.players.length == 1 ? (Player)task.players[0].getBukkitEntity() : null;
-			if (!Listeners.canSendUncompressedPacket(p, task.packet)) {
+			MCPacket.setPacket(task.packet, 51);
+			if (!Listeners.canSendUncompressedPacket(p,MCPacket)) {
 				return;
 			}
 			handleMapChunk(task);
