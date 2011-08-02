@@ -17,7 +17,7 @@ import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.event.bukkitcontrib.SpoutCraftEnableEvent;
+import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 

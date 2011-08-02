@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
-import org.getspout.spoutapi.event.bukkitcontrib.ServerTickEvent;
+import org.getspout.spoutapi.event.spout.ServerTickEvent;
 
 public class ServerTickTask implements Runnable {
 
