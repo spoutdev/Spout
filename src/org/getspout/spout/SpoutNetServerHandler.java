@@ -221,7 +221,13 @@ public class SpoutNetServerHandler extends NetServerHandler{
 			if (packet.b != -999) {
 				if (inventory instanceof CraftingInventory) {
 					CraftingInventory crafting = (CraftingInventory) inventory;
-					InventoryCrafting recipe = (InventoryCrafting) ((SpoutCraftingInventory)crafting).getMatrixHandle();
+					InventoryCrafting recipe = null;
+					if (inventory instanceof SpoutCraftingInventory) {
+						recipe = (InventoryCrafting) ((SpoutCraftingInventory)crafting).getMatrixHandle();
+					}
+					else {
+						recipe = (InventoryCrafting) ((SpoutCraftInventoryPlayer)crafting).getMatrixHandle();
+					}
 
 					SpoutCraftItemStack craftResult = SpoutCraftItemStack.fromItemStack(CraftingManager.getInstance().craft(recipe));
 					SpoutCraftItemStack[] recipeContents = new SpoutCraftItemStack[recipe.getSize()];
