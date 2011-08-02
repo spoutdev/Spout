@@ -59,6 +59,7 @@ import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.standard.MCCraftPacket;
+import org.getspout.spout.packet.standard.MCCraftPacketUnknown;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;
@@ -66,7 +67,7 @@ import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
 import org.getspout.spoutapi.event.inventory.InventorySlotType;
 import org.getspout.spoutapi.inventory.CraftingInventory;
-import org.getspout.spoutapi.packet.listener.Listeners;
+import org.getspout.spoutapi.packet.listener.PacketListeners;
 
 public class SpoutNetServerHandler extends NetServerHandler{
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -75,6 +76,7 @@ public class SpoutNetServerHandler extends NetServerHandler{
 	protected ItemStack lastOverrideDisplayStack = null;
 	
 	private MCCraftPacket[] packetWrappers = new MCCraftPacket[256];
+	private MCCraftPacket unknownPacket = new MCCraftPacketUnknown();
 
 	private final int teleportZoneSize = 3; // grid size is a square of chunks with an edge of (2*teleportZoneSize - 1)
 
@@ -422,7 +424,12 @@ public class SpoutNetServerHandler extends NetServerHandler{
 			packetWrapper.setPacket(packet, packetId);
 		}
 		
-		if (packetWrapper != null && !Listeners.canSend((Player)player.getBukkitEntity(), packetWrapper)) {
+		if (packetWrapper == null) {
+			packetWrapper = unknownPacket;
+			packetWrapper.setPacket(packet, packetId);
+		}
+		
+		if (packetWrapper != null && !PacketListeners.canSend((Player)player.getBukkitEntity(), packetWrapper)) {
 			return;
 		} else if(packet instanceof Packet51MapChunk) {
 			sendPacket2((Packet51MapChunk)packet);

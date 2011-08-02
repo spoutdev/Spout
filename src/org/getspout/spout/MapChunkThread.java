@@ -18,7 +18,7 @@ import net.minecraft.server.World;
 
 import org.bukkit.entity.Player;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
-import org.getspout.spoutapi.packet.listener.Listeners;
+import org.getspout.spoutapi.packet.listener.PacketListeners;
 
 public final class MapChunkThread implements Runnable {
 
@@ -113,7 +113,7 @@ public final class MapChunkThread implements Runnable {
 		if (task.compress) {
 			Player p = task.players.length == 1 ? (Player)task.players[0].getBukkitEntity() : null;
 			MCPacket.setPacket(task.packet, 51);
-			if (!Listeners.canSendUncompressedPacket(p,MCPacket)) {
+			if (!PacketListeners.canSendUncompressedPacket(p,MCPacket)) {
 				return;
 			}
 			handleMapChunk(task);

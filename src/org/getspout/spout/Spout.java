@@ -34,9 +34,6 @@ import org.getspout.spout.sound.SimpleSoundManager;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketPluginReload;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
-import org.getspout.spoutapi.packet.listener.Listener;
-import org.getspout.spoutapi.packet.listener.Listeners;
-import org.getspout.spoutapi.packet.standard.MCPacket;
 
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;

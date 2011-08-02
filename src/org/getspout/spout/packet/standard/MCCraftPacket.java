@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import net.minecraft.server.Packet;
 
 import org.getspout.spoutapi.packet.standard.MCPacket;
+import org.getspout.spoutapi.packet.standard.MCPacket51MapChunk;
 import org.getspout.spoutapi.packet.standard.MCPacket51MapChunkUncompressed;
 
 public class MCCraftPacket implements MCPacket {
@@ -28,6 +29,7 @@ public class MCCraftPacket implements MCPacket {
 		
 		packets[0] = MCCraftPacket0KeepAlive.class;
 		packets[3] = MCCraftPacket3Chat.class;
+		packets[51] = MCCraftPacket51MapChunk.class;
 		packets[256] = MCPacket51MapChunkUncompressed.class;
 		
 	}
