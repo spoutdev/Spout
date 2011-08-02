@@ -43,7 +43,7 @@ Coding and Pull Request Formatting
 * No 80 column limit or midstatement newlines.
 * Pull requests must compile and work.
 * Pull requests must be formatted properly.
-* When modifying Notch code (Minecraft vanilla code), include `//Spout Start`and `//Spout end`
+* When modifying Notch code (Minecraft vanilla code), include `//Spout start`and `//Spout end`
 
 Please follow the above conventions if you want your pull requests accepted.
 
