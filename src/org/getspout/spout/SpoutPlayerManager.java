@@ -1,9 +1,13 @@
 package org.getspout.spout; // Spout
 
-import net.minecraft.server.*; // Spout
-
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.server.ChunkCoordIntPair;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerList;
+import net.minecraft.server.WorldServer;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SpoutPlayerManager extends net.minecraft.server.PlayerManager { // Spout
 

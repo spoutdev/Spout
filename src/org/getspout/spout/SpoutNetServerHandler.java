@@ -3,39 +3,24 @@ package org.getspout.spout;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Result;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.craftbukkit.inventory.CraftInventory;
-import org.getspout.spout.inventory.SpoutCraftInventory;
-import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
-import org.getspout.spout.inventory.SpoutCraftItemStack;
-import org.getspout.spout.inventory.SpoutCraftingInventory;
-import org.getspout.spoutapi.packet.listener.Listeners;
-import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
-import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
-import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;
-import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
-import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
-import org.getspout.spoutapi.event.inventory.InventorySlotType;
-import org.getspout.spoutapi.inventory.CraftingInventory;
-
-
+import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.Container;
+import net.minecraft.server.ContainerChest;
+import net.minecraft.server.ContainerDispenser;
+import net.minecraft.server.ContainerFurnace;
+import net.minecraft.server.ContainerPlayer;
+import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.CraftingManager;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
@@ -45,34 +30,53 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
-import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.Packet;
-import net.minecraft.server.Packet9Respawn;
+import net.minecraft.server.Packet100OpenWindow;
+import net.minecraft.server.Packet101CloseWindow;
+import net.minecraft.server.Packet102WindowClick;
+import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Packet10Flying;
 import net.minecraft.server.Packet11PlayerPosition;
 import net.minecraft.server.Packet13PlayerLookMove;
 import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.Packet51MapChunk;
-import net.minecraft.server.Packet100OpenWindow;
-import net.minecraft.server.Packet101CloseWindow;
-import net.minecraft.server.Packet102WindowClick;
-import net.minecraft.server.ContainerPlayer;
-import net.minecraft.server.ContainerFurnace;
-import net.minecraft.server.ContainerChest;
-import net.minecraft.server.ContainerDispenser;
-import net.minecraft.server.ContainerWorkbench;
-import net.minecraft.server.Packet106Transaction;
+import net.minecraft.server.Packet9Respawn;
 import net.minecraft.server.Slot;
+import net.minecraft.server.TileEntity;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
-import net.minecraft.server.TileEntity;
 import net.minecraft.server.WorldServer;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
+import org.bukkit.inventory.Inventory;
+import org.getspout.spout.inventory.SpoutCraftInventory;
+import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
+import org.getspout.spout.inventory.SpoutCraftItemStack;
+import org.getspout.spout.inventory.SpoutCraftingInventory;
+import org.getspout.spout.packet.standard.MCCraftPacket;
+import org.getspout.spout.packet.standard.MCCraftPacketUnknown;
+import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
+import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
+import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;
+import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
+import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
+import org.getspout.spoutapi.event.inventory.InventorySlotType;
+import org.getspout.spoutapi.inventory.CraftingInventory;
+import org.getspout.spoutapi.packet.listener.PacketListeners;
 
 public class SpoutNetServerHandler extends NetServerHandler{
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
 	protected boolean activeInventory = false;
 	protected Location activeLocation = null;
 	protected ItemStack lastOverrideDisplayStack = null;
+	
+	private MCCraftPacket[] packetWrappers = new MCCraftPacket[256];
+	private MCCraftPacket unknownPacket = new MCCraftPacketUnknown();
 
 	private final int teleportZoneSize = 3; // grid size is a square of chunks with an edge of (2*teleportZoneSize - 1)
 
@@ -410,7 +414,22 @@ public class SpoutNetServerHandler extends NetServerHandler{
 
 	// MapChunkThread sends packets to the method.  All packets should pass through this method before being sent to the client
 	public void sendPacket2(Packet packet) {
-		if (!Listeners.canSend((Player)player.getBukkitEntity(), packet)) {
+		
+		int packetId = packet.b();
+		MCCraftPacket packetWrapper = packetWrappers[packetId];
+		if(packetWrapper == null) {
+			packetWrapper = MCCraftPacket.newInstance(packetId, packet);
+			packetWrappers[packetId] = packetWrapper;
+		} else {
+			packetWrapper.setPacket(packet, packetId);
+		}
+		
+		if (packetWrapper == null) {
+			packetWrapper = unknownPacket;
+			packetWrapper.setPacket(packet, packetId);
+		}
+		
+		if (packetWrapper != null && !PacketListeners.canSend((Player)player.getBukkitEntity(), packetWrapper)) {
 			return;
 		} else if(packet instanceof Packet51MapChunk) {
 			sendPacket2((Packet51MapChunk)packet);

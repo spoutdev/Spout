@@ -3,10 +3,9 @@ package org.getspout.spout;
 import java.lang.reflect.Field;
 
 import org.bukkit.craftbukkit.CraftWorld;
-
+import org.bukkit.event.world.ChunkEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
-import org.bukkit.event.world.ChunkEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.getspout.spout.block.SpoutCraftChunk;
 

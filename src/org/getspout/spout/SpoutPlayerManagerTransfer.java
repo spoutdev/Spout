@@ -1,10 +1,11 @@
 package org.getspout.spout;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.lang.reflect.Field;
-import net.minecraft.server.PlayerManager;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.server.PlayerList;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.WorldServer;
 
 import org.getspout.spout.util.ReflectUtil;
