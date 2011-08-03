@@ -35,7 +35,7 @@ public class SimpleSoundManager implements SoundManager{
 	@Override
 	public void playGlobalSoundEffect(SoundEffect effect, Location location, int distance, int volumePercent) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			playSoundEffect((SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player), effect, location, distance, volumePercent);
+			playSoundEffect((SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(player), effect, location, distance, volumePercent);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class SimpleSoundManager implements SoundManager{
 	@Override
 	public void playGlobalMusic(Music music, int volumePercent) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			playMusic((SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player), music, volumePercent);
+			playMusic((SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(player), music, volumePercent);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class SimpleSoundManager implements SoundManager{
 	@Override
 	public void playGlobalCustomMusic(Plugin plugin, String Url, boolean notify, Location location, int distance, int volumePercent) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			playCustomMusic(plugin, (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player), Url, notify, location, distance, volumePercent);
+			playCustomMusic(plugin, (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(player), Url, notify, location, distance, volumePercent);
 		}
 	}
 
@@ -176,7 +176,7 @@ public class SimpleSoundManager implements SoundManager{
 	@Override
 	public void playGlobalCustomSoundEffect(Plugin plugin, String Url, boolean notify, Location location, int distance, int volumePercent) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			playCustomSoundEffect(plugin, (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player), Url, notify, location, distance, volumePercent);
+			playCustomSoundEffect(plugin, (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(player), Url, notify, location, distance, volumePercent);
 		}
 	}
 

@@ -34,7 +34,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				skinMap.put(p.getName(), map);
 			}
 			map.put(target.getName(), Url);
-			SpoutPlayer player = SpoutCraftPlayer.getContribPlayer(p);
+			SpoutPlayer player = SpoutCraftPlayer.getPlayer(p);
 			if (player.isSpoutCraftEnabled())
 				player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
 		}
@@ -115,7 +115,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				skinMap.put(p.getName(), map);
 			}
 			map.put(target.getName(), Url);
-			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(p);
+			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(p);
 			if (player.getVersion() > 4)
 				player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
 		}
@@ -156,7 +156,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				cloakMap.put(p.getName(), map);
 			}
 			map.put(target.getName(), Url);
-			SpoutPlayer player = SpoutCraftPlayer.getContribPlayer(p);
+			SpoutPlayer player = SpoutCraftPlayer.getPlayer(p);
 			if (player.isSpoutCraftEnabled())
 				player.sendPacket(new PacketSkinURL(Url, target.getEntityId()));
 		}
@@ -187,7 +187,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				cloakMap.put(p.getName(), map);
 			}
 			map.put(target.getName(), Url);
-			SpoutPlayer player = SpoutCraftPlayer.getContribPlayer(p);
+			SpoutPlayer player = SpoutCraftPlayer.getPlayer(p);
 			if (player.isSpoutCraftEnabled())
 				player.sendPacket(new PacketSkinURL(Url, target.getEntityId()));
 		}
@@ -327,7 +327,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				titleMap.put(p.getName(), map);
 			}
 			map.put(target.getEntityId(), title);
-			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(p);
+			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(p);
 			if (player.isSpoutCraftEnabled())
 				player.sendPacket(new PacketEntityTitle(target.getEntityId(), title));
 		}
@@ -365,7 +365,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				titleMap.put(p.getName(), map);
 			}
 			map.remove(target.getEntityId());
-			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(p);
+			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(p);
 			if (player.isSpoutCraftEnabled()){
 				player.sendPacket(new PacketEntityTitle(target.getEntityId(), "reset"));
 			}
