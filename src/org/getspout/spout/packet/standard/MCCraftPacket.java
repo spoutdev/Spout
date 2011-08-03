@@ -23,14 +23,24 @@ public class MCCraftPacket implements MCPacket {
 		this.packetId = packetId;
 	}
 	
+	public Packet getPacket() {
+		return packet;
+	}
+	
+	private static Class<?>[] MCPackets = new Class<?>[257];
 	private static Class<?>[] packets = new Class<?>[257];
 	
 	static {
 		
-		packets[0] = MCCraftPacket0KeepAlive.class;
-		packets[3] = MCCraftPacket3Chat.class;
-		packets[51] = MCCraftPacket51MapChunk.class;
-		packets[256] = MCPacket51MapChunkUncompressed.class;
+		MCPackets[0] = MCCraftPacket0KeepAlive.class;
+		MCPackets[3] = MCCraftPacket3Chat.class;
+		MCPackets[51] = MCCraftPacket51MapChunk.class;
+		MCPackets[256] = MCPacket51MapChunkUncompressed.class;
+		
+		packets[0] = net.minecraft.server.Packet0KeepAlive.class;
+		packets[3] = net.minecraft.server.Packet3Chat.class;
+		packets[51] = net.minecraft.server.Packet51MapChunk.class;
+		packets[256] = net.minecraft.server.Packet51MapChunk.class;
 		
 	}
 	
@@ -43,7 +53,7 @@ public class MCCraftPacket implements MCPacket {
 	public static MCCraftPacket newInstance(int packetId, Packet packet) {
 		try {
 			@SuppressWarnings("unchecked")
-			Class<? extends MCCraftPacket> mcp = (Class<? extends MCCraftPacket>)packets[packetId];
+			Class<? extends MCCraftPacket> mcp = (Class<? extends MCCraftPacket>)MCPackets[packetId];
 			if(mcp == null) {
 				return null;
 			}
@@ -51,6 +61,32 @@ public class MCCraftPacket implements MCPacket {
 			MCCraftPacket r = c.newInstance(blank);
 			r.setPacket(packet, packetId);
 			return r;
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static MCCraftPacket newInstance(int packetId) {
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends Packet> packetClass = (Class<? extends Packet>)packets[packetId];
+			if(packetClass == null) {
+				return null;
+			}
+			Constructor<? extends Packet> c = packetClass.getConstructor(new Class[] {});
+			Packet r = c.newInstance(blank);
+			
+			return newInstance(packetId, r);
 		} catch (SecurityException e) {
 			throw new RuntimeException(e);
 		} catch (NoSuchMethodException e) {
