@@ -418,18 +418,15 @@ public class SpoutNetServerHandler extends NetServerHandler{
 	// MapChunkThread sends packets to the method.  All packets should pass through this method before being sent to the client
 	public void sendPacket2(Packet packet) {
 		resyncQueue.addLast(packet);
+		while(!resyncQueue.isEmpty()) {
+			sendPacket3(resyncQueue.poll());
+		}
 	}
 	
 	public void sendImmediatePacket(Packet packet) {
 		resyncQueue.addFirst(packet);
-	}
-	
-	public void onTick() {
 		while(!resyncQueue.isEmpty()) {
-			Packet p = resyncQueue.pollFirst();
-			if(p != null) {
-				sendPacket3(p);
-			}
+			sendPacket3(resyncQueue.poll());
 		}
 	}
 	
