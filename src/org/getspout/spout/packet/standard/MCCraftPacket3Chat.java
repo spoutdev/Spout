@@ -6,7 +6,7 @@ import org.getspout.spoutapi.packet.standard.MCPacket3Chat;
 
 public class MCCraftPacket3Chat extends MCCraftPacket implements MCPacket3Chat {
 
-	private Packet3Chat getPacket() {
+	public Packet3Chat getPacket() {
 		return (Packet3Chat)packet;
 	}
 	

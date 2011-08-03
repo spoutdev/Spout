@@ -27,6 +27,7 @@ import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
+import org.getspout.spout.packet.SimplePacketManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
@@ -53,6 +54,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		SpoutManager.getInstance().setSkyManager(new SimpleSkyManager());
 		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
+		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
 	}
 	@Override
 	public void onDisable() {

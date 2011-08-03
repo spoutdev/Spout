@@ -35,6 +35,7 @@ import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.CustomPacket;
+import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spoutapi.event.input.RenderDistance;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
@@ -48,6 +49,7 @@ import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
+import org.getspout.spoutapi.packet.standard.MCPacket;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 @SuppressWarnings("unused")
@@ -512,6 +514,22 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		getNetServerHandler().sendPacket(new CustomPacket(packet));
 	}
 	
+	public void sendPacket(MCPacket packet) {
+		if(!(packet instanceof MCCraftPacket)) {
+			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
+		}
+		MCCraftPacket p = (MCCraftPacket)packet;
+		getNetServerHandler().sendPacket(p.getPacket());
+	}
+	
+	public void sendImmediatePacket(MCPacket packet) {
+		if(!(packet instanceof MCCraftPacket)) {
+			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
+		}
+		MCCraftPacket p = (MCCraftPacket)packet;
+		getNetServerHandler().sendImmediatePacket(p.getPacket());
+	}
+	
 	public int getMajorVersion() {
 		return majorVersion;
 	}
@@ -536,6 +554,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	public void onTick() {
 		mainScreen.onTick();
+		getNetServerHandler().onTick();
 	}
 	
 	private void reset() {
