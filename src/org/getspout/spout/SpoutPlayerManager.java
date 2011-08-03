@@ -39,7 +39,13 @@ public class SpoutPlayerManager extends net.minecraft.server.PlayerManager { // 
 
 	public void flush() {
 		for (int i = 0; i < this.c.size(); ++i) {
-			((SpoutPlayerInstance) this.c.get(i)).a(); // Spout
+			Object instance = this.c.get(i);
+			//Spout start
+			if (!(instance.getClass().equals(SpoutPlayerInstance.class))) {
+				instance = SpoutPlayerManagerTransfer.copyPlayerInstance(this, instance);
+			}
+			((SpoutPlayerInstance) instance).a(); 
+			// Spout end
 		}
 
 		this.c.clear();

@@ -45,7 +45,7 @@ public class SpoutPlayerListener extends PlayerListener{
 			return;
 		}
 		Runnable update = null;
-		final SpoutPlayer scp = SpoutCraftPlayer.getContribPlayer(event.getPlayer());
+		final SpoutPlayer scp = SpoutCraftPlayer.getPlayer(event.getPlayer());
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
 			if(scp.isSpoutCraftEnabled()) {
 				long newSeed = event.getTo().getWorld().getSeed();
@@ -79,7 +79,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
-		SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(event.getPlayer());
+		SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(event.getPlayer());
 		if (event.getClickedBlock() != null) {
 			Material type = event.getClickedBlock().getType();
 			if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
@@ -93,7 +93,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (!(event.getPlayer() instanceof SpoutPlayer)) {
 			updatePlayerEvent(event);
 		}
-		SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getContribPlayer(event.getPlayer());
+		SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
 		if (player.isSpoutCraftEnabled()) {
 			return;
 		}
@@ -113,10 +113,9 @@ public class SpoutPlayerListener extends PlayerListener{
 	
 	private void updatePlayerEvent(PlayerEvent event) {
 		try {
-			System.out.println("Updating Event");
 			Field player = PlayerEvent.class.getDeclaredField("player");
 			player.setAccessible(true);
-			player.set(event, (SpoutCraftPlayer)SpoutCraftPlayer.getContribPlayer(event.getPlayer()));
+			player.set(event, (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer()));
 		}
 		catch (Exception e) {
 			e.printStackTrace();

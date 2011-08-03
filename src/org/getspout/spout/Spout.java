@@ -29,6 +29,7 @@ import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
+import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spout.sound.SimpleSoundManager;
@@ -55,6 +56,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setSkyManager(new SimpleSkyManager());
 		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
 		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
+		SpoutManager.getInstance().setPlayerManager(new SimplePlayerManager());
 	}
 	@Override
 	public void onDisable() {
@@ -65,7 +67,7 @@ public class Spout extends JavaPlugin{
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
-				SpoutCraftPlayer scp = (SpoutCraftPlayer) SpoutCraftPlayer.getContribPlayer(player);
+				SpoutCraftPlayer scp = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(player);
 				if (scp.isSpoutCraftEnabled()) {
 					scp.sendPacket(new PacketRenderDistance(true, true));
 					scp.sendPacket(new PacketPluginReload((SpoutCraftPlayer)player));

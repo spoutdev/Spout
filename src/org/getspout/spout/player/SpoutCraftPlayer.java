@@ -636,7 +636,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 	}
 
-	public static SpoutPlayer getContribPlayer(Player player) {
+	public static SpoutPlayer getPlayer(Player player) {
 		if (player instanceof SpoutCraftPlayer) {
 			return (SpoutCraftPlayer)player;
 		}
@@ -644,7 +644,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
 		}
 		//We should never get here
-		Logger.getLogger("Minecraft").warning("Player: " + player.getName() + " was not properly updated during login!");
+		//Logger.getLogger("Minecraft").warning("Player: " + player.getName() + " was not properly updated during login!");
 		updateBukkitEntity(player);
 		return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
 	}
