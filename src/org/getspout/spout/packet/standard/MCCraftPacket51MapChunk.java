@@ -6,7 +6,7 @@ import org.getspout.spoutapi.packet.standard.MCPacket51MapChunk;
 
 public class MCCraftPacket51MapChunk extends MCCraftPacket implements MCPacket51MapChunk {
 
-	private Packet51MapChunk getPacket() {
+	public Packet51MapChunk getPacket() {
 		return (Packet51MapChunk)packet;
 	}
 	

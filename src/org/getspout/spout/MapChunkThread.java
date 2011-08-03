@@ -17,8 +17,8 @@ import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
 
 import org.bukkit.entity.Player;
+import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
-import org.getspout.spoutapi.packet.listener.PacketListeners;
 
 public final class MapChunkThread implements Runnable {
 

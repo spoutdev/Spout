@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,6 +59,7 @@ import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
+import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spout.packet.standard.MCCraftPacketUnknown;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
@@ -67,7 +69,6 @@ import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
 import org.getspout.spoutapi.event.inventory.InventorySlotType;
 import org.getspout.spoutapi.inventory.CraftingInventory;
-import org.getspout.spoutapi.packet.listener.PacketListeners;
 
 public class SpoutNetServerHandler extends NetServerHandler{
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -412,9 +413,29 @@ public class SpoutNetServerHandler extends NetServerHandler{
 		}
 	}
 
+	private LinkedBlockingDeque<Packet> resyncQueue = new LinkedBlockingDeque<Packet>();
+	
 	// MapChunkThread sends packets to the method.  All packets should pass through this method before being sent to the client
 	public void sendPacket2(Packet packet) {
-		
+		resyncQueue.addLast(packet);
+	}
+	
+	public void sendImmediatePacket(Packet packet) {
+		resyncQueue.addFirst(packet);
+	}
+	
+	public void onTick() {
+		while(!resyncQueue.isEmpty()) {
+			Packet p = resyncQueue.pollFirst();
+			if(p != null) {
+				sendPacket3(p);
+			}
+		}
+	}
+	
+	// Called from the main thread only
+	private void sendPacket3(Packet packet) {
+			
 		int packetId = packet.b();
 		MCCraftPacket packetWrapper = packetWrappers[packetId];
 		if(packetWrapper == null) {
