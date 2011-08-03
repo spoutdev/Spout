@@ -3,7 +3,15 @@ package org.getspout.spout; // Spout
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.*; // Spout
+import net.minecraft.server.Block;
+import net.minecraft.server.ChunkCoordIntPair;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Packet;
+import net.minecraft.server.Packet50PreChunk;
+import net.minecraft.server.Packet52MultiBlockChange;
+import net.minecraft.server.Packet53BlockChange;
+import net.minecraft.server.TileEntity;
+import net.minecraft.server.WorldServer;
 
 class SpoutPlayerInstance { // Spout
 
