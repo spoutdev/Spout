@@ -245,6 +245,7 @@ public class Spout extends JavaPlugin{
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void pingLink(String Url) {
 		try {
 			URL url = new URL(Url);
