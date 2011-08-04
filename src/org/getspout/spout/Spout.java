@@ -42,7 +42,7 @@ public class Spout extends JavaPlugin{
 	private final SpoutWorldListener chunkListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
-	private final static int VERSION = 100;
+	public final String bcDownloadURL = "http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar";
 	
 	public Spout() {
 		super();
@@ -183,44 +183,43 @@ public class Spout extends JavaPlugin{
 	}
 	
 	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(getVersionString()));
-	}
-	
-	protected static String getVersionString() {
-		int version = getVersion();
-		return (version / 100) + "." + ((version / 10) % 10) + "." + (version % 10);
-	}
-	
-	protected static int getVersion() {
-		try {
-			String[] split = Spout.getInstance().getDescription().getVersion().split("\\.");
-			return Integer.parseInt(split[0]) * 100 + Integer.parseInt(split[1]) * 10 + Integer.parseInt(split[2]);
-		}
-		catch (Exception e) {}
-		return VERSION;
+		player.sendRawMessage(versionToString(Spout.getInstance().getDescription().getVersion()));
 	}
 	
 	protected boolean isUpdateAvailable() {
 		if (!ConfigReader.isAutoUpdate()) {
 			return false;
 		}
+		
+		String latest = this.getRBVersion();
+
+		if (latest == null) return false;
+		
+		int c = Integer.parseInt(this.getDescription().getVersion().split("\\.")[3]);
+		int l = Integer.parseInt(latest);
+		
+		if (c < l) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public String getRBVersion() {
 		try {
-			URL url = new URL("http://dl.dropbox.com/u/49805/SpoutCraftVersion.txt");
+			String version = "-1";
+			URL url = new URL("http://ci.getspout.org/job/Spout/Recommended/buildNumber");
+			
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 			String str;
 			while ((str = in.readLine()) != null) {
-				String[] split = str.split("\\.");
-				int version = Integer.parseInt(split[0]) * 100 + Integer.parseInt(split[1]) * 10 + Integer.parseInt(split[2]);
-				if (version > getVersion()){
-					in.close();
-					return true;
-				}
+			     version = str;
+			     return version;
 			}
 			in.close();
-		}
-		catch (Exception e) {}
-		return false;
-	}
+		} catch (Exception e) {}
+		return null;
+	 }
 	
 	protected void update() {
 		//test install once
@@ -246,7 +245,7 @@ public class Spout extends JavaPlugin{
 			}
 			File plugin = new File(directory.getPath(), "Spout.jar");
 			if (!plugin.exists()) {
-				URL bukkitContrib = new URL("http://bit.ly/spoutautoupdate  ");
+				URL bukkitContrib = new URL("http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar");
 				HttpURLConnection con = (HttpURLConnection)(bukkitContrib.openConnection());
 				System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
