@@ -181,7 +181,7 @@ public class Spout extends JavaPlugin{
 			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[3]);
 			int newest = Integer.parseInt(latest);
 
-			return current < latest;
+			return current < newest;
 		}
 		return false;
 	}
