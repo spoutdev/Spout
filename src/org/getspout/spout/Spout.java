@@ -42,7 +42,6 @@ public class Spout extends JavaPlugin{
 	private final SpoutWorldListener chunkListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
-	public final String bcDownloadURL = "http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar";
 	
 	public Spout() {
 		super();
@@ -168,40 +167,22 @@ public class Spout extends JavaPlugin{
 			ChatColor.getByCode(Integer.parseInt(split[2]));
 	}
 	
-	@SuppressWarnings("unused")
-	private static String colorToString(String color) {
-		StringBuffer buffer = new StringBuffer();
-		String split[] = color.split(ChatColor.WHITE.toString());
-		for (int i = 0; i < split.length; i++) {
-			int code = 0;
-			for (int j = 0; j < split[i].length(); j++) {
-				code += (int)(split[i].charAt(j));
-			}
-			buffer.append((char)(code - ChatColor.BLACK.toString().charAt(0)));
-		}
-		return buffer.toString();
-	}
-	
 	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(Spout.getInstance().getDescription().getVersion()));
+		player.sendRawMessage(versionToString(Spout.getInstance().getDescription().getVersion())); //TODO look at sending packet 138 instead?
 	}
 	
 	protected boolean isUpdateAvailable() {
 		if (!ConfigReader.isAutoUpdate()) {
 			return false;
 		}
-		
-		String latest = this.getRBVersion();
+		String latest = getRBVersion();
 
-		if (latest == null) return false;
-		
-		int c = Integer.parseInt(this.getDescription().getVersion().split("\\.")[3]);
-		int l = Integer.parseInt(latest);
-		
-		if (c < l) {
-			return true;
+		if (latest != null) {
+			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[3]);
+			int newest = Integer.parseInt(latest);
+
+			return current < latest;
 		}
-		
 		return false;
 	}
 	
@@ -264,7 +245,6 @@ public class Spout extends JavaPlugin{
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private void pingLink(String Url) {
 		try {
 			URL url = new URL(Url);
