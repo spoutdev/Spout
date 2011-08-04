@@ -435,6 +435,12 @@ public class SpoutNetServerHandler extends NetServerHandler{
 		resyncQueue.addFirst(packet);
 	}
 	
+	@Override 
+	public void a() {
+		onTick();
+		super.a();
+	}
+	
 	public void onTick() {
 		while(!resyncQueue.isEmpty()) {
 			Packet p = resyncQueue.pollFirst();
