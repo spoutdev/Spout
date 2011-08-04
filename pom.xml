@@ -44,13 +44,9 @@
 
     <!-- Repository locations -->
     <repositories>
-        <!-- <repository>
-            <id>craftfire-repo</id>
-            <url>http://repo.craftfire.com</url>
-        </repository> -->
         <repository>
-            <id>craftfire-dbrepo</id>
-            <url>http://db.craftfire.com/repo</url>
+            <id>spout-repo</id>
+            <url>http://repo.getspout.org</url>
         </repository>
     </repositories>
 
@@ -63,7 +59,6 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-
         <!-- SpoutAPI -->
         <dependency>
             <groupId>org.getspout</groupId>
@@ -75,8 +70,8 @@
     </dependencies>
    
     <build>
+        <defaultGoal>clean install</defaultGoal>
         <sourceDirectory>${basedir}/src/</sourceDirectory>
-
         <!-- Resources -->
         <resources>
             <resource>
@@ -88,10 +83,8 @@
                 </includes>
             </resource>
         </resources>
-
         <!-- Plugins -->
         <plugins>
-
             <!-- Compile plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -102,14 +95,12 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-
             <!-- JAR creation plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
             </plugin>
-            
             <!-- JAR dependency addition plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -139,9 +130,7 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
-
     </build>
 
 </project>
