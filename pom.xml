@@ -50,6 +50,7 @@
         </repository>
     </repositories>
 
+    <!-- Dependencies -->
     <dependencies>
         <!-- CraftBukkit -->
         <dependency>
