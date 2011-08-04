@@ -407,7 +407,7 @@ public class SpoutNetServerHandler extends NetServerHandler{
 			if(packet.k) {
 				MapChunkThread.sendPacket(this.player, packet);
 			} else {
-				sendPacket2(packet);
+				queueOutputPacket(packet);
 			}
 		}
 	}
@@ -415,7 +415,7 @@ public class SpoutNetServerHandler extends NetServerHandler{
 	private LinkedBlockingDeque<Packet> resyncQueue = new LinkedBlockingDeque<Packet>();
 	
 	// MapChunkThread sends packets to the method.  All packets should pass through this method before being sent to the client
-	public void sendPacket2(Packet packet) {
+	public void queueOutputPacket(Packet packet) {
 		if(packet instanceof Packet50PreChunk) {
 			packet = updateActiveChunks((Packet50PreChunk)packet);
 			if(packet == null) {
@@ -437,34 +437,34 @@ public class SpoutNetServerHandler extends NetServerHandler{
 	
 	@Override 
 	public void a() {
-		onTick();
+		syncFlushPacketQueue();
 		super.a();
 	}
 	
-	public void onTick() {
+	public void syncFlushPacketQueue() {
 		while(!resyncQueue.isEmpty()) {
 			Packet p = resyncQueue.pollFirst();
 			if(p != null) {
-				sendPacket3(p);
+				syncedSendPacket(p);
 			}
 		}
 	}
 	
 	// Called from the main thread only
-	private void sendPacket3(Packet packet) {
+	private void syncedSendPacket(Packet packet) {
 			
 		if (!PacketListeners.canSend((Player)player.getBukkitEntity(), packet, packetWrappers, packet.b())) {
 			return;
 		} else if(packet instanceof Packet51MapChunk) {
-			sendPacket3((Packet51MapChunk)packet);
+			syncedSendPacket((Packet51MapChunk)packet);
 		} else if(packet instanceof Packet50PreChunk) {
-			sendPacket3((Packet50PreChunk)packet);
+			syncedSendPacket((Packet50PreChunk)packet);
 		} else if(packet instanceof Packet11PlayerPosition) {
-			sendPacket3((Packet11PlayerPosition)packet);
+			syncedSendPacket((Packet11PlayerPosition)packet);
 		} else if(packet instanceof Packet13PlayerLookMove) {
-			sendPacket3((Packet13PlayerLookMove)packet);
+			syncedSendPacket((Packet13PlayerLookMove)packet);
 		} else if(packet instanceof Packet9Respawn) {
-			sendPacket3((Packet9Respawn)packet);
+			syncedSendPacket((Packet9Respawn)packet);
 		} else {
 			super.sendPacket(packet);
 		}
@@ -488,7 +488,7 @@ public class SpoutNetServerHandler extends NetServerHandler{
 		return null;
 	}
 
-	public void sendPacket3(Packet50PreChunk packet) {
+	public void syncedSendPacket(Packet50PreChunk packet) {
 		int cx = packet.a;
 		int cz = packet.b;
 		boolean init = packet.c;
@@ -519,7 +519,7 @@ public class SpoutNetServerHandler extends NetServerHandler{
 		}
 	}
 
-	public void sendPacket3(Packet51MapChunk packet) {
+	public void syncedSendPacket(Packet51MapChunk packet) {
 		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(packet.a >> 4, packet.c >> 4);
 		if(!activeChunks.contains(chunkPos)) {
 			return;
@@ -527,17 +527,17 @@ public class SpoutNetServerHandler extends NetServerHandler{
 		super.sendPacket(packet);
 	}
 
-	public void sendPacket3(Packet11PlayerPosition packet) {
+	public void syncedSendPacket(Packet11PlayerPosition packet) {
 		playerTeleported(((int)packet.x) >> 4, ((int)packet.z) >> 4);
 		super.sendPacket(packet);
 	}
 
-	public void sendPacket3(Packet13PlayerLookMove packet) {
+	public void syncedSendPacket(Packet13PlayerLookMove packet) {
 		playerTeleported(((int)packet.x) >> 4, ((int)packet.z) >> 4);
 		super.sendPacket(packet);
 	}
 
-	public void sendPacket3(Packet9Respawn packet) {
+	public void syncedSendPacket(Packet9Respawn packet) {
 		activeChunks.clear();
 		super.sendPacket(packet);
 	}

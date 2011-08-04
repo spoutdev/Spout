@@ -554,7 +554,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	public void onTick() {
 		mainScreen.onTick();
-		getNetServerHandler().onTick();
+		getNetServerHandler().syncFlushPacketQueue();
 	}
 	
 	private void reset() {
