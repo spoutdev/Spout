@@ -36,7 +36,7 @@ public class SimpleKeyboardManager implements KeyboardManager{
 			keyMap.put(plugin, new HashMap<Keyboard, HashSet<KeyboardBinding>>());
 		}
 		if (!keyMap.get(plugin).containsKey(key)) {
-			keyMap.get(plugin).put(key, HashSet<KeyboardBinding>());
+			keyMap.get(plugin).put(key, new HashSet<KeyboardBinding>());
 		}
 		keyMap.get(plugin).get(key).add(keyBinding);
 	}
