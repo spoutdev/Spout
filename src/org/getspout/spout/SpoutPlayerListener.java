@@ -101,6 +101,11 @@ public class SpoutPlayerListener extends PlayerListener{
 			player.setVersion(event.getMessage().substring(1));
 			if (player.isSpoutCraftEnabled()) {
 				event.setCancelled(true);
+				//Kick old BC players
+				if (player.getVersion() < 100) {
+					player.kickPlayer("This server is using Spout. Upgrade to the latest Spoutcraft client to play!");
+					return;
+				}
 				((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
 				manager.onBukkitContribSPEnable(player);
 				((SimpleItemManager)SpoutManager.getItemManager()).onPlayerJoin(player);
