@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.zip.Deflater;
 
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.Container;
@@ -496,7 +497,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			return packet;
 		}
 	}
-	
+
 	@Override
 	public void a(Packet10Flying packet) {
 		manageChunkQueue(true);
@@ -638,10 +639,34 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			Field k = Packet.class.getDeclaredField("k");
 			k.setAccessible(true);
 			k.setBoolean(packet, false);
+			Field g = Packet51MapChunk.class.getDeclaredField("g");
+			g.setAccessible(true);
+			byte[] compressedData = (byte[])g.get(packet);
+			if(compressedData == null) {
+				AtomicInteger size = new AtomicInteger(0);
+				Field rawData = Packet51MapChunk.class.getDeclaredField("rawData");
+				Field h = Packet51MapChunk.class.getDeclaredField("h");
+				rawData.setAccessible(true);
+				h.setAccessible(true);
+				byte[] rawBytes = (byte[])rawData.get(packet);
+				g.set(packet, compressData(rawBytes, size));
+				h.set(packet, size.get());
+			}
 		} catch (NoSuchFieldException e) {
 		} catch (IllegalAccessException e) {
 		}
 		return packet;
+	}
+	
+	Deflater deflater = new Deflater(-1);
+
+	private byte[] compressData(byte[] rawBytes, AtomicInteger size) {
+		deflater.reset();
+		deflater.setInput(rawBytes);
+		deflater.finish();
+		byte[] compressedData = new byte[rawBytes.length];
+		size.set(deflater.deflate(compressedData));
+		return compressedData;
 	}
 
 	private Inventory getInventoryFromContainer(Container container) {
