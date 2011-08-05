@@ -22,7 +22,10 @@ public class SimpleKeyboardManager implements KeyboardManager{
 	public int getNumKeyBindings(Keyboard key) {
 		int size = 0;
 		for (Plugin plugin : pluginSet) {
-			size += keyMap.get(plugin).get(key).size();
+			HashSet<KeyboardBinding> set = keyMap.get(plugin).get(key);
+			if (set != null) {
+				size += set.size();
+			}
 		}
 		return size;
 	}
@@ -32,16 +35,21 @@ public class SimpleKeyboardManager implements KeyboardManager{
 			pluginSet.add(plugin);
 			keyMap.put(plugin, new HashMap<Keyboard, HashSet<KeyboardBinding>>());
 		}
+		if (!keyMap.get(plugin).containsKey(key)) {
+			keyMap.get(plugin).put(key, HashSet<KeyboardBinding>());
+		}
 		keyMap.get(plugin).get(key).add(keyBinding);
 	}
 
 	public void removeKeyBinding(Keyboard key, Class<? extends KeyboardBinding> keyBindingClass, Plugin plugin) {
 		HashSet<KeyboardBinding> set = keyMap.get(plugin).get(key);
-		Iterator<KeyboardBinding> i = set.iterator();
-		while(i.hasNext()) {
-			KeyboardBinding binding = i.next();
-			if (keyBindingClass.isInstance(binding)) {
-				i.remove();
+		if (set != null) {
+			Iterator<KeyboardBinding> i = set.iterator();
+			while(i.hasNext()) {
+				KeyboardBinding binding = i.next();
+				if (keyBindingClass.isInstance(binding)) {
+					i.remove();
+				}
 			}
 		}
 	}
