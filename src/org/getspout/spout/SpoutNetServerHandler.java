@@ -466,7 +466,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 					ChunkCoordIntPair coord = i.next();
 					if (!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
 						if (activeChunks.remove(coord)) {
-							sendImmediatePacket(new Packet50PreChunk(coord.x, coord.z, false));
+							resyncQueue.addFirst(new Packet50PreChunk(coord.x, coord.z, false));
 						}
 						i.remove();
 					}
