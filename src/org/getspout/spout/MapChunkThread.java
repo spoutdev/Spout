@@ -157,7 +157,12 @@ public final class MapChunkThread implements Runnable {
 	private void sendToNetworkQueue(QueuedPacket task) {
 		for (EntityPlayer player : task.players) {
 			if (task.coords == null || player.playerChunkCoordIntPairs.contains(task.coords)) {
-				((SpoutNetServerHandler) player.netServerHandler).queueOutputPacket(task.packet);
+				if (player.netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+					((SpoutNetServerHandler) player.netServerHandler).queueOutputPacket(task.packet);
+				}
+				else {
+					player.netServerHandler.sendPacket(task.packet);
+				}
 			}
 		}
 	}
