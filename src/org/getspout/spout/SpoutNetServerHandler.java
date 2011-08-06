@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.Deflater;
@@ -60,6 +61,7 @@ import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
+import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
@@ -69,6 +71,7 @@ import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
 import org.getspout.spoutapi.event.inventory.InventorySlotType;
 import org.getspout.spoutapi.inventory.CraftingInventory;
+import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 
 public class SpoutNetServerHandler extends NetServerHandler {
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -381,9 +384,17 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void setCursorSlot(ItemStack item) {
 		this.player.inventory.b(item);
 	}
+	
+	private AtomicBoolean firstPacket = new AtomicBoolean(true);
 
 	@Override
 	public void sendPacket(Packet packet) {
+		if (firstPacket.get()) {
+			firstPacket.set(false);
+			PacketCacheHashUpdate p = new PacketCacheHashUpdate();
+			p.reset = true;
+			MapChunkThread.sendPacket(this.player, new CustomPacket(p));
+		}
 		if (packet != null) {
 			if (packet.k) {
 				MapChunkThread.sendPacket(this.player, packet);

@@ -64,9 +64,11 @@ public class ChunkCache {
 			NetServerHandler nsh = player.netServerHandler;
 			while(!pending.isEmpty()) {
 				HashUpdate update = pending.removeFirst();
-				Packet p = new CustomPacket(new PacketCacheHashUpdate(update.add, update.hashes));
-				p.k = true;
-				nsh.sendPacket(p);
+				if(update.hashes.length != 0) {
+					Packet p = new CustomPacket(new PacketCacheHashUpdate(update.add, update.hashes));
+					p.k = true;
+					nsh.sendPacket(p);
+				}
 			}
 		}
 
@@ -96,16 +98,24 @@ public class ChunkCache {
 		return cachedData;
 
 	}
-	
+
 	public static boolean handleCustomPacket(EntityPlayer[] players, CustomPacket packet) {
 
 		if(packet.packet instanceof PacketCacheHashUpdate) {
 			EntityPlayer player = players[0];
 			int id = player.id;
-			
+
 			HashSet<Long> hashes = activeHashes.get(id);
-			
+
 			PacketCacheHashUpdate updatePacket = (PacketCacheHashUpdate)packet.packet;
+			
+			if(updatePacket.reset) {
+				if(hashes != null) {
+					hashes.clear();
+				}
+				return true;
+			}
+			
 			if(!updatePacket.add) {
 				if(hashes != null) {
 					for (long hash : updatePacket.hashes) {
@@ -119,7 +129,7 @@ public class ChunkCache {
 					activeHashes.put(id, hashes);
 				}
 				for (long hash : updatePacket.hashes) {
-						hashes.add(hash);
+					hashes.add(hash);
 				}
 				return false;
 			}
