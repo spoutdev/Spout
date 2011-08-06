@@ -17,11 +17,12 @@ import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
 
 import org.bukkit.entity.Player;
+import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
 
 public final class MapChunkThread implements Runnable {
-
+	
 	// configuration
 	private static final int QUEUE_CAPACITY = 1024 * 10; // how many packets can be queued before the main thread blocks
 
@@ -123,35 +124,36 @@ public final class MapChunkThread implements Runnable {
 
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
+		
+		packet.g = ChunkCache.cacheChunk(task.players, packet.g);
+		
+		// compress packet.g
+		int dataSize = packet.g.length;
+		
+		if (deflateBuffer.length < dataSize + 100)
+			deflateBuffer = new byte[dataSize + 100];
 
-		if(packet.g != null) {
-			// compress packet.g
-			int dataSize = packet.g.length;
-			if (deflateBuffer.length < dataSize + 100)
-				deflateBuffer = new byte[dataSize + 100];
-
-			deflater.reset();
-			deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
-			deflater.setInput(packet.g);
-			deflater.finish();
-			int size = deflater.deflate(deflateBuffer);
-			if (size == 0) {
-				size = deflater.deflate(deflateBuffer);
-			}
-
-			// copy compressed data to packet
-			packet.g = new byte[size];
-			try {
-				Field ph = Packet51MapChunk.class.getDeclaredField("h");
-				ph.setAccessible(true);
-				ph.set(packet, size);
-			} catch (NoSuchFieldException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			}
-			System.arraycopy(deflateBuffer, 0, packet.g, 0, size);
+		deflater.reset();
+		deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
+		deflater.setInput(packet.g);
+		deflater.finish();
+		int size = deflater.deflate(deflateBuffer);
+		if (size == 0) {
+			size = deflater.deflate(deflateBuffer);
 		}
+
+		// copy compressed data to packet
+		packet.g = new byte[size];
+		try {
+			Field ph = Packet51MapChunk.class.getDeclaredField("h");
+			ph.setAccessible(true);
+			ph.set(packet, size);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		System.arraycopy(deflateBuffer, 0, packet.g, 0, size);
 	}
 
 	private void sendToNetworkQueue(QueuedPacket task) {
