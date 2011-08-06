@@ -22,6 +22,7 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
 import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.chunkcache.SimpleCacheManager;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
@@ -56,6 +57,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
 		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
 		SpoutManager.getInstance().setPlayerManager(new SimplePlayerManager());
+		SpoutManager.getInstance().setCacheManager(new SimpleCacheManager());
 	}
 	@Override
 	public void onDisable() {

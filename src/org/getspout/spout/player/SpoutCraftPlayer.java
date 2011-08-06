@@ -3,7 +3,6 @@ package org.getspout.spout.player;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.ContainerPlayer;

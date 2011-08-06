@@ -18,8 +18,10 @@ import net.minecraft.server.World;
 
 import org.bukkit.entity.Player;
 import org.getspout.spout.chunkcache.ChunkCache;
+import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
+import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 
 public final class MapChunkThread implements Runnable {
 	
@@ -118,6 +120,10 @@ public final class MapChunkThread implements Runnable {
 				return;
 			}
 			handleMapChunk(task);
+		} else if (task.packet instanceof CustomPacket) {
+			if(!ChunkCache.handleCustomPacket(task.players, (CustomPacket)task.packet)) {
+				return;
+			}
 		}
 		sendToNetworkQueue(task);
 	}

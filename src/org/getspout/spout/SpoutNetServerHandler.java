@@ -636,9 +636,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	private Packet getFastPacket51(int cx, int cz) {
 		Packet packet = new Packet51MapChunk(cx << 4, 0, cz << 4, 16, 128, 16, this.player.world);
 		try {
-			Field k = Packet.class.getDeclaredField("k");
-			k.setAccessible(true);
-			k.setBoolean(packet, false);
+			packet.k = false;
 			Field g = Packet51MapChunk.class.getDeclaredField("g");
 			g.setAccessible(true);
 			byte[] compressedData = (byte[])g.get(packet);

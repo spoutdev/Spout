@@ -2,8 +2,6 @@ package org.getspout.spout;
 
 import java.lang.reflect.Field;
 
-import net.minecraft.server.EntityPlayer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

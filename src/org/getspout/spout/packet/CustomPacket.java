@@ -15,7 +15,7 @@ import org.getspout.spoutapi.packet.PacketType;
 import org.getspout.spoutapi.packet.SpoutPacket;
 
 public class CustomPacket extends Packet{
-	SpoutPacket packet;
+	public SpoutPacket packet;
 
 	public CustomPacket() {
 		
