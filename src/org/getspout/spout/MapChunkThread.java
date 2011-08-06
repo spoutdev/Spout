@@ -17,11 +17,12 @@ import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
 
 import org.bukkit.entity.Player;
+import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
 
 public final class MapChunkThread implements Runnable {
-
+	
 	// configuration
 	private static final int QUEUE_CAPACITY = 1024 * 10; // how many packets can be queued before the main thread blocks
 
@@ -35,7 +36,7 @@ public final class MapChunkThread implements Runnable {
 	private static final MapChunkThread instance = new MapChunkThread();
 	private static Thread thread = null;
 	private static boolean runs = false;
-	
+
 	private static MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
 
 	public static void startThread() {
@@ -123,9 +124,12 @@ public final class MapChunkThread implements Runnable {
 
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
-
+		
+		packet.g = ChunkCache.cacheChunk(task.players, packet.g);
+		
 		// compress packet.g
 		int dataSize = packet.g.length;
+		
 		if (deflateBuffer.length < dataSize + 100)
 			deflateBuffer = new byte[dataSize + 100];
 
@@ -155,7 +159,12 @@ public final class MapChunkThread implements Runnable {
 	private void sendToNetworkQueue(QueuedPacket task) {
 		for (EntityPlayer player : task.players) {
 			if (task.coords == null || player.playerChunkCoordIntPairs.contains(task.coords)) {
-				((SpoutNetServerHandler) player.netServerHandler).queueOutputPacket(task.packet);
+				if (player.netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+					((SpoutNetServerHandler) player.netServerHandler).queueOutputPacket(task.packet);
+				}
+				else {
+					player.netServerHandler.sendPacket(task.packet);
+				}
 			}
 		}
 	}

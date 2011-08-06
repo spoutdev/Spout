@@ -45,3 +45,5 @@ Thumbs.db
 .classpath
 .project
 MANIFEST.MF
+
+/doc

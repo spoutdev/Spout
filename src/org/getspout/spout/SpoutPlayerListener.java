@@ -2,9 +2,12 @@ package org.getspout.spout;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.server.EntityPlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -12,7 +15,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleSkyManager;
@@ -101,6 +106,11 @@ public class SpoutPlayerListener extends PlayerListener{
 			player.setVersion(event.getMessage().substring(1));
 			if (player.isSpoutCraftEnabled()) {
 				event.setCancelled(true);
+				//Kick old BC players
+				if (player.getVersion() < 100) {
+					player.kickPlayer("This server is using Spout. Upgrade to the latest Spoutcraft client to play!");
+					return;
+				}
 				((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
 				manager.onBukkitContribSPEnable(player);
 				((SimpleItemManager)SpoutManager.getItemManager()).onPlayerJoin(player);
@@ -141,6 +151,12 @@ public class SpoutPlayerListener extends PlayerListener{
 
 		netServerHandler.setPlayerChunk(cx, cz);
 
+	}
+	
+	@Override
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		int id = ((CraftPlayer)event.getPlayer()).getHandle().id;
+		ChunkCache.playerQuit(id);
 	}
 
 }
