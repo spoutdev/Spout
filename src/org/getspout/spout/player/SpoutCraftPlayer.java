@@ -42,7 +42,7 @@ import org.getspout.spoutapi.gui.InGameScreen;
 import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
 import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.packet.PacketAirTime;
-import org.getspout.spoutapi.packet.PacketBukkitContribAlert;
+import org.getspout.spoutapi.packet.PacketAlert;
 import org.getspout.spoutapi.packet.PacketClipboardText;
 import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
@@ -51,7 +51,6 @@ import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-@SuppressWarnings("unused")
 public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected SpoutCraftInventoryPlayer inventory = null;
 	protected Keyboard forward = Keyboard.KEY_UNKNOWN;
@@ -395,7 +394,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
 			if (message.length() > 26)
 				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars");
-			sendPacket(new PacketBukkitContribAlert(title, message, toRender.getId()));
+			sendPacket(new PacketAlert(title, message, toRender.getId()));
 		}
 	}
 	

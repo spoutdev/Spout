@@ -11,7 +11,8 @@ public class ConfigReader {
 	private static boolean forceClient = false;
 	private static boolean autoUpdate = false;
 	private static int authTicks = 200;
-	private static String kickMessage = "This server requires the Spout SP mod! http://bit.ly/bukkitcontrib"; //TODO update link!
+	private static String kickMessage = "This server requires Spoutcraft! http://bit.ly/unleashtheflow";
+	private static boolean allowVisualCheats = false;
 	
 	public void read() {
 		try {
@@ -60,6 +61,13 @@ public class ConfigReader {
 				configuration.setProperty("AutoUpdate", true);
 			}
 			
+			if (configuration.getProperty("AllowVisualCheats") != null) {
+				allowVisualCheats = configuration.getBoolean("AllowVisualCheats", false);
+			}
+			else {
+				configuration.setProperty("AllowVisualCheats", false);
+			}
+			
 			if (!configuration.save()) {
 				throw new IOException();
 			}
@@ -82,5 +90,9 @@ public class ConfigReader {
 	
 	public static int getAuthenticateTicks() {
 		return authTicks;
+	}
+	
+	public static boolean isAllowVisualCheats() {
+		return allowVisualCheats;
 	}
 }

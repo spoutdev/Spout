@@ -21,7 +21,6 @@ import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
-import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 
 public final class MapChunkThread implements Runnable {
 	
