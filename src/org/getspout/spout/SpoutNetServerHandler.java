@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.Deflater;
@@ -41,6 +40,7 @@ import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Packet10Flying;
 import net.minecraft.server.Packet11PlayerPosition;
 import net.minecraft.server.Packet13PlayerLookMove;
+import net.minecraft.server.Packet255KickDisconnect;
 import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet9Respawn;
@@ -61,7 +61,6 @@ import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
-import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
@@ -71,7 +70,6 @@ import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
 import org.getspout.spoutapi.event.inventory.InventorySlotType;
 import org.getspout.spoutapi.inventory.CraftingInventory;
-import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 
 public class SpoutNetServerHandler extends NetServerHandler {
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -420,6 +418,13 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void a() {
 		syncFlushPacketQueue();
 		super.a();
+	}
+	
+	@Override
+	public void disconnect(String kick) {
+		this.sendPacket(new Packet255KickDisconnect(kick));
+		a();
+		super.disconnect(kick);
 	}
 
 	public void syncFlushPacketQueue() {
