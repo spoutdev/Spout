@@ -17,11 +17,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
+import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -114,6 +116,11 @@ public class SpoutPlayerListener extends PlayerListener{
 				((SimpleItemManager)SpoutManager.getItemManager()).onPlayerJoin(player);
 				((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
 				System.out.println("[Spout] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + player.getVersion());
+				if(player.getVersion() > 101) {
+					PacketCacheHashUpdate p = new PacketCacheHashUpdate();
+					p.reset = true;
+					player.getNetServerHandler().sendPacket(new CustomPacket(p));
+				}
 				Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 			}
 		}

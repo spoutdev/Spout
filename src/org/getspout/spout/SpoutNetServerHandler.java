@@ -385,16 +385,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		this.player.inventory.b(item);
 	}
 	
-	private AtomicBoolean firstPacket = new AtomicBoolean(true);
-
 	@Override
 	public void sendPacket(Packet packet) {
-		if (firstPacket.get()) {
-			firstPacket.set(false);
-			PacketCacheHashUpdate p = new PacketCacheHashUpdate();
-			p.reset = true;
-			MapChunkThread.sendPacket(this.player, new CustomPacket(p));
-		}
 		if (packet != null) {
 			if (packet.k) {
 				MapChunkThread.sendPacket(this.player, packet);

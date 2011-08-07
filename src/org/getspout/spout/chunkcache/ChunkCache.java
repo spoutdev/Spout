@@ -51,8 +51,7 @@ public class ChunkCache {
 			return uncompressedData;
 		} else {
 			SpoutCraftPlayer spc = (SpoutCraftPlayer)cp;
-			if(spc.getVersion() < 101) { 
-				// TODO: fix version, probably 102
+			if(spc.getVersion() < 102) { 
 				return uncompressedData;
 			}
 		}
