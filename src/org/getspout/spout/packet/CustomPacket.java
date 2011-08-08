@@ -57,7 +57,7 @@ public class CustomPacket extends Packet{
 			}
 			else if (packet.getVersion() != version) {
 				input.skipBytes(length);
-				System.out.println("Unknown packet version of" + packetId + ". Current: " + packet.getVersion() + " Receieved: " + version + " Skipping contents.");
+				System.out.println("Invalid Packet Id: " + packetId + ". Current v: " + packet.getVersion() + " Receieved v: " + version + " Skipping contents.");
 			}
 			else {
 				packet.readData(input);
@@ -84,6 +84,7 @@ public class CustomPacket extends Packet{
 		//System.out.println("Writing Packet Data for " + packet.getPacketType());
 		output.writeInt(packet.getPacketType().getId());
 		output.writeInt(a() - 12);
+		output.writeInt(packet.getVersion());
 		packet.writeData(output);
 	}
 
