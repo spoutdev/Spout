@@ -40,6 +40,8 @@ import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Packet10Flying;
 import net.minecraft.server.Packet11PlayerPosition;
 import net.minecraft.server.Packet13PlayerLookMove;
+import net.minecraft.server.Packet18ArmAnimation;
+import net.minecraft.server.Packet255KickDisconnect;
 import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet9Respawn;
@@ -62,6 +64,7 @@ import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket;
+import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;
@@ -69,6 +72,7 @@ import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
 import org.getspout.spoutapi.event.inventory.InventorySlotType;
 import org.getspout.spoutapi.inventory.CraftingInventory;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutNetServerHandler extends NetServerHandler {
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
@@ -82,6 +86,17 @@ public class SpoutNetServerHandler extends NetServerHandler {
 
 	public SpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
+	}
+	
+	public void a(Packet18ArmAnimation packet) {
+		if (packet.a == -42) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
+			player.setVersion(1, 0, 2);
+			Spout.getInstance().playerListener.manager.onSpoutcraftEnable((SpoutPlayer)getPlayer());
+		}
+		else {
+			super.a(packet);
+		}
 	}
 
 	public void setActiveInventoryLocation(Location location) {
@@ -381,7 +396,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void setCursorSlot(ItemStack item) {
 		this.player.inventory.b(item);
 	}
-
+	
 	@Override
 	public void sendPacket(Packet packet) {
 		if (packet != null) {
@@ -417,6 +432,13 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void a() {
 		syncFlushPacketQueue();
 		super.a();
+	}
+	
+	@Override
+	public void disconnect(String kick) {
+		this.sendPacket(new Packet255KickDisconnect(kick));
+		a();
+		super.disconnect(kick);
 	}
 
 	public void syncFlushPacketQueue() {

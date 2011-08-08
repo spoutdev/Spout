@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -16,14 +15,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.getspout.spout.chunkcache.ChunkCache;
-import org.getspout.spout.config.ConfigReader;
-import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
-import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
-import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -34,7 +28,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		SpoutCraftPlayer.updateNetServerHandler(event.getPlayer());
 		SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
 		updatePlayerEvent(event);
-		Spout.sendBukkitContribVersionChat(event.getPlayer());
+		Spout.getInstance().authenticate(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
 	}
 
@@ -89,35 +83,6 @@ public class SpoutPlayerListener extends PlayerListener{
 			Material type = event.getClickedBlock().getType();
 			if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
 				player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
-			}
-		}
-	}
-	
-	@Override
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (!(event.getPlayer() instanceof SpoutPlayer)) {
-			updatePlayerEvent(event);
-		}
-		SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
-		if (player.isSpoutCraftEnabled()) {
-			return;
-		}
-		if (event.getMessage().split("\\.").length == 3) {
-			player.setVersion(event.getMessage().substring(1));
-			if (player.isSpoutCraftEnabled()) {
-				event.setCancelled(true);
-				//Kick old BC players
-				if (player.getVersion() < 100) {
-					player.kickPlayer("This server is using Spout. Upgrade to the latest Spoutcraft client to play!");
-					return;
-				}
-				((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
-				manager.onBukkitContribSPEnable(player);
-				((SimpleItemManager)SpoutManager.getItemManager()).onPlayerJoin(player);
-				((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
-				player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
-				System.out.println("[Spout] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + player.getVersion());
-				Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 			}
 		}
 	}

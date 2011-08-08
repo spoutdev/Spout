@@ -12,8 +12,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 import java.util.logging.Logger;
 
+import net.minecraft.server.Packet18ArmAnimation;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
@@ -119,7 +120,6 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_COMMAND_PREPROCESS, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
@@ -131,7 +131,7 @@ public class Spout extends JavaPlugin{
 			SpoutCraftPlayer.resetNetServerHandler(player);
 			SpoutCraftPlayer.updateNetServerHandler(player);
 			SpoutCraftPlayer.updateBukkitEntity(player);
-			sendBukkitContribVersionChat(player);
+			authenticate(player);
 			playerListener.manager.onPlayerJoin(player);
 		}
 
@@ -163,15 +163,11 @@ public class Spout extends JavaPlugin{
 		return instance;
 	}
 	
-	private static String versionToString(String version) {
-		String split[] = version.split("\\.");
-		return ChatColor.getByCode(Integer.parseInt(split[0])).toString() + ChatColor.WHITE.toString() +
-			ChatColor.getByCode(Integer.parseInt(split[1])) + ChatColor.WHITE.toString() + 
-			ChatColor.getByCode(Integer.parseInt(split[2]));
-	}
-	
-	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(Spout.getInstance().getDescription().getVersion())); //TODO look at sending packet 138 instead?
+	public void authenticate(Player player) {
+		Packet18ArmAnimation packet = new Packet18ArmAnimation();
+		packet.a = -42;
+		((SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(player)).getNetServerHandler().sendImmediatePacket(packet);
+
 	}
 	
 	protected boolean isUpdateAvailable() {
@@ -229,8 +225,8 @@ public class Spout extends JavaPlugin{
 			}
 			File plugin = new File(directory.getPath(), "Spout.jar");
 			if (!plugin.exists()) {
-				URL bukkitContrib = new URL("http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar");
-				HttpURLConnection con = (HttpURLConnection)(bukkitContrib.openConnection());
+				URL spout = new URL("http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar");
+				HttpURLConnection con = (HttpURLConnection)(spout.openConnection());
 				System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 				ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());

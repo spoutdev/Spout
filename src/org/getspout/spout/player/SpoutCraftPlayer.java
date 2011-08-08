@@ -35,7 +35,6 @@ import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.standard.MCCraftPacket;
-import org.getspout.spoutapi.event.input.RenderDistance;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.gui.InGameScreen;
@@ -49,6 +48,7 @@ import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
+import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
@@ -540,25 +540,15 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return buildVersion;
 	}
 	
-	public void setVersion(String version) {
-		try {
-			String split[] = version.split("\\.");
-			buildVersion = Integer.valueOf(split[2]);
-			minorVersion = Integer.valueOf(split[1]);
-			majorVersion = Integer.valueOf(split[0]);
-		}
-		catch (Exception e) {reset();}
+	public void setVersion(int major, int minor, int build) {
+		buildVersion = build;
+		minorVersion = minor;
+		majorVersion = major;
 	}
 	
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();
-	}
-	
-	private void reset() {
-		buildVersion = -1;
-		minorVersion = -1;
-		majorVersion = -1;
 	}
 	
 	/* Non Interface public static methods */
