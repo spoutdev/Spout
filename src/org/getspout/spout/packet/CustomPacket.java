@@ -28,9 +28,9 @@ public class CustomPacket extends Packet{
 	@Override
 	public int a() {
 		if(packet == null) {
-			return 8;
+			return 12;
 		} else {
-			return packet.getNumBytes() + 8;
+			return packet.getNumBytes() + 12;
 		}
 	}
 
@@ -39,32 +39,37 @@ public class CustomPacket extends Packet{
 		int packetId = -1;
 		packetId = input.readInt();
 		int length = input.readInt(); //packet size
-		if (packetId > -1) {
-				try {
-					this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
-				}
-				catch (Exception e) {
-					System.out.println("Failed to identify packet id: " + packetId);
-					e.printStackTrace();
-				}
-				try {
-					if(this.packet == null) {
-						input.skipBytes(length);
-						System.out.println("Unknown packet " + packetId + ". Skipping contents.");
-						return;
-					}
-					else {
-						packet.readData(input);
-						//System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
-					}
-				}
-				catch (IOException e) {
-					throw new IOException(e);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-					throw new IllegalStateException("readData() for packetId " + packetId + " threw an exception");
-				}
+		int version = input.readInt(); //packet version
+		if (packetId > -1 && version > -1) {
+			try {
+				this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
+			}
+			catch (Exception e) {
+				System.out.println("Failed to identify packet id: " + packetId);
+				//e.printStackTrace();
+			}
+		}
+		try {
+			if(this.packet == null) {
+				input.skipBytes(length);
+				System.out.println("Unknown packet " + packetId + ". Skipping contents.");
+				return;
+			}
+			else if (packet.getVersion() != version) {
+				input.skipBytes(length);
+				System.out.println("Unknown packet version of" + packetId + ". Current: " + packet.getVersion() + " Receieved: " + version + " Skipping contents.");
+			}
+			else {
+				packet.readData(input);
+				//System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
+			}
+		}
+		catch (IOException e) {
+			throw new IOException(e);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new IllegalStateException("readData() for packetId " + packetId + " threw an exception");
 		}
 	}
 
@@ -72,12 +77,13 @@ public class CustomPacket extends Packet{
 	public void a(DataOutputStream output) throws IOException {
 		if(packet == null) {
 			output.writeInt(-1);
-			output.writeInt(0);;
+			output.writeInt(0);
+			output.writeInt(-1);
 			return;
 		}
 		//System.out.println("Writing Packet Data for " + packet.getPacketType());
 		output.writeInt(packet.getPacketType().getId());
-		output.writeInt(a() - 8);
+		output.writeInt(a() - 12);
 		packet.writeData(output);
 	}
 
