@@ -528,7 +528,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
 		}
 		MCCraftPacket p = (MCCraftPacket)packet;
-		if (cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+		if (getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
 			getNetServerHandler().sendImmediatePacket(p.getPacket());
 		}
 		else {
