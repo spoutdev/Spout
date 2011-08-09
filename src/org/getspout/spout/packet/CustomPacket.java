@@ -38,8 +38,8 @@ public class CustomPacket extends Packet{
 	public void a(DataInputStream input) throws IOException {
 		int packetId = -1;
 		packetId = input.readShort();
-		int length = input.readInt(); //packet size
 		int version = input.readShort(); //packet version
+		int length = input.readInt(); //packet size
 		if (packetId > -1 && version > -1) {
 			try {
 				this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
@@ -77,14 +77,14 @@ public class CustomPacket extends Packet{
 	public void a(DataOutputStream output) throws IOException {
 		if(packet == null) {
 			output.writeShort(-1);
-			output.writeInt(0);
 			output.writeShort(-1);
+			output.writeInt(0);
 			return;
 		}
 		//System.out.println("Writing Packet Data for " + packet.getPacketType());
 		output.writeShort(packet.getPacketType().getId());
-		output.writeInt(a() - 8);
 		output.writeShort(packet.getVersion());
+		output.writeInt(a() - 8);
 		packet.writeData(output);
 	}
 
