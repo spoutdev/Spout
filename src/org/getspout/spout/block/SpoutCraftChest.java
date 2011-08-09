@@ -59,7 +59,18 @@ public class SpoutCraftChest extends CraftChest implements SpoutChest{
 	public DoubleChestInventory getFullInventory() {
 		if (isDoubleChest()){
 			SpoutCraftChest other = (SpoutCraftChest)getOtherSide();
-			return new SpoutDoubleChestInventory(new InventoryLargeChest("Double Chest", chest, other.chest), getBlock(), other.getBlock());
+			SpoutCraftChest top, bottom;
+			
+			if ((this.getLocation().getBlockX() < other.getLocation().getBlockX()) ||
+				(this.getLocation().getBlockZ() < other.getLocation().getBlockZ())) {
+				top = this;
+				bottom = other;
+			} else {
+				top = other;
+				bottom = this;
+			}
+			
+			return new SpoutDoubleChestInventory(new InventoryLargeChest("Double Chest", top.chest, bottom.chest), top.getBlock(), bottom.getBlock());
 		}
 		return null;
 	}
