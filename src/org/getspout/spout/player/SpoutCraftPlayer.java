@@ -528,7 +528,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
 		}
 		MCCraftPacket p = (MCCraftPacket)packet;
-		if ((cp.getHandle().netServerHandler instanceof SpoutNetServerHandler)) {
+		if (cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
 			getNetServerHandler().sendImmediatePacket(p.getPacket());
 		}
 		else {
@@ -566,7 +566,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		CraftPlayer cp = (CraftPlayer)player;
 		CraftServer server = (CraftServer)Bukkit.getServer();
 		
-		if ((cp.getHandle().netServerHandler instanceof SpoutNetServerHandler)) {
+		if (cp.getHandle().netServerHandler instanceof SpoutNetServerHandler) {
 			Set<ChunkCoordIntPair> chunkUpdateQueue = ((SpoutNetServerHandler)cp.getHandle().netServerHandler).getChunkUpdateQueue();
 			for(ChunkCoordIntPair c : chunkUpdateQueue) {
 					cp.getHandle().chunkCoordIntPairQueue.add(c);
