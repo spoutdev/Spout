@@ -564,6 +564,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 					cp.getHandle().chunkCoordIntPairQueue.add(c);
 			}
 			((SpoutNetServerHandler)cp.getHandle().netServerHandler).flushUnloadQueue();
+			cp.getHandle().netServerHandler.a();
 			Location loc = player.getLocation();
 			NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
 			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
