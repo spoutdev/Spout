@@ -491,6 +491,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return getNetServerHandler().getDefaultInventory();
 	}
 
+	/*
+		May be unsafe during initialization or de-initialization
+	*/
 	public SpoutNetServerHandler getNetServerHandler() {
 		return (SpoutNetServerHandler) getHandle().netServerHandler;
 	}
@@ -517,7 +520,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
 		}
 		MCCraftPacket p = (MCCraftPacket)packet;
-		getNetServerHandler().sendPacket(p.getPacket());
+		getHandle().netServerHandler.sendPacket(p.getPacket());
 	}
 	
 	public void sendImmediatePacket(MCPacket packet) {
@@ -525,7 +528,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
 		}
 		MCCraftPacket p = (MCCraftPacket)packet;
-		getNetServerHandler().sendImmediatePacket(p.getPacket());
+		if ((cp.getHandle().netServerHandler instanceof SpoutNetServerHandler)) {
+			getNetServerHandler().sendImmediatePacket(p.getPacket());
+		}
+		else {
+			sendPacket(packet);
+		}
 	}
 	
 	public int getMajorVersion() {
