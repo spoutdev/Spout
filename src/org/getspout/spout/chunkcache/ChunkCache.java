@@ -10,6 +10,7 @@ import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spout.util.ChunkHash;
@@ -38,6 +39,10 @@ public class ChunkCache {
 			}
 		}
 
+		if(!ConfigReader.isChunkDataCache()) {
+			return uncompressedData;
+		}
+		
 		if(uncompressedData.length != FULL_CHUNK_SIZE || players.length != 1) {
 			return uncompressedData;
 		}

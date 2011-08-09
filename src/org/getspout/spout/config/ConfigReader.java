@@ -13,6 +13,7 @@ public class ConfigReader {
 	private static int authTicks = 200;
 	private static String kickMessage = "This server requires Spoutcraft! http://bit.ly/unleashtheflow";
 	private static boolean allowVisualCheats = false;
+	private static boolean chunkDataCache = true;
 	
 	public void read() {
 		try {
@@ -68,6 +69,12 @@ public class ConfigReader {
 				configuration.setProperty("AllowVisualCheats", false);
 			}
 			
+			if (configuration.getProperty("ChunkDataCache") != null) {
+				chunkDataCache = configuration.getBoolean("ChunkDataCache", true);
+			} else {
+				configuration.setProperty("ChunkDataCache", true);
+			}
+			
 			if (!configuration.save()) {
 				throw new IOException();
 			}
@@ -94,5 +101,9 @@ public class ConfigReader {
 	
 	public static boolean isAllowVisualCheats() {
 		return allowVisualCheats;
+	}
+	
+	public static boolean isChunkDataCache() {
+		return chunkDataCache;
 	}
 }
