@@ -5,8 +5,7 @@ package org.getspout.spout;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
 
@@ -69,7 +68,7 @@ public final class MapChunkThread implements Runnable {
 
 	// worker thread queue
 	private final HashMap<EntityPlayer, Integer> queueSizePerPlayer = new HashMap<EntityPlayer, Integer>();
-	private final BlockingQueue<QueuedPacket> queue = new LinkedBlockingQueue<QueuedPacket>(QUEUE_CAPACITY);
+	private final LinkedBlockingDeque<QueuedPacket> queue = new LinkedBlockingDeque<QueuedPacket>(QUEUE_CAPACITY);
 
 	private final AtomicBoolean kill = new AtomicBoolean(false);
 
@@ -175,7 +174,7 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	// producer
-	private void putTask(QueuedPacket task) {
+	private void putTask(QueuedPacket task, boolean skip) {
 		if(instance.kill.get()) {
 			throw new RuntimeException("MapChunkData: attempting to add task to queue after thread has been killed");
 		}
@@ -183,7 +182,11 @@ public final class MapChunkThread implements Runnable {
 
 		while (true) {
 			try {
-				queue.put(task);
+				if (skip) {
+					queue.putFirst(task);
+				} else {
+					queue.put(task);
+				}
 				return;
 			} catch (InterruptedException e) {
 				// TODO: ignore?
@@ -199,11 +202,15 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	public static void sendPacket(EntityPlayer player, Packet packet) {
-		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false));
+		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false), false);
+	}
+	
+	public static void sendPacketSkipQueue(EntityPlayer player, Packet packet) {
+		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false), true);
 	}
 
 	public static void sendPacket(ChunkCoordIntPair coords, List<EntityPlayer> players, Packet packet) {
-		instance.putTask(new QueuedPacket(coords, players.toArray(new EntityPlayer[0]), packet, false));
+		instance.putTask(new QueuedPacket(coords, players.toArray(new EntityPlayer[0]), packet, false), false);
 	}
 
 	public static void sendPacketMapChunk(ChunkCoordIntPair coords, EntityPlayer player, World world) {
@@ -225,6 +232,6 @@ public final class MapChunkThread implements Runnable {
 		mapChunk.f = dz;
 		mapChunk.g = world.getMultiChunkData(x, y, z, dx, dy, dz);
 
-		instance.putTask(new QueuedPacket(coords, players, mapChunk, true));
+		instance.putTask(new QueuedPacket(coords, players, mapChunk, true), false);
 	}
 }
