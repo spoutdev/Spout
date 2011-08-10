@@ -10,6 +10,7 @@ import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.getspout.spout.MapChunkThread;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SpoutCraftPlayer;
@@ -65,13 +66,12 @@ public class ChunkCache {
 
 		LinkedList<HashUpdate> pending = pendingHashUpdates.get(id);
 		if (pending != null) {
-			NetServerHandler nsh = player.netServerHandler;
 			while(!pending.isEmpty()) {
 				HashUpdate update = pending.removeFirst();
 				if(update.hashes.length != 0) {
 					Packet p = new CustomPacket(new PacketCacheHashUpdate(update.add, update.hashes));
 					p.k = true;
-					nsh.sendPacket(p);
+					MapChunkThread.sendPacketSkipQueue(player, p);
 				}
 			}
 		}
