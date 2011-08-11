@@ -656,4 +656,29 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setActiveInventoryLocation(Location loc) {
 		getNetServerHandler().setActiveInventoryLocation(loc);
 	}
+	
+	public void reconnect(String hostname, int port) {
+		if (hostname.indexOf(":") != -1) {
+			throw new IllegalArgumentException("Hostnames may not the : symbol");
+		}
+		this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
+	}
+
+	public void reconnect(String hostname) {
+		if (hostname.indexOf(":") != -1) {
+			String[] split = hostname.split(":");
+			if (split.length != 2) {
+				throw new IllegalArgumentException("Improperly formatted hostname: " + hostname);
+			}
+			int port;
+			try {
+				port = Integer.parseInt(split[1]);
+			} catch (NumberFormatException nfe) {
+				throw new IllegalArgumentException("Unable to parse port number: " + split[1] + " in " + hostname);
+			}
+			reconnect(split[0], port);
+		}
+		this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
+	}
+	
 }
