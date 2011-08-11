@@ -15,6 +15,7 @@ import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.CraftServer;
@@ -390,10 +391,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
 		if (isSpoutCraftEnabled()) {
-			if (title.length() > 26)
-				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
-			if (message.length() > 26)
-				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars");
+			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
+				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
+			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
+				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars + 26 colors");
 			sendPacket(new PacketAlert(title, message, toRender.getId()));
 		}
 	}
@@ -401,10 +402,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public void sendNotification(String title, String message, Material toRender, short data, int time) {
 		if (isSpoutCraftEnabled()) {
-			if (title.length() > 26)
-				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars");
-			if (message.length() > 26)
-				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars");
+			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
+				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
+			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
+				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars + 26 colors");
 			sendPacket(new PacketNotification(title, message, toRender.getId(), data, time));
 		}
 	}
@@ -589,11 +590,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (!(cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class))) {
 			Location loc = player.getLocation();
 			SpoutNetServerHandler handler = new SpoutNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
-			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 			for(Object o : cp.getHandle().playerChunkCoordIntPairs) {
 				ChunkCoordIntPair c = (ChunkCoordIntPair) o;
 				handler.addActiveChunk(c);
 			}
+			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 			cp.getHandle().netServerHandler = handler;
 			return true;
 		}
@@ -655,4 +656,29 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setActiveInventoryLocation(Location loc) {
 		getNetServerHandler().setActiveInventoryLocation(loc);
 	}
+	
+	public void reconnect(String hostname, int port) {
+		if (hostname.indexOf(":") != -1) {
+			throw new IllegalArgumentException("Hostnames may not the : symbol");
+		}
+		this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
+	}
+
+	public void reconnect(String hostname) {
+		if (hostname.indexOf(":") != -1) {
+			String[] split = hostname.split(":");
+			if (split.length != 2) {
+				throw new IllegalArgumentException("Improperly formatted hostname: " + hostname);
+			}
+			int port;
+			try {
+				port = Integer.parseInt(split[1]);
+			} catch (NumberFormatException nfe) {
+				throw new IllegalArgumentException("Unable to parse port number: " + split[1] + " in " + hostname);
+			}
+			reconnect(split[0], port);
+		}
+		this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
+	}
+	
 }
