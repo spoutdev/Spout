@@ -626,14 +626,17 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	}
 
 	private void playerTeleported(int cx, int cz) {
-		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(cx, cz);
-		if (!activeChunks.contains(chunkPos)) {
-			for (int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
-				for (int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
-					sendPacket(new Packet50PreChunk(cx + x, cz + z, true));
-					sendPacket(getFastPacket51(cx + x, cz + z));
-					sendChunkTiles(cx + x, cz + z);
-				}
+		for (int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
+			for (int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
+				int xx = cx + x;
+				int zz = cz + z;
+				ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
+				if(!activeChunks.contains(chunkPos)) {
+					unloadQueue.remove(chunkPos);
+					this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
+				} 
+				this.queueOutputPacket(getFastPacket51(xx, zz));
+				sendChunkTiles(xx, zz);
 			}
 		}
 	}

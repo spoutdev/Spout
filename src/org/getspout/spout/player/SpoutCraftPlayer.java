@@ -590,11 +590,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (!(cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class))) {
 			Location loc = player.getLocation();
 			SpoutNetServerHandler handler = new SpoutNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
-			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 			for(Object o : cp.getHandle().playerChunkCoordIntPairs) {
 				ChunkCoordIntPair c = (ChunkCoordIntPair) o;
 				handler.addActiveChunk(c);
 			}
+			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 			cp.getHandle().netServerHandler = handler;
 			return true;
 		}
