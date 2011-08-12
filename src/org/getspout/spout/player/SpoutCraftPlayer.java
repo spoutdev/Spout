@@ -433,6 +433,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		 }
 	}
 	
+
+	@Override
+	public void resetTexturePack() {
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketTexturePack("[none]"));
+		}
+	}
+	
 	public void setClipboardText(String text, boolean updateClient) {
 		if (isSpoutCraftEnabled()) {
 			clipboard = text;
