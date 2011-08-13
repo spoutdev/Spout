@@ -11,6 +11,7 @@ import net.minecraft.server.Entity;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
+import net.minecraft.server.NetworkManager;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 
@@ -30,6 +31,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
@@ -570,12 +572,31 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	/* Non Interface public static methods */
 
+	public static boolean setNetServerHandler(NetworkManager nm, NetServerHandler nsh) {
+		try {
+			Field p = nm.getClass().getDeclaredField("p");
+			p.setAccessible(true);
+			p.set(nm, nsh);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static boolean resetNetServerHandler(Player player) {
 		CraftPlayer cp = (CraftPlayer)player;
 		CraftServer server = (CraftServer)Bukkit.getServer();
 		
 		if (cp.getHandle().netServerHandler instanceof SpoutNetServerHandler) {
+			NetServerHandler oldHandler = cp.getHandle().netServerHandler;
 			Set<ChunkCoordIntPair> chunkUpdateQueue = ((SpoutNetServerHandler)cp.getHandle().netServerHandler).getChunkUpdateQueue();
 			for(ChunkCoordIntPair c : chunkUpdateQueue) {
 					cp.getHandle().chunkCoordIntPairQueue.add(c);
@@ -586,6 +607,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			NetServerHandler handler = new NetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
 			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 			cp.getHandle().netServerHandler = handler;
+			NetworkManager nm = cp.getHandle().netServerHandler.networkManager;
+			setNetServerHandler(nm, cp.getHandle().netServerHandler);
+			oldHandler.disconnected = true;
+			((CraftServer)Spout.getInstance().getServer()).getServer().networkListenThread.a(handler);
 			return true;
 		}
 		return false;
@@ -596,6 +621,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		CraftServer server = (CraftServer)Bukkit.getServer();
 		
 		if (!(cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class))) {
+			NetServerHandler oldHandler = cp.getHandle().netServerHandler;
 			Location loc = player.getLocation();
 			SpoutNetServerHandler handler = new SpoutNetServerHandler(server.getHandle().server, cp.getHandle().netServerHandler.networkManager, cp.getHandle());
 			for(Object o : cp.getHandle().playerChunkCoordIntPairs) {
@@ -604,6 +630,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 			handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 			cp.getHandle().netServerHandler = handler;
+			NetworkManager nm = cp.getHandle().netServerHandler.networkManager;
+			setNetServerHandler(nm, cp.getHandle().netServerHandler);
+			oldHandler.disconnected = true;
+			((CraftServer)Spout.getInstance().getServer()).getServer().networkListenThread.a(handler);
 			return true;
 		}
 		return false;
