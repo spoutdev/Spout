@@ -437,7 +437,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	@Override
 	public void disconnect(String kick) {
 		this.sendPacket(new Packet255KickDisconnect(kick));
-		a();
+		syncFlushPacketQueue();
 		super.disconnect(kick);
 	}
 
