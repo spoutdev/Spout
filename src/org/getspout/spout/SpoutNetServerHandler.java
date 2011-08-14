@@ -76,8 +76,8 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutNetServerHandler extends NetServerHandler {
 	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
-	protected boolean activeInventory = false;
-	protected Location activeLocation = null;
+	public boolean activeInventory = false;
+	public Location activeLocation = null;
 	protected ItemStack lastOverrideDisplayStack = null;
 
 	private MCCraftPacket[] packetWrappers = new MCCraftPacket[256];
@@ -437,7 +437,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	@Override
 	public void disconnect(String kick) {
 		this.sendPacket(new Packet255KickDisconnect(kick));
-		a();
+		syncFlushPacketQueue();
 		super.disconnect(kick);
 	}
 

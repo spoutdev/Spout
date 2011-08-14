@@ -11,8 +11,10 @@ import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
 
 import org.getspout.spout.SpoutNetServerHandler;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketType;
 import org.getspout.spoutapi.packet.SpoutPacket;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class CustomPacket extends Packet{
 	public SpoutPacket packet;
@@ -92,7 +94,10 @@ public class CustomPacket extends Packet{
 	public void a(NetHandler netHandler) {
 		if (netHandler.getClass().hashCode() == SpoutNetServerHandler.class.hashCode()) {
 			SpoutNetServerHandler handler = (SpoutNetServerHandler)netHandler;
-			packet.run(handler.getPlayer().getEntityId());
+			SpoutPlayer player = SpoutManager.getPlayerFromId(handler.getPlayer().getEntityId());
+			if (player != null) {
+				packet.run(player.getEntityId());
+			}
 		}
 		else {
 			//System.out.println("Invalid hash!");

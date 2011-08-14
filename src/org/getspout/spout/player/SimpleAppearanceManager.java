@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.packet.PacketEntitySkin;
 import org.getspout.spoutapi.packet.PacketEntityTitle;
 import org.getspout.spoutapi.packet.PacketSkinURL;
 import org.getspout.spoutapi.player.AppearanceManager;
@@ -379,5 +380,17 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				resetGlobalTitle(lv);
 			}
 		}
+	}
+
+	@Override
+	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
+		PacketEntitySkin packet = new PacketEntitySkin(target, url, true);
+		viewingPlayer.sendPacket(packet);
+	}
+
+	@Override
+	public void setEntitySecondarySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
+		PacketEntitySkin packet = new PacketEntitySkin(target, url, false);
+		viewingPlayer.sendPacket(packet);
 	}
 }
