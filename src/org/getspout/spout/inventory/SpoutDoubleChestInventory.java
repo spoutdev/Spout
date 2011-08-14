@@ -62,7 +62,7 @@ public class SpoutDoubleChestInventory extends SpoutCraftInventory implements Do
 	}
 	
 	private static boolean isSolid(Block block) {
-		// o[]: If block type is non-solid.
+		// o[]: If block type is completely solid.
 		// This should really be part of Spout or Bukkit, but for now it's here.
 		return net.minecraft.server.Block.o[block.getTypeId()];  
 	}
