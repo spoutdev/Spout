@@ -41,5 +41,9 @@ public abstract class ChunkUtil {
 		}
 		return chunkList;
 	}
+	
+	public static long intPairToLong(int x, int z) {
+		return (((long)x)<<32) | (((long)z) & 0xFFFFFFFFL);
+	}
 
 }

@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkcache.SimpleCacheManager;
+import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
@@ -42,6 +43,7 @@ import org.getspout.spoutapi.packet.PacketRenderDistance;
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
 	private final SpoutWorldListener chunkListener;
+	private final SpoutWorldMonitorListener chunkMonitorListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
 	
@@ -49,6 +51,7 @@ public class Spout extends JavaPlugin{
 		super();
 		playerListener = new SpoutPlayerListener();
 		chunkListener = new SpoutWorldListener();
+		chunkMonitorListener = new SpoutWorldMonitorListener();
 		pluginListener = new PluginListener();
 		SpoutManager.getInstance().setKeyboardManager(new SimpleKeyboardManager());
 		SpoutManager.getInstance().setAppearanceManager(new SimpleAppearanceManager());
@@ -59,6 +62,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
 		SpoutManager.getInstance().setPlayerManager(new SimplePlayerManager());
 		SpoutManager.getInstance().setCacheManager(new SimpleCacheManager());
+		SpoutManager.getInstance().setChunkDataManager(new SimpleChunkDataManager());
 	}
 	@Override
 	public void onDisable() {
@@ -86,6 +90,10 @@ public class Spout extends JavaPlugin{
 		SpoutCraftChunk.resetAllBukkitChunks();
 		
 		getServer().getScheduler().cancelTasks(this);
+		
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		dm.unloadAllChunks();
+		dm.closeAllFiles();
 		
 		//Attempt to auto update if file is available
 		try {
@@ -123,7 +131,11 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
+
 
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
@@ -152,6 +164,10 @@ public class Spout extends JavaPlugin{
 		//Can not remove them on disable because the packets will still be in the send queue
 		CustomPacket.removeClassMapping();
 		CustomPacket.addClassMapping();
+		
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		dm.loadAllChunks();
+		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}
 

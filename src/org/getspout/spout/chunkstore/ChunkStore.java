@@ -2,33 +2,42 @@ package org.getspout.spout.chunkstore;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 
 import org.bukkit.World;
+import org.getspout.spout.util.ChunkUtil;
 
 public class ChunkStore {
-	
+
 	HashMap<UUID,HashMap<Long,SimpleRegionFile>> regionFiles = new HashMap<UUID,HashMap<Long,SimpleRegionFile>>();
-	
+
 	public void closeAll() {
 		for(UUID uid : regionFiles.keySet()) {
 			HashMap<Long,SimpleRegionFile> worldRegions = regionFiles.get(uid);
-			for(Long key : worldRegions.keySet()) {
-				SimpleRegionFile rf = worldRegions.get(key);
+			Iterator<SimpleRegionFile> itr = worldRegions.values().iterator();
+			while(itr.hasNext()) {
+				SimpleRegionFile rf = itr.next();
 				if(rf != null) {
 					rf.close();
+					itr.remove();
 				}
 			}
 		}
 		regionFiles = new HashMap<UUID,HashMap<Long,SimpleRegionFile>>();
 	}
-	
+
 	public ChunkMetaData readChunkMetaData(World world, int x, int z) throws IOException {
 		SimpleRegionFile rf = getSimpleRegionFile(world, x, z);
-		ObjectInputStream objectStream = new ObjectInputStream(rf.getInputStream(x, z));
+		InputStream in = rf.getInputStream(x, z);
+		if (in == null) {
+			return null;
+		}
+		ObjectInputStream objectStream = new ObjectInputStream(in);
 		try {
 			Object o = objectStream.readObject();
 			if(o instanceof ChunkMetaData) {
@@ -42,50 +51,56 @@ public class ChunkStore {
 			throw new RuntimeException("Unable to find serialized class for " + x + ", " + z, e);
 		}
 	}
-	
+
 	public void writeChunkMetaData(World world, int x, int z, ChunkMetaData data) {
+		
+		if (!data.getDirty()) {
+			return;
+		}
 		try {
-		SimpleRegionFile rf = getSimpleRegionFile(world, x, z);
-		ObjectOutputStream objectStream = new ObjectOutputStream(rf.getOutputStream(x, z));
-		objectStream.writeObject(data);
-		objectStream.close();
+			SimpleRegionFile rf = getSimpleRegionFile(world, x, z);
+			ObjectOutputStream objectStream = new ObjectOutputStream(rf.getOutputStream(x, z));
+			objectStream.writeObject(data);
+			objectStream.flush();
+			objectStream.close();
+			data.setDirty(false);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to write chunk meta data for " + x + ", " + z, e);
 		}
 	}
-	
-	public SimpleRegionFile getSimpleRegionFile(World world, int x, int z) {
-		
-		File directory = Utils.getWorldDirectory(world);
-		
+
+	private SimpleRegionFile getSimpleRegionFile(World world, int x, int z) {
+
+		File directory = new File(Utils.getWorldDirectory(world), "spout_meta");
+
+		directory.mkdirs();
+
 		UUID key = world.getUID();
-		
+
 		HashMap<Long,SimpleRegionFile> worldRegions = regionFiles.get(key);
-		
+
 		if (worldRegions == null) {
 			worldRegions = new HashMap<Long,SimpleRegionFile>();
 			regionFiles.put(key, worldRegions);
 		}
-		
-		long key2 = intPairToLong(x, z);
+
+		int rx = x >> 5;
+		int rz = z >> 5;
+
+		long key2 = ChunkUtil.intPairToLong(rx, rz);
+
 		SimpleRegionFile regionFile = worldRegions.get(key2);
-		
+
 		if (regionFile == null) {
-			
-			int rx = x >> 5;
-			int rz = z >> 5;
-			File file = new File(directory, "spout_" + rx + "_" + rz + "_.spo");
+
+			File file = new File(directory, "spout_" + rx + "_" + rz + "_.spm");
 			regionFile = new SimpleRegionFile(file, rx, rz);
 			worldRegions.put(key2, regionFile);
-			
+
 		}
-		
+
 		return regionFile;
-		
+
 	}
-	
-	private static long intPairToLong(int x, int z) {
-		return (((long)x)<<32) | (((long)z) & 0xFFFFFFFFL);
-	}
-	
+
 }

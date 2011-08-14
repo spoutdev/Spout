@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 public class SimpleRegionFile {
 	
@@ -48,9 +48,12 @@ public class SimpleRegionFile {
 			this.segmentSize = file.readInt();
 			this.segmentMask = (1 << segmentSize) - 1;
 			
-			int reservedSegments = 1 + (((4096 * 3) - 1) >> segmentSize);
+			int reservedSegments = this.sizeToSegments(4096 * 3);
 			
 			for (int i = 0; i < reservedSegments; i++) {
+				while (inuse.size() <= i) {
+					inuse.add(false);
+				}
 				inuse.set(i, true);
 			}
 			
@@ -81,15 +84,21 @@ public class SimpleRegionFile {
 	
 	public DataInputStream getInputStream(int x, int z) throws IOException {
 		int index = getChunkIndex(x, z);
-		byte[] data = new byte[dataActualLength[index]];
+		int actualLength = dataActualLength[index];
+		if (actualLength == 0) {
+			return null;
+		}
+		byte[] data = new byte[actualLength];
+
 		file.seek(dataStart[index] << segmentSize);
 		file.readFully(data);
-		return new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(data)));
+		return new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(data)));
 	}
 	
 	void write(int index, byte[] buffer, int size) throws IOException {
-		setInUse(index, false);
-		int start = findSpace(size);
+
+		int oldStart = setInUse(index, false);
+		int start = findSpace(oldStart, size);
 		file.seek(start << segmentSize);
 		file.write(buffer, 0, size);
 		dataStart[index] = start;
@@ -101,22 +110,27 @@ public class SimpleRegionFile {
 	
 	public void close() {
 		try {
+			file.seek(4096*2);
 			file.close();
 		} catch (IOException ioe) {
 			throw new RuntimeException("Unable to close file", ioe);
 		}
 	}
 	
-	private void setInUse(int index, boolean used) {
+	private int setInUse(int index, boolean used) {
+		
+		if (dataActualLength[index] == 0) {
+			return dataStart[index];
+		}
 
 		int start = dataStart[index];
-		int end = dataLength[index];
+		int end = start + dataLength[index];
 		
 		for(int i = start; i < end; i++) {
-			while(i - 1 > inuse.size()) {
+			while(i > inuse.size() - 1) {
 				inuse.add(false);
 			}
-			Boolean old = inuse.set(index, used);
+			Boolean old = inuse.set(i, used);
 			if (old != null && old == used) {
 				if (old) {
 					throw new IllegalStateException("Attempting to overwrite an in-use segment");
@@ -125,11 +139,15 @@ public class SimpleRegionFile {
 				}
 			}
 		}
+		
+		return dataStart[index];
 	}
 	
 	private void extendFile() throws IOException {
 		
 		long extend = (-file.length()) & segmentMask;
+		
+		file.seek(file.length());
 		
 		while ((extend--) > 0) {
 			file.write(0);
@@ -137,9 +155,21 @@ public class SimpleRegionFile {
 		
 	}
 	
-	private int findSpace(int size) {
+	private int findSpace(int oldStart, int size) {
 		
 		int segments = sizeToSegments(size);
+		
+		boolean oldFree = true;
+		for (int i = oldStart; i < inuse.size() && i < oldStart + segments; i++) {
+			if (inuse.get(i)) {
+				oldFree = false;
+				break;
+			}
+		}
+		
+		if (oldFree) {
+			return oldStart;
+		}
 		
 		int start = 0;
 		int end = 0;
@@ -160,7 +190,11 @@ public class SimpleRegionFile {
 	}
 	
 	private int sizeToSegments(int size) {
-		return ((size - 1) >> segmentSize) + 1;
+		if (size <= 0) {
+			return 1;
+		} else {
+			return ((size - 1) >> segmentSize) + 1;
+		}
 	}
 	
 	private Integer getChunkIndex(int x, int z) {
@@ -168,6 +202,9 @@ public class SimpleRegionFile {
 		if (rx != (x >> 5) || rz != (z >> 5)) {
 			throw new RuntimeException(x + ", " + z + " not in region " + rx + ", " + rz);
 		}
+		
+		x = x & 0x1F;
+		z = z & 0x1F;
 		
 		return (x << 5) + z;
 	}

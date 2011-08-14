@@ -8,6 +8,8 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.chunkstore.SimpleChunkDataManager;
+import org.getspout.spoutapi.SpoutManager;
 
 public class SpoutWorldListener extends WorldListener{
 	
@@ -22,11 +24,17 @@ public class SpoutWorldListener extends WorldListener{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		dm.loadChunk(event.getChunk());
 	}
 
 	@Override
 	public void onWorldLoad(WorldLoadEvent event) {
 		net.minecraft.server.World world = ((CraftWorld)event.getWorld()).getHandle();
 		SpoutPlayerManagerTransfer.replacePlayerManager((net.minecraft.server.WorldServer)world);
+		
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		dm.loadWorldChunks(event.getWorld());
 	}
 }

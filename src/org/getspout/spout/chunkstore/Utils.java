@@ -46,16 +46,15 @@ public class Utils {
 	public static byte[] serialize(Object o) {
 		
 		try {
-			
-			objectOutput.flush();
-			objectOutput.reset();
-			byteOutput.reset();
+			byteOutput = new ByteArrayOutputStream();
+			objectOutput = new ObjectOutputStream(byteOutput);
 			objectOutput.writeObject(o);
 			objectOutput.flush();
+			byteOutput.flush();
 			byte[] b = byteOutput.toByteArray();
-			objectOutput.reset();
 			return b;
 		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 		
@@ -72,8 +71,10 @@ public class Utils {
 			Object o = objectInput.readObject();
 			return o;
 		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			return null;
 		}
 		
