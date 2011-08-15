@@ -72,6 +72,7 @@ public class Spout extends JavaPlugin{
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
 		((SimpleItemManager)SpoutManager.getItemManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
+		((SimpleBiomeManager)SpoutManager.getBiomeManager()).reset();
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
@@ -156,6 +157,7 @@ public class Spout extends JavaPlugin{
 		
 		SpoutCraftChunk.replaceAllBukkitChunks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
+		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPluginEnable();
 
 		MapChunkThread.startThread(); // Always on
 		

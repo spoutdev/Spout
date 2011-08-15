@@ -19,6 +19,7 @@ public class SimpleBiomeManager implements BiomeManager{
 	public void setPlayerBiomeWeather(SpoutPlayer player, Biome biome, SpoutWeather weather) {
 		if(!weatherMap.containsKey(player.getName())) {
 			weatherMap.put(player.getName(), new HashMap<Biome, SpoutWeather>());
+			System.out.println("New Player");
 		}
 		weatherMap.get(player.getName()).put(biome, weather);
 		if(player.isSpoutCraftEnabled()) {
@@ -88,6 +89,26 @@ public class SimpleBiomeManager implements BiomeManager{
 				for(Biome biome : weatherMap.get(player.getName()).keySet()) {
 					byte biomeByte = (byte) biome.ordinal();
 					byte weatherByte = (byte) weatherMap.get(player.getName()).get(biome).ordinal();
+					sPlayer.sendPacket(new PacketBiomeWeather(biomeByte, weatherByte));
+				}
+			}
+		}
+	}
+	
+	public void onPluginEnable() {
+		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+			weatherMap.put(player.getName(), new HashMap<Biome, SpoutWeather>());
+		}
+	}
+	
+	public void reset() {
+		weatherMap.clear();
+		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+			SpoutPlayer sPlayer = SpoutManager.getPlayer(player);
+			if(sPlayer.isSpoutCraftEnabled()) {
+				for(Biome biome : Biome.values()) {
+					byte biomeByte = (byte) biome.ordinal();
+					byte weatherByte = (byte) SpoutWeather.RESET.ordinal();
 					sPlayer.sendPacket(new PacketBiomeWeather(biomeByte, weatherByte));
 				}
 			}
