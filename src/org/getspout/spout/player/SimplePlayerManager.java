@@ -1,13 +1,17 @@
 package org.getspout.spout.player;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.PlayerManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SimplePlayerManager implements PlayerManager{
+	
+	HashMap<String, PlayerInformation> infoMap = new HashMap<String, PlayerInformation>();
 
 	@Override
 	public SpoutPlayer getPlayer(Player player) {
@@ -32,6 +36,25 @@ public class SimplePlayerManager implements PlayerManager{
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public PlayerInformation getPlayerInfo(Player player) {
+		return infoMap.get(player.getName());
+	}
+	
+	public void onPlayerJoin(Player player) {
+		infoMap.put(player.getName(), new SimplePlayerInformation());
+	}
+	
+	public void onPluginEnable() {
+		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+			infoMap.put(player.getName(), new SimplePlayerInformation());
+		}
+	}
+	
+	public void onPluginDisable() {
+		infoMap.clear();
 	}
 
 }

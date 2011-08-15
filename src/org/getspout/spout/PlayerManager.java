@@ -15,10 +15,12 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
+import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class PlayerManager {
 	private HashMap<String, Integer> timer = new HashMap<String, Integer>();
+	HashMap<String, PlayerInformation> infoMap = new HashMap<String, PlayerInformation>();
 	
 	public void onPlayerJoin(Player player){
 		timer.put(player.getName(), ConfigReader.getAuthenticateTicks());
