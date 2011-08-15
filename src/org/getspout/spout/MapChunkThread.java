@@ -129,35 +129,8 @@ public final class MapChunkThread implements Runnable {
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
 		
-		packet.g = ChunkCache.cacheChunk(task.players, packet.g);
+		packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
 		
-		// compress packet.g
-		int dataSize = packet.g.length;
-		
-		if (deflateBuffer.length < dataSize + 100)
-			deflateBuffer = new byte[dataSize + 100];
-
-		deflater.reset();
-		deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
-		deflater.setInput(packet.g);
-		deflater.finish();
-		int size = deflater.deflate(deflateBuffer);
-		if (size == 0) {
-			size = deflater.deflate(deflateBuffer);
-		}
-
-		// copy compressed data to packet
-		packet.g = new byte[size];
-		try {
-			Field ph = Packet51MapChunk.class.getDeclaredField("h");
-			ph.setAccessible(true);
-			ph.set(packet, size);
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-		System.arraycopy(deflateBuffer, 0, packet.g, 0, size);
 	}
 
 	private void sendToNetworkQueue(QueuedPacket task) {
@@ -223,15 +196,8 @@ public final class MapChunkThread implements Runnable {
 
 	public static void sendPacketMapChunk(ChunkCoordIntPair coords, EntityPlayer[] players, int x, int y, int z, int dx, int dy, int dz, World world) {
 		// create packet with uncompressed data to be compressed by worker thread
-		Packet51MapChunk mapChunk = new Packet51MapChunk();
-		mapChunk.a = x;
-		mapChunk.b = y;
-		mapChunk.c = z;
-		mapChunk.d = dx;
-		mapChunk.e = dy;
-		mapChunk.f = dz;
-		mapChunk.g = world.getMultiChunkData(x, y, z, dx, dy, dz);
-
+		Packet51MapChunk mapChunk = new Packet51MapChunk(x, y, z, dx, dy, dz, world);
+		
 		instance.putTask(new QueuedPacket(coords, players, mapChunk, true), false);
 	}
 }
