@@ -1,5 +1,7 @@
 package org.getspout.spout.block;
 
+import java.io.Serializable;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -7,6 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.block.SpoutChunk;
 
@@ -59,6 +62,21 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		for (Player player : chunk.getWorld().getPlayers()) {
 			player.sendBlockChange(getLocation(), type, data);
 		}
+	}
+	
+	@Override
+	public Serializable setData(String id, Serializable data) {
+		return SpoutManager.getChunkDataManager().setBlockData(id, getWorld(), getX(), getY(), getZ(), data);
+	}
+	
+	@Override
+	public Serializable getData(String id) {
+		return SpoutManager.getChunkDataManager().getBlockData(id, getWorld(), getX(), getY(), getZ());
+	}
+	
+	@Override
+	public Serializable removeData(String id) {
+		return SpoutManager.getChunkDataManager().removeBlockData(id, getWorld(), getX(), getY(), getZ());
 	}
 	
 	@Override

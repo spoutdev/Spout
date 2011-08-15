@@ -1,6 +1,7 @@
 package org.getspout.spout.chunkstore;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -139,7 +140,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 
 
-	public Object setBlockData(String id, World world, int x, int y, int z, Object data) {
+	public Serializable setBlockData(String id, World world, int x, int y, int z, Serializable data) {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
 		
@@ -148,7 +149,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 
 
-	public Object getBlockData(String id, World world, int x, int y, int z) {
+	public Serializable getBlockData(String id, World world, int x, int y, int z) {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
 		
@@ -156,7 +157,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 
 
-	public Object removeBlockData(String id, World world, int x, int y, int z) {
+	public Serializable removeBlockData(String id, World world, int x, int y, int z) {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
 		
@@ -164,7 +165,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 
 
-	public Object setChunkData(String id, World world, int x, int z, Object data) {
+	public Serializable setChunkData(String id, World world, int x, int z, Serializable data) {
 
 		ChunkMetaData md = getMetaData(world, x, z, false);
 		
@@ -172,7 +173,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 	
 
-	public Object getChunkData(String id, World world, int x, int z) {
+	public Serializable getChunkData(String id, World world, int x, int z) {
 
 		ChunkMetaData md = getMetaData(world, x, z, false);
 		
@@ -180,7 +181,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 
 
-	public Object removeChunkData(String id, World world, int x, int z) {
+	public Serializable removeChunkData(String id, World world, int x, int z) {
 
 		ChunkMetaData md = getMetaData(world, x, z, false);
 		

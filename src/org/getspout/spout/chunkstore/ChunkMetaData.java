@@ -59,7 +59,7 @@ public class ChunkMetaData implements Serializable {
 		return worldUid;
 	}
 	
-	public Object removeChunkData(String id) {
+	public Serializable removeChunkData(String id) {
 		byte[] serial = chunkData.remove(id);
 		if (serial != null) {
 			dirty = true;
@@ -69,12 +69,12 @@ public class ChunkMetaData implements Serializable {
 		}
 	}
 	
-	public Object getChunkData(String id) {
+	public Serializable getChunkData(String id) {
 		byte[] serial = chunkData.get(id);
 		return Utils.deserialize(serial);
 	}
 	
-	public Object putChunkData(String id, Object o) {
+	public Serializable putChunkData(String id, Serializable o) {
 		
 		byte[] oldBytes = chunkData.put(id, Utils.serialize(o));
 
@@ -88,7 +88,7 @@ public class ChunkMetaData implements Serializable {
 		
 	}
 	
-	public Object removeBlockData(String id, int x, int y, int z) {
+	public Serializable removeBlockData(String id, int x, int y, int z) {
 		
 		int key = positionToKey(x, y, z);
 		
@@ -110,7 +110,7 @@ public class ChunkMetaData implements Serializable {
 		
 	}
 	
-	public Object getBlockData(String id, int x, int y, int z) {
+	public Serializable getBlockData(String id, int x, int y, int z) {
 		
 		int key = positionToKey(x, y, z);
 		
@@ -125,7 +125,7 @@ public class ChunkMetaData implements Serializable {
 		
 	}
 	
-	public Object putBlockData(String id, int x, int y, int z, Object o) {
+	public Serializable putBlockData(String id, int x, int y, int z, Serializable o) {
 		
 		int key = positionToKey(x, y, z);
 		

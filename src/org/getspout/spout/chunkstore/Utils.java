@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -43,7 +44,7 @@ public class Utils {
 		}
 	}
 	
-	public static byte[] serialize(Object o) {
+	public static byte[] serialize(Serializable o) {
 		
 		try {
 			byteOutput = new ByteArrayOutputStream();
@@ -60,7 +61,7 @@ public class Utils {
 		
 	}
 	
-	public static Object deserialize(byte[] array) {
+	public static Serializable deserialize(byte[] array) {
 		if (array == null) {
 			return null;
 		}
@@ -68,7 +69,7 @@ public class Utils {
 		try {
 			byteInput = new ByteArrayInputStream(array);
 			objectInput = new ObjectInputStream(byteInput);
-			Object o = objectInput.readObject();
+			Serializable o = (Serializable)objectInput.readObject();
 			return o;
 		} catch (IOException e) {
 			e.printStackTrace();

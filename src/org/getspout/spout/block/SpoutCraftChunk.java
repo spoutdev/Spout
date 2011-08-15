@@ -1,5 +1,6 @@
 package org.getspout.spout.block;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutChunk;
 
 public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
@@ -166,6 +168,21 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	
 	public static void resetBukkitChunk(org.bukkit.Chunk chunk) {
 		((CraftChunk)chunk).getHandle().bukkitChunk = new CraftChunk(((CraftChunk)chunk).getHandle());
+	}
+	
+	@Override
+	public Serializable setData(String id, Serializable data) {
+		return SpoutManager.getChunkDataManager().setChunkData(id, getWorld(), getX(), getZ(), data);
+	}
+	
+	@Override
+	public Serializable getData(String id) {
+		return SpoutManager.getChunkDataManager().getChunkData(id, getWorld(), getX(), getZ());
+	}
+	
+	@Override
+	public Serializable removeData(String id) {
+		return SpoutManager.getChunkDataManager().removeChunkData(id, getWorld(), getX(), getZ());
 	}
 
 }
