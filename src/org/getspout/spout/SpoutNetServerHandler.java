@@ -64,6 +64,7 @@ import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket;
+import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
@@ -631,12 +632,18 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				int xx = cx + x;
 				int zz = cz + z;
 				ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
+				
+				unloadQueue.remove(chunkPos);
+				
 				if(!activeChunks.contains(chunkPos)) {
-					unloadQueue.remove(chunkPos);
 					this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
-				} 
-				this.queueOutputPacket(getFastPacket51(xx, zz));
-				sendChunkTiles(xx, zz);
+				}
+				
+				Packet p = getFastPacket51(xx, zz);
+				if (p != null) {
+					this.queueOutputPacket(p);
+					sendChunkTiles(xx, zz);
+				}
 			}
 		}
 	}
@@ -658,6 +665,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		return cur.x - cx < d && cur.x - cx > -d && cur.z - cz < d && cur.z - cz > -d;
 	}
 
+	MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
+	
 	private Packet getFastPacket51(int cx, int cz) {
 		Packet packet = new Packet51MapChunk(cx << 4, 0, cz << 4, 16, 128, 16, this.player.world);
 		try {
@@ -666,6 +675,11 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			g.setAccessible(true);
 			byte[] compressedData = (byte[])g.get(packet);
 			if(compressedData == null) {
+				
+				MCPacket.setPacket(packet, 51);
+				if (!PacketListeners.canSendUncompressedPacket(getPlayer(), MCPacket)) {
+					return null;
+				}
 				AtomicInteger size = new AtomicInteger(0);
 				Field rawData = Packet51MapChunk.class.getDeclaredField("rawData");
 				Field h = Packet51MapChunk.class.getDeclaredField("h");

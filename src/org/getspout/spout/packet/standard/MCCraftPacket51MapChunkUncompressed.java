@@ -9,7 +9,13 @@ public class MCCraftPacket51MapChunkUncompressed extends MCCraftPacket51MapChunk
 	}
 	
 	public byte[] getUncompressedChunkData() {
-		return super.getCompressedChunkData();
+		
+		byte[] raw = super.getPacket().rawData; 
+		if (raw == null) {
+			return super.getCompressedChunkData();
+		} else {
+			return raw;
+		}
 	}
 
 }
