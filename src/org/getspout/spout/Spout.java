@@ -147,11 +147,6 @@ public class Spout extends JavaPlugin{
 			playerListener.manager.onPlayerJoin(player);
 		}
 
-		List<World> worlds = getServer().getWorlds();
-		for (World world : worlds) {
-			SpoutPlayerManagerTransfer.replacePlayerManager(((CraftWorld)world).getHandle());
-		}
-		
 		SpoutCraftChunk.replaceAllBukkitChunks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
 

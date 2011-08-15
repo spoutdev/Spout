@@ -31,9 +31,6 @@ public class SpoutWorldListener extends WorldListener{
 
 	@Override
 	public void onWorldLoad(WorldLoadEvent event) {
-		net.minecraft.server.World world = ((CraftWorld)event.getWorld()).getHandle();
-		SpoutPlayerManagerTransfer.replacePlayerManager((net.minecraft.server.WorldServer)world);
-		
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
 		dm.loadWorldChunks(event.getWorld());
 	}
