@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.player.SimpleAppearanceManager;
+import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
@@ -30,6 +31,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		updatePlayerEvent(event);
 		Spout.getInstance().authenticate(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
+		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
 	}
 
 	@Override

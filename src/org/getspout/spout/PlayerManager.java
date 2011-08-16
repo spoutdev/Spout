@@ -8,16 +8,19 @@ import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SimpleAppearanceManager;
+import org.getspout.spout.player.SimpleBiomeManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
+import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class PlayerManager {
 	private HashMap<String, Integer> timer = new HashMap<String, Integer>();
+	HashMap<String, PlayerInformation> infoMap = new HashMap<String, PlayerInformation>();
 	
 	public void onPlayerJoin(Player player){
 		timer.put(player.getName(), ConfigReader.getAuthenticateTicks());
@@ -50,6 +53,7 @@ public class PlayerManager {
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
 		((SimpleItemManager)SpoutManager.getItemManager()).onPlayerJoin(player);
 		((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
+		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
 		System.out.println("[Spout] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + player.getVersion());
 		if(player.getVersion() > 101) {
