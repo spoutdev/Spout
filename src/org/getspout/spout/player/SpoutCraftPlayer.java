@@ -38,6 +38,7 @@ import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.standard.MCCraftPacket;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.gui.InGameScreen;
@@ -51,6 +52,7 @@ import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
+import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -726,6 +728,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			reconnect(split[0], port);
 		}
 		this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
+	}
+
+	@Override
+	public PlayerInformation getInformation() {
+		return SpoutManager.getPlayerManager().getPlayerInfo(this);
 	}
 	
 }

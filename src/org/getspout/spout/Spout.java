@@ -32,6 +32,7 @@ import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
+import org.getspout.spout.player.SimpleBiomeManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
@@ -63,6 +64,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setPlayerManager(new SimplePlayerManager());
 		SpoutManager.getInstance().setCacheManager(new SimpleCacheManager());
 		SpoutManager.getInstance().setChunkDataManager(new SimpleChunkDataManager());
+		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
 	}
 	@Override
 	public void onDisable() {
@@ -70,6 +72,7 @@ public class Spout extends JavaPlugin{
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
 		((SimpleItemManager)SpoutManager.getItemManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
+		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginDisable();
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
@@ -145,10 +148,12 @@ public class Spout extends JavaPlugin{
 			SpoutCraftPlayer.updateBukkitEntity(player);
 			authenticate(player);
 			playerListener.manager.onPlayerJoin(player);
+			((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(player);
 		}
 
 		SpoutCraftChunk.replaceAllBukkitChunks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
+		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
 
 		MapChunkThread.startThread(); // Always on
 		
