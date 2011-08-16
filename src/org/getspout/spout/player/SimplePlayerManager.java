@@ -44,7 +44,9 @@ public class SimplePlayerManager implements PlayerManager{
 	}
 	
 	public void onPlayerJoin(Player player) {
-		infoMap.put(player.getName(), new SimplePlayerInformation());
+		if (getPlayerInfo(player) == null) {
+			infoMap.put(player.getName(), new SimplePlayerInformation());
+		}
 	}
 	
 	public void onPluginEnable() {

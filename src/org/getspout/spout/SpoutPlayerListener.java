@@ -30,8 +30,8 @@ public class SpoutPlayerListener extends PlayerListener{
 		SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
 		updatePlayerEvent(event);
 		Spout.getInstance().authenticate(event.getPlayer());
-		manager.onPlayerJoin(event.getPlayer());
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
+		manager.onPlayerJoin(event.getPlayer());
 	}
 
 	@Override
