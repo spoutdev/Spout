@@ -20,7 +20,7 @@ import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 public class ChunkCache {
 
 	private final static int FULL_CHUNK_SIZE = 81920;
-	private final static int CACHED_SIZE = FULL_CHUNK_SIZE + 40*8;
+	private final static int CACHED_SIZE = FULL_CHUNK_SIZE + 40*8 + 8;
 
 	private static HashMap<Integer,HashSet<Long>> activeHashes = new HashMap<Integer,HashSet<Long>>();
 	private static ConcurrentLinkedQueue<Integer> quittingPlayers = new ConcurrentLinkedQueue<Integer>();
@@ -84,13 +84,16 @@ public class ChunkCache {
 			activeHashes.put(id, playerHashes);
 		}
 
+		long CRC = ChunkHash.hash(uncompressedData);
+		PartitionChunk.setHash(cachedData, 40, CRC);
+		
 		int cacheHit = 0;
 
 		for(int i = 0; i < 40; i++) {
 			PartitionChunk.copyFromChunkData(cachedData, i, partition);
 			long hash = ChunkHash.hash(partition);
 			PartitionChunk.setHash(cachedData, i, hash);
-
+			
 			if(!playerHashes.add(hash)) {
 				PartitionChunk.copyToChunkData(cachedData, i, null);
 				cacheHit++;
@@ -98,8 +101,11 @@ public class ChunkCache {
 				PartitionChunk.setHash(cachedData, i, 0);
 			}
 		}
-
-		return cachedData;
+		
+		byte[] newData = new byte[cachedData.length];
+		System.arraycopy(cachedData, 0, newData, 0, cachedData.length);
+		
+		return newData;
 
 	}
 
