@@ -53,6 +53,7 @@ import net.minecraft.server.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -668,6 +669,10 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
 	
 	private Packet getFastPacket51(int cx, int cz) {
+		World world = getPlayer().getWorld();
+		if (!world.isChunkLoaded(cx, cz)) {
+			world.loadChunk(cx, cz);
+		}
 		Packet packet = new Packet51MapChunk(cx << 4, 0, cz << 4, 16, 128, 16, this.player.world);
 		try {
 			packet.k = false;
