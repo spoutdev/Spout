@@ -675,13 +675,17 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			g.setAccessible(true);
 			byte[] compressedData = (byte[])g.get(packet);
 			if(compressedData == null) {
-				
 				MCPacket.setPacket(packet, 51);
 				if (!PacketListeners.canSendUncompressedPacket(getPlayer(), MCPacket)) {
 					return null;
 				}
 				AtomicInteger size = new AtomicInteger(0);
-				Field rawData = Packet51MapChunk.class.getDeclaredField("rawData");
+				Field rawData;
+				try {
+					rawData = Packet51MapChunk.class.getDeclaredField("rawData");
+				} catch (NoSuchFieldException e) {
+					rawData = Packet51MapChunk.class.getDeclaredField("g");
+				}
 				Field h = Packet51MapChunk.class.getDeclaredField("h");
 				rawData.setAccessible(true);
 				h.setAccessible(true);
@@ -690,7 +694,9 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				h.set(packet, size.get());
 			}
 		} catch (NoSuchFieldException e) {
+			return null;
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 		return packet;
 	}

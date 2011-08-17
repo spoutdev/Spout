@@ -7,14 +7,18 @@ public class MCCraftPacket51MapChunkUncompressed extends MCCraftPacket51MapChunk
 	public byte[] getCompressedChunkData() {
 		throw new IllegalStateException("MCCraftPacket51MapChunkUncompressed packets don't have compressed chunk data");
 	}
-	
+
 	public byte[] getUncompressedChunkData() {
-		
-		byte[] raw = super.getPacket().rawData; 
-		if (raw == null) {
+
+		try {
+			byte[] raw = super.getPacket().rawData; 
+			if (raw == null) {
+				return super.getCompressedChunkData();
+			} else {
+				return raw;
+			}
+		} catch (NoSuchFieldError e) {
 			return super.getCompressedChunkData();
-		} else {
-			return raw;
 		}
 	}
 

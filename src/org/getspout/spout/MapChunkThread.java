@@ -2,7 +2,6 @@
 
 package org.getspout.spout;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -129,7 +128,10 @@ public final class MapChunkThread implements Runnable {
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
 		
+		try {
 		packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
+		} catch (NoSuchFieldError e) {
+		}
 		
 	}
 
