@@ -50,6 +50,7 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	public void setTypeIdAndDataAsync(int type, byte data) {
 		chunk.queuedId.put(getIndex(), type);
 		chunk.queuedData.put(getIndex(), data);
+		SpoutCraftChunk.queuedChunks.add(chunk);
 	}
 	
 	@Override

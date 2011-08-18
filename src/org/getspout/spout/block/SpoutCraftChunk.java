@@ -99,7 +99,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	}
 
 	public void onTick() {
-		while (!queuedId.isEmpty() || !queuedData.isEmpty()) {
+		while (!queuedData.isEmpty() || !queuedId.isEmpty()) {
 			Iterator<Entry<Integer, Integer>> i = queuedId.entrySet().iterator();
 			while (i.hasNext()) {
 				Entry<Integer, Integer> entry = i.next();
@@ -112,9 +112,9 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 				}
 			}
 			Iterator<Entry<Integer, Byte>> j = queuedData.entrySet().iterator();
-			while (i.hasNext()) {
+			while (j.hasNext()) {
 				Entry<Integer, Byte> entry = j.next();
-				if (!queuedId.isEmpty()) {
+				if (queuedId.isEmpty()) {
 					try {
 						Block block = getBlockFromPos(entry.getKey());
 						block.setData(entry.getValue());
