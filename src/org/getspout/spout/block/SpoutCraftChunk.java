@@ -25,7 +25,8 @@ import org.getspout.spoutapi.block.SpoutChunk;
 public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
-	protected static final Set<SpoutCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<SpoutCraftChunk,Boolean>());
+	protected static final Set<SpoutCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<SpoutCraftChunk, Boolean>());
+
 	public SpoutCraftChunk(Chunk chunk) {
 		super(chunk);
 	}
@@ -42,19 +43,18 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		try {
 			int pos = (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
 			Map<Integer, Block> cache = getCache();
-			Block block = cache.get( pos );
+			Block block = cache.get(pos);
 			if (block == null) {
-				Block newBlock = new SpoutCraftBlock( this, (getX() << 4) | (x & 0xF), y & 0x7F, (getZ() << 4) | (z & 0xF) );
-				Block oldBlock = cache.put( pos, newBlock );
-				if(oldBlock == null) {
+				Block newBlock = new SpoutCraftBlock(this, (getX() << 4) | (x & 0xF), y & 0x7F, (getZ() << 4) | (z & 0xF));
+				Block oldBlock = cache.put(pos, newBlock);
+				if (oldBlock == null) {
 					block = newBlock;
 				} else {
 					block = oldBlock;
-				} 
+				}
 			}
 			return block;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return super.getBlock(x, y, z);
 		}
 	}
@@ -101,27 +101,25 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	public void onTick() {
 		while (!queuedId.isEmpty() || !queuedData.isEmpty()) {
 			Iterator<Entry<Integer, Integer>> i = queuedId.entrySet().iterator();
-			while(i.hasNext()) {
+			while (i.hasNext()) {
 				Entry<Integer, Integer> entry = i.next();
 				try {
 					Block block = getBlockFromPos(entry.getKey());
 					block.setTypeId(entry.getValue());
 					i.remove();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 
 				}
 			}
 			Iterator<Entry<Integer, Byte>> j = queuedData.entrySet().iterator();
-			while(i.hasNext()) {
+			while (i.hasNext()) {
 				Entry<Integer, Byte> entry = j.next();
 				if (!queuedId.isEmpty()) {
 					try {
 						Block block = getBlockFromPos(entry.getKey());
 						block.setData(entry.getValue());
 						j.remove();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 
 					}
 				} else {
@@ -132,12 +130,12 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	}
 
 	protected void onReset() {
-		//TODO finalize queuing
+		// TODO finalize queuing
 	}
 
 	public static void updateTicks() {
 		Iterator<SpoutCraftChunk> i = SpoutCraftChunk.queuedChunks.iterator();
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			SpoutCraftChunk chunk = i.next();
 			chunk.onTick();
 			i.remove();
@@ -156,39 +154,39 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		List<World> worlds = Bukkit.getServer().getWorlds();
 		for (World world : worlds) {
 			try {
-				CraftWorld cw = (CraftWorld)world;
+				CraftWorld cw = (CraftWorld) world;
 				Field worldServer = CraftWorld.class.getDeclaredField("world");
 				worldServer.setAccessible(true);
-				ChunkProviderServer cps = ((WorldServer)worldServer.get(cw)).chunkProviderServer;
+				ChunkProviderServer cps = ((WorldServer) worldServer.get(cw)).chunkProviderServer;
 				for (Object c : cps.chunkList) {
-					Chunk chunk = (Chunk)c;
+					Chunk chunk = (Chunk) c;
 					if (reset) {
 						if (chunk.bukkitChunk instanceof SpoutCraftChunk) {
-							((SpoutCraftChunk)chunk.bukkitChunk).onReset();
+							((SpoutCraftChunk) chunk.bukkitChunk).onReset();
 						}
 						resetBukkitChunk(chunk.bukkitChunk);
-					}
-					else {
+					} else {
 						replaceBukkitChunk(chunk.bukkitChunk);
 					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			catch (Exception e) {e.printStackTrace();}
 		}
 	}
 
 	public static boolean replaceBukkitChunk(org.bukkit.Chunk chunk) {
-		if (((CraftChunk)chunk).getHandle().bukkitChunk.getClass().hashCode() == SpoutCraftChunk.class.hashCode()) {
-			return false; //hashcodes will differ if the class was constructed by a different version of this plugin
-			//or is a different class
+		if (((CraftChunk) chunk).getHandle().bukkitChunk.getClass().hashCode() == SpoutCraftChunk.class.hashCode()) {
+			return false; // hashcodes will differ if the class was constructed by a different version of this plugin
+			// or is a different class
 		}
-		((CraftChunk)chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk)chunk).getHandle());
+		((CraftChunk) chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk) chunk).getHandle());
 		return true;
 
 	}
 
 	public static void resetBukkitChunk(org.bukkit.Chunk chunk) {
-		((CraftChunk)chunk).getHandle().bukkitChunk = new CraftChunk(((CraftChunk)chunk).getHandle());
+		((CraftChunk) chunk).getHandle().bukkitChunk = new CraftChunk(((CraftChunk) chunk).getHandle());
 	}
 
 	@Override
