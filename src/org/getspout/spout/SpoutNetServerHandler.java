@@ -580,7 +580,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				}
 				chunkUpdateQueue.remove(first);
 				MapChunkThread.sendPacketMapChunk(first, this.player, this.player.world);
-				sendChunkTiles(first.x, first.z);
+				sendChunkTiles(first.x, first.z, player);
 			}
 		}
 	}
@@ -613,7 +613,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	private final Set<ChunkCoordIntPair> unloadQueue = Collections.synchronizedSet(new LinkedHashSet<ChunkCoordIntPair>());
 
 	@SuppressWarnings("rawtypes")
-	private void sendChunkTiles(int cx, int cz) {
+	public static void sendChunkTiles(int cx, int cz, EntityPlayer player) {
 		WorldServer worldserver = (WorldServer) player.world;
 		List tileEntities = worldserver.getTileEntities(cx << 4, 0, cz << 4, (cx << 4) + 16, 128, (cz << 4) + 16);
 		for (Object tileEntityObject : tileEntities) {
@@ -621,7 +621,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				TileEntity tileEntity = (TileEntity) tileEntityObject;
 				Packet tilePacket = tileEntity.f();
 				if (tilePacket != null) {
-					MapChunkThread.sendPacket(this.player, tilePacket);
+					MapChunkThread.sendPacket(player, tilePacket);
 				}
 			}
 		}
@@ -643,7 +643,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				Packet p = getFastPacket51(xx, zz);
 				if (p != null) {
 					this.queueOutputPacket(p);
-					sendChunkTiles(xx, zz);
+					sendChunkTiles(xx, zz, player);
 				}
 			}
 		}
