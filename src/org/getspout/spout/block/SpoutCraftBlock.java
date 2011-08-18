@@ -38,30 +38,18 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	public void setTypeIdAsync(int type) {
 		chunk.queuedId.put(getIndex(), type);
 		SpoutCraftChunk.queuedChunks.add(chunk);
-		final byte data = getData();
-		for (Player player : chunk.getWorld().getPlayers()) {
-			player.sendBlockChange(getLocation(), type, data);
-		}
 	}
 	
 	@Override
 	public void setDataAsync(byte data) {
 		chunk.queuedData.put(getIndex(), data);
 		SpoutCraftChunk.queuedChunks.add(chunk);
-		final int type = getTypeId();
-		for (Player player : chunk.getWorld().getPlayers()) {
-			player.sendBlockChange(getLocation(), type, data);
-		}
 	}
 	
 	@Override
 	public void setTypeIdAndDataAsync(int type, byte data) {
 		chunk.queuedId.put(getIndex(), type);
 		chunk.queuedData.put(getIndex(), data);
-		SpoutCraftChunk.queuedChunks.add(chunk);
-		for (Player player : chunk.getWorld().getPlayers()) {
-			player.sendBlockChange(getLocation(), type, data);
-		}
 	}
 	
 	@Override

@@ -29,14 +29,14 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	public SpoutCraftChunk(Chunk chunk) {
 		super(chunk);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Block> getCache() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Field cache = CraftChunk.class.getDeclaredField("cache");
 		cache.setAccessible(true);
 		return (Map<Integer, Block>) cache.get(this);
 	}
-	
+
 	@Override
 	public Block getBlock(int x, int y, int z) {
 		try {
@@ -82,30 +82,51 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	public boolean unload(boolean save, boolean safe) {
 		return getWorld().unloadChunk(getX(), getZ(), save, safe);
 	}
-	
-	public void onTick() {
-		Iterator<Entry<Integer, Integer>> i = queuedId.entrySet().iterator();
-		while(i.hasNext()) {
-			Entry<Integer, Integer> entry = i.next();
-			try {
-				Block block = getCache().get(entry.getKey());
-				block.setTypeId(entry.getValue());
-				i.remove();
-			}
-			catch (Exception e) {
-				
-			}
+
+	private Block getBlockFromPos(int pos) throws IllegalAccessException, NoSuchFieldException {
+		Block block = getCache().get(pos);
+
+		if (block != null) {
+			return block;
 		}
-		Iterator<Entry<Integer, Byte>> j = queuedData.entrySet().iterator();
-		while(i.hasNext()) {
-			Entry<Integer, Byte> entry = j.next();
-			try {
-				Block block = getCache().get(entry.getKey());
-				block.setData(entry.getValue());
-				j.remove();
+
+		int x = (pos >> 11) & 0xF;
+		int y = (pos >> 0) & 0xFF;
+		int z = (pos >> 7) & 0xF;
+
+		return getBlock(x, y, z);
+
+	}
+
+	public void onTick() {
+		while (!queuedId.isEmpty() || !queuedData.isEmpty()) {
+			Iterator<Entry<Integer, Integer>> i = queuedId.entrySet().iterator();
+			while(i.hasNext()) {
+				Entry<Integer, Integer> entry = i.next();
+				try {
+					Block block = getBlockFromPos(entry.getKey());
+					block.setTypeId(entry.getValue());
+					i.remove();
+				}
+				catch (Exception e) {
+
+				}
 			}
-			catch (Exception e) {
-				
+			Iterator<Entry<Integer, Byte>> j = queuedData.entrySet().iterator();
+			while(i.hasNext()) {
+				Entry<Integer, Byte> entry = j.next();
+				if (!queuedId.isEmpty()) {
+					try {
+						Block block = getBlockFromPos(entry.getKey());
+						block.setData(entry.getValue());
+						j.remove();
+					}
+					catch (Exception e) {
+
+					}
+				} else {
+					break;
+				}
 			}
 		}
 	}
@@ -113,7 +134,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected void onReset() {
 		//TODO finalize queuing
 	}
-	
+
 	public static void updateTicks() {
 		Iterator<SpoutCraftChunk> i = SpoutCraftChunk.queuedChunks.iterator();
 		while(i.hasNext()) {
@@ -126,7 +147,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	public static void replaceAllBukkitChunks() {
 		replaceAllBukkitChunks(false);
 	}
-	
+
 	public static void resetAllBukkitChunks() {
 		replaceAllBukkitChunks(true);
 	}
@@ -158,28 +179,28 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 
 	public static boolean replaceBukkitChunk(org.bukkit.Chunk chunk) {
 		if (((CraftChunk)chunk).getHandle().bukkitChunk.getClass().hashCode() == SpoutCraftChunk.class.hashCode()) {
-				return false; //hashcodes will differ if the class was constructed by a different version of this plugin
-							  //or is a different class
+			return false; //hashcodes will differ if the class was constructed by a different version of this plugin
+			//or is a different class
 		}
 		((CraftChunk)chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk)chunk).getHandle());
 		return true;
 
 	}
-	
+
 	public static void resetBukkitChunk(org.bukkit.Chunk chunk) {
 		((CraftChunk)chunk).getHandle().bukkitChunk = new CraftChunk(((CraftChunk)chunk).getHandle());
 	}
-	
+
 	@Override
 	public Serializable setData(String id, Serializable data) {
 		return SpoutManager.getChunkDataManager().setChunkData(id, getWorld(), getX(), getZ(), data);
 	}
-	
+
 	@Override
 	public Serializable getData(String id) {
 		return SpoutManager.getChunkDataManager().getChunkData(id, getWorld(), getX(), getZ());
 	}
-	
+
 	@Override
 	public Serializable removeData(String id) {
 		return SpoutManager.getChunkDataManager().removeChunkData(id, getWorld(), getX(), getZ());
