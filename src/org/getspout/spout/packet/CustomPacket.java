@@ -45,7 +45,7 @@ public class CustomPacket extends Packet{
 		if (packetId > -1 && version > -1) {
 			try {
 				this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
-			}
+			} 
 			catch (Exception e) {
 				System.out.println("Failed to identify packet id: " + packetId);
 				//e.printStackTrace();
