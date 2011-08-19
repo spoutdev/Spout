@@ -25,9 +25,9 @@ Spout uses Maven to handle it's dependencies.
 
 Spout requires CraftBukkit (preferrably the latest version or source).  
 * Install [Maven 2 or 3](http://maven.apache.org/download.html)  
-* Checkout the SpoutAPI and Spout repositories
-* cd to SpoutAPI and run `mvn install`
-* cd to Spout and run `mvn package shade:shade`
+* Checkout the SpoutAPI and Spout repositories  
+* cd to SpoutAPI and run `mvn install`  
+* cd to Spout and run `mvn package shade:shade`  
 
 Spout SP requires the Minecraft Coder Pack.  
 * Download and extract the latest version of [Minecraft Coder Pack][MCP].  
