@@ -89,7 +89,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public SpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
 	}
-	
+
 	public void a(Packet18ArmAnimation packet) {
 		if (packet.a == -42) {
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
@@ -398,7 +398,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void setCursorSlot(ItemStack item) {
 		this.player.inventory.b(item);
 	}
-	
+
 	@Override
 	public void sendPacket(Packet packet) {
 		if (packet != null) {
@@ -435,7 +435,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		syncFlushPacketQueue();
 		super.a();
 	}
-	
+
 	@Override
 	public void disconnect(String kick) {
 		this.sendPacket(new Packet255KickDisconnect(kick));
@@ -633,17 +633,16 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				int xx = cx + x;
 				int zz = cz + z;
 				ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
-				
+
 				unloadQueue.remove(chunkPos);
-				
+
 				if(!activeChunks.contains(chunkPos)) {
 					this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
-				}
-				
-				Packet p = getFastPacket51(xx, zz);
-				if (p != null) {
-					this.queueOutputPacket(p);
-					sendChunkTiles(xx, zz, player);
+					Packet p = getFastPacket51(xx, zz);
+					if (p != null) {
+						this.queueOutputPacket(p);
+						sendChunkTiles(xx, zz, player);
+					}
 				}
 			}
 		}
@@ -667,7 +666,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	}
 
 	MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
-	
+
 	private Packet getFastPacket51(int cx, int cz) {
 		World world = getPlayer().getWorld();
 		if (!world.isChunkLoaded(cx, cz)) {
@@ -705,7 +704,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		}
 		return packet;
 	}
-	
+
 	Deflater deflater = new Deflater(-1);
 
 	private byte[] compressData(byte[] rawBytes, AtomicInteger size) {
