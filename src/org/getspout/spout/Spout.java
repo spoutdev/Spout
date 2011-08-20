@@ -9,14 +9,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.List;
 import java.util.logging.Logger;
 
 import net.minecraft.server.Packet18ArmAnimation;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -94,7 +91,7 @@ public class Spout extends JavaPlugin{
 		
 		getServer().getScheduler().cancelTasks(this);
 		
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.unloadAllChunks();
 		dm.closeAllFiles();
 		
@@ -165,7 +162,7 @@ public class Spout extends JavaPlugin{
 		CustomPacket.removeClassMapping();
 		CustomPacket.addClassMapping();
 		
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadAllChunks();
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
@@ -209,8 +206,8 @@ public class Spout extends JavaPlugin{
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 			String str;
 			while ((str = in.readLine()) != null) {
-			     version = str;
-			     return version;
+				 version = str;
+				 return version;
 			}
 			in.close();
 		} catch (Exception e) {}

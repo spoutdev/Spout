@@ -2,7 +2,6 @@ package org.getspout.spout;
 
 import java.lang.reflect.Field;
 
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.event.world.ChunkEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
@@ -25,13 +24,13 @@ public class SpoutWorldListener extends WorldListener{
 			e.printStackTrace();
 		}
 		
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadChunk(event.getChunk());
 	}
 
 	@Override
 	public void onWorldLoad(WorldLoadEvent event) {
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadWorldChunks(event.getWorld());
 	}
 }

@@ -14,14 +14,14 @@ public class SpoutWorldMonitorListener extends WorldListener {
 		if (event.isCancelled()) {
 			return;
 		}
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.unloadChunk(event.getChunk());
 
 	}
 
 	@Override
 	public void onWorldSave(WorldSaveEvent event) {
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.saveWorldChunks(event.getWorld());
 	}
 
@@ -30,7 +30,7 @@ public class SpoutWorldMonitorListener extends WorldListener {
 		if (event.isCancelled()) {
 			return;
 		}
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getInstance().getChunkDataManager();
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.unloadWorldChunks(event.getWorld());
 	}
 	

@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -87,6 +86,7 @@ public class ChunkCache {
 		long CRC = ChunkHash.hash(uncompressedData);
 		PartitionChunk.setHash(cachedData, 40, CRC);
 		
+		@SuppressWarnings("unused")
 		int cacheHit = 0;
 
 		for(int i = 0; i < 40; i++) {

@@ -35,6 +35,7 @@ public class PartitionChunk {
 		
 		int pos = start;
 		
+		@SuppressWarnings("unused")
 		int count = 0;
 		int partitionPos = 0;
 		
@@ -62,6 +63,7 @@ public class PartitionChunk {
 		
 		int pos = start;
 		
+		@SuppressWarnings("unused")
 		int count = 0;
 		int partitionPos = 0;
 		

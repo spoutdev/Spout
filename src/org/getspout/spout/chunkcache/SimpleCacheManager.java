@@ -4,7 +4,6 @@ import net.minecraft.server.Packet;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
 
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
