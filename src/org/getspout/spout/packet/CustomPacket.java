@@ -18,6 +18,16 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class CustomPacket extends Packet{
 	public SpoutPacket packet;
+	private boolean success = false;
+	private static final int[] nags;
+	private static final int NAG_MSG_AMT = 10;
+	
+	static {
+		nags = new int[PacketType.values().length];
+		for (int i = 0; i < PacketType.values().length; i++) {
+			nags[i] = NAG_MSG_AMT;
+		}
+	}
 
 	public CustomPacket() {
 		
@@ -58,12 +68,15 @@ public class CustomPacket extends Packet{
 				return;
 			}
 			else if (packet.getVersion() != version) {
-				input.skipBytes(length);
-				System.out.println("Invalid Packet Id: " + packetId + ". Current v: " + packet.getVersion() + " Receieved v: " + version + " Skipping contents.");
+				input.skipBytes(length);				
+				//Keep server admins from going insane :p
+				if (nags[packetId]-- > 0) {
+					System.out.println("Invalid Packet Id: " + packetId + ". Current v: " + packet.getVersion() + " Receieved v: " + version + " Skipping contents.");
+				}
 			}
 			else {
 				packet.readData(input);
-				//System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
+				success = true;
 			}
 		}
 		catch (IOException e) {
@@ -96,7 +109,12 @@ public class CustomPacket extends Packet{
 			SpoutNetServerHandler handler = (SpoutNetServerHandler)netHandler;
 			SpoutPlayer player = SpoutManager.getPlayerFromId(handler.getPlayer().getEntityId());
 			if (player != null) {
-				packet.run(player.getEntityId());
+				if (success) {
+					packet.run(player.getEntityId());
+				}
+				else {
+					packet.failure(player.getEntityId());
+				}
 			}
 		}
 		else {

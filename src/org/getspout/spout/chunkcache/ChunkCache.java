@@ -86,8 +86,6 @@ public class ChunkCache {
 		long CRC = ChunkHash.hash(uncompressedData);
 		PartitionChunk.setHash(cachedData, 40, CRC);
 		
-		int cacheHit = 0;
-
 		for(int i = 0; i < 40; i++) {
 			PartitionChunk.copyFromChunkData(cachedData, i, partition);
 			long hash = ChunkHash.hash(partition);
@@ -95,7 +93,6 @@ public class ChunkCache {
 			
 			if(!playerHashes.add(hash)) {
 				PartitionChunk.copyToChunkData(cachedData, i, null);
-				cacheHit++;
 			} else {
 				PartitionChunk.setHash(cachedData, i, 0);
 			}
