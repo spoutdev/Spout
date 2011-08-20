@@ -86,7 +86,6 @@ public class ChunkCache {
 		long CRC = ChunkHash.hash(uncompressedData);
 		PartitionChunk.setHash(cachedData, 40, CRC);
 		
-		@SuppressWarnings("unused")
 		int cacheHit = 0;
 
 		for(int i = 0; i < 40; i++) {
