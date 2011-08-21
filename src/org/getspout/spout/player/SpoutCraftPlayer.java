@@ -36,6 +36,8 @@ import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
+import org.getspout.spout.io.CRCStore.URLCheck;
+import org.getspout.spout.io.CRCStoreRunnable;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spoutapi.SpoutManager;
@@ -77,6 +79,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
 	protected PermissibleBase perm;
+
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
@@ -158,7 +161,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 		return (SpoutPlayerInventory)this.inventory;
 	}
-	
+
 	@Override
 	public void setMaximumAir(int time) {
 		if (isSpoutCraftEnabled()) {
@@ -166,7 +169,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 		super.setMaximumAir(time);
 	}
-	
+
 	@Override
 	public void setRemainingAir(int time) {
 		if (isSpoutCraftEnabled()) {
@@ -174,7 +177,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 		super.setRemainingAir(time);
 	}
-	
+
 	/* Inteface New Public Methods */
 
 	public boolean closeActiveWindow() {
@@ -192,7 +195,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public boolean openInventoryWindow(Inventory inventory) {
 		return openInventoryWindow(inventory, null, false);
 	}
-	
+
 	public boolean openInventoryWindow(Inventory inventory, Location location) {
 		return openInventoryWindow(inventory, location, false);
 	}
@@ -230,7 +233,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (inventory instanceof SpoutInventory) {
 			title = ((SpoutInventory)inventory).getTitle();
 		}
-		
+
 		updateWindowId();
 		getNetServerHandler().sendPacket(new Packet100OpenWindow(getActiveWindowId(), id, title, dialog.getSize()));
 		getHandle().activeContainer = new ContainerChest(getHandle().inventory, dialog);
@@ -257,7 +260,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			return true;
 		}
 	}
-	
+
 	@Override
 	public InGameScreen getMainScreen() {
 		//throw new UnsupportedOperationException("Not yet implemented!");
@@ -268,7 +271,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public boolean isSpoutCraftEnabled() {
 		return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
 	}
-	
+
 	public int getVersion() {
 		if (isSpoutCraftEnabled()) {
 			return majorVersion * 100 + minorVersion * 10 + buildVersion;
@@ -325,7 +328,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public Keyboard getSneakKey() {
 		return sneak;
 	}
-	
+
 
 	@Override
 	public RenderDistance getRenderDistance() {
@@ -339,7 +342,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketRenderDistance(distance, null, null));
 		}
 	}
-	
+
 	@Override
 	public void setRenderDistance(RenderDistance distance, boolean update) {
 		if (update) {
@@ -362,7 +365,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketRenderDistance(null, maximum, null));
 		}
 	}
-	
+
 	@Override
 	public void resetMaximumRenderDistance() {
 		if (isSpoutCraftEnabled()) {
@@ -383,7 +386,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketRenderDistance(null, null, minimum));
 		}
 	}
-	
+
 	@Override
 	public void resetMinimumRenderDistance() {
 		if (isSpoutCraftEnabled()) {
@@ -391,7 +394,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketRenderDistance(false, true));
 		}
 	}
-	
+
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
 		if (isSpoutCraftEnabled()) {
@@ -402,7 +405,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketAlert(title, message, toRender.getId()));
 		}
 	}
-	
+
 	@Override
 	public void sendNotification(String title, String message, Material toRender, short data, int time) {
 		if (isSpoutCraftEnabled()) {
@@ -413,38 +416,53 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketNotification(title, message, toRender.getId(), data, time));
 		}
 	}
-	
+
 	@Override
 	public String getClipboardText() {
 		return clipboard;
 	}
-	
+
 	@Override
 	public void setClipboardText(String text) {
 		setClipboardText(text, true);
 	}
-	
+
+	private byte[] urlBuffer = new byte[16384];
+
 	@Override
 	public void setTexturePack(String url) {
-		 if (isSpoutCraftEnabled()) {
-			 if (url == null || url.length() < 5) {
-				 throw new IllegalArgumentException("Invalid URL!");
-			 }
-			 if (!url.toLowerCase().endsWith(".zip")) {
-				 throw new IllegalArgumentException("A Texture Pack must be in a .zip format");
-			 }
-			 sendPacket(new PacketTexturePack(url));
-		 }
+		if (isSpoutCraftEnabled()) {
+			if (url == null || url.length() < 5) {
+				throw new IllegalArgumentException("Invalid URL!");
+			}
+			if (!url.toLowerCase().endsWith(".zip")) {
+				throw new IllegalArgumentException("A Texture Pack must be in a .zip format");
+			}
+			final String finalURL = url;
+			URLCheck urlCheck = new URLCheck(url, urlBuffer, new CRCStoreRunnable() {
+				
+				Long CRC;
+				
+				public void setCRC(Long CRC) {
+					this.CRC = CRC;
+				}
+				
+				public void run() {
+					sendPacket(new PacketTexturePack(finalURL, CRC));
+				}
+				
+			});
+			urlCheck.start();
+		}
 	}
-	
 
 	@Override
 	public void resetTexturePack() {
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketTexturePack("[none]"));
+			sendPacket(new PacketTexturePack("[none]", 0));
 		}
 	}
-	
+
 	public void setClipboardText(String text, boolean updateClient) {
 		if (isSpoutCraftEnabled()) {
 			clipboard = text;
@@ -453,9 +471,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 	}
-	
+
 	/*Non Inteface public methods */
-	
+
 	public void createInventory(String name) {
 		if (this.getHandle().activeContainer instanceof ContainerPlayer) {
 			this.inventory = new SpoutCraftInventoryPlayer(this.getHandle().inventory, 
@@ -472,7 +490,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 	}
-	
+
 	public int getActiveWindowId() {
 		Field id;
 		try {
@@ -484,7 +502,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 		return 0;
 	}
-	
+
 	public void updateWindowId() {
 		Method id;
 		try {
@@ -499,18 +517,18 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public Inventory getActiveInventory() {
 		return getNetServerHandler().getActiveInventory();
 	}
-	
+
 	public Inventory getDefaultInventory() {
 		return getNetServerHandler().getDefaultInventory();
 	}
 
 	/*
 		May be unsafe during initialization or de-initialization
-	*/
+	 */
 	public SpoutNetServerHandler getNetServerHandler() {
 		return (SpoutNetServerHandler) getHandle().netServerHandler;
 	}
-	
+
 	public void updateKeys(byte[] keys) {
 		this.forward = Keyboard.getKey(keys[0]);
 		this.back = Keyboard.getKey(keys[2]);
@@ -523,11 +541,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		this.togglefog = Keyboard.getKey(keys[8]);
 		this.sneak = Keyboard.getKey(keys[9]);
 	}
-	
+
 	public void sendPacket(SpoutPacket packet) {
 		getNetServerHandler().sendPacket(new CustomPacket(packet));
 	}
-	
+
 	public void sendPacket(MCPacket packet) {
 		if(!(packet instanceof MCCraftPacket)) {
 			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
@@ -535,7 +553,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		MCCraftPacket p = (MCCraftPacket)packet;
 		getHandle().netServerHandler.sendPacket(p.getPacket());
 	}
-	
+
 	public void sendImmediatePacket(MCPacket packet) {
 		if(!(packet instanceof MCCraftPacket)) {
 			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
@@ -548,30 +566,30 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(packet);
 		}
 	}
-	
+
 	public int getMajorVersion() {
 		return majorVersion;
 	}
-	
+
 	public int getMinorVersion() {
 		return minorVersion;
 	}
-	
+
 	public int getBuildVersion() {
 		return buildVersion;
 	}
-	
+
 	public void setVersion(int major, int minor, int build) {
 		buildVersion = build;
 		minorVersion = minor;
 		majorVersion = major;
 	}
-	
+
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();
 	}
-	
+
 	/* Non Interface public static methods */
 
 	public static boolean setNetServerHandler(NetworkManager nm, NetServerHandler nsh) {
@@ -591,7 +609,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean sendInventoryEvent() {
 		SpoutNetServerHandler snsh = (SpoutNetServerHandler) this.getHandle().netServerHandler;
@@ -600,17 +618,17 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		return event.isCancelled();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static boolean resetNetServerHandler(Player player) {
 		CraftPlayer cp = (CraftPlayer)player;
 		CraftServer server = (CraftServer)Bukkit.getServer();
-		
+
 		if (cp.getHandle().netServerHandler instanceof SpoutNetServerHandler) {
 			NetServerHandler oldHandler = cp.getHandle().netServerHandler;
 			Set<ChunkCoordIntPair> chunkUpdateQueue = ((SpoutNetServerHandler)cp.getHandle().netServerHandler).getChunkUpdateQueue();
 			for(ChunkCoordIntPair c : chunkUpdateQueue) {
-					cp.getHandle().chunkCoordIntPairQueue.add(c);
+				cp.getHandle().chunkCoordIntPairQueue.add(c);
 			}
 			((SpoutNetServerHandler)cp.getHandle().netServerHandler).flushUnloadQueue();
 			cp.getHandle().netServerHandler.a();
@@ -630,7 +648,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public static boolean updateNetServerHandler(Player player) {
 		CraftPlayer cp = (CraftPlayer)player;
 		CraftServer server = (CraftServer)Bukkit.getServer();
-		
+
 		if (!(cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class))) {
 			NetServerHandler oldHandler = cp.getHandle().netServerHandler;
 			Location loc = player.getLocation();
@@ -667,7 +685,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 				e.printStackTrace();
 			}
 		}
-		  return false;
+		return false;
 	}
 
 	public static void removeBukkitEntity(Player player) {
@@ -705,7 +723,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setActiveInventoryLocation(Location loc) {
 		getNetServerHandler().setActiveInventoryLocation(loc);
 	}
-	
+
 	public void reconnect(String hostname, int port) {
 		if (hostname.indexOf(":") != -1) {
 			throw new IllegalArgumentException("Hostnames may not the : symbol");
@@ -734,5 +752,5 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public PlayerInformation getInformation() {
 		return SpoutManager.getPlayerManager().getPlayerInfo(this);
 	}
-	
+
 }

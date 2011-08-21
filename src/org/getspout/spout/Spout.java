@@ -19,12 +19,14 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
+import org.bukkit.util.config.Configuration;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkcache.SimpleCacheManager;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
+import org.getspout.spout.io.CRCStore;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
@@ -44,6 +46,7 @@ public class Spout extends JavaPlugin{
 	private final SpoutWorldMonitorListener chunkMonitorListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
+	private Configuration CRCConfig;
 	
 	public Spout() {
 		super();
@@ -94,6 +97,8 @@ public class Spout extends JavaPlugin{
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.unloadAllChunks();
 		dm.closeAllFiles();
+		
+		CRCConfig.save();
 		
 		//Attempt to auto update if file is available
 		try {
@@ -164,6 +169,11 @@ public class Spout extends JavaPlugin{
 		
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadAllChunks();
+		
+		CRCConfig = new Configuration(new File(this.getDataFolder(), "CRCCache.yml"));
+		CRCConfig.load();
+		
+		CRCStore.setConfigFile(CRCConfig);
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}
