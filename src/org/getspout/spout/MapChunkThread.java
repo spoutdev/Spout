@@ -2,10 +2,12 @@
 
 package org.getspout.spout;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
@@ -19,7 +21,7 @@ import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
 
 public final class MapChunkThread implements Runnable {
-	
+
 	// configuration
 	private static final int QUEUE_CAPACITY = 1024 * 10; // how many packets can be queued before the main thread blocks
 
@@ -54,7 +56,7 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	// worker thread queue
-	private final HashMap<EntityPlayer, Integer> queueSizePerPlayer = new HashMap<EntityPlayer, Integer>();
+	private final ConcurrentHashMap<Integer, AtomicInteger> queueSizePerPlayer = new ConcurrentHashMap<Integer, AtomicInteger>();
 	private final LinkedBlockingDeque<QueuedPacket> queue = new LinkedBlockingDeque<QueuedPacket>(QUEUE_CAPACITY);
 
 	private final AtomicBoolean kill = new AtomicBoolean(false);
@@ -75,11 +77,17 @@ public final class MapChunkThread implements Runnable {
 
 	// utility methods
 	private void addToQueueSize(EntityPlayer[] players, int amount) {
-		synchronized (queueSizePerPlayer) {
-			for (EntityPlayer player : players) {
-				Integer count = queueSizePerPlayer.get(player);
-				queueSizePerPlayer.put(player, (count == null ? 0 : count) + amount);
+		for (EntityPlayer player : players) {
+			AtomicInteger count = queueSizePerPlayer.get(player.id);
+			
+			if (count == null) {
+				count = new AtomicInteger(0);
+				AtomicInteger current = queueSizePerPlayer.putIfAbsent(player.id, count);
+				if (current != null) {
+					count = current;
+				}
 			}
+			count.addAndGet(amount);
 		}
 	}
 
@@ -115,12 +123,12 @@ public final class MapChunkThread implements Runnable {
 
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
-		
+
 		try {
-		packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
+			packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
 		} catch (NoSuchFieldError e) {
 		}
-		
+
 	}
 
 	private void sendToNetworkQueue(QueuedPacket task) {
@@ -158,16 +166,18 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	public static int getQueueLength(EntityPlayer player) {
-		synchronized (instance.queueSizePerPlayer) {
-			Integer count = instance.queueSizePerPlayer.get(player);
-			return count == null ? 0 : count;
-		}
+		AtomicInteger count = instance.queueSizePerPlayer.get(player.id);
+		return count == null ? 0 : count.get();
+	}
+	
+	public static void removeId(int id) {
+		instance.queueSizePerPlayer.remove(id);
 	}
 
 	public static void sendPacket(EntityPlayer player, Packet packet) {
 		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false), false);
 	}
-	
+
 	public static void sendPacketSkipQueue(EntityPlayer player, Packet packet) {
 		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false), true);
 	}
@@ -187,7 +197,7 @@ public final class MapChunkThread implements Runnable {
 	public static void sendPacketMapChunk(ChunkCoordIntPair coords, EntityPlayer[] players, int x, int y, int z, int dx, int dy, int dz, World world) {
 		// create packet with uncompressed data to be compressed by worker thread
 		Packet51MapChunk mapChunk = new Packet51MapChunk(x, y, z, dx, dy, dz, world);
-		
+
 		instance.putTask(new QueuedPacket(coords, players, mapChunk, true), false);
 	}
 }

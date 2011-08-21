@@ -123,8 +123,9 @@ public class SpoutPlayerListener extends PlayerListener{
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		int id = ((CraftPlayer)event.getPlayer()).getHandle().id;
+		int id = event.getPlayer().getEntityId();
 		ChunkCache.playerQuit(id);
+		MapChunkThread.removeId(id);
 	}
 
 }
