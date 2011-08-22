@@ -550,7 +550,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			playerChunkQueue.clear();
 		}
 
-		if (!chunkUpdateQueue.isEmpty() && (b() + ChunkCompressionThread.getPlayerQueueSize(this.player) + MapChunkThread.getQueueLength(this.player)) < 4) {
+		if (!chunkUpdateQueue.isEmpty() && (b() /*+ ChunkCompressionThread.getPlayerQueueSize(this.player)*/ + MapChunkThread.getQueueLength(this.player)) < 4) {
 			ChunkCoordIntPair playerChunk = getPlayerChunk();
 			Iterator<ChunkCoordIntPair> i = chunkUpdateQueue.iterator();
 			ChunkCoordIntPair first = i.next();
