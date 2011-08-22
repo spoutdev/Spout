@@ -70,6 +70,7 @@ import net.minecraft.server.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.ChunkCompressionThread;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -565,8 +566,12 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			playerChunkQueue.clear();
 		}
 
-		if (!chunkUpdateQueue.isEmpty() && (b() /*+ ChunkCompressionThread.getPlayerQueueSize(this.player)*/ + MapChunkThread.getQueueLength(this.player)) < 4) {
-			ChunkCoordIntPair playerChunk = getPlayerChunk();
+		int chunkCompressionThreadSize = 0;
+		try {
+			chunkCompressionThreadSize = ChunkCompressionThread.getPlayerQueueSize(this.player);
+		} catch (java.lang.NoClassDefFoundError err) {
+		}
+		if (!chunkUpdateQueue.isEmpty() && (b() + chunkCompressionThreadSize + MapChunkThread.getQueueLength(this.player)) < 4) {			ChunkCoordIntPair playerChunk = getPlayerChunk();
 			Iterator<ChunkCoordIntPair> i = chunkUpdateQueue.iterator();
 			ChunkCoordIntPair first = i.next();
 			while (first != null && !activeChunks.contains(first)) {
