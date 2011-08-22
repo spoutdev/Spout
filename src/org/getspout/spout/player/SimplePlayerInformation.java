@@ -79,10 +79,10 @@ public class SimplePlayerInformation implements PlayerInformation{
 	 * @param key of the property. For example: "EntitySkin"
 	 * @param args for the used getter
 	 * @return the property, if found, else null
-	 * @throws Exception when the property wasn't found
+	 * @throws NoSuchMethodException when the property wasn't found
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Object getProperty(String key, Object ...args) throws Exception{
+	public Object getProperty(String key, Object ...args) throws NoSuchMethodException{
 		//Use in this form (String)getProperty("EntitySkin", entity);
 		Object ret = null;
 		Class clazz = getClass();
@@ -104,7 +104,7 @@ public class SimplePlayerInformation implements PlayerInformation{
 				ret = getter.invoke(SpoutManager.getPlayerManager().getGlobalInfo(), args);
 			}
 		} catch(Exception e){
-			throw new Exception("No get-method for the property '"+key+"' could be found.");
+			throw new NoSuchMethodException("No get-method for the property '"+key+"' could be found.");
 		}
 		
 		return ret;
