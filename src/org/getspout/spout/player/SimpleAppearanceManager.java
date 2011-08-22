@@ -249,8 +249,10 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySecondarySkin(lv, null);
 		for(Player p : Bukkit.getServer().getOnlinePlayers()){
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
-			player.sendPacket(new PacketEntitySkin(lv, "[reset]", true));
-			player.sendPacket(new PacketEntitySkin(lv, "[reset]", false));
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(lv, "[reset]", true));
+				player.sendPacket(new PacketEntitySkin(lv, "[reset]", false));
+			}
 		}
 	}
 
@@ -439,7 +441,9 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(entity, url);
 		for(Player p : Bukkit.getServer().getOnlinePlayers()){
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
-			player.sendPacket(new PacketEntitySkin(entity, url, true));
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(entity, url, true));
+			}
 		}
 	}
 
@@ -448,7 +452,9 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySecondarySkin(entity, url);
 		for(Player p : Bukkit.getServer().getOnlinePlayers()){
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
-			player.sendPacket(new PacketEntitySkin(entity, url, false));
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(entity, url, false));
+			}
 		}
 	}
 }

@@ -28,8 +28,6 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutWeather;
 import org.getspout.spoutapi.player.PlayerInformation;
 
-import com.sun.tools.example.debug.bdi.MethodNotFoundException;
-
 public class SimplePlayerInformation implements PlayerInformation{
 	
 	HashMap<Biome,SpoutWeather> weatherMap = new HashMap<Biome, SpoutWeather>();
@@ -81,10 +79,10 @@ public class SimplePlayerInformation implements PlayerInformation{
 	 * @param key of the property. For example: "EntitySkin"
 	 * @param args for the used getter
 	 * @return the property, if found, else null
-	 * @throws MethodNotFoundException when the property wasn't found
+	 * @throws Exception when the property wasn't found
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Object getProperty(String key, Object ...args) throws MethodNotFoundException{
+	public Object getProperty(String key, Object ...args) throws Exception{
 		//Use in this form (String)getProperty("EntitySkin", entity);
 		Object ret = null;
 		Class clazz = getClass();
@@ -106,7 +104,7 @@ public class SimplePlayerInformation implements PlayerInformation{
 				ret = getter.invoke(SpoutManager.getPlayerManager().getGlobalInfo(), args);
 			}
 		} catch(Exception e){
-			throw new MethodNotFoundException("No get-method for the property '"+key+"' could be found.");
+			throw new Exception("No get-method for the property '"+key+"' could be found.");
 		}
 		
 		return ret;
