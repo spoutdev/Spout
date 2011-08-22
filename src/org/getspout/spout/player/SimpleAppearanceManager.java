@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketEntitySkin;
 import org.getspout.spoutapi.packet.PacketEntityTitle;
 import org.getspout.spoutapi.packet.PacketSkinURL;
@@ -218,13 +219,34 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		}
 	}
 
+	private void resetAllEntitySkins() {
+		for (World w : Bukkit.getServer().getWorlds()) {
+			for (LivingEntity lv : w.getLivingEntities()) {
+				resetEntitySkin(lv);
+			}
+		}
+	}
+
+	@Override
+	public void resetEntitySkin(LivingEntity lv) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(lv, null);
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySecondarySkin(lv, null);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			player.sendPacket(new PacketEntitySkin(lv, "[reset]", true));
+			player.sendPacket(new PacketEntitySkin(lv, "[reset]", false));
+		}
+	}
+
 	@Override
 	public void resetAll() {
 		resetAllCloaks();
 		resetAllSkins();
 		resetAllTitles();
+		resetAllEntitySkins();
 	}
 	
+
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
 			HashMap<Integer, String> tmap = titleMap.get(player.getName());
@@ -386,11 +408,31 @@ public class SimpleAppearanceManager implements AppearanceManager{
 	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
 		PacketEntitySkin packet = new PacketEntitySkin(target, url, true);
 		viewingPlayer.sendPacket(packet);
+		viewingPlayer.getInformation().setEntitySkin(target, url);
 	}
 
 	@Override
 	public void setEntitySecondarySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
 		PacketEntitySkin packet = new PacketEntitySkin(target, url, false);
 		viewingPlayer.sendPacket(packet);
+		viewingPlayer.getInformation().setEntitySecondarySkin(target, url);
+	}
+
+	@Override
+	public void setGlobalEntitySkin(LivingEntity entity, String url) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(entity, url);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			player.sendPacket(new PacketEntitySkin(entity, url, true));
+		}
+	}
+
+	@Override
+	public void setGlobalEntitySecondarySkin(LivingEntity entity, String url) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySecondarySkin(entity, url);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			player.sendPacket(new PacketEntitySkin(entity, url, false));
+		}
 	}
 }
