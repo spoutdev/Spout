@@ -12,6 +12,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 public class SimplePlayerManager implements PlayerManager{
 	
 	HashMap<String, PlayerInformation> infoMap = new HashMap<String, PlayerInformation>();
+	PlayerInformation globalInfo = new SimplePlayerInformation();
 
 	@Override
 	public SpoutPlayer getPlayer(Player player) {
@@ -59,4 +60,8 @@ public class SimplePlayerManager implements PlayerManager{
 		infoMap.clear();
 	}
 
+	@Override
+	public PlayerInformation getGlobalInfo() {
+		return globalInfo;
+	}
 }
