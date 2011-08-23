@@ -693,7 +693,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 				bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
 				bukkitEntity.setAccessible(true);
 				org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
-				if (!(e instanceof SpoutCraftPlayer)) {
+				if (!e.getClass().equals(SpoutCraftPlayer.class)) {
 					bukkitEntity.set(ep, new SpoutCraftPlayer((CraftServer)Bukkit.getServer(), ep));
 				}
 				return true;
@@ -702,19 +702,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 		return false;
-	}
-
-	public static void removeBukkitEntity(Player player) {
-		CraftPlayer cp = (CraftPlayer)player;
-		EntityPlayer ep = cp.getHandle();
-		Field bukkitEntity;
-		try {
-			bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-			bukkitEntity.setAccessible(true);
-			bukkitEntity.set(ep, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static SpoutPlayer getPlayer(Player player) {

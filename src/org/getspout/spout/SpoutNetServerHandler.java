@@ -715,8 +715,10 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				rawData.setAccessible(true);
 				h.setAccessible(true);
 				byte[] rawBytes = (byte[])rawData.get(packet);
-				g.set(packet, compressData(rawBytes, size));
-				h.set(packet, size.get());
+				if (rawBytes != null) {
+					g.set(packet, compressData(rawBytes, size));
+					h.set(packet, size.get());
+				}
 			}
 		} catch (NoSuchFieldException e) {
 			return null;

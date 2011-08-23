@@ -102,10 +102,10 @@ public class Spout extends JavaPlugin{
 				e.printStackTrace();
 			}
 		}
-		for (Player player : online) {
-			SpoutCraftPlayer.removeBukkitEntity(player);
-			SpoutCraftPlayer.resetNetServerHandler(player);
-		}
+		//for (Player player : online) {
+		//	SpoutCraftPlayer.removeBukkitEntity(player);
+		//	SpoutCraftPlayer.resetNetServerHandler(player);
+		//}
 		SpoutCraftChunk.resetAllBukkitChunks();
 		
 		getServer().getScheduler().cancelTasks(this);
@@ -160,7 +160,6 @@ public class Spout extends JavaPlugin{
 
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
-			SpoutCraftPlayer.removeBukkitEntity(player);
 			SpoutCraftPlayer.resetNetServerHandler(player);
 			SpoutCraftPlayer.updateNetServerHandler(player);
 			SpoutCraftPlayer.updateBukkitEntity(player);
