@@ -42,6 +42,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -49,6 +50,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
+import org.getspout.spout.SpoutPermissibleBase;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
@@ -70,6 +72,7 @@ import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
+import org.getspout.spoutapi.permission.SpoutPermissible;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -94,7 +97,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected RenderDistance minimumRender = null;
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
-	protected PermissibleBase perm;
+	protected SpoutPermissible perm;
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
@@ -103,7 +106,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			CraftPlayer cp = entity.netServerHandler.getPlayer();
 			Field permissionBase = CraftHumanEntity.class.getDeclaredField("perm");
 			permissionBase.setAccessible(true);
-			perm = (PermissibleBase) permissionBase.get(cp);
+			perm = new SpoutPermissibleBase((PermissibleBase) permissionBase.get(cp));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -150,6 +153,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
 		return perm.addAttachment(plugin, ticks);
+	}
+	
+	public boolean hasAttachment(PermissionAttachment attachment) {
+		return perm.hasAttachment(attachment);
 	}
 
 	@Override
