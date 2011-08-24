@@ -28,6 +28,7 @@ import org.getspout.spoutapi.packet.PacketEntitySkin;
 import org.getspout.spoutapi.packet.PacketEntityTitle;
 import org.getspout.spoutapi.packet.PacketSkinURL;
 import org.getspout.spoutapi.player.AppearanceManager;
+import org.getspout.spoutapi.player.EntitySkinType;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SimpleAppearanceManager implements AppearanceManager{
@@ -246,12 +247,10 @@ public class SimpleAppearanceManager implements AppearanceManager{
 	@Override
 	public void resetEntitySkin(LivingEntity lv) {
 		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(lv, null);
-		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySecondarySkin(lv, null);
 		for(Player p : Bukkit.getServer().getOnlinePlayers()){
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
 			if(player.isSpoutCraftEnabled()){
-				player.sendPacket(new PacketEntitySkin(lv, "[reset]", true));
-				player.sendPacket(new PacketEntitySkin(lv, "[reset]", false));
+				player.sendPacket(new PacketEntitySkin(lv, "[reset]", (byte) 0));
 			}
 		}
 	}
@@ -421,7 +420,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 			}
 		}
 	}
-
+/*
 	@Override
 	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
 		PacketEntitySkin packet = new PacketEntitySkin(target, url, true);
@@ -454,6 +453,24 @@ public class SimpleAppearanceManager implements AppearanceManager{
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
 			if(player.isSpoutCraftEnabled()){
 				player.sendPacket(new PacketEntitySkin(entity, url, false));
+			}
+		}
+	}*/
+
+	@Override
+	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url, EntitySkinType type) {
+		PacketEntitySkin packet = new PacketEntitySkin(target, url, type.getId());
+		viewingPlayer.sendPacket(packet);
+		viewingPlayer.getInformation().setEntitySkin(target, url, type);
+	}
+
+	@Override
+	public void setGlobalEntitySkin(LivingEntity entity, String url, EntitySkinType type) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(entity, url, type);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(entity, url, type.getId()));
 			}
 		}
 	}

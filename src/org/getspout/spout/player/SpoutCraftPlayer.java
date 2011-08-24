@@ -61,12 +61,14 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.gui.InGameScreen;
+import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
 import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.packet.PacketAirTime;
 import org.getspout.spoutapi.packet.PacketAlert;
 import org.getspout.spoutapi.packet.PacketClipboardText;
 import org.getspout.spoutapi.packet.PacketNotification;
+import org.getspout.spoutapi.packet.PacketOpenScreen;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
@@ -760,6 +762,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public PlayerInformation getInformation() {
 		return SpoutManager.getPlayerManager().getPlayerInfo(this);
+	}
+
+	@Override
+	public void openScreen(ScreenType type) {
+		sendPacket(new PacketOpenScreen(type));
 	}
 
 }
