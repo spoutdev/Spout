@@ -26,13 +26,13 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.LivingEntity;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutWeather;
+import org.getspout.spoutapi.player.EntitySkinType;
 import org.getspout.spoutapi.player.PlayerInformation;
 
 public class SimplePlayerInformation implements PlayerInformation{
 	
 	HashMap<Biome,SpoutWeather> weatherMap = new HashMap<Biome, SpoutWeather>();
-	HashMap<LivingEntity, String> entitySkin = new HashMap<LivingEntity, String>();
-	HashMap<LivingEntity, String> entitySecondarySkin = new HashMap<LivingEntity, String>();
+	HashMap<LivingEntity, SpoutEntitySkin> entitySkin = new HashMap<LivingEntity, SpoutEntitySkin>();
 
 	@Override
 	public SpoutWeather getBiomeWeather(Biome biome) {
@@ -52,26 +52,6 @@ public class SimplePlayerInformation implements PlayerInformation{
 	@Override
 	public Set<Biome> getBiomes() {
 		return weatherMap.keySet();
-	}
-
-	@Override
-	public void setEntitySkin(LivingEntity entity, String url) {
-		entitySkin.put(entity, url);
-	}
-
-	@Override
-	public String getEntitySkin(LivingEntity entity) {
-		return entitySkin.get(entity);
-	}
-
-	@Override
-	public void setEntitySecondarySkin(LivingEntity entity, String url) {
-		entitySecondarySkin.put(entity, url);
-	}
-
-	@Override
-	public String getEntitySecondarySkin(LivingEntity entity) {
-		return entitySecondarySkin.get(entity);
 	}
 	
 	/**
@@ -108,5 +88,36 @@ public class SimplePlayerInformation implements PlayerInformation{
 		}
 		
 		return ret;
+	}
+
+	@Override
+	public void setEntitySkin(LivingEntity entity, String url) {
+		setEntitySkin(entity, url, EntitySkinType.DEFAULT);
+	}
+
+	@Override
+	public void setEntitySkin(LivingEntity entity, String url, EntitySkinType type) {
+		SpoutEntitySkin textures = getTextureObject(entity);
+		if(url == null){
+			textures.reset();
+			return;
+		}
+		textures.setSkin(type, url);
+	}
+
+	private SpoutEntitySkin getTextureObject(LivingEntity entity) {
+		SpoutEntitySkin ret = entitySkin.get(entity);
+		if(ret == null)
+		{
+			ret = new SpoutEntitySkin();
+			entitySkin.put(entity, ret);
+		}
+		return ret;
+	}
+
+	@Override
+	public String getEntitySkin(LivingEntity entity, EntitySkinType type) {
+		SpoutEntitySkin textures = getTextureObject(entity);
+		return textures.getSkin(type);
 	}
 }
