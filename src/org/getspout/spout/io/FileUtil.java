@@ -88,4 +88,13 @@ public class FileUtil {
 		
 	}
 	
+	public static String getFileName(String Url) {
+		int slashIndex = Url.lastIndexOf('/');
+		int dotIndex = Url.lastIndexOf('.', slashIndex);
+		if (dotIndex == -1 || dotIndex < slashIndex) {
+			return Url.substring(slashIndex + 1).replaceAll("%20", " ");
+		}
+		return Url.substring(slashIndex + 1, dotIndex).replaceAll("%20", " ");
+	}
+	
 }
