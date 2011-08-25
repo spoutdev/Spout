@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.plugin.Plugin;
+import org.getspout.spout.Spout;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.io.CRCStoreRunnable;
@@ -36,10 +37,10 @@ public class SimpleFileManager implements FileManager {
 			while (i.hasNext()) {
 				Entry<Plugin, List<File>> next = i.next();
 				for (File file : next.getValue()) {
-					String fileName = FileUtil.getFileName(file.getPath());
 					long crc = -1;
 					try {
-						crc = CRCStore.getCRC(fileName, FileUtils.readFileToByteArray(file));
+						byte[] data = new byte[FileUtils.readFileToByteArray(file).length];
+						crc = FileUtil.getCRC(file, data);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

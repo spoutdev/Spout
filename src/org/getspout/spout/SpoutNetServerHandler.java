@@ -111,7 +111,12 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		if (packet.a == -42) {
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
 			player.setVersion(1, 0, 2);
-			Spout.getInstance().playerListener.manager.onSpoutcraftEnable((SpoutPlayer)getPlayer());
+			try {
+				Spout.getInstance().playerListener.manager.onSpoutcraftEnable((SpoutPlayer)getPlayer());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		else {
 			super.a(packet);
