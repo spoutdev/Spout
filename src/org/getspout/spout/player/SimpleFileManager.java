@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -29,8 +30,45 @@ public class SimpleFileManager implements FileManager {
 	private static final String[] validExtensions = {"txt", "yml", "xml", "png", "jpg", "ogg", "midi", "wav", "zip"};
 	private byte[] urlBuffer = new byte[16384];
 	
-	public void onPlayerJoin(SpoutPlayer player) {
-		//TODO send files
+	public void onPlayerJoin(final SpoutPlayer player) {
+		if (player.isSpoutCraftEnabled()) {
+			Iterator<Entry<Plugin, List<File>>> i = preLoginCache.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<Plugin, List<File>> next = i.next();
+				for (File file : next.getValue()) {
+					String fileName = FileUtil.getFileName(file.getPath());
+					long crc = -1;
+					try {
+						crc = CRCStore.getCRC(fileName, FileUtils.readFileToByteArray(file));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					if (crc !=-1) {
+						player.sendPacket(new PacketPreCacheFile(next.getKey().getDescription().getName(), file.getPath(), crc, false));
+					}
+				}
+			}
+			Iterator<Entry<Plugin, List<String>>> j = preLoginUrlCache.entrySet().iterator();
+			while (j.hasNext()) {
+				final Entry<Plugin, List<String>> next = j.next();
+				for (final String url : next.getValue()) {
+					URLCheck urlCheck = new URLCheck(url, urlBuffer, new CRCStoreRunnable() {
+						
+						Long CRC;
+						
+						public void setCRC(Long CRC) {
+							this.CRC = CRC;
+						}
+						
+						public void run() {
+							player.sendPacket(new PacketPreCacheFile(next.getKey().getDescription().getName(), url, CRC, true));
+						}
+						
+					});
+					urlCheck.start();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -115,7 +153,7 @@ public class SimpleFileManager implements FileManager {
 			if (crc !=-1) {
 				for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
 					if (player.isSpoutCraftEnabled()) {
-						player.sendPacket(new PacketPreCacheFile(plugin.getDescription().getName(), fileName, crc));
+						player.sendPacket(new PacketPreCacheFile(plugin.getDescription().getName(), file.getPath(), crc, false));
 					}
 				}
 			}
@@ -127,7 +165,6 @@ public class SimpleFileManager implements FileManager {
 	@Override
 	public boolean addToCache(final Plugin plugin, final String fileUrl) {
 		if (addToPreLoginCache(plugin, fileUrl)) {
-			final String fileName = FileUtil.getFileName(fileUrl);
 			URLCheck urlCheck = new URLCheck(fileUrl, urlBuffer, new CRCStoreRunnable() {
 				
 				Long CRC;
@@ -139,7 +176,7 @@ public class SimpleFileManager implements FileManager {
 				public void run() {
 					for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
 						if (player.isSpoutCraftEnabled()) {
-							player.sendPacket(new PacketPreCacheFile(plugin.getDescription().getName(), fileName, CRC));
+							player.sendPacket(new PacketPreCacheFile(plugin.getDescription().getName(), fileUrl, CRC, true));
 						}
 					}
 				}
