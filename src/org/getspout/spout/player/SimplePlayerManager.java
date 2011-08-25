@@ -80,4 +80,14 @@ public class SimplePlayerManager implements PlayerManager{
 	public PlayerInformation getGlobalInfo() {
 		return globalInfo;
 	}
+
+	@Override
+	public SpoutPlayer[] getOnlinePlayers() {
+		Player[] online = Bukkit.getServer().getOnlinePlayers();
+		SpoutPlayer[] spoutPlayers = new SpoutPlayer[online.length];
+		for (int i = 0; i < online.length; i++) {
+			spoutPlayers[i] = getPlayer(online[i]);
+		}
+		return spoutPlayers;
+	}
 }

@@ -42,7 +42,7 @@ import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
-import org.getspout.spout.io.CRCStore;
+import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;

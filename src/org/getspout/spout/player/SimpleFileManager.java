@@ -1,15 +1,24 @@
 package org.getspout.spout.player;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.plugin.Plugin;
-import org.getspout.spout.io.FileUtil;
+import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.io.CRCStore;
+import org.getspout.spoutapi.io.CRCStoreRunnable;
+import org.getspout.spoutapi.io.FileUtil;
+import org.getspout.spoutapi.io.CRCStore.URLCheck;
+import org.getspout.spoutapi.packet.PacketCacheDeleteFile;
+import org.getspout.spoutapi.packet.PacketPreCacheFile;
 import org.getspout.spoutapi.player.FileManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -18,7 +27,7 @@ public class SimpleFileManager implements FileManager {
 	private Map<Plugin,  List<String>> preLoginUrlCache = new HashMap<Plugin,  List<String>>();
 	private Map<Plugin, List<String>> cachedFiles = new HashMap<Plugin,  List<String>>();
 	private static final String[] validExtensions = {"txt", "yml", "xml", "png", "jpg", "ogg", "midi", "wav", "zip"};
-	
+	private byte[] urlBuffer = new byte[16384];
 	
 	public void onPlayerJoin(SpoutPlayer player) {
 		//TODO send files
@@ -96,49 +105,109 @@ public class SimpleFileManager implements FileManager {
 	@Override
 	public boolean addToCache(Plugin plugin, File file) {
 		if (addToPreLoginCache(plugin, file)) {
-			//TODO send packet
+			String fileName = FileUtil.getFileName(file.getPath());
+			long crc = -1;
+			try {
+				crc = CRCStore.getCRC(fileName, FileUtils.readFileToByteArray(file));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (crc !=-1) {
+				for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+					if (player.isSpoutCraftEnabled()) {
+						player.sendPacket(new PacketPreCacheFile(plugin.getDescription().getName(), fileName, crc));
+					}
+				}
+			}
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean addToCache(Plugin plugin, String fileUrl) {
+	public boolean addToCache(final Plugin plugin, final String fileUrl) {
 		if (addToPreLoginCache(plugin, fileUrl)) {
-			//TODO send packet
-			return true;
+			final String fileName = FileUtil.getFileName(fileUrl);
+			URLCheck urlCheck = new URLCheck(fileUrl, urlBuffer, new CRCStoreRunnable() {
+				
+				Long CRC;
+				
+				public void setCRC(Long CRC) {
+					this.CRC = CRC;
+				}
+				
+				public void run() {
+					for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+						if (player.isSpoutCraftEnabled()) {
+							player.sendPacket(new PacketPreCacheFile(plugin.getDescription().getName(), fileName, CRC));
+						}
+					}
+				}
+				
+			});
+			urlCheck.start();
 		}
 		return false;
 	}
 
 	@Override
 	public boolean addToCache(Plugin plugin, Collection<File> files) {
-		if (addToPreLoginCache(plugin, files)) {
-			//TODO send packet
-			return true;
+		boolean success = true;
+		for (File file : files) {
+			if (!addToCache(plugin, file)) {
+				success = false;
+			}
 		}
-		return false;
+		return success;
 	}
 
 	@Override
 	public boolean addToCache(Plugin plugin, List<String> fileUrls) {
-		if (addToPreLoginCache(plugin, fileUrls)) {
-			//TODO send packet
-			return true;
+		boolean success = true;
+		for (String file : fileUrls) {
+			if (!addToCache(plugin, file)) {
+				success = false;
+			}
 		}
-		return false;
+		return success;
 	}
 
 	@Override
 	public void removeFromCache(Plugin plugin, String file) {
-		// TODO Auto-generated method stub
-		
+		List<File> cache = preLoginCache.get(plugin);
+		if (cache != null) {
+			Iterator<File> i = cache.iterator();
+			while (i.hasNext()) {
+				File next = i.next();
+				String fileName = FileUtil.getFileName(next.getPath());
+				if (fileName.equals(file)) {
+					i.remove();
+				}
+			}
+		}
+		List<String> urlCache = preLoginUrlCache.get(plugin);
+		if (urlCache != null) {
+			Iterator<String> i = urlCache.iterator();
+			while (i.hasNext()) {
+				String next = i.next();
+				String fileName = FileUtil.getFileName(next);
+				if (fileName.equals(file)) {
+					i.remove();
+				}
+			}
+		}
+		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(new PacketCacheDeleteFile(plugin.getDescription().getName(), file));
+			}
+		}
 	}
 
 	@Override
-	public void removeFromCache(Plugin plugin, List<String> file) {
-		// TODO Auto-generated method stub
-		
+	public void removeFromCache(Plugin plugin, List<String> files) {
+		for (String file : files) {
+			removeFromCache(plugin, file);
+		}
 	}
 
 	@Override
