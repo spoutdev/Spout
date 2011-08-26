@@ -214,7 +214,9 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setSkyColor(SpoutPlayer player, Color skycolor) {
 		skyColor.put(player.getName(), skycolor);
-		player.sendPacket(new PacketSky(skycolor, null, null));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(skycolor, null, null));
+		}
 	}
 
 	@Override
@@ -225,7 +227,9 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setFogColor(SpoutPlayer player, Color fogColor) {
 		this.fogColor.put(player.getName(), fogColor);
-		player.sendPacket(new PacketSky(null, fogColor, null));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(null, fogColor, null));
+		}
 	}
 
 	@Override
@@ -236,7 +240,9 @@ public class SimpleSkyManager implements SkyManager{
 	@Override
 	public void setCloudColor(SpoutPlayer player, Color cloudColor) {
 		this.cloudColor.put(player.getName(), cloudColor);
-		player.sendPacket(new PacketSky(null, null, cloudColor));
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(null, null, cloudColor));
+		}
 	}
 
 	@Override
