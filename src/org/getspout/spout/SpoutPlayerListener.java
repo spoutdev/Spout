@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -29,11 +30,13 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.Inventory;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -141,6 +144,14 @@ public class SpoutPlayerListener extends PlayerListener{
 		int id = event.getPlayer().getEntityId();
 		ChunkCache.playerQuit(id);
 		MapChunkThread.removeId(id);
+		SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
+		SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
+		if (netServerHandler.activeInventory) {
+			Inventory inventory = netServerHandler.getActiveInventory();
+
+			InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
+			Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+		}
 	}
 
 }
