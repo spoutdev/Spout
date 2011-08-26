@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,9 +16,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.plugin.Plugin;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
+import org.getspout.spoutapi.io.CRCStore.URLCheck;
 import org.getspout.spoutapi.io.CRCStoreRunnable;
 import org.getspout.spoutapi.io.FileUtil;
-import org.getspout.spoutapi.io.CRCStore.URLCheck;
 import org.getspout.spoutapi.packet.PacketCacheDeleteFile;
 import org.getspout.spoutapi.packet.PacketPreCacheFile;
 import org.getspout.spoutapi.player.FileManager;
@@ -52,7 +53,7 @@ public class SimpleFileManager implements FileManager {
 			while (j.hasNext()) {
 				final Entry<Plugin, List<String>> next = j.next();
 				for (final String url : next.getValue()) {
-					URLCheck urlCheck = new URLCheck(url, urlBuffer, new CRCStoreRunnable() {
+					URLCheck urlCheck = new URLCheck(url, new byte[4096], new CRCStoreRunnable() {
 						
 						Long CRC;
 						
