@@ -495,6 +495,78 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 	}
+	
+
+	@Override
+	public Location getActiveInventoryLocation() {
+		return getNetServerHandler().getActiveInventoryLocation();
+	}
+
+	@Override
+	public void setActiveInventoryLocation(Location loc) {
+		getNetServerHandler().setActiveInventoryLocation(loc);
+	}
+
+	public void reconnect(String hostname, int port) {
+		if (hostname.indexOf(":") != -1) {
+			throw new IllegalArgumentException("Hostnames may not the : symbol");
+		}
+		this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
+	}
+
+	public void reconnect(String hostname) {
+		if (hostname.indexOf(":") != -1) {
+			String[] split = hostname.split(":");
+			if (split.length != 2) {
+				throw new IllegalArgumentException("Improperly formatted hostname: " + hostname);
+			}
+			int port;
+			try {
+				port = Integer.parseInt(split[1]);
+			} catch (NumberFormatException nfe) {
+				throw new IllegalArgumentException("Unable to parse port number: " + split[1] + " in " + hostname);
+			}
+			reconnect(split[0], port);
+		}
+		this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
+	}
+
+	@Override
+	public PlayerInformation getInformation() {
+		return SpoutManager.getPlayerManager().getPlayerInfo(this);
+	}
+
+	@Override
+	public void openScreen(ScreenType type) {
+		sendPacket(new PacketOpenScreen(type));
+	}
+
+	@Override
+	public void setGravityMultiplier(double multiplier) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setSwimmingMultiplier(double multiplier) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setWalkingMultiplier(double multiplier) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public boolean sendInventoryEvent() {
+		SpoutNetServerHandler snsh = (SpoutNetServerHandler) this.getHandle().netServerHandler;
+		snsh.activeInventory = true;
+		InventoryOpenEvent event = new InventoryOpenEvent(this, snsh.getActiveInventory(), snsh.getDefaultInventory(), snsh.getActiveInventoryLocation());
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		return event.isCancelled();
+	}
 
 	/*Non Inteface public methods */
 
@@ -634,15 +706,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return true;
 	}
 
-	@Override
-	public boolean sendInventoryEvent() {
-		SpoutNetServerHandler snsh = (SpoutNetServerHandler) this.getHandle().netServerHandler;
-		snsh.activeInventory = true;
-		InventoryOpenEvent event = new InventoryOpenEvent(this, snsh.getActiveInventory(), snsh.getDefaultInventory(), snsh.getActiveInventoryLocation());
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		return event.isCancelled();
-	}
-
 	@SuppressWarnings("unchecked")
 	public static boolean resetNetServerHandler(Player player) {
 		CraftPlayer cp = (CraftPlayer)player;
@@ -724,49 +787,4 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		updateBukkitEntity(player);
 		return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
 	}
-
-	@Override
-	public Location getActiveInventoryLocation() {
-		return getNetServerHandler().getActiveInventoryLocation();
-	}
-
-	@Override
-	public void setActiveInventoryLocation(Location loc) {
-		getNetServerHandler().setActiveInventoryLocation(loc);
-	}
-
-	public void reconnect(String hostname, int port) {
-		if (hostname.indexOf(":") != -1) {
-			throw new IllegalArgumentException("Hostnames may not the : symbol");
-		}
-		this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
-	}
-
-	public void reconnect(String hostname) {
-		if (hostname.indexOf(":") != -1) {
-			String[] split = hostname.split(":");
-			if (split.length != 2) {
-				throw new IllegalArgumentException("Improperly formatted hostname: " + hostname);
-			}
-			int port;
-			try {
-				port = Integer.parseInt(split[1]);
-			} catch (NumberFormatException nfe) {
-				throw new IllegalArgumentException("Unable to parse port number: " + split[1] + " in " + hostname);
-			}
-			reconnect(split[0], port);
-		}
-		this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
-	}
-
-	@Override
-	public PlayerInformation getInformation() {
-		return SpoutManager.getPlayerManager().getPlayerInfo(this);
-	}
-
-	@Override
-	public void openScreen(ScreenType type) {
-		sendPacket(new PacketOpenScreen(type));
-	}
-
 }
