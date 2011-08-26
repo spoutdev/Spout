@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,7 +28,6 @@ public class SimpleFileManager implements FileManager {
 	private Map<Plugin,  List<String>> preLoginUrlCache = new HashMap<Plugin,  List<String>>();
 	private Map<Plugin, List<String>> cachedFiles = new HashMap<Plugin,  List<String>>();
 	private static final String[] validExtensions = {"txt", "yml", "xml", "png", "jpg", "ogg", "midi", "wav", "zip"};
-	private byte[] urlBuffer = new byte[16384];
 	
 	public void onPlayerJoin(final SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
@@ -166,7 +164,7 @@ public class SimpleFileManager implements FileManager {
 	@Override
 	public boolean addToCache(final Plugin plugin, final String fileUrl) {
 		if (addToPreLoginCache(plugin, fileUrl)) {
-			URLCheck urlCheck = new URLCheck(fileUrl, urlBuffer, new CRCStoreRunnable() {
+			URLCheck urlCheck = new URLCheck(fileUrl, new byte[4096], new CRCStoreRunnable() {
 				
 				Long CRC;
 				
