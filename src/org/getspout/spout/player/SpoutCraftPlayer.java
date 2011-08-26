@@ -638,7 +638,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public boolean sendInventoryEvent() {
 		SpoutNetServerHandler snsh = (SpoutNetServerHandler) this.getHandle().netServerHandler;
 		snsh.activeInventory = true;
-		InventoryOpenEvent event = new InventoryOpenEvent(this, getInventory(), snsh.getDefaultInventory(), snsh.getActiveInventoryLocation());
+		InventoryOpenEvent event = new InventoryOpenEvent(this, snsh.getActiveInventory(), snsh.getDefaultInventory(), snsh.getActiveInventoryLocation());
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		return event.isCancelled();
 	}
