@@ -67,6 +67,7 @@ import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.packet.PacketAirTime;
 import org.getspout.spoutapi.packet.PacketAlert;
 import org.getspout.spoutapi.packet.PacketClipboardText;
+import org.getspout.spoutapi.packet.PacketMovementModifiers;
 import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
@@ -99,6 +100,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
 	protected SpoutPermissible perm;
+	private double gravityMod = 1;
+	private double swimmingMod = 1;
+	private double walkingMod = 1;
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
@@ -540,23 +544,41 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void openScreen(ScreenType type) {
 		sendPacket(new PacketOpenScreen(type));
 	}
+	
+	public double getGravityMultiplier() {
+		return gravityMod;
+	}
+	
+	public double getSwimmingMultiplier() {
+		return swimmingMod;
+	}
+	
+	public double getWalkingMultiplier() {
+		return walkingMod;
+	}
 
 	@Override
 	public void setGravityMultiplier(double multiplier) {
-		// TODO Auto-generated method stub
-		
+		gravityMod = multiplier;
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
+		}
 	}
 
 	@Override
 	public void setSwimmingMultiplier(double multiplier) {
-		// TODO Auto-generated method stub
-		
+		swimmingMod = multiplier;
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
+		}
 	}
 
 	@Override
 	public void setWalkingMultiplier(double multiplier) {
-		// TODO Auto-generated method stub
-		
+		walkingMod = multiplier;
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
+		}
 	}
 	
 	@Override
