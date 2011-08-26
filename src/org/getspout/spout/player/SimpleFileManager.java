@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.plugin.Plugin;
-import org.getspout.spout.Spout;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.io.CRCStoreRunnable;
