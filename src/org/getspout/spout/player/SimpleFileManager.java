@@ -20,6 +20,7 @@ import org.getspout.spoutapi.io.CRCStore.URLCheck;
 import org.getspout.spoutapi.io.CRCStoreRunnable;
 import org.getspout.spoutapi.io.FileUtil;
 import org.getspout.spoutapi.packet.PacketCacheDeleteFile;
+import org.getspout.spoutapi.packet.PacketPreCacheCompleted;
 import org.getspout.spoutapi.packet.PacketPreCacheFile;
 import org.getspout.spoutapi.player.FileManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -49,6 +50,7 @@ public class SimpleFileManager implements FileManager {
 					}
 				}
 			}
+			LinkedList<Thread> urlThreads = new LinkedList<Thread>();
 			Iterator<Entry<Plugin, List<String>>> j = preLoginUrlCache.entrySet().iterator();
 			while (j.hasNext()) {
 				final Entry<Plugin, List<String>> next = j.next();
@@ -66,10 +68,40 @@ public class SimpleFileManager implements FileManager {
 						}
 						
 					});
+					urlCheck.setName(url);
 					urlCheck.start();
+					urlThreads.add(urlCheck);
 				}
 			}
+			new URLCheckJoin(urlThreads, player).start();
 		}
+	}
+	
+	private class URLCheckJoin extends Thread {
+		
+		private final List<Thread> threads;
+		private final SpoutPlayer player;
+		
+		public URLCheckJoin(List<Thread> threads, SpoutPlayer player) {
+			this.threads = threads;
+			this.player = player;
+		}
+		
+		public void run() {
+			while(!threads.isEmpty()) {
+				Iterator<Thread> i = threads.iterator();
+				while (i.hasNext()) {
+					Thread t = i.next();
+					try {
+						t.join();
+						i.remove();
+					} catch (InterruptedException ie) {
+					}
+				}
+			}
+			player.sendPacket(new PacketPreCacheCompleted());
+		}
+		
 	}
 
 	@Override
