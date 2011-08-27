@@ -47,6 +47,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.SpoutPermissibleBase;
@@ -71,6 +72,7 @@ import org.getspout.spoutapi.packet.PacketMovementModifiers;
 import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
+import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
@@ -206,6 +208,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketAirTime(this.getMaximumAir(), time));
 		}
 		super.setRemainingAir(time);
+	}
+	
+	@Override
+	public void setVelocity(Vector velocity) {
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketSetVelocity(velocity.getX(), velocity.getY(), velocity.getZ()));
+		}
+		super.setVelocity(velocity);
 	}
 
 	/* Inteface New Public Methods */
