@@ -552,7 +552,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		manageChunkQueue(true);
 		SpoutPlayer player = SpoutManager.getPlayer(this.getPlayer());
 		boolean old = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
-		boolean oldCheckMovement = true;
+		/*boolean oldCheckMovement = true;
 		Field checkMovement = null;
 		try {
 			checkMovement = NetServerHandler.class.getDeclaredField("checkMovement");
@@ -562,19 +562,19 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = player.isCanFly();
 		super.a(packet);
 		
 		//Reset old settings
-		try {
+		/*try {
 			checkMovement = NetServerHandler.class.getDeclaredField("checkMovement");
 			checkMovement.setAccessible(true);
 			checkMovement.set(this, oldCheckMovement);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = old;
 	}
 
