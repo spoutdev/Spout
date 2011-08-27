@@ -57,6 +57,8 @@ public class PlayerManager {
 				else {
 					timer.remove(player.getName());
 					System.out.println("[Spout] Failed to authenticate " + player.getName() + "'s client in " + ConfigReader.getAuthenticateTicks() + " server ticks.");
+					SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutManager.getPlayer(player);
+					scp.queued = null;
 					if (ConfigReader.isForceClient()) {
 						System.out.println("[Spout] Kicking " + player.getName() + " for not running Spout client");
 						player.kickPlayer(ConfigReader.getKickMessage());

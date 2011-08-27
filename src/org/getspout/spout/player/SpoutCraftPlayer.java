@@ -107,7 +107,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
 	private boolean fly;
-	private LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
+	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
@@ -688,7 +688,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	public void sendPacket(SpoutPacket packet) {
 		if (!isSpoutCraftEnabled()) {
-			queued.add(packet);
+			if (queued != null) {
+				queued.add(packet);
+			}
 		}
 		else {
 			getNetServerHandler().sendPacket(new CustomPacket(packet));
@@ -732,7 +734,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		buildVersion = build;
 		minorVersion = minor;
 		majorVersion = major;
-		if (isSpoutCraftEnabled()) {
+		if (isSpoutCraftEnabled() && queued != null) {
 			for (SpoutPacket packet : queued) {
 				sendPacket(packet);
 			}
