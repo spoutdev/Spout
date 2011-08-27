@@ -56,6 +56,7 @@ import net.minecraft.server.Packet106Transaction;
 import net.minecraft.server.Packet10Flying;
 import net.minecraft.server.Packet11PlayerPosition;
 import net.minecraft.server.Packet13PlayerLookMove;
+import net.minecraft.server.Packet14BlockDig;
 import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.Packet255KickDisconnect;
 import net.minecraft.server.Packet50PreChunk;
@@ -123,6 +124,20 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		}
 		else {
 			super.a(packet);
+		}
+	}
+	
+	@Override
+	public void a(Packet14BlockDig packet) {
+		SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
+		boolean inAir = false;
+		if (player.isCanFly() && !player.getHandle().onGround) {
+			inAir = true;
+			player.getHandle().onGround = true;
+		}
+		super.a(packet);
+		if (inAir) {
+			player.getHandle().onGround = false;
 		}
 	}
 
