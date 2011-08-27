@@ -18,6 +18,7 @@ package org.getspout.spout.player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.Set;
 
 import net.minecraft.server.ChunkCoordIntPair;
@@ -106,6 +107,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
 	private boolean fly;
+	private LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
@@ -685,7 +687,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	}
 
 	public void sendPacket(SpoutPacket packet) {
-		getNetServerHandler().sendPacket(new CustomPacket(packet));
+		if (!isSpoutCraftEnabled()) {
+			queued.add(packet);
+		}
+		else {
+			getNetServerHandler().sendPacket(new CustomPacket(packet));
+		}
 	}
 
 	public void sendPacket(MCPacket packet) {
@@ -725,6 +732,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		buildVersion = build;
 		minorVersion = minor;
 		majorVersion = major;
+		if (isSpoutCraftEnabled()) {
+			for (SpoutPacket packet : queued) {
+				sendPacket(packet);
+			}
+		}
 	}
 
 	public void onTick() {
