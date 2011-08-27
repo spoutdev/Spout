@@ -213,7 +213,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public void setVelocity(Vector velocity) {
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketSetVelocity(velocity.getX(), velocity.getY(), velocity.getZ()));
+			sendPacket(new PacketSetVelocity(getEntityId(), velocity.getX(), velocity.getY(), velocity.getZ()));
 		}
 		super.setVelocity(velocity);
 	}
