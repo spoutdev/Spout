@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.Deflater;
 
@@ -501,8 +502,28 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			super.sendPacket(packet);
 		}
 	}
+	
+	AtomicLong lastUnloadCheck = new AtomicLong(0);
 
 	public Packet updateActiveChunks(Packet packet) {
+		
+		long currentTime = System.currentTimeMillis();
+		if (lastUnloadCheck.get() + 1000 < currentTime) {
+			lastUnloadCheck.set(currentTime);
+			synchronized (unloadQueue) {
+				Iterator<ChunkCoordIntPair> i = unloadQueue.iterator();
+				while (i.hasNext()) {
+					ChunkCoordIntPair coord = i.next();
+					if (!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
+						if (activeChunks.remove(coord)) {
+							resyncQueue.addFirst(new Packet50PreChunk(coord.x, coord.z, false));
+						}
+						i.remove();
+					}
+				}
+			}
+		}
+		
 		if (packet instanceof Packet50PreChunk) {
 			Packet50PreChunk p = (Packet50PreChunk) packet;
 			int cx = p.a;
@@ -523,18 +544,6 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				} else {
 					unloadQueue.add(new ChunkCoordIntPair(cx, cz));
 					p = null;
-				}
-			}
-			synchronized (unloadQueue) {
-				Iterator<ChunkCoordIntPair> i = unloadQueue.iterator();
-				while (i.hasNext()) {
-					ChunkCoordIntPair coord = i.next();
-					if (!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
-						if (activeChunks.remove(coord)) {
-							resyncQueue.addFirst(new Packet50PreChunk(coord.x, coord.z, false));
-						}
-						i.remove();
-					}
 				}
 			}
 			return p;
