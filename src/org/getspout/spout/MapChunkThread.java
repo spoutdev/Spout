@@ -56,7 +56,7 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	// worker thread queue
-	private final ConcurrentHashMap<Integer, AtomicInteger> queueSizePerPlayer = new ConcurrentHashMap<Integer, AtomicInteger>();
+	private final ConcurrentHashMap<Integer, Integer> queueSizePerPlayer = new ConcurrentHashMap<Integer, Integer>();
 	private final LinkedBlockingDeque<QueuedPacket> queue = new LinkedBlockingDeque<QueuedPacket>(QUEUE_CAPACITY);
 
 	private final AtomicBoolean kill = new AtomicBoolean(false);
@@ -78,16 +78,27 @@ public final class MapChunkThread implements Runnable {
 	// utility methods
 	private void addToQueueSize(EntityPlayer[] players, int amount) {
 		for (EntityPlayer player : players) {
-			AtomicInteger count = queueSizePerPlayer.get(player.id);
 			
-			if (count == null) {
-				count = new AtomicInteger(0);
-				AtomicInteger current = queueSizePerPlayer.putIfAbsent(player.id, count);
-				if (current != null) {
-					count = current;
+			boolean success = false;
+			
+			while (!success) {
+				Integer count = queueSizePerPlayer.get(player.id);
+
+				if (count == null) {
+					count = amount;
+					Integer current = queueSizePerPlayer.putIfAbsent(player.id, count);
+					success = current == null;
+				} else {
+					Integer newValue = count + amount;
+					if (newValue == 0) {
+						boolean removed = queueSizePerPlayer.remove(player.id, count);
+						success = removed;
+					} else {
+						boolean replaced = queueSizePerPlayer.replace(player.id, count, newValue);
+						success = replaced;
+					}
 				}
 			}
-			count.addAndGet(amount);
 		}
 	}
 
@@ -166,8 +177,8 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	public static int getQueueLength(EntityPlayer player) {
-		AtomicInteger count = instance.queueSizePerPlayer.get(player.id);
-		return count == null ? 0 : count.get();
+		Integer count = instance.queueSizePerPlayer.get(player.id);
+		return count == null ? 0 : count;
 	}
 	
 	public static void removeId(int id) {
