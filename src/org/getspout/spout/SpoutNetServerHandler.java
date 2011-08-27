@@ -71,6 +71,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.ChunkCompressionThread;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -84,6 +85,7 @@ import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
 import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;
@@ -107,6 +109,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		super(minecraftserver, networkmanager, entityplayer);
 	}
 
+	@Override
 	public void a(Packet18ArmAnimation packet) {
 		if (packet.a == -42) {
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
@@ -547,7 +550,11 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	@Override
 	public void a(Packet10Flying packet) {
 		manageChunkQueue(true);
+		SpoutPlayer player = SpoutManager.getPlayer(this.getPlayer());
+		boolean old = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
+		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = player.isCanFly();
 		super.a(packet);
+		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = old;
 	}
 
 	private final LinkedHashSet<ChunkCoordIntPair> chunkUpdateQueue = new LinkedHashSet<ChunkCoordIntPair>();
@@ -576,7 +583,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			chunkCompressionThreadSize = ChunkCompressionThread.getPlayerQueueSize(this.player);
 		} catch (java.lang.NoClassDefFoundError err) {
 		}
-		if (!chunkUpdateQueue.isEmpty() && (b() + chunkCompressionThreadSize + MapChunkThread.getQueueLength(this.player)) < 4) {			ChunkCoordIntPair playerChunk = getPlayerChunk();
+		if (!chunkUpdateQueue.isEmpty() && (b() + chunkCompressionThreadSize + MapChunkThread.getQueueLength(this.player)) < 4) {
+			ChunkCoordIntPair playerChunk = getPlayerChunk();
 			Iterator<ChunkCoordIntPair> i = chunkUpdateQueue.iterator();
 			ChunkCoordIntPair first = i.next();
 			while (first != null && !activeChunks.contains(first)) {

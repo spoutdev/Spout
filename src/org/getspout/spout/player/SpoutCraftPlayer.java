@@ -103,6 +103,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double gravityMod = 1;
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
+	private boolean fly;
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
@@ -117,6 +118,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			e.printStackTrace();
 		}
 		mainScreen = new InGameScreen(this.getEntityId());
+		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
 	}
 	/* Interace Overriden Public Methods */
 
@@ -579,6 +581,16 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
 		}
+	}
+	
+	@Override
+	public boolean isCanFly() {
+		return fly;
+	}
+
+	@Override
+	public void setCanFly(boolean fly) {
+		this.fly = fly;
 	}
 	
 	@Override
