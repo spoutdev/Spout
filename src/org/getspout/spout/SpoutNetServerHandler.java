@@ -571,10 +571,11 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		//The server rules.
 		if (firstFlyPacket) {
 			if (!Double.isNaN(packet.x) && !Double.isNaN(packet.y) && !Double.isNaN(packet.z) && !Double.isNaN(packet.pitch) && !Double.isNaN(packet.yaw))
-			player.setPositionRotation(packet.x, packet.y, packet.z, packet.pitch, packet.yaw);
-			firstFlyPacket = false;
+			player.locX = packet.x;
+			player.locY = packet.y;
+			player.locZ = packet.z;
 		}
-		
+		firstFlyPacket = false;
 		
 		manageChunkQueue(true);
 		SpoutPlayer player = SpoutManager.getPlayer(this.getPlayer());
