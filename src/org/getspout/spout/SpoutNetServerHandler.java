@@ -106,8 +106,6 @@ public class SpoutNetServerHandler extends NetServerHandler {
 
 	private final int teleportZoneSize = 3; // grid size is a square of chunks with an edge of (2*teleportZoneSize - 1)
 	
-	private boolean firstFlyPacket = true;
-
 	public SpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
 	}
@@ -566,17 +564,6 @@ public class SpoutNetServerHandler extends NetServerHandler {
 
 	@Override
 	public void a(Packet10Flying packet) {
-		//Note: firstFlyPacket is used to allow the client to safely "fly" (e.g fall if they are in mid air)
-		//while in the pre-download screen. It only accepted the first packet, every other packet follows
-		//The server rules.
-		if (firstFlyPacket) {
-			if (!Double.isNaN(packet.x) && !Double.isNaN(packet.y) && !Double.isNaN(packet.z) && !Double.isNaN(packet.pitch) && !Double.isNaN(packet.yaw))
-			player.locX = packet.x;
-			player.locY = packet.y;
-			player.locZ = packet.z;
-		}
-		firstFlyPacket = false;
-		
 		manageChunkQueue(true);
 		SpoutPlayer player = SpoutManager.getPlayer(this.getPlayer());
 		boolean old = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
