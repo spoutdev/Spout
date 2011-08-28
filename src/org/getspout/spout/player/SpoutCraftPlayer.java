@@ -106,6 +106,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double gravityMod = 1;
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
+	private double jumpingMod = 1;
 	private boolean fly;
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
@@ -577,7 +578,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setGravityMultiplier(double multiplier) {
 		gravityMod = multiplier;
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
 		}
 	}
 
@@ -585,7 +586,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setSwimmingMultiplier(double multiplier) {
 		swimmingMod = multiplier;
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
 		}
 	}
 
@@ -593,7 +594,32 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setWalkingMultiplier(double multiplier) {
 		walkingMod = multiplier;
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod));
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
+		}
+	}
+	
+
+	@Override
+	public double getJumpingMultiplier() {
+		return jumpingMod;
+	}
+
+	@Override
+	public void setJumpingMultiplier(double multiplier) {
+		this.jumpingMod = multiplier;
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
+		}
+	}
+	
+	@Override
+	public void resetMovement() {
+		gravityMod = 1;
+		walkingMod = 1;
+		swimmingMod = 1;
+		jumpingMod = 1;
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
 		}
 	}
 	
