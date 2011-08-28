@@ -1,5 +1,5 @@
 name: Spout
-version: 1.0.2.${build.number}
+version: 1.0.5.${build.number}
 description: Spout is a framework to bridge the ever-widening chasm between single player mods, and multiplayer Bukkit plugins.
 authors: [Afforess, alta189, Wulfspider, Raphfrk, Narrowtux, Top_Cat]
 website: http://www.getspout.org
