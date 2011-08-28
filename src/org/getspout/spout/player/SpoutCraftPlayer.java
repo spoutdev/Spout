@@ -107,6 +107,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
 	private boolean fly;
+	private String versionString = "not set";
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
@@ -740,7 +741,15 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 	}
+	
+	public void setVersionString(String versionString) {
+		this.versionString = versionString;
+	}
 
+	public String getVersionString() {
+		return versionString;
+	}
+	
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();

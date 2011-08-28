@@ -90,4 +90,15 @@ public class SimplePlayerManager implements PlayerManager{
 		}
 		return spoutPlayers;
 	}
+	
+	@Override
+	public void setVersionString(int playerId, String versionString) {
+		
+		SpoutPlayer sp = getPlayer(playerId);
+		if (sp instanceof SpoutCraftPlayer) {
+			SpoutCraftPlayer scp = (SpoutCraftPlayer)sp;
+			scp.setVersionString(versionString);
+		}
+		
+	}
 }

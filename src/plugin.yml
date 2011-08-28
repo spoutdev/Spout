@@ -6,3 +6,11 @@ website: http://www.getspout.org
 
 main: org.getspout.spout.Spout
 load: postworld
+
+commands:
+  spver:
+    aliases: [spoutversion spversion]
+    description: used to report server and client versions
+    usage: |
+      Usage: /<command>
+      Incorrect usage of command /<command>
