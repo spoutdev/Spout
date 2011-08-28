@@ -8,9 +8,9 @@ main: org.getspout.spout.Spout
 load: postworld
 
 commands:
-  spver:
-    aliases: [spoutversion spversion]
-    description: used to report server and client versions
+  spout:
+    aliases: [spoutcommand]
+    description: Spout commands
     usage: |
-      Usage: /<command>
-      Incorrect usage of command /<command>
+      Usage: /<command> version
+      Usage: /<command> version playername
