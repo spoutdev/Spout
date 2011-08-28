@@ -6,3 +6,11 @@ website: http://www.getspout.org
 
 main: org.getspout.spout.Spout
 load: postworld
+
+commands:
+  spout:
+    aliases: [spoutcommand]
+    description: Spout commands
+    usage: |
+      Usage: /<command> version
+      Usage: /<command> version playername

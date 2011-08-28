@@ -39,6 +39,7 @@ import org.bukkit.util.config.Configuration;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkcache.SimpleCacheManager;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
+import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
@@ -160,6 +161,7 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
 
+		getCommand("spout").setExecutor(new SpoutCommand(this));
 
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
