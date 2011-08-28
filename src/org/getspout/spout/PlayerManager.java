@@ -75,7 +75,6 @@ public class PlayerManager {
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
-		System.out.println("[Spout] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + ((SpoutCraftPlayer)player).getVersion());
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
 		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));
