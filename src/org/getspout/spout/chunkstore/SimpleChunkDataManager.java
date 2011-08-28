@@ -28,8 +28,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.getspout.spout.util.ChunkUtil;
-import org.getspout.spout.util.UniqueStringMap;
 import org.getspout.spoutapi.chunkdatamanager.ChunkDataManager;
+import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class SimpleChunkDataManager implements ChunkDataManager {
 	
@@ -152,7 +152,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 	
 	public int getStringId(String string) {
-		return UniqueStringMap.getId(string);
+		return UniqueItemStringMap.getId(string);
 	}
 
 

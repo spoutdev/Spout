@@ -57,6 +57,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.packet.PacketPluginReload;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
+import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
@@ -65,6 +66,7 @@ public class Spout extends JavaPlugin{
 	private final PluginListener pluginListener;
 	private static Spout instance;
 	private Configuration CRCConfig;
+	private Configuration itemMapConfig;
 	
 	public Spout() {
 		super();
@@ -119,6 +121,12 @@ public class Spout extends JavaPlugin{
 		dm.closeAllFiles();
 		
 		CRCConfig.save();
+		
+		if (itemMapConfig != null) {
+			synchronized(itemMapConfig) {
+				itemMapConfig.save();
+			}
+		}
 		
 		//Attempt to auto update if file is available
 		try {
@@ -194,6 +202,11 @@ public class Spout extends JavaPlugin{
 		CRCConfig.load();
 		
 		CRCStore.setConfigFile(CRCConfig);
+		
+		itemMapConfig = new Configuration(new File(this.getDataFolder(), "itemMap.yml"));
+		itemMapConfig.load();
+		
+		UniqueItemStringMap.setConfigFile(itemMapConfig);
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}
