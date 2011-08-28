@@ -18,17 +18,18 @@ public class SpoutCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-		if (!sender.isOp()) {
-			sender.sendMessage("[Spout] This command is Op only");
+		
+		
+		sender.sendMessage("[Spout] Server version: " + p.getDescription().getVersion());
+		
+		if (args.length == 0) {
 			return true;
 		}
 		
-		if (args.length == 0) {
-			return false;
+		if (!sender.isOp() && args.length > 0) {
+			sender.sendMessage("[Spout] This command is Op only");
+			return true;
 		}
-		
-		sender.sendMessage("[Spout] Server version: " + p.getDescription().getVersion());
 		
 		String c = args[0];
 
