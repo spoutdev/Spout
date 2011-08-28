@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.Deflater;
 
@@ -78,6 +79,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.inventory.Inventory;
+import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
@@ -501,8 +503,28 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			super.sendPacket(packet);
 		}
 	}
+	
+	AtomicLong lastUnloadCheck = new AtomicLong(0);
 
 	public Packet updateActiveChunks(Packet packet) {
+		
+		long currentTime = System.currentTimeMillis();
+		if (lastUnloadCheck.get() + 1000 < currentTime) {
+			lastUnloadCheck.set(currentTime);
+			synchronized (unloadQueue) {
+				Iterator<ChunkCoordIntPair> i = unloadQueue.iterator();
+				while (i.hasNext()) {
+					ChunkCoordIntPair coord = i.next();
+					if (!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
+						if (activeChunks.remove(coord)) {
+							resyncQueue.addFirst(new Packet50PreChunk(coord.x, coord.z, false));
+						}
+						i.remove();
+					}
+				}
+			}
+		}
+		
 		if (packet instanceof Packet50PreChunk) {
 			Packet50PreChunk p = (Packet50PreChunk) packet;
 			int cx = p.a;
@@ -523,18 +545,6 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				} else {
 					unloadQueue.add(new ChunkCoordIntPair(cx, cz));
 					p = null;
-				}
-			}
-			synchronized (unloadQueue) {
-				Iterator<ChunkCoordIntPair> i = unloadQueue.iterator();
-				while (i.hasNext()) {
-					ChunkCoordIntPair coord = i.next();
-					if (!nearPlayer(coord.x, coord.z, teleportZoneSize)) {
-						if (activeChunks.remove(coord)) {
-							resyncQueue.addFirst(new Packet50PreChunk(coord.x, coord.z, false));
-						}
-						i.remove();
-					}
 				}
 			}
 			return p;
@@ -698,20 +708,22 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	}
 
 	private void playerTeleported(int cx, int cz) {
-		for (int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
-			for (int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
-				int xx = cx + x;
-				int zz = cz + z;
-				ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
+		if (ConfigReader.isTeleportSmoothing()) {
+			for (int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
+				for (int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
+					int xx = cx + x;
+					int zz = cz + z;
+					ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
 
-				unloadQueue.remove(chunkPos);
+					unloadQueue.remove(chunkPos);
 
-				if(!activeChunks.contains(chunkPos)) {
-					this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
-					Packet p = getFastPacket51(xx, zz);
-					if (p != null) {
-						this.queueOutputPacket(p);
-						sendChunkTiles(xx, zz, player);
+					if(!activeChunks.contains(chunkPos)) {
+						this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
+						Packet p = getFastPacket51(xx, zz);
+						if (p != null) {
+							this.queueOutputPacket(p);
+							sendChunkTiles(xx, zz, player);
+						}
 					}
 				}
 			}

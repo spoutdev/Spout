@@ -30,6 +30,7 @@ public class ConfigReader {
 	private static String kickMessage = "This server requires Spoutcraft! http://bit.ly/unleashtheflow";
 	private static boolean allowVisualCheats = false;
 	private static boolean chunkDataCache = true;
+	private static boolean teleportSmoothing = true;
 	
 	public void read() {
 		try {
@@ -91,6 +92,12 @@ public class ConfigReader {
 				configuration.setProperty("ChunkDataCache", true);
 			}
 			
+			if (configuration.getProperty("TeleportSmoothing") != null) {
+				teleportSmoothing = configuration.getBoolean("TeleportSmoothing", true);
+			} else {
+				configuration.setProperty("TeleportSmoothing", true);
+			}
+			
 			if (!configuration.save()) {
 				throw new IOException();
 			}
@@ -121,5 +128,9 @@ public class ConfigReader {
 	
 	public static boolean isChunkDataCache() {
 		return chunkDataCache;
+	}
+	
+	public static boolean isTeleportSmoothing() {
+		return teleportSmoothing;
 	}
 }
