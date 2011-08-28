@@ -107,6 +107,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
 	private double jumpingMod = 1;
+	private double airspeedMod = 1;
 	private boolean fly;
 	private String versionString = "not set";
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
@@ -578,25 +579,19 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public void setGravityMultiplier(double multiplier) {
 		gravityMod = multiplier;
-		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
-		}
+		updateMovement();
 	}
 
 	@Override
 	public void setSwimmingMultiplier(double multiplier) {
 		swimmingMod = multiplier;
-		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
-		}
+		updateMovement();
 	}
 
 	@Override
 	public void setWalkingMultiplier(double multiplier) {
 		walkingMod = multiplier;
-		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
-		}
+		updateMovement();
 	}
 	
 
@@ -608,9 +603,19 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public void setJumpingMultiplier(double multiplier) {
 		this.jumpingMod = multiplier;
-		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
-		}
+		updateMovement();
+	}
+	
+
+	@Override
+	public double getAirSpeedMultiplier() {
+		return airspeedMod;
+	}
+
+	@Override
+	public void setAirSpeedMultiplier(double multiplier) {
+		airspeedMod = multiplier;
+		
 	}
 	
 	@Override
@@ -619,9 +624,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		walkingMod = 1;
 		swimmingMod = 1;
 		jumpingMod = 1;
-		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod));
-		}
+		updateMovement();
 	}
 	
 	@Override
@@ -779,6 +782,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();
+	}
+	
+	private void updateMovement() {
+		if (isSpoutCraftEnabled()) {
+			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod, airspeedMod));
+		}
 	}
 
 	/* Non Interface public static methods */
