@@ -79,6 +79,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.inventory.Inventory;
+import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
@@ -707,20 +708,22 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	}
 
 	private void playerTeleported(int cx, int cz) {
-		for (int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
-			for (int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
-				int xx = cx + x;
-				int zz = cz + z;
-				ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
+		if (ConfigReader.isTeleportSmoothing()) {
+			for (int x = 1 - teleportZoneSize; x < teleportZoneSize; x++) {
+				for (int z = 1 - teleportZoneSize; z < teleportZoneSize; z++) {
+					int xx = cx + x;
+					int zz = cz + z;
+					ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(xx, zz);
 
-				unloadQueue.remove(chunkPos);
+					unloadQueue.remove(chunkPos);
 
-				if(!activeChunks.contains(chunkPos)) {
-					this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
-					Packet p = getFastPacket51(xx, zz);
-					if (p != null) {
-						this.queueOutputPacket(p);
-						sendChunkTiles(xx, zz, player);
+					if(!activeChunks.contains(chunkPos)) {
+						this.queueOutputPacket(new Packet50PreChunk(xx, zz, true));
+						Packet p = getFastPacket51(xx, zz);
+						if (p != null) {
+							this.queueOutputPacket(p);
+							sendChunkTiles(xx, zz, player);
+						}
 					}
 				}
 			}
