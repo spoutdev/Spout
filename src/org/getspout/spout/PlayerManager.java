@@ -77,12 +77,10 @@ public class PlayerManager {
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
 		player.sendPacket(new PacketMovementModifiers(player.getGravityMultiplier(), player.getWalkingMultiplier(), player.getSwimmingMultiplier()));
-		System.out.println("[Spout] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + player.getVersion());
-		if(player.getVersion() > 101) {
-			PacketCacheHashUpdate p = new PacketCacheHashUpdate();
-			p.reset = true;
-			((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));
-		}
+		System.out.println("[Spout] Successfully authenticated " + player.getName() + "'s Spoutcraft client. Running client version: " + ((SpoutCraftPlayer)player).getVersion());
+		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
+		p.reset = true;
+		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}
 
