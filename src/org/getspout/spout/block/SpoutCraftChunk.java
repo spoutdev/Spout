@@ -42,15 +42,22 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
 	protected static final Set<SpoutCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<SpoutCraftChunk, Boolean>());
+	protected Field cache;
 
 	public SpoutCraftChunk(Chunk chunk) {
 		super(chunk);
+		try {
+			cache = CraftChunk.class.getDeclaredField("cache");
+			cache.setAccessible(true);
+		}
+		catch (Exception e) {
+			cache = null;
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Block> getCache() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		Field cache = CraftChunk.class.getDeclaredField("cache");
-		cache.setAccessible(true);
 		return (Map<Integer, Block>) cache.get(this);
 	}
 
