@@ -615,6 +615,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public void setAirSpeedMultiplier(double multiplier) {
 		airspeedMod = multiplier;
+		updateMovement();
 		
 	}
 	
