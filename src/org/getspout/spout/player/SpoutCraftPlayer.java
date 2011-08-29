@@ -124,6 +124,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
 		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
 	}
