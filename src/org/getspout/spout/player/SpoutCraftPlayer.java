@@ -303,7 +303,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 			getNetServerHandler().setActiveInventory(true);
 			getNetServerHandler().setActiveInventoryLocation(location);
-			getHandle().a(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+			getHandle().b(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 			return true;
 		}
 	}
