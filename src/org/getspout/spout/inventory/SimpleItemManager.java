@@ -23,12 +23,15 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class SimpleItemManager implements ItemManager{
+	private final HashMap<Integer, Integer> itemBlock = new HashMap<Integer,Integer>();
 	private final HashMap<ItemData, String> itemNames;
 	private final HashMap<ItemData, String> customNames;
 	public SimpleItemManager() {
@@ -307,6 +310,10 @@ public class SimpleItemManager implements ItemManager{
 		}
 	}
 	
+	public void setItemName(int id, String name) {
+		setItemName(Material.STONE, (short)id, name);
+	}
+	
 	@Override
 	public void resetName(Material item) {
 		resetName(item,(byte) 0);
@@ -343,6 +350,10 @@ public class SimpleItemManager implements ItemManager{
 	public String getCustomItemName(Material item) {
 		return getCustomItemName(item, (short)0);
 	}
+	
+	public String getCustomItemName(int id) {
+		return getCustomItemName(Material.STONE, (short)id);
+	}
 
 	@Override
 	public String getCustomItemName(Material item, short data) {
@@ -361,5 +372,25 @@ public class SimpleItemManager implements ItemManager{
 				((SpoutPlayer)player).sendPacket(new PacketItemName(e.getKey().id, e.getKey().data, e.getValue()));
 			}
 		}
+	}
+	
+	public Integer getItemBlock(int damage) {
+		return itemBlock.get(damage);
+	}
+	
+	public Integer registerCustomItemName(String key) {
+		return UniqueItemStringMap.getId(key);
+	}
+	
+	public void setCustomItemBlock(int id, Integer blockId) {
+		if (blockId != null) {
+			itemBlock.put(id, blockId);
+		} else {
+			itemBlock.remove(id);
+		}
+	}
+
+	public ItemStack getCustomItemStack(int id, int size) {
+		return new ItemStack(1, size, (short)id);
 	}
 }

@@ -64,6 +64,7 @@ public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
 	private final SpoutWorldListener chunkListener;
 	private final SpoutWorldMonitorListener chunkMonitorListener;
+	private final SpoutBlockListener blockListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
 	private Configuration CRCConfig;
@@ -87,6 +88,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setChunkDataManager(new SimpleChunkDataManager());
 		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
 		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
+		blockListener = new SpoutBlockListener(); 
 	}
 	@Override
 	public void onDisable() {
@@ -169,6 +171,7 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Lowest, this);
 
 		getCommand("spout").setExecutor(new SpoutCommand(this));
 
