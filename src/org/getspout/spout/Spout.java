@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import net.minecraft.server.Packet18ArmAnimation;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
@@ -279,15 +280,26 @@ public class Spout extends JavaPlugin{
 				}
 				catch (SecurityException e1) {}
 			}
+			File tempDirectory = new File(directory, "temp");
+			if (!tempDirectory.exists()) {
+				try {
+					tempDirectory.mkdir();
+				}
+				catch (SecurityException e1) {}
+			}
 			File plugin = new File(directory.getPath(), "Spout.jar");
+			File temp = new File(tempDirectory.getPath(), "Spout.jar");
 			if (!plugin.exists()) {
 				URL spout = new URL("http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar");
 				HttpURLConnection con = (HttpURLConnection)(spout.openConnection());
 				System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 				ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
-				fos = new FileOutputStream(plugin);
+				fos = new FileOutputStream(temp);
 				fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+			}
+			if (temp.exists()) {
+				FileUtils.moveFile(temp, plugin);
 			}
 		}
 		catch (Exception e) {}
