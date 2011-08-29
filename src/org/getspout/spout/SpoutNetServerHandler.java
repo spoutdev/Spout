@@ -352,7 +352,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		// clicked on bottom player inventory
 		if (!(this.player.activeContainer instanceof ContainerPlayer) && this.player.defaultContainer instanceof ContainerPlayer && packet.b >= inventory.getSize()) {
 			int activeSlot = packet.b - inventory.getSize() + 9;
-			if (activeSlot > this.getPlayer().getInventory().getSize()) {
+			if (activeSlot >= this.getPlayer().getInventory().getSize()) {
 				activeSlot -= this.getPlayer().getInventory().getSize();
 			}
 			type = getInventorySlotType(activeSlot);
