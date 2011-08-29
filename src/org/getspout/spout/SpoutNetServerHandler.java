@@ -497,7 +497,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	// Called from the main thread only
 	private void syncedSendPacket(Packet packet) {
 
-		if (!PacketListeners.canSend(SpoutCraftPlayer.getPlayer(getPlayer()), packet, packetWrappers, packet.b())) {
+		if (!PacketListeners.canSend(getPlayer(), packet, packetWrappers, packet.b())) {
 			return;
 		} else {
 			super.sendPacket(packet);
