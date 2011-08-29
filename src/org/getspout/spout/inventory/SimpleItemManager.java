@@ -19,19 +19,24 @@ package org.getspout.spout.inventory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.spout.Spout;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.inventory.ItemManager;
+import org.getspout.spoutapi.packet.PacketCustomItem;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class SimpleItemManager implements ItemManager{
 	private final HashMap<Integer, Integer> itemBlock = new HashMap<Integer,Integer>();
+	private final HashMap<Integer, String> itemTexture = new HashMap<Integer,String>();
+	
 	private final HashMap<ItemData, String> itemNames;
 	private final HashMap<ItemData, String> customNames;
 	public SimpleItemManager() {
@@ -388,8 +393,50 @@ public class SimpleItemManager implements ItemManager{
 		} else {
 			itemBlock.remove(id);
 		}
+		updateCustomClientData(id);
+	}
+	
+	public void setCustomItemTexture(int id, String texture) {
+		if (texture != null) {
+			itemTexture.put(id, texture);
+		} else {
+			itemTexture.remove(id);
+		}
+		updateCustomClientData(id);
 	}
 
+	public void updateCustomClientData(Player player) {
+		Set<Integer> ids = UniqueItemStringMap.getIds();
+		Player[] players = new Player[1];
+		players[0] = player;
+		for (Integer id : ids) {
+			updateCustomClientData(players, id);
+		}
+	}
+	
+	private void updateCustomClientData(int id) {
+		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
+		updateCustomClientData(players, id);
+	}
+		
+	private void updateCustomClientData(Player[] players, int id) {
+		
+		String texture = itemTexture.get(id);
+		
+		Integer blockId = itemBlock.get(id);
+		
+		PacketCustomItem p = new PacketCustomItem(id, blockId, texture);
+		
+		for (Player player : players) {
+			if (player instanceof SpoutCraftPlayer) {
+				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
+				if (sp.isSpoutCraftEnabled()) {
+					sp.sendPacket(p);
+				}
+			}
+		}
+	}
+	
 	public ItemStack getCustomItemStack(int id, int size) {
 		return new ItemStack(1, size, (short)id);
 	}
