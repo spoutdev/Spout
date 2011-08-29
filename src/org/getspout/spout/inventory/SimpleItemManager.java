@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.getspout.spout.Spout;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.inventory.ItemManager;
@@ -36,6 +37,7 @@ import org.getspout.spoutapi.util.UniqueItemStringMap;
 public class SimpleItemManager implements ItemManager{
 	private final HashMap<Integer, Integer> itemBlock = new HashMap<Integer,Integer>();
 	private final HashMap<Integer, String> itemTexture = new HashMap<Integer,String>();
+	private final HashMap<Integer, String> itemPlugin = new HashMap<Integer,String>();
 	
 	private final HashMap<ItemData, String> itemNames;
 	private final HashMap<ItemData, String> customNames;
@@ -383,8 +385,12 @@ public class SimpleItemManager implements ItemManager{
 		return itemBlock.get(damage);
 	}
 	
-	public Integer registerCustomItemName(String key) {
-		return UniqueItemStringMap.getId(key);
+	public Integer registerCustomItemName(Plugin plugin, String key) {
+		int id = UniqueItemStringMap.getId(key);
+		
+		itemPlugin.put(id, plugin.getDescription().getName());
+		
+		return id;
 	}
 	
 	public void setCustomItemBlock(int id, Integer blockId) {
@@ -396,11 +402,13 @@ public class SimpleItemManager implements ItemManager{
 		updateCustomClientData(id);
 	}
 	
-	public void setCustomItemTexture(int id, String texture) {
-		if (texture != null) {
+	public void setCustomItemTexture(int id, Plugin plugin, String texture) {
+		if (texture != null && plugin != null) {
 			itemTexture.put(id, texture);
+			itemPlugin.put(id, plugin.getDescription().getName());
 		} else {
 			itemTexture.remove(id);
+			itemPlugin.remove(id);
 		}
 		updateCustomClientData(id);
 	}
@@ -425,7 +433,9 @@ public class SimpleItemManager implements ItemManager{
 		
 		Integer blockId = itemBlock.get(id);
 		
-		PacketCustomItem p = new PacketCustomItem(id, blockId, texture);
+		String pluginName = itemPlugin.get(id);
+		
+		PacketCustomItem p = new PacketCustomItem(id, blockId, pluginName, texture);
 		
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
