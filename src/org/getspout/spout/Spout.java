@@ -49,6 +49,7 @@ import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleBiomeManager;
+import org.getspout.spout.player.SimpleCustomBlockManager;
 import org.getspout.spout.player.SimpleFileManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SimpleSkyManager;
@@ -87,6 +88,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setChunkDataManager(new SimpleChunkDataManager());
 		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
 		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
+		SpoutManager.getInstance().setCustomBlockManager(new SimpleCustomBlockManager());
 	}
 	@Override
 	public void onDisable() {
