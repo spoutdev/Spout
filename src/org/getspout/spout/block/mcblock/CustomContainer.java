@@ -39,8 +39,6 @@ public class CustomContainer extends BlockContainer{
 		updateField(parent, this, "name");
 		
 		Block.isTileEntity[id] = true;
-		
-		System.out.println("Block Name: " +l());
 	}
 	
 	@Override

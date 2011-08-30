@@ -36,8 +36,6 @@ public class CustomBlock extends Block{
 		this.bz = parent.bz;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
-		
-		System.out.println("Block Name: " +l());
 	}
 	
 	@Override
@@ -276,8 +274,6 @@ public class CustomBlock extends Block{
 				else {
 					Block.byId[i] = new CustomBlock(parent);
 				}
-				
-				System.out.println("Is tick on load: " + oldn);
 				n[i] = oldn;
 				o[i] = oldo;
 				isTileEntity[i] = oldTileEntity;
