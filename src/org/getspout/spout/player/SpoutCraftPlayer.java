@@ -38,7 +38,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -115,15 +114,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
-		try {
-			CraftPlayer cp = entity.netServerHandler.getPlayer();
-			Field permissionBase = CraftHumanEntity.class.getDeclaredField("perm");
-			permissionBase.setAccessible(true);
-			perm = new SpoutPermissibleBase((PermissibleBase) permissionBase.get(cp));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		CraftPlayer player = entity.netServerHandler.getPlayer();
+        perm = new SpoutPermissibleBase((PermissibleBase) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
+        perm.recalculatePermissions();
+		addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible();
+		perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
 		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
 	}

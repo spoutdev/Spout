@@ -339,7 +339,7 @@ public class SimpleItemManager implements ItemManager{
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer){
 				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
-					((SpoutPlayer)player).sendPacket(new PacketItemName(item.getId(), (short) 0, name));
+					((SpoutPlayer)player).sendPacket(new PacketItemName(item.getId(), data, name));
 				}
 			}
 		}
