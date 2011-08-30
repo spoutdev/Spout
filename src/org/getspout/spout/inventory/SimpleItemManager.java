@@ -40,7 +40,6 @@ import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class SimpleItemManager implements ItemManager{
 	private final HashMap<Integer, Integer> itemBlock = new HashMap<Integer,Integer>();
-	private final HashMap<Integer, String> itemTexture = new HashMap<Integer,String>();
 	private final HashMap<Integer, String> itemPlugin = new HashMap<Integer,String>();
 	
 	private final HashMap<ItemData, String> itemNames;
@@ -431,17 +430,6 @@ public class SimpleItemManager implements ItemManager{
 		updateCustomClientData(id);
 	}
 	
-	public void setCustomItemTexture(int id, Plugin plugin, String texture) {
-		if (texture != null && plugin != null) {
-			itemTexture.put(id, texture);
-			itemPlugin.put(id, plugin.getDescription().getName());
-		} else {
-			itemTexture.remove(id);
-			itemPlugin.remove(id);
-		}
-		updateCustomClientData(id);
-	}
-
 	public void updateCustomClientData(Player player) {
 		Set<Integer> ids = UniqueItemStringMap.getIds();
 		Player[] players = new Player[1];
@@ -458,13 +446,11 @@ public class SimpleItemManager implements ItemManager{
 		
 	private void updateCustomClientData(Player[] players, int id) {
 		
-		String texture = itemTexture.get(id);
-		
 		Integer blockId = itemBlock.get(id);
 		
 		String pluginName = itemPlugin.get(id);
 		
-		PacketCustomItem p = new PacketCustomItem(id, blockId, pluginName, texture);
+		PacketCustomItem p = new PacketCustomItem(id, blockId);
 		
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
