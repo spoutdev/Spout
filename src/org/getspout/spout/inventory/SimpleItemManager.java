@@ -42,6 +42,7 @@ import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class SimpleItemManager implements ItemManager{
 	private final HashMap<Integer, Integer> itemBlock = new HashMap<Integer,Integer>();
+    private final HashMap<Integer, Short> itemMetaData = new HashMap<Integer,Short>();
 	private final HashMap<Integer, String> itemPlugin = new HashMap<Integer,String>();
 	
 	private final HashMap<ItemData, String> itemNames;
@@ -489,6 +490,10 @@ public class SimpleItemManager implements ItemManager{
 		return itemBlock.get(damage);
 	}
 	
+	public Short getItemMetaData(int damage) {
+		return itemMetaData.get(damage);
+	}
+	
 	public Integer registerCustomItemName(Plugin plugin, String key) {
 		int id = UniqueItemStringMap.getId(key);
 		
@@ -497,11 +502,13 @@ public class SimpleItemManager implements ItemManager{
 		return id;
 	}
 	
-	public void setCustomItemBlock(int id, Integer blockId) {
-		if (blockId != null) {
+	public void setCustomItemBlock(int id, Integer blockId, Short metaData) {
+		if (blockId != null || metaData == null) {
 			itemBlock.put(id, blockId);
+			itemMetaData.put(id, metaData);
 		} else {
 			itemBlock.remove(id);
+			itemMetaData.remove(id);
 		}
 		updateCustomClientData(id);
 	}
@@ -524,9 +531,11 @@ public class SimpleItemManager implements ItemManager{
 		
 		Integer blockId = itemBlock.get(id);
 		
+		Short metaData = itemMetaData.get(id);
+		
 		String pluginName = itemPlugin.get(id);
 		
-		PacketCustomItem p = new PacketCustomItem(id, blockId);
+		PacketCustomItem p = new PacketCustomItem(id, blockId, metaData);
 		
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
