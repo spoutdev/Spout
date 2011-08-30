@@ -19,6 +19,7 @@ package org.getspout.spout.block;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,10 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
 	protected static final Set<SpoutCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<SpoutCraftChunk, Boolean>());
+	
+	public final HashMap<Integer, Integer> powerOverrides = new HashMap<Integer, Integer>();
+	public final HashMap<Integer, Float> hardnessOverrides = new HashMap<Integer, Float>();
+	
 	protected Field cache;
 
 	public SpoutCraftChunk(Chunk chunk) {

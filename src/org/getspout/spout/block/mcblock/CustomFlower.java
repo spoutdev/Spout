@@ -3,40 +3,25 @@ package org.getspout.spout.block.mcblock;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
-import org.getspout.spout.block.SpoutCraftChunk;
-import org.getspout.spout.player.SpoutCraftPlayer;
-import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.block.SpoutBlock;
 
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Block;
-import net.minecraft.server.BlockContainer;
 import net.minecraft.server.BlockFlower;
-import net.minecraft.server.BlockMinecartTrack;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
-import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IBlockAccess;
 import net.minecraft.server.MovingObjectPosition;
 import net.minecraft.server.Vec3D;
 import net.minecraft.server.World;
 
-public class CustomBlock extends Block{
-	protected Block parent;
-	
-	
-	
-	protected CustomBlock(Block parent) {
-		super(parent.id, parent.textureId, parent.material);
+public class CustomFlower extends BlockFlower{
+	protected BlockFlower parent;
+	protected CustomFlower(BlockFlower parent) {
+		super(parent.id, parent.textureId);
 		this.parent = parent;
+		
 		updateField(parent, this, "strength");
 		updateField(parent, this, "durability");
 		updateField(parent, this, "bq");
@@ -51,12 +36,6 @@ public class CustomBlock extends Block{
 		this.bz = parent.bz;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
-		
-		System.out.println("Block: " + l() + " Material: " + this.material + " Is Replacable: " + this.material.isReplacable() + " Is Buildable: " + this.material.isBuildable());
-	}
-	
-	private static int getIndex(int x, int y, int z) {
-		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
 	}
 	
 	@Override
@@ -177,20 +156,6 @@ public class CustomBlock extends Block{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
-		if (entityhuman instanceof EntityPlayer) {
-			System.out.println("Getting Damage");
-			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
-			Location target = player.getRawLastClickedLocation();
-			if (target != null) {
-				System.out.println("Valid Last Click");
-				int index = getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
-				Map<Integer, Float> hardnessOverrides = ((SpoutCraftChunk)target.getWorld().getChunkAt(target)).hardnessOverrides;
-				if (hardnessOverrides.containsKey(index)) {
-					System.out.println("Returning Override. Parent: " + parent.getDamage(entityhuman) + " Override: " + hardnessOverrides.get(index));
-					return hardnessOverrides.get(index);
-				}
-			}
-		}
 		return parent.getDamage(entityhuman);
 	}
 	
@@ -211,19 +176,16 @@ public class CustomBlock extends Block{
 	
 	@Override
 	public boolean canPlace(World world, int i, int j, int k, int l) {
-		System.out.println("Can Place: " + parent.canPlace(world, i, j, k, l)  + " Super: " + super.canPlace(world, i, j, k, l));
 		return parent.canPlace(world, i, j, k, l);
 	}
 	
 	@Override
 	public boolean canPlace(World world, int i, int j, int k) {
-		System.out.println("Can Place: " + parent.canPlace(world, i, j, k)  + " Super: " + super.canPlace(world, i, j, k));
 		return parent.canPlace(world, i, j, k);
 	}
 	
 	@Override
 	public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman) {
-		System.out.println("Can Interact: " + parent.interact(world, i, j, k, entityhuman)  + " Super: " + super.interact(world, i, j, k, entityhuman));
 		return parent.interact(world, i, j, k, entityhuman);
 	}
 	
@@ -239,10 +201,6 @@ public class CustomBlock extends Block{
 	
 	@Override
 	 public void b(World world, int i, int j, int k, EntityHuman entityhuman) {
-		if (entityhuman instanceof EntityPlayer) {
-			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
-			player.setLastClickedLocation(new Location(player.getWorld(), i, j, k));
-		}
 		parent.b(world, i, j, k, entityhuman);
 	 }
 	
@@ -257,29 +215,8 @@ public class CustomBlock extends Block{
 	}
 	
 	@Override
-	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
-		int index = getIndex(x, y, z);
-		Map<Integer, Integer> powerOverrides = ((SpoutCraftChunk)((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk).powerOverrides;
-		if (powerOverrides.containsKey(index)) {
-			int powerbits = powerOverrides.get(index);
-			switch (face) {
-				case 0:
-					return (powerbits & (1 << 0)) != 0;
-				case 1:
-					return (powerbits & (1 << 1)) != 0;
-				case 2:
-					return (powerbits & (1 << 2)) != 0;
-				case 3:
-					return (powerbits & (1 << 3)) != 0;
-				case 4:
-					return (powerbits & (1 << 4)) != 0;
-				case 5:
-					return (powerbits & (1 << 5)) != 0;
-				default:
-					return parent.a(iblockaccess, x, y, z, face);
-			}
-		}
-		return parent.a(iblockaccess, x, y, z, face);
+	public boolean a(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+		return parent.a(iblockaccess, i, j, k, l);
 	}
 	
 	@Override
@@ -316,55 +253,7 @@ public class CustomBlock extends Block{
 	public void a(World world, int i, int j, int k, int l, int i1) {
 		parent.a(world, i, j, k, l, i1);
 	}
-	
-	public static void replaceBlocks() {
-		for (int i = 0; i < Block.byId.length; i++) {
-			if (Block.byId[i] != null) {
-				Block parent = Block.byId[i];
-				Block.byId[i] = null;
-				
-				boolean oldn = n[i];
-				boolean oldo = o[i];
-				boolean oldTileEntity = isTileEntity[i];
-				int oldq = q[i];
-				boolean oldr = r[i];
-				int olds = s[i];
-				boolean oldt = t[i];
-				
-				if (parent instanceof BlockContainer) {
-					Block.byId[i] = new CustomContainer((BlockContainer)parent);
-				}
-				else if (parent instanceof BlockMinecartTrack) {
-					Block.byId[i] = new CustomMinecartTrack((BlockMinecartTrack)parent);
-				}
-				else if (parent instanceof BlockFlower) {
-					Block.byId[i] = new CustomFlower((BlockFlower)parent);
-				}
-				else {
-					Block.byId[i] = new CustomBlock(parent);
-				}
-				n[i] = oldn;
-				o[i] = oldo;
-				isTileEntity[i] = oldTileEntity;
-				q[i] = oldq;
-				r[i] = oldr;
-				s[i] = olds;
-				t[i] = oldt;
 
-			}
-		}
-		
-		int range = 55;
-		for (int dx = -(range); dx <= range; dx++){
-			for (int dy = -(range); dy <= range; dy++){
-				for (int dz = -(range); dz <= range; dz++){
-					((SpoutBlock)Bukkit.getServer().getWorlds().get(0).getBlockAt(dx, dy, dz)).setBlockPowered(true, BlockFace.EAST);
-					((SpoutBlock)Bukkit.getServer().getWorlds().get(0).getBlockAt(dx, dy, dz)).setHardness(5f);
-				}
-			}
-		}
-	}
-	
 	private static void updateField(Block parent, Block child, String fieldName) {
 		try {
 			Field field = Block.class.getDeclaredField(fieldName);

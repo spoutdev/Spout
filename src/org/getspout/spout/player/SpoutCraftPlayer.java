@@ -109,6 +109,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double airspeedMod = 1;
 	private boolean fly;
 	private String versionString = "not set";
+	private Location lastClicked = null;
+	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
@@ -641,8 +643,25 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		return event.isCancelled();
 	}
+	
+
+	@Override
+	public Location getLastClickedLocation() {
+		if (lastClicked != null) {
+			return lastClicked.clone();
+		}
+		return null;
+	}
 
 	/*Non Inteface public methods */
+	
+	public Location getRawLastClickedLocation() {
+		return lastClicked;
+	}
+	
+	public void setLastClickedLocation(Location location) {
+		lastClicked = location;
+	}
 
 	public void createInventory(String name) {
 		if (this.getHandle().activeContainer instanceof ContainerPlayer) {

@@ -154,7 +154,6 @@ public class Spout extends JavaPlugin{
 
 	@Override
 	public void onEnable() {
-		CustomBlock.replaceBlocks();
 		Spout.instance = this;
 		(new ConfigReader()).read();
 		(new Thread() {
@@ -190,6 +189,8 @@ public class Spout extends JavaPlugin{
 		SpoutCraftChunk.replaceAllBukkitChunks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
+		
+		CustomBlock.replaceBlocks();
 
 		MapChunkThread.startThread(); // Always on
 		

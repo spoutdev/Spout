@@ -125,5 +125,92 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	private int getIndex() {
 		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
 	}
+
+	@Override
+	public String getName() {
+		return SpoutManager.getItemManager().getItemName(getType(), getData());
+	}
+	
+	@Override
+	public void setBlockPowered(boolean power) {
+		setBlockPowered(power, null);
+	}
+	
+	@Override
+	public void setBlockPowered(boolean power, BlockFace face) {
+		int powerbits = 0;
+		int index = getIndex();
+		if (chunk.powerOverrides.containsKey(index)) {
+			powerbits = chunk.powerOverrides.get(index);
+		}
+		if (face != null) {
+			if (face == BlockFace.UP ){
+				powerbits = power ? powerbits | (1 << 0) : powerbits &  ~(1 << 0);
+			}
+			else if (face == BlockFace.DOWN) {
+				powerbits = power ? powerbits | (1 << 1) : powerbits &  ~(1 << 1);
+			}
+			else if (face == BlockFace.EAST) {
+				powerbits = power ? powerbits | (1 << 2) : powerbits &  ~(1 << 2);
+			}
+			else if (face == BlockFace.WEST) {
+				powerbits = power ? powerbits | (1 << 3) : powerbits &  ~(1 << 3);
+			}
+			else if (face == BlockFace.NORTH) {
+				powerbits = power ? powerbits | (1 << 4) : powerbits &  ~(1 << 4);
+			}
+			else if (face == BlockFace.SOUTH) {
+				powerbits = power ? powerbits | (1 << 5) : powerbits &  ~(1 << 5);
+			}
+			else {
+				throw new IllegalArgumentException("Valid block faces are up, down, east, west, north, south, or null.");
+			}
+		}
+		else {
+			powerbits = power ? ~0 : 0;
+		}
+		chunk.powerOverrides.put(index, powerbits);
+	}
+	
+	@Override
+	public void resetBlockPower() {
+		chunk.powerOverrides.remove(getIndex());
+	}
+
+	@Override
+	public void setLightLevel(byte level) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public float getHardness() {
+		int index = getIndex();
+		if (chunk.hardnessOverrides.containsKey(index)) {
+			return chunk.hardnessOverrides.get(index);
+		}
+		return net.minecraft.server.Block.byId[getTypeId()].j();
+	}
+
+	@Override
+	public void setHardness(float hardness) {
+		chunk.hardnessOverrides.put(getIndex(), hardness);
+	}
+
+	
+
+	@Override
+	public void resetLightLevel() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetHardness() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 	
 }
