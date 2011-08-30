@@ -35,6 +35,7 @@ import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.packet.PacketCustomItem;
 import org.getspout.spoutapi.packet.PacketItemName;
+import org.getspout.spoutapi.packet.PacketItemTexture;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 
@@ -44,9 +45,11 @@ public class SimpleItemManager implements ItemManager{
 	
 	private final HashMap<ItemData, String> itemNames;
 	private final HashMap<ItemData, String> customNames;
+	private final HashMap<ItemData, String> customTextures;
 	public SimpleItemManager() {
 		itemNames = new HashMap<ItemData, String>(500);
 		customNames = new HashMap<ItemData, String>(100);
+		customTextures = new HashMap<ItemData, String>(100);
 		itemNames.put(new ItemData(1), "Stone");
 		itemNames.put(new ItemData(2), "Grass");
 		itemNames.put(new ItemData(3), "Dirt");
@@ -372,6 +375,7 @@ public class SimpleItemManager implements ItemManager{
 	@Override
 	public void reset() {
 		customNames.clear();
+		customTextures.clear();
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer){
 				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
@@ -398,13 +402,69 @@ public class SimpleItemManager implements ItemManager{
 		}
 		return null;
 	}
-	
+
 	public void onPlayerJoin(SpoutPlayer player) {
-		if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
+		if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
 			Iterator<Entry<ItemData, String>> i = customNames.entrySet().iterator();
 			while (i.hasNext()) {
 				Entry<ItemData, String> e = i.next();
-				((SpoutPlayer)player).sendPacket(new PacketItemName(e.getKey().id, e.getKey().data, e.getValue()));
+				((SpoutPlayer) player).sendPacket(new PacketItemName(e.getKey().id, e.getKey().data, e.getValue()));
+			}
+			i = customTextures.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<ItemData, String> e = i.next();
+				((SpoutPlayer) player).sendPacket(new PacketItemTexture(e.getKey().id, e.getKey().data, e.getValue()));
+			}
+		}
+	}
+
+	@Override
+	public void setItemTexture(Material item, String texture) {
+		setItemTexture(item, (short) 0, texture);
+	}
+
+	@Override
+	public void setItemTexture(Material item, short data, String texture) {
+		customTextures.put(new ItemData(item.getId(), data), texture);
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+			if (player instanceof SpoutCraftPlayer) {
+				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
+					((SpoutPlayer) player).sendPacket(new PacketItemTexture(item.getId(), data, texture));
+				}
+			}
+		}
+	}
+
+	@Override
+	public String getCustomItemTexture(Material item) {
+		return getCustomItemTexture(item, (short) 0);
+	}
+
+	@Override
+	public String getCustomItemTexture(Material item, short data) {
+		ItemData info = new ItemData(item.getId(), data);
+		if (customTextures.containsKey(info)) {
+			return customTextures.get(info);
+		}
+		return null;
+	}
+
+	@Override
+	public void resetTexture(Material item) {
+		resetTexture(item, (short) 0);
+	}
+
+	@Override
+	public void resetTexture(Material item, short data) {
+		ItemData info = new ItemData(item.getId(), data);
+		if (customTextures.containsKey(info)) {
+			customTextures.remove(info);
+			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+				if (player instanceof SpoutCraftPlayer) {
+					if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
+						((SpoutPlayer) player).sendPacket(new PacketItemTexture(info.id, info.data, "[reset]"));
+					}
+				}
 			}
 		}
 	}
