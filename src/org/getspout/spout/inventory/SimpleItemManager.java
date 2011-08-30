@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.minecraft.server.Block;
 import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;
@@ -434,6 +435,11 @@ public class SimpleItemManager implements ItemManager{
 			}
 		}
 	}
+	
+	@Override
+	public void setItemTexture(int id, String texture) {
+		setItemTexture(Material.STONE, (short)id, texture);
+	}
 
 	@Override
 	public String getCustomItemTexture(Material item) {
@@ -447,6 +453,11 @@ public class SimpleItemManager implements ItemManager{
 			return customTextures.get(info);
 		}
 		return null;
+	}
+	
+	@Override
+	public String getCustomItemTexture(int id) {
+		return getCustomItemTexture(Material.STONE, (short)id);
 	}
 
 	@Override
@@ -467,6 +478,11 @@ public class SimpleItemManager implements ItemManager{
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void resetTexture(int id) {
+		resetTexture(Material.STONE, (short)id);
 	}
 	
 	public Integer getItemBlock(int damage) {
