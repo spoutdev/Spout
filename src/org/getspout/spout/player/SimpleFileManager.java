@@ -159,6 +159,9 @@ public class SimpleFileManager implements FileManager {
 	@Override
 	public boolean addToPreLoginCache(Plugin plugin, Collection<File> files) {
 		for (File file: files) {
+			if (file == null || !file.exists() || file.isDirectory()) {
+				throw new IllegalArgumentException("Invalid Files! Files must not be null and must exist!");
+			}
 			if (!canCache(file)) {
 				return false;
 			}
@@ -190,6 +193,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToCache(Plugin plugin, File file) {
+		if (file == null || !file.exists() || file.isDirectory()) {
+			throw new IllegalArgumentException("Invalid File! Files must not be null and must exist!");
+		}
 		if (addToPreLoginCache(plugin, file)) {
 			String fileName = FileUtil.getFileName(file.getPath());
 			long crc = -1;
