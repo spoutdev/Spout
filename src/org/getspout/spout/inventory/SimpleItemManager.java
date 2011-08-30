@@ -16,10 +16,14 @@
  */
 package org.getspout.spout.inventory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -284,6 +288,31 @@ public class SimpleItemManager implements ItemManager{
 		itemNames.put(new ItemData(359), "Shears");
 		itemNames.put(new ItemData(2256), "Music Disc");
 		itemNames.put(new ItemData(2257), "Music Disc");
+	}
+	
+	public static void disableStoneStackMix() {
+
+			Method a;
+			try {
+				a = Item.class.getDeclaredMethod("a", new Class[] {boolean.class});
+				a.setAccessible(true);
+				a.invoke(Item.byId[1], new Object[] {Boolean.TRUE});
+			} catch (SecurityException e) {
+				e.printStackTrace();
+				return;
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+				return;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				return;
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				return;
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				return;
+			}
 	}
 
 	@Override
