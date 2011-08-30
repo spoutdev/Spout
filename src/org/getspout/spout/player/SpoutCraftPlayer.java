@@ -115,15 +115,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
-		try {
-			CraftPlayer cp = entity.netServerHandler.getPlayer();
-			Field permissionBase = CraftHumanEntity.class.getDeclaredField("perm");
-			permissionBase.setAccessible(true);
-			perm = new SpoutPermissibleBase((PermissibleBase) permissionBase.get(cp));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		CraftPlayer player = entity.netServerHandler.getPlayer();
+        perm = new SpoutPermissibleBase((PermissibleBase) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
+        perm.recalculatePermissions();
+		addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible();
 		perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
 		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
