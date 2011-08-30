@@ -38,6 +38,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
 import org.bukkit.util.config.Configuration;
 import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.block.mcblock.CustomBlock;
 import org.getspout.spout.chunkcache.SimpleCacheManager;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.command.SpoutCommand;
@@ -153,6 +154,7 @@ public class Spout extends JavaPlugin{
 
 	@Override
 	public void onEnable() {
+		CustomBlock.replaceBlocks();
 		Spout.instance = this;
 		(new ConfigReader()).read();
 		(new Thread() {
