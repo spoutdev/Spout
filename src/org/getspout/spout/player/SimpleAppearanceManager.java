@@ -290,6 +290,15 @@ public class SimpleAppearanceManager implements AppearanceManager{
 					if (title != null) {
 						((SpoutCraftPlayer)player).sendPacket(new PacketEntityTitle(lv.getEntityId(), title));
 					}
+					for (EntitySkinType type : EntitySkinType.values()) {
+						String urlSkin = player.getInformation().getEntitySkin(lv, type);
+						if (urlSkin == null) {
+							urlSkin = SpoutManager.getPlayerManager().getGlobalInfo().getEntitySkin(lv, type);
+						}
+						if (urlSkin != null) {
+							player.sendPacket(new PacketEntitySkin(lv, urlSkin, type.getId()));
+						}
+					}
 					if (lv instanceof HumanEntity) {
 						String Url = smap.get(((HumanEntity)lv).getName());
 						if (Url == null) {

@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.minecraft.server.Block;
 import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;

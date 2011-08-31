@@ -182,6 +182,12 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void resetLightLevel() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public float getHardness() {
@@ -197,20 +203,8 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		chunk.hardnessOverrides.put(getIndex(), hardness);
 	}
 
-	
-
-	@Override
-	public void resetLightLevel() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void resetHardness() {
-		// TODO Auto-generated method stub
-		
+		chunk.hardnessOverrides.remove(getIndex());
 	}
-
-
-	
 }
