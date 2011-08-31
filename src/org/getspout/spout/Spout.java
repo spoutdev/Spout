@@ -89,7 +89,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setChunkDataManager(new SimpleChunkDataManager());
 		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
 		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
-		blockListener = new SpoutBlockListener(); 
+		blockListener = new SpoutBlockListener();
 	}
 	@Override
 	public void onDisable() {
@@ -215,6 +215,8 @@ public class Spout extends JavaPlugin{
 		itemMapConfig.load();
 		
 		UniqueItemStringMap.setConfigFile(itemMapConfig);
+		
+		SimpleItemManager.disableStoneStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}

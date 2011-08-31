@@ -33,10 +33,11 @@ public class SpoutBlockListener extends BlockListener {
 		int damage = itemInHand.getDurability();
 		
 		Integer newBlockId = i.getItemBlock(damage);
+		Short newMetaData = i.getItemMetaData(damage);
 		
-		if (newBlockId != null) {
+		if (newBlockId != null && newMetaData != null) {
 			Block block = event.getBlockPlaced();
-			block.setTypeId(newBlockId);
+			block.setTypeIdAndData(newBlockId, (byte)(newMetaData & 0xF), true);
 		} else if (damage >= 1024) {
 			event.setCancelled(true);
 		}
