@@ -3,7 +3,14 @@ package org.getspout.spout.block.mcblock;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spoutapi.SpoutManager;
 
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Block;
@@ -11,6 +18,7 @@ import net.minecraft.server.BlockFlower;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
+import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IBlockAccess;
 import net.minecraft.server.MovingObjectPosition;
 import net.minecraft.server.Vec3D;
@@ -156,6 +164,17 @@ public class CustomFlower extends BlockFlower{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
+		if (entityhuman instanceof EntityPlayer) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
+			Location target = player.getRawLastClickedLocation();
+			if (target != null) {
+				int index = CustomBlock.getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
+				Map<Integer, Float> hardnessOverrides = ((SpoutCraftChunk)target.getWorld().getChunkAt(target)).hardnessOverrides;
+				if (hardnessOverrides.containsKey(index)) {
+					return hardnessOverrides.get(index);
+				}
+			}
+		}
 		return parent.getDamage(entityhuman);
 	}
 	
@@ -200,9 +219,13 @@ public class CustomFlower extends BlockFlower{
 	}
 	
 	@Override
-	 public void b(World world, int i, int j, int k, EntityHuman entityhuman) {
+	public void b(World world, int i, int j, int k, EntityHuman entityhuman) {
+		if (entityhuman instanceof EntityPlayer) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
+			player.setLastClickedLocation(new Location(player.getWorld(), i, j, k));
+		}
 		parent.b(world, i, j, k, entityhuman);
-	 }
+	}
 	
 	@Override
 	public void a(World world, int i, int j, int k, Entity entity, Vec3D vec3d) {
@@ -215,8 +238,29 @@ public class CustomFlower extends BlockFlower{
 	}
 	
 	@Override
-	public boolean a(IBlockAccess iblockaccess, int i, int j, int k, int l) {
-		return parent.a(iblockaccess, i, j, k, l);
+	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
+		int index = CustomBlock.getIndex(x, y, z);
+		Map<Integer, Integer> powerOverrides = ((SpoutCraftChunk)((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk).powerOverrides;
+		if (powerOverrides.containsKey(index)) {
+			int powerbits = powerOverrides.get(index);
+			switch (face) {
+				case 0:
+					return (powerbits & (1 << 0)) != 0;
+				case 1:
+					return (powerbits & (1 << 1)) != 0;
+				case 2:
+					return (powerbits & (1 << 2)) != 0;
+				case 3:
+					return (powerbits & (1 << 3)) != 0;
+				case 4:
+					return (powerbits & (1 << 4)) != 0;
+				case 5:
+					return (powerbits & (1 << 5)) != 0;
+				default:
+					return parent.a(iblockaccess, x, y, z, face);
+			}
+		}
+		return parent.a(iblockaccess, x, y, z, face);
 	}
 	
 	@Override
