@@ -21,7 +21,6 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftChunk;
-import org.getspout.spout.block.SpoutMetadataChunkBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.event.spout.ServerTickEvent;
 
@@ -54,10 +53,6 @@ public class ServerTickTask implements Runnable {
 			}
 			//System.out.println("Updating chunks took: " + (System.nanoTime() - time) / 1E6D + " ms");
 		}
-		
-		SpoutMetadataChunkBlock.updateLighting();
-		
-		
 	}
 
 }

@@ -79,7 +79,6 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.inventory.Inventory;
-import org.getspout.spout.block.SpoutMetadataChunkBlock;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
@@ -482,25 +481,21 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	@Override
 	public void disconnect(String kick) {
 		this.sendPacket(new Packet255KickDisconnect(kick));
-		syncFlushPacketQueue(new MCCraftPacket[256]);
+		syncFlushPacketQueue();
 		super.disconnect(kick);
 	}
-	
-	public void syncFlushPacketQueue() {
-		syncFlushPacketQueue(packetWrappers);
-	}
 
-	public void syncFlushPacketQueue(MCCraftPacket[] packetWrappers) {
+	public void syncFlushPacketQueue() {
 		while (!resyncQueue.isEmpty()) {
 			Packet p = resyncQueue.pollFirst();
 			if (p != null) {
-				syncedSendPacket(p, packetWrappers);
+				syncedSendPacket(p);
 			}
 		}
 	}
 
 	// Called from the main thread only
-	private void syncedSendPacket(Packet packet, MCCraftPacket[] packetWrappers) {
+	private void syncedSendPacket(Packet packet) {
 
 		if (!PacketListeners.canSend(getPlayer(), packet, packetWrappers, packet.b())) {
 			return;

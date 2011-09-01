@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftChunk;
@@ -190,9 +191,12 @@ public class CustomBlock extends Block{
 			Location target = player.getRawLastClickedLocation();
 			if (target != null) {
 				int index = CustomBlock.getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
-				Map<Integer, Float> hardnessOverrides = ((SpoutCraftChunk)target.getWorld().getChunkAt(target)).hardnessOverrides;
-				if (hardnessOverrides.containsKey(index)) {
-					return hardnessOverrides.get(index);
+				Chunk chunk = target.getWorld().getChunkAt(target);
+				if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
+					Map<Integer, Float> hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
+					if (hardnessOverrides.containsKey(index)) {
+						return hardnessOverrides.get(index);
+					}
 				}
 			}
 		}
@@ -261,24 +265,27 @@ public class CustomBlock extends Block{
 	@Override
 	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
 		int index = CustomBlock.getIndex(x, y, z);
-		Map<Integer, Integer> powerOverrides = ((SpoutCraftChunk)((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk).powerOverrides;
-		if (powerOverrides.containsKey(index)) {
-			int powerbits = powerOverrides.get(index);
-			switch (face) {
-				case 0:
-					return (powerbits & (1 << 0)) != 0;
-				case 1:
-					return (powerbits & (1 << 1)) != 0;
-				case 2:
-					return (powerbits & (1 << 2)) != 0;
-				case 3:
-					return (powerbits & (1 << 3)) != 0;
-				case 4:
-					return (powerbits & (1 << 4)) != 0;
-				case 5:
-					return (powerbits & (1 << 5)) != 0;
-				default:
-					return parent.a(iblockaccess, x, y, z, face);
+		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
+		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
+			Map<Integer, Integer> powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;
+			if (powerOverrides.containsKey(index)) {
+				int powerbits = powerOverrides.get(index);
+				switch (face) {
+					case 0:
+						return (powerbits & (1 << 0)) != 0;
+					case 1:
+						return (powerbits & (1 << 1)) != 0;
+					case 2:
+						return (powerbits & (1 << 2)) != 0;
+					case 3:
+						return (powerbits & (1 << 3)) != 0;
+					case 4:
+						return (powerbits & (1 << 4)) != 0;
+					case 5:
+						return (powerbits & (1 << 5)) != 0;
+					default:
+						return parent.a(iblockaccess, x, y, z, face);
+				}
 			}
 		}
 		return parent.a(iblockaccess, x, y, z, face);

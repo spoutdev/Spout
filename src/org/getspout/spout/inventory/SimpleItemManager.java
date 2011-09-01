@@ -532,6 +532,7 @@ public class SimpleItemManager implements ItemManager{
 		
 		Short metaData = itemMetaData.get(id);
 		
+		@SuppressWarnings("unused")
 		String pluginName = itemPlugin.get(id);
 		
 		PacketCustomItem p = new PacketCustomItem(id, blockId, metaData);
