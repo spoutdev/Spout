@@ -53,9 +53,9 @@ Please follow the above conventions if you want your pull requests accepted.
 [License]: http://www.gnu.org/licenses/lgpl.html
 [Website]: http://getspout.org
 [Forum]: http://bit.ly/getspout
-[GitHub]: https://github.com/Afforess/Spout
-[Javadoc]: http://ci.craftfire.com/view/Afforess/job/Spout/javadoc
-[Jenkins]: http://ci.craftfire.com/view/Afforess
+[GitHub]: https://github.com/SpoutDev/Spout
+[Javadoc]: http://jd.getspout.org/
+[Jenkins]: http://ci.craftfire.com/view/SpoutDev
 [MCP]: http://mcp.ocean-labs.de/index.php/MCP_Releases
-[Issues]: https://github.com/Afforess/Spout/issues
-[Twitter]: http://twitter.com/Afforess
+[Issues]: https://github.com/SpoutDev/Spout/issues
+[Twitter]: http://twitter.com/SpoutDev
