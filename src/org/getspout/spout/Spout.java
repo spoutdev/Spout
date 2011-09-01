@@ -66,6 +66,7 @@ public class Spout extends JavaPlugin{
 	private final SpoutWorldListener chunkListener;
 	private final SpoutWorldMonitorListener chunkMonitorListener;
 	private final SpoutBlockListener blockListener;
+	private final SpoutEntityListener entityListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
 	private Configuration CRCConfig;
@@ -77,6 +78,7 @@ public class Spout extends JavaPlugin{
 		chunkListener = new SpoutWorldListener();
 		chunkMonitorListener = new SpoutWorldMonitorListener();
 		pluginListener = new PluginListener();
+		entityListener = new SpoutEntityListener();
 		SpoutManager.getInstance().setKeyboardManager(new SimpleKeyboardManager());
 		SpoutManager.getInstance().setAppearanceManager(new SimpleAppearanceManager());
 		SpoutManager.getInstance().setSoundManager(new SimpleSoundManager());
@@ -174,6 +176,8 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
 
 		getCommand("spout").setExecutor(new SpoutCommand(this));
 
