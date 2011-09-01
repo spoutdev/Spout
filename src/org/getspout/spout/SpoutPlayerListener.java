@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
+import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
@@ -66,14 +67,15 @@ public class SpoutPlayerListener extends PlayerListener{
 		Runnable update = null;
 		final SpoutPlayer scp = SpoutCraftPlayer.getPlayer(event.getPlayer());
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
-			if(scp.isSpoutCraftEnabled()) {
-				long newSeed = event.getTo().getWorld().getSeed();
-				scp.sendPacket(new PacketWorldSeed(newSeed));
-			}
 			update = new Runnable() {
 				public void run() {
 					SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
 					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
+					if(scp.isSpoutCraftEnabled()) {
+						SpoutCraftBlock.updateHardness(scp);
+						long newSeed = event.getTo().getWorld().getSeed();
+						scp.sendPacket(new PacketWorldSeed(newSeed));
+					}
 				}
 			};
 		}
