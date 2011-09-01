@@ -482,21 +482,25 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	@Override
 	public void disconnect(String kick) {
 		this.sendPacket(new Packet255KickDisconnect(kick));
-		syncFlushPacketQueue();
+		syncFlushPacketQueue(new MCCraftPacket[256]);
 		super.disconnect(kick);
 	}
-
+	
 	public void syncFlushPacketQueue() {
+		syncFlushPacketQueue(packetWrappers);
+	}
+
+	public void syncFlushPacketQueue(MCCraftPacket[] packetWrappers) {
 		while (!resyncQueue.isEmpty()) {
 			Packet p = resyncQueue.pollFirst();
 			if (p != null) {
-				syncedSendPacket(p);
+				syncedSendPacket(p, packetWrappers);
 			}
 		}
 	}
 
 	// Called from the main thread only
-	private void syncedSendPacket(Packet packet) {
+	private void syncedSendPacket(Packet packet, MCCraftPacket[] packetWrappers) {
 
 		if (!PacketListeners.canSend(getPlayer(), packet, packetWrappers, packet.b())) {
 			return;
