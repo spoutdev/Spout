@@ -110,6 +110,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private boolean fly;
 	private String versionString = "not set";
 	private Location lastClicked = null;
+	private boolean precachingComplete = false;
 	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
@@ -905,5 +906,22 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		//Logger.getLogger("Minecraft").warning("Player: " + player.getName() + " was not properly updated during login!");
 		updateBukkitEntity(player);
 		return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
+	}
+
+	@Override
+	public void setPreCachingComplete(boolean complete) {
+		if(!precachingComplete)
+		{
+			precachingComplete = complete;
+		}
+	}
+
+	@Override
+	public boolean isPreCachingComplete() {
+		if(isSpoutCraftEnabled()){
+			return precachingComplete;
+		} else {
+			return true;
+		}
 	}
 }
