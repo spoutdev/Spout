@@ -31,13 +31,17 @@ import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
+import net.minecraft.server.TileEntitySign;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.block.CraftBlock;
+import org.bukkit.craftbukkit.block.CraftSign;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -71,6 +75,7 @@ import org.getspout.spoutapi.packet.PacketClipboardText;
 import org.getspout.spoutapi.packet.PacketMovementModifiers;
 import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
+import org.getspout.spoutapi.packet.PacketOpenSignGUI;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
@@ -922,6 +927,16 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			return precachingComplete;
 		} else {
 			return true;
+		}
+	}
+
+	@Override
+	public void openSignEditGUI(Sign sign) {
+		if(sign != null && isSpoutCraftEnabled())
+		{
+			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
+			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethestas Lawyers are right!
+			tes.a(true);
 		}
 	}
 }
