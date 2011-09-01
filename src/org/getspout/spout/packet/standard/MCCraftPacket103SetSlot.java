@@ -101,7 +101,7 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 		try
 		{
 			slotField.set(packet, slot);
-			slot = Slot.getSlotByRawValues(rawWindow, rawSlot);
+			this.slot = Slot.getSlotByRawValues(rawWindow, rawSlot);
 		}
 		catch (Exception ex)
 		{
