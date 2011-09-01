@@ -52,6 +52,7 @@ public class MCCraftPacket implements MCPacket {
 		MCPackets[17] = MCCraftPacket17.class;
 		MCPackets[18] = MCCraftPacket18ArmAnimation.class;
 		MCPackets[51] = MCCraftPacket51MapChunk.class;
+		MCPackets[103] = MCCraftPacket103SetSlot.class;
 		
 		MCPackets[256] = MCPacket51MapChunkUncompressed.class;
 		
@@ -60,6 +61,7 @@ public class MCCraftPacket implements MCPacket {
 		packets[17] = net.minecraft.server.Packet17.class;
 		packets[18] = net.minecraft.server.Packet18ArmAnimation.class;
 		packets[51] = net.minecraft.server.Packet51MapChunk.class;
+		packets[103] = net.minecraft.server.Packet103SetSlot.class;
 		
 		packets[256] = net.minecraft.server.Packet51MapChunk.class;
 		
