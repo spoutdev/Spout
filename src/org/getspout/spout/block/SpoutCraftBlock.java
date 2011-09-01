@@ -18,11 +18,15 @@ package org.getspout.spout.block;
 
 import java.io.Serializable;
 
+import net.minecraft.server.EnumSkyBlock;
+import net.minecraft.server.World;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftChunk;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
@@ -179,14 +183,17 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 
 	@Override
 	public void setLightLevel(byte level) {
-		// TODO Auto-generated method stub
-		
+		chunk.lightOverrides.put(getIndex(), (int) level);
+		//this.chunk.getHandle().g.a(x, y, z, level);
+		CraftWorld cw = (CraftWorld)chunk.getWorld();
+		World handle = cw.getHandle();
+		handle.b(EnumSkyBlock.SKY, x, y, z, level);
+		handle.b(EnumSkyBlock.BLOCK, x, y, z, level);
 	}
 	
 	@Override
 	public void resetLightLevel() {
-		// TODO Auto-generated method stub
-		
+		chunk.lightOverrides.remove(getIndex());
 	}
 
 	@Override

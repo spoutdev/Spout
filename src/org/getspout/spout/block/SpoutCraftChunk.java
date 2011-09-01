@@ -46,6 +46,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	
 	public final HashMap<Integer, Integer> powerOverrides = new HashMap<Integer, Integer>();
 	public final HashMap<Integer, Float> hardnessOverrides = new HashMap<Integer, Float>();
+	public final HashMap<Integer, Integer> lightOverrides = new HashMap<Integer, Integer>();
 	
 	protected Field cache;
 

@@ -79,6 +79,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.inventory.Inventory;
+import org.getspout.spout.block.SpoutMetadataChunkBlock;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
