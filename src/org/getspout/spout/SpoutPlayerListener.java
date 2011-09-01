@@ -122,6 +122,8 @@ public class SpoutPlayerListener extends PlayerListener{
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (!(event.getPlayer() instanceof SpoutPlayer)) {
 			updatePlayerEvent(event);
+		} else {
+			event.setCancelled(!((SpoutPlayer)event.getPlayer()).isPreCachingComplete());
 		}
 		if(event.isCancelled()) {
 			return;
