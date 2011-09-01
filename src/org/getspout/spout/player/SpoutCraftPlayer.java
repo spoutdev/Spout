@@ -712,10 +712,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return getNetServerHandler().getDefaultInventory();
 	}
 
-	/*
-		May be unsafe during initialization or de-initialization
-	 */
 	public SpoutNetServerHandler getNetServerHandler() {
+		if (getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+			updateNetServerHandler(this);
+		}
 		return (SpoutNetServerHandler) getHandle().netServerHandler;
 	}
 
