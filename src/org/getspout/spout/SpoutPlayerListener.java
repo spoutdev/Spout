@@ -123,7 +123,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (!(event.getPlayer() instanceof SpoutPlayer)) {
 			updatePlayerEvent(event);
 		} else {
-			event.setCancelled(!((SpoutPlayer)event.getPlayer()).isPreCachingComplete());
+			event.setCancelled(event.isCancelled()||!((SpoutPlayer)event.getPlayer()).isPreCachingComplete());
 		}
 		if(event.isCancelled()) {
 			return;
