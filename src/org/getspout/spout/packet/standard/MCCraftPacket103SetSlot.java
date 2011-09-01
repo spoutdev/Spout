@@ -31,13 +31,13 @@ import org.getspout.spoutapi.packet.standard.MCPacket103SetSlot;
  */
 public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket103SetSlot
 {
-	private static Field __WindowField, __SlotField, __ItemStackField;
+	private static Field windowField, slotField, itemStackField;
 	
-	private int __RawWindow, __RawSlot;
-	private net.minecraft.server.ItemStack __NotchStack;
-	private ItemStack __BukkitStack;
-	private Slot __Slot;
-	private Window __Window;
+	private int rawWindow, rawSlot;
+	private net.minecraft.server.ItemStack notchStack;
+	private ItemStack bukkitStack;
+	private Slot slot;
+	private Window window;
 	
 	// Glom onto Notch's packet
 	static
@@ -45,13 +45,13 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 		Class<Packet103SetSlot> packetclass = Packet103SetSlot.class;
 		try
 		{
-			__WindowField = packetclass.getDeclaredField("a");
-			__SlotField = packetclass.getDeclaredField("b");
-			__ItemStackField = packetclass.getDeclaredField("c");
+			windowField = packetclass.getDeclaredField("a");
+			slotField = packetclass.getDeclaredField("b");
+			itemStackField = packetclass.getDeclaredField("c");
 			
-			__WindowField.setAccessible(true);
-			__SlotField.setAccessible(true);
-			__ItemStackField.setAccessible(true);
+			windowField.setAccessible(true);
+			slotField.setAccessible(true);
+			itemStackField.setAccessible(true);
 		}
 		catch (Exception ex)
 		{
@@ -62,20 +62,20 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 	@Override
 	public Slot getSlot()
 	{
-		return __Slot;
+		return slot;
 	}
 
 	@Override
 	public void setSlot(Slot slot)
 	{
-		__Slot = slot;
+		this.slot = slot;
 		try
 		{
-			__RawWindow = __Slot.RawWindowId;
-			__Window = Window.getWindowById(__RawWindow);
-			__RawSlot = __Slot.RawSlotId;
-			__WindowField.set(packet, __RawWindow);
-			__SlotField.set(packet, __RawSlot);
+			rawWindow = slot.rawWindowId;
+			window = Window.getWindowById(rawWindow);
+			rawSlot = slot.rawSlotId;
+			windowField.set(packet, rawWindow);
+			slotField.set(packet, rawSlot);
 		}
 		catch (Exception ex)
 		{
@@ -85,23 +85,23 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 	@Override
 	public Window getWindow()
 	{
-		return __Window;
+		return window;
 	}
 
 	@Override
 	public int getRawSlot()
 	{
-		return __RawSlot;
+		return rawSlot;
 	}
 
 	@Override
 	public void setRawSlot(int slot)
 	{
-		__RawSlot = slot;
+		rawSlot = slot;
 		try
 		{
-			__SlotField.set(packet, slot);
-			__Slot = Slot.getSlotByRawValues(__RawWindow, __RawSlot);
+			slotField.set(packet, slot);
+			slot = Slot.getSlotByRawValues(rawWindow, rawSlot);
 		}
 		catch (Exception ex)
 		{
@@ -111,18 +111,18 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 	@Override
 	public int getRawWindow()
 	{
-		return __RawWindow;
+		return rawWindow;
 	}
 
 	@Override
 	public void setRawWindow(int window)
 	{
-		__RawWindow = window;
+		rawWindow = window;
 		try
 		{
-			__WindowField.set(packet, window);
-			__Window = Window.getWindowById(window);
-			__Slot = Slot.getSlotByRawValues(__RawWindow, __RawSlot);
+			windowField.set(packet, window);
+			this.window = Window.getWindowById(window);
+			slot = Slot.getSlotByRawValues(rawWindow, rawSlot);
 		}
 		catch (Exception ex)
 		{
@@ -132,20 +132,20 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 	@Override
 	public ItemStack getItemStack()
 	{
-		return __BukkitStack;
+		return bukkitStack;
 	}
 
 	@Override
 	public void setItemStack(ItemStack itemStack)
 	{
-		__BukkitStack = itemStack;
-		if (__BukkitStack == null)
-			__NotchStack = null;
+		bukkitStack = itemStack;
+		if (bukkitStack == null)
+			notchStack = null;
 		else
-			__NotchStack = new net.minecraft.server.ItemStack(__BukkitStack.getTypeId(), __BukkitStack.getAmount(), __BukkitStack.getDurability());
+			notchStack = new net.minecraft.server.ItemStack(bukkitStack.getTypeId(), bukkitStack.getAmount(), bukkitStack.getDurability());
 		try
 		{
-			__ItemStackField.set(packet, __NotchStack);
+			itemStackField.set(packet, notchStack);
 		}
 		catch (Exception ex)
 		{
@@ -158,13 +158,13 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 		super.setPacket(packet, packetId);
 		try
 		{
-			__RawWindow = ((Integer)__WindowField.get(packet)).intValue();
-			__Window = Window.getWindowById(__RawWindow);
-			__RawSlot = ((Integer)__SlotField.get(packet)).intValue();
-			__Slot = Slot.getSlotByRawValues(__RawWindow, __RawSlot);
-			__NotchStack = (net.minecraft.server.ItemStack)__ItemStackField.get(packet);
-			if (__NotchStack != null)
-				__BukkitStack = new ItemStack(__NotchStack.id, __NotchStack.count, (short)__NotchStack.damage);
+			rawWindow = ((Integer)windowField.get(packet)).intValue();
+			window = Window.getWindowById(rawWindow);
+			rawSlot = ((Integer)slotField.get(packet)).intValue();
+			slot = Slot.getSlotByRawValues(rawWindow, rawSlot);
+			notchStack = (net.minecraft.server.ItemStack)itemStackField.get(packet);
+			if (notchStack != null)
+				bukkitStack = new ItemStack(notchStack.id, notchStack.count, (short)notchStack.damage);
 		}
 		catch (Exception ex)
 		{
@@ -174,9 +174,9 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 	@Override
 	public String toString()
 	{
-		if (__NotchStack == null)
-			return "{" + __Slot.toString() + ", null}";
+		if (notchStack == null)
+			return "{" + slot.toString() + ", null}";
 		else
-			return "{" + __Slot.toString() + ", " + __BukkitStack.toString() + "}";
+			return "{" + slot.toString() + ", " + bukkitStack.toString() + "}";
 	}
 }
