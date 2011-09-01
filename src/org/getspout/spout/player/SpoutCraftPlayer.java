@@ -718,7 +718,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	}
 
 	public SpoutNetServerHandler getNetServerHandler() {
-		if (getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+		if (!getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
 			updateNetServerHandler(this);
 		}
 		return (SpoutNetServerHandler) getHandle().netServerHandler;
