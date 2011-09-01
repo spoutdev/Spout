@@ -11,7 +11,7 @@ Visit our [website][Website].
 Get support on our [Bukkit forum thread][Forum].  
 Track and submit issues and bugs on our [issue tracker][Issues].
 
-Follow Spout on Twitter [@Afforess][Twitter]
+Follow Spout on Twitter [@SpoutDev][Twitter]
 
 Source
 ------
