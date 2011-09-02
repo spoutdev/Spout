@@ -83,7 +83,9 @@ public class SimpleItemManager implements ItemManager{
 		itemNames.put(new ItemData(28), "Detector Rail");
 		itemNames.put(new ItemData(29), "Sticky Piston");
 		itemNames.put(new ItemData(30), "Cobweb");
-		itemNames.put(new ItemData(31), "Tall Grass");
+		itemNames.put(new ItemData(31, 0), "Dead Grass");
+		itemNames.put(new ItemData(31, 1), "Tall Grass");
+		itemNames.put(new ItemData(31, 2), "Fern");
 		itemNames.put(new ItemData(32), "Dead Shrubs");
 		itemNames.put(new ItemData(33), "Piston");
 		itemNames.put(new ItemData(34), "Piston (Head)");
