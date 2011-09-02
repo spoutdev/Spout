@@ -47,10 +47,13 @@ public class SimpleItemManager implements ItemManager{
 	private final HashMap<ItemData, String> itemNames;
 	private final HashMap<ItemData, String> customNames;
 	private final HashMap<ItemData, String> customTextures;
+	private final HashMap<ItemData, String> customTexturesPlugin;
+
 	public SimpleItemManager() {
 		itemNames = new HashMap<ItemData, String>(500);
 		customNames = new HashMap<ItemData, String>(100);
 		customTextures = new HashMap<ItemData, String>(100);
+		customTexturesPlugin = new HashMap<ItemData, String>(100);
 		itemNames.put(new ItemData(1), "Stone");
 		itemNames.put(new ItemData(2), "Grass");
 		itemNames.put(new ItemData(3), "Dirt");
@@ -416,23 +419,45 @@ public class SimpleItemManager implements ItemManager{
 			i = customTextures.entrySet().iterator();
 			while (i.hasNext()) {
 				Entry<ItemData, String> e = i.next();
-				((SpoutPlayer) player).sendPacket(new PacketItemTexture(e.getKey().id, e.getKey().data, e.getValue()));
+				String pluginName = customTexturesPlugin.get(e.getKey());
+				((SpoutPlayer) player).sendPacket(new PacketItemTexture(e.getKey().id, e.getKey().data, pluginName, e.getValue()));
 			}
 		}
 	}
 
 	@Override
 	public void setItemTexture(Material item, String texture) {
-		setItemTexture(item, (short) 0, texture);
+		setItemTexture(item, (short) 0, null, texture);
+	}
+	
+	@Override
+	public void setItemTexture(Material item, Plugin plugin, String texture) {
+		setItemTexture(item, (short) 0, plugin, texture);
+	}
+	
+	public void setItemTexture(Material item, short data, String texture) {
+		setItemTexture(item, data, null, texture);
 	}
 
 	@Override
-	public void setItemTexture(Material item, short data, String texture) {
-		customTextures.put(new ItemData(item.getId(), data), texture);
+	public void setItemTexture(Material item, short data, Plugin plugin, String texture) {
+		String pluginName;
+		if (plugin == null) {
+			pluginName = null;
+		} else {
+			pluginName = plugin.getDescription().getName();
+		}
+		ItemData newKey = new ItemData(item.getId(), data);
+		customTextures.put(newKey, texture);
+		if (pluginName == null) {
+			customTexturesPlugin.remove(newKey);
+		} else {
+			customTexturesPlugin.put(newKey, pluginName);
+		}
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer) {
 				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-					((SpoutPlayer) player).sendPacket(new PacketItemTexture(item.getId(), data, texture));
+					((SpoutPlayer) player).sendPacket(new PacketItemTexture(item.getId(), data, pluginName, texture));
 				}
 			}
 		}
@@ -442,10 +467,20 @@ public class SimpleItemManager implements ItemManager{
 	public void setItemTexture(int id, String texture) {
 		setItemTexture(Material.STONE, (short)id, texture);
 	}
+	
+	@Override
+	public void setItemTexture(int id, Plugin plugin, String texture) {
+		setItemTexture(Material.STONE, (short)id, plugin, texture);
+	}
 
 	@Override
 	public String getCustomItemTexture(Material item) {
 		return getCustomItemTexture(item, (short) 0);
+	}
+	
+	@Override
+	public String getCustomItemTexturePlugin(Material item) {
+		return getCustomItemTexturePlugin(item, (short) 0);
 	}
 
 	@Override
@@ -457,9 +492,22 @@ public class SimpleItemManager implements ItemManager{
 		return null;
 	}
 	
+	public String getCustomItemTexturePlugin(Material item, short data) {
+		ItemData info = new ItemData(item.getId(), data);
+		if (customTexturesPlugin.containsKey(info)) {
+			return customTexturesPlugin.get(info);
+		}
+		return null;
+	}
+	
 	@Override
 	public String getCustomItemTexture(int id) {
 		return getCustomItemTexture(Material.STONE, (short)id);
+	}
+	
+	@Override 
+	public String getCustomItemTexturePlugin(int id) {
+		return getCustomItemTexturePlugin(Material.STONE, (short)id);
 	}
 
 	@Override
@@ -472,10 +520,11 @@ public class SimpleItemManager implements ItemManager{
 		ItemData info = new ItemData(item.getId(), data);
 		if (customTextures.containsKey(info)) {
 			customTextures.remove(info);
+			String pluginName = customTexturesPlugin.remove(info);
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 				if (player instanceof SpoutCraftPlayer) {
 					if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-						((SpoutPlayer) player).sendPacket(new PacketItemTexture(info.id, info.data, "[reset]"));
+						((SpoutPlayer) player).sendPacket(new PacketItemTexture(info.id, info.data, pluginName, "[reset]"));
 					}
 				}
 			}
