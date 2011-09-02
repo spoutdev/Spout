@@ -235,7 +235,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (event.isCancelled()) {
 			return false;
 		}
-		getHandle().x();
+		getHandle().y();
 		getNetServerHandler().setActiveInventory(false);
 		getNetServerHandler().setActiveInventoryLocation(null);
 		return true;
