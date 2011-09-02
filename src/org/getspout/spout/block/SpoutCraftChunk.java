@@ -204,13 +204,22 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	}
 
 	public static boolean replaceBukkitChunk(org.bukkit.Chunk chunk) {
-		if (((CraftChunk) chunk).getHandle().bukkitChunk.getClass().hashCode() == SpoutCraftChunk.class.hashCode()) {
-			return false; // hashcodes will differ if the class was constructed by a different version of this plugin
-			// or is a different class
+		CraftChunk handle = (CraftChunk) ((CraftChunk) chunk).getHandle().bukkitChunk;
+		boolean replace = false;
+		if (handle.getX() != chunk.getX()) {
+			replace = true;
 		}
-		((CraftChunk) chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk) chunk).getHandle());
-		return true;
-
+		if (handle.getZ() != chunk.getZ()) {
+			replace = true;
+		}
+		if (handle.getClass().hashCode() != SpoutCraftChunk.class.hashCode()) {
+			replace = true;
+		}
+		if (replace) {
+			((CraftChunk) chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk) chunk).getHandle());
+			return true;
+		}
+		return false;
 	}
 
 	public static void resetBukkitChunk(org.bukkit.Chunk chunk) {
