@@ -10,14 +10,14 @@ public class SpoutEntityListener extends EntityListener {
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.getEntity() instanceof SpoutPlayer){
-			event.setCancelled(event.isCancelled()||!((SpoutPlayer)event.getEntity()).isPreCachingComplete());
+			event.setCancelled(event.isCancelled() || !((SpoutPlayer)event.getEntity()).isPreCachingComplete());
 		}
 	}
 
 	@Override
 	public void onEntityTarget(EntityTargetEvent event) {
 		if(event.getTarget() instanceof SpoutPlayer){
-			event.setCancelled(event.isCancelled()||!((SpoutPlayer)event.getTarget()).isPreCachingComplete());
+			event.setCancelled(event.isCancelled() || !((SpoutPlayer)event.getTarget()).isPreCachingComplete());
 		}
 	}
 

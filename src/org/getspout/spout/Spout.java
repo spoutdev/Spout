@@ -59,6 +59,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.packet.PacketPluginReload;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
+import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class Spout extends JavaPlugin{
@@ -181,14 +182,15 @@ public class Spout extends JavaPlugin{
 
 		getCommand("spout").setExecutor(new SpoutCommand(this));
 
-		Player[] online = getServer().getOnlinePlayers();
-		for (Player player : online) {
+		SpoutPlayer[] online = SpoutManager.getOnlinePlayers();
+		for (SpoutPlayer player : online) {
 			SpoutCraftPlayer.resetNetServerHandler(player);
 			SpoutCraftPlayer.updateNetServerHandler(player);
 			SpoutCraftPlayer.updateBukkitEntity(player);
 			authenticate(player);
 			playerListener.manager.onPlayerJoin(player);
 			((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(player);
+			player.setPreCachingComplete(true); //already done if we are already online!
 		}
 
 		SpoutCraftChunk.replaceAllBukkitChunks();

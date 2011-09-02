@@ -914,8 +914,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void setPreCachingComplete(boolean complete) {
-		if(!precachingComplete)
-		{
+		if(!precachingComplete) {
 			precachingComplete = complete;
 		}
 	}
