@@ -215,6 +215,10 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		if (handle.getClass().hashCode() != SpoutCraftChunk.class.hashCode()) {
 			replace = true;
 		}
+		org.bukkit.Chunk loopbackChunk = ((CraftChunk)chunk).getHandle().bukkitChunk;
+		if (loopbackChunk != chunk) {
+		    replace = true;
+		}
 		if (replace) {
 			((CraftChunk) chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk) chunk).getHandle());
 			return true;
