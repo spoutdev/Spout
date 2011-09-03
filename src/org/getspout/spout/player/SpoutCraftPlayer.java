@@ -921,7 +921,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public boolean isPreCachingComplete() {
-		if(isSpoutCraftEnabled()){
+		int minorBuild = -1;
+		try {
+			minorBuild = Integer.parseInt(getVersionString().split("\\.")[3]);
+		}
+		catch (Exception e) {
+			
+		}
+		if(isSpoutCraftEnabled() && minorBuild > 276){
 			return precachingComplete;
 		} else {
 			return true;
