@@ -235,7 +235,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (event.isCancelled()) {
 			return false;
 		}
-		getHandle().x();
+		getHandle().y();
 		getNetServerHandler().setActiveInventory(false);
 		getNetServerHandler().setActiveInventoryLocation(null);
 		return true;
@@ -914,8 +914,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void setPreCachingComplete(boolean complete) {
-		if(!precachingComplete)
-		{
+		if(!precachingComplete) {
 			precachingComplete = complete;
 		}
 	}
