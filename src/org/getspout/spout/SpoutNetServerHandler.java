@@ -116,7 +116,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void a(Packet18ArmAnimation packet) {
 		if (packet.a == -42) {
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
-			player.setVersion(1, 0, 2);
+			player.setVersion(1, 0, 5);
 			try {
 				Spout.getInstance().playerListener.manager.onSpoutcraftEnable((SpoutPlayer)getPlayer());
 			}

@@ -921,7 +921,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public boolean isPreCachingComplete() {
-		if(isSpoutCraftEnabled()){
+		if(isSpoutCraftEnabled() && getVersion() > 102){
 			return precachingComplete;
 		} else {
 			return true;
