@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -29,9 +30,9 @@ import org.bukkit.plugin.Plugin;
 import org.getspout.spoutapi.permission.SpoutPermissible;
 
 public class SpoutPermissibleBase implements SpoutPermissible {
-	protected PermissibleBase perm;
-	public SpoutPermissibleBase(PermissibleBase perm) {
-		this.perm = perm;
+	protected Permissible perm;
+	public SpoutPermissibleBase(Permissible permissible) {
+		this.perm = permissible;
 	}
 	
 	public boolean isOp() {

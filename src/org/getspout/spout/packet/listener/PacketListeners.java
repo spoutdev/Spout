@@ -50,6 +50,9 @@ public class PacketListeners {
 	}
 
 	public static boolean canSendUncompressedPacket(Player player, MCCraftPacket MCPacket) {
+		if (player == null) {
+			return true;
+		}
 		AtomicReference<PacketListener[]> listenerReference = (AtomicReference<PacketListener[]>) listeners[256];
 		PacketListener[] listenerArray = listenerReference.get();
 		if (listenerArray != null) {
@@ -62,6 +65,9 @@ public class PacketListeners {
 	}
 
 	public static boolean canSend(Player player, Packet packet, MCCraftPacket[] packetWrappers, int packetId) {
+		if (player == null) {
+			return true;
+		}
 		AtomicReference<PacketListener[]> listenerReference = (AtomicReference<PacketListener[]>) listeners[packetId];
 		PacketListener[] listenerArray = listenerReference.get();
 		if (listenerArray != null) {
