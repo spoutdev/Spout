@@ -103,6 +103,8 @@ public class SimplePlayerManager implements PlayerManager{
 			System.out.println("[Spout] Successfully authenticated " + scp.getName() + "'s Spoutcraft client. Running client version: " + scp.getVersionString());
 			((SimpleItemManager)SpoutManager.getItemManager()).updateCustomClientData(scp);
 			((SimpleItemManager)SpoutManager.getItemManager()).updateAllCustomBlockDesigns(scp);
+			SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
+			im.sendBlockOverrideToPlayers(new Player[] {sp}, sp.getWorld());
 		}
 		
 	}

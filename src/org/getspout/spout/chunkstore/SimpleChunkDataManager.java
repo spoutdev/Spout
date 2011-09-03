@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.util.BlockVector;
 import org.getspout.spout.util.ChunkUtil;
 import org.getspout.spoutapi.chunkdatamanager.ChunkDataManager;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
@@ -194,6 +195,13 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 		ChunkMetaData md = getMetaData(world, x, z, false);
 		
 		return md.getChunkData(id);
+	}
+	
+	public BlockVector[] getTaggedBlocks(World world, int x, int z) {
+		
+		ChunkMetaData md = getMetaData(world, x, z, false);
+		
+		return md.getTaggedBlocks();
 	}
 
 

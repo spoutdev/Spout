@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.util.BlockVector;
+
 public class ChunkMetaData implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -101,6 +103,31 @@ public class ChunkMetaData implements Serializable {
 		} else {
 			return Utils.deserialize(oldBytes);
 		}
+		
+	}
+	
+	public BlockVector[] getTaggedBlocks() {
+		
+		int count = 0;
+		
+		for (int i = 0; i < blocks; i++) {
+			if (blockData[i] != null) {
+				count++;
+			}
+		}
+		
+		BlockVector[] vectors = new BlockVector[count];
+		
+		count = 0;
+		
+		for (int i = 0; i < blocks; i++) {
+			if (blockData[i] != null) {
+				vectors[count] = new BlockVector(blockX[count], blockY[count], blockZ[count]);
+				count++;
+			}
+		}
+		
+		return vectors;
 		
 	}
 	

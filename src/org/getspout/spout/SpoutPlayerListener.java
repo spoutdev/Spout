@@ -33,6 +33,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.chunkcache.ChunkCache;
+import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
@@ -75,6 +76,8 @@ public class SpoutPlayerListener extends PlayerListener{
 						SpoutCraftBlock.updateHardness(scp);
 						long newSeed = event.getTo().getWorld().getSeed();
 						scp.sendPacket(new PacketWorldSeed(newSeed));
+						SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
+						im.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
 					}
 				}
 			};

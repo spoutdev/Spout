@@ -36,6 +36,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.util.BlockVector;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutChunk;
 
@@ -243,6 +244,11 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	@Override
 	public Serializable removeData(String id) {
 		return SpoutManager.getChunkDataManager().removeChunkData(id, getWorld(), getX(), getZ());
+	}
+	
+	@Override
+	public BlockVector[] getTaggedBlocks() {
+		return SpoutManager.getChunkDataManager().getTaggedBlocks(getWorld(), getX(), getZ());
 	}
 
 }

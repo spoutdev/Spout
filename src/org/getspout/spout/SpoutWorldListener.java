@@ -17,13 +17,16 @@
 package org.getspout.spout;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.world.ChunkEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
+import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spoutapi.SpoutManager;
 
 public class SpoutWorldListener extends WorldListener{
@@ -42,11 +45,16 @@ public class SpoutWorldListener extends WorldListener{
 		
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadChunk(event.getChunk());
+		SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
+		List<Player> players = event.getChunk().getWorld().getPlayers();
+		im.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
 	}
 
 	@Override
 	public void onWorldLoad(WorldLoadEvent event) {
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadWorldChunks(event.getWorld());
+		SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
+		im.sendBlockOverrideToPlayers(event.getWorld().getPlayers().toArray(new Player[0]), event.getWorld());
 	}
 }
