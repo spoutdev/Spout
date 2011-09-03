@@ -5,7 +5,7 @@ authors: [Afforess, alta189, Wulfspider, Raphfrk, Narrowtux, Top_Cat]
 website: http://www.getspout.org
 
 main: org.getspout.spout.Spout
-load: postworld
+load: startup
 
 commands:
   spout:
