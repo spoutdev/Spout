@@ -51,12 +51,15 @@ public class SimpleItemManager implements ItemManager{
 	private final HashMap<ItemData, String> customNames;
 	private final HashMap<ItemData, String> customTextures;
 	private final HashMap<ItemData, String> customTexturesPlugin;
+	
+	private final HashMap<ItemData, SpoutCustomBlockDesign> customBlockDesigns;
 
 	public SimpleItemManager() {
 		itemNames = new HashMap<ItemData, String>(500);
 		customNames = new HashMap<ItemData, String>(100);
 		customTextures = new HashMap<ItemData, String>(100);
 		customTexturesPlugin = new HashMap<ItemData, String>(100);
+		customBlockDesigns = new HashMap<ItemData, SpoutCustomBlockDesign>(100);
 		itemNames.put(new ItemData(1), "Stone");
 		itemNames.put(new ItemData(2), "Grass");
 		itemNames.put(new ItemData(3), "Dirt");
@@ -622,16 +625,41 @@ public class SimpleItemManager implements ItemManager{
 	
 	@Override
 	public void setCustomBlockDesign(Integer blockId, Integer metaData, SpoutCustomBlockDesign design) {
-		System.out.println("Setting custom block design");
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 		
-		PacketCustomBlockDesign p = new PacketCustomBlockDesign(blockId, metaData, design);
+		ItemData info = new ItemData(blockId, metaData);
+		
+		if (design != null) {
+			customBlockDesigns.put(info, design);
+		} else {
+			customBlockDesigns.remove(info);
+		}
+		
+		updateCustomBlockDesigns(players, info, design);
+
+	}
+	
+	public void updateAllCustomBlockDesigns(Player player) {
+		Player[] players = new Player[1];
+		players[0] = player;
+		updateAllCustomBlockDesigns(players);
+	}
+	
+	public void updateAllCustomBlockDesigns(Player[] players) {
+			for (Entry<ItemData, SpoutCustomBlockDesign> entry : customBlockDesigns.entrySet()) {
+			updateCustomBlockDesigns(players, entry.getKey(), entry.getValue());
+		}
+	}
+		
+	private void updateCustomBlockDesigns(Player[] players, ItemData data, SpoutCustomBlockDesign design) {
+		
+		PacketCustomBlockDesign p = new PacketCustomBlockDesign(data.id, (int)data.data, design);
 		
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
 				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
 				if (sp.isSpoutCraftEnabled()) {
-					System.out.println("Sending packet to " + player.getName());
+					System.out.println("Sending");
 					sp.sendPacket(p);
 				}
 			}
