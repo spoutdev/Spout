@@ -20,8 +20,10 @@ package org.getspout.spout.packet.standard;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.minecraft.server.Packet;
 import net.minecraft.server.Packet103SetSlot;
+
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.packet.standard.MCPacket103SetSlot;
 

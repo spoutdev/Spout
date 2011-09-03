@@ -32,7 +32,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.getspout.spout.Spout;
 import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spoutapi.event.inventory.SpoutCustomBlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
+import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
+import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.packet.PacketItemTexture;
@@ -327,7 +330,7 @@ public class SimpleItemManager implements ItemManager{
 	public String getItemName(Material item) {
 		return getItemName(item, (short)0);
 	}
-
+	
 	@Override
 	public String getItemName(Material item, short data) {
 		ItemData info = new ItemData(item.getId(), data);
@@ -600,5 +603,38 @@ public class SimpleItemManager implements ItemManager{
 	
 	public ItemStack getCustomItemStack(int id, int size) {
 		return new ItemStack(1, size, (short)id);
+	}
+	
+	public void overrideBlock(int x, int y, int z, Integer blockId, Integer metaData) {
+		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
+		
+		PacketCustomBlockOverride p = new PacketCustomBlockOverride(x, y, z, blockId, metaData);
+		
+		for (Player player : players) {
+			if (player instanceof SpoutCraftPlayer) {
+				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
+				if (sp.isSpoutCraftEnabled()) {
+					sp.sendPacket(p);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void setCustomBlockDesign(Integer blockId, Integer metaData, SpoutCustomBlockDesign design) {
+		System.out.println("Setting custom block design");
+		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
+		
+		PacketCustomBlockDesign p = new PacketCustomBlockDesign(blockId, metaData, design);
+		
+		for (Player player : players) {
+			if (player instanceof SpoutCraftPlayer) {
+				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
+				if (sp.isSpoutCraftEnabled()) {
+					System.out.println("Sending packet to " + player.getName());
+					sp.sendPacket(p);
+				}
+			}
+		}
 	}
 }
