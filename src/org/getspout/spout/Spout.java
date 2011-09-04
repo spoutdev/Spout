@@ -229,8 +229,8 @@ public class Spout extends JavaPlugin{
 	}
 
 	/**
-	 * Gets the singleton instance of the bukkitcontrib plugin
-	 * @return bukkitcontrib plugin
+	 * Gets the singleton instance of the Spout plugin
+	 * @return Spout plugin
 	 */
 	public static Spout getInstance() {
 		return instance;

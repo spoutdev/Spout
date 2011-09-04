@@ -29,12 +29,12 @@ Spout requires CraftBukkit (preferrably the latest version or source).
 * cd to SpoutAPI and run `mvn install`  
 * cd to Spout and run `mvn package shade:shade`  
 
-Spout SP requires the Minecraft Coder Pack.  
+Spoutcraft requires the Minecraft Coder Pack.  
 * Download and extract the latest version of [Minecraft Coder Pack][MCP].  
 * Copy the latest complete Minecraft bin directory from your computer.  
 * Place the Minecraft bin directory under MCP's `jars` directory.  
-* Checkout or copy the latest source fro the Spout SP repo.  
-* Checkout or copy the conf directory of files from the Spout SP repo to MCP's `conf` directory.  
+* Checkout or copy the latest source from the Spoutcraft repo.  
+* Checkout or copy the conf directory of files from the Spoutcraft repo to MCP's `conf` directory.  
 * Run cleanup, decompile, recompile, and reobfuscate (.bat for Windows or .sh for Linux).  
 * When tasks are finished, the compiled Spout class files will be located in reobf.
 

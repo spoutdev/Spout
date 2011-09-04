@@ -273,7 +273,7 @@ public class SimpleSkyManager implements SkyManager{
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutPlayer) {
 				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
-					((SpoutPlayer)player).sendPacket(new PacketSky(108, 1500, 100, 100, new Color(-2,-2,-2), new Color(-2,-2,-2), new Color(-2,-2,-2), "[reset]", "[reset]"));
+					((SpoutPlayer)player).sendPacket(new PacketSky(108, 1500, 100, 100, Color.remove(), Color.remove(), Color.remove(), "[reset]", "[reset]"));
 				}
 			}
 		}
