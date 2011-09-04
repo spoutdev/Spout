@@ -105,7 +105,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected RenderDistance minimumRender = null;
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
-	protected SpoutPermissible perm;
+	//protected SpoutPermissible perm;
 	private double gravityMod = 1;
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
@@ -122,15 +122,15 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
-		CraftPlayer player = entity.netServerHandler.getPlayer();
-        perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
-        perm.recalculatePermissions();
+		//CraftPlayer player = entity.netServerHandler.getPlayer();
+		//perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
+		//perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
 		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
 	}
 	/* Interace Overriden Public Methods */
 
-	@Override
+	/*@Override
 	public boolean isPermissionSet(String name) {
 		return perm.isPermissionSet(name);
 	}
@@ -187,7 +187,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
 		return perm.getEffectivePermissions();
-	}
+	}*/
 
 	@Override
 	public SpoutPlayerInventory getInventory() {
