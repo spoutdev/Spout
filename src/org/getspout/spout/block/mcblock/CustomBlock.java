@@ -364,7 +364,6 @@ public class CustomBlock extends Block{
 			}
 		}
 		
-		
 		/*int range = 55;
 		for (int dx = -(range); dx <= range; dx++){
 			for (int dy = -(range); dy <= range; dy++){
@@ -374,6 +373,31 @@ public class CustomBlock extends Block{
 				}
 			}
 		}*/
+	}
+	
+	public static void resetBlocks() {
+		for (int i = 0; i < Block.byId.length; i++) {
+			if (Block.byId[i] != null) {
+				Block parent = Block.byId[i];
+				Block.byId[i] = null;
+				
+				if (parent instanceof CustomBlock) {
+					Block.byId[i] = ((CustomBlock)parent).parent;
+				}
+				else if (parent instanceof CustomContainer) {
+					Block.byId[i] = ((CustomContainer)parent).parent;
+				}
+				else if (parent instanceof CustomFlower) {
+					Block.byId[i] = ((CustomFlower)parent).parent;
+				}
+				else if (parent instanceof CustomMinecartTrack) {
+					Block.byId[i] = ((CustomMinecartTrack)parent).parent;
+				}
+				else {
+					Block.byId[i] = parent;
+				}
+			}
+		}
 	}
 	
 	private static void updateField(Block parent, Block child, String fieldName) {

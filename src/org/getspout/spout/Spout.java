@@ -97,6 +97,7 @@ public class Spout extends JavaPlugin{
 	@Override
 	public void onDisable() {
 		//order matters
+		CustomBlock.resetBlocks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
 		((SimpleItemManager)SpoutManager.getItemManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
