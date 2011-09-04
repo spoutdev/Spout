@@ -578,6 +578,10 @@ public class SimpleItemManager implements ItemManager{
 		return id;
 	}
 	
+	public Integer getCustomItemId(Plugin plugin, String key) {
+		return registerCustomItemName(plugin, key);
+	}
+	
 	public void setCustomItemBlock(int id, Integer blockId, Short metaData) {
 		if (blockId != null || metaData == null) {
 			itemBlock.put(id, blockId);
