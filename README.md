@@ -33,7 +33,7 @@ Spoutcraft requires the Minecraft Coder Pack.
 * Download and extract the latest version of [Minecraft Coder Pack][MCP].  
 * Copy the latest complete Minecraft bin directory from your computer.  
 * Place the Minecraft bin directory under MCP's `jars` directory.  
-* Checkout or copy the latest source fro the Spoutcraft repo.  
+* Checkout or copy the latest source from the Spoutcraft repo.  
 * Checkout or copy the conf directory of files from the Spoutcraft repo to MCP's `conf` directory.  
 * Run cleanup, decompile, recompile, and reobfuscate (.bat for Windows or .sh for Linux).  
 * When tasks are finished, the compiled Spout class files will be located in reobf.
