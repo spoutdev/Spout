@@ -115,6 +115,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private String versionString = "not set";
 	private Location lastClicked = null;
 	private boolean precachingComplete = false;
+	private ScreenType activeScreen = ScreenType.GAME_SCREEN;
 	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
@@ -226,7 +227,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	}
 
 	/* Inteface New Public Methods */
-
 	public boolean closeActiveWindow() {
 		InventoryCloseEvent event = new InventoryCloseEvent(this, getActiveInventory(), getDefaultInventory());
 		Bukkit.getServer().getPluginManager().callEvent(event);
@@ -558,10 +558,23 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public PlayerInformation getInformation() {
 		return SpoutManager.getPlayerManager().getPlayerInfo(this);
 	}
-
+	
+	@Override
+	public ScreenType getActiveScreen() {
+		return activeScreen;
+	}
+	
 	@Override
 	public void openScreen(ScreenType type) {
-		sendPacket(new PacketOpenScreen(type));
+		openScreen(type, true);
+	}
+
+	@Override
+	public void openScreen(ScreenType type, boolean packet) {
+		activeScreen = type;
+		if (packet) {
+			sendPacket(new PacketOpenScreen(type));
+		}
 	}
 	
 	public double getGravityMultiplier() {

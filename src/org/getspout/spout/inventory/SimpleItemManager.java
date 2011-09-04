@@ -345,6 +345,11 @@ public class SimpleItemManager implements ItemManager{
 	}
 	
 	@Override
+	public String getItemName(int item, short data) {
+		return getItemName(Material.getMaterial(item), data);
+	}
+	
+	@Override
 	public String getItemName(Material item, short data) {
 		ItemData info = new ItemData(item.getId(), data);
 		if (customNames.containsKey(info)) {
@@ -356,6 +361,11 @@ public class SimpleItemManager implements ItemManager{
 	@Override
 	public void setItemName(Material item, String name) {
 		setItemName(item, (short)0, name);
+	}
+	
+	@Override
+	public void setItemName(int item, short data, String name) {
+		setItemName(Material.getMaterial(item), data, name);
 	}
 
 	@Override
