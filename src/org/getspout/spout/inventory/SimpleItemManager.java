@@ -39,8 +39,8 @@ import org.getspout.spout.Spout;
 import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
-import org.getspout.spoutapi.event.inventory.SpoutCustomBlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
+import org.getspout.spoutapi.inventory.SpoutCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
@@ -578,6 +578,10 @@ public class SimpleItemManager implements ItemManager{
 		return id;
 	}
 	
+	public Integer getCustomItemId(Plugin plugin, String key) {
+		return registerCustomItemName(plugin, key);
+	}
+	
 	public void setCustomItemBlock(int id, Integer blockId, Short metaData) {
 		if (blockId != null || metaData == null) {
 			itemBlock.put(id, blockId);
@@ -779,7 +783,6 @@ public class SimpleItemManager implements ItemManager{
 			if (player instanceof SpoutCraftPlayer) {
 				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
 				if (sp.isSpoutCraftEnabled()) {
-					System.out.println("Sending");
 					sp.sendPacket(p);
 				}
 			}
