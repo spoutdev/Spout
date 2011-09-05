@@ -80,7 +80,6 @@ import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
-import org.getspout.spoutapi.permission.SpoutPermissible;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -105,7 +104,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected RenderDistance minimumRender = null;
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
-	protected SpoutPermissible perm;
+	protected Permissible perm;
 	private double gravityMod = 1;
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
@@ -190,10 +189,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
 		return perm.addAttachment(plugin, ticks);
-	}
-	
-	public boolean hasAttachment(PermissionAttachment attachment) {
-		return perm.hasAttachment(attachment);
 	}
 
 	@Override
