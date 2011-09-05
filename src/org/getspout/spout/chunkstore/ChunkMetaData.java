@@ -244,6 +244,7 @@ public class ChunkMetaData implements Serializable {
 	public void refreshLookup() {
 		if (blockData != null || chunkData != null) {
 			System.out.println("[Spout] Converting chunk data to new format for chunk " + cx + ", " + cz);
+			dirty = true;
 			if (blockData == null || chunkData == null) {
 				throw new RuntimeException("[Spout] chunk meta data error, partial conversion occured");
 			}
