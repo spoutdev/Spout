@@ -18,6 +18,8 @@ package org.getspout.spout.chunkstore;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.util.BlockVector;
@@ -36,20 +38,21 @@ public class ChunkMetaData implements Serializable {
 	private int[] blockX = new int[1];
 	private int[] blockY = new int[1];
 	private int[] blockZ = new int[1];
+
+	private HashMap<String,byte[]>[] blockData = null;
+	private HashMap<String,byte[]> chunkData = null;
 	@SuppressWarnings("unchecked")
-	private HashMap<String,byte[]>[] blockData = new HashMap[1];
-	private HashMap<String,byte[]> chunkData = new HashMap<String,byte[]>();
+	private HashMap<String,Serializable>[] blockDataAsObject = new HashMap[1];
+	private HashMap<String,Serializable> chunkDataAsObject = new HashMap<String,Serializable>();
 	
 	private int blocks = 0;
 	
 	
 	// This is just a fast lookup for the data
-	volatile private HashMap<Integer,HashMap<String,byte[]>> fastLookup = null;
-	volatile private HashMap<Integer,Integer> indexLookup = null;
+	transient private HashMap<Integer,HashMap<String,Serializable>> fastLookup = null;
+	transient private HashMap<Integer,Integer> indexLookup = null;
 	
-	volatile private boolean firstRead = true;
-	
-	volatile private boolean dirty = false;
+	transient private boolean dirty = false;
 	
 	ChunkMetaData(UUID worldId, int cx, int cz) {
 		this.cx = cx;
@@ -78,31 +81,27 @@ public class ChunkMetaData implements Serializable {
 	}
 	
 	public Serializable removeChunkData(String id) {
-		byte[] serial = chunkData.remove(id);
+		Serializable serial = chunkDataAsObject.remove(id);
 		if (serial != null) {
 			dirty = true;
-			return Utils.deserialize(serial);
+			return serial;
 		} else {
 			return null;
 		}
 	}
 	
 	public Serializable getChunkData(String id) {
-		byte[] serial = chunkData.get(id);
-		return Utils.deserialize(serial);
+		Serializable serial = chunkDataAsObject.get(id);
+		return serial;
 	}
 	
 	public Serializable putChunkData(String id, Serializable o) {
 		
-		byte[] oldBytes = chunkData.put(id, Utils.serialize(o));
+		Serializable serial = chunkDataAsObject.put(id, Utils.serialize(o));
 
 		dirty = true;
 		
-		if (oldBytes == null) {
-			return null;
-		} else {
-			return Utils.deserialize(oldBytes);
-		}
+		return serial;
 		
 	}
 	
@@ -111,7 +110,7 @@ public class ChunkMetaData implements Serializable {
 		int count = 0;
 		
 		for (int i = 0; i < blocks; i++) {
-			if (blockData[i] != null) {
+			if (blockDataAsObject[i] != null) {
 				count++;
 			}
 		}
@@ -121,7 +120,7 @@ public class ChunkMetaData implements Serializable {
 		count = 0;
 		
 		for (int i = 0; i < blocks; i++) {
-			if (blockData[i] != null) {
+			if (blockDataAsObject[i] != null) {
 				vectors[count] = new BlockVector(blockX[count], blockY[count], blockZ[count]);
 				count++;
 			}
@@ -135,20 +134,20 @@ public class ChunkMetaData implements Serializable {
 		
 		int key = positionToKey(x, y, z);
 		
-		HashMap<String,byte[]> localBlockData = fastLookup.get(key);
+		HashMap<String,Serializable> localBlockData = fastLookup.get(key);
 		
 		if (localBlockData == null) {
 			return null;
 		} else {
 			dirty = true;
-			byte[] serial = localBlockData.remove(id);
+			Serializable serial = localBlockData.remove(id);
 			if (localBlockData.size() == 0) {
 				int index = indexLookup.get(key);
-				blockData[index] = null;
+				blockDataAsObject[index] = null;
 				fastLookup.remove(key);
 				indexLookup.remove(key);
 			}
-			return Utils.deserialize(serial);
+			return serial;
 		}
 		
 	}
@@ -157,13 +156,13 @@ public class ChunkMetaData implements Serializable {
 		
 		int key = positionToKey(x, y, z);
 		
-		HashMap<String,byte[]> localBlockData = fastLookup.get(key);
+		HashMap<String,Serializable> localBlockData = fastLookup.get(key);
 		
 		if (localBlockData == null) {
 			return null;
 		} else {
-			byte[] serial = localBlockData.get(id);
-			return Utils.deserialize(serial);
+			Serializable serial = localBlockData.get(id);
+			return serial;
 		}
 		
 	}
@@ -172,27 +171,27 @@ public class ChunkMetaData implements Serializable {
 		
 		int key = positionToKey(x, y, z);
 		
-		HashMap<String,byte[]> localBlockData = fastLookup.get(key);
+		HashMap<String,Serializable> localBlockData = fastLookup.get(key);
 		
 		if (localBlockData == null) {
 			if (blocks >= this.blockData.length) {
 				resizeArrays(1 + ((blocks * 3) / 2));
 			}
-			localBlockData = new HashMap<String,byte[]>();
+			localBlockData = new HashMap<String,Serializable>();
 			blockX[blocks] = x;
 			blockY[blocks] = y;
 			blockZ[blocks] = z;
-			blockData[blocks] = localBlockData;
-			fastLookup.put(key, blockData[blocks]);
+			blockDataAsObject[blocks] = localBlockData;
+			fastLookup.put(key, blockDataAsObject[blocks]);
 			indexLookup.put(key, blocks);
 			blocks++;
-			updateHashMap();
+			refreshLookup();
 		}
 		
-		byte[] oldBytes = localBlockData.put(id, Utils.serialize(o));
+		Serializable oldObject = localBlockData.put(id, Utils.serialize(o));
 		dirty = true;
 
-		return Utils.deserialize(oldBytes);
+		return oldObject;
 
 	}
 	
@@ -209,13 +208,13 @@ public class ChunkMetaData implements Serializable {
 		int[] oldBlockY = blockY;
 		int[] oldBlockZ = blockZ;
 		
-		HashMap<String,byte[]>[] oldBlockData = blockData;
+		HashMap<String,Serializable>[] oldBlockData = blockDataAsObject;
 		
 		blockX = new int[size];
 		blockY = new int[size];
 		blockZ = new int[size];
 
-		blockData = new HashMap[size];
+		blockDataAsObject = new HashMap[size];
 		
 		int dest = 0;
 		for (int i = 0; i < blocks; i++) {
@@ -223,7 +222,7 @@ public class ChunkMetaData implements Serializable {
 				blockX[dest] = oldBlockX[i];
 				blockY[dest] = oldBlockY[i];
 				blockZ[dest] = oldBlockZ[i];
-				blockData[dest] = oldBlockData[i];
+				blockDataAsObject[dest] = oldBlockData[i];
 				dest++;
 			}
 		}
@@ -234,11 +233,6 @@ public class ChunkMetaData implements Serializable {
 	
 	private int positionToKey(int x, int y, int z) {
 		
-		if (firstRead) {
-			firstRead = false;
-			updateHashMap();
-		}
-		
 		int xx = x & 0xF;
 		int yy = y & 0xFF;
 		int zz = z & 0xF;
@@ -246,12 +240,45 @@ public class ChunkMetaData implements Serializable {
 		return (xx << 24) | (yy << 8) | (zz << 0);
 	}
 	
-	private void updateHashMap() {
-		fastLookup = new HashMap<Integer,HashMap<String,byte[]>>();
+	@SuppressWarnings("unchecked")
+	public void refreshLookup() {
+		if (blockData != null || chunkData != null) {
+			System.out.println("[Spout] Converting chunk data to new format for chunk " + cx + ", " + cz);
+			if (blockData == null || chunkData == null) {
+				throw new RuntimeException("[Spout] chunk meta data error, partial conversion occured");
+			}
+			blockDataAsObject = new HashMap[blockData.length];
+			for (int i = 0; i < blockData.length; i++) {
+				HashMap<String, byte[]> map = blockData[i];
+				if (map != null) {
+					HashMap<String, Serializable> singleBlockData = new HashMap<String, Serializable>();
+					blockDataAsObject[i] = singleBlockData;
+					Iterator<Map.Entry<String, byte[]>> itr = map.entrySet().iterator();
+					while (itr.hasNext()) {
+						Map.Entry<String, byte[]> entry  = itr.next();
+						singleBlockData.put(entry.getKey(), Utils.deserialize(entry.getValue()));
+					}
+				}
+			}
+			blockData = null;
+			
+			chunkDataAsObject = new HashMap<String, Serializable>();
+			HashMap<String, byte[]> map = chunkData;
+			if (map != null) {
+				Iterator<Map.Entry<String, byte[]>> itr = map.entrySet().iterator();
+				while (itr.hasNext()) {
+					Map.Entry<String, byte[]> entry  = itr.next();
+					chunkDataAsObject.put(entry.getKey(), Utils.deserialize(entry.getValue()));
+				}
+			}
+			chunkData = null;
+		}
+
+		fastLookup = new HashMap<Integer,HashMap<String,Serializable>>();
 		indexLookup = new HashMap<Integer,Integer>();
 		for (int i = 0; i < blocks; i++) {
 			int key = positionToKey(blockX[i], blockY[i], blockZ[i]);
-			fastLookup.put(key, blockData[i]);
+			fastLookup.put(key, blockDataAsObject[i]);
 			indexLookup.put(key, i);
 		}
 	}
