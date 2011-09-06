@@ -93,8 +93,6 @@
                     <include>LICENSE.txt</include>
                 </includes>
             </resource>
-        </resources>
-        <resources>
             <resource>
                 <targetPath>.</targetPath>
                 <filtering>true</filtering>

@@ -42,7 +42,7 @@ Please follow the above conventions if you want your pull requests accepted.
 [Website]: http://www.getspout.org
 [Forum]: http://bit.ly/getspout
 [GitHub]: https://github.com/SpoutDev/Spout
-[Javadoc]: http://ci.getspout.org/view/SpoutDev/job/Spout/javadoc
+[Javadoc]: http://jddev.getspout.org
 [Jenkins]: http://ci.getspout.org/view/SpoutDev
 [Issues]: https://github.com/SpoutDev/Spout/issues
 [Twitter]: http://twitter.com/SpoutDev
