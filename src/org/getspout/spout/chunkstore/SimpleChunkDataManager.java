@@ -240,8 +240,6 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 			
 			if (md == null) {
 				md = new ChunkMetaData(world.getUID(), x, z);
-			} else {
-				md.refreshLookup();
 			}
 			
 			worldChunks.put(key, md);
@@ -251,3 +249,4 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	}
 	
 }
+
