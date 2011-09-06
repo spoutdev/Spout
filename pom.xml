@@ -1,7 +1,7 @@
 <!--
   Maven build file for Spout
 
-  Copyright (c) 2011 Afforess <http://www.afforess.com>
+  Copyright (c) 2011 SpoutDev <http://www.afforess.com>
   Spout is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
 -->
 
@@ -48,19 +48,15 @@
             <id>spout-repo</id>
             <url>http://repo.getspout.org</url>
         </repository>
+        <repository>
+            <id>nuxeo-repo</id>
+            <name>Maven Nuxeo Repository</name>
+            <url>http://maven.nuxeo.org/nexus/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <!-- Dependencies -->
     <dependencies>
-        <!-- CraftBukkit -->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <!-- SpoutAPI -->
         <dependency>
             <groupId>org.getspout</groupId>
             <artifactId>spoutapi</artifactId>
@@ -68,17 +64,41 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>trove</groupId>
+            <artifactId>trove</artifactId>
+            <version>2.1.1</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
    
     <build>
-        <defaultGoal>clean install</defaultGoal>
-        <sourceDirectory>${basedir}/src/</sourceDirectory>
+        <defaultGoal>clean package</defaultGoal>
+        <sourceDirectory>${basedir}/src</sourceDirectory>
         <!-- Resources -->
         <resources>
             <resource>
                 <targetPath>.</targetPath>
                 <filtering>true</filtering>
-                <directory>${basedir}/src/</directory>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>LICENSE.txt</include>
+                </includes>
+            </resource>
+        </resources>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src</directory>
                 <includes>
                     <include>plugin.yml</include>
                 </includes>
@@ -100,7 +120,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.3.2</version>
             </plugin>
             <!-- JAR dependency addition plugin -->
             <plugin>
@@ -118,14 +138,6 @@
                                 <includes>
                                     <include>org.getspout:spoutapi</include>
                                 </includes>
-                                <excludes>
-                                    <exclude>com.avaje:*</exclude>
-                                    <exclude>com.google:*</exclude>
-                                    <exclude>javax:*</exclude>
-                                    <exclude>org.bukkit:*</exclude>
-                                    <exclude>org.json:*</exclude>
-                                    <exclude>org.yaml:*</exclude>
-                                </excludes>
                             </artifactSet>
                         </configuration>
                     </execution>
