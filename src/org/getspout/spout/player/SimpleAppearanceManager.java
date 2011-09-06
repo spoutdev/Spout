@@ -1,3 +1,19 @@
+/*
+ * This file is part of Spout (http://wiki.getspout.org/).
+ * 
+ * Spout is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Spout is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.getspout.spout.player;
 
 import java.util.HashMap;
@@ -7,9 +23,12 @@ import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.packet.PacketEntitySkin;
 import org.getspout.spoutapi.packet.PacketEntityTitle;
 import org.getspout.spoutapi.packet.PacketSkinURL;
 import org.getspout.spoutapi.player.AppearanceManager;
+import org.getspout.spoutapi.player.EntitySkinType;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SimpleAppearanceManager implements AppearanceManager{
@@ -217,13 +236,34 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		}
 	}
 
+	private void resetAllEntitySkins() {
+		for (World w : Bukkit.getServer().getWorlds()) {
+			for (LivingEntity lv : w.getLivingEntities()) {
+				resetEntitySkin(lv);
+			}
+		}
+	}
+
+	@Override
+	public void resetEntitySkin(LivingEntity lv) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(lv, null);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(lv, "[reset]", (byte) 0));
+			}
+		}
+	}
+
 	@Override
 	public void resetAll() {
 		resetAllCloaks();
 		resetAllSkins();
 		resetAllTitles();
+		resetAllEntitySkins();
 	}
 	
+
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
 			HashMap<Integer, String> tmap = titleMap.get(player.getName());
@@ -249,6 +289,15 @@ public class SimpleAppearanceManager implements AppearanceManager{
 					}
 					if (title != null) {
 						((SpoutCraftPlayer)player).sendPacket(new PacketEntityTitle(lv.getEntityId(), title));
+					}
+					for (EntitySkinType type : EntitySkinType.values()) {
+						String urlSkin = player.getInformation().getEntitySkin(lv, type);
+						if (urlSkin == null) {
+							urlSkin = SpoutManager.getPlayerManager().getGlobalInfo().getEntitySkin(lv, type);
+						}
+						if (urlSkin != null) {
+							player.sendPacket(new PacketEntitySkin(lv, urlSkin, type.getId()));
+						}
 					}
 					if (lv instanceof HumanEntity) {
 						String Url = smap.get(((HumanEntity)lv).getName());
@@ -377,6 +426,60 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		for (World w : Bukkit.getServer().getWorlds()) {
 			for (LivingEntity lv : w.getLivingEntities()) {
 				resetGlobalTitle(lv);
+			}
+		}
+	}
+/*
+	@Override
+	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
+		PacketEntitySkin packet = new PacketEntitySkin(target, url, true);
+		viewingPlayer.sendPacket(packet);
+		viewingPlayer.getInformation().setEntitySkin(target, url);
+	}
+
+	@Override
+	public void setEntitySecondarySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url) {
+		PacketEntitySkin packet = new PacketEntitySkin(target, url, false);
+		viewingPlayer.sendPacket(packet);
+		viewingPlayer.getInformation().setEntitySecondarySkin(target, url);
+	}
+
+	@Override
+	public void setGlobalEntitySkin(LivingEntity entity, String url) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(entity, url);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(entity, url, true));
+			}
+		}
+	}
+
+	@Override
+	public void setGlobalEntitySecondarySkin(LivingEntity entity, String url) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySecondarySkin(entity, url);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(entity, url, false));
+			}
+		}
+	}*/
+
+	@Override
+	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url, EntitySkinType type) {
+		PacketEntitySkin packet = new PacketEntitySkin(target, url, type.getId());
+		viewingPlayer.sendPacket(packet);
+		viewingPlayer.getInformation().setEntitySkin(target, url, type);
+	}
+
+	@Override
+	public void setGlobalEntitySkin(LivingEntity entity, String url, EntitySkinType type) {
+		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(entity, url, type);
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+			if(player.isSpoutCraftEnabled()){
+				player.sendPacket(new PacketEntitySkin(entity, url, type.getId()));
 			}
 		}
 	}

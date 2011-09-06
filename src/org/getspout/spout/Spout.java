@@ -1,3 +1,19 @@
+/*
+ * This file is part of Spout (http://wiki.getspout.org/).
+ * 
+ * Spout is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Spout is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.getspout.spout;
 
 import java.io.BufferedReader;
@@ -9,19 +25,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.List;
 import java.util.logging.Logger;
 
+import net.minecraft.server.Packet18ArmAnimation;
+
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
+import org.bukkit.util.config.Configuration;
 import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.block.mcblock.CustomBlock;
+import org.getspout.spout.chunkcache.SimpleCacheManager;
+import org.getspout.spout.chunkstore.SimpleChunkDataManager;
+import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
@@ -29,25 +49,37 @@ import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
+import org.getspout.spout.player.SimpleBiomeManager;
+import org.getspout.spout.player.SimpleFileManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spout.sound.SimpleSoundManager;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.packet.PacketPluginReload;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
+import org.getspout.spoutapi.player.SpoutPlayer;
+import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
 	private final SpoutWorldListener chunkListener;
+	private final SpoutWorldMonitorListener chunkMonitorListener;
+	private final SpoutBlockListener blockListener;
+	private final SpoutEntityListener entityListener;
 	private final PluginListener pluginListener;
 	private static Spout instance;
+	private Configuration CRCConfig;
+	private Configuration itemMapConfig;
 	
 	public Spout() {
 		super();
 		playerListener = new SpoutPlayerListener();
 		chunkListener = new SpoutWorldListener();
+		chunkMonitorListener = new SpoutWorldMonitorListener();
 		pluginListener = new PluginListener();
+		entityListener = new SpoutEntityListener();
 		SpoutManager.getInstance().setKeyboardManager(new SimpleKeyboardManager());
 		SpoutManager.getInstance().setAppearanceManager(new SimpleAppearanceManager());
 		SpoutManager.getInstance().setSoundManager(new SimpleSoundManager());
@@ -56,17 +88,25 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
 		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
 		SpoutManager.getInstance().setPlayerManager(new SimplePlayerManager());
+		SpoutManager.getInstance().setCacheManager(new SimpleCacheManager());
+		SpoutManager.getInstance().setChunkDataManager(new SimpleChunkDataManager());
+		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
+		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
+		blockListener = new SpoutBlockListener();
 	}
 	@Override
 	public void onDisable() {
 		//order matters
+		CustomBlock.resetBlocks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
 		((SimpleItemManager)SpoutManager.getItemManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
+		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginDisable();
 		Player[] online = getServer().getOnlinePlayers();
 		for (Player player : online) {
 			try {
 				SpoutCraftPlayer scp = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(player);
+				scp.resetMovement();
 				if (scp.isSpoutCraftEnabled()) {
 					scp.sendPacket(new PacketRenderDistance(true, true));
 					scp.sendPacket(new PacketPluginReload((SpoutCraftPlayer)player));
@@ -76,13 +116,25 @@ public class Spout extends JavaPlugin{
 				e.printStackTrace();
 			}
 		}
-		for (Player player : online) {
-			SpoutCraftPlayer.removeBukkitEntity(player);
-			SpoutCraftPlayer.resetNetServerHandler(player);
-		}
+		//for (Player player : online) {
+		//	SpoutCraftPlayer.removeBukkitEntity(player);
+		//	SpoutCraftPlayer.resetNetServerHandler(player);
+		//}
 		SpoutCraftChunk.resetAllBukkitChunks();
 		
 		getServer().getScheduler().cancelTasks(this);
+		
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
+		dm.unloadAllChunks();
+		dm.closeAllFiles();
+		
+		CRCConfig.save();
+		
+		if (itemMapConfig != null) {
+			synchronized(itemMapConfig) {
+				itemMapConfig.save();
+			}
+		}
 		
 		//Attempt to auto update if file is available
 		try {
@@ -114,31 +166,39 @@ public class Spout extends JavaPlugin{
 			}
 		}).start();
 		getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_COMMAND_PREPROCESS, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
 
-		Player[] online = getServer().getOnlinePlayers();
-		for (Player player : online) {
-			SpoutCraftPlayer.removeBukkitEntity(player);
+		getCommand("spout").setExecutor(new SpoutCommand(this));
+
+		SpoutPlayer[] online = SpoutManager.getOnlinePlayers();
+		for (SpoutPlayer player : online) {
 			SpoutCraftPlayer.resetNetServerHandler(player);
 			SpoutCraftPlayer.updateNetServerHandler(player);
 			SpoutCraftPlayer.updateBukkitEntity(player);
-			sendBukkitContribVersionChat(player);
+			authenticate(player);
 			playerListener.manager.onPlayerJoin(player);
+			((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(player);
+			player.setPreCachingComplete(true); //already done if we are already online!
 		}
 
-		List<World> worlds = getServer().getWorlds();
-		for (World world : worlds) {
-			SpoutPlayerManagerTransfer.replacePlayerManager(((CraftWorld)world).getHandle());
-		}
-		
 		SpoutCraftChunk.replaceAllBukkitChunks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
+		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
+		
+		CustomBlock.replaceBlocks();
 
 		MapChunkThread.startThread(); // Always on
 		
@@ -149,26 +209,38 @@ public class Spout extends JavaPlugin{
 		//Can not remove them on disable because the packets will still be in the send queue
 		CustomPacket.removeClassMapping();
 		CustomPacket.addClassMapping();
+		
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
+		dm.loadAllChunks();
+		
+		CRCConfig = new Configuration(new File(this.getDataFolder(), "CRCCache.yml"));
+		CRCConfig.load();
+		
+		CRCStore.setConfigFile(CRCConfig);
+		
+		itemMapConfig = new Configuration(new File(this.getDataFolder(), "itemMap.yml"));
+		itemMapConfig.load();
+		
+		UniqueItemStringMap.setConfigFile(itemMapConfig);
+		
+		SimpleItemManager.disableStoneStackMix();
+		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}
 
 	/**
-	 * Gets the singleton instance of the bukkitcontrib plugin
-	 * @return bukkitcontrib plugin
+	 * Gets the singleton instance of the Spout plugin
+	 * @return Spout plugin
 	 */
 	public static Spout getInstance() {
 		return instance;
 	}
 	
-	private static String versionToString(String version) {
-		String split[] = version.split("\\.");
-		return ChatColor.getByCode(Integer.parseInt(split[0])).toString() + ChatColor.WHITE.toString() +
-			ChatColor.getByCode(Integer.parseInt(split[1])) + ChatColor.WHITE.toString() + 
-			ChatColor.getByCode(Integer.parseInt(split[2]));
-	}
-	
-	protected static void sendBukkitContribVersionChat(Player player) {
-		player.sendRawMessage(versionToString(Spout.getInstance().getDescription().getVersion())); //TODO look at sending packet 138 instead?
+	public void authenticate(Player player) {
+		Packet18ArmAnimation packet = new Packet18ArmAnimation();
+		packet.a = -42;
+		((SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(player)).getNetServerHandler().sendImmediatePacket(packet);
+
 	}
 	
 	protected boolean isUpdateAvailable() {
@@ -194,8 +266,8 @@ public class Spout extends JavaPlugin{
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 			String str;
 			while ((str = in.readLine()) != null) {
-			     version = str;
-			     return version;
+				 version = str;
+				 return version;
 			}
 			in.close();
 		} catch (Exception e) {}
@@ -224,15 +296,26 @@ public class Spout extends JavaPlugin{
 				}
 				catch (SecurityException e1) {}
 			}
+			File tempDirectory = new File(directory, "temp");
+			if (!tempDirectory.exists()) {
+				try {
+					tempDirectory.mkdir();
+				}
+				catch (SecurityException e1) {}
+			}
 			File plugin = new File(directory.getPath(), "Spout.jar");
+			File temp = new File(tempDirectory.getPath(), "Spout.jar");
 			if (!plugin.exists()) {
-				URL bukkitContrib = new URL("http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar");
-				HttpURLConnection con = (HttpURLConnection)(bukkitContrib.openConnection());
+				URL spout = new URL("http://ci.getspout.org/view/SpoutDev/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar");
+				HttpURLConnection con = (HttpURLConnection)(spout.openConnection());
 				System.setProperty("http.agent", ""); //Spoofing the user agent is required to track stats
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 				ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
-				fos = new FileOutputStream(plugin);
+				fos = new FileOutputStream(temp);
 				fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+			}
+			if (temp.exists()) {
+				FileUtils.moveFile(temp, plugin);
 			}
 		}
 		catch (Exception e) {}
@@ -245,6 +328,7 @@ public class Spout extends JavaPlugin{
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void pingLink(String Url) {
 		try {
 			URL url = new URL(Url);

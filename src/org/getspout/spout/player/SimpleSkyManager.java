@@ -1,9 +1,26 @@
+/*
+ * This file is part of Spout (http://wiki.getspout.org/).
+ * 
+ * Spout is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Spout is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.getspout.spout.player;
 
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.gui.Color;
 import org.getspout.spoutapi.packet.PacketSky;
 import org.getspout.spoutapi.player.SkyManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -15,6 +32,9 @@ public class SimpleSkyManager implements SkyManager{
 	private final HashMap<String, Integer> moonPercent = new HashMap<String, Integer>();
 	private final HashMap<String, String> sunUrl = new HashMap<String, String>();
 	private final HashMap<String, String> moonUrl = new HashMap<String, String>();
+	private final HashMap<String, Color> skyColor = new HashMap<String, Color>();
+	private final HashMap<String, Color> fogColor = new HashMap<String, Color>();
+	private final HashMap<String, Color> cloudColor = new HashMap<String, Color>();
 
 	@Override
 	public int getCloudHeight(SpoutPlayer player) {
@@ -190,13 +210,53 @@ public class SimpleSkyManager implements SkyManager{
 		}
 	}
 	
+
+	@Override
+	public void setSkyColor(SpoutPlayer player, Color skycolor) {
+		skyColor.put(player.getName(), skycolor);
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(skycolor, null, null));
+		}
+	}
+
+	@Override
+	public Color getSkyColor(SpoutPlayer player) {
+		return skyColor.get(player.getName());
+	}
+	
+	@Override
+	public void setFogColor(SpoutPlayer player, Color fogColor) {
+		this.fogColor.put(player.getName(), fogColor);
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(null, fogColor, null));
+		}
+	}
+
+	@Override
+	public Color getFogColor(SpoutPlayer player) {
+		return fogColor.get(player.getName());
+	}
+
+	@Override
+	public void setCloudColor(SpoutPlayer player, Color cloudColor) {
+		this.cloudColor.put(player.getName(), cloudColor);
+		if (player.isSpoutCraftEnabled()) {
+			player.sendPacket(new PacketSky(null, null, cloudColor));
+		}
+	}
+
+	@Override
+	public Color getCloudColor(SpoutPlayer player) {
+		return cloudColor.get(player.getName());
+	}
+	
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
 			String moon = getMoonTextureUrl(player);
 			moon = moon == null ? "" : moon;
 			String sun = getSunTextureUrl(player);
 			sun = sun == null ? "" : sun;
-			player.sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), sun, moon));
+			player.sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), getSkyColor(player), getFogColor(player), getCloudColor(player), sun, moon));
 		}
 	}
 	
@@ -207,10 +267,13 @@ public class SimpleSkyManager implements SkyManager{
 		moonPercent.clear();
 		sunUrl.clear();
 		moonUrl.clear();
+		skyColor.clear();
+		fogColor.clear();
+		cloudColor.clear();
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutPlayer) {
 				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
-					((SpoutPlayer)player).sendPacket(new PacketSky(108, 1500, 100, 100, "[reset]", "[reset]"));
+					((SpoutPlayer)player).sendPacket(new PacketSky(108, 1500, 100, 100, Color.remove(), Color.remove(), Color.remove(), "[reset]", "[reset]"));
 				}
 			}
 		}
@@ -234,5 +297,4 @@ public class SimpleSkyManager implements SkyManager{
 			throw new UnsupportedOperationException("All Url's must be shorter than 256 characters");
 		}
 	}
-
 }

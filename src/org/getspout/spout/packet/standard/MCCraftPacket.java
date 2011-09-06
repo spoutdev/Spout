@@ -1,3 +1,19 @@
+/*
+ * This file is part of Spout (http://wiki.getspout.org/).
+ * 
+ * Spout is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Spout is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.getspout.spout.packet.standard;
 
 import java.lang.reflect.Constructor;
@@ -6,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import net.minecraft.server.Packet;
 
 import org.getspout.spoutapi.packet.standard.MCPacket;
-import org.getspout.spoutapi.packet.standard.MCPacket51MapChunk;
 import org.getspout.spoutapi.packet.standard.MCPacket51MapChunkUncompressed;
 
 public class MCCraftPacket implements MCPacket {
@@ -34,12 +49,20 @@ public class MCCraftPacket implements MCPacket {
 		
 		MCPackets[0] = MCCraftPacket0KeepAlive.class;
 		MCPackets[3] = MCCraftPacket3Chat.class;
+		MCPackets[17] = MCCraftPacket17.class;
+		MCPackets[18] = MCCraftPacket18ArmAnimation.class;
 		MCPackets[51] = MCCraftPacket51MapChunk.class;
+		MCPackets[103] = MCCraftPacket103SetSlot.class;
+		
 		MCPackets[256] = MCPacket51MapChunkUncompressed.class;
 		
 		packets[0] = net.minecraft.server.Packet0KeepAlive.class;
 		packets[3] = net.minecraft.server.Packet3Chat.class;
+		packets[17] = net.minecraft.server.Packet17.class;
+		packets[18] = net.minecraft.server.Packet18ArmAnimation.class;
 		packets[51] = net.minecraft.server.Packet51MapChunk.class;
+		packets[103] = net.minecraft.server.Packet103SetSlot.class;
+		
 		packets[256] = net.minecraft.server.Packet51MapChunk.class;
 		
 	}

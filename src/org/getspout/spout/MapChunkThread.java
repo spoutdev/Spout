@@ -2,13 +2,10 @@
 
 package org.getspout.spout;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.zip.Deflater;
 
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.EntityPlayer;
@@ -17,6 +14,8 @@ import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.World;
 
 import org.bukkit.entity.Player;
+import org.getspout.spout.chunkcache.ChunkCache;
+import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.packet.standard.MCCraftPacket51MapChunkUncompressed;
 
@@ -25,17 +24,11 @@ public final class MapChunkThread implements Runnable {
 	// configuration
 	private static final int QUEUE_CAPACITY = 1024 * 10; // how many packets can be queued before the main thread blocks
 
-	private static final int CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
-	private static final int REDUCED_DEFLATE_THRESHOLD = CHUNK_SIZE / 4;
-
-	private static final int DEFLATE_LEVEL_CHUNKS = 6; // big chunks gets compressed well
-	private static final int DEFLATE_LEVEL_PARTS = 1; // small data gets compressed fast (reduced CPU load)
-
 	// singleton
 	private static final MapChunkThread instance = new MapChunkThread();
 	private static Thread thread = null;
 	private static boolean runs = false;
-	
+
 	private static MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
 
 	public static void startThread() {
@@ -61,13 +54,9 @@ public final class MapChunkThread implements Runnable {
 		}
 	}
 
-	// deflater stuff
-	private final Deflater deflater = new Deflater();
-	private byte[] deflateBuffer = new byte[CHUNK_SIZE + 100];
-
 	// worker thread queue
-	private final HashMap<EntityPlayer, Integer> queueSizePerPlayer = new HashMap<EntityPlayer, Integer>();
-	private final BlockingQueue<QueuedPacket> queue = new LinkedBlockingQueue<QueuedPacket>(QUEUE_CAPACITY);
+	private final ConcurrentHashMap<Integer, Integer> queueSizePerPlayer = new ConcurrentHashMap<Integer, Integer>();
+	private final LinkedBlockingDeque<QueuedPacket> queue = new LinkedBlockingDeque<QueuedPacket>(QUEUE_CAPACITY);
 
 	private final AtomicBoolean kill = new AtomicBoolean(false);
 
@@ -87,10 +76,27 @@ public final class MapChunkThread implements Runnable {
 
 	// utility methods
 	private void addToQueueSize(EntityPlayer[] players, int amount) {
-		synchronized (queueSizePerPlayer) {
-			for (EntityPlayer player : players) {
-				Integer count = queueSizePerPlayer.get(player);
-				queueSizePerPlayer.put(player, (count == null ? 0 : count) + amount);
+		for (EntityPlayer player : players) {
+			
+			boolean success = false;
+			
+			while (!success) {
+				Integer count = queueSizePerPlayer.get(player.id);
+
+				if (count == null) {
+					count = amount;
+					Integer current = queueSizePerPlayer.putIfAbsent(player.id, count);
+					success = current == null;
+				} else {
+					Integer newValue = count + amount;
+					if (newValue == 0) {
+						boolean removed = queueSizePerPlayer.remove(player.id, count);
+						success = removed;
+					} else {
+						boolean replaced = queueSizePerPlayer.replace(player.id, count, newValue);
+						success = replaced;
+					}
+				}
 			}
 		}
 	}
@@ -117,6 +123,10 @@ public final class MapChunkThread implements Runnable {
 				return;
 			}
 			handleMapChunk(task);
+		} else if (task.packet instanceof CustomPacket) {
+			if(!ChunkCache.handleCustomPacket(task.players, (CustomPacket)task.packet)) {
+				return;
+			}
 		}
 		sendToNetworkQueue(task);
 	}
@@ -124,44 +134,28 @@ public final class MapChunkThread implements Runnable {
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
 
-		// compress packet.g
-		int dataSize = packet.g.length;
-		if (deflateBuffer.length < dataSize + 100)
-			deflateBuffer = new byte[dataSize + 100];
-
-		deflater.reset();
-		deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
-		deflater.setInput(packet.g);
-		deflater.finish();
-		int size = deflater.deflate(deflateBuffer);
-		if (size == 0) {
-			size = deflater.deflate(deflateBuffer);
-		}
-
-		// copy compressed data to packet
-		packet.g = new byte[size];
 		try {
-			Field ph = Packet51MapChunk.class.getDeclaredField("h");
-			ph.setAccessible(true);
-			ph.set(packet, size);
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
+			packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
+		} catch (NoSuchFieldError e) {
 		}
-		System.arraycopy(deflateBuffer, 0, packet.g, 0, size);
+
 	}
 
 	private void sendToNetworkQueue(QueuedPacket task) {
 		for (EntityPlayer player : task.players) {
 			if (task.coords == null || player.playerChunkCoordIntPairs.contains(task.coords)) {
-				((SpoutNetServerHandler) player.netServerHandler).sendPacket2(task.packet);
+				if (player.netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+					((SpoutNetServerHandler) player.netServerHandler).queueOutputPacket(task.packet);
+				}
+				else {
+					player.netServerHandler.sendPacket(task.packet);
+				}
 			}
 		}
 	}
 
 	// producer
-	private void putTask(QueuedPacket task) {
+	private void putTask(QueuedPacket task, boolean skip) {
 		if(instance.kill.get()) {
 			throw new RuntimeException("MapChunkData: attempting to add task to queue after thread has been killed");
 		}
@@ -169,7 +163,11 @@ public final class MapChunkThread implements Runnable {
 
 		while (true) {
 			try {
-				queue.put(task);
+				if (skip) {
+					queue.putFirst(task);
+				} else {
+					queue.put(task);
+				}
 				return;
 			} catch (InterruptedException e) {
 				// TODO: ignore?
@@ -178,18 +176,24 @@ public final class MapChunkThread implements Runnable {
 	}
 
 	public static int getQueueLength(EntityPlayer player) {
-		synchronized (instance.queueSizePerPlayer) {
-			Integer count = instance.queueSizePerPlayer.get(player);
-			return count == null ? 0 : count;
-		}
+		Integer count = instance.queueSizePerPlayer.get(player.id);
+		return count == null ? 0 : count;
+	}
+	
+	public static void removeId(int id) {
+		instance.queueSizePerPlayer.remove(id);
 	}
 
 	public static void sendPacket(EntityPlayer player, Packet packet) {
-		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false));
+		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false), false);
+	}
+
+	public static void sendPacketSkipQueue(EntityPlayer player, Packet packet) {
+		instance.putTask(new QueuedPacket(null, new EntityPlayer[] { player }, packet, false), true);
 	}
 
 	public static void sendPacket(ChunkCoordIntPair coords, List<EntityPlayer> players, Packet packet) {
-		instance.putTask(new QueuedPacket(coords, players.toArray(new EntityPlayer[0]), packet, false));
+		instance.putTask(new QueuedPacket(coords, players.toArray(new EntityPlayer[0]), packet, false), false);
 	}
 
 	public static void sendPacketMapChunk(ChunkCoordIntPair coords, EntityPlayer player, World world) {
@@ -202,15 +206,8 @@ public final class MapChunkThread implements Runnable {
 
 	public static void sendPacketMapChunk(ChunkCoordIntPair coords, EntityPlayer[] players, int x, int y, int z, int dx, int dy, int dz, World world) {
 		// create packet with uncompressed data to be compressed by worker thread
-		Packet51MapChunk mapChunk = new Packet51MapChunk();
-		mapChunk.a = x;
-		mapChunk.b = y;
-		mapChunk.c = z;
-		mapChunk.d = dx;
-		mapChunk.e = dy;
-		mapChunk.f = dz;
-		mapChunk.g = world.getMultiChunkData(x, y, z, dx, dy, dz);
+		Packet51MapChunk mapChunk = new Packet51MapChunk(x, y, z, dx, dy, dz, world);
 
-		instance.putTask(new QueuedPacket(coords, players, mapChunk, true));
+		instance.putTask(new QueuedPacket(coords, players, mapChunk, true), false);
 	}
 }

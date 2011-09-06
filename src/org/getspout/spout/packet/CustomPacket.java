@@ -1,3 +1,19 @@
+/*
+ * This file is part of Spout (http://wiki.getspout.org/).
+ * 
+ * Spout is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Spout is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.getspout.spout.packet;
 
 import java.io.DataInputStream;
@@ -11,11 +27,23 @@ import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
 
 import org.getspout.spout.SpoutNetServerHandler;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketType;
 import org.getspout.spoutapi.packet.SpoutPacket;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class CustomPacket extends Packet{
-	SpoutPacket packet;
+	public SpoutPacket packet;
+	private boolean success = false;
+	private static final int[] nags;
+	private static final int NAG_MSG_AMT = 10;
+	
+	static {
+		nags = new int[PacketType.values().length];
+		for (int i = 0; i < PacketType.values().length; i++) {
+			nags[i] = NAG_MSG_AMT;
+		}
+	}
 
 	public CustomPacket() {
 		
@@ -37,46 +65,56 @@ public class CustomPacket extends Packet{
 	@Override
 	public void a(DataInputStream input) throws IOException {
 		int packetId = -1;
-		packetId = input.readInt();
+		packetId = input.readShort();
+		int version = input.readShort(); //packet version
 		int length = input.readInt(); //packet size
-		if (packetId > -1) {
-				try {
-					this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
+		if (packetId > -1 && version > -1) {
+			try {
+				this.packet = PacketType.getPacketFromId(packetId).getPacketClass().newInstance();
+			} 
+			catch (Exception e) {
+				System.out.println("Failed to identify packet id: " + packetId);
+				//e.printStackTrace();
+			}
+		}
+		try {
+			if(this.packet == null) {
+				input.skipBytes(length);
+				System.out.println("Unknown packet " + packetId + ". Skipping contents.");
+				return;
+			}
+			else if (packet.getVersion() != version) {
+				input.skipBytes(length);				
+				//Keep server admins from going insane :p
+				if (nags[packetId]-- > 0) {
+					System.out.println("Invalid Packet Id: " + packetId + ". Current v: " + packet.getVersion() + " Receieved v: " + version + " Skipping contents.");
 				}
-				catch (Exception e) {
-					System.out.println("Failed to identify packet id: " + packetId);
-					e.printStackTrace();
-				}
-				try {
-					if(this.packet == null) {
-						input.skipBytes(length);
-						System.out.println("Unknown packet " + packetId + ". Skipping contents.");
-						return;
-					}
-					else {
-						packet.readData(input);
-						//System.out.println("Reading Packet Data for " +  PacketType.getPacketFromId(packetId));
-					}
-				}
-				catch (IOException e) {
-					throw new IOException(e);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-					throw new IllegalStateException("readData() for packetId " + packetId + " threw an exception");
-				}
+			}
+			else {
+				packet.readData(input);
+				success = true;
+			}
+		}
+		catch (IOException e) {
+			throw new IOException(e);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new IllegalStateException("readData() for packetId " + packetId + " threw an exception");
 		}
 	}
 
 	@Override
 	public void a(DataOutputStream output) throws IOException {
 		if(packet == null) {
-			output.writeInt(-1);
-			output.writeInt(0);;
+			output.writeShort(-1);
+			output.writeShort(-1);
+			output.writeInt(0);
 			return;
 		}
 		//System.out.println("Writing Packet Data for " + packet.getPacketType());
-		output.writeInt(packet.getPacketType().getId());
+		output.writeShort(packet.getPacketType().getId());
+		output.writeShort(packet.getVersion());
 		output.writeInt(a() - 8);
 		packet.writeData(output);
 	}
@@ -85,7 +123,15 @@ public class CustomPacket extends Packet{
 	public void a(NetHandler netHandler) {
 		if (netHandler.getClass().hashCode() == SpoutNetServerHandler.class.hashCode()) {
 			SpoutNetServerHandler handler = (SpoutNetServerHandler)netHandler;
-			packet.run(handler.getPlayer().getEntityId());
+			SpoutPlayer player = SpoutManager.getPlayerFromId(handler.getPlayer().getEntityId());
+			if (player != null) {
+				if (success) {
+					packet.run(player.getEntityId());
+				}
+				else {
+					packet.failure(player.getEntityId());
+				}
+			}
 		}
 		else {
 			//System.out.println("Invalid hash!");
