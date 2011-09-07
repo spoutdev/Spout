@@ -243,7 +243,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			if(!event.isCancelled()) {
 				sendPacket(new PacketSetVelocity(getEntityId(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
 			}
-			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but stil tells the server about the new velocity
+			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but still tells the server about the new velocity
 		}
 	}
 
