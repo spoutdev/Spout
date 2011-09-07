@@ -58,13 +58,6 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.getspout</groupId>
-            <artifactId>spoutapi</artifactId>
-            <version>dev-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
@@ -72,11 +65,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.getspout</groupId>
+            <artifactId>spoutapi</artifactId>
+            <version>dev-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>trove</groupId>
             <artifactId>trove</artifactId>
             <version>2.1.1</version>
             <type>jar</type>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
    
