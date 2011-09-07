@@ -44,6 +44,7 @@ import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
@@ -237,7 +238,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setVelocity(Vector velocity) {
 		super.setVelocity(velocity);
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketSetVelocity(getEntityId(), velocity.getX(), velocity.getY(), velocity.getZ()));
+			PlayerVelocityEvent event = new PlayerVelocityEvent(this, velocity);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if(!event.isCancelled()) {
+				sendPacket(new PacketSetVelocity(getEntityId(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
+			}
 			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but stil tells the server about the new velocity
 		}
 	}
