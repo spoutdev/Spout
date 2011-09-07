@@ -16,11 +16,9 @@
  */
 package org.getspout.spout.block;
 
+import gnu.trove.TIntFloatIterator;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -231,10 +229,11 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		ArrayList<Float> hardness = new ArrayList<Float>(100);
 		for (Chunk chunk : world.getLoadedChunks()) {
 			if (chunk instanceof SpoutCraftChunk) {
-				Iterator<Entry<Integer, Float>> i = ((SpoutCraftChunk)chunk).hardnessOverrides.entrySet().iterator();
+				TIntFloatIterator i = ((SpoutCraftChunk)chunk).hardnessOverrides.iterator();
 				while (i.hasNext()) {
-					Entry<Integer, Float> e = i.next();
-					int pos = e.getKey();
+					i.advance(); //move first
+					
+					int pos = i.key();
 					int x = (pos >> 11) & 0xF;
 					int y = (pos >> 0) & 0xFF;
 					int z = (pos >> 7) & 0xF;
@@ -245,22 +244,10 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 					xCoords.add(x);
 					yCoords.add(y);
 					zCoords.add(z);
-					hardness.add(e.getValue());
+					hardness.add(i.value());
 				}
 			}
 		}
-		
-		int size = xCoords.size();
-		int xCoordsArray[] = new int[size];
-		int yCoordsArray[] = new int[size];
-		int zCoordsArray[] = new int[size];
-		float hardnessArray[] = new float[size];
-		for (int i = 0; i < size; i++) {
-			xCoordsArray[i] = xCoords.get(i);
-			yCoordsArray[i] = yCoords.get(i);
-			zCoordsArray[i] = zCoords.get(i);
-			hardnessArray[i] = hardness.get(i);
-		}
-		player.sendPacket(new PacketBlockHardness(xCoordsArray, yCoordsArray, zCoordsArray, hardnessArray));
+		player.sendPacket(new PacketBlockHardness(xCoords, yCoords, zCoords, hardness));
 	}
 }

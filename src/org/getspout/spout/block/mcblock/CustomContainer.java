@@ -16,10 +16,12 @@
  */
 package org.getspout.spout.block.mcblock;
 
+import gnu.trove.TIntFloatHashMap;
+import gnu.trove.TIntIntHashMap;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.server.AxisAlignedBB;
@@ -204,7 +206,7 @@ public class CustomContainer extends BlockContainer{
 				int index = CustomBlock.getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
 				Chunk chunk = target.getWorld().getChunkAt(target);
 				if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
-					Map<Integer, Float> hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
+					TIntFloatHashMap hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
 					if (hardnessOverrides.containsKey(index)) {
 						return hardnessOverrides.get(index);
 					}
@@ -278,7 +280,7 @@ public class CustomContainer extends BlockContainer{
 		int index = CustomBlock.getIndex(x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
-			Map<Integer, Integer> powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;
+			TIntIntHashMap powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;
 			if (powerOverrides.containsKey(index)) {
 				int powerbits = powerOverrides.get(index);
 				switch (face) {
