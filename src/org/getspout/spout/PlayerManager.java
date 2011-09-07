@@ -31,6 +31,7 @@ import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
+import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 import org.getspout.spoutapi.player.PlayerInformation;
@@ -56,8 +57,9 @@ public class PlayerManager {
 				}
 				else {
 					timer.remove(player.getName());
-					System.out.println("[Spout] Failed to authenticate " + player.getName() + "'s client in " + ConfigReader.getAuthenticateTicks() + " server ticks.");
 					SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutManager.getPlayer(player);
+					Bukkit.getServer().getPluginManager().callEvent(new SpoutcraftFailedEvent(scp));
+					System.out.println("[Spout] Failed to authenticate " + player.getName() + "'s client in " + ConfigReader.getAuthenticateTicks() + " server ticks.");
 					scp.queued = null;
 					if (ConfigReader.isForceClient()) {
 						System.out.println("[Spout] Kicking " + player.getName() + " for not running Spout client");
