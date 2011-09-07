@@ -250,7 +250,7 @@ public class Spout extends JavaPlugin{
 		String latest = getRBVersion();
 
 		if (latest != null) {
-			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[3]);
+			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[2]);
 			int newest = Integer.parseInt(latest);
 
 			return current < newest;
