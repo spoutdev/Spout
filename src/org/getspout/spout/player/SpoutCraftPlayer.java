@@ -235,11 +235,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void setVelocity(Vector velocity) {
+		super.setVelocity(velocity);
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketSetVelocity(getEntityId(), velocity.getX(), velocity.getY(), velocity.getZ()));
-		}
-		else {
-			super.setVelocity(velocity);
+			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but stil tells the server about the new velocity
 		}
 	}
 
