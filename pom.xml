@@ -135,6 +135,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.getspout:spoutapi</include>
+                                    <include>trove:trove</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
