@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.packet.CustomPacket;
@@ -81,10 +80,7 @@ public class PlayerManager {
 		
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
-		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));
-		
-		SpoutCraftBlock.updateHardness(player);
-		
+		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));		
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}
 

@@ -18,6 +18,7 @@ package org.getspout.spout.player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -55,6 +56,7 @@ import org.bukkit.util.Vector;
 import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.SpoutPermissibleBase;
+import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
@@ -116,6 +118,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private Location lastClicked = null;
 	private boolean precachingComplete = false;
 	private ScreenType activeScreen = ScreenType.GAME_SCREEN;
+	public SpoutCraftChunk lastTickChunk = null;
+	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
@@ -834,7 +838,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();
-	}
+	} 
 	
 	private void updateMovement() {
 		if (isSpoutCraftEnabled()) {

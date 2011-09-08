@@ -365,16 +365,6 @@ public class CustomBlock extends Block{
 
 			}
 		}
-		
-		/*int range = 55;
-		for (int dx = -(range); dx <= range; dx++){
-			for (int dy = -(range); dy <= range; dy++){
-				for (int dz = -(range); dz <= range; dz++){
-					((SpoutBlock)Bukkit.getServer().getWorlds().get(0).getBlockAt(dx, dy, dz)).setBlockPowered(true, BlockFace.EAST);
-					((SpoutBlock)Bukkit.getServer().getWorlds().get(0).getBlockAt(dx, dy, dz)).setHardness(2f);
-				}
-			}
-		}*/
 	}
 	
 	public static void resetBlocks() {

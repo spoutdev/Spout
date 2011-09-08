@@ -199,7 +199,7 @@ public class Spout extends JavaPlugin{
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
 		
 		CustomBlock.replaceBlocks();
-
+		
 		MapChunkThread.startThread(); // Always on
 		
 		//Start counting ticks

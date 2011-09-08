@@ -252,5 +252,4 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	public BlockVector[] getTaggedBlocks() {
 		return SpoutManager.getChunkDataManager().getTaggedBlocks(getWorld(), getX(), getZ());
 	}
-
 }

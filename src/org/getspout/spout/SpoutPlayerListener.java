@@ -31,7 +31,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
-import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
@@ -73,7 +72,6 @@ public class SpoutPlayerListener extends PlayerListener{
 					SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
 					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
 					if(scp.isSpoutCraftEnabled()) {
-						SpoutCraftBlock.updateHardness(scp);
 						long newSeed = event.getTo().getWorld().getSeed();
 						scp.sendPacket(new PacketWorldSeed(newSeed));
 						SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
