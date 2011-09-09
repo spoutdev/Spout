@@ -33,6 +33,7 @@ import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
+import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -77,7 +78,7 @@ public class PlayerManager {
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
-		
+		player.sendPacket(new PacketUniqueId(player.getUniqueId(), player.getEntityId()));
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
 		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));		

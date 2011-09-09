@@ -16,10 +16,16 @@
  */
 package org.getspout.spout.player;
 
+import gnu.trove.TIntObjectHashMap;
+
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spoutapi.SpoutManager;
@@ -31,6 +37,8 @@ public class SimplePlayerManager implements PlayerManager{
 	
 	HashMap<String, PlayerInformation> infoMap = new HashMap<String, PlayerInformation>();
 	PlayerInformation globalInfo = new SimplePlayerInformation();
+	TIntObjectHashMap entityIdMap = new TIntObjectHashMap();
+	Map<UUID, WeakReference<Entity>> entityUniqueIdMap = new HashMap<UUID, WeakReference<Entity>>();
 
 	@Override
 	public SpoutPlayer getPlayer(Player player) {
@@ -107,5 +115,54 @@ public class SimplePlayerManager implements PlayerManager{
 			im.sendBlockOverrideToPlayers(new Player[] {sp}, sp.getWorld());
 		}
 		
+	}
+
+	@Override
+	public Entity getEntity(UUID id) {
+		WeakReference<Entity> result = entityUniqueIdMap.get(id);
+		Entity found = null;
+		if (result != null && result.get() != null) {
+			found = result.get();
+		}
+		else {
+loop:		for (World world : Bukkit.getServer().getWorlds()){
+				for (Entity e : world.getEntities()) {
+					if (e.getUniqueId().equals(id)) {
+						found = e;
+						break loop;
+					}
+				}
+			}
+		}
+		if (found != null) {
+			result = new WeakReference<Entity>(found);
+			entityUniqueIdMap.put(id, result);
+		}
+		return found;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Entity getEntity(int entityId) {
+		WeakReference<Entity> result = (WeakReference<Entity>) entityIdMap.get(entityId);
+		Entity found = null;
+		if (result != null && result.get() != null) {
+			found = result.get();
+		}
+		else {
+loop:		for (World world : Bukkit.getServer().getWorlds()){
+				for (Entity e : world.getEntities()) {
+					if (e.getEntityId() == entityId) {
+						found = e;
+						break loop;
+					}
+				}
+			}
+		}
+		if (found != null) {
+			result = new WeakReference<Entity>(found);
+			entityIdMap.put(entityId, result);
+		}
+		return found;
 	}
 }
