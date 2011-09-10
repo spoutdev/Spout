@@ -170,6 +170,7 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.PLAYER_RESPAWN, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor, this);

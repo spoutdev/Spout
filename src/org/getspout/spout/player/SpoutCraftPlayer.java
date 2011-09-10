@@ -840,7 +840,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		getNetServerHandler().syncFlushPacketQueue();
 	} 
 	
-	private void updateMovement() {
+	public void updateMovement() {
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod, airspeedMod));
 		}
