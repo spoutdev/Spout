@@ -45,7 +45,9 @@ public class EntitySpawnListener implements PacketListener{
 				}
 				if (entityId != -1) {
 					Entity e = SpoutManager.getEntityFromId(entityId);
-					player.sendPacket(new PacketUniqueId(e.getUniqueId(), entityId));
+					if (e != null) {
+						player.sendPacket(new PacketUniqueId(e.getUniqueId(), entityId));
+					}
 				}
 			}
 		}
