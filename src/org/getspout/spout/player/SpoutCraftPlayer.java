@@ -65,6 +65,7 @@ import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
+import org.getspout.spoutapi.event.permission.PlayerPermissionEvent;
 import org.getspout.spoutapi.gui.InGameScreen;
 import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
@@ -168,12 +169,18 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public boolean hasPermission(String name) {
-		return perm.hasPermission(name);
+		boolean defaultResult = this.perm.hasPermission(name);
+		PlayerPermissionEvent event = new PlayerPermissionEvent(this, name, Bukkit.getServer().getPluginManager().getPermission(name), defaultResult);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		return event.getResult();
 	}
 
 	@Override
 	public boolean hasPermission(Permission perm) {
-		return this.perm.hasPermission(perm);
+		boolean defaultResult = this.perm.hasPermission(perm);
+		PlayerPermissionEvent event = new PlayerPermissionEvent(this, perm.getName(), perm, defaultResult);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		return event.getResult();
 	}
 
 	@Override
