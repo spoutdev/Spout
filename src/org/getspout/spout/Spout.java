@@ -152,6 +152,8 @@ public class Spout extends JavaPlugin{
 		}
 		catch (Exception e) {}
 		
+		SimpleFileManager.clearTempDirectory();
+		
 		//end the thread
 		MapChunkThread.endThread();
 	}

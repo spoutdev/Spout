@@ -16,8 +16,11 @@
  */
 package org.getspout.spout.player;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,7 +32,9 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.plugin.Plugin;
+import org.getspout.spout.Spout;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.io.CRCStore.URLCheck;
@@ -190,6 +195,17 @@ public class SimpleFileManager implements FileManager {
 		preLoginUrlCache.put(plugin, cache);
 		return true;
 	}
+	
+	@Override
+	public boolean addToPreLoginCache(Plugin plugin, InputStream input, String fileName) {
+		if (canCache(fileName)){
+			File result = addToTempDirectory(input, fileName);
+			if (result != null) {
+				addToPreLoginCache(plugin, result);
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public boolean addToCache(Plugin plugin, File file) {
@@ -262,6 +278,18 @@ public class SimpleFileManager implements FileManager {
 		}
 		return success;
 	}
+	
+
+	@Override
+	public boolean addToCache(Plugin plugin, InputStream input, String fileName) {
+		if (canCache(fileName)){
+			File result = addToTempDirectory(input, fileName);
+			if (result != null) {
+				addToCache(plugin, result);
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public void removeFromCache(Plugin plugin, String file) {
@@ -312,5 +340,32 @@ public class SimpleFileManager implements FileManager {
 		String filename = FileUtil.getFileName(fileUrl);
 		return FilenameUtils.isExtension(filename, validExtensions);
 	}
-
+	
+	private static File getTempDirectory() {
+		File dir = new File(Spout.getInstance().getDataFolder(), "temp");
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		return dir;
+	}
+	
+	private static File addToTempDirectory(InputStream input, String fileName) {
+		try {
+			File temp = new File(getTempDirectory(), fileName);
+			BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(temp));
+			IOUtils.copy(input, output);
+			return temp;
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
+	
+	public static void clearTempDirectory() {
+		try {
+			FileUtils.deleteDirectory(getTempDirectory());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
