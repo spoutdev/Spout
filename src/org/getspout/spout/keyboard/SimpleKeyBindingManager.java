@@ -21,6 +21,9 @@ public class SimpleKeyBindingManager implements KeyBindingManager {
 	private List<KeyBinding> bindings = new ArrayList<KeyBinding>();
 	@Override
 	public void registerBinding(String id, Keyboard defaultKey, String description, BindingExecutionDelegate callback, Plugin plugin) throws Exception {
+		
+		System.out.println("Plugin ["+plugin.getDescription().getName()+"] registered key ["+defaultKey+"]!");
+		
 		if(searchBinding(id, plugin) != null){
 			throw new Exception("This binding is already registered: "+id+" for plugin ["+plugin.getDescription().getName()+"]");
 		}
