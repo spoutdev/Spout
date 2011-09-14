@@ -670,6 +670,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		walkingMod = 1;
 		swimmingMod = 1;
 		jumpingMod = 1;
+		airspeedMod = 1;
 		updateMovement();
 	}
 	
