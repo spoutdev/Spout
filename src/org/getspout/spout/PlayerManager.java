@@ -23,7 +23,6 @@ import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
-import org.getspout.spout.keyboard.SimpleKeyBindingManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleBiomeManager;
@@ -76,7 +75,6 @@ public class PlayerManager {
 		((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
-		((SimpleKeyBindingManager)SpoutManager.getKeyBindingManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
 		
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
