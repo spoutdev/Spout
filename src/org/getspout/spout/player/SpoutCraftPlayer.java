@@ -30,6 +30,7 @@ import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 import net.minecraft.server.TileEntitySign;
@@ -66,7 +67,11 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.permission.PlayerPermissionEvent;
+import org.getspout.spoutapi.gui.GenericScreen;
 import org.getspout.spoutapi.gui.InGameScreen;
+import org.getspout.spoutapi.gui.GenericOverlayScreen;
+import org.getspout.spoutapi.gui.OverlayScreen;
+import org.getspout.spoutapi.gui.Screen;
 import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
 import org.getspout.spoutapi.io.CRCStore.URLCheck;
@@ -82,6 +87,7 @@ import org.getspout.spoutapi.packet.PacketOpenSignGUI;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
+import org.getspout.spoutapi.packet.PacketWidget;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
 import org.getspout.spoutapi.player.PlayerInformation;
@@ -119,6 +125,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private Location lastClicked = null;
 	private boolean precachingComplete = false;
 	private ScreenType activeScreen = ScreenType.GAME_SCREEN;
+	private GenericOverlayScreen currentScreen = null;
 	public SpoutCraftChunk lastTickChunk = null;
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	
@@ -342,8 +349,17 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public InGameScreen getMainScreen() {
-		//throw new UnsupportedOperationException("Not yet implemented!");
 		return mainScreen;
+	}
+	
+
+	@Override
+	public Screen getCurrentScreen() {
+		if(getActiveScreen() == ScreenType.GAME_SCREEN){
+			return getMainScreen();
+		} else {
+			return currentScreen;
+		}
 	}
 
 	@Override
@@ -603,9 +619,21 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void openScreen(ScreenType type, boolean packet) {
+		if(type == activeScreen) {
+			return;
+		}
 		activeScreen = type;
 		if (packet) {
 			sendPacket(new PacketOpenScreen(type));
+		}
+		if(activeScreen != ScreenType.GAME_SCREEN && activeScreen != ScreenType.CUSTOM_SCREEN) {
+			currentScreen = new GenericOverlayScreen(getEntityId(), getActiveScreen());
+			PacketWidget packetw = new PacketWidget(currentScreen, getMainScreen().getId());
+			sendPacket(packetw);
+			currentScreen.onTick();
+		} else {
+			System.out.println("Removed OverlayScreen");
+			currentScreen = null;
 		}
 	}
 	
@@ -845,6 +873,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	public void onTick() {
 		mainScreen.onTick();
+		Screen currentScreen = getCurrentScreen();
+		if(currentScreen != null){
+			currentScreen.onTick();
+		}
 		getNetServerHandler().syncFlushPacketQueue();
 	} 
 	
