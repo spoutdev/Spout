@@ -984,8 +984,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if(sign != null && isSpoutCraftEnabled())
 		{
 			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
-			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethestas Lawyers are right!
-			tes.a(true);
+			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethesdas Lawyers are right!
+			tes.isEditable = true;
 		}
 	}
 }

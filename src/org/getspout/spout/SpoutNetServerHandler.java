@@ -250,7 +250,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			Inventory inventory = getActiveInventory();
 			CraftPlayer player = (CraftPlayer) this.player.getBukkitEntity();
 			ItemStack before = ItemStack.b(packet.e);
-			ItemStack cursorBefore = this.player.inventory.j();
+			ItemStack cursorBefore = this.player.inventory.getItemInHand();
 			SpoutCraftItemStack slot = SpoutCraftItemStack.fromItemStack(before);
 			SpoutCraftItemStack cursor = SpoutCraftItemStack.fromItemStack(cursorBefore);
 			InventorySlotType type = getActiveInventorySlotType(packet.b);
@@ -703,7 +703,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		for (Object tileEntityObject : tileEntities) {
 			if (tileEntityObject != null && tileEntityObject instanceof TileEntity) {
 				TileEntity tileEntity = (TileEntity) tileEntityObject;
-				Packet tilePacket = tileEntity.f();
+				Packet tilePacket = tileEntity.l();
 				if (tilePacket != null) {
 					MapChunkThread.sendPacket(player, tilePacket);
 				}
