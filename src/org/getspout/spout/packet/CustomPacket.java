@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import net.minecraft.server.EntityList;
 import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
 
@@ -155,12 +156,12 @@ public class CustomPacket extends Packet{
 		try {
 			Field field = Packet.class.getDeclaredField("a");
 			field.setAccessible(true);
-			Map temp = (Map) field.get(null);
-			temp.remove(195);
+			EntityList temp = (EntityList) field.get(null);
+			temp.d(195);
 			field = Packet.class.getDeclaredField("b");
 			field.setAccessible(true);
-			temp = (Map) field.get(null);
-			temp.remove(CustomPacket.class);
+			Map temp2 = (Map) field.get(null);
+			temp2.remove(CustomPacket.class);
 		}
 		catch (Exception e) {
 			
