@@ -17,19 +17,15 @@
 
 package org.getspout.spout;
 
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Set;
 
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
-import org.getspout.spoutapi.permission.SpoutPermissible;
 
-public class SpoutPermissibleBase implements SpoutPermissible {
+public class SpoutPermissibleBase implements Permissible {
 	protected Permissible perm;
 	public SpoutPermissibleBase(Permissible permissible) {
 		this.perm = permissible;
@@ -93,29 +89,9 @@ public class SpoutPermissibleBase implements SpoutPermissible {
 	public void recalculatePermissions() {
 		perm.recalculatePermissions();
 	}
-	
-	@SuppressWarnings("unchecked")
-	public boolean hasAttachment(PermissionAttachment attachment) {
-		try {
-			Field attachments = PermissibleBase.class.getDeclaredField("attachments");
-			attachments.setAccessible(true);
-			List<PermissionAttachment> list = (List<PermissionAttachment>) attachments.get(perm);
-			return list.contains(attachment);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
 
 	@Override
 	public void removeAttachment(PermissionAttachment attachment) {
-		if (attachment == null) {
-			return;
-		}
-		if (!hasAttachment(attachment)) {
-			return;
-		}
 		perm.removeAttachment(attachment);
 	}
 }

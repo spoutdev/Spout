@@ -17,13 +17,7 @@
 package org.getspout.spout.block;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
-import org.bukkit.Chunk;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -32,8 +26,6 @@ import org.bukkit.craftbukkit.block.CraftBlock;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.block.SpoutChunk;
-import org.getspout.spoutapi.packet.PacketBlockHardness;
-import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	protected final int x, y, z;
@@ -182,85 +174,5 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	@Override
 	public void resetBlockPower() {
 		chunk.powerOverrides.remove(getIndex());
-	}
-
-	/*@Override
-	public void setLightLevel(byte level) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void resetLightLevel() {
-		// TODO Auto-generated method stub
-		
-	}*/
-
-	@Override
-	public float getHardness() {
-		int index = getIndex();
-		if (chunk.hardnessOverrides.containsKey(index)) {
-			return chunk.hardnessOverrides.get(index);
-		}
-		return net.minecraft.server.Block.byId[getTypeId()].j();
-	}
-
-	@Override
-	public void setHardness(float hardness) {
-		chunk.hardnessOverrides.put(getIndex(), hardness);
-		updateHardness(this, hardness);
-	}
-
-	@Override
-	public void resetHardness() {
-		chunk.hardnessOverrides.remove(getIndex());
-		updateHardness(this, -999f);
-	}
-	
-	public static void updateHardness(SpoutBlock block, float hardness) {
-		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
-			player.sendPacket(new PacketBlockHardness(block.getLocation(), hardness));
-		}
-	}
-	
-	public static void updateHardness(SpoutPlayer player) {
-		World world = player.getWorld();
-		ArrayList<Integer> xCoords = new ArrayList<Integer>(100);
-		ArrayList<Integer> yCoords = new ArrayList<Integer>(100);
-		ArrayList<Integer> zCoords = new ArrayList<Integer>(100);
-		ArrayList<Float> hardness = new ArrayList<Float>(100);
-		for (Chunk chunk : world.getLoadedChunks()) {
-			if (chunk instanceof SpoutCraftChunk) {
-				Iterator<Entry<Integer, Float>> i = ((SpoutCraftChunk)chunk).hardnessOverrides.entrySet().iterator();
-				while (i.hasNext()) {
-					Entry<Integer, Float> e = i.next();
-					int pos = e.getKey();
-					int x = (pos >> 11) & 0xF;
-					int y = (pos >> 0) & 0xFF;
-					int z = (pos >> 7) & 0xF;
-					
-					x = (chunk.getX() << 4) | (x & 0xF);
-					y = y & 0x7F;
-					z = (chunk.getZ() << 4) | (z & 0xF);
-					xCoords.add(x);
-					yCoords.add(y);
-					zCoords.add(z);
-					hardness.add(e.getValue());
-				}
-			}
-		}
-		
-		int size = xCoords.size();
-		int xCoordsArray[] = new int[size];
-		int yCoordsArray[] = new int[size];
-		int zCoordsArray[] = new int[size];
-		float hardnessArray[] = new float[size];
-		for (int i = 0; i < size; i++) {
-			xCoordsArray[i] = xCoords.get(i);
-			yCoordsArray[i] = yCoords.get(i);
-			zCoordsArray[i] = zCoords.get(i);
-			hardnessArray[i] = hardness.get(i);
-		}
-		player.sendPacket(new PacketBlockHardness(xCoordsArray, yCoordsArray, zCoordsArray, hardnessArray));
 	}
 }

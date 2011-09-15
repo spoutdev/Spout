@@ -18,6 +18,7 @@ package org.getspout.spout.player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
@@ -54,6 +56,7 @@ import org.bukkit.util.Vector;
 import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.SpoutPermissibleBase;
+import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
@@ -62,6 +65,7 @@ import org.getspout.spout.packet.standard.MCCraftPacket;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
+import org.getspout.spoutapi.event.permission.PlayerPermissionEvent;
 import org.getspout.spoutapi.gui.InGameScreen;
 import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
@@ -80,7 +84,6 @@ import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
-import org.getspout.spoutapi.permission.SpoutPermissible;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -105,7 +108,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	protected RenderDistance minimumRender = null;
 	protected String clipboard = null;
 	protected InGameScreen mainScreen;
-	protected SpoutPermissible perm;
+	protected Permissible perm;
 	private double gravityMod = 1;
 	private double swimmingMod = 1;
 	private double walkingMod = 1;
@@ -116,6 +119,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private Location lastClicked = null;
 	private boolean precachingComplete = false;
 	private ScreenType activeScreen = ScreenType.GAME_SCREEN;
+	public SpoutCraftChunk lastTickChunk = null;
+	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
@@ -164,12 +169,18 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public boolean hasPermission(String name) {
-		return perm.hasPermission(name);
+		boolean defaultResult = this.perm.hasPermission(name);
+		PlayerPermissionEvent event = new PlayerPermissionEvent(this, name, Bukkit.getServer().getPluginManager().getPermission(name), defaultResult);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		return event.getResult();
 	}
 
 	@Override
 	public boolean hasPermission(Permission perm) {
-		return this.perm.hasPermission(perm);
+		boolean defaultResult = this.perm.hasPermission(perm);
+		PlayerPermissionEvent event = new PlayerPermissionEvent(this, perm.getName(), perm, defaultResult);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		return event.getResult();
 	}
 
 	@Override
@@ -190,10 +201,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
 		return perm.addAttachment(plugin, ticks);
-	}
-	
-	public boolean hasAttachment(PermissionAttachment attachment) {
-		return perm.hasAttachment(attachment);
 	}
 
 	@Override
@@ -240,11 +247,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	
 	@Override
 	public void setVelocity(Vector velocity) {
+		super.setVelocity(velocity);
 		if (isSpoutCraftEnabled()) {
-			sendPacket(new PacketSetVelocity(getEntityId(), velocity.getX(), velocity.getY(), velocity.getZ()));
-		}
-		else {
-			super.setVelocity(velocity);
+			PlayerVelocityEvent event = new PlayerVelocityEvent(this, velocity);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if(!event.isCancelled()) {
+				sendPacket(new PacketSetVelocity(getEntityId(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
+			}
+			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but still tells the server about the new velocity
 		}
 	}
 
@@ -660,6 +670,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		walkingMod = 1;
 		swimmingMod = 1;
 		jumpingMod = 1;
+		airspeedMod = 1;
 		updateMovement();
 	}
 	
@@ -835,9 +846,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();
-	}
+	} 
 	
-	private void updateMovement() {
+	public void updateMovement() {
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod, airspeedMod));
 		}

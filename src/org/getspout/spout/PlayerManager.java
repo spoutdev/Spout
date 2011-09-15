@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.packet.CustomPacket;
@@ -31,8 +30,10 @@ import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
+import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
+import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -56,8 +57,9 @@ public class PlayerManager {
 				}
 				else {
 					timer.remove(player.getName());
-					System.out.println("[Spout] Failed to authenticate " + player.getName() + "'s client in " + ConfigReader.getAuthenticateTicks() + " server ticks.");
 					SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutManager.getPlayer(player);
+					Bukkit.getServer().getPluginManager().callEvent(new SpoutcraftFailedEvent(scp));
+					System.out.println("[Spout] Failed to authenticate " + player.getName() + "'s client in " + ConfigReader.getAuthenticateTicks() + " server ticks.");
 					scp.queued = null;
 					if (ConfigReader.isForceClient()) {
 						System.out.println("[Spout] Kicking " + player.getName() + " for not running Spout client");
@@ -76,13 +78,10 @@ public class PlayerManager {
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
-		
+		player.sendPacket(new PacketUniqueId(player.getUniqueId(), player.getEntityId()));
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
-		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));
-		
-		SpoutCraftBlock.updateHardness(player);
-		
+		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));		
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}
 

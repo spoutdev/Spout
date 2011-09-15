@@ -12,7 +12,6 @@ target/
 # Git #
 #######
 .git/
-.gitignore
 
 # Packages #
 ############
@@ -35,7 +34,7 @@ target/
 
 # OS generated files #
 ######################
-.DS_Store
+.DS_Store?
 ehthumbs.db
 Icon?
 Thumbs.db
@@ -44,6 +43,12 @@ Thumbs.db
 #################
 .classpath
 .project
+.settings
 MANIFEST.MF
 
-/doc
+# Netbeans files #
+##################
+build/
+dist/
+nbproject/
+build.xml

@@ -16,10 +16,12 @@
  */
 package org.getspout.spout.block.mcblock;
 
+import gnu.trove.TIntFloatHashMap;
+import gnu.trove.TIntIntHashMap;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.server.AxisAlignedBB;
@@ -194,7 +196,7 @@ public class CustomBlock extends Block{
 				int index = CustomBlock.getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
 				Chunk chunk = target.getWorld().getChunkAt(target);
 				if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
-					Map<Integer, Float> hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
+					TIntFloatHashMap hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
 					if (hardnessOverrides.containsKey(index)) {
 						return hardnessOverrides.get(index);
 					}
@@ -268,7 +270,7 @@ public class CustomBlock extends Block{
 		int index = CustomBlock.getIndex(x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
-			Map<Integer, Integer> powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;
+			TIntIntHashMap powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;
 			if (powerOverrides.containsKey(index)) {
 				int powerbits = powerOverrides.get(index);
 				switch (face) {
@@ -363,16 +365,6 @@ public class CustomBlock extends Block{
 
 			}
 		}
-		
-		/*int range = 55;
-		for (int dx = -(range); dx <= range; dx++){
-			for (int dy = -(range); dy <= range; dy++){
-				for (int dz = -(range); dz <= range; dz++){
-					((SpoutBlock)Bukkit.getServer().getWorlds().get(0).getBlockAt(dx, dy, dz)).setBlockPowered(true, BlockFace.EAST);
-					((SpoutBlock)Bukkit.getServer().getWorlds().get(0).getBlockAt(dx, dy, dz)).setHardness(2f);
-				}
-			}
-		}*/
 	}
 	
 	public static void resetBlocks() {

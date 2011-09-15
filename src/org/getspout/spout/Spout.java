@@ -48,6 +48,8 @@ import org.getspout.spout.inventory.SpoutInventoryBuilder;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
+import org.getspout.spout.packet.listener.EntitySpawnListener;
+import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleBiomeManager;
 import org.getspout.spout.player.SimpleFileManager;
@@ -57,7 +59,6 @@ import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spout.sound.SimpleSoundManager;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
-import org.getspout.spoutapi.packet.PacketPluginReload;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
@@ -109,7 +110,6 @@ public class Spout extends JavaPlugin{
 				scp.resetMovement();
 				if (scp.isSpoutCraftEnabled()) {
 					scp.sendPacket(new PacketRenderDistance(true, true));
-					scp.sendPacket(new PacketPluginReload((SpoutCraftPlayer)player));
 				}
 			}
 			catch (Exception e) {
@@ -152,6 +152,8 @@ public class Spout extends JavaPlugin{
 		}
 		catch (Exception e) {}
 		
+		SimpleFileManager.clearTempDirectory();
+		
 		//end the thread
 		MapChunkThread.endThread();
 	}
@@ -170,6 +172,7 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.PLAYER_RESPAWN, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor, this);
@@ -182,6 +185,15 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
 
 		getCommand("spout").setExecutor(new SpoutCommand(this));
+		
+		//Listen to entity spawn packets to send over the UUID to the clients
+		EntitySpawnListener listener = new EntitySpawnListener();
+		PacketListeners.addListener(20, listener);
+		PacketListeners.addListener(21, listener);
+		PacketListeners.addListener(23, listener);
+		PacketListeners.addListener(24, listener);
+		PacketListeners.addListener(25, listener);
+		PacketListeners.addListener(30, listener);
 
 		SpoutPlayer[] online = SpoutManager.getOnlinePlayers();
 		for (SpoutPlayer player : online) {
@@ -199,7 +211,7 @@ public class Spout extends JavaPlugin{
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
 		
 		CustomBlock.replaceBlocks();
-
+		
 		MapChunkThread.startThread(); // Always on
 		
 		//Start counting ticks
@@ -250,7 +262,7 @@ public class Spout extends JavaPlugin{
 		String latest = getRBVersion();
 
 		if (latest != null) {
-			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[3]);
+			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[2]);
 			int newest = Integer.parseInt(latest);
 
 			return current < newest;

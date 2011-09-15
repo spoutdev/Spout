@@ -29,9 +29,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
-import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
@@ -39,6 +39,7 @@ import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
+import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -66,14 +67,14 @@ public class SpoutPlayerListener extends PlayerListener{
 			return;
 		}
 		Runnable update = null;
-		final SpoutPlayer scp = SpoutCraftPlayer.getPlayer(event.getPlayer());
+		final SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
 			update = new Runnable() {
 				public void run() {
 					SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
 					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
 					if(scp.isSpoutCraftEnabled()) {
-						SpoutCraftBlock.updateHardness(scp);
+						scp.updateMovement();
 						long newSeed = event.getTo().getWorld().getSeed();
 						scp.sendPacket(new PacketWorldSeed(newSeed));
 						SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
@@ -89,6 +90,21 @@ public class SpoutPlayerListener extends PlayerListener{
 				}
 			};
 		}
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
+	}
+	
+	@Override
+	public void onPlayerRespawn(final PlayerRespawnEvent event) {
+		System.out.println("Player Respawning");
+		Runnable update = new Runnable() {
+			public void run() {
+				SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
+				if(scp.isSpoutCraftEnabled()) {
+					scp.sendPacket(new PacketUniqueId(scp.getUniqueId(), scp.getEntityId()));
+					scp.updateMovement();
+				}
+			}
+		};
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
 	}
 

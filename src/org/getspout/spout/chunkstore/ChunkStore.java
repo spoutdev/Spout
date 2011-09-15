@@ -30,21 +30,21 @@ import org.getspout.spout.util.ChunkUtil;
 
 public class ChunkStore {
 
-	HashMap<UUID,HashMap<Long,SimpleRegionFile>> regionFiles = new HashMap<UUID,HashMap<Long,SimpleRegionFile>>();
+	HashMap<UUID, HashMap<Long, SimpleRegionFile>> regionFiles = new HashMap<UUID, HashMap<Long, SimpleRegionFile>>();
 
 	public void closeAll() {
-		for(UUID uid : regionFiles.keySet()) {
-			HashMap<Long,SimpleRegionFile> worldRegions = regionFiles.get(uid);
+		for (UUID uid : regionFiles.keySet()) {
+			HashMap<Long, SimpleRegionFile> worldRegions = regionFiles.get(uid);
 			Iterator<SimpleRegionFile> itr = worldRegions.values().iterator();
-			while(itr.hasNext()) {
+			while (itr.hasNext()) {
 				SimpleRegionFile rf = itr.next();
-				if(rf != null) {
+				if (rf != null) {
 					rf.close();
 					itr.remove();
 				}
 			}
 		}
-		regionFiles = new HashMap<UUID,HashMap<Long,SimpleRegionFile>>();
+		regionFiles = new HashMap<UUID, HashMap<Long, SimpleRegionFile>>();
 	}
 
 	public ChunkMetaData readChunkMetaData(World world, int x, int z) throws IOException {
@@ -56,8 +56,8 @@ public class ChunkStore {
 		ObjectInputStream objectStream = new ObjectInputStream(in);
 		try {
 			Object o = objectStream.readObject();
-			if(o instanceof ChunkMetaData) {
-				return (ChunkMetaData)o;
+			if (o instanceof ChunkMetaData) {
+				return (ChunkMetaData) o;
 			} else {
 				throw new RuntimeException("Wrong class type read for chunk meta data for " + x + ", " + z);
 			}
@@ -69,7 +69,7 @@ public class ChunkStore {
 	}
 
 	public void writeChunkMetaData(World world, int x, int z, ChunkMetaData data) {
-		
+
 		if (!data.getDirty()) {
 			return;
 		}
@@ -93,10 +93,10 @@ public class ChunkStore {
 
 		UUID key = world.getUID();
 
-		HashMap<Long,SimpleRegionFile> worldRegions = regionFiles.get(key);
+		HashMap<Long, SimpleRegionFile> worldRegions = regionFiles.get(key);
 
 		if (worldRegions == null) {
-			worldRegions = new HashMap<Long,SimpleRegionFile>();
+			worldRegions = new HashMap<Long, SimpleRegionFile>();
 			regionFiles.put(key, worldRegions);
 		}
 
