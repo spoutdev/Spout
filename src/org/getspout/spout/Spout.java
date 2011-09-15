@@ -258,8 +258,7 @@ public class Spout extends JavaPlugin{
 	protected boolean isUpdateAvailable() {
 		File runOnce = new File(getDataFolder(), "runonce");
 		runOnce.delete();
-		return false;
-		/*if (!ConfigReader.isAutoUpdate()) {
+		if (!ConfigReader.isAutoUpdate()) {
 			return false;
 		}
 		String latest = getRBVersion();
@@ -270,7 +269,7 @@ public class Spout extends JavaPlugin{
 
 			return current < newest;
 		}
-		return false;*/
+		return false;
 	}
 	
 	public String getRBVersion() {
@@ -291,7 +290,7 @@ public class Spout extends JavaPlugin{
 	
 	protected void update() {
 		//test install once
-		File runOnce = new File(getDataFolder(), "runonce");
+		File runOnce = new File(getDataFolder(), "spout_runonce");
 		if (!runOnce.exists()) {
 			try {
 				runOnce.createNewFile();

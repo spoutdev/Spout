@@ -121,7 +121,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private ScreenType activeScreen = ScreenType.GAME_SCREEN;
 	public SpoutCraftChunk lastTickChunk = null;
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
-	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
@@ -342,7 +341,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public InGameScreen getMainScreen() {
-		//throw new UnsupportedOperationException("Not yet implemented!");
 		return mainScreen;
 	}
 
@@ -608,15 +606,15 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketOpenScreen(type));
 		}
 	}
-	
+
 	public double getGravityMultiplier() {
 		return gravityMod;
 	}
-	
+
 	public double getSwimmingMultiplier() {
 		return swimmingMod;
 	}
-	
+
 	public double getWalkingMultiplier() {
 		return walkingMod;
 	}
@@ -638,7 +636,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		walkingMod = multiplier;
 		updateMovement();
 	}
-	
 
 	@Override
 	public double getJumpingMultiplier() {
@@ -650,7 +647,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		this.jumpingMod = multiplier;
 		updateMovement();
 	}
-	
 
 	@Override
 	public double getAirSpeedMultiplier() {
@@ -663,7 +659,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		updateMovement();
 		
 	}
-	
+
 	@Override
 	public void resetMovement() {
 		gravityMod = 1;
@@ -673,7 +669,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		airspeedMod = 1;
 		updateMovement();
 	}
-	
+
 	@Override
 	public boolean isCanFly() {
 		return fly;
@@ -683,7 +679,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setCanFly(boolean fly) {
 		this.fly = fly;
 	}
-	
+
 	@Override
 	public boolean sendInventoryEvent() {
 		SpoutNetServerHandler snsh = (SpoutNetServerHandler) this.getHandle().netServerHandler;
@@ -692,7 +688,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		return event.isCancelled();
 	}
-	
 
 	@Override
 	public Location getLastClickedLocation() {
@@ -702,8 +697,79 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return null;
 	}
 
+	@Override
+	public void setPreCachingComplete(boolean complete) {
+		if(!precachingComplete) {
+			precachingComplete = complete;
+		}
+	}
+
+	@Override
+	public boolean isPreCachingComplete() {
+		if(isSpoutCraftEnabled()){
+			return precachingComplete;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public void openSignEditGUI(Sign sign) {
+		if(sign != null && isSpoutCraftEnabled())
+		{
+			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
+			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethesdas Lawyers are right!
+			tes.isEditable = true;
+		}
+	}
+
+	public void updateKeys(byte[] keys) {
+		this.forward = Keyboard.getKey(keys[0]);
+		this.back = Keyboard.getKey(keys[2]);
+		this.left = Keyboard.getKey(keys[1]);
+		this.right = Keyboard.getKey(keys[3]);
+		this.jump = Keyboard.getKey(keys[4]);
+		this.inventoryKey = Keyboard.getKey(keys[5]);
+		this.drop = Keyboard.getKey(keys[6]);
+		this.chat = Keyboard.getKey(keys[7]);
+		this.togglefog = Keyboard.getKey(keys[8]);
+		this.sneak = Keyboard.getKey(keys[9]);
+	}
+
+	public void sendPacket(SpoutPacket packet) {
+		if (!isSpoutCraftEnabled()) {
+			if (queued != null) {
+				queued.add(packet);
+			}
+		}
+		else {
+			getNetServerHandler().sendPacket(new CustomPacket(packet));
+		}
+	}
+
+	public void sendPacket(MCPacket packet) {
+		if(!(packet instanceof MCCraftPacket)) {
+			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
+		}
+		MCCraftPacket p = (MCCraftPacket)packet;
+		getHandle().netServerHandler.sendPacket(p.getPacket());
+	}
+
+	public void sendImmediatePacket(MCPacket packet) {
+		if(!(packet instanceof MCCraftPacket)) {
+			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
+		}
+		MCCraftPacket p = (MCCraftPacket)packet;
+		if (getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+			getNetServerHandler().sendImmediatePacket(p.getPacket());
+		}
+		else {
+			sendPacket(packet);
+		}
+	}
+
 	/*Non Inteface public methods */
-	
+
 	public Location getRawLastClickedLocation() {
 		return lastClicked;
 	}
@@ -767,51 +833,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return (SpoutNetServerHandler) getHandle().netServerHandler;
 	}
 
-	public void updateKeys(byte[] keys) {
-		this.forward = Keyboard.getKey(keys[0]);
-		this.back = Keyboard.getKey(keys[2]);
-		this.left = Keyboard.getKey(keys[1]);
-		this.right = Keyboard.getKey(keys[3]);
-		this.jump = Keyboard.getKey(keys[4]);
-		this.inventoryKey = Keyboard.getKey(keys[5]);
-		this.drop = Keyboard.getKey(keys[6]);
-		this.chat = Keyboard.getKey(keys[7]);
-		this.togglefog = Keyboard.getKey(keys[8]);
-		this.sneak = Keyboard.getKey(keys[9]);
-	}
-
-	public void sendPacket(SpoutPacket packet) {
-		if (!isSpoutCraftEnabled()) {
-			if (queued != null) {
-				queued.add(packet);
-			}
-		}
-		else {
-			getNetServerHandler().sendPacket(new CustomPacket(packet));
-		}
-	}
-
-	public void sendPacket(MCPacket packet) {
-		if(!(packet instanceof MCCraftPacket)) {
-			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
-		}
-		MCCraftPacket p = (MCCraftPacket)packet;
-		getHandle().netServerHandler.sendPacket(p.getPacket());
-	}
-
-	public void sendImmediatePacket(MCPacket packet) {
-		if(!(packet instanceof MCCraftPacket)) {
-			throw new IllegalArgumentException("Packet not of type MCCraftPacket");
-		}
-		MCCraftPacket p = (MCCraftPacket)packet;
-		if (getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
-			getNetServerHandler().sendImmediatePacket(p.getPacket());
-		}
-		else {
-			sendPacket(packet);
-		}
-	}
-
 	public int getMajorVersion() {
 		return majorVersion;
 	}
@@ -834,7 +855,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 	}
-	
+
 	public void setVersionString(String versionString) {
 		this.versionString = versionString;
 	}
@@ -842,12 +863,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public String getVersionString() {
 		return versionString;
 	}
-	
+
 	public void onTick() {
 		mainScreen.onTick();
 		getNetServerHandler().syncFlushPacketQueue();
 	} 
-	
+
 	public void updateMovement() {
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod, airspeedMod));
@@ -954,38 +975,5 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		//Logger.getLogger("Minecraft").warning("Player: " + player.getName() + " was not properly updated during login!");
 		updateBukkitEntity(player);
 		return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
-	}
-
-	@Override
-	public void setPreCachingComplete(boolean complete) {
-		if(!precachingComplete) {
-			precachingComplete = complete;
-		}
-	}
-
-	@Override
-	public boolean isPreCachingComplete() {
-		int minorBuild = -1;
-		try {
-			minorBuild = Integer.parseInt(getVersionString().split("\\.")[3]);
-		}
-		catch (Exception e) {
-			
-		}
-		if(isSpoutCraftEnabled() && minorBuild > 276){
-			return precachingComplete;
-		} else {
-			return true;
-		}
-	}
-
-	@Override
-	public void openSignEditGUI(Sign sign) {
-		if(sign != null && isSpoutCraftEnabled())
-		{
-			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
-			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethesdas Lawyers are right!
-			tes.isEditable = true;
-		}
 	}
 }
