@@ -256,7 +256,10 @@ public class Spout extends JavaPlugin{
 	}
 	
 	protected boolean isUpdateAvailable() {
-		if (!ConfigReader.isAutoUpdate()) {
+		File runOnce = new File(getDataFolder(), "runonce");
+		runOnce.delete();
+		return false;
+		/*if (!ConfigReader.isAutoUpdate()) {
 			return false;
 		}
 		String latest = getRBVersion();
@@ -267,7 +270,7 @@ public class Spout extends JavaPlugin{
 
 			return current < newest;
 		}
-		return false;
+		return false;*/
 	}
 	
 	public String getRBVersion() {
@@ -292,13 +295,14 @@ public class Spout extends JavaPlugin{
 		if (!runOnce.exists()) {
 			try {
 				runOnce.createNewFile();
-				pingLink("http://bit.ly/spoutserverrunonce");
+				pingLink("http://bit.ly/spoutserverinstalls");
 			}
 			catch (Exception e) {}
 		}
 		if (!isUpdateAvailable()) {
 			return;
 		}
+		pingLink("http://bit.ly/spoutserverupdated");
 		FileOutputStream fos = null;
 		try {
 			File directory = new File(Bukkit.getServer().getUpdateFolder());
