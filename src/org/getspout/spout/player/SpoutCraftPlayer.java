@@ -732,7 +732,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public int getActiveWindowId() {
 		Field id;
 		try {
-			id = EntityPlayer.class.getDeclaredField("bI");
+			id = EntityPlayer.class.getDeclaredField("bX");
 			id.setAccessible(true);
 			return (Integer)id.get(getHandle());
 		} catch (Exception e) {
@@ -744,7 +744,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void updateWindowId() {
 		Method id;
 		try {
-			id = EntityPlayer.class.getDeclaredMethod("af");
+			id = EntityPlayer.class.getDeclaredMethod("aq");
 			id.setAccessible(true);
 			id.invoke(getHandle());
 		} catch (Exception e) {
