@@ -71,7 +71,7 @@ public class CustomContainer extends BlockContainer{
 	@Override
 	public TileEntity a_() {
 		try{
-			Method a = Block.class.getDeclaredMethod("a_", (Class[])null);
+			Method a = BlockContainer.class.getDeclaredMethod("a_", (Class[])null);
 			a.setAccessible(true);
 			return (TileEntity)a.invoke(parent, (Object[]) null);
 		}
