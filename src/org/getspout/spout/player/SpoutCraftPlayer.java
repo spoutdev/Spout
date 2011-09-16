@@ -1012,38 +1012,4 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		updateBukkitEntity(player);
 		return (SpoutCraftPlayer)((((CraftPlayer)player).getHandle()).getBukkitEntity());
 	}
-
-	@Override
-	public void setPreCachingComplete(boolean complete) {
-		if(!precachingComplete) {
-			precachingComplete = complete;
-		}
-	}
-
-	@Override
-	public boolean isPreCachingComplete() {
-		int minorBuild = -1;
-		try {
-			minorBuild = Integer.parseInt(getVersionString().split("\\.")[3]);
-		}
-		catch (Exception e) {
-			
-		}
-		if(isSpoutCraftEnabled() && minorBuild > 276){
-			return precachingComplete;
-		} else {
-			return true;
-		}
-	}
-
-	@Override
-	public void openSignEditGUI(Sign sign) {
-		if(sign != null && isSpoutCraftEnabled())
-		{
-			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
-			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethestas Lawyers are right!
-			tes.a(true);
-			openScreen(ScreenType.SIGN_SCREEN, false);
-		}
-	}
 }
