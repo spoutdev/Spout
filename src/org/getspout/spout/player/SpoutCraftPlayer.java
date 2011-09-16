@@ -67,6 +67,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.permission.PlayerPermissionEvent;
+import org.getspout.spoutapi.event.screen.ScreenOpenEvent;
 import org.getspout.spoutapi.gui.GenericScreen;
 import org.getspout.spoutapi.gui.InGameScreen;
 import org.getspout.spoutapi.gui.GenericOverlayScreen;
@@ -128,6 +129,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private GenericOverlayScreen currentScreen = null;
 	public SpoutCraftChunk lastTickChunk = null;
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
+	private boolean screenOpenThisTick = false;
 	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
@@ -619,20 +621,20 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public void openScreen(ScreenType type, boolean packet) {
-		if(type == activeScreen) {
+		if(type == activeScreen || screenOpenThisTick) {
 			return;
 		}
+		screenOpenThisTick = packet;
 		activeScreen = type;
 		if (packet) {
 			sendPacket(new PacketOpenScreen(type));
 		}
 		if(activeScreen != ScreenType.GAME_SCREEN && activeScreen != ScreenType.CUSTOM_SCREEN) {
 			currentScreen = new GenericOverlayScreen(getEntityId(), getActiveScreen());
-			PacketWidget packetw = new PacketWidget(currentScreen, getMainScreen().getId());
+			PacketWidget packetw = new PacketWidget(currentScreen, currentScreen.getId());
 			sendPacket(packetw);
 			currentScreen.onTick();
 		} else {
-			System.out.println("Removed OverlayScreen");
 			currentScreen = null;
 		}
 	}
@@ -874,10 +876,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void onTick() {
 		mainScreen.onTick();
 		Screen currentScreen = getCurrentScreen();
-		if(currentScreen != null){
+		if(currentScreen != null && currentScreen instanceof OverlayScreen){
 			currentScreen.onTick();
 		}
 		getNetServerHandler().syncFlushPacketQueue();
+		screenOpenThisTick = false;
 	} 
 	
 	public void updateMovement() {
@@ -1018,6 +1021,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
 			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethestas Lawyers are right!
 			tes.a(true);
+			openScreen(ScreenType.SIGN_SCREEN, false);
 		}
 	}
 }
