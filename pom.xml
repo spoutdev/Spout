@@ -54,11 +54,6 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-        <repository>
-            <id>nuxeo-repo</id>
-            <name>Maven Nuxeo Repository</name>
-            <url>http://maven.nuxeo.org/nexus/content/groups/public/</url>
-        </repository>
     </repositories>
 
     <!-- Dependencies -->
@@ -74,13 +69,6 @@
             <groupId>org.getspout</groupId>
             <artifactId>spoutapi</artifactId>
             <version>dev-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>trove</groupId>
-            <artifactId>trove</artifactId>
-            <version>2.1.1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -141,7 +129,6 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.getspout:spoutapi</include>
-                                    <include>trove:trove</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
