@@ -130,7 +130,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public SpoutCraftChunk lastTickChunk = null;
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	private boolean screenOpenThisTick = false;
-	
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
@@ -638,15 +637,15 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			currentScreen = null;
 		}
 	}
-	
+
 	public double getGravityMultiplier() {
 		return gravityMod;
 	}
-	
+
 	public double getSwimmingMultiplier() {
 		return swimmingMod;
 	}
-	
+
 	public double getWalkingMultiplier() {
 		return walkingMod;
 	}
@@ -668,7 +667,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		walkingMod = multiplier;
 		updateMovement();
 	}
-	
 
 	@Override
 	public double getJumpingMultiplier() {
@@ -680,7 +678,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		this.jumpingMod = multiplier;
 		updateMovement();
 	}
-	
 
 	@Override
 	public double getAirSpeedMultiplier() {
@@ -693,7 +690,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		updateMovement();
 		
 	}
-	
+
 	@Override
 	public void resetMovement() {
 		gravityMod = 1;
@@ -703,7 +700,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		airspeedMod = 1;
 		updateMovement();
 	}
-	
+
 	@Override
 	public boolean isCanFly() {
 		return fly;
@@ -713,7 +710,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public void setCanFly(boolean fly) {
 		this.fly = fly;
 	}
-	
+
 	@Override
 	public boolean sendInventoryEvent() {
 		SpoutNetServerHandler snsh = (SpoutNetServerHandler) this.getHandle().netServerHandler;
@@ -722,7 +719,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		return event.isCancelled();
 	}
-	
 
 	@Override
 	public Location getLastClickedLocation() {
@@ -732,69 +728,30 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		return null;
 	}
 
-	/*Non Inteface public methods */
-	
-	public Location getRawLastClickedLocation() {
-		return lastClicked;
-	}
-	
-	public void setLastClickedLocation(Location location) {
-		lastClicked = location;
-	}
-
-	public void createInventory(String name) {
-		if (this.getHandle().activeContainer instanceof ContainerPlayer) {
-			this.inventory = new SpoutCraftInventoryPlayer(this.getHandle().inventory, 
-					new SpoutCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).craftInventory, ((ContainerPlayer)this.getHandle().activeContainer).resultInventory));
-			if (name != null) {
-				this.inventory.setName(name);
-			}
-		}
-		else {
-			this.inventory = new SpoutCraftInventoryPlayer(this.getHandle().inventory, 
-					new SpoutCraftingInventory(((ContainerPlayer)this.getHandle().defaultContainer).craftInventory, ((ContainerPlayer)this.getHandle().defaultContainer).resultInventory));
-			if (name != null) {
-				this.inventory.setName(name);
-			}
+	@Override
+	public void setPreCachingComplete(boolean complete) {
+		if(!precachingComplete) {
+			precachingComplete = complete;
 		}
 	}
 
-	public int getActiveWindowId() {
-		Field id;
-		try {
-			id = EntityPlayer.class.getDeclaredField("bI");
-			id.setAccessible(true);
-			return (Integer)id.get(getHandle());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
-	public void updateWindowId() {
-		Method id;
-		try {
-			id = EntityPlayer.class.getDeclaredMethod("af");
-			id.setAccessible(true);
-			id.invoke(getHandle());
-		} catch (Exception e) {
-			e.printStackTrace();
+	@Override
+	public boolean isPreCachingComplete() {
+		if(isSpoutCraftEnabled()){
+			return precachingComplete;
+		} else {
+			return true;
 		}
 	}
 
-	public Inventory getActiveInventory() {
-		return getNetServerHandler().getActiveInventory();
-	}
-
-	public Inventory getDefaultInventory() {
-		return getNetServerHandler().getDefaultInventory();
-	}
-
-	public SpoutNetServerHandler getNetServerHandler() {
-		if (!getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
-			updateNetServerHandler(this);
+	@Override
+	public void openSignEditGUI(Sign sign) {
+		if(sign != null && isSpoutCraftEnabled())
+		{
+			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
+			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethesdas Lawyers are right!
+			tes.isEditable = true;
 		}
-		return (SpoutNetServerHandler) getHandle().netServerHandler;
 	}
 
 	public void updateKeys(byte[] keys) {
@@ -842,6 +799,71 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		}
 	}
 
+	/*Non Inteface public methods */
+
+	public Location getRawLastClickedLocation() {
+		return lastClicked;
+	}
+	
+	public void setLastClickedLocation(Location location) {
+		lastClicked = location;
+	}
+
+	public void createInventory(String name) {
+		if (this.getHandle().activeContainer instanceof ContainerPlayer) {
+			this.inventory = new SpoutCraftInventoryPlayer(this.getHandle().inventory, 
+					new SpoutCraftingInventory(((ContainerPlayer)this.getHandle().activeContainer).craftInventory, ((ContainerPlayer)this.getHandle().activeContainer).resultInventory));
+			if (name != null) {
+				this.inventory.setName(name);
+			}
+		}
+		else {
+			this.inventory = new SpoutCraftInventoryPlayer(this.getHandle().inventory, 
+					new SpoutCraftingInventory(((ContainerPlayer)this.getHandle().defaultContainer).craftInventory, ((ContainerPlayer)this.getHandle().defaultContainer).resultInventory));
+			if (name != null) {
+				this.inventory.setName(name);
+			}
+		}
+	}
+
+	public int getActiveWindowId() {
+		Field id;
+		try {
+			id = EntityPlayer.class.getDeclaredField("bX");
+			id.setAccessible(true);
+			return (Integer)id.get(getHandle());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public void updateWindowId() {
+		Method id;
+		try {
+			id = EntityPlayer.class.getDeclaredMethod("aq");
+			id.setAccessible(true);
+			id.invoke(getHandle());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Inventory getActiveInventory() {
+		return getNetServerHandler().getActiveInventory();
+	}
+
+	public Inventory getDefaultInventory() {
+		return getNetServerHandler().getDefaultInventory();
+	}
+
+	public SpoutNetServerHandler getNetServerHandler() {
+		if (!getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class)) {
+			updateNetServerHandler(this);
+		}
+		return (SpoutNetServerHandler) getHandle().netServerHandler;
+	}
+
 	public int getMajorVersion() {
 		return majorVersion;
 	}
@@ -864,7 +886,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 			}
 		}
 	}
-	
+
 	public void setVersionString(String versionString) {
 		this.versionString = versionString;
 	}
@@ -872,7 +894,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	public String getVersionString() {
 		return versionString;
 	}
-	
+
 	public void onTick() {
 		mainScreen.onTick();
 		Screen currentScreen = getCurrentScreen();
@@ -882,7 +904,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		getNetServerHandler().syncFlushPacketQueue();
 		screenOpenThisTick = false;
 	} 
-	
+
 	public void updateMovement() {
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketMovementModifiers(gravityMod, walkingMod, swimmingMod, jumpingMod, airspeedMod));

@@ -256,6 +256,8 @@ public class Spout extends JavaPlugin{
 	}
 	
 	protected boolean isUpdateAvailable() {
+		File runOnce = new File(getDataFolder(), "runonce");
+		runOnce.delete();
 		if (!ConfigReader.isAutoUpdate()) {
 			return false;
 		}
@@ -288,17 +290,18 @@ public class Spout extends JavaPlugin{
 	
 	protected void update() {
 		//test install once
-		File runOnce = new File(getDataFolder(), "runonce");
+		File runOnce = new File(getDataFolder(), "spout_runonce");
 		if (!runOnce.exists()) {
 			try {
 				runOnce.createNewFile();
-				pingLink("http://bit.ly/spoutserverrunonce");
+				pingLink("http://bit.ly/spoutserverinstalls");
 			}
 			catch (Exception e) {}
 		}
 		if (!isUpdateAvailable()) {
 			return;
 		}
+		pingLink("http://bit.ly/spoutserverupdated");
 		FileOutputStream fos = null;
 		try {
 			File directory = new File(Bukkit.getServer().getUpdateFolder());

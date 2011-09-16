@@ -52,8 +52,8 @@ public class CustomContainer extends BlockContainer{
 		
 		updateField(parent, this, "strength");
 		updateField(parent, this, "durability");
-		updateField(parent, this, "bq");
-		updateField(parent, this, "br");
+		updateField(parent, this, "bD");
+		updateField(parent, this, "bE");
 		this.minX = parent.minX;
 		this.minY = parent.minY;
 		this.minZ = parent.minZ;
@@ -61,7 +61,7 @@ public class CustomContainer extends BlockContainer{
 		this.maxY = parent.maxY;
 		this.maxZ = parent.maxZ;
 		this.stepSound = parent.stepSound;
-		this.bz = parent.bz;
+		this.bM = parent.bM;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
 		
@@ -69,9 +69,9 @@ public class CustomContainer extends BlockContainer{
 	}
 	
 	@Override
-	protected TileEntity a_() {
+	public TileEntity a_() {
 		try{
-			Method a = Block.class.getDeclaredMethod("a_", (Class[])null);
+			Method a = BlockContainer.class.getDeclaredMethod("a_", (Class[])null);
 			a.setAccessible(true);
 			return (TileEntity)a.invoke(parent, (Object[]) null);
 		}
@@ -153,8 +153,8 @@ public class CustomContainer extends BlockContainer{
 	}
 	
 	@Override
-	public boolean k_() {
-		return parent.k_();
+	public boolean q_() {
+		return parent.q_();
 	}
 	
 	@Override
@@ -178,8 +178,8 @@ public class CustomContainer extends BlockContainer{
 	}
 	
 	@Override
-	public void c(World world, int i, int j, int k) {
-		parent.c(world, i, j, k);
+	public void a(World world, int i, int j, int k) {
+		parent.a(world, i, j, k);
 	}
 	
 	@Override
@@ -227,8 +227,8 @@ public class CustomContainer extends BlockContainer{
 	}
 	
 	@Override
-	public void d(World world, int i, int j, int k) {
-		parent.d(world, i, j, k);
+	public void a_(World world, int i, int j, int k) {
+		parent.a_(world, i, j, k);
 	}
 	
 	@Override
