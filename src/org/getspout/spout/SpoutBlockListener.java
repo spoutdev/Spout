@@ -18,6 +18,7 @@ public class SpoutBlockListener extends BlockListener {
 		i = (SimpleItemManager)SpoutManager.getItemManager();
 	}
 
+	@Override
 	public void onBlockPlace(BlockPlaceEvent event) {
 		
 		if (event.isCancelled()) {
@@ -49,6 +50,7 @@ public class SpoutBlockListener extends BlockListener {
 	//the static final refernces in Block.
 	//Specifically, public boolean a(int i, int j, int k, int l, boolean flag, int i1)
 	//in World.java is broken otherwise.
+	@Override
 	public void onBlockCanBuild(BlockCanBuildEvent event) {
 		if (event.isBuildable()) {
 			return;

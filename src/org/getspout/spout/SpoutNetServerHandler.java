@@ -41,6 +41,7 @@ import net.minecraft.server.ContainerFurnace;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.CraftingManager;
+import net.minecraft.server.EntityList;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.InventoryCraftResult;
@@ -99,7 +100,7 @@ import org.getspout.spoutapi.inventory.CraftingInventory;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutNetServerHandler extends NetServerHandler {
-	protected Map<Integer, Short> n = new HashMap<Integer, Short>();
+	protected Field entityListField = null;
 	public boolean activeInventory = false;
 	public Location activeLocation = null;
 	protected ItemStack lastOverrideDisplayStack = null;
@@ -110,6 +111,27 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	
 	public SpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
+		try {
+			entityListField = NetServerHandler.class.getDeclaredField("q");
+			entityListField.setAccessible(true);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public EntityList getEntityList() {
+		try {
+			return (EntityList) entityListField.get(this);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -237,7 +259,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		if (this.player.dead) {
 			return;
 		}
-		Short oshort = this.n.get(Integer.valueOf(this.player.activeContainer.windowId));
+		Short oshort = (Short) this.getEntityList().a(Integer.valueOf(this.player.activeContainer.windowId));
 
 		if (oshort != null && packet.b == oshort.shortValue() && this.player.activeContainer.windowId == packet.a && !this.player.activeContainer.c(this.player)) {
 			this.player.activeContainer.a(this.player, true);
@@ -246,6 +268,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 
 	@Override
 	public void a(Packet102WindowClick packet) {
+		if (this.player.dead) return;
+		
 		if (this.player.activeContainer.windowId == packet.a && this.player.activeContainer.c(this.player)) {
 			Inventory inventory = getActiveInventory();
 			CraftPlayer player = (CraftPlayer) this.player.getBukkitEntity();
@@ -324,10 +348,10 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, true));
 				this.player.h = true;
 				this.player.activeContainer.a();
-				this.player.z();
+				this.player.y();
 				this.player.h = false;
 			} else {
-				this.n.put(Integer.valueOf(this.player.activeContainer.windowId), Short.valueOf(packet.d));
+				this.getEntityList().a(Integer.valueOf(this.player.activeContainer.windowId), Short.valueOf(packet.d));
 				this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, false));
 				this.player.activeContainer.a(this.player, false);
 				ArrayList<ItemStack> arraylist = new ArrayList<ItemStack>();

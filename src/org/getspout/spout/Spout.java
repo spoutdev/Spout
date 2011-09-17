@@ -45,6 +45,7 @@ import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
+import org.getspout.spout.item.mcitem.CustomItemSpade;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
@@ -210,6 +211,7 @@ public class Spout extends JavaPlugin{
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
 		
+		CustomItemSpade.replaceSpades();
 		CustomBlock.replaceBlocks();
 		
 		MapChunkThread.startThread(); // Always on

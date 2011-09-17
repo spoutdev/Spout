@@ -68,6 +68,14 @@ public class CustomContainer extends BlockContainer{
 		Block.isTileEntity[id] = true;
 	}
 	
+	public float getExplosionResistance() {
+		return this.durability;
+	}
+	
+	public void setExplosionResistance(float resistance) {
+		this.durability = resistance;
+	}
+	
 	@Override
 	public TileEntity a_() {
 		try{
@@ -101,6 +109,11 @@ public class CustomContainer extends BlockContainer{
 	@Override
 	public float j() {
 		return parent.j();
+	}
+	
+	@Override
+	public Block c(float f) {
+		return super.c(f);
 	}
 	
 	@Override

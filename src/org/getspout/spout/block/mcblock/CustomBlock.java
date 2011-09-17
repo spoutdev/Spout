@@ -18,7 +18,6 @@ package org.getspout.spout.block.mcblock;
 
 import gnu.trove.TIntFloatHashMap;
 import gnu.trove.TIntIntHashMap;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import net.minecraft.server.Block;
 import net.minecraft.server.BlockContainer;
 import net.minecraft.server.BlockFlower;
 import net.minecraft.server.BlockMinecartTrack;
+import net.minecraft.server.BlockStem;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
@@ -71,6 +71,14 @@ public class CustomBlock extends Block{
 		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
 	}
 	
+	public float getExplosionResistance() {
+		return this.durability;
+	}
+	
+	public void setExplosionResistance(float resistance) {
+		this.durability = resistance;
+	}
+	
 	@Override
 	protected void h() {
 		try{
@@ -91,6 +99,11 @@ public class CustomBlock extends Block{
 	@Override
 	public float j() {
 		return parent.j();
+	}
+	
+	@Override
+	public Block c(float f) {
+		return super.c(f);
 	}
 	
 	@Override
@@ -311,6 +324,7 @@ public class CustomBlock extends Block{
 	
 	@Override
 	public void a(World world, EntityHuman entityhuman, int i, int j, int k, int l) {
+		System.out.println("Post Block Break " + world + " " + entityhuman + " " + i + " " + j + " " + k + " " + l);
 		parent.a(world, entityhuman, i, j, k, l);
 	}
 	
@@ -349,6 +363,10 @@ public class CustomBlock extends Block{
 				else if (parent instanceof BlockMinecartTrack) {
 					Block.byId[i] = new CustomMinecartTrack((BlockMinecartTrack)parent);
 				}
+				/* Order matters, BlockStem extends BlockFlower*/
+				else if (parent instanceof BlockStem) {
+					Block.byId[i] = new CustomStem((BlockStem)parent);
+				}
 				else if (parent instanceof BlockFlower) {
 					Block.byId[i] = new CustomFlower((BlockFlower)parent);
 				}
@@ -378,6 +396,9 @@ public class CustomBlock extends Block{
 				}
 				else if (parent instanceof CustomContainer) {
 					Block.byId[i] = ((CustomContainer)parent).parent;
+				}
+				else if (parent instanceof CustomStem) {
+					Block.byId[i] = ((CustomStem)parent).parent;
 				}
 				else if (parent instanceof CustomFlower) {
 					Block.byId[i] = ((CustomFlower)parent).parent;

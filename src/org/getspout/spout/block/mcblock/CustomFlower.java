@@ -65,6 +65,14 @@ public class CustomFlower extends BlockFlower{
 		updateField(parent, this, "name");
 	}
 	
+	public float getExplosionResistance() {
+		return this.durability;
+	}
+	
+	public void setExplosionResistance(float resistance) {
+		this.durability = resistance;
+	}
+	
 	@Override
 	protected void h() {
 		try{
@@ -85,6 +93,11 @@ public class CustomFlower extends BlockFlower{
 	@Override
 	public float j() {
 		return parent.j();
+	}
+	
+	@Override
+	public Block c(float f) {
+		return super.c(f);
 	}
 	
 	@Override

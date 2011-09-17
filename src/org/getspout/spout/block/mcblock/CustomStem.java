@@ -26,7 +26,7 @@ import java.util.Random;
 
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Block;
-import net.minecraft.server.BlockMinecartTrack;
+import net.minecraft.server.BlockStem;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
@@ -43,12 +43,13 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomMinecartTrack extends BlockMinecartTrack{
-	protected BlockMinecartTrack parent;
-	protected CustomMinecartTrack(BlockMinecartTrack parent) {
-		super(parent.id, parent.textureId, parent.f());
+public class CustomStem extends BlockStem{
+	protected BlockStem parent;
+	protected CustomStem(BlockStem parent) {
+		super(parent.id, null /*the block they grow from - we set it a bit later in the constructor*/);
 		this.parent = parent;
 		
+		updateStemField(parent, this, "a");
 		updateField(parent, this, "strength");
 		updateField(parent, this, "durability");
 		updateField(parent, this, "bD");
@@ -334,6 +335,17 @@ public class CustomMinecartTrack extends BlockMinecartTrack{
 	@Override
 	public void a(World world, int i, int j, int k, int l, int i1) {
 		parent.a(world, i, j, k, l, i1);
+	}
+	
+	private static void updateStemField(Block parent, Block child, String fieldName) {
+		try {
+			Field field = BlockStem.class.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			field.set(child, field.get(parent));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void updateField(Block parent, Block child, String fieldName) {
