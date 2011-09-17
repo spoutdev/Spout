@@ -324,7 +324,6 @@ public class CustomBlock extends Block{
 	
 	@Override
 	public void a(World world, EntityHuman entityhuman, int i, int j, int k, int l) {
-		System.out.println("Post Block Break " + world + " " + entityhuman + " " + i + " " + j + " " + k + " " + l);
 		parent.a(world, entityhuman, i, j, k, l);
 	}
 	
