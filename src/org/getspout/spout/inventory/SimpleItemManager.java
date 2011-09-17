@@ -602,15 +602,15 @@ public class SimpleItemManager implements ItemManager{
 		resetTexture(Material.STONE, (short)id);
 	}
 	
-	public Integer getItemBlock(int damage) {
+	public int getItemBlock(int damage) {
 		return itemBlock.get(damage);
 	}
 	
-	public Short getItemMetaData(int damage) {
+	public short getItemMetaData(int damage) {
 		return (short) itemMetaData.get(damage);
 	}
 	
-	public Integer registerCustomItemName(Plugin plugin, String key) {
+	public int registerCustomItemName(Plugin plugin, String key) {
 		int id = UniqueItemStringMap.getId(key);
 		
 		itemPlugin.put(id, plugin.getDescription().getName());
@@ -618,7 +618,7 @@ public class SimpleItemManager implements ItemManager{
 		return id;
 	}
 	
-	public Integer getCustomItemId(Plugin plugin, String key) {
+	public int getCustomItemId(Plugin plugin, String key) {
 		return registerCustomItemName(plugin, key);
 	}
 	
@@ -733,7 +733,6 @@ public class SimpleItemManager implements ItemManager{
 	public boolean sendBlockOverrideToPlayers(Player[] players, Chunk chunk) {
 		
 		SpoutCraftChunk scc = getSpoutCraftChunk(chunk);
-
 		if (scc == null) {
 			return false;
 		}
