@@ -44,7 +44,20 @@ public class ChunkStore {
 				}
 			}
 		}
-		regionFiles = new HashMap<UUID, HashMap<Long, SimpleRegionFile>>();
+		regionFiles.clear();
+	}
+	
+	public void testFileTimeouts() {
+		for (UUID uid : regionFiles.keySet()) {
+			HashMap<Long, SimpleRegionFile> worldRegions = regionFiles.get(uid);
+			Iterator<SimpleRegionFile> itr = worldRegions.values().iterator();
+			while (itr.hasNext()) {
+				SimpleRegionFile rf = itr.next();
+				if (rf != null) {
+					rf.testCloseTimeout();
+				}
+			}
+		}
 	}
 
 	public ChunkMetaData readChunkMetaData(World world, int x, int z) throws IOException {

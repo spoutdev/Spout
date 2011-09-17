@@ -30,7 +30,6 @@ import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.NetworkManager;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 import net.minecraft.server.TileEntitySign;
@@ -67,8 +66,6 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.permission.PlayerPermissionEvent;
-import org.getspout.spoutapi.event.screen.ScreenOpenEvent;
-import org.getspout.spoutapi.gui.GenericScreen;
 import org.getspout.spoutapi.gui.InGameScreen;
 import org.getspout.spoutapi.gui.GenericOverlayScreen;
 import org.getspout.spoutapi.gui.OverlayScreen;
@@ -702,7 +699,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	}
 
 	@Override
-	public boolean isCanFly() {
+	public boolean canFly() {
 		return fly;
 	}
 

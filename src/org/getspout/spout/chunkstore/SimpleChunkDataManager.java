@@ -41,6 +41,10 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	public void closeAllFiles() {
 		chunkStore.closeAll();
 	}
+	
+	public void testFileTimeouts() {
+		chunkStore.testFileTimeouts();
+	}
 
 	public ChunkMetaData loadChunk(Chunk c) {
 		return loadChunk(c.getWorld(), c.getX(), c.getZ());

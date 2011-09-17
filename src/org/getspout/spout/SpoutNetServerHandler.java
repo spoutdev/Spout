@@ -20,12 +20,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -155,7 +153,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	public void a(Packet14BlockDig packet) {
 		SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
 		boolean inAir = false;
-		if (player.isCanFly() && !player.getHandle().onGround) {
+		if (player.canFly() && !player.getHandle().onGround) {
 			inAir = true;
 			player.getHandle().onGround = true;
 		}
@@ -616,7 +614,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		catch (Exception e) {
 			e.printStackTrace();
 		}*/
-		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = player.isCanFly();
+		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = player.canFly();
 		super.a(packet);
 		
 		//Reset old settings

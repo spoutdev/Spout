@@ -28,69 +28,88 @@ import java.util.zip.InflaterInputStream;
 
 public class SimpleRegionFile {
 	
-	private final RandomAccessFile file;
+	private RandomAccessFile file;
 	private final int[] dataStart = new int[1024];
 	private final int[] dataActualLength = new int[1024];
 	private final int[] dataLength = new int[1024];
 	private final ArrayList<Boolean> inuse = new ArrayList<Boolean>();
-	private final int segmentSize;
-	private final int segmentMask;
+	private int segmentSize;
+	private int segmentMask;
 	private final int rx;
 	private final int rz;
+	private final int defaultSegmentSize;
+	private final File parent;
+	private long lastAccessTime = System.currentTimeMillis();
+	private static long TIMEOUT_TIME = 300000; //5 min
 	
 	public SimpleRegionFile(File f, int rx, int rz) {
 		this(f, rx, rz, 10);
 	}
 	
 	public SimpleRegionFile(File f, int rx, int rz, int defaultSegmentSize) {
-		
 		this.rx = rx;
 		this.rz = rz;
-		
-		try {
-			this.file = new RandomAccessFile(f, "rw");
-			
-			if (file.length() < 4096*3) {
+		this.defaultSegmentSize = defaultSegmentSize;
+		this.parent = f;
+		getFile();
+	}
+	
+	public final RandomAccessFile getFile() {
+		lastAccessTime = System.currentTimeMillis();
+		if (file == null) {
+			try {
+				this.file = new RandomAccessFile(parent, "rw");
 				
-				for (int i = 0; i < 1024*3; i++) {
-					file.writeInt(0);
+				if (file.length() < 4096*3) {
+					
+					for (int i = 0; i < 1024*3; i++) {
+						file.writeInt(0);
+					}
+					file.seek(4096 * 2);
+					file.writeInt(defaultSegmentSize);
 				}
+	
 				file.seek(4096 * 2);
-				file.writeInt(defaultSegmentSize);
-			}
-
-			file.seek(4096 * 2);
-
-			this.segmentSize = file.readInt();
-			this.segmentMask = (1 << segmentSize) - 1;
-			
-			int reservedSegments = this.sizeToSegments(4096 * 3);
-			
-			for (int i = 0; i < reservedSegments; i++) {
-				while (inuse.size() <= i) {
-					inuse.add(false);
+	
+				this.segmentSize = file.readInt();
+				this.segmentMask = (1 << segmentSize) - 1;
+				
+				int reservedSegments = this.sizeToSegments(4096 * 3);
+				
+				for (int i = 0; i < reservedSegments; i++) {
+					while (inuse.size() <= i) {
+						inuse.add(false);
+					}
+					inuse.set(i, true);
 				}
-				inuse.set(i, true);
-			}
-			
-			file.seek(0);
-			
-			for (int i = 0; i < 1024; i++) {
-				dataStart[i] = file.readInt();
-			}
-			
-			for (int i = 0; i < 1024; i++) {
-				dataActualLength[i] = file.readInt();
-				dataLength[i] = sizeToSegments(dataActualLength[i]);
-				setInUse(i, true);
-			}
-			
-			extendFile();
-			
-		} catch (IOException fnfe) {
-			throw new RuntimeException(fnfe);
-		} 
-		
+				
+				file.seek(0);
+				
+				for (int i = 0; i < 1024; i++) {
+					dataStart[i] = file.readInt();
+				}
+				
+				for (int i = 0; i < 1024; i++) {
+					dataActualLength[i] = file.readInt();
+					dataLength[i] = sizeToSegments(dataActualLength[i]);
+					setInUse(i, true);
+				}
+				
+				extendFile();
+				
+			} catch (IOException fnfe) {
+				throw new RuntimeException(fnfe);
+			} 
+		}
+		return file;
+	}
+	
+	public boolean testCloseTimeout() {
+		if (System.currentTimeMillis() - TIMEOUT_TIME > lastAccessTime) {
+			close();
+			return true;
+		}
+		return false;
 	}
 	
 	public DataOutputStream getOutputStream(int x, int z) {
@@ -106,8 +125,8 @@ public class SimpleRegionFile {
 		}
 		byte[] data = new byte[actualLength];
 
-		file.seek(dataStart[index] << segmentSize);
-		file.readFully(data);
+		getFile().seek(dataStart[index] << segmentSize);
+		getFile().readFully(data);
 		return new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(data)));
 	}
 	
@@ -115,8 +134,8 @@ public class SimpleRegionFile {
 
 		int oldStart = setInUse(index, false);
 		int start = findSpace(oldStart, size);
-		file.seek(start << segmentSize);
-		file.write(buffer, 0, size);
+		getFile().seek(start << segmentSize);
+		getFile().write(buffer, 0, size);
 		dataStart[index] = start;
 		dataActualLength[index] = size;
 		dataLength[index] = sizeToSegments(size);
@@ -126,8 +145,9 @@ public class SimpleRegionFile {
 	
 	public void close() {
 		try {
-			file.seek(4096*2);
-			file.close();
+			getFile().seek(4096*2);
+			getFile().close();
+			file = null;
 		} catch (IOException ioe) {
 			throw new RuntimeException("Unable to close file", ioe);
 		}
@@ -161,12 +181,12 @@ public class SimpleRegionFile {
 	
 	private void extendFile() throws IOException {
 		
-		long extend = (-file.length()) & segmentMask;
+		long extend = (-getFile().length()) & segmentMask;
 		
-		file.seek(file.length());
+		getFile().seek(getFile().length());
 		
 		while ((extend--) > 0) {
-			file.write(0);
+			getFile().write(0);
 		}
 		
 	}
@@ -226,13 +246,13 @@ public class SimpleRegionFile {
 	}
 	
 	private void saveFAT() throws IOException {
-		file.seek(0);
+		getFile().seek(0);
 		for (int i = 0; i < 1024; i++) {
-			file.writeInt(dataStart[i]);
+			getFile().writeInt(dataStart[i]);
 		}
 		
 		for (int i = 0; i < 1024; i++) {
-			file.writeInt(dataActualLength[i]);
+			getFile().writeInt(dataActualLength[i]);
 		}
 		
 	}

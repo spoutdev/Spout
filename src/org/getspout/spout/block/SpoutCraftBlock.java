@@ -23,9 +23,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.block.CraftBlock;
+import org.bukkit.inventory.ItemStack;
+import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.block.SpoutChunk;
+import org.getspout.spoutapi.material.MaterialData;
 
 public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	protected final int x, y, z;
@@ -174,5 +177,22 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	@Override
 	public void resetBlockPower() {
 		chunk.powerOverrides.remove(getIndex());
+	}
+
+	@Override
+	public org.getspout.spoutapi.material.Block getBlockType() {
+		return MaterialData.getBlock(getTypeId());
+	}
+
+	@Override
+	public ItemStack toItemStack() {
+		return toItemStack(1);
+	}
+
+	@Override
+	public ItemStack toItemStack(int amount) {
+		int type = getTypeId();
+		int data = getBlockType().hasSubtypes() ? getData() : 0;
+		return new SpoutCraftItemStack(type, amount, (short) data);
 	}
 }
