@@ -41,11 +41,7 @@ import org.bukkit.util.BlockVector;
 import org.getspout.spout.Spout;
 import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.block.SpoutCraftChunk;
-import org.getspout.spout.block.mcblock.CustomBlock;
-import org.getspout.spout.block.mcblock.CustomContainer;
-import org.getspout.spout.block.mcblock.CustomFlower;
-import org.getspout.spout.block.mcblock.CustomMinecartTrack;
-import org.getspout.spout.block.mcblock.CustomStem;
+import org.getspout.spout.block.mcblock.CustomMCBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.inventory.SpoutCustomBlockDesign;
@@ -881,16 +877,9 @@ public class SimpleItemManager implements ItemManager{
 			originalHardness.put(key, getHardness(id, data));
 		}
 		net.minecraft.server.Block b = net.minecraft.server.Block.byId[id];
-		if (b instanceof CustomBlock)
-			((CustomBlock)b).c(hardness);
-		else if (b instanceof CustomContainer)
-			((CustomContainer)b).c(hardness);
-		else if (b instanceof CustomStem)
-			((CustomStem)b).c(hardness);
-		else if (b instanceof CustomFlower)
-			((CustomFlower)b).c(hardness);
-		else if (b instanceof CustomMinecartTrack)
-			((CustomMinecartTrack)b).c(hardness);
+		if (b instanceof CustomMCBlock) {
+			((CustomMCBlock)b).setHardness(hardness);
+		}
 	}
 
 	@Override

@@ -26,7 +26,7 @@ import java.util.Random;
 
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Block;
-import net.minecraft.server.BlockFlower;
+import net.minecraft.server.BlockMushroom;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
@@ -43,9 +43,9 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomFlower extends BlockFlower implements CustomMCBlock{
-	protected BlockFlower parent;
-	protected CustomFlower(BlockFlower parent) {
+public class CustomMushroom extends BlockMushroom implements CustomMCBlock{
+	protected BlockMushroom parent;
+	protected CustomMushroom(BlockMushroom parent) {
 		super(parent.id, parent.textureId);
 		this.parent = parent;
 		

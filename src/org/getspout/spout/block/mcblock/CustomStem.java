@@ -43,7 +43,7 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomStem extends BlockStem{
+public class CustomStem extends BlockStem implements CustomMCBlock{
 	protected BlockStem parent;
 	protected CustomStem(BlockStem parent) {
 		super(parent.id, null /*the block they grow from - we set it a bit later in the constructor*/);
@@ -64,6 +64,14 @@ public class CustomStem extends BlockStem{
 		this.bM = parent.bM;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
+	}
+	
+	public Block getParent() {
+		return parent;
+	}
+	
+	public void setHardness(float hardness) {
+		c(hardness);
 	}
 	
 	public float getExplosionResistance() {

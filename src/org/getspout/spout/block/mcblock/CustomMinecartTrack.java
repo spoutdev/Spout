@@ -43,7 +43,7 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomMinecartTrack extends BlockMinecartTrack{
+public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCBlock{
 	protected BlockMinecartTrack parent;
 	protected CustomMinecartTrack(BlockMinecartTrack parent) {
 		super(parent.id, parent.textureId, parent.f());
@@ -65,6 +65,14 @@ public class CustomMinecartTrack extends BlockMinecartTrack{
 		updateField(parent, this, "name");
 	}
 	
+	public Block getParent() {
+		return parent;
+	}
+	
+	public void setHardness(float hardness) {
+		c(hardness);
+	}
+			
 	public float getExplosionResistance() {
 		return this.durability;
 	}

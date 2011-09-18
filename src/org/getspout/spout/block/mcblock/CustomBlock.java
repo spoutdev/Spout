@@ -28,6 +28,7 @@ import net.minecraft.server.Block;
 import net.minecraft.server.BlockContainer;
 import net.minecraft.server.BlockFlower;
 import net.minecraft.server.BlockMinecartTrack;
+import net.minecraft.server.BlockMushroom;
 import net.minecraft.server.BlockStem;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
@@ -45,7 +46,7 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomBlock extends Block{
+public class CustomBlock extends Block implements CustomMCBlock{
 	protected Block parent;
 	
 	protected CustomBlock(Block parent) {
@@ -67,6 +68,14 @@ public class CustomBlock extends Block{
 		updateField(parent, this, "name");
 	}
 	
+	public Block getParent() {
+		return parent;
+	}
+	
+	public void setHardness(float hardness) {
+		c(hardness);
+	}
+			
 	protected static int getIndex(int x, int y, int z) {
 		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
 	}
@@ -366,6 +375,9 @@ public class CustomBlock extends Block{
 				else if (parent instanceof BlockStem) {
 					Block.byId[i] = new CustomStem((BlockStem)parent);
 				}
+				else if (parent instanceof BlockMushroom) {
+					Block.byId[i] = new CustomMushroom((BlockMushroom)parent);
+				}
 				else if (parent instanceof BlockFlower) {
 					Block.byId[i] = new CustomFlower((BlockFlower)parent);
 				}
@@ -390,20 +402,8 @@ public class CustomBlock extends Block{
 				Block parent = Block.byId[i];
 				Block.byId[i] = null;
 				
-				if (parent instanceof CustomBlock) {
-					Block.byId[i] = ((CustomBlock)parent).parent;
-				}
-				else if (parent instanceof CustomContainer) {
-					Block.byId[i] = ((CustomContainer)parent).parent;
-				}
-				else if (parent instanceof CustomStem) {
-					Block.byId[i] = ((CustomStem)parent).parent;
-				}
-				else if (parent instanceof CustomFlower) {
-					Block.byId[i] = ((CustomFlower)parent).parent;
-				}
-				else if (parent instanceof CustomMinecartTrack) {
-					Block.byId[i] = ((CustomMinecartTrack)parent).parent;
+				if (parent instanceof CustomMCBlock) {
+					Block.byId[i] = ((CustomMCBlock)parent).getParent();
 				}
 				else {
 					Block.byId[i] = parent;

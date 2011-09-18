@@ -44,7 +44,7 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomContainer extends BlockContainer{
+public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	protected BlockContainer parent;
 	protected CustomContainer(BlockContainer parent) {
 		super(parent.id, parent.textureId, parent.material);
@@ -68,6 +68,14 @@ public class CustomContainer extends BlockContainer{
 		Block.isTileEntity[id] = true;
 	}
 	
+	public Block getParent() {
+		return parent;
+	}
+	
+	public void setHardness(float hardness) {
+		c(hardness);
+	}
+			
 	public float getExplosionResistance() {
 		return this.durability;
 	}
