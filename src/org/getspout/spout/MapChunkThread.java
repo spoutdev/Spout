@@ -157,7 +157,10 @@ public final class MapChunkThread implements Runnable {
 	// producer
 	private void putTask(QueuedPacket task, boolean skip) {
 		if(instance.kill.get()) {
-			throw new RuntimeException("MapChunkData: attempting to add task to queue after thread has been killed");
+			//throw new RuntimeException("MapChunkData: attempting to add task to queue after thread has been killed");
+			//send the packet async, hopefully it doesn't break!
+			player.netServerHandler.networkManager.queue(task.packet);
+		
 		}
 		addToQueueSize(task.players, +1);
 
