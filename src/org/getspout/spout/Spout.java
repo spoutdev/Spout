@@ -251,10 +251,11 @@ public class Spout extends JavaPlugin{
 	}
 	
 	public void authenticate(Player player) {
-		Packet18ArmAnimation packet = new Packet18ArmAnimation();
-		packet.a = -42;
-		((SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(player)).getNetServerHandler().sendImmediatePacket(packet);
-
+		if (ConfigReader.authenticateSpoutcraft()) {}
+			Packet18ArmAnimation packet = new Packet18ArmAnimation();
+			packet.a = -42;
+			((SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(player)).getNetServerHandler().sendImmediatePacket(packet);
+		}
 	}
 	
 	protected boolean isUpdateAvailable() {
