@@ -1,7 +1,7 @@
 # Compiled source #
 ###################
-bin/
-target/
+bin
+target
 *.com
 *.class
 *.dll
@@ -11,12 +11,10 @@ target/
 
 # Git #
 #######
-.git/
+.git
 
 # Packages #
 ############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
 *.7z
 *.dmg
 *.gz
@@ -34,7 +32,7 @@ target/
 
 # OS generated files #
 ######################
-.DS_Store?
+.DS_Store
 ehthumbs.db
 Icon?
 Thumbs.db
@@ -48,7 +46,7 @@ MANIFEST.MF
 
 # Netbeans files #
 ##################
-build/
-dist/
-nbproject/
+build
+dist
+nbproject
 build.xml
