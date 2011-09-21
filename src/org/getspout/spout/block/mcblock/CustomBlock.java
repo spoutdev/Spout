@@ -370,7 +370,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				if (parent instanceof BlockChest) {
 					Block.byId[i] = new CustomChest((BlockChest)parent);
 				}
-				if (parent instanceof BlockContainer) {
+				else if (parent instanceof BlockContainer) {
 					Block.byId[i] = new CustomContainer((BlockContainer)parent);
 				}
 				else if (parent instanceof BlockMinecartTrack) {
