@@ -18,6 +18,7 @@ package org.getspout.spout.block.mcblock;
 
 import gnu.trove.TIntFloatHashMap;
 import gnu.trove.TIntIntHashMap;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,16 +28,13 @@ import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Block;
 import net.minecraft.server.BlockChest;
 import net.minecraft.server.BlockContainer;
-import net.minecraft.server.BlockFlower;
-import net.minecraft.server.BlockMinecartTrack;
-import net.minecraft.server.BlockMushroom;
-import net.minecraft.server.BlockStem;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IBlockAccess;
 import net.minecraft.server.MovingObjectPosition;
+import net.minecraft.server.TileEntity;
 import net.minecraft.server.Vec3D;
 import net.minecraft.server.World;
 
@@ -47,12 +45,12 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 
-public class CustomBlock extends Block implements CustomMCBlock{
-	protected Block parent;
-	
-	protected CustomBlock(Block parent) {
-		super(parent.id, parent.textureId, parent.material);
+public class CustomChest extends BlockChest implements CustomMCBlock{
+	protected BlockChest parent;
+	protected CustomChest(BlockChest parent) {
+		super(parent.id);
 		this.parent = parent;
+		
 		updateField(parent, this, "strength");
 		updateField(parent, this, "durability");
 		updateField(parent, this, "bD");
@@ -67,6 +65,8 @@ public class CustomBlock extends Block implements CustomMCBlock{
 		this.bM = parent.bM;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
+		
+		Block.isTileEntity[id] = true;
 	}
 	
 	public Block getParent() {
@@ -77,16 +77,25 @@ public class CustomBlock extends Block implements CustomMCBlock{
 		c(hardness);
 	}
 			
-	protected static int getIndex(int x, int y, int z) {
-		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
-	}
-	
 	public float getExplosionResistance() {
 		return this.durability;
 	}
 	
 	public void setExplosionResistance(float resistance) {
 		this.durability = resistance;
+	}
+	
+	@Override
+	public TileEntity a_() {
+		try{
+			Method a = BlockContainer.class.getDeclaredMethod("a_", (Class[])null);
+			a.setAccessible(true);
+			return (TileEntity)a.invoke(parent, (Object[]) null);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	@Override
@@ -351,72 +360,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	public void a(World world, int i, int j, int k, int l, int i1) {
 		parent.a(world, i, j, k, l, i1);
 	}
-	
-	public static void replaceBlocks() {
-		for (int i = 0; i < Block.byId.length; i++) {
-			if (Block.byId[i] != null) {
-				Block parent = Block.byId[i];
-				Block.byId[i] = null;
-				
-				boolean oldn = n[i];
-				boolean oldo = o[i];
-				boolean oldTileEntity = isTileEntity[i];
-				int oldq = q[i];
-				boolean oldr = r[i];
-				int olds = s[i];
-				boolean oldt = t[i];
-				
-				/* Order matters, BlockChest extends BlockContainer*/
-				if (parent instanceof BlockChest) {
-					Block.byId[i] = new CustomChest((BlockChest)parent);
-				}
-				if (parent instanceof BlockContainer) {
-					Block.byId[i] = new CustomContainer((BlockContainer)parent);
-				}
-				else if (parent instanceof BlockMinecartTrack) {
-					Block.byId[i] = new CustomMinecartTrack((BlockMinecartTrack)parent);
-				}
-				/* Order matters, BlockStem extends BlockFlower*/
-				else if (parent instanceof BlockStem) {
-					Block.byId[i] = new CustomStem((BlockStem)parent);
-				}
-				else if (parent instanceof BlockMushroom) {
-					Block.byId[i] = new CustomMushroom((BlockMushroom)parent);
-				}
-				else if (parent instanceof BlockFlower) {
-					Block.byId[i] = new CustomFlower((BlockFlower)parent);
-				}
-				else {
-					Block.byId[i] = new CustomBlock(parent);
-				}
-				n[i] = oldn;
-				o[i] = oldo;
-				isTileEntity[i] = oldTileEntity;
-				q[i] = oldq;
-				r[i] = oldr;
-				s[i] = olds;
-				t[i] = oldt;
 
-			}
-		}
-	}
-	
-	public static void resetBlocks() {
-		for (int i = 0; i < Block.byId.length; i++) {
-			if (Block.byId[i] != null) {
-				Block parent = Block.byId[i];
-				Block.byId[i] = null;
-				
-				if (parent instanceof CustomMCBlock) {
-					Block.byId[i] = ((CustomMCBlock)parent).getParent();
-				}
-				else {
-					Block.byId[i] = parent;
-				}
-			}
-		}
-	}
-	
 	private static void updateField(Block parent, Block child, String fieldName) {
 		try {
 			Field field = Block.class.getDeclaredField(fieldName);
