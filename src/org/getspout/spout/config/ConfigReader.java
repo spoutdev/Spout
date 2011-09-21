@@ -31,6 +31,7 @@ public class ConfigReader {
 	private static boolean allowVisualCheats = false;
 	private static boolean chunkDataCache = true;
 	private static boolean teleportSmoothing = true;
+	private static boolean authenticateSpoutcraft = true;
 	
 	public void read() {
 		try {
@@ -97,6 +98,11 @@ public class ConfigReader {
 			} else {
 				configuration.setProperty("TeleportSmoothing", true);
 			}
+			if (configuration.getProperty("AuthenticateSpoutcraft") != null) {
+				authenticateSpoutcraft = configuration.getBoolean("AuthenticateSpoutcraft", true);
+			} else {
+				configuration.setProperty("AuthenticateSpoutcraft", true);
+			}
 			
 			if (!configuration.save()) {
 				throw new IOException();
@@ -132,5 +138,9 @@ public class ConfigReader {
 	
 	public static boolean isTeleportSmoothing() {
 		return teleportSmoothing;
+	}
+	
+	public static boolean authenticateSpoutcraft() {
+		return authenticateSpoutcraft;
 	}
 }
