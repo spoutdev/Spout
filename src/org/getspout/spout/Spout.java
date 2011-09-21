@@ -251,7 +251,7 @@ public class Spout extends JavaPlugin{
 	}
 	
 	public void authenticate(Player player) {
-		if (ConfigReader.authenticateSpoutcraft()) {}
+		if (ConfigReader.authenticateSpoutcraft()) {
 			Packet18ArmAnimation packet = new Packet18ArmAnimation();
 			packet.a = -42;
 			((SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(player)).getNetServerHandler().sendImmediatePacket(packet);
