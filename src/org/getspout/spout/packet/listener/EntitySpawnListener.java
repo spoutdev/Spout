@@ -20,7 +20,7 @@ public class EntitySpawnListener implements PacketListener{
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean checkPacket(Player p, MCPacket packet) {
-		if (p != null) {
+		if (p != null && p.getClass().equals(SpoutCraftPlayer.class)) {
 			SpoutPlayer player = (SpoutPlayer)p;
 			if (player.isSpoutCraftEnabled()) {
 				Object raw = packet.getPacket();
