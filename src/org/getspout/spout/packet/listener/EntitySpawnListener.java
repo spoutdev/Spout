@@ -9,6 +9,7 @@ import net.minecraft.server.Packet30Entity;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.packet.listener.PacketListener;
