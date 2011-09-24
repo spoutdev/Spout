@@ -83,7 +83,6 @@ import org.getspout.spoutapi.packet.PacketMovementModifiers;
 import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
 import org.getspout.spoutapi.packet.PacketOpenSignGUI;
-import org.getspout.spoutapi.packet.PacketPlayerAttribute;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
@@ -120,6 +119,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 	private double walkingMod = 1;
 	private double jumpingMod = 1;
 	private double airspeedMod = 1;
+	private boolean fly;
 	private String versionString = "not set";
 	private Location lastClicked = null;
 	private boolean precachingComplete = false;
@@ -137,7 +137,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
 		perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
+
 		mainScreen.toggleSurvivalHUD(!getGameMode().equals(GameMode.CREATIVE));
+		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
 	}
 	
 	@Override
@@ -701,45 +703,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 
 	@Override
 	public boolean canFly() {
-		return this.getHandle().abilities.canFly;
+		return fly;
 	}
 
 	@Override
 	public void setCanFly(boolean fly) {
-		this.getHandle().abilities.canFly = fly;
-		sendPacket(new PacketPlayerAttribute((byte) 0,fly));
-	}
-	
-	@Override
-	public boolean isFlying() {
-		return this.getHandle().abilities.isFlying;
-	}
-	
-	@Override
-	public void setFlying(boolean flying) {
-		this.getHandle().abilities.isFlying = flying;
-		sendPacket(new PacketPlayerAttribute((byte) 1,flying));
-	}
-	@Override
-	public void setInvulnerable(boolean invulnerable) {
-		this.getHandle().abilities.isInvulnerable = invulnerable;
-		sendPacket(new PacketPlayerAttribute((byte) 3,invulnerable));
-	}
-
-	@Override
-	public boolean isInvulnerable() {
-		return this.getHandle().abilities.isInvulnerable;
-	}
-
-	@Override
-	public void setInstantBreak(boolean instantBreak) {
-		this.getHandle().abilities.canInstantlyBuild = instantBreak;
-		sendPacket(new PacketPlayerAttribute((byte) 2,instantBreak));
-	}
-
-	@Override
-	public boolean canInstantBreak() {
-		return this.getHandle().abilities.canInstantlyBuild;
+		this.fly = fly;
 	}
 
 	@Override
