@@ -36,6 +36,7 @@ import net.minecraft.server.TileEntitySign;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -136,6 +137,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
 		perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
+		mainScreen.toggleSurvivalHUD(!getGameMode().equals(GameMode.CREATIVE));
 	}
 	
 	@Override
