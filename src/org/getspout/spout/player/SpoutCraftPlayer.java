@@ -26,6 +26,7 @@ import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.Entity;
+import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
@@ -93,7 +94,7 @@ import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
+public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	protected SpoutCraftInventoryPlayer inventory = null;
 	protected Keyboard forward = Keyboard.KEY_UNKNOWN;
 	protected Keyboard back = Keyboard.KEY_UNKNOWN;
@@ -273,7 +274,20 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (event.isCancelled()) {
 			return false;
 		}
-		getHandle().y();
+		
+		// Maintaining support for both CB 1185 RB and CB Dev builds. net.minecraft.server mappings were updated.
+		try {
+			Method x = EntityHuman.class.getDeclaredMethod("x", (Class[])null);
+			x.invoke(getHandle(), (Object[])null);
+		} catch (Exception e) {
+			try {
+				Method closeInventory = EntityHuman.class.getDeclaredMethod("closeInventory", (Class[])null);
+				closeInventory.invoke(getHandle(), (Object[])null);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
 		getNetServerHandler().setActiveInventory(false);
 		getNetServerHandler().setActiveInventoryLocation(null);
 		return true;
