@@ -165,12 +165,12 @@ public class SpoutCraftEntity extends CraftEntity{
 			}
 			return previous;
 		}
-		if (entity instanceof EntityFish) {
-			if (!previous.getClass().equals(SpoutCraftFish.class)) {
-				return new SpoutCraftFish(server, (EntityFish)entity);
-			}
-			return previous;
-		}
+//		if (entity instanceof EntityFish) {
+//			if (!previous.getClass().equals(SpoutCraftFish.class)) {
+//				return new SpoutCraftFish(server, (EntityFish)entity);
+//			}
+//			return previous;
+//		}
 		if (entity instanceof EntityItem) {
 			if (!previous.getClass().equals(SpoutCraftItem.class)) {
 				return new SpoutCraftItem(server, (EntityItem)entity);
