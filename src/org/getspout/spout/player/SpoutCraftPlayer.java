@@ -278,10 +278,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		// Maintaining support for both CB 1185 RB and CB Dev builds. net.minecraft.server mappings were updated.
 		try {
 			Method x = EntityHuman.class.getDeclaredMethod("x", (Class[])null);
+			x.setAccessible(true);
 			x.invoke(getHandle(), (Object[])null);
 		} catch (Exception e) {
 			try {
 				Method closeInventory = EntityHuman.class.getDeclaredMethod("closeInventory", (Class[])null);
+				closeInventory.setAccessible(true);
 				closeInventory.invoke(getHandle(), (Object[])null);
 			} catch (Exception e1) {
 				e1.printStackTrace();
