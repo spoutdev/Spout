@@ -26,6 +26,7 @@ import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.Entity;
+import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
@@ -36,6 +37,7 @@ import net.minecraft.server.TileEntitySign;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -92,7 +94,7 @@ import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
+public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	protected SpoutCraftInventoryPlayer inventory = null;
 	protected Keyboard forward = Keyboard.KEY_UNKNOWN;
 	protected Keyboard back = Keyboard.KEY_UNKNOWN;
@@ -136,6 +138,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
 		perm.recalculatePermissions();
 		mainScreen = new InGameScreen(this.getEntityId());
+
+		mainScreen.toggleSurvivalHUD(!getGameMode().equals(GameMode.CREATIVE));
 		fly = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
 	}
 	
@@ -270,7 +274,22 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer{
 		if (event.isCancelled()) {
 			return false;
 		}
-		getHandle().y();
+		
+		// Maintaining support for both CB 1185 RB and CB Dev builds. net.minecraft.server mappings were updated.
+		try {
+			Method x = EntityHuman.class.getDeclaredMethod("x", (Class[])null);
+			x.setAccessible(true);
+			x.invoke(getHandle(), (Object[])null);
+		} catch (Exception e) {
+			try {
+				Method closeInventory = EntityHuman.class.getDeclaredMethod("closeInventory", (Class[])null);
+				closeInventory.setAccessible(true);
+				closeInventory.invoke(getHandle(), (Object[])null);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
 		getNetServerHandler().setActiveInventory(false);
 		getNetServerHandler().setActiveInventoryLocation(null);
 		return true;
