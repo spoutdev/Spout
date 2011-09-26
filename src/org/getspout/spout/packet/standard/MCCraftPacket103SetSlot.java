@@ -166,7 +166,7 @@ public class MCCraftPacket103SetSlot extends MCCraftPacket implements MCPacket10
 			slot = Slot.getSlotByRawValues(rawWindow, rawSlot);
 			notchStack = (net.minecraft.server.ItemStack)itemStackField.get(packet);
 			if (notchStack != null)
-				bukkitStack = new ItemStack(notchStack.id, notchStack.count, (short)notchStack.damage);
+				bukkitStack = new ItemStack(notchStack.id, notchStack.count, (short)notchStack.getData());
 		}
 		catch (Exception ex)
 		{
