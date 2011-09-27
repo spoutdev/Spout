@@ -30,7 +30,7 @@ public class SpoutCraftItemStack extends CraftItemStack{
 	
 	public static SpoutCraftItemStack fromItemStack(net.minecraft.server.ItemStack item) {
 		if (item == null) return null;
-		return new SpoutCraftItemStack(item.id, item.count, (short) item.damage);
+		return new SpoutCraftItemStack(item.id, item.count, (short) item.getData());
 	}
 	
 	public static SpoutCraftItemStack getContribCraftItemStack(org.bukkit.inventory.ItemStack item) {
