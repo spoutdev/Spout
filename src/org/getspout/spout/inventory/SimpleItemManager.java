@@ -44,7 +44,7 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.block.mcblock.CustomMCBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.inventory.ItemManager;
-import org.getspout.spoutapi.inventory.SpoutCustomBlockDesign;
+import org.getspout.spoutapi.material.block.GenericCustomBlock;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
@@ -783,7 +783,7 @@ public class SimpleItemManager implements ItemManager{
 	}
 	
 	@Override
-	public void setCustomBlockDesign(Integer blockId, Integer metaData, SpoutCustomBlockDesign design) {
+	public void setCustomBlockDesign(Integer blockId, Integer metaData, GenericCustomBlock design) {
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 		
 		long info = toLong(blockId, metaData);
@@ -807,11 +807,11 @@ public class SimpleItemManager implements ItemManager{
 	public void updateAllCustomBlockDesigns(Player[] players) {
 		for (TLongObjectIterator it = customBlockDesigns.iterator(); it.hasNext();) {
 			it.advance();
-			updateCustomBlockDesigns(players, it.key(), (SpoutCustomBlockDesign) it.value());
+			updateCustomBlockDesigns(players, it.key(), (GenericCustomBlock) it.value());
 		}
 	}
 		
-	private void updateCustomBlockDesigns(Player[] players, long data, SpoutCustomBlockDesign design) {
+	private void updateCustomBlockDesigns(Player[] players, long data, GenericCustomBlock design) {
 		
 		PacketCustomBlockDesign p = new PacketCustomBlockDesign(msw(data), lsw(data), design);
 		
