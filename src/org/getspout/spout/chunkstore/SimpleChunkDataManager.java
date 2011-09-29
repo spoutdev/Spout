@@ -165,6 +165,10 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
 		
+		if (md == null) {
+			return null;
+		}
+		
 		return md.putBlockData(id, x, y, z, data);
 		
 	}
@@ -174,6 +178,10 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
 		
+		if (md == null) {
+			return null;
+		}
+		
 		return md.getBlockData(id, x, y, z);
 	}
 
@@ -181,6 +189,10 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	public Serializable removeBlockData(String id, World world, int x, int y, int z) {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
+		
+		if (md == null) {
+			return null;
+		}
 		
 		return md.removeBlockData(id, x, y, z);
 	}
@@ -190,6 +202,10 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 
 		ChunkMetaData md = getMetaData(world, x, z, false);
 		
+		if (md == null) {
+			return null;
+		}
+		
 		return md.putChunkData(id, data);
 	}
 	
@@ -198,12 +214,20 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 
 		ChunkMetaData md = getMetaData(world, x, z, false);
 		
+		if (md == null) {
+			return null;
+		}
+		
 		return md.getChunkData(id);
 	}
 	
 	public BlockVector[] getTaggedBlocks(World world, int x, int z) {
 		
 		ChunkMetaData md = getMetaData(world, x, z, false);
+		
+		if (md == null) {
+			return null;
+		}
 		
 		return md.getTaggedBlocks();
 	}
@@ -212,6 +236,10 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	public Serializable removeChunkData(String id, World world, int x, int z) {
 
 		ChunkMetaData md = getMetaData(world, x, z, false);
+		
+		if (md == null) {
+			return null;
+		}
 		
 		return md.removeChunkData(id);
 	}
