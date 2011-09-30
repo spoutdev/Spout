@@ -43,8 +43,9 @@ import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.block.mcblock.CustomMCBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spoutapi.inventory.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
-import org.getspout.spoutapi.material.block.GenericCustomBlock;
+import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
@@ -526,12 +527,7 @@ public class SimpleItemManager implements ItemManager{
 	}
 	
 	@Override
-	public void setItemTexture(int id, String texture) {
-		setItemTexture(Material.STONE, (short)id, texture);
-	}
-	
-	@Override
-	public void setItemTexture(int id, Plugin plugin, String texture) {
+	public void setCustomItemTexture(int id, Plugin plugin, String texture) {
 		setItemTexture(Material.STONE, (short)id, plugin, texture);
 	}
 
@@ -691,6 +687,10 @@ public class SimpleItemManager implements ItemManager{
 		return true;
 	}
 	
+	public boolean overrideBlock(Block block, CustomBlock customBlock) {
+		return overrideBlock(block, customBlock.getRawId(), customBlock.getRawData());
+	}
+	
 	public void sendBlockOverrideToPlayers(Player[] players, World world) {
 		
 		Chunk[] chunks = world.getLoadedChunks();
@@ -783,7 +783,7 @@ public class SimpleItemManager implements ItemManager{
 	}
 	
 	@Override
-	public void setCustomBlockDesign(Integer blockId, Integer metaData, GenericCustomBlock design) {
+	public void setCustomBlockDesign(Integer blockId, Integer metaData, BlockDesign design) {
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 		
 		long info = toLong(blockId, metaData);
@@ -807,11 +807,11 @@ public class SimpleItemManager implements ItemManager{
 	public void updateAllCustomBlockDesigns(Player[] players) {
 		for (TLongObjectIterator it = customBlockDesigns.iterator(); it.hasNext();) {
 			it.advance();
-			updateCustomBlockDesigns(players, it.key(), (GenericCustomBlock) it.value());
+			updateCustomBlockDesigns(players, it.key(), (BlockDesign) it.value());
 		}
 	}
 		
-	private void updateCustomBlockDesigns(Player[] players, long data, GenericCustomBlock design) {
+	private void updateCustomBlockDesigns(Player[] players, long data, BlockDesign design) {
 		
 		PacketCustomBlockDesign p = new PacketCustomBlockDesign(msw(data), lsw(data), design);
 		
