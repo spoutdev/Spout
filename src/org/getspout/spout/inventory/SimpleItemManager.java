@@ -43,6 +43,8 @@ import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.block.mcblock.CustomMCBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.inventory.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.material.CustomBlock;
@@ -54,26 +56,26 @@ import org.getspout.spoutapi.packet.PacketItemTexture;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 
-public class SimpleItemManager implements ItemManager{
+public class SimpleItemManager implements ItemManager {
 	private final TIntIntHashMap itemBlock = new TIntIntHashMap();
-    private final TIntIntHashMap itemMetaData = new TIntIntHashMap();
+	private final TIntIntHashMap itemMetaData = new TIntIntHashMap();
 	private final TIntObjectHashMap itemPlugin = new TIntObjectHashMap();
-	
+
 	private final TLongFloatHashMap originalHardness = new TLongFloatHashMap();
 	private final TLongFloatHashMap originalFriction = new TLongFloatHashMap();
 	private final TIntIntHashMap originalOpacity = new TIntIntHashMap();
 	private final TIntIntHashMap originalLight = new TIntIntHashMap();
-	
+
 	private final TLongObjectHashMap itemNames = new TLongObjectHashMap(500);
 	private final TLongObjectHashMap customNames = new TLongObjectHashMap(100);
 	private final TLongObjectHashMap customTextures = new TLongObjectHashMap(100);
 	private final TLongObjectHashMap customTexturesPlugin = new TLongObjectHashMap(100);
-	
+
 	private final TLongObjectHashMap customBlockDesigns = new TLongObjectHashMap(100);
-	
+
 	public final static String blockIdString = "org.spout.customblocks.blockid";
 	public final static String metaDataString = "org.spout.customblocks.metadata";
-
+	
 	public SimpleItemManager() {
 		itemNames.put(toLong(1), "Stone");
 		itemNames.put(toLong(2), "Grass");
@@ -212,7 +214,7 @@ public class SimpleItemManager implements ItemManager{
 		itemNames.put(toLong(107), "Fence Gate");
 		itemNames.put(toLong(108), "Brick Stairs");
 		itemNames.put(toLong(109), "Stone Brick Stairs");
-		
+
 		itemNames.put(toLong(256), "Iron Shovel");
 		itemNames.put(toLong(257), "Iron Pickaxe");
 		itemNames.put(toLong(258), "Iron Axe");
@@ -336,15 +338,15 @@ public class SimpleItemManager implements ItemManager{
 		itemNames.put(toLong(2256), "Music Disc");
 		itemNames.put(toLong(2257), "Music Disc");
 	}
-	
+
 	private static long toLong(int msw) {
 		return toLong(msw, 0);
 	}
-	
+
 	private static long toLong(int msw, int lsw) {
 		return ((long) msw << 32) + lsw - Integer.MIN_VALUE;
 	}
-	
+
 	private static int msw(long l) {
 		return (int) (l >> 32);
 	}
@@ -352,42 +354,43 @@ public class SimpleItemManager implements ItemManager{
 	private static int lsw(long l) {
 		return (int) (l & 0xFFFFFFFF) + Integer.MIN_VALUE;
 	}
-	
+
 	public static void disableStoneStackMix() {
 
-			Method a;
-			try {
-				a = Item.class.getDeclaredMethod("a", new Class[] {boolean.class});
-				a.setAccessible(true);
-				a.invoke(Item.byId[1], new Object[] {Boolean.TRUE});
-			} catch (SecurityException e) {
-				e.printStackTrace();
-				return;
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-				return;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				return;
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				return;
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-				return;
-			}
+		Method a;
+		try {
+			a = Item.class.getDeclaredMethod("a", new Class[] { boolean.class });
+			a.setAccessible(true);
+			a.invoke(Item.byId[1], new Object[] { Boolean.TRUE });
+			a.invoke(Item.byId[20], new Object[] { Boolean.TRUE });
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			return;
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			return;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return;
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	@Override
 	public String getItemName(Material item) {
-		return getItemName(item, (short)0);
+		return getItemName(item, (short) 0);
 	}
-	
+
 	@Override
 	public String getItemName(int item, short data) {
 		return getItemName(Material.getMaterial(item), data);
 	}
-	
+
 	@Override
 	public String getItemName(Material item, short data) {
 		long key = toLong(item.getId(), data);
@@ -399,9 +402,9 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public void setItemName(Material item, String name) {
-		setItemName(item, (short)0, name);
+		setItemName(item, (short) 0, name);
 	}
-	
+
 	@Override
 	public void setItemName(int item, short data, String name) {
 		setItemName(Material.getMaterial(item), data, name);
@@ -411,21 +414,17 @@ public class SimpleItemManager implements ItemManager{
 	public void setItemName(Material item, short data, String name) {
 		customNames.put(toLong(item.getId(), data), name);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			if (player instanceof SpoutCraftPlayer){
-				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
-					((SpoutPlayer)player).sendPacket(new PacketItemName(item.getId(), data, name));
+			if (player instanceof SpoutCraftPlayer) {
+				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
+					((SpoutPlayer) player).sendPacket(new PacketItemName(item.getId(), data, name));
 				}
 			}
 		}
 	}
-	
-	public void setItemName(int id, String name) {
-		setItemName(Material.STONE, (short)id, name);
-	}
-	
+
 	@Override
 	public void resetName(Material item) {
-		resetName(item,(byte) 0);
+		resetName(item, (byte) 0);
 	}
 
 	@Override
@@ -434,9 +433,9 @@ public class SimpleItemManager implements ItemManager{
 		if (customNames.containsKey(key)) {
 			customNames.remove(key);
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-				if (player instanceof SpoutCraftPlayer){
-					if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
-						((SpoutPlayer)player).sendPacket(new PacketItemName(msw(key), (short) lsw(key), "[reset]"));
+				if (player instanceof SpoutCraftPlayer) {
+					if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
+						((SpoutPlayer) player).sendPacket(new PacketItemName(msw(key), (short) lsw(key), "[reset]"));
 					}
 				}
 			}
@@ -448,9 +447,9 @@ public class SimpleItemManager implements ItemManager{
 		customNames.clear();
 		customTextures.clear();
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			if (player instanceof SpoutCraftPlayer){
-				if (((SpoutPlayer)player).isSpoutCraftEnabled()) {
-					((SpoutPlayer)player).sendPacket(new PacketItemName(0, (short) 0, "[resetall]"));
+			if (player instanceof SpoutCraftPlayer) {
+				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
+					((SpoutPlayer) player).sendPacket(new PacketItemName(0, (short) 0, "[resetall]"));
 				}
 			}
 		}
@@ -458,11 +457,7 @@ public class SimpleItemManager implements ItemManager{
 
 	@Override
 	public String getCustomItemName(Material item) {
-		return getCustomItemName(item, (short)0);
-	}
-	
-	public String getCustomItemName(int id) {
-		return getCustomItemName(Material.STONE, (short)id);
+		return getCustomItemName(item, (short) 0);
 	}
 
 	@Override
@@ -478,12 +473,12 @@ public class SimpleItemManager implements ItemManager{
 		if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
 			for (TLongObjectIterator it = customNames.iterator(); it.hasNext();) {
 				it.advance();
-				((SpoutPlayer) player).sendPacket(new PacketItemName(msw(it.key()), (short) lsw(it.key()), (String)it.value()));
+				((SpoutPlayer) player).sendPacket(new PacketItemName(msw(it.key()), (short) lsw(it.key()), (String) it.value()));
 			}
 			for (TLongObjectIterator it = customTextures.iterator(); it.hasNext();) {
 				it.advance();
 				String pluginName = (String) customTexturesPlugin.get(it.key());
-				((SpoutPlayer) player).sendPacket(new PacketItemTexture(msw(it.key()), (short) lsw(it.key()), pluginName, (String)it.value()));
+				((SpoutPlayer) player).sendPacket(new PacketItemTexture(msw(it.key()), (short) lsw(it.key()), pluginName, (String) it.value()));
 			}
 		}
 	}
@@ -492,12 +487,12 @@ public class SimpleItemManager implements ItemManager{
 	public void setItemTexture(Material item, String texture) {
 		setItemTexture(item, (short) 0, null, texture);
 	}
-	
+
 	@Override
 	public void setItemTexture(Material item, Plugin plugin, String texture) {
 		setItemTexture(item, (short) 0, plugin, texture);
 	}
-	
+
 	public void setItemTexture(Material item, short data, String texture) {
 		setItemTexture(item, data, null, texture);
 	}
@@ -525,17 +520,12 @@ public class SimpleItemManager implements ItemManager{
 			}
 		}
 	}
-	
-	@Override
-	public void setCustomItemTexture(int id, Plugin plugin, String texture) {
-		setItemTexture(Material.STONE, (short)id, plugin, texture);
-	}
 
 	@Override
 	public String getCustomItemTexture(Material item) {
 		return getCustomItemTexture(item, (short) 0);
 	}
-	
+
 	@Override
 	public String getCustomItemTexturePlugin(Material item) {
 		return getCustomItemTexturePlugin(item, (short) 0);
@@ -549,23 +539,13 @@ public class SimpleItemManager implements ItemManager{
 		}
 		return null;
 	}
-	
+
 	public String getCustomItemTexturePlugin(Material item, short data) {
 		long info = toLong(item.getId(), data);
 		if (customTexturesPlugin.containsKey(info)) {
 			return (String) customTexturesPlugin.get(info);
 		}
 		return null;
-	}
-	
-	@Override
-	public String getCustomItemTexture(int id) {
-		return getCustomItemTexture(Material.STONE, (short)id);
-	}
-	
-	@Override 
-	public String getCustomItemTexturePlugin(int id) {
-		return getCustomItemTexturePlugin(Material.STONE, (short)id);
 	}
 
 	@Override
@@ -588,32 +568,27 @@ public class SimpleItemManager implements ItemManager{
 			}
 		}
 	}
-	
-	@Override
-	public void resetTexture(int id) {
-		resetTexture(Material.STONE, (short)id);
-	}
-	
+
 	public int getItemBlock(int damage) {
 		return itemBlock.get(damage);
 	}
-	
+
 	public short getItemMetaData(int damage) {
 		return (short) itemMetaData.get(damage);
 	}
-	
+
 	public int registerCustomItemName(Plugin plugin, String key) {
 		int id = UniqueItemStringMap.getId(key);
-		
+
 		itemPlugin.put(id, plugin.getDescription().getName());
-		
+
 		return id;
 	}
-	
+
 	public int getCustomItemId(Plugin plugin, String key) {
 		return registerCustomItemName(plugin, key);
 	}
-	
+
 	public void setCustomItemBlock(int id, Integer blockId, Short metaData) {
 		if (blockId != null || metaData == null) {
 			itemBlock.put(id, blockId);
@@ -624,7 +599,7 @@ public class SimpleItemManager implements ItemManager{
 		}
 		updateCustomClientData(id);
 	}
-	
+
 	public void updateCustomClientData(Player player) {
 		Set<Integer> ids = UniqueItemStringMap.getIds();
 		Player[] players = new Player[1];
@@ -633,133 +608,149 @@ public class SimpleItemManager implements ItemManager{
 			updateCustomClientData(players, id);
 		}
 	}
-	
+
 	private void updateCustomClientData(int id) {
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 		updateCustomClientData(players, id);
 	}
-		
+
 	private void updateCustomClientData(Player[] players, int id) {
-		
+
 		int blockId = itemBlock.get(id);
-		
+
 		short metaData = (short) itemMetaData.get(id);
-		
+
 		@SuppressWarnings("unused")
 		String pluginName = (String) itemPlugin.get(id);
-		
+
 		PacketCustomItem p = new PacketCustomItem(id, blockId, metaData);
-		
+
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
-				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
+				SpoutCraftPlayer sp = (SpoutCraftPlayer) player;
 				if (sp.isSpoutCraftEnabled()) {
 					sp.sendPacket(p);
 				}
 			}
 		}
 	}
-	
-	public ItemStack getCustomItemStack(int id, int size) {
-		return new ItemStack(1, size, (short)id);
+
+	public ItemStack getCustomItemStack(CustomBlock block, int size) {
+		return new ItemStack(block.getRawId(), size, (short) block.getCustomID());
 	}
-	
+
 	public boolean overrideBlock(Block block, Integer blockId, Integer metaData) {
-		
+
 		if (!(block instanceof SpoutCraftBlock)) {
 			return false;
 		}
-		
-		SpoutCraftBlock scb = (SpoutCraftBlock)block;
+
+		SpoutCraftBlock scb = (SpoutCraftBlock) block;
 
 		if (blockId == null || metaData == null) {
-			scb.removeData(blockIdString);
-			scb.removeData(metaDataString);
+			scb.removeCustomBlockData();
 		} else {
-			scb.setData(blockIdString, blockId);
-			scb.setData(metaDataString, metaData);
+			scb.setCustomBlockId(blockId);
+			scb.setCustomMetaData(metaData);
 		}
-		
+
 		Player[] players = block.getWorld().getPlayers().toArray(new Player[0]);
-		
+
 		sendBlockOverrideToPlayers(players, block, blockId, metaData);
-		
+
 		return true;
 	}
-	
+
+	@Override
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
-		return overrideBlock(block, customBlock.getRawId(), customBlock.getRawData());
+		block.setTypeId(customBlock.getRawId());
+		return overrideBlock(block, customBlock.getCustomID(), customBlock.getCustomMetaData());
 	}
-	
+
+	@Override
+	public boolean overrideBlock(World world, int x, int y, int z, CustomBlock customBlock) {
+		int blockId = customBlock.getCustomID();
+		int metaData = customBlock.getCustomMetaData();
+
+		SpoutManager.getChunkDataManager().setBlockData(blockIdString, world, x, y, z, blockId);
+		SpoutManager.getChunkDataManager().setBlockData(metaDataString, world, x, y, z, metaData);
+
+		Player[] players = world.getPlayers().toArray(new Player[0]);
+
+		sendBlockOverrideToPlayers(players, new BlockVector(x, y, z), blockId, metaData);
+
+		return true;
+	}
+
 	public void sendBlockOverrideToPlayers(Player[] players, World world) {
-		
+
 		Chunk[] chunks = world.getLoadedChunks();
-		
+
 		for (Chunk chunk : chunks) {
 			sendBlockOverrideToPlayers(players, chunk);
 		}
-		
+
 	}
 
 	private SpoutCraftChunk getSpoutCraftChunk(Chunk chunk) {
 		if (!(chunk instanceof SpoutCraftChunk)) {
 			return null;
 		} else {
-			return (SpoutCraftChunk)chunk;
+			return (SpoutCraftChunk) chunk;
 		}
 	}
-	
+
 	private SpoutCraftBlock getSpoutCraftBlock(Block block) {
 		if (!(block instanceof SpoutCraftBlock)) {
 			return null;
 		} else {
-			return (SpoutCraftBlock)block;
+			return (SpoutCraftBlock) block;
 		}
 	}
-	
+
 	private BlockVector correctBlockVector(BlockVector vector, Chunk chunk) {
-		
-		vector.setX(vector.getBlockX() & 0xF + (chunk.getX()<<4));
-		vector.setZ(vector.getBlockZ() & 0xF + (chunk.getZ()<<4));
+
+		vector.setX(vector.getBlockX() & 0xF + (chunk.getX() << 4));
+		vector.setZ(vector.getBlockZ() & 0xF + (chunk.getZ() << 4));
 		vector.setY(vector.getBlockY() & 0xFF);
 		return vector;
-		
+
 	}
-	
+
 	public boolean sendBlockOverrideToPlayers(Player[] players, Chunk chunk) {
-		
+
 		SpoutCraftChunk scc = getSpoutCraftChunk(chunk);
 		if (scc == null) {
 			return false;
 		}
-		
+
 		BlockVector[] blocks = scc.getTaggedBlocks();
-		
+
 		if (blocks == null) {
 			return false;
 		}
-		
+
 		boolean success = true;
 		for (BlockVector block : blocks) {
 			correctBlockVector(block, scc);
-			
+
 			SpoutCraftBlock scb = getSpoutCraftBlock(chunk.getWorld().getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
-			
+
 			if (scb == null) {
 				success = false;
 				continue;
 			}
-			
-			Integer blockId = (Integer)scb.getData(blockIdString);
-			Integer metaData = (Integer)scb.getData(metaDataString);
-			
+
+			Integer blockId = scb.getCustomBlockId();
+			Integer metaData = scb.getCustomMetaData();
+
 			if (blockId != null && metaData != null) {
 				sendBlockOverrideToPlayers(players, block, blockId, metaData);
 			}
 		}
-		
+
 		return success;
-		
+
 	}
 
 	public void sendBlockOverrideToPlayers(Player[] players, Block block, Integer blockId, Integer metaData) {
@@ -767,57 +758,57 @@ public class SimpleItemManager implements ItemManager{
 		BlockVector blockVector = new BlockVector(blockLocation.getBlockX(), blockLocation.getBlockY(), blockLocation.getBlockZ());
 		sendBlockOverrideToPlayers(players, blockVector, blockId, metaData);
 	}
-	
+
 	public void sendBlockOverrideToPlayers(Player[] players, BlockVector blockVector, Integer blockId, Integer metaData) {
-		
+
 		PacketCustomBlockOverride p = new PacketCustomBlockOverride(blockVector.getBlockX(), blockVector.getBlockY(), blockVector.getBlockZ(), blockId, metaData);
-		
+
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
-				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
+				SpoutCraftPlayer sp = (SpoutCraftPlayer) player;
 				if (sp.isSpoutCraftEnabled()) {
 					sp.sendPacket(p);
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public void setCustomBlockDesign(Integer blockId, Integer metaData, BlockDesign design) {
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
-		
+
 		long info = toLong(blockId, metaData);
-		
+
 		if (design != null) {
 			customBlockDesigns.put(info, design);
 		} else {
 			customBlockDesigns.remove(info);
 		}
-		
+
 		updateCustomBlockDesigns(players, info, design);
 
 	}
-	
+
 	public void updateAllCustomBlockDesigns(Player player) {
 		Player[] players = new Player[1];
 		players[0] = player;
 		updateAllCustomBlockDesigns(players);
 	}
-	
+
 	public void updateAllCustomBlockDesigns(Player[] players) {
 		for (TLongObjectIterator it = customBlockDesigns.iterator(); it.hasNext();) {
 			it.advance();
 			updateCustomBlockDesigns(players, it.key(), (BlockDesign) it.value());
 		}
 	}
-		
+
 	private void updateCustomBlockDesigns(Player[] players, long data, BlockDesign design) {
-		
+
 		PacketCustomBlockDesign p = new PacketCustomBlockDesign(msw(data), lsw(data), design);
-		
+
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
-				SpoutCraftPlayer sp = (SpoutCraftPlayer)player;
+				SpoutCraftPlayer sp = (SpoutCraftPlayer) player;
 				if (sp.isSpoutCraftEnabled()) {
 					sp.sendPacket(p);
 				}
@@ -834,13 +825,13 @@ public class SimpleItemManager implements ItemManager{
 	@Override
 	public void setStepSound(int id, short data, String url) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resetStepSound(int id, short data) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -878,7 +869,7 @@ public class SimpleItemManager implements ItemManager{
 		}
 		net.minecraft.server.Block b = net.minecraft.server.Block.byId[id];
 		if (b instanceof CustomMCBlock) {
-			((CustomMCBlock)b).setHardness(hardness);
+			((CustomMCBlock) b).setHardness(hardness);
 		}
 	}
 
@@ -927,6 +918,36 @@ public class SimpleItemManager implements ItemManager{
 	public void resetLightLevel(int id, short data) {
 		if (originalLight.containsKey(id)) {
 			setLightLevel(id, data, originalLight.get(id));
+		}
+	}
+
+	@Override
+	public boolean isCustomBlock(Block block) {
+
+		if (!(block instanceof SpoutCraftBlock)) {
+			return false;
+		}
+
+		boolean outcome = false;
+
+		SpoutCraftBlock scb = (SpoutCraftBlock) block;
+
+		Integer blockId = scb.getCustomBlockId();
+		Integer metaData = scb.getCustomMetaData();
+
+		if (blockId != null && metaData != null) {
+			outcome = true;
+		}
+
+		return outcome;
+	}
+
+	@Override
+	public SpoutBlock getSpoutBlock(Block block) {
+		if (block instanceof SpoutBlock) {
+			return (SpoutBlock) block;
+		} else {
+			return null;
 		}
 	}
 }

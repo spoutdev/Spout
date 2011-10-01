@@ -3,12 +3,15 @@ package org.getspout.spout;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.block.SpoutBlock;
+import org.getspout.spoutapi.material.MaterialData;
 
 public class SpoutBlockListener extends BlockListener {
 	
@@ -25,7 +28,7 @@ public class SpoutBlockListener extends BlockListener {
 			return;
 		}
 		
-		if (event.getBlockPlaced().getType() != Material.STONE) {
+		if (event.getBlockPlaced().getType() != Material.STONE && event.getBlockPlaced().getType() != Material.GLASS) {
 			return;
 		}
 		
@@ -36,13 +39,35 @@ public class SpoutBlockListener extends BlockListener {
 		int newBlockId = i.getItemBlock(damage);
 		short newMetaData = i.getItemMetaData(damage);
 		
-		if (newBlockId != 0 && newMetaData != 0) {
+		if (newBlockId != 0 ) {
 			Block block = event.getBlockPlaced();
 			block.setTypeIdAndData(newBlockId, (byte)(newMetaData & 0xF), true);
+			i.overrideBlock(block, MaterialData.getCustomBlock(newBlockId, (short) damage));
 		} else if (damage >= 1024) {
 			event.setCancelled(true);
 		}
 		
+	}	
+	
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		super.onBlockBreak(event);
+		
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		Block block = event.getBlock();
+		if(block instanceof SpoutBlock) {
+			SpoutBlock sb = (SpoutBlock) block;
+			if (sb.getType() != Material.STONE && sb.getType() != Material.GLASS) {
+				return;
+			}
+			
+			if (sb.isCustomBlock()) {
+				i.overrideBlock(sb, null, null);
+			}
+		}
 	}
 	
 	//This replaces nms functionality that is broken due to 

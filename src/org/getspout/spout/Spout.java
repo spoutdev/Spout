@@ -183,6 +183,7 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
