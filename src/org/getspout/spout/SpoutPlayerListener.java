@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerEvent;
@@ -32,6 +33,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
@@ -39,6 +41,9 @@ import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
+import org.getspout.spoutapi.inventory.ItemManager;
+import org.getspout.spoutapi.material.CustomBlock;
+import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -124,6 +129,32 @@ public class SpoutPlayerListener extends PlayerListener{
 			Material type = event.getClickedBlock().getType();
 			if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
 				player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
+			}
+			
+			if (event.hasItem()) {
+				ItemStack item = event.getItem();
+				int damage = item.getDurability();
+				
+				if(item.getType() == Material.FLINT && damage != 0) {
+					
+					SimpleItemManager im = (SimpleItemManager) SpoutManager.getItemManager();
+
+					int newBlockId = im.getItemBlock(damage);
+					short newMetaData = im.getItemMetaData(damage);
+					
+					if (newBlockId != 0 ) {
+						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
+						CustomBlock cb = MaterialData.getCustomBlock(newBlockId, (short) damage);
+						block.setTypeIdAndData(cb.getRawData(), (byte)(newMetaData & 0xF), true);
+						im.overrideBlock(block, cb);
+						
+						if(item.getAmount() == 1) {
+							event.getPlayer().setItemInHand(null);
+						} else {
+							item.setAmount(item.getAmount() - 1);
+						}
+					}
+				}
 			}
 		}
 	}
