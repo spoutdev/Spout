@@ -16,7 +16,7 @@
  */
 package org.getspout.spout.player;
 
-import gnu.trove.TIntObjectHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class SimplePlayerManager implements PlayerManager{
 	
 	HashMap<String, PlayerInformation> infoMap = new HashMap<String, PlayerInformation>();
 	PlayerInformation globalInfo = new SimplePlayerInformation();
-	TIntObjectHashMap entityIdMap = new TIntObjectHashMap();
+	TIntObjectHashMap<WeakReference<Entity>> entityIdMap = new TIntObjectHashMap<WeakReference<Entity>>();
 	Map<UUID, WeakReference<Entity>> entityUniqueIdMap = new HashMap<UUID, WeakReference<Entity>>();
 
 	@Override
@@ -141,7 +141,6 @@ loop:		for (World world : Bukkit.getServer().getWorlds()){
 		return found;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Entity getEntity(int entityId) {
 		WeakReference<Entity> result = (WeakReference<Entity>) entityIdMap.get(entityId);

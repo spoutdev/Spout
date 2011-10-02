@@ -16,8 +16,9 @@
  */
 package org.getspout.spout.block.mcblock;
 
-import gnu.trove.TIntFloatHashMap;
-import gnu.trove.TIntIntHashMap;
+
+import gnu.trove.map.hash.TIntFloatHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

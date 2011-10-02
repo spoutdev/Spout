@@ -16,12 +16,9 @@
  */
 package org.getspout.spout.inventory;
 
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TLongFloatHashMap;
-import gnu.trove.TLongObjectHashMap;
-import gnu.trove.TLongObjectIterator;
-
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -55,304 +52,291 @@ import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.packet.PacketItemTexture;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
+import org.getspout.spoutapi.util.map.TIntPairFloatHashMap;
+import org.getspout.spoutapi.util.map.TIntPairHashSet;
+import org.getspout.spoutapi.util.map.TIntPairObjectHashMap;
 
 public class SimpleItemManager implements ItemManager {
 	private final TIntIntHashMap itemBlock = new TIntIntHashMap();
 	private final TIntIntHashMap itemMetaData = new TIntIntHashMap();
-	private final TIntObjectHashMap itemPlugin = new TIntObjectHashMap();
+	private final TIntObjectHashMap<String> itemPlugin = new TIntObjectHashMap<String>();
 
-	private final TLongFloatHashMap originalHardness = new TLongFloatHashMap();
-	private final TLongFloatHashMap originalFriction = new TLongFloatHashMap();
+	private final TIntPairFloatHashMap originalHardness = new TIntPairFloatHashMap();
+	private final TIntPairFloatHashMap originalFriction = new TIntPairFloatHashMap();
 	private final TIntIntHashMap originalOpacity = new TIntIntHashMap();
 	private final TIntIntHashMap originalLight = new TIntIntHashMap();
 
-	private final TLongObjectHashMap itemNames = new TLongObjectHashMap(500);
-	private final TLongObjectHashMap customNames = new TLongObjectHashMap(100);
-	private final TLongObjectHashMap customTextures = new TLongObjectHashMap(100);
-	private final TLongObjectHashMap customTexturesPlugin = new TLongObjectHashMap(100);
+	private final TIntPairObjectHashMap<String> itemNames = new TIntPairObjectHashMap<String>(500);
+	private final TIntPairObjectHashMap<String> customNames = new TIntPairObjectHashMap<String>(100);
+	private final TIntPairObjectHashMap<String> customTextures = new TIntPairObjectHashMap<String>(100);
+	private final TIntPairObjectHashMap<String> customTexturesPlugin = new TIntPairObjectHashMap<String>(100);
 
-	private final TLongObjectHashMap customBlockDesigns = new TLongObjectHashMap(100);
+	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
 
 	public final static String blockIdString = "org.spout.customblocks.blockid";
 	public final static String metaDataString = "org.spout.customblocks.metadata";
 	
 	public SimpleItemManager() {
-		itemNames.put(toLong(1), "Stone");
-		itemNames.put(toLong(2), "Grass");
-		itemNames.put(toLong(3), "Dirt");
-		itemNames.put(toLong(4), "Cobblestone");
-		itemNames.put(toLong(5), "Wooden Planks");
-		itemNames.put(toLong(6, 0), "Sapling");
-		itemNames.put(toLong(6, 1), "Spruce Sapling");
-		itemNames.put(toLong(6, 2), "Birch Sapling");
-		itemNames.put(toLong(7), "Bedrock");
-		itemNames.put(toLong(8), "Water");
-		itemNames.put(toLong(9), "Stationary Water");
-		itemNames.put(toLong(10), "Lava");
-		itemNames.put(toLong(11), "Stationary Lava");
-		itemNames.put(toLong(12), "Sand");
-		itemNames.put(toLong(13), "Gravel");
-		itemNames.put(toLong(14), "Gold Ore");
-		itemNames.put(toLong(15), "Iron Ore");
-		itemNames.put(toLong(16), "Coal Ore");
-		itemNames.put(toLong(17), "Wood");
-		itemNames.put(toLong(18), "Leaves");
-		itemNames.put(toLong(19), "Spone");
-		itemNames.put(toLong(20), "Glass");
-		itemNames.put(toLong(21), "Lapis Lazuli Ore");
-		itemNames.put(toLong(22), "Lapis Lazuli Block");
-		itemNames.put(toLong(23), "Dispenser");
-		itemNames.put(toLong(24), "SandStone");
-		itemNames.put(toLong(25), "Note Block");
-		itemNames.put(toLong(26), "Bed");
-		itemNames.put(toLong(27), "Powered Rail");
-		itemNames.put(toLong(28), "Detector Rail");
-		itemNames.put(toLong(29), "Sticky Piston");
-		itemNames.put(toLong(30), "Cobweb");
-		itemNames.put(toLong(31, 0), "Dead Grass");
-		itemNames.put(toLong(31, 1), "Tall Grass");
-		itemNames.put(toLong(31, 2), "Fern");
-		itemNames.put(toLong(32), "Dead Shrubs");
-		itemNames.put(toLong(33), "Piston");
-		itemNames.put(toLong(34), "Piston (Head)");
-		itemNames.put(toLong(35, 0), "Wool");
-		itemNames.put(toLong(35, 1), "Orange Wool");
-		itemNames.put(toLong(35, 2), "Magenta Wool");
-		itemNames.put(toLong(35, 3), "Light Blue Wool");
-		itemNames.put(toLong(35, 4), "Yellow Wool");
-		itemNames.put(toLong(35, 5), "Light Green Wool");
-		itemNames.put(toLong(35, 6), "Pink Wool");
-		itemNames.put(toLong(35, 7), "Gray Wool");
-		itemNames.put(toLong(35, 8), "Light Gray Wool");
-		itemNames.put(toLong(35, 9), "Cyan Wool");
-		itemNames.put(toLong(35, 10), "Purple Wool");
-		itemNames.put(toLong(35, 11), "Blue Wool");
-		itemNames.put(toLong(35, 12), "Brown Wool");
-		itemNames.put(toLong(35, 13), "Dark Green Wool");
-		itemNames.put(toLong(35, 14), "Red Wool");
-		itemNames.put(toLong(35, 15), "Black Wool");
-		itemNames.put(toLong(37), "Dandelion");
-		itemNames.put(toLong(38), "Rose");
-		itemNames.put(toLong(39), "Brown Mushroom");
-		itemNames.put(toLong(40), "Red Mushroom");
-		itemNames.put(toLong(41), "Gold Block");
-		itemNames.put(toLong(42), "Iron Block");
-		itemNames.put(toLong(43, 0), "Stone Double Slab");
-		itemNames.put(toLong(43, 1), "Sandstone Double Slabs");
-		itemNames.put(toLong(43, 2), "Wooden Double Slabs");
-		itemNames.put(toLong(43, 3), "Stone Double Slabs");
-		itemNames.put(toLong(43, 4), "Brick Double Slabs");
-		itemNames.put(toLong(43, 5), "Stone Brick Double Slabs");
-		itemNames.put(toLong(44, 0), "Stone Slab");
-		itemNames.put(toLong(44, 1), "Sandstone Slab");
-		itemNames.put(toLong(44, 2), "Wooden Slab");
-		itemNames.put(toLong(44, 3), "Stone Slab");
-		itemNames.put(toLong(44, 4), "Brick Slab");
-		itemNames.put(toLong(44, 5), "Stone Brick Slab");
-		itemNames.put(toLong(45), "Brick Block");
-		itemNames.put(toLong(46), "TNT");
-		itemNames.put(toLong(47), "Bookshelf");
-		itemNames.put(toLong(48), "Moss Stone");
-		itemNames.put(toLong(49), "Obsidian");
-		itemNames.put(toLong(50), "Torch");
-		itemNames.put(toLong(51), "Fire");
-		itemNames.put(toLong(52), "Monster Spawner");
-		itemNames.put(toLong(53), "Wooden Stairs");
-		itemNames.put(toLong(54), "Chest");
-		itemNames.put(toLong(55), "Redstone Wire");
-		itemNames.put(toLong(56), "Diamond Ore");
-		itemNames.put(toLong(57), "Diamond Block");
-		itemNames.put(toLong(58), "Crafting Table");
-		itemNames.put(toLong(59), "Seeds");
-		itemNames.put(toLong(60), "Farmland");
-		itemNames.put(toLong(61), "Furnace");
-		itemNames.put(toLong(62), "Burning Furnace");
-		itemNames.put(toLong(63), "Sign Post");
-		itemNames.put(toLong(64), "Wooden Door");
-		itemNames.put(toLong(65), "Ladders");
-		itemNames.put(toLong(66), "Rails");
-		itemNames.put(toLong(67), "Cobblestone Stairs");
-		itemNames.put(toLong(68), "Wall Sign");
-		itemNames.put(toLong(69), "Lever");
-		itemNames.put(toLong(70), "Stone Pressure Plate");
-		itemNames.put(toLong(71), "Iron Door");
-		itemNames.put(toLong(72), "Wooden Pressure Plate");
-		itemNames.put(toLong(73), "Redstone Ore");
-		itemNames.put(toLong(74), "Glowing Redstone Ore");
-		itemNames.put(toLong(75), "Redstone Torch");
-		itemNames.put(toLong(76), "Redstone Torch (On)");
-		itemNames.put(toLong(77), "Stone Button");
-		itemNames.put(toLong(78), "Snow");
-		itemNames.put(toLong(79), "Ice");
-		itemNames.put(toLong(80), "Snow Block");
-		itemNames.put(toLong(81), "Cactus");
-		itemNames.put(toLong(82), "Clay Block");
-		itemNames.put(toLong(83), "Sugar Cane");
-		itemNames.put(toLong(84), "Jukebox");
-		itemNames.put(toLong(85), "Fence");
-		itemNames.put(toLong(86), "Pumpkin");
-		itemNames.put(toLong(87), "Netherrack");
-		itemNames.put(toLong(88), "Soul Sand");
-		itemNames.put(toLong(89), "Glowstone Block");
-		itemNames.put(toLong(90), "Portal");
-		itemNames.put(toLong(91), "Jack 'o' Lantern");
-		itemNames.put(toLong(92), "Cake Block");
-		itemNames.put(toLong(93), "Redstone Repeater");
-		itemNames.put(toLong(94), "Redstone Repeater (On)");
-		itemNames.put(toLong(95), "Locked Chest");
-		itemNames.put(toLong(96), "Trapdoor");
-		itemNames.put(toLong(97), "Silverfish Stone");
-		itemNames.put(toLong(98), "Stone Brick");
-		itemNames.put(toLong(99), "Huge Red Mushroom");
-		itemNames.put(toLong(100), "Huge Brown Mushroom");
-		itemNames.put(toLong(101), "Iron Bars");
-		itemNames.put(toLong(102), "Glass Pane");
-		itemNames.put(toLong(103), "Watermelon");
-		itemNames.put(toLong(104), "Pumpkin Stem");
-		itemNames.put(toLong(105), "Melon Stem");
-		itemNames.put(toLong(106), "Vines");
-		itemNames.put(toLong(107), "Fence Gate");
-		itemNames.put(toLong(108), "Brick Stairs");
-		itemNames.put(toLong(109), "Stone Brick Stairs");
+		itemNames.put(1, 0, "Stone");
+		itemNames.put(2, 0, "Grass");
+		itemNames.put(3, 0, "Dirt");
+		itemNames.put(4, 0, "Cobblestone");
+		itemNames.put(5, 0, "Wooden Planks");
+		itemNames.put(6, 0, "Sapling");
+		itemNames.put(6, 1, "Spruce Sapling");
+		itemNames.put(6, 2, "Birch Sapling");
+		itemNames.put(7, 0, "Bedrock");
+		itemNames.put(8, 0, "Water");
+		itemNames.put(9, 0, "Stationary Water");
+		itemNames.put(10, 0, "Lava");
+		itemNames.put(11, 0, "Stationary Lava");
+		itemNames.put(12, 0, "Sand");
+		itemNames.put(13, 0, "Gravel");
+		itemNames.put(14, 0, "Gold Ore");
+		itemNames.put(15, 0, "Iron Ore");
+		itemNames.put(16, 0, "Coal Ore");
+		itemNames.put(17, 0, "Wood");
+		itemNames.put(18, 0, "Leaves");
+		itemNames.put(19, 0, "Spone");
+		itemNames.put(20, 0, "Glass");
+		itemNames.put(21, 0, "Lapis Lazuli Ore");
+		itemNames.put(22, 0, "Lapis Lazuli Block");
+		itemNames.put(23, 0, "Dispenser");
+		itemNames.put(24, 0, "SandStone");
+		itemNames.put(25, 0, "Note Block");
+		itemNames.put(26, 0, "Bed");
+		itemNames.put(27, 0, "Powered Rail");
+		itemNames.put(28, 0, "Detector Rail");
+		itemNames.put(29, 0, "Sticky Piston");
+		itemNames.put(30, 0, "Cobweb");
+		itemNames.put(31, 0, "Dead Grass");
+		itemNames.put(31, 1, "Tall Grass");
+		itemNames.put(31, 2, "Fern");
+		itemNames.put(32, 0, "Dead Shrubs");
+		itemNames.put(33, 0, "Piston");
+		itemNames.put(34, 0, "Piston (Head)");
+		itemNames.put(35, 0, "Wool");
+		itemNames.put(35, 1, "Orange Wool");
+		itemNames.put(35, 2, "Magenta Wool");
+		itemNames.put(35, 3, "Light Blue Wool");
+		itemNames.put(35, 4, "Yellow Wool");
+		itemNames.put(35, 5, "Light Green Wool");
+		itemNames.put(35, 6, "Pink Wool");
+		itemNames.put(35, 7, "Gray Wool");
+		itemNames.put(35, 8, "Light Gray Wool");
+		itemNames.put(35, 9, "Cyan Wool");
+		itemNames.put(35, 10, "Purple Wool");
+		itemNames.put(35, 11, "Blue Wool");
+		itemNames.put(35, 12, "Brown Wool");
+		itemNames.put(35, 13, "Dark Green Wool");
+		itemNames.put(35, 14, "Red Wool");
+		itemNames.put(35, 15, "Black Wool");
+		itemNames.put(37, 0, "Dandelion");
+		itemNames.put(38, 0, "Rose");
+		itemNames.put(39, 0, "Brown Mushroom");
+		itemNames.put(40, 0, "Red Mushroom");
+		itemNames.put(41, 0, "Gold Block");
+		itemNames.put(42, 0, "Iron Block");
+		itemNames.put(43, 0, "Stone Double Slab");
+		itemNames.put(43, 1, "Sandstone Double Slabs");
+		itemNames.put(43, 2, "Wooden Double Slabs");
+		itemNames.put(43, 3, "Stone Double Slabs");
+		itemNames.put(43, 4, "Brick Double Slabs");
+		itemNames.put(43, 5, "Stone Brick Double Slabs");
+		itemNames.put(44, 0, "Stone Slab");
+		itemNames.put(44, 1, "Sandstone Slab");
+		itemNames.put(44, 2, "Wooden Slab");
+		itemNames.put(44, 3, "Stone Slab");
+		itemNames.put(44, 4, "Brick Slab");
+		itemNames.put(44, 5, "Stone Brick Slab");
+		itemNames.put(45, 0, "Brick Block");
+		itemNames.put(46, 0, "TNT");
+		itemNames.put(47, 0, "Bookshelf");
+		itemNames.put(48, 0, "Moss Stone");
+		itemNames.put(49, 0, "Obsidian");
+		itemNames.put(50, 0, "Torch");
+		itemNames.put(51, 0, "Fire");
+		itemNames.put(52, 0, "Monster Spawner");
+		itemNames.put(53, 0, "Wooden Stairs");
+		itemNames.put(54, 0, "Chest");
+		itemNames.put(55, 0, "Redstone Wire");
+		itemNames.put(56, 0, "Diamond Ore");
+		itemNames.put(57, 0, "Diamond Block");
+		itemNames.put(58, 0, "Crafting Table");
+		itemNames.put(59, 0, "Seeds");
+		itemNames.put(60, 0, "Farmland");
+		itemNames.put(61, 0, "Furnace");
+		itemNames.put(62, 0, "Burning Furnace");
+		itemNames.put(63, 0, "Sign Post");
+		itemNames.put(64, 0, "Wooden Door");
+		itemNames.put(65, 0, "Ladders");
+		itemNames.put(66, 0, "Rails");
+		itemNames.put(67, 0, "Cobblestone Stairs");
+		itemNames.put(68, 0, "Wall Sign");
+		itemNames.put(69, 0, "Lever");
+		itemNames.put(70, 0, "Stone Pressure Plate");
+		itemNames.put(71, 0, "Iron Door");
+		itemNames.put(72, 0, "Wooden Pressure Plate");
+		itemNames.put(73, 0, "Redstone Ore");
+		itemNames.put(74, 0, "Glowing Redstone Ore");
+		itemNames.put(75, 0, "Redstone Torch");
+		itemNames.put(76, 0, "Redstone Torch (On)");
+		itemNames.put(77, 0, "Stone Button");
+		itemNames.put(78, 0, "Snow");
+		itemNames.put(79, 0, "Ice");
+		itemNames.put(80, 0, "Snow Block");
+		itemNames.put(81, 0, "Cactus");
+		itemNames.put(82, 0, "Clay Block");
+		itemNames.put(83, 0, "Sugar Cane");
+		itemNames.put(84, 0, "Jukebox");
+		itemNames.put(85, 0, "Fence");
+		itemNames.put(86, 0, "Pumpkin");
+		itemNames.put(87, 0, "Netherrack");
+		itemNames.put(88, 0, "Soul Sand");
+		itemNames.put(89, 0, "Glowstone Block");
+		itemNames.put(90, 0, "Portal");
+		itemNames.put(91, 0, "Jack 'o' Lantern");
+		itemNames.put(92, 0, "Cake Block");
+		itemNames.put(93, 0, "Redstone Repeater");
+		itemNames.put(94, 0, "Redstone Repeater (On)");
+		itemNames.put(95, 0, "Locked Chest");
+		itemNames.put(96, 0, "Trapdoor");
+		itemNames.put(97, 0, "Silverfish Stone");
+		itemNames.put(98, 0, "Stone Brick");
+		itemNames.put(99, 0, "Huge Red Mushroom");
+		itemNames.put(100, 0, "Huge Brown Mushroom");
+		itemNames.put(101, 0, "Iron Bars");
+		itemNames.put(102, 0, "Glass Pane");
+		itemNames.put(103, 0, "Watermelon");
+		itemNames.put(104, 0, "Pumpkin Stem");
+		itemNames.put(105, 0, "Melon Stem");
+		itemNames.put(106, 0, "Vines");
+		itemNames.put(107, 0, "Fence Gate");
+		itemNames.put(108, 0, "Brick Stairs");
+		itemNames.put(109, 0, "Stone Brick Stairs");
 
-		itemNames.put(toLong(256), "Iron Shovel");
-		itemNames.put(toLong(257), "Iron Pickaxe");
-		itemNames.put(toLong(258), "Iron Axe");
-		itemNames.put(toLong(259), "Flint and Steel");
-		itemNames.put(toLong(260), "Apple");
-		itemNames.put(toLong(261), "Bow");
-		itemNames.put(toLong(262), "Arrow");
-		itemNames.put(toLong(263, 0), "Coal");
-		itemNames.put(toLong(263, 1), "Charcoal");
-		itemNames.put(toLong(264), "Diamond");
-		itemNames.put(toLong(265), "Iron Ingot");
-		itemNames.put(toLong(266), "Gold Ingot");
-		itemNames.put(toLong(267), "Iron Sword");
-		itemNames.put(toLong(268), "Wooden Sword");
-		itemNames.put(toLong(269), "Wooden Shovel");
-		itemNames.put(toLong(270), "Wooden Pickaxe");
-		itemNames.put(toLong(271), "Wooden Axe");
-		itemNames.put(toLong(272), "Stone Sword");
-		itemNames.put(toLong(273), "Stone Shovel");
-		itemNames.put(toLong(274), "Stone Pickaxe");
-		itemNames.put(toLong(275), "Stone Axe");
-		itemNames.put(toLong(276), "Diamond Sword");
-		itemNames.put(toLong(277), "Diamond Shovel");
-		itemNames.put(toLong(278), "Diamond Pickaxe");
-		itemNames.put(toLong(279), "Diamond Axe");
-		itemNames.put(toLong(280), "Stick");
-		itemNames.put(toLong(281), "Bowl");
-		itemNames.put(toLong(282), "Mushroom Soup");
-		itemNames.put(toLong(283), "Gold Sword");
-		itemNames.put(toLong(284), "Gold Shovel");
-		itemNames.put(toLong(285), "Gold Pickaxe");
-		itemNames.put(toLong(286), "Gold Axe");
-		itemNames.put(toLong(287), "String");
-		itemNames.put(toLong(288), "Feather");
-		itemNames.put(toLong(289), "Gunpowder");
-		itemNames.put(toLong(290), "Wooden Hoe");
-		itemNames.put(toLong(291), "Stone Hoe");
-		itemNames.put(toLong(292), "Iron Hoe");
-		itemNames.put(toLong(293), "Diamond Hoe");
-		itemNames.put(toLong(294), "Gold Hoe");
-		itemNames.put(toLong(295), "Seeds");
-		itemNames.put(toLong(296), "Wheat");
-		itemNames.put(toLong(297), "Bread");
-		itemNames.put(toLong(298), "Leather Cap");
-		itemNames.put(toLong(299), "Leather Tunic");
-		itemNames.put(toLong(300), "Leather Boots");
-		itemNames.put(toLong(301), "Leather Boots");
-		itemNames.put(toLong(302), "Chain Helmet");
-		itemNames.put(toLong(303), "Chain Chestplate");
-		itemNames.put(toLong(304), "Chain Leggings");
-		itemNames.put(toLong(305), "Chain Boots");
-		itemNames.put(toLong(306), "Iron Helmet");
-		itemNames.put(toLong(307), "Iron Chestplate");
-		itemNames.put(toLong(308), "Iron Leggings");
-		itemNames.put(toLong(309), "Iron Boots");
-		itemNames.put(toLong(310), "Diamond Helmet");
-		itemNames.put(toLong(311), "Diamond Chestplate");
-		itemNames.put(toLong(312), "Diamond Leggings");
-		itemNames.put(toLong(313), "Diamond Boots");
-		itemNames.put(toLong(314), "Gold Helmet");
-		itemNames.put(toLong(315), "Gold Chestplate");
-		itemNames.put(toLong(316), "Gold Leggings");
-		itemNames.put(toLong(317), "Gold Boots");
-		itemNames.put(toLong(318), "Flint");
-		itemNames.put(toLong(319), "Raw Porkchop");
-		itemNames.put(toLong(320), "Cooked Porkchop");
-		itemNames.put(toLong(321), "Paintings");
-		itemNames.put(toLong(322), "Golden Apple");
-		itemNames.put(toLong(323), "Sign");
-		itemNames.put(toLong(324), "Wooden Door");
-		itemNames.put(toLong(325), "Bucket");
-		itemNames.put(toLong(326), "Water Bucket");
-		itemNames.put(toLong(327), "Lava Bucket");
-		itemNames.put(toLong(328), "Minecart");
-		itemNames.put(toLong(329), "Saddle");
-		itemNames.put(toLong(330), "Iron Door");
-		itemNames.put(toLong(331), "Redstone");
-		itemNames.put(toLong(332), "Snowball");
-		itemNames.put(toLong(333), "Boat");
-		itemNames.put(toLong(334), "Leather");
-		itemNames.put(toLong(335), "Milk");
-		itemNames.put(toLong(336), "Brick");
-		itemNames.put(toLong(337), "Clay");
-		itemNames.put(toLong(338), "Sugar Canes");
-		itemNames.put(toLong(339), "Paper");
-		itemNames.put(toLong(340), "Book");
-		itemNames.put(toLong(341), "Slimeball");
-		itemNames.put(toLong(342), "Minecart with Chest");
-		itemNames.put(toLong(343), "Minecart with Furnace");
-		itemNames.put(toLong(344), "Egg");
-		itemNames.put(toLong(345), "Compass");
-		itemNames.put(toLong(346), "Fishing Rod");
-		itemNames.put(toLong(347), "Clock");
-		itemNames.put(toLong(348), "Glowstone Dust");
-		itemNames.put(toLong(349), "Raw Fish");
-		itemNames.put(toLong(350), "Cooked Fish");
-		itemNames.put(toLong(351, 0), "Ink Sac");
-		itemNames.put(toLong(351, 1), "Rose Red");
-		itemNames.put(toLong(351, 2), "Cactus Green");
-		itemNames.put(toLong(351, 3), "Cocoa Beans");
-		itemNames.put(toLong(351, 4), "Lapis Lazuli");
-		itemNames.put(toLong(351, 5), "Purple Dye");
-		itemNames.put(toLong(351, 6), "Cyan Dye");
-		itemNames.put(toLong(351, 7), "Light Gray Dye");
-		itemNames.put(toLong(351, 8), "Gray Dye");
-		itemNames.put(toLong(351, 9), "Pink Dye");
-		itemNames.put(toLong(351, 10), "Lime Dye");
-		itemNames.put(toLong(351, 11), "Dandelion Yellow");
-		itemNames.put(toLong(351, 12), "Light Blue Dye");
-		itemNames.put(toLong(351, 13), "Magenta Dye");
-		itemNames.put(toLong(351, 14), "Orange Dye");
-		itemNames.put(toLong(351, 15), "Bone Meal");
-		itemNames.put(toLong(352), "Bone");
-		itemNames.put(toLong(353), "Sugar");
-		itemNames.put(toLong(354), "Cake");
-		itemNames.put(toLong(355), "Bed");
-		itemNames.put(toLong(356), "Redstone Repeater");
-		itemNames.put(toLong(357), "Cookie");
-		itemNames.put(toLong(358), "Map");
-		itemNames.put(toLong(359), "Shears");
-		itemNames.put(toLong(2256), "Music Disc");
-		itemNames.put(toLong(2257), "Music Disc");
-	}
-
-	private static long toLong(int msw) {
-		return toLong(msw, 0);
-	}
-
-	private static long toLong(int msw, int lsw) {
-		return ((long) msw << 32) + lsw - Integer.MIN_VALUE;
-	}
-
-	private static int msw(long l) {
-		return (int) (l >> 32);
-	}
-
-	private static int lsw(long l) {
-		return (int) (l & 0xFFFFFFFF) + Integer.MIN_VALUE;
+		itemNames.put(256, 0, "Iron Shovel");
+		itemNames.put(257, 0, "Iron Pickaxe");
+		itemNames.put(258, 0, "Iron Axe");
+		itemNames.put(259, 0, "Flint and Steel");
+		itemNames.put(260, 0, "Apple");
+		itemNames.put(261, 0, "Bow");
+		itemNames.put(262, 0, "Arrow");
+		itemNames.put(263, 0, "Coal");
+		itemNames.put(263, 1, "Charcoal");
+		itemNames.put(264, 0, "Diamond");
+		itemNames.put(265, 0, "Iron Ingot");
+		itemNames.put(266, 0, "Gold Ingot");
+		itemNames.put(267, 0, "Iron Sword");
+		itemNames.put(268, 0, "Wooden Sword");
+		itemNames.put(269, 0, "Wooden Shovel");
+		itemNames.put(270, 0, "Wooden Pickaxe");
+		itemNames.put(271, 0, "Wooden Axe");
+		itemNames.put(272, 0, "Stone Sword");
+		itemNames.put(273, 0, "Stone Shovel");
+		itemNames.put(274, 0, "Stone Pickaxe");
+		itemNames.put(275, 0, "Stone Axe");
+		itemNames.put(276, 0, "Diamond Sword");
+		itemNames.put(277, 0, "Diamond Shovel");
+		itemNames.put(278, 0, "Diamond Pickaxe");
+		itemNames.put(279, 0, "Diamond Axe");
+		itemNames.put(280, 0, "Stick");
+		itemNames.put(281, 0, "Bowl");
+		itemNames.put(282, 0, "Mushroom Soup");
+		itemNames.put(283, 0, "Gold Sword");
+		itemNames.put(284, 0, "Gold Shovel");
+		itemNames.put(285, 0, "Gold Pickaxe");
+		itemNames.put(286, 0, "Gold Axe");
+		itemNames.put(287, 0, "String");
+		itemNames.put(288, 0, "Feather");
+		itemNames.put(289, 0, "Gunpowder");
+		itemNames.put(290, 0, "Wooden Hoe");
+		itemNames.put(291, 0, "Stone Hoe");
+		itemNames.put(292, 0, "Iron Hoe");
+		itemNames.put(293, 0, "Diamond Hoe");
+		itemNames.put(294, 0, "Gold Hoe");
+		itemNames.put(295, 0, "Seeds");
+		itemNames.put(296, 0, "Wheat");
+		itemNames.put(297, 0, "Bread");
+		itemNames.put(298, 0, "Leather Cap");
+		itemNames.put(299, 0, "Leather Tunic");
+		itemNames.put(300, 0, "Leather Boots");
+		itemNames.put(301, 0, "Leather Boots");
+		itemNames.put(302, 0, "Chain Helmet");
+		itemNames.put(303, 0, "Chain Chestplate");
+		itemNames.put(304, 0, "Chain Leggings");
+		itemNames.put(305, 0, "Chain Boots");
+		itemNames.put(306, 0, "Iron Helmet");
+		itemNames.put(307, 0, "Iron Chestplate");
+		itemNames.put(308, 0, "Iron Leggings");
+		itemNames.put(309, 0, "Iron Boots");
+		itemNames.put(310, 0, "Diamond Helmet");
+		itemNames.put(311, 0, "Diamond Chestplate");
+		itemNames.put(312, 0, "Diamond Leggings");
+		itemNames.put(313, 0, "Diamond Boots");
+		itemNames.put(314, 0, "Gold Helmet");
+		itemNames.put(315, 0, "Gold Chestplate");
+		itemNames.put(316, 0, "Gold Leggings");
+		itemNames.put(317, 0, "Gold Boots");
+		itemNames.put(318, 0, "Flint");
+		itemNames.put(319, 0, "Raw Porkchop");
+		itemNames.put(320, 0, "Cooked Porkchop");
+		itemNames.put(321, 0, "Paintings");
+		itemNames.put(322, 0, "Golden Apple");
+		itemNames.put(323, 0, "Sign");
+		itemNames.put(324, 0, "Wooden Door");
+		itemNames.put(325, 0, "Bucket");
+		itemNames.put(326, 0, "Water Bucket");
+		itemNames.put(327, 0, "Lava Bucket");
+		itemNames.put(328, 0, "Minecart");
+		itemNames.put(329, 0, "Saddle");
+		itemNames.put(330, 0, "Iron Door");
+		itemNames.put(331, 0, "Redstone");
+		itemNames.put(332, 0, "Snowball");
+		itemNames.put(333, 0, "Boat");
+		itemNames.put(334, 0, "Leather");
+		itemNames.put(335, 0, "Milk");
+		itemNames.put(336, 0, "Brick");
+		itemNames.put(337, 0, "Clay");
+		itemNames.put(338, 0, "Sugar Canes");
+		itemNames.put(339, 0, "Paper");
+		itemNames.put(340, 0, "Book");
+		itemNames.put(341, 0, "Slimeball");
+		itemNames.put(342, 0, "Minecart with Chest");
+		itemNames.put(343, 0, "Minecart with Furnace");
+		itemNames.put(344, 0, "Egg");
+		itemNames.put(345, 0, "Compass");
+		itemNames.put(346, 0, "Fishing Rod");
+		itemNames.put(347, 0, "Clock");
+		itemNames.put(348, 0, "Glowstone Dust");
+		itemNames.put(349, 0, "Raw Fish");
+		itemNames.put(350, 0, "Cooked Fish");
+		itemNames.put(351, 0, "Ink Sac");
+		itemNames.put(351, 1, "Rose Red");
+		itemNames.put(351, 2, "Cactus Green");
+		itemNames.put(351, 3, "Cocoa Beans");
+		itemNames.put(351, 4, "Lapis Lazuli");
+		itemNames.put(351, 5, "Purple Dye");
+		itemNames.put(351, 6, "Cyan Dye");
+		itemNames.put(351, 7, "Light Gray Dye");
+		itemNames.put(351, 8, "Gray Dye");
+		itemNames.put(351, 9, "Pink Dye");
+		itemNames.put(351, 10, "Lime Dye");
+		itemNames.put(351, 11, "Dandelion Yellow");
+		itemNames.put(351, 12, "Light Blue Dye");
+		itemNames.put(351, 13, "Magenta Dye");
+		itemNames.put(351, 14, "Orange Dye");
+		itemNames.put(351, 15, "Bone Meal");
+		itemNames.put(352, 0, "Bone");
+		itemNames.put(353, 0, "Sugar");
+		itemNames.put(354, 0, "Cake");
+		itemNames.put(355, 0, "Bed");
+		itemNames.put(356, 0, "Redstone Repeater");
+		itemNames.put(357, 0, "Cookie");
+		itemNames.put(358, 0, "Map");
+		itemNames.put(359, 0, "Shears");
+		itemNames.put(2256, 0, "Music Disc");
+		itemNames.put(2257, 0, "Music Disc");
 	}
 
 	public static void disableStoneStackMix() {
@@ -393,11 +377,10 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public String getItemName(Material item, short data) {
-		long key = toLong(item.getId(), data);
-		if (customNames.containsKey(key)) {
-			return (String) customNames.get(key);
+		if (customNames.containsKey(item.getId(), data)) {
+			return (String) customNames.get(item.getId(), data);
 		}
-		return (String) itemNames.get(key);
+		return (String) itemNames.get(item.getId(), data);
 	}
 
 	@Override
@@ -412,7 +395,7 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void setItemName(Material item, short data, String name) {
-		customNames.put(toLong(item.getId(), data), name);
+		customNames.put(item.getId(), data, name);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer) {
 				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
@@ -429,13 +412,12 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void resetName(Material item, short data) {
-		long key = toLong(item.getId(), data);
-		if (customNames.containsKey(key)) {
-			customNames.remove(key);
+		if (customNames.containsKey(item.getId(), data)) {
+			customNames.remove(item.getId(), data);
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 				if (player instanceof SpoutCraftPlayer) {
 					if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-						((SpoutPlayer) player).sendPacket(new PacketItemName(msw(key), (short) lsw(key), "[reset]"));
+						((SpoutPlayer) player).sendPacket(new PacketItemName(item.getId(), data, "[reset]"));
 					}
 				}
 			}
@@ -462,23 +444,22 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public String getCustomItemName(Material item, short data) {
-		long key = toLong(item.getId(), data);
-		if (customNames.containsKey(key)) {
-			return (String) customNames.get(key);
+		if (customNames.containsKey(item.getId(), data)) {
+			return (String) customNames.get(item.getId(), data);
 		}
 		return null;
 	}
 
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-			for (TLongObjectIterator it = customNames.iterator(); it.hasNext();) {
+			for (TLongObjectIterator<String> it = customNames.iterator(); it.hasNext();) {
 				it.advance();
-				((SpoutPlayer) player).sendPacket(new PacketItemName(msw(it.key()), (short) lsw(it.key()), (String) it.value()));
+				((SpoutPlayer) player).sendPacket(new PacketItemName(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), it.value()));
 			}
-			for (TLongObjectIterator it = customTextures.iterator(); it.hasNext();) {
+			for (TLongObjectIterator<String> it = customTextures.iterator(); it.hasNext();) {
 				it.advance();
-				String pluginName = (String) customTexturesPlugin.get(it.key());
-				((SpoutPlayer) player).sendPacket(new PacketItemTexture(msw(it.key()), (short) lsw(it.key()), pluginName, (String) it.value()));
+				String pluginName = (String) customTexturesPlugin.get(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()));
+				((SpoutPlayer) player).sendPacket(new PacketItemTexture(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), pluginName, it.value()));
 			}
 		}
 	}
@@ -505,12 +486,11 @@ public class SimpleItemManager implements ItemManager {
 		} else {
 			pluginName = plugin.getDescription().getName();
 		}
-		long newKey = toLong(item.getId(), data);
-		customTextures.put(newKey, texture);
+		customTextures.put(item.getId(), data, texture);
 		if (pluginName == null) {
-			customTexturesPlugin.remove(newKey);
+			customTexturesPlugin.remove(item.getId(), data);
 		} else {
-			customTexturesPlugin.put(newKey, pluginName);
+			customTexturesPlugin.put(item.getId(), data, pluginName);
 		}
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer) {
@@ -533,17 +513,15 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public String getCustomItemTexture(Material item, short data) {
-		long info = toLong(item.getId(), data);
-		if (customTextures.containsKey(info)) {
-			return (String) customTextures.get(info);
+		if (customTextures.containsKey(item.getId(), data)) {
+			return (String) customTextures.get(item.getId(), data);
 		}
 		return null;
 	}
 
 	public String getCustomItemTexturePlugin(Material item, short data) {
-		long info = toLong(item.getId(), data);
-		if (customTexturesPlugin.containsKey(info)) {
-			return (String) customTexturesPlugin.get(info);
+		if (customTexturesPlugin.containsKey(item.getId(), data)) {
+			return (String) customTexturesPlugin.get(item.getId(), data);
 		}
 		return null;
 	}
@@ -555,14 +533,13 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void resetTexture(Material item, short data) {
-		long info = toLong(item.getId(), data);
-		if (customTextures.containsKey(info)) {
-			customTextures.remove(info);
-			String pluginName = (String) customTexturesPlugin.remove(info);
+		if (customTextures.containsKey(item.getId(), data)) {
+			customTextures.remove(item.getId(), data);
+			String pluginName = (String) customTexturesPlugin.remove(item.getId(), data);
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 				if (player instanceof SpoutCraftPlayer) {
 					if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-						((SpoutPlayer) player).sendPacket(new PacketItemTexture(msw(info), (short) lsw(info), pluginName, "[reset]"));
+						((SpoutPlayer) player).sendPacket(new PacketItemTexture(item.getId(), data, pluginName, "[reset]"));
 					}
 				}
 			}
@@ -589,8 +566,9 @@ public class SimpleItemManager implements ItemManager {
 		return registerCustomItemName(plugin, key);
 	}
 
-	public void setCustomItemBlock(int id, Integer blockId, Short metaData) {
-		if (blockId != null || metaData == null) {
+	@Override
+	public void setCustomItemBlock(int id, int blockId, short metaData) {
+		if (blockId != 0 || metaData == 0) {
 			itemBlock.put(id, blockId);
 			itemMetaData.put(id, metaData);
 		} else {
@@ -636,7 +614,7 @@ public class SimpleItemManager implements ItemManager {
 	}
 
 	public ItemStack getCustomItemStack(CustomBlock block, int size) {
-		return new ItemStack(block.getRawId(), size, (short) block.getCustomID());
+		return new ItemStack(block.getRawId(), size, (short) block.getCustomId());
 	}
 
 	public boolean overrideBlock(Block block, Integer blockId, Integer metaData) {
@@ -664,12 +642,12 @@ public class SimpleItemManager implements ItemManager {
 	@Override
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
 		block.setTypeId(customBlock.getRawId());
-		return overrideBlock(block, customBlock.getCustomID(), customBlock.getCustomMetaData());
+		return overrideBlock(block, customBlock.getCustomId(), customBlock.getCustomMetaData());
 	}
 
 	@Override
 	public boolean overrideBlock(World world, int x, int y, int z, CustomBlock customBlock) {
-		int blockId = customBlock.getCustomID();
+		int blockId = customBlock.getCustomId();
 		int metaData = customBlock.getCustomMetaData();
 
 		SpoutManager.getChunkDataManager().setBlockData(blockIdString, world, x, y, z, blockId);
@@ -773,19 +751,16 @@ public class SimpleItemManager implements ItemManager {
 		}
 	}
 
-	@Override
-	public void setCustomBlockDesign(Integer blockId, Integer metaData, BlockDesign design) {
+	public void setCustomBlockDesign(int blockId, short metaData, BlockDesign design) {
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 
-		long info = toLong(blockId, metaData);
-
 		if (design != null) {
-			customBlockDesigns.put(info, design);
+			customBlockDesigns.put(blockId, metaData, design);
 		} else {
-			customBlockDesigns.remove(info);
+			customBlockDesigns.remove(blockId, metaData);
 		}
 
-		updateCustomBlockDesigns(players, info, design);
+		updateCustomBlockDesigns(players, blockId, metaData, design);
 
 	}
 
@@ -796,15 +771,15 @@ public class SimpleItemManager implements ItemManager {
 	}
 
 	public void updateAllCustomBlockDesigns(Player[] players) {
-		for (TLongObjectIterator it = customBlockDesigns.iterator(); it.hasNext();) {
+		for (TLongObjectIterator<BlockDesign> it = customBlockDesigns.iterator(); it.hasNext();) {
 			it.advance();
-			updateCustomBlockDesigns(players, it.key(), (BlockDesign) it.value());
+			updateCustomBlockDesigns(players, TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), (BlockDesign) it.value());
 		}
 	}
 
-	private void updateCustomBlockDesigns(Player[] players, long data, BlockDesign design) {
+	private void updateCustomBlockDesigns(Player[] players, int blockId, int metaData, BlockDesign design) {
 
-		PacketCustomBlockDesign p = new PacketCustomBlockDesign(msw(data), lsw(data), design);
+		PacketCustomBlockDesign p = new PacketCustomBlockDesign(blockId, metaData, design);
 
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
@@ -841,18 +816,16 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void setFriction(int id, short data, float friction) {
-		long key = toLong(id, data);
-		if (!originalFriction.containsKey(key)) {
-			originalFriction.put(key, getFriction(id, data));
+		if (!originalFriction.containsKey(id, data)) {
+			originalFriction.put(id, data, getFriction(id, data));
 		}
 		net.minecraft.server.Block.byId[id].frictionFactor = friction;
 	}
 
 	@Override
 	public void resetFriction(int id, short data) {
-		long key = toLong(id, data);
-		if (originalFriction.containsKey(key)) {
-			setFriction(id, data, originalFriction.get(key));
+		if (originalFriction.containsKey(id, data)) {
+			setFriction(id, data, originalFriction.get(id, data));
 		}
 	}
 
@@ -863,9 +836,8 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void setHardness(int id, short data, float hardness) {
-		long key = toLong(id, data);
-		if (!originalHardness.containsKey(key)) {
-			originalHardness.put(key, getHardness(id, data));
+		if (!originalHardness.containsKey(id, data)) {
+			originalHardness.put(id, data, getHardness(id, data));
 		}
 		net.minecraft.server.Block b = net.minecraft.server.Block.byId[id];
 		if (b instanceof CustomMCBlock) {
@@ -875,9 +847,8 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void resetHardness(int id, short data) {
-		long key = toLong(id, data);
-		if (originalHardness.containsKey(key)) {
-			setHardness(id, data, originalHardness.get(key));
+		if (originalHardness.containsKey(id, data)) {
+			setHardness(id, data, originalHardness.get(id, data));
 		}
 	}
 
