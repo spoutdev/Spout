@@ -22,7 +22,7 @@ import gnu.trove.TLongFloatHashMap;
 import gnu.trove.TLongObjectHashMap;
 import gnu.trove.TLongObjectIterator;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -34,6 +34,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -357,25 +358,12 @@ public class SimpleItemManager implements ItemManager {
 
 	public static void disableStoneStackMix() {
 
-		Method a;
 		try {
-			a = Item.class.getDeclaredMethod("a", new Class[] { boolean.class });
+			Method a = Item.class.getDeclaredMethod("a", new Class[] { boolean.class });
 			a.setAccessible(true);
-			a.invoke(Item.byId[1], new Object[] { Boolean.TRUE });
-			a.invoke(Item.byId[20], new Object[] { Boolean.TRUE });
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			return;
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-			return;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			return;
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			return;
-		} catch (InvocationTargetException e) {
+			a.invoke(Item.byId[318], Boolean.TRUE);
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		}
@@ -636,7 +624,7 @@ public class SimpleItemManager implements ItemManager {
 	}
 
 	public ItemStack getCustomItemStack(CustomBlock block, int size) {
-		return new ItemStack(block.getRawId(), size, (short) block.getCustomID());
+		return new ItemStack(318, size, (short) block.getCustomId());
 	}
 
 	public boolean overrideBlock(Block block, Integer blockId, Integer metaData) {
@@ -664,12 +652,12 @@ public class SimpleItemManager implements ItemManager {
 	@Override
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
 		block.setTypeId(customBlock.getRawId());
-		return overrideBlock(block, customBlock.getCustomID(), customBlock.getCustomMetaData());
+		return overrideBlock(block, customBlock.getCustomId(), customBlock.getCustomMetaData());
 	}
 
 	@Override
 	public boolean overrideBlock(World world, int x, int y, int z, CustomBlock customBlock) {
-		int blockId = customBlock.getCustomID();
+		int blockId = customBlock.getCustomId();
 		int metaData = customBlock.getCustomMetaData();
 
 		SpoutManager.getChunkDataManager().setBlockData(blockIdString, world, x, y, z, blockId);
