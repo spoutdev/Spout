@@ -143,7 +143,7 @@ public class SpoutPlayerListener extends PlayerListener{
 					
 					if (newBlockId != 0 ) {
 						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
-						CustomBlock cb = MaterialData.getCustomBlock(newBlockId, (short) damage);
+						CustomBlock cb = MaterialData.getCustomBlock(damage);
 						block.setTypeIdAndData(cb.getRawData(), (byte)(newMetaData & 0xF), true);
 						im.overrideBlock(block, cb);
 						

@@ -44,6 +44,7 @@ import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.inventory.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.material.CustomBlock;
+import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
@@ -74,7 +75,7 @@ public class SimpleItemManager implements ItemManager {
 
 	public final static String blockIdString = "org.spout.customblocks.blockid";
 	public final static String metaDataString = "org.spout.customblocks.metadata";
-	
+
 	public SimpleItemManager() {
 		itemNames.put(1, 0, "Stone");
 		itemNames.put(2, 0, "Grass");
@@ -380,6 +381,11 @@ public class SimpleItemManager implements ItemManager {
 	}
 
 	@Override
+	public void setItemName(CustomItem item, String name) {
+		setItemName(item.getRawId(), (short) item.getCustomId(), name);
+	}
+
+	@Override
 	public void setItemName(Material item, short data, String name) {
 		customNames.put(item.getId(), data, name);
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -462,6 +468,11 @@ public class SimpleItemManager implements ItemManager {
 
 	public void setItemTexture(Material item, short data, String texture) {
 		setItemTexture(item, data, null, texture);
+	}
+
+	@Override
+	public void setItemTexture(CustomItem item, Plugin plugin, String texture) {
+		setItemTexture(Material.getMaterial(item.getRawId()), (short) item.getCustomId(), plugin, texture);
 	}
 
 	@Override
@@ -553,15 +564,12 @@ public class SimpleItemManager implements ItemManager {
 	}
 
 	@Override
-	public void setCustomItemBlock(int id, int blockId, short metaData) {
-		if (blockId != 0 || metaData == 0) {
-			itemBlock.put(id, blockId);
-			itemMetaData.put(id, metaData);
-		} else {
-			itemBlock.remove(id);
-			itemMetaData.remove(id);
-		}
-		updateCustomClientData(id);
+	public void setCustomItemBlock(CustomItem item, CustomBlock block) {
+		int itemId = item.getCustomId();
+		itemBlock.put(itemId, block.getRawId());
+		itemMetaData.put(itemId, block.getCustomMetaData());
+
+		updateCustomClientData(itemId);
 	}
 
 	public void updateCustomClientData(Player player) {

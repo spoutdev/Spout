@@ -42,7 +42,7 @@ public class SpoutBlockListener extends BlockListener {
 		if (newBlockId != 0 ) {
 			Block block = event.getBlockPlaced();
 			block.setTypeIdAndData(newBlockId, (byte)(newMetaData & 0xF), true);
-			i.overrideBlock(block, MaterialData.getCustomBlock(newBlockId, (short) damage));
+			i.overrideBlock(block, MaterialData.getCustomBlock(damage));
 		} else if (damage >= 1024) {
 			event.setCancelled(true);
 		}

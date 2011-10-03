@@ -222,6 +222,6 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	
 	public CustomBlock getCustomBlock() {
 		int id = getCustomBlockId();
-		return MaterialData.getCustomBlock(getTypeId(), (short) id);
+		return MaterialData.getCustomBlock(id);
 	}
 }
