@@ -33,7 +33,7 @@ public class PacketCompressionThread extends Thread{
 	
 	public static void startThread() {
 		instance = new PacketCompressionThread();
-		instance.run();
+		instance.start();
 	}
 	
 	public static void endThread() {
