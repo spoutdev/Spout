@@ -16,10 +16,15 @@
  */
 package org.getspout.spout.inventory;
 
+import gnu.trove.iterator.TIntByteIterator;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.iterator.TLongFloatIterator;
 import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.hash.TIntByteHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.server.Item;
@@ -45,11 +50,13 @@ import org.getspout.spoutapi.inventory.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.CustomItem;
+import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.packet.PacketItemTexture;
+import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 import org.getspout.spoutapi.util.map.TIntPairFloatHashMap;
@@ -63,7 +70,7 @@ public class SimpleItemManager implements ItemManager {
 
 	private final TIntPairFloatHashMap originalHardness = new TIntPairFloatHashMap();
 	private final TIntPairFloatHashMap originalFriction = new TIntPairFloatHashMap();
-	private final TIntIntHashMap originalOpacity = new TIntIntHashMap();
+	private final TIntByteHashMap originalOpacity = new TIntByteHashMap();
 	private final TIntIntHashMap originalLight = new TIntIntHashMap();
 
 	private final TIntPairObjectHashMap<String> itemNames = new TIntPairObjectHashMap<String>(500);
@@ -72,7 +79,9 @@ public class SimpleItemManager implements ItemManager {
 	private final TIntPairObjectHashMap<String> customTexturesPlugin = new TIntPairObjectHashMap<String>(100);
 
 	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
-
+	
+	private SpoutPacket cachedBlockData = null;
+	
 	public final static String blockIdString = "org.spout.customblocks.blockid";
 	public final static String metaDataString = "org.spout.customblocks.metadata";
 
@@ -814,13 +823,16 @@ public class SimpleItemManager implements ItemManager {
 			originalFriction.put(id, data, getFriction(id, data));
 		}
 		net.minecraft.server.Block.byId[id].frictionFactor = friction;
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
 	public void resetFriction(int id, short data) {
 		if (originalFriction.containsKey(id, data)) {
 			setFriction(id, data, originalFriction.get(id, data));
+			originalFriction.remove(id, data);
 		}
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
@@ -837,13 +849,16 @@ public class SimpleItemManager implements ItemManager {
 		if (b instanceof CustomMCBlock) {
 			((CustomMCBlock) b).setHardness(hardness);
 		}
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
 	public void resetHardness(int id, short data) {
 		if (originalHardness.containsKey(id, data)) {
 			setHardness(id, data, originalHardness.get(id, data));
+			originalHardness.remove(id, data);
 		}
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
@@ -854,16 +869,19 @@ public class SimpleItemManager implements ItemManager {
 	@Override
 	public void setOpaque(int id, short data, boolean opacity) {
 		if (!originalOpacity.containsKey(id)) {
-			originalOpacity.put(id, isOpaque(id, data) ? 1 : 0);
+			originalOpacity.put(id, (byte) (isOpaque(id, data) ? 1 : 0));
 		}
 		net.minecraft.server.Block.o[id] = opacity;
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
 	public void resetOpacity(int id, short data) {
 		if (originalOpacity.containsKey(id)) {
 			setOpaque(id, data, originalOpacity.get(id) != 0);
+			originalOpacity.remove(id);
 		}
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
@@ -877,13 +895,72 @@ public class SimpleItemManager implements ItemManager {
 			originalLight.put(id, getLightLevel(id, data));
 		}
 		net.minecraft.server.Block.s[id] = level;
+		cachedBlockData = null; //invalidate cache
 	}
 
 	@Override
 	public void resetLightLevel(int id, short data) {
 		if (originalLight.containsKey(id)) {
 			setLightLevel(id, data, originalLight.get(id));
+			originalLight.remove(id);
 		}
+		cachedBlockData = null; //invalidate cache
+	}
+	
+	@Override
+	public Set<org.getspout.spoutapi.material.Block> getModifiedBlocks() {
+		Set<org.getspout.spoutapi.material.Block> modified = new HashSet<org.getspout.spoutapi.material.Block>();
+		TLongFloatIterator i = originalFriction.iterator();
+		while (i.hasNext()) {
+			int id = TIntPairHashSet.longToKey1(i.key());
+			int data = TIntPairHashSet.longToKey2(i.key());
+			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(id, (short) data);
+			if (block != null) {
+				modified.add(block);
+			}
+			i.advance();
+		}
+		
+		i = originalHardness.iterator();
+		while (i.hasNext()) {
+			int id = TIntPairHashSet.longToKey1(i.key());
+			int data = TIntPairHashSet.longToKey2(i.key());
+			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(id, (short) data);
+			if (block != null) {
+				modified.add(block);
+			}
+			i.advance();
+		}
+		
+		TIntIntIterator j = originalLight.iterator();
+		while (j.hasNext()) {
+			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(j.key());
+			if (block != null) {
+				modified.add(block);
+			}
+			j.advance();
+		}
+		
+		TIntByteIterator k = originalOpacity.iterator();
+		while (k.hasNext()) {
+			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(k.key());
+			if (block != null) {
+				modified.add(block);
+			}
+			k.advance();
+		}
+		return modified;
+	}
+	
+
+	@Override
+	public SpoutPacket getCachedBlockData() {
+		return cachedBlockData;
+	}
+
+	@Override
+	public void setCachedBlockData(SpoutPacket packet) {
+		cachedBlockData = packet;
 	}
 
 	@Override

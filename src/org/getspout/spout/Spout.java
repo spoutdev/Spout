@@ -159,6 +159,7 @@ public class Spout extends JavaPlugin{
 		
 		//end the thread
 		MapChunkThread.endThread();
+		PacketCompressionThread.endThread();
 	}
 
 	@Override
@@ -218,6 +219,7 @@ public class Spout extends JavaPlugin{
 		CustomBlock.replaceBlocks();
 		
 		MapChunkThread.startThread(); // Always on
+		PacketCompressionThread.startThread();
 		
 		//Start counting ticks
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new ServerTickTask(), 0, 1);

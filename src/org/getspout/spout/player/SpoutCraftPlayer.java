@@ -55,6 +55,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.getspout.spout.PacketCompressionThread;
 import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.SpoutPermissibleBase;
@@ -77,6 +78,7 @@ import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
 import org.getspout.spoutapi.io.CRCStore.URLCheck;
 import org.getspout.spoutapi.io.CRCStoreRunnable;
 import org.getspout.spoutapi.keyboard.Keyboard;
+import org.getspout.spoutapi.packet.CompressablePacket;
 import org.getspout.spoutapi.packet.PacketAirTime;
 import org.getspout.spoutapi.packet.PacketAlert;
 import org.getspout.spoutapi.packet.PacketClipboardText;
@@ -790,6 +792,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			}
 		}
 		else {
+			if (packet instanceof CompressablePacket) {
+				CompressablePacket compressable = ((CompressablePacket)packet);
+				//uncompressed, send it to the compression thread
+				if (!compressable.isCompressed()) {
+					PacketCompressionThread.add(compressable, this);
+					return;
+				}
+			}
 			getNetServerHandler().sendPacket(new CustomPacket(packet));
 		}
 	}
