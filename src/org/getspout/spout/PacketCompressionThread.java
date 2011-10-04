@@ -62,7 +62,7 @@ public class PacketCompressionThread extends Thread{
 				packet.packet.compress();
 				packet.player.sendPacket(packet.packet);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				break;
 			}
 		}
 	}
