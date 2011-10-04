@@ -50,6 +50,7 @@ import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.inventory.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.inventory.SpoutShapedRecipe;
+import org.getspout.spoutapi.inventory.SpoutShapelessRecipe;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.material.MaterialData;
@@ -1007,6 +1008,8 @@ public class SimpleItemManager implements ItemManager {
         } else {
             if (recipe instanceof SpoutShapedRecipe) {
                 toAdd = SimpleSpoutShapedRecipe.fromSpoutRecipe((SpoutShapedRecipe) recipe);
+            } else if (recipe instanceof SpoutShapelessRecipe) {
+            	toAdd = SimpleSpoutShapelessRecipe.fromSpoutRecipe((SpoutShapelessRecipe) recipe);
             } else {
                 return false;
             }

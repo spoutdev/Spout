@@ -44,11 +44,6 @@ public class SimpleSpoutShapedRecipe extends SpoutShapedRecipe implements SpoutR
 			
 			int id = mdata.getRawId();
 			int dmg = mdata.getRawData();
-			net.minecraft.server.ItemStack nmsis = new net.minecraft.server.ItemStack(id, 1, dmg);
-			System.out.println(nmsis.id);
-			System.out.println(nmsis.usesData() + " Uses data?");
-			nmsis.b(dmg);
-			System.out.println(nmsis.g() + " data value");
 			
 			data[i] = new net.minecraft.server.ItemStack(id, 1, dmg);
 			i++;
