@@ -37,6 +37,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
 import org.getspout.spout.Spout;
@@ -48,6 +49,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.inventory.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
+import org.getspout.spoutapi.inventory.SpoutShapedRecipe;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.material.MaterialData;
@@ -575,7 +577,7 @@ public class SimpleItemManager implements ItemManager {
 	@Override
 	public void setCustomItemBlock(CustomItem item, CustomBlock block) {
 		int itemId = item.getCustomId();
-		itemBlock.put(itemId, block.getRawId());
+		itemBlock.put(itemId, block.getBlockId());
 		itemMetaData.put(itemId, block.getCustomMetaData());
 
 		updateCustomClientData(itemId);
@@ -617,7 +619,11 @@ public class SimpleItemManager implements ItemManager {
 	}
 
 	public ItemStack getCustomItemStack(CustomBlock block, int size) {
-		return new ItemStack(318, size, (short) block.getCustomId());
+		return getCustomItemStack(block.getBlockItem(), size);
+	}
+	
+	public ItemStack getCustomItemStack(CustomItem item, int size) {
+		return new ItemStack(item.getRawId(), size, (short) item.getCustomId());
 	}
 
 	public boolean overrideBlock(Block block, Integer blockId, Integer metaData) {
@@ -644,7 +650,7 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
-		block.setTypeId(customBlock.getRawId());
+		block.setTypeId(customBlock.getBlockId());
 		return overrideBlock(block, customBlock.getCustomId(), customBlock.getCustomMetaData());
 	}
 
@@ -991,5 +997,21 @@ public class SimpleItemManager implements ItemManager {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public boolean registerSpoutRecipe(Recipe recipe) {
+        SpoutRecipe toAdd;
+        if (recipe instanceof SpoutRecipe) {
+            toAdd = (SpoutRecipe) recipe;
+        } else {
+            if (recipe instanceof SpoutShapedRecipe) {
+                toAdd = SimpleSpoutShapedRecipe.fromSpoutRecipe((SpoutShapedRecipe) recipe);
+            } else {
+                return false;
+            }
+        }
+        toAdd.addToCraftingManager();
+        return true;
 	}
 }
