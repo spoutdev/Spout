@@ -54,11 +54,13 @@ import org.getspout.spoutapi.inventory.SpoutShapelessRecipe;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.material.MaterialData;
+import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.packet.PacketItemTexture;
+import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 import org.getspout.spoutapi.util.map.TIntPairFloatHashMap;
@@ -831,7 +833,7 @@ public class SimpleItemManager implements ItemManager {
 			originalFriction.put(id, data, getFriction(id, data));
 		}
 		net.minecraft.server.Block.byId[id].frictionFactor = friction;
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -840,7 +842,7 @@ public class SimpleItemManager implements ItemManager {
 			setFriction(id, data, originalFriction.get(id, data));
 			originalFriction.remove(id, data);
 		}
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -857,7 +859,7 @@ public class SimpleItemManager implements ItemManager {
 		if (b instanceof CustomMCBlock) {
 			((CustomMCBlock) b).setHardness(hardness);
 		}
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -866,7 +868,7 @@ public class SimpleItemManager implements ItemManager {
 			setHardness(id, data, originalHardness.get(id, data));
 			originalHardness.remove(id, data);
 		}
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -880,7 +882,7 @@ public class SimpleItemManager implements ItemManager {
 			originalOpacity.put(id, (byte) (isOpaque(id, data) ? 1 : 0));
 		}
 		net.minecraft.server.Block.o[id] = opacity;
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -889,7 +891,7 @@ public class SimpleItemManager implements ItemManager {
 			setOpaque(id, data, originalOpacity.get(id) != 0);
 			originalOpacity.remove(id);
 		}
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -903,7 +905,7 @@ public class SimpleItemManager implements ItemManager {
 			originalLight.put(id, getLightLevel(id, data));
 		}
 		net.minecraft.server.Block.s[id] = level;
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 
 	@Override
@@ -912,7 +914,7 @@ public class SimpleItemManager implements ItemManager {
 			setLightLevel(id, data, originalLight.get(id));
 			originalLight.remove(id);
 		}
-		cachedBlockData = null; //invalidate cache
+		updateBlockAttributes(id, data); //invalidate cache
 	}
 	
 	@Override
@@ -1012,5 +1014,19 @@ public class SimpleItemManager implements ItemManager {
         }
         toAdd.addToCraftingManager();
         return true;
+	}
+	
+	private void updateBlockAttributes(int id, short data) {
+		org.getspout.spoutapi.material.Block block = MaterialData.getBlock(id, data);
+		if (block != null) {
+			cachedBlockData = null;
+			HashSet<org.getspout.spoutapi.material.Block> toUpdate = new HashSet<org.getspout.spoutapi.material.Block>(1);
+			toUpdate.add(block);
+			SpoutPacket updatePacket = new PacketBlockData(toUpdate);
+			for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+				if (player.isSpoutCraftEnabled())
+					player.sendPacket(updatePacket);
+			}
+		}
 	}
 }
