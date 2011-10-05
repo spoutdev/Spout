@@ -59,7 +59,6 @@ import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.packet.PacketItemTexture;
-import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 import org.getspout.spoutapi.util.map.TIntPairFloatHashMap;
@@ -83,7 +82,7 @@ public class SimpleItemManager implements ItemManager {
 
 	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
 	
-	private SpoutPacket cachedBlockData = null;
+	private Set<org.getspout.spoutapi.material.Block> cachedBlockData = null;
 	
 	public final static String blockIdString = "org.spout.customblocks.blockid";
 	public final static String metaDataString = "org.spout.customblocks.metadata";
@@ -916,58 +915,53 @@ public class SimpleItemManager implements ItemManager {
 	
 	@Override
 	public Set<org.getspout.spoutapi.material.Block> getModifiedBlocks() {
+		//hit cache first
+		if (cachedBlockData != null) {
+			return cachedBlockData;
+		}
 		Set<org.getspout.spoutapi.material.Block> modified = new HashSet<org.getspout.spoutapi.material.Block>();
 		TLongFloatIterator i = originalFriction.iterator();
 		while (i.hasNext()) {
+			i.advance();
 			int id = TIntPairHashSet.longToKey1(i.key());
 			int data = TIntPairHashSet.longToKey2(i.key());
+			
 			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(id, (short) data);
 			if (block != null) {
 				modified.add(block);
 			}
-			i.advance();
 		}
 		
 		i = originalHardness.iterator();
 		while (i.hasNext()) {
+			i.advance();
 			int id = TIntPairHashSet.longToKey1(i.key());
 			int data = TIntPairHashSet.longToKey2(i.key());
 			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(id, (short) data);
 			if (block != null) {
 				modified.add(block);
 			}
-			i.advance();
 		}
 		
 		TIntIntIterator j = originalLight.iterator();
 		while (j.hasNext()) {
+			j.advance();
 			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(j.key());
 			if (block != null) {
 				modified.add(block);
 			}
-			j.advance();
 		}
 		
 		TIntByteIterator k = originalOpacity.iterator();
 		while (k.hasNext()) {
+			k.advance();
 			org.getspout.spoutapi.material.Block block = MaterialData.getBlock(k.key());
 			if (block != null) {
 				modified.add(block);
 			}
-			k.advance();
 		}
+		cachedBlockData = modified; //save to cache
 		return modified;
-	}
-	
-
-	@Override
-	public SpoutPacket getCachedBlockData() {
-		return cachedBlockData;
-	}
-
-	@Override
-	public void setCachedBlockData(SpoutPacket packet) {
-		cachedBlockData = packet;
 	}
 
 	@Override

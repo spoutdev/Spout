@@ -33,6 +33,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
+import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.player.PlayerInformation;
@@ -83,7 +84,8 @@ public class PlayerManager {
 		player.sendPacket(new PacketUniqueId(player.getUniqueId(), player.getEntityId()));
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
-		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));		
+		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));	
+		player.sendPacket(new PacketBlockData(SpoutManager.getItemManager().getModifiedBlocks()));
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}
 
