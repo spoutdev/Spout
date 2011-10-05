@@ -47,7 +47,7 @@ import org.getspout.spout.block.mcblock.CustomMCBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
-import org.getspout.spoutapi.inventory.BlockDesign;
+import org.getspout.spoutapi.block.design.BlockDesign;
 import org.getspout.spoutapi.inventory.ItemManager;
 import org.getspout.spoutapi.inventory.SpoutShapedRecipe;
 import org.getspout.spoutapi.inventory.SpoutShapelessRecipe;
@@ -1028,5 +1028,23 @@ public class SimpleItemManager implements ItemManager {
 					player.sendPacket(updatePacket);
 			}
 		}
+	}
+
+	@Override
+	public boolean isCustomItem(ItemStack item) {
+		if(item.getTypeId() == 318 && item.getDurability() != 0) {
+			if(MaterialData.getCustomItem(item.getDurability()) != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public CustomItem getCustomItem(ItemStack item) {
+		if(isCustomItem(item)) {
+			return MaterialData.getCustomItem(item.getDurability());
+		}
+		return null;
 	}
 }
