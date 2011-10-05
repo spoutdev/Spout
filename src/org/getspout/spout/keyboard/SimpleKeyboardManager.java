@@ -26,6 +26,7 @@ import org.getspout.spoutapi.keyboard.KeyboardBinding;
 import org.getspout.spoutapi.keyboard.KeyboardManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
+@SuppressWarnings("deprecation")
 public class SimpleKeyboardManager implements KeyboardManager {
 	protected HashSet<Plugin> pluginSet;
 	protected HashMap<Plugin, HashMap<Keyboard, HashSet<KeyboardBinding>>> keyMap;

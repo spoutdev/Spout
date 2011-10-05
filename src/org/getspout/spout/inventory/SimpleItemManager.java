@@ -469,41 +469,43 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public void setItemTexture(Material item, String texture) {
-		setItemTexture(item, (short) 0, null, texture);
+		setItemTexture(item.getId(), (short) 0, null, texture);
 	}
 
 	@Override
 	public void setItemTexture(Material item, Plugin plugin, String texture) {
-		setItemTexture(item, (short) 0, plugin, texture);
+		setItemTexture(item.getId(), (short) 0, plugin, texture);
 	}
 
 	public void setItemTexture(Material item, short data, String texture) {
-		setItemTexture(item, data, null, texture);
+		setItemTexture(item.getId(), data, null, texture);
 	}
 
 	@Override
 	public void setItemTexture(CustomItem item, Plugin plugin, String texture) {
-		setItemTexture(Material.getMaterial(item.getRawId()), (short) item.getCustomId(), plugin, texture);
+		System.out.println("Texture Material: " + Material.getMaterial(item.getRawId()));
+		System.out.println("Texture ID: " + item.getCustomId());
+		setItemTexture(item.getRawId(), (short) item.getCustomId(), plugin, texture);
 	}
 
 	@Override
-	public void setItemTexture(Material item, short data, Plugin plugin, String texture) {
+	public void setItemTexture(int id, short data, Plugin plugin, String texture) {
 		String pluginName;
 		if (plugin == null) {
 			pluginName = null;
 		} else {
 			pluginName = plugin.getDescription().getName();
 		}
-		customTextures.put(item.getId(), data, texture);
+		customTextures.put(id, data, texture);
 		if (pluginName == null) {
-			customTexturesPlugin.remove(item.getId(), data);
+			customTexturesPlugin.remove(id, data);
 		} else {
-			customTexturesPlugin.put(item.getId(), data, pluginName);
+			customTexturesPlugin.put(id, data, pluginName);
 		}
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (player instanceof SpoutCraftPlayer) {
 				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-					((SpoutPlayer) player).sendPacket(new PacketItemTexture(item.getId(), data, pluginName, texture));
+					((SpoutPlayer) player).sendPacket(new PacketItemTexture(id, data, pluginName, texture));
 				}
 			}
 		}
