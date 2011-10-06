@@ -638,7 +638,7 @@ public class SimpleItemManager implements ItemManager {
 
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
 
-		if (blockId == null || metaData == null) {
+		if (blockId == null) {
 			scb.removeCustomBlockData();
 		} else {
 			scb.setCustomBlockId(blockId);
