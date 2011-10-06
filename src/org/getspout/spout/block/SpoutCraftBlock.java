@@ -224,4 +224,8 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		int id = getCustomBlockId();
 		return MaterialData.getCustomBlock(id);
 	}
+	
+	public boolean equals(Object other) {
+		return other == this;
+	}
 }

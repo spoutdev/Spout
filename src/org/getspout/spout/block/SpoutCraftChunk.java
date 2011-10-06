@@ -42,6 +42,8 @@ import org.bukkit.util.BlockVector;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutChunk;
 
+import com.google.common.collect.MapMaker;
+
 public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
@@ -49,6 +51,8 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	
 	public final TIntIntHashMap powerOverrides = new TIntIntHashMap();
 	public final TIntFloatHashMap hardnessOverrides = new TIntFloatHashMap();
+	
+	public final Map<Integer, Block> blockCache = new MapMaker().weakValues().makeMap();
 	
 	protected Field cache;
 
@@ -60,13 +64,16 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		}
 		catch (Exception e) {
 			cache = null;
-			e.printStackTrace();
+			//cache is not present in newer builds
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Block> getCache() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		return (Map<Integer, Block>) cache.get(this);
+		if (cache != null) {
+			return (Map<Integer, Block>) cache.get(this);
+		}
+		return blockCache;
 	}
 
 	@Override
