@@ -24,7 +24,9 @@ import gnu.trove.map.hash.TIntByteHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.server.Item;
@@ -85,6 +87,8 @@ public class SimpleItemManager implements ItemManager {
 	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
 	
 	private Set<org.getspout.spoutapi.material.Block> cachedBlockData = null;
+	
+	private Map<org.getspout.spoutapi.material.CustomBlock, ItemStack> customBlockDrops = new HashMap<org.getspout.spoutapi.material.CustomBlock, ItemStack>();
 	
 	public final static String blockIdString = "org.spout.customblocks.blockid";
 	public final static String metaDataString = "org.spout.customblocks.metadata";
@@ -1040,7 +1044,12 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public CustomBlock registerItemDrop(CustomBlock block, ItemStack item) {
-		// TODO Auto-generated method stub
-		return null;
+		customBlockDrops.put(block, item);
+		return block;
+	}
+	
+	@Override
+	public Map<org.getspout.spoutapi.material.CustomBlock, ItemStack> getCustomBlockDrops() {
+		return customBlockDrops;
 	}
 }

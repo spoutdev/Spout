@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
+import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.MaterialData;
 
 public class SpoutBlockListener extends BlockListener {
@@ -66,6 +67,11 @@ public class SpoutBlockListener extends BlockListener {
 			
 			if (sb.isCustomBlock()) {
 				i.overrideBlock(sb, null, null);
+				if (i.getCustomBlockDrops().containsKey((CustomBlock) sb)) {
+					event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), i.getCustomBlockDrops().get((CustomBlock) sb));
+					event.getBlock().setTypeId(0);
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
