@@ -974,19 +974,9 @@ public class SimpleItemManager implements ItemManager {
 		if (!(block instanceof SpoutCraftBlock)) {
 			return false;
 		}
-
-		boolean outcome = false;
-
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
 
-		Integer blockId = scb.getCustomBlockId();
-		Integer metaData = scb.getCustomMetaData();
-
-		if (blockId != null && metaData != null) {
-			outcome = true;
-		}
-
-		return outcome;
+		return scb.isCustomBlock();
 	}
 
 	@Override
@@ -1045,6 +1035,12 @@ public class SimpleItemManager implements ItemManager {
 		if(isCustomItem(item)) {
 			return MaterialData.getCustomItem(item.getDurability());
 		}
+		return null;
+	}
+
+	@Override
+	public CustomBlock registerItemDrop(CustomBlock block, ItemStack item) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }
