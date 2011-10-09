@@ -81,6 +81,7 @@ public class SimpleItemManager implements ItemManager {
 	private final TIntPairObjectHashMap<String> customNames = new TIntPairObjectHashMap<String>(100);
 	private final TIntPairObjectHashMap<String> customTextures = new TIntPairObjectHashMap<String>(100);
 	private final TIntPairObjectHashMap<String> customTexturesPlugin = new TIntPairObjectHashMap<String>(100);
+	private final TIntPairObjectHashMap<ItemStack> customDrops = new TIntPairObjectHashMap<ItemStack>(100);
 
 	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
 	
@@ -1040,7 +1041,17 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public CustomBlock registerItemDrop(CustomBlock block, ItemStack item) {
-		// TODO Auto-generated method stub
-		return null;
+		customDrops.put(block.getCustomId(), block.getCustomMetaData(), item);
+		return block;
+	}
+	
+	@Override
+	public boolean hasItemDrop(CustomBlock block) {
+		return customDrops.containsKey(block.getCustomId(), block.getCustomMetaData());
+	}
+	
+	@Override
+	public ItemStack getItemDrop(CustomBlock block) {
+		return customDrops.get(block.getCustomId(), block.getCustomMetaData());
 	}
 }

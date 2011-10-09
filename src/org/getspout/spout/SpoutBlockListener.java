@@ -65,6 +65,11 @@ public class SpoutBlockListener extends BlockListener {
 			}
 			
 			if (sb.isCustomBlock()) {
+				if(i.hasItemDrop(sb.getCustomBlock())) {
+					sb.getWorld().dropItem(sb.getLocation(), i.getItemDrop(sb.getCustomBlock()));
+					sb.setTypeId(0);
+					event.setCancelled(true);
+				}
 				i.overrideBlock(sb, null, null);
 			}
 		}
