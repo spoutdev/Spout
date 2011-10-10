@@ -1077,7 +1077,7 @@ public class SimpleItemManager implements ItemManager {
 	public void onTick() {
 		for (World world : Bukkit.getServer().getWorlds()) {
 			TIntPairObjectHashMap<BlockOverrides> chunkOverrides = queuedChunkBlockOverrides.get(world);
-			if (chunkOverrides.size() > 0 && world.getPlayers().size() > 0) {
+			if (chunkOverrides != null && chunkOverrides.size() > 0 && world.getPlayers().size() > 0) {
 				//long time = System.nanoTime();
 				for (BlockOverrides override : chunkOverrides.valueCollection()){
 					override.sendPacket();
