@@ -228,4 +228,9 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	public boolean equals(Object other) {
 		return other == this;
 	}
+
+	@Override
+	public void setCustomBlock(CustomBlock block) {
+		SpoutManager.getItemManager().overrideBlock(this, block);
+	}
 }
