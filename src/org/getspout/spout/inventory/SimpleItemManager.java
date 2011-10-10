@@ -20,18 +20,21 @@ import gnu.trove.iterator.TIntByteIterator;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TLongFloatIterator;
 import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntByteHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -58,6 +61,7 @@ import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
 import org.getspout.spoutapi.packet.PacketCustomItem;
+import org.getspout.spoutapi.packet.PacketCustomMultiBlockOverride;
 import org.getspout.spoutapi.packet.PacketItemName;
 import org.getspout.spoutapi.packet.PacketItemTexture;
 import org.getspout.spoutapi.packet.SpoutPacket;
@@ -84,6 +88,8 @@ public class SimpleItemManager implements ItemManager {
 	private final TIntPairObjectHashMap<ItemStack> customDrops = new TIntPairObjectHashMap<ItemStack>(100);
 
 	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
+	
+	private final HashMap<World, TIntPairObjectHashMap<BlockOverrides>> queuedChunkBlockOverrides = new HashMap<World, TIntPairObjectHashMap<BlockOverrides>>(10);
 	
 	private Set<org.getspout.spoutapi.material.Block> cachedBlockData = null;
 	
@@ -646,9 +652,7 @@ public class SimpleItemManager implements ItemManager {
 			scb.setCustomMetaData(metaData);
 		}
 
-		Player[] players = block.getWorld().getPlayers().toArray(new Player[0]);
-
-		sendBlockOverrideToPlayers(players, block, blockId, metaData);
+		queueBlockOverrides(scb, blockId, metaData);
 
 		return true;
 	}
@@ -667,9 +671,7 @@ public class SimpleItemManager implements ItemManager {
 		SpoutManager.getChunkDataManager().setBlockData(blockIdString, world, x, y, z, blockId);
 		SpoutManager.getChunkDataManager().setBlockData(metaDataString, world, x, y, z, metaData);
 
-		Player[] players = world.getPlayers().toArray(new Player[0]);
-
-		sendBlockOverrideToPlayers(players, new BlockVector(x, y, z), blockId, metaData);
+		queueBlockOverrides(getSpoutCraftBlock(world.getBlockAt(x, y, z)), blockId, metaData);
 
 		return true;
 	}
@@ -737,15 +739,32 @@ public class SimpleItemManager implements ItemManager {
 			Integer metaData = scb.getCustomMetaData();
 
 			if (blockId != null && metaData != null) {
-				sendBlockOverrideToPlayers(players, block, blockId, metaData);
+				queueBlockOverrides(scb, blockId, metaData);
 			}
 		}
 
 		return success;
 
 	}
+	
+	public void queueBlockOverrides(SpoutCraftBlock scb, Integer blockId, Integer metaData) {
+		if (scb != null) {
+			Chunk chunk = scb.getChunk();
+			TIntPairObjectHashMap<BlockOverrides> chunkOverrides = queuedChunkBlockOverrides.get(chunk.getWorld());
+			if (chunkOverrides == null) {
+				chunkOverrides = new TIntPairObjectHashMap<BlockOverrides>(100);
+				queuedChunkBlockOverrides.put(chunk.getWorld(), chunkOverrides);
+			}
+			BlockOverrides overrides = chunkOverrides.get(chunk.getX(), chunk.getZ());
+			if (overrides == null) {
+				overrides = new BlockOverrides();
+				chunkOverrides.put(scb.getChunk().getX(), scb.getChunk().getZ(), overrides);
+			}
+			overrides.putOverride(scb, blockId != null ? blockId.intValue() : -1, metaData != null ? metaData.intValue() : 0);
+		}
+	}
 
-	public void sendBlockOverrideToPlayers(Player[] players, Block block, Integer blockId, Integer metaData) {
+/*	public void sendBlockOverrideToPlayers(Player[] players, Block block, Integer blockId, Integer metaData) {
 		Location blockLocation = block.getLocation();
 		BlockVector blockVector = new BlockVector(blockLocation.getBlockX(), blockLocation.getBlockY(), blockLocation.getBlockZ());
 		sendBlockOverrideToPlayers(players, blockVector, blockId, metaData);
@@ -763,7 +782,7 @@ public class SimpleItemManager implements ItemManager {
 				}
 			}
 		}
-	}
+	}*/
 
 	public void setCustomBlockDesign(int blockId, short metaData, BlockDesign design) {
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
@@ -1053,5 +1072,59 @@ public class SimpleItemManager implements ItemManager {
 	@Override
 	public ItemStack getItemDrop(CustomBlock block) {
 		return customDrops.get(block.getCustomId(), block.getCustomMetaData());
+	}
+	
+	public void onTick() {
+		for (World world : Bukkit.getServer().getWorlds()) {
+			TIntPairObjectHashMap<BlockOverrides> chunkOverrides = queuedChunkBlockOverrides.get(world);
+			if (chunkOverrides.size() > 0 && world.getPlayers().size() > 0) {
+				//long time = System.nanoTime();
+				for (BlockOverrides override : chunkOverrides.valueCollection()){
+					override.sendPacket();
+				}
+				chunkOverrides.clear();
+				//System.out.println("Sending block overrides took " + (System.nanoTime() - time) * 1E-6D + " ms");
+			}
+		}
+	}
+	
+	private class BlockOverrides {
+		private List<Block> locations = new ArrayList<Block>();
+		private TIntArrayList typeIds = new TIntArrayList();
+		private TIntArrayList metadata = new TIntArrayList(); 
+		protected void putOverride(Block block, int id, int data) {
+			locations.add(block);
+			typeIds.add(id);
+			metadata.add(data);
+		}
+		
+		protected void sendPacket() {
+			List<Player> players = locations.get(0).getWorld().getPlayers();
+			if (locations.size() > 6) {
+				SpoutPacket packet = new PacketCustomMultiBlockOverride(locations, typeIds, metadata);
+				for (Player player : players) {
+					if (player instanceof SpoutCraftPlayer) {
+						SpoutCraftPlayer spc = (SpoutCraftPlayer)player;
+						if (spc.isSpoutCraftEnabled()) {
+							spc.sendPacket(packet);
+						}
+					}
+				}
+			}
+			else {
+				for (int i = 0; i < locations.size(); i++) {
+					Block block = locations.get(i);
+					SpoutPacket packet = new PacketCustomBlockOverride(block.getX(), block.getY(), block.getZ(), typeIds.get(i), metadata.get(i));
+					for (Player player : players) {
+						if (player instanceof SpoutCraftPlayer) {
+							SpoutCraftPlayer spc = (SpoutCraftPlayer)player;
+							if (spc.isSpoutCraftEnabled()) {
+								spc.sendPacket(packet);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

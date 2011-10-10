@@ -67,14 +67,14 @@ import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
-	private final SpoutWorldListener chunkListener;
-	private final SpoutWorldMonitorListener chunkMonitorListener;
-	private final SpoutBlockListener blockListener;
-	private final SpoutEntityListener entityListener;
-	private final PluginListener pluginListener;
-	private static Spout instance;
-	private Configuration CRCConfig;
-	private Configuration itemMapConfig;
+	protected final SpoutWorldListener chunkListener;
+	protected final SpoutWorldMonitorListener chunkMonitorListener;
+	protected final SpoutBlockListener blockListener;
+	protected final SpoutEntityListener entityListener;
+	protected final PluginListener pluginListener;
+	protected static Spout instance;
+	protected Configuration CRCConfig;
+	protected Configuration itemMapConfig;
 	
 	public Spout() {
 		super();
