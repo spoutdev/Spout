@@ -39,7 +39,9 @@ public class SimpleRegionFile {
 	private final int rz;
 	private final int defaultSegmentSize;
 	private final File parent;
+	@SuppressWarnings("unused")
 	private long lastAccessTime = System.currentTimeMillis();
+	@SuppressWarnings("unused")
 	private static long TIMEOUT_TIME = 300000; //5 min
 	
 	public SimpleRegionFile(File f, int rx, int rz) {

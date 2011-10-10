@@ -44,6 +44,7 @@ import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
 import org.getspout.spout.item.mcitem.CustomItemSpade;
 import org.getspout.spout.keyboard.SimpleKeyBindingManager;
@@ -86,7 +87,6 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setKeyboardManager(new SimpleKeyboardManager());
 		SpoutManager.getInstance().setAppearanceManager(new SimpleAppearanceManager());
 		SpoutManager.getInstance().setSoundManager(new SimpleSoundManager());
-		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		SpoutManager.getInstance().setSkyManager(new SimpleSkyManager());
 		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
 		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
@@ -96,6 +96,8 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
 		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
 		SpoutManager.getInstance().setKeyBindingManager(new SimpleKeyBindingManager());
+		SpoutManager.getInstance().setMaterialManager(new SimpleMaterialManager());
+		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		blockListener = new SpoutBlockListener();
 	}
 	@Override
@@ -103,7 +105,7 @@ public class Spout extends JavaPlugin{
 		//order matters
 		CustomBlock.resetBlocks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
-		((SimpleItemManager)SpoutManager.getItemManager()).reset();
+		((SimpleMaterialManager)SpoutManager.getMaterialManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginDisable();
 		Player[] online = getServer().getOnlinePlayers();
@@ -183,7 +185,6 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
@@ -242,7 +243,7 @@ public class Spout extends JavaPlugin{
 		
 		UniqueItemStringMap.setConfigFile(itemMapConfig);
 		
-		SimpleItemManager.disableStoneStackMix();
+		SimpleMaterialManager.disableFlintStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}

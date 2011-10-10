@@ -35,7 +35,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.chunkcache.ChunkCache;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
@@ -81,8 +81,8 @@ public class SpoutPlayerListener extends PlayerListener{
 						scp.updateMovement();
 						long newSeed = event.getTo().getWorld().getSeed();
 						scp.sendPacket(new PacketWorldSeed(newSeed));
-						SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
-						im.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
+						SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+						mm.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
 					}
 				}
 			};
@@ -136,16 +136,16 @@ public class SpoutPlayerListener extends PlayerListener{
 				
 				if(item.getType() == Material.FLINT && damage != 0) {
 					
-					SimpleItemManager im = (SimpleItemManager) SpoutManager.getItemManager();
+					SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 
-					int newBlockId = im.getItemBlock(damage);
-					short newMetaData = im.getItemMetaData(damage);
+					int newBlockId = mm.getItemBlock(damage);
+					short newMetaData = (short) mm.getItemMetaData(damage);
 					
 					if (newBlockId != 0 ) {
 						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
 						CustomBlock cb = MaterialData.getCustomBlock(damage);
 						block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
-						im.overrideBlock(block, cb);
+						mm.overrideBlock(block, cb);
 						
 						if(item.getAmount() == 1) {
 							event.getPlayer().setItemInHand(null);

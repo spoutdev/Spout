@@ -24,7 +24,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.inventory.ItemStack;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
@@ -133,7 +133,7 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 
 	@Override
 	public String getName() {
-		return SpoutManager.getItemManager().getItemName(getType(), getData());
+		return MaterialData.getMaterial(getTypeId(), getData()).getName();
 	}
 
 	@Override
@@ -193,24 +193,24 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	}
 
 	public Integer getCustomBlockId() {
-		return (Integer) getData(SimpleItemManager.blockIdString);
+		return (Integer) getData(SimpleMaterialManager.blockIdString);
 	}
 
 	public Integer getCustomMetaData() {
-		return (Integer) getData(SimpleItemManager.metaDataString);
+		return (Integer) getData(SimpleMaterialManager.metaDataString);
 	}
 
 	public void setCustomBlockId(int blockId) {
-		setData(SimpleItemManager.blockIdString, blockId);
+		setData(SimpleMaterialManager.blockIdString, blockId);
 	}
 
 	public void setCustomMetaData(int metaData) {
-		setData(SimpleItemManager.metaDataString, metaData);
+		setData(SimpleMaterialManager.metaDataString, metaData);
 	}
 
 	public void removeCustomBlockData() {
-		removeData(SimpleItemManager.blockIdString);
-		removeData(SimpleItemManager.metaDataString);
+		removeData(SimpleMaterialManager.blockIdString);
+		removeData(SimpleMaterialManager.metaDataString);
 	}
 
 	public boolean isCustomBlock() {
@@ -231,6 +231,6 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 
 	@Override
 	public void setCustomBlock(CustomBlock block) {
-		SpoutManager.getItemManager().overrideBlock(this, block);
+		SpoutManager.getMaterialManager().overrideBlock(this, block);
 	}
 }

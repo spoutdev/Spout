@@ -26,7 +26,7 @@ import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spoutapi.SpoutManager;
 
 public class SpoutWorldListener extends WorldListener{
@@ -45,9 +45,9 @@ public class SpoutWorldListener extends WorldListener{
 			
 			SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 			dm.loadChunk(event.getChunk());
-			SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
+			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 			List<Player> players = event.getChunk().getWorld().getPlayers();
-			im.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
+			mm.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
 		}
 	}
 
@@ -55,7 +55,7 @@ public class SpoutWorldListener extends WorldListener{
 	public void onWorldLoad(WorldLoadEvent event) {
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadWorldChunks(event.getWorld());
-		SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
-		im.sendBlockOverrideToPlayers(event.getWorld().getPlayers().toArray(new Player[0]), event.getWorld());
+		SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+		mm.sendBlockOverrideToPlayers(event.getWorld().getPlayers().toArray(new Player[0]), event.getWorld());
 	}
 }
