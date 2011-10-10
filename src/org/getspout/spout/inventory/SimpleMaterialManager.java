@@ -417,6 +417,10 @@ public class SimpleMaterialManager implements MaterialManager {
 	public void setCustomBlockDesign(Material material, BlockDesign design) {
 		int blockId = material.getRawId();
 		int metaData = material.getRawData();
+		if(material instanceof CustomBlock) {
+			blockId = ((CustomBlock) material).getCustomId();
+			metaData = ((CustomBlock) material).getCustomMetaData();
+		}
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 
 		if (design != null) {
