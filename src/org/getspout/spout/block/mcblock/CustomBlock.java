@@ -43,10 +43,14 @@ import net.minecraft.server.World;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.material.MaterialData;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class CustomBlock extends Block implements CustomMCBlock{
 	protected Block parent;
@@ -68,6 +72,16 @@ public class CustomBlock extends Block implements CustomMCBlock{
 		this.bM = parent.bM;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
+	}
+	
+	private org.getspout.spoutapi.material.CustomBlock getCustomBlock(World world, int x, int y, int z) {
+		if (this.id == MaterialData.stone.getRawId() || this.id == MaterialData.glass.getRawId()) {
+			Object o = SpoutManager.getChunkDataManager().getBlockData(SimpleMaterialManager.blockIdString, world.getWorld(), x, y, z);
+			if (o != null && o instanceof Integer) {
+				return MaterialData.getCustomBlock(((Integer)o).intValue());
+			}
+		}
+		return null;
 	}
 	
 	public Block getParent() {
@@ -183,7 +197,15 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public void doPhysics(World world, int i, int j, int k, int l) {
-		parent.doPhysics(world, i, j, k, l);
+		boolean handled = false;
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			block.onNeighborBlockChange(world.getWorld(), i, j, k, l);
+			handled = true;
+		}
+		if (!handled) {
+			parent.doPhysics(world, i, j, k, l);
+		}
 	}
 	
 	@Override
@@ -193,12 +215,28 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public void a(World world, int i, int j, int k) {
-		parent.a(world, i, j, k);
+		boolean handled = false;
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			block.onBlockPlace(world.getWorld(), i, j, k);
+			handled = true;
+		}
+		if (!handled) {
+			parent.a(world, i, j, k);
+		}
 	}
 	
 	@Override
 	public void remove(World world, int i, int j, int k) {
-		parent.remove(world, i, j, k);
+		boolean handled = false;
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			block.onBlockDestroyed(world.getWorld(), i, j, k);
+			handled = true;
+		}
+		if (!handled) {
+			parent.remove(world, i, j, k);
+		}
 	}
 	
 	@Override
@@ -247,36 +285,74 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean canPlace(World world, int i, int j, int k, int l) {
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			return block.canPlaceBlockAt(world.getWorld(), i, j, k, CraftBlock.notchToBlockFace(l));
+		}
 		return parent.canPlace(world, i, j, k, l);
 	}
 	
 	@Override
 	public boolean canPlace(World world, int i, int j, int k) {
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			return block.canPlaceBlockAt(world.getWorld(), i, j, k);
+		}
 		return parent.canPlace(world, i, j, k);
 	}
 	
 	@Override
 	public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman) {
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null && entityhuman instanceof EntityPlayer) {
+			return block.onBlockInteract(world.getWorld(), i, j, k, ((SpoutPlayer)entityhuman.getBukkitEntity()));
+		}
 		return parent.interact(world, i, j, k, entityhuman);
 	}
 	
 	@Override
 	public void b(World world, int i, int j, int k, Entity entity) {
-		parent.b(world, i, j, k, entity);
+		boolean handled = false;
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			block.onEntityMoveAt(world.getWorld(), i, j, k, entity.getBukkitEntity());
+			handled = true;
+		}
+		if (!handled) {
+			parent.b(world, i, j, k, entity);
+		}
 	}
 	
 	@Override
 	public void postPlace(World world, int i, int j, int k, int l) {
-		parent.postPlace(world, i, j, k, l);
+		boolean handled = false;
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			block.onBlockPlace(world.getWorld(), i, j, k);
+			handled = true;
+		}
+		if (!handled) {
+			parent.postPlace(world, i, j, k, l);
+		}
 	}
 	
 	@Override
 	public void b(World world, int i, int j, int k, EntityHuman entityhuman) {
+		boolean handled = false;
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			block.onBlockClicked(world.getWorld(), i, j, k, (SpoutPlayer)entityhuman.getBukkitEntity());
+			handled = true;
+		}
+		
 		if (entityhuman instanceof EntityPlayer) {
 			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
 			player.setLastClickedLocation(new Location(player.getWorld(), i, j, k));
 		}
-		parent.b(world, i, j, k, entityhuman);
+		
+		if (!handled) {
+			parent.b(world, i, j, k, entityhuman);
+		}	
 	}
 	
 	@Override
@@ -315,6 +391,12 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				}
 			}
 		}
+		if (iblockaccess instanceof World) {
+			org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
+			if (block != null) {
+				return block.isProvidingPowerTo(((World)iblockaccess).getWorld(), x, y, z, CraftBlock.notchToBlockFace(face));
+			}
+		}
 		return parent.a(iblockaccess, x, y, z, face);
 	}
 	
@@ -330,6 +412,10 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean d(World world, int i, int j, int k, int l) {
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		if (block != null) {
+			return block.isProvidingPowerTo(world.getWorld(), i, j, k, CraftBlock.notchToBlockFace(l));
+		}
 		return parent.d(world, i, j, k, l);
 	}
 	
