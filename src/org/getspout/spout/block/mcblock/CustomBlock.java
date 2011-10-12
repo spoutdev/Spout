@@ -123,12 +123,12 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float j() {
-		return parent.j();
+		return super.j(); //use super because it may be modified
 	}
 	
 	@Override
 	public Block c(float f) {
-		return super.c(f);
+		return super.c(f); 
 	}
 	
 	@Override
@@ -170,6 +170,11 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public boolean a() {
 		if (parent != null) {
+			//Spout
+			if (this.id == MaterialData.glass.getRawId()){
+				return true;
+			}
+			//Spout end
 			return parent.a();
 		}
 		return super.a();
@@ -265,7 +270,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				}
 			}
 		}
-		return parent.getDamage(entityhuman);
+		return super.getDamage(entityhuman); //could have modified hardness, return super
 	}
 	
 	@Override
