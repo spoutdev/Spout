@@ -32,6 +32,7 @@ public final class MapChunkThread implements Runnable {
 	private static MCCraftPacket51MapChunkUncompressed MCPacket = new MCCraftPacket51MapChunkUncompressed();
 
 	public static void startThread() {
+		
 		if (!runs) {
 			runs = true;
 			thread = new Thread(instance);

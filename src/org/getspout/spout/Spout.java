@@ -163,6 +163,7 @@ public class Spout extends JavaPlugin{
 		//end the thread
 		MapChunkThread.endThread();
 		PacketCompressionThread.endThread();
+		ChunkCompressionThread.endThread();
 	}
 
 	@Override
@@ -220,6 +221,7 @@ public class Spout extends JavaPlugin{
 		CustomItemSpade.replaceSpades();
 		CustomBlock.replaceBlocks();
 		
+		ChunkCompressionThread.startThread();
 		MapChunkThread.startThread(); // Always on
 		PacketCompressionThread.startThread();
 		
