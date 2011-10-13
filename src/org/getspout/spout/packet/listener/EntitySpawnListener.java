@@ -7,8 +7,10 @@ import net.minecraft.server.Packet24MobSpawn;
 import net.minecraft.server.Packet25EntityPainting;
 import net.minecraft.server.Packet30Entity;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.getspout.spout.Spout;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketUniqueId;
@@ -45,14 +47,32 @@ public class EntitySpawnListener implements PacketListener{
 					entityId = ((Packet25EntityPainting)raw).a;
 				}
 				if (entityId != -1) {
-					Entity e = SpoutManager.getEntityFromId(entityId);
-					if (e != null) {
-						player.sendPacket(new PacketUniqueId(e.getUniqueId(), entityId));
-					}
+					//TODO there must be a better way to do this...
+					UpdateUniqueId update = new UpdateUniqueId(player, entityId);
+					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update);
 				}
 			}
 		}
 		return true;
+	}
+	
+	private class UpdateUniqueId implements Runnable {
+		private SpoutPlayer player;
+		private int entityId;
+		
+		private UpdateUniqueId(SpoutPlayer player, int id) {
+			this.player = player;
+			this.entityId = id;
+		}
+
+		@Override
+		public void run() {
+			Entity e = SpoutManager.getEntityFromId(entityId);
+			if (e != null) {
+				player.sendPacket(new PacketUniqueId(e.getUniqueId(), entityId));
+			}
+		}
+		
 	}
 
 }
