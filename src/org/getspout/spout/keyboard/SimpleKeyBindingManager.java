@@ -17,12 +17,10 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 public class SimpleKeyBindingManager implements KeyBindingManager {
 	private HashMap<UUID, KeyBinding> bindings = new HashMap<UUID, KeyBinding>();
 	@Override
-	public void registerBinding(String id, Keyboard defaultKey, String description, BindingExecutionDelegate callback, Plugin plugin) throws Exception {
-		
-		System.out.println("Plugin ["+plugin.getDescription().getName()+"] registered key ["+defaultKey+"]!");
-		
+	public void registerBinding(String id, Keyboard defaultKey, String description, BindingExecutionDelegate callback, Plugin plugin) throws IllegalArgumentException {
+				
 		if(searchBinding(id, plugin) != null){
-			throw new Exception("This binding is already registered: "+id+" for plugin ["+plugin.getDescription().getName()+"]");
+			throw new IllegalArgumentException("This binding is already registered: "+id+" for plugin ["+plugin.getDescription().getName()+"]");
 		}
 		KeyBinding binding = new KeyBinding(id, defaultKey, description, plugin, callback);
 		bindings.put(binding.getUniqueId(), binding);
