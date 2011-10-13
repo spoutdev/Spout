@@ -28,7 +28,15 @@ public class ConfigReader {
 	private static boolean autoUpdate = false;
 	private static int authTicks = 200;
 	private static String kickMessage = "This server requires Spoutcraft! http://bit.ly/unleashtheflow";
+        
 	private static boolean allowVisualCheats = false;
+        private static boolean allowSkyCheat = false;
+        private static boolean allowClearWaterCheat = false;
+        private static boolean allowCloudHeightCheat = false;
+        private static boolean allowStarsCheat = false;
+        private static boolean allowWeatherCheat = false;
+        private static boolean allowTimeCheat = false;
+        
 	private static boolean chunkDataCache = true;
 	private static boolean teleportSmoothing = true;
 	private static boolean authenticateSpoutcraft = true;
@@ -86,7 +94,49 @@ public class ConfigReader {
 			else {
 				configuration.setProperty("AllowVisualCheats", false);
 			}
+                        
+			if (configuration.getProperty("AllowSkyCheat") != null) {
+				allowSkyCheat = configuration.getBoolean("AllowSkyCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowSkyCheat", false);
+			}
+                        
+			if (configuration.getProperty("AllowClearWaterCheat") != null) {
+				allowClearWaterCheat = configuration.getBoolean("AllowClearWaterCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowClearWaterCheat", false);
+			}
+                        
+			if (configuration.getProperty("AllowCloudHeightCheat") != null) {
+				allowCloudHeightCheat = configuration.getBoolean("AllowCloudHeightCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowCloudHeightCheat", false);
+			}                        
 			
+			if (configuration.getProperty("AllowStarsCheat") != null) {
+				allowStarsCheat = configuration.getBoolean("AllowStarsCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowStarsCheat", false);
+			}
+                        
+			if (configuration.getProperty("AllowWeatherCheat") != null) {
+				allowWeatherCheat = configuration.getBoolean("AllowWeatherCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowWeatherCheat", false);
+			}
+                        
+			if (configuration.getProperty("AllowTimeCheat") != null) {
+				allowTimeCheat = configuration.getBoolean("AllowTimeCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowTimeCheat", false);
+			}                        
+                        
 			if (configuration.getProperty("ChunkDataCache") != null) {
 				chunkDataCache = configuration.getBoolean("ChunkDataCache", true);
 			} else {
@@ -131,7 +181,31 @@ public class ConfigReader {
 	public static boolean isAllowVisualCheats() {
 		return allowVisualCheats;
 	}
+        
+        public static boolean isAllowSkyCheat() {
+                return allowSkyCheat;
+        }
+        
+        public static boolean isAllowClearWaterCheat() {
+                return allowClearWaterCheat;
+        }
+        
+        public static boolean isAllowCloudHeightCheat() {
+                return allowCloudHeightCheat;
+        }
 	
+        public static boolean isAllowStarsCheat() {
+                return allowStarsCheat;
+        }
+        
+        public static boolean isAllowWeatherCheat() {
+                return allowWeatherCheat;
+        }
+        
+        public static boolean isAllowTimeCheat() {
+                return allowTimeCheat;
+        }
+        
 	public static boolean isChunkDataCache() {
 		return chunkDataCache;
 	}
