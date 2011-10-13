@@ -62,7 +62,6 @@ import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spout.sound.SimpleSoundManager;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.io.CRCStore;
-import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
@@ -249,11 +248,6 @@ public class Spout extends JavaPlugin{
 		SimpleMaterialManager.disableFlintStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
-		
-		float blockDirt = MaterialData.getBlock(2).getHardness();
-		MaterialData.getBlock(24).setHardness(blockDirt);
-		MaterialData.getBlock(MaterialData.ironBlock.getRawId()).setHardness(blockDirt);
-		MaterialData.stone.setHardness(MaterialData.glass.getHardness());
 	}
 
 	/**

@@ -16,7 +16,6 @@
  */
 package org.getspout.spout.block.mcblock;
 
-import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.lang.reflect.Field;
@@ -37,6 +36,7 @@ import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IBlockAccess;
+import net.minecraft.server.Material;
 import net.minecraft.server.MovingObjectPosition;
 import net.minecraft.server.Vec3D;
 import net.minecraft.server.World;
@@ -89,7 +89,8 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	}
 	
 	public void setHardness(float hardness) {
-		c(hardness);
+		this.strength = hardness;
+		updateField(this, parent, "strength");
 	}
 			
 	protected static int getIndex(int x, int y, int z) {
@@ -123,7 +124,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float j() {
-		return super.j(); //use super because it may be modified
+		return parent.j();
 	}
 	
 	@Override
@@ -169,12 +170,12 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean a() {
+		//Spout
+		if (this.id == Block.GLASS.id){
+			return true;
+		}
+		//Spout end
 		if (parent != null) {
-			//Spout
-			if (this.id == MaterialData.glass.getRawId()){
-				return true;
-			}
-			//Spout end
 			return parent.a();
 		}
 		return super.a();
@@ -256,21 +257,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
-		if (entityhuman instanceof EntityPlayer) {
-			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
-			Location target = player.getRawLastClickedLocation();
-			if (target != null) {
-				int index = CustomBlock.getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
-				Chunk chunk = target.getWorld().getChunkAt(target);
-				if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
-					TIntFloatHashMap hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
-					if (hardnessOverrides.containsKey(index)) {
-						return hardnessOverrides.get(index);
-					}
-				}
-			}
-		}
-		return super.getDamage(entityhuman); //could have modified hardness, return super
+		return parent.getDamage(entityhuman); //could have modified hardness, return super
 	}
 	
 	@Override
@@ -491,6 +478,16 @@ public class CustomBlock extends Block implements CustomMCBlock{
 
 			}
 		}
+		
+		//Allow placement of blocks on glass
+		try {
+			Field field = Material.SHATTERABLE.getClass().getDeclaredField("G");
+			field.setAccessible(true);
+			field.setBoolean(Material.SHATTERABLE, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Block.q[Block.GLASS.id] = 0;
 	}
 	
 	public static void resetBlocks() {

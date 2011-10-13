@@ -16,7 +16,6 @@
  */
 package org.getspout.spout.block;
 
-import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.io.Serializable;
@@ -50,7 +49,6 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected static final Set<SpoutCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<SpoutCraftChunk, Boolean>());
 	
 	public final TIntIntHashMap powerOverrides = new TIntIntHashMap();
-	public final TIntFloatHashMap hardnessOverrides = new TIntFloatHashMap();
 	
 	public final Map<Integer, Block> blockCache = new MapMaker().weakValues().makeMap();
 	
