@@ -16,8 +16,7 @@
  */
 package org.getspout.spout.block;
 
-import gnu.trove.TIntFloatHashMap;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -42,13 +41,16 @@ import org.bukkit.util.BlockVector;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutChunk;
 
+import com.google.common.collect.MapMaker;
+
 public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	protected final ConcurrentHashMap<Integer, Integer> queuedId = new ConcurrentHashMap<Integer, Integer>();
 	protected final ConcurrentHashMap<Integer, Byte> queuedData = new ConcurrentHashMap<Integer, Byte>();
 	protected static final Set<SpoutCraftChunk> queuedChunks = Collections.newSetFromMap(new ConcurrentHashMap<SpoutCraftChunk, Boolean>());
 	
 	public final TIntIntHashMap powerOverrides = new TIntIntHashMap();
-	public final TIntFloatHashMap hardnessOverrides = new TIntFloatHashMap();
+	
+	public final Map<Integer, Block> blockCache = new MapMaker().weakValues().makeMap();
 	
 	protected Field cache;
 
@@ -60,13 +62,16 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		}
 		catch (Exception e) {
 			cache = null;
-			e.printStackTrace();
+			//cache is not present in newer builds
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Block> getCache() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		return (Map<Integer, Block>) cache.get(this);
+		if (cache != null) {
+			return (Map<Integer, Block>) cache.get(this);
+		}
+		return blockCache;
 	}
 
 	@Override
@@ -208,22 +213,24 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 
 	public static boolean replaceBukkitChunk(org.bukkit.Chunk chunk) {
 		CraftChunk handle = (CraftChunk) ((CraftChunk) chunk).getHandle().bukkitChunk;
-		boolean replace = false;
-		if (handle.getX() != chunk.getX()) {
-			replace = true;
-		}
-		if (handle.getZ() != chunk.getZ()) {
-			replace = true;
-		}
-		if (handle.getClass().hashCode() != SpoutCraftChunk.class.hashCode()) {
-			replace = true;
-		}
-		org.bukkit.Chunk loopbackChunk = ((CraftChunk)chunk).getHandle().bukkitChunk;
-		if (loopbackChunk != chunk) {
-		    replace = true;
-		}
-		if (replace) {
-			((CraftChunk) chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk) chunk).getHandle());
+		if (handle != null) {
+			boolean replace = false;
+			if (handle.getX() != chunk.getX()) {
+				replace = true;
+			}
+			if (handle.getZ() != chunk.getZ()) {
+				replace = true;
+			}
+			if (handle.getClass().hashCode() != SpoutCraftChunk.class.hashCode()) {
+				replace = true;
+			}
+			org.bukkit.Chunk loopbackChunk = ((CraftChunk)chunk).getHandle().bukkitChunk;
+			if (loopbackChunk != chunk) {
+			    replace = true;
+			}
+			if (replace) {
+				((CraftChunk) chunk).getHandle().bukkitChunk = new SpoutCraftChunk(((CraftChunk) chunk).getHandle());
+			}
 			return true;
 		}
 		return false;

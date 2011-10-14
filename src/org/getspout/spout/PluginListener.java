@@ -24,6 +24,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class PluginListener extends ServerListener{
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onPluginDisable(PluginDisableEvent event) {
 		SpoutManager.getKeyboardManager().removeAllKeyBindings(event.getPlugin());

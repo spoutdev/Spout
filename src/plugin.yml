@@ -9,8 +9,8 @@ load: startup
 
 commands:
   spout:
-    aliases: [sp, spver]
-    description: Spout commands. Currently only for checking the versions.
+    aliases: [spoutcommand]
+    description: Spout commands
     usage: |
-      Usage: /<command> version
-      Usage: /<command> version playername
+      Usage: /<command> version [player]
+      Usage: /<command> verify [motd]

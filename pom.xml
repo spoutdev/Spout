@@ -54,6 +54,10 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
+         <repository>
+            <id>craftfire-dbrepo</id>
+            <url>http://dbrepo.craftfire.com/repo</url>
+        </repository>
         <repository>
             <id>nuxeo-repo</id>
             <name>Maven Nuxeo Repository</name>
@@ -87,7 +91,7 @@
         <dependency>
             <groupId>trove</groupId>
             <artifactId>trove</artifactId>
-            <version>2.1.1</version>
+            <version>3.0.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.getspout.spout.config.ConfigReader;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.keyboard.SimpleKeyBindingManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.player.SimpleAppearanceManager;
@@ -33,6 +33,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
+import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.player.PlayerInformation;
@@ -74,7 +75,7 @@ public class PlayerManager {
 	public void onSpoutcraftEnable(SpoutPlayer player) {
 		timer.remove(player.getName());
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
-		((SimpleItemManager)SpoutManager.getItemManager()).onPlayerJoin(player);
+		((SimpleMaterialManager)SpoutManager.getMaterialManager()).onPlayerJoin(player);
 		((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
@@ -83,7 +84,8 @@ public class PlayerManager {
 		player.sendPacket(new PacketUniqueId(player.getUniqueId(), player.getEntityId()));
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
-		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));		
+		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));	
+		player.sendPacket(new PacketBlockData(SpoutManager.getMaterialManager().getModifiedBlocks()));
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}
 

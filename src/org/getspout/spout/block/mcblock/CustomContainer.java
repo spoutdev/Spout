@@ -16,8 +16,7 @@
  */
 package org.getspout.spout.block.mcblock;
 
-import gnu.trove.TIntFloatHashMap;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -73,7 +72,8 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	}
 	
 	public void setHardness(float hardness) {
-		c(hardness);
+		this.strength = hardness;
+		updateField(this, parent, "strength");
 	}
 			
 	public float getExplosionResistance() {
@@ -220,21 +220,7 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
-		if (entityhuman instanceof EntityPlayer) {
-			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutManager.getPlayer((Player)((EntityPlayer)entityhuman).getBukkitEntity());
-			Location target = player.getRawLastClickedLocation();
-			if (target != null) {
-				int index = CustomBlock.getIndex((int)target.getX(), (int)target.getY(), (int)target.getZ());
-				Chunk chunk = target.getWorld().getChunkAt(target);
-				if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
-					TIntFloatHashMap hardnessOverrides = ((SpoutCraftChunk)chunk).hardnessOverrides;
-					if (hardnessOverrides.containsKey(index)) {
-						return hardnessOverrides.get(index);
-					}
-				}
-			}
-		}
-		return parent.getDamage(entityhuman);
+		return parent.getDamage(entityhuman); //could have modified hardness, return super
 	}
 	
 	@Override

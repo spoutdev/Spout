@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.util.BlockVector;
@@ -362,22 +361,12 @@ public class ChunkMetaData implements Serializable {
 		} else {
 			out.writeBoolean(true);
 		}
-
-		Set<Map.Entry<String, Serializable>> entrySet = map.entrySet();
-
-		Iterator<Map.Entry<String, Serializable>> itr = entrySet.iterator();
-
-		int length = entrySet.size();
-		out.writeInt(length);
-
-		while (itr.hasNext()) {
-			Map.Entry<String, Serializable> entry = itr.next();
-			out.writeUTF(entry.getKey());
-			Utils.safeSerialize(out, entry.getValue());
-		}
+		
+		out.writeObject(map);
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private HashMap<String, Serializable> readMap(ObjectInputStream in) throws IOException {
 
 		if (!in.readBoolean()) {
@@ -385,13 +374,12 @@ public class ChunkMetaData implements Serializable {
 		}
 
 		HashMap<String, Serializable> map = new HashMap<String, Serializable>();
-
-		int length = in.readInt();
-
-		for (int i = 0; i < length; i++) {
-			String key = in.readUTF();
-			Serializable value = Utils.safeDeserialize(in);
-			map.put(key, value);
+		
+		try {
+			map = (HashMap<String, Serializable>) in.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return map;

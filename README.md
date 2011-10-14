@@ -33,6 +33,7 @@ Coding and Pull Request Formatting
 * No 80 column limit or midstatement newlines.
 * Pull requests must compile and work.
 * Pull requests must be formatted properly.
+* If you change a Packet or Widget's read/write/number of bytes, be sure to increment the version on both the server and client.
 * When modifying Notch code (Minecraft vanilla code), include `//Spout start`and `//Spout end`
 
 Please follow the above conventions if you want your pull requests accepted.

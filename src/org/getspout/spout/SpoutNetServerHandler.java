@@ -526,6 +526,13 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		if (!PacketListeners.canSend(getPlayer(), packet, packetWrappers, packet.b())) {
 			return;
 		} else {
+			if (packet instanceof Packet51MapChunk) {
+				Packet51MapChunk chunk = (Packet51MapChunk)packet;
+				if (chunk.g == null) {
+					ChunkCompressionThread.sendPacket(player, packet);
+					return;
+				}
+			}
 			super.sendPacket(packet);
 		}
 	}

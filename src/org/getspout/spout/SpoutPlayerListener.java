@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerEvent;
@@ -32,13 +33,16 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.chunkcache.ChunkCache;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
+import org.getspout.spoutapi.material.CustomBlock;
+import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.packet.PacketUniqueId;
 import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -77,8 +81,8 @@ public class SpoutPlayerListener extends PlayerListener{
 						scp.updateMovement();
 						long newSeed = event.getTo().getWorld().getSeed();
 						scp.sendPacket(new PacketWorldSeed(newSeed));
-						SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
-						im.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
+						SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+						mm.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
 					}
 				}
 			};
@@ -124,6 +128,32 @@ public class SpoutPlayerListener extends PlayerListener{
 			Material type = event.getClickedBlock().getType();
 			if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
 				player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
+			}
+			
+			if (event.hasItem()) {
+				ItemStack item = event.getItem();
+				int damage = item.getDurability();
+				
+				if(item.getType() == Material.FLINT && damage != 0) {
+					
+					SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+
+					int newBlockId = mm.getItemBlock(damage);
+					short newMetaData = (short) mm.getItemMetaData(damage);
+					
+					if (newBlockId != 0 ) {
+						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
+						CustomBlock cb = MaterialData.getCustomBlock(damage);
+						block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
+						mm.overrideBlock(block, cb);
+						
+						if(item.getAmount() == 1) {
+							event.getPlayer().setItemInHand(null);
+						} else {
+							item.setAmount(item.getAmount() - 1);
+						}
+					}
+				}
 			}
 		}
 	}

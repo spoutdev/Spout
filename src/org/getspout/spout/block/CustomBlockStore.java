@@ -1,8 +1,9 @@
 package org.getspout.spout.block;
 
-import gnu.trove.TIntObjectHashMap;
-
 import java.io.Serializable;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 
 public class CustomBlockStore implements Serializable {
 
@@ -13,7 +14,7 @@ public class CustomBlockStore implements Serializable {
 	private final int arrayConvertThreshold = 128;
 	private final int mapConvertThreshold = 64;
 
-	private TIntObjectHashMap customBlockMap = new TIntObjectHashMap();
+	private TIntObjectHashMap<CustomMaterial> customBlockMap = new TIntObjectHashMap<CustomMaterial>();
 	private CustomMaterial[] customBlockArray = null;
 	private boolean map = true;
 	private int size = 0;
@@ -79,7 +80,7 @@ public class CustomBlockStore implements Serializable {
 
 	private void convertArrayToMap() {
 
-		customBlockMap = new TIntObjectHashMap();
+		customBlockMap = new TIntObjectHashMap<CustomMaterial>();
 
 		for (int i = 0; i < arraySize; i++) {
 			CustomMaterial material = customBlockArray[i];

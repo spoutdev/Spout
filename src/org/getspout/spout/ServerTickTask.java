@@ -22,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.ServerTickEvent;
@@ -40,6 +41,7 @@ public class ServerTickTask implements Runnable {
 			}
 		}
 		SpoutCraftChunk.updateTicks();
+		((SimpleMaterialManager)SpoutManager.getMaterialManager()).onTick();
 		ServerTickEvent event = new ServerTickEvent();
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		

@@ -26,35 +26,36 @@ import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spoutapi.SpoutManager;
 
 public class SpoutWorldListener extends WorldListener{
 	
 	@Override
 	public void onChunkLoad(ChunkLoadEvent event) {
-		SpoutCraftChunk.replaceBukkitChunk(event.getChunk());
-		//update the reference to the chunk in the event
-		try {
-			Field chunk = ChunkEvent.class.getDeclaredField("chunk");
-			chunk.setAccessible(true);
-			chunk.set(event, event.getChunk().getWorld().getChunkAt(event.getChunk().getX(), event.getChunk().getZ()));
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (SpoutCraftChunk.replaceBukkitChunk(event.getChunk())) {
+			//update the reference to the chunk in the event
+			try {
+				Field chunk = ChunkEvent.class.getDeclaredField("chunk");
+				chunk.setAccessible(true);
+				chunk.set(event, event.getChunk().getWorld().getChunkAt(event.getChunk().getX(), event.getChunk().getZ()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
+			dm.loadChunk(event.getChunk());
+			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+			List<Player> players = event.getChunk().getWorld().getPlayers();
+			mm.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
 		}
-		
-		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
-		dm.loadChunk(event.getChunk());
-		SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
-		List<Player> players = event.getChunk().getWorld().getPlayers();
-		im.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
 	}
 
 	@Override
 	public void onWorldLoad(WorldLoadEvent event) {
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 		dm.loadWorldChunks(event.getWorld());
-		SimpleItemManager im = (SimpleItemManager)SpoutManager.getItemManager();
-		im.sendBlockOverrideToPlayers(event.getWorld().getPlayers().toArray(new Player[0]), event.getWorld());
+		SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+		mm.sendBlockOverrideToPlayers(event.getWorld().getPlayers().toArray(new Player[0]), event.getWorld());
 	}
 }

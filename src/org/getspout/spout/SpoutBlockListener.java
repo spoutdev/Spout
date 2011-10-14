@@ -3,46 +3,45 @@ package org.getspout.spout;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockListener;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
-import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.block.SpoutBlock;
 
 public class SpoutBlockListener extends BlockListener {
 	
-	private final SimpleItemManager i;
+	private final SimpleMaterialManager mm;
 	
 	public SpoutBlockListener() {
-		i = (SimpleItemManager)SpoutManager.getItemManager();
+		mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 	}
-
+	
 	@Override
-	public void onBlockPlace(BlockPlaceEvent event) {
+	public void onBlockBreak(BlockBreakEvent event) {
+		super.onBlockBreak(event);
 		
 		if (event.isCancelled()) {
 			return;
 		}
 		
-		if (event.getBlockPlaced().getType() != Material.STONE) {
-			return;
+		Block block = event.getBlock();
+		if(block instanceof SpoutBlock) {
+			SpoutBlock sb = (SpoutBlock) block;
+			if (sb.getType() != Material.STONE && sb.getType() != Material.GLASS) {
+				return;
+			}
+			
+			if (sb.isCustomBlock()) {
+				if(mm.hasItemDrop(sb.getCustomBlock())) {
+					sb.getWorld().dropItem(sb.getLocation(), mm.getItemDrop(sb.getCustomBlock()));
+					sb.setTypeId(0);
+					event.setCancelled(true);
+				}
+				mm.removeBlockOverride(sb);
+			}
 		}
-		
-		ItemStack itemInHand = event.getPlayer().getItemInHand();
-
-		int damage = itemInHand.getDurability();
-		
-		int newBlockId = i.getItemBlock(damage);
-		short newMetaData = i.getItemMetaData(damage);
-		
-		if (newBlockId != 0 && newMetaData != 0) {
-			Block block = event.getBlockPlaced();
-			block.setTypeIdAndData(newBlockId, (byte)(newMetaData & 0xF), true);
-		} else if (damage >= 1024) {
-			event.setCancelled(true);
-		}
-		
 	}
 	
 	//This replaces nms functionality that is broken due to 

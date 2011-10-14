@@ -39,7 +39,9 @@ public class SimpleRegionFile {
 	private final int rz;
 	private final int defaultSegmentSize;
 	private final File parent;
+	@SuppressWarnings("unused")
 	private long lastAccessTime = System.currentTimeMillis();
+	@SuppressWarnings("unused")
 	private static long TIMEOUT_TIME = 300000; //5 min
 	
 	public SimpleRegionFile(File f, int rx, int rz) {
@@ -51,7 +53,53 @@ public class SimpleRegionFile {
 		this.rz = rz;
 		this.defaultSegmentSize = defaultSegmentSize;
 		this.parent = f;
-		getFile();
+		
+		lastAccessTime = System.currentTimeMillis();
+		if (file == null) {
+			try {
+				this.file = new RandomAccessFile(parent, "rw");
+				
+				if (file.length() < 4096*3) {
+					
+					for (int i = 0; i < 1024*3; i++) {
+						file.writeInt(0);
+					}
+					file.seek(4096 * 2);
+					file.writeInt(defaultSegmentSize);
+				}
+	
+				file.seek(4096 * 2);
+	
+				this.segmentSize = file.readInt();
+				this.segmentMask = (1 << segmentSize) - 1;
+				
+				int reservedSegments = this.sizeToSegments(4096 * 3);
+				
+				for (int i = 0; i < reservedSegments; i++) {
+					while (inuse.size() <= i) {
+						inuse.add(false);
+					}
+					inuse.set(i, true);
+				}
+				
+				file.seek(0);
+				
+				for (int i = 0; i < 1024; i++) {
+					dataStart[i] = file.readInt();
+				}
+				
+				for (int i = 0; i < 1024; i++) {
+					dataActualLength[i] = file.readInt();
+					dataLength[i] = sizeToSegments(dataActualLength[i]);
+					setInUse(i, true);
+				}
+				
+				extendFile();
+				
+			} catch (IOException fnfe) {
+				throw new RuntimeException(fnfe);
+			} 
+		}
 	}
 	
 	public final RandomAccessFile getFile() {
@@ -105,10 +153,10 @@ public class SimpleRegionFile {
 	}
 	
 	public boolean testCloseTimeout() {
-		if (System.currentTimeMillis() - TIMEOUT_TIME > lastAccessTime) {
-			close();
-			return true;
-		}
+//		if (System.currentTimeMillis() - TIMEOUT_TIME > lastAccessTime) {
+//			close();
+//			return true;
+//		}
 		return false;
 	}
 	

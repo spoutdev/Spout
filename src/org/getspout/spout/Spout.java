@@ -44,6 +44,7 @@ import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleItemManager;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
 import org.getspout.spout.item.mcitem.CustomItemSpade;
 import org.getspout.spout.keyboard.SimpleKeyBindingManager;
@@ -67,14 +68,14 @@ import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
-	private final SpoutWorldListener chunkListener;
-	private final SpoutWorldMonitorListener chunkMonitorListener;
-	private final SpoutBlockListener blockListener;
-	private final SpoutEntityListener entityListener;
-	private final PluginListener pluginListener;
-	private static Spout instance;
-	private Configuration CRCConfig;
-	private Configuration itemMapConfig;
+	protected final SpoutWorldListener chunkListener;
+	protected final SpoutWorldMonitorListener chunkMonitorListener;
+	protected final SpoutBlockListener blockListener;
+	protected final SpoutEntityListener entityListener;
+	protected final PluginListener pluginListener;
+	protected static Spout instance;
+	protected Configuration CRCConfig;
+	protected Configuration itemMapConfig;
 	
 	public Spout() {
 		super();
@@ -86,7 +87,6 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setKeyboardManager(new SimpleKeyboardManager());
 		SpoutManager.getInstance().setAppearanceManager(new SimpleAppearanceManager());
 		SpoutManager.getInstance().setSoundManager(new SimpleSoundManager());
-		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		SpoutManager.getInstance().setSkyManager(new SimpleSkyManager());
 		SpoutManager.getInstance().setInventoryBuilder(new SpoutInventoryBuilder());
 		SpoutManager.getInstance().setPacketManager(new SimplePacketManager());
@@ -96,6 +96,8 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setBiomeManager(new SimpleBiomeManager());
 		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
 		SpoutManager.getInstance().setKeyBindingManager(new SimpleKeyBindingManager());
+		SpoutManager.getInstance().setMaterialManager(new SimpleMaterialManager());
+		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		blockListener = new SpoutBlockListener();
 	}
 	@Override
@@ -103,7 +105,7 @@ public class Spout extends JavaPlugin{
 		//order matters
 		CustomBlock.resetBlocks();
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
-		((SimpleItemManager)SpoutManager.getItemManager()).reset();
+		((SimpleMaterialManager)SpoutManager.getMaterialManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginDisable();
 		Player[] online = getServer().getOnlinePlayers();
@@ -159,6 +161,8 @@ public class Spout extends JavaPlugin{
 		
 		//end the thread
 		MapChunkThread.endThread();
+		PacketCompressionThread.endThread();
+		ChunkCompressionThread.endThread();
 	}
 
 	@Override
@@ -182,7 +186,7 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
@@ -216,7 +220,9 @@ public class Spout extends JavaPlugin{
 		CustomItemSpade.replaceSpades();
 		CustomBlock.replaceBlocks();
 		
+		ChunkCompressionThread.startThread();
 		MapChunkThread.startThread(); // Always on
+		PacketCompressionThread.startThread();
 		
 		//Start counting ticks
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new ServerTickTask(), 0, 1);
@@ -239,7 +245,7 @@ public class Spout extends JavaPlugin{
 		
 		UniqueItemStringMap.setConfigFile(itemMapConfig);
 		
-		SimpleItemManager.disableStoneStackMix();
+		SimpleMaterialManager.disableFlintStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
 	}
@@ -269,10 +275,16 @@ public class Spout extends JavaPlugin{
 		String latest = getRBVersion();
 
 		if (latest != null) {
-			int current = Integer.parseInt(getDescription().getVersion().split("\\.")[2]);
-			int newest = Integer.parseInt(latest);
-
-			return current < newest;
+			try {
+				int current = Integer.parseInt(getDescription().getVersion().split("\\.")[3]);
+				int newest = Integer.parseInt(latest);
+	
+				return current < newest;
+			}
+			catch (NumberFormatException e){
+				return false;
+			}
+			
 		}
 		return false;
 	}
