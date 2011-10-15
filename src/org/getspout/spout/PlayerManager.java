@@ -80,7 +80,7 @@ public class PlayerManager {
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		((SimpleKeyBindingManager)SpoutManager.getKeyBindingManager()).onPlayerJoin(player);
-		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
+		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowSkyCheat(),ConfigReader.isAllowClearWaterCheat(),ConfigReader.isAllowCloudHeightCheat(),ConfigReader.isAllowStarsCheat(),ConfigReader.isAllowWeatherCheat(),ConfigReader.isAllowTimeCheat(),ConfigReader.isAllowCoordsCheat(), ConfigReader.isAllowBrightnessCheat(), ConfigReader.isAllowEntityLabelCheat(), ConfigReader.isAllowRenderDistanceCheat()));
 		player.sendPacket(new PacketUniqueId(player.getUniqueId(), player.getEntityId()));
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
