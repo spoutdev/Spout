@@ -36,6 +36,9 @@ public class ConfigReader {
     private static boolean allowWeatherCheat = false;
     private static boolean allowTimeCheat = false;
     private static boolean allowCoordsCheat = false;
+    private static boolean allowBrightnessCheat = false;
+    private static boolean allowEntityLabelCheat = false;
+    private static boolean allowRenderDistanceCheat = false;
         
 	private static boolean chunkDataCache = true;
 	private static boolean teleportSmoothing = true;
@@ -137,6 +140,27 @@ public class ConfigReader {
 				configuration.setProperty("AllowCoordsCheat", false);
 			}      			
                         
+			if (configuration.getProperty("AllowBrightnessCheat") != null) {
+				allowBrightnessCheat = configuration.getBoolean("AllowBrightnessCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowBrightnessCheat", false);
+			}     
+			
+			if (configuration.getProperty("AllowEntityLabelCheat") != null) {
+				allowEntityLabelCheat = configuration.getBoolean("AllowEntityLabelCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowEntityLabelCheat", false);
+			}     		
+			
+			if (configuration.getProperty("AllowRenderDistanceCheat") != null) {
+				allowRenderDistanceCheat = configuration.getBoolean("AllowRenderDistanceCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowRenderDistanceCheat", false);
+			}    			
+			
 			if (configuration.getProperty("ChunkDataCache") != null) {
 				chunkDataCache = configuration.getBoolean("ChunkDataCache", true);
 			} else {
@@ -177,36 +201,47 @@ public class ConfigReader {
 	public static int getAuthenticateTicks() {
 		return authTicks;
 	}
+        
+    public static boolean isAllowSkyCheat() {
+            return allowSkyCheat;
+    }
+    
+    public static boolean isAllowClearWaterCheat() {
+            return allowClearWaterCheat;
+    }
+    
+    public static boolean isAllowCloudHeightCheat() {
+            return allowCloudHeightCheat;
+    }
 
+    public static boolean isAllowStarsCheat() {
+            return allowStarsCheat;
+    }
+    
+    public static boolean isAllowWeatherCheat() {
+            return allowWeatherCheat;
+    }
+    
+    public static boolean isAllowTimeCheat() {
+            return allowTimeCheat;
+    }
+    
+    public static boolean isAllowCoordsCheat() {
+        return allowCoordsCheat;
+    }
+    
+    public static boolean isAllowBrightnessCheat() {
+    	return allowBrightnessCheat;
+    }
+    
+    public static boolean isAllowEntityLabelCheat() {
+    	return allowEntityLabelCheat;
+    }
         
-        public static boolean isAllowSkyCheat() {
-                return allowSkyCheat;
-        }
-        
-        public static boolean isAllowClearWaterCheat() {
-                return allowClearWaterCheat;
-        }
-        
-        public static boolean isAllowCloudHeightCheat() {
-                return allowCloudHeightCheat;
-        }
-	
-        public static boolean isAllowStarsCheat() {
-                return allowStarsCheat;
-        }
-        
-        public static boolean isAllowWeatherCheat() {
-                return allowWeatherCheat;
-        }
-        
-        public static boolean isAllowTimeCheat() {
-                return allowTimeCheat;
-        }
-        
-        public static boolean isAllowCoordsCheat() {
-            return allowCoordsCheat;
-        }        
-        
+    public static boolean isAllowRenderDistanceCheat() {
+    	return allowRenderDistanceCheat;
+    }    
+    
 	public static boolean isChunkDataCache() {
 		return chunkDataCache;
 	}
