@@ -29,13 +29,13 @@ public class ConfigReader {
 	private static int authTicks = 200;
 	private static String kickMessage = "This server requires Spoutcraft! http://bit.ly/unleashtheflow";
         
-	private static boolean allowVisualCheats = false;
-        private static boolean allowSkyCheat = false;
-        private static boolean allowClearWaterCheat = false;
-        private static boolean allowCloudHeightCheat = false;
-        private static boolean allowStarsCheat = false;
-        private static boolean allowWeatherCheat = false;
-        private static boolean allowTimeCheat = false;
+    private static boolean allowSkyCheat = false;
+    private static boolean allowClearWaterCheat = false;
+    private static boolean allowCloudHeightCheat = false;
+    private static boolean allowStarsCheat = false;
+    private static boolean allowWeatherCheat = false;
+    private static boolean allowTimeCheat = false;
+    private static boolean allowCoordsCheat = false;
         
 	private static boolean chunkDataCache = true;
 	private static boolean teleportSmoothing = true;
@@ -87,13 +87,6 @@ public class ConfigReader {
 			else {
 				configuration.setProperty("AutoUpdate", true);
 			}
-			
-			if (configuration.getProperty("AllowVisualCheats") != null) {
-				allowVisualCheats = configuration.getBoolean("AllowVisualCheats", false);
-			}
-			else {
-				configuration.setProperty("AllowVisualCheats", false);
-			}
                         
 			if (configuration.getProperty("AllowSkyCheat") != null) {
 				allowSkyCheat = configuration.getBoolean("AllowSkyCheat", false);
@@ -135,7 +128,14 @@ public class ConfigReader {
 			}
 			else {
 				configuration.setProperty("AllowTimeCheat", false);
-			}                        
+			}       
+			
+			if (configuration.getProperty("AllowCoordsCheat") != null) {
+				allowCoordsCheat = configuration.getBoolean("AllowCoordsCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowCoordsCheat", false);
+			}      			
                         
 			if (configuration.getProperty("ChunkDataCache") != null) {
 				chunkDataCache = configuration.getBoolean("ChunkDataCache", true);
@@ -177,10 +177,7 @@ public class ConfigReader {
 	public static int getAuthenticateTicks() {
 		return authTicks;
 	}
-	
-	public static boolean isAllowVisualCheats() {
-		return allowVisualCheats;
-	}
+
         
         public static boolean isAllowSkyCheat() {
                 return allowSkyCheat;
@@ -205,6 +202,10 @@ public class ConfigReader {
         public static boolean isAllowTimeCheat() {
                 return allowTimeCheat;
         }
+        
+        public static boolean isAllowCoordsCheat() {
+            return allowCoordsCheat;
+        }        
         
 	public static boolean isChunkDataCache() {
 		return chunkDataCache;
