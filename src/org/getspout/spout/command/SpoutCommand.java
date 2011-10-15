@@ -24,13 +24,12 @@ public class SpoutCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
-		sender.sendMessage("[Spout] Server version: " + p.getDescription().getVersion());
-		
 		if (args.length == 0) {
+			sender.sendMessage("[Spout] Server version: " + p.getDescription().getVersion());
 			return true;
 		}
 		
-		if (!sender.isOp() && args.length > 0) {
+		if (!sender.isOp()) {
 			sender.sendMessage("[Spout] This command is Op only");
 			return true;
 		}
@@ -38,6 +37,7 @@ public class SpoutCommand implements CommandExecutor {
 		String c = args[0];
 
 		if (c.equals("version")) {
+			sender.sendMessage("[Spout] Server version: " + p.getDescription().getVersion());
 			
 			CommandSender target = sender;
 			
@@ -78,6 +78,7 @@ public class SpoutCommand implements CommandExecutor {
 					motd_temp = null;
 				}
 			}, 20 * 60 * 5);
+			return true;
 		}
 		
 		return false;
