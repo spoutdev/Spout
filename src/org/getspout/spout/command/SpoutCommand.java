@@ -14,7 +14,8 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 public class SpoutCommand implements CommandExecutor {
 
 	private final Spout p;
-	private String motd_temp = "";
+	private String motd_temp = null;
+	private int motd_task = 0;
 
 	public SpoutCommand(Spout p) {
 		this.p = p;
@@ -64,12 +65,17 @@ public class SpoutCommand implements CommandExecutor {
 		} else if (c.equals("verify") && args.length > 1 && sender.isOp() && sender instanceof ConsoleCommandSender) {
 			sender.sendMessage("[Spout] Temporarily setting the motd to: " + args[1]);
 			sender.sendMessage("[Spout] It will return to its oringinal setting in ~5 mins");
-			motd_temp = ((CraftServer) Bukkit.getServer()).getHandle().server.p;
+			if (motd_temp == null) {
+				motd_temp = ((CraftServer) Bukkit.getServer()).getHandle().server.p;
+			} else {
+				Bukkit.getServer().getScheduler().cancelTask(motd_task);
+			}
 			((CraftServer) Bukkit.getServer()).getHandle().server.p = args[1];
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(p, new Runnable() {
+			motd_task = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(p, new Runnable() {
 				@Override
 				public void run() {
 					((CraftServer) Bukkit.getServer()).getHandle().server.p = motd_temp;
+					motd_temp = null;
 				}
 			}, 20 * 60 * 5);
 		}
