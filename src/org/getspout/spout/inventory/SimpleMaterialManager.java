@@ -465,63 +465,78 @@ public class SimpleMaterialManager implements MaterialManager {
 	}
 
 	@Override
-	public String getStepSound(Material material) {
+	public String getStepSound(org.getspout.spoutapi.material.Block block) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setStepSound(Material material, String url) {
+	public void setStepSound(org.getspout.spoutapi.material.Block block, String url) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void resetStepSound(Material material) {
+	public void resetStepSound(org.getspout.spoutapi.material.Block block) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public float getFriction(Material material) {
-		int id = material.getRawId();
+	public float getFriction(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
 		return net.minecraft.server.Block.byId[id].frictionFactor;
 	}
 
 	@Override
-	public void setFriction(Material material, float friction) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void setFriction(org.getspout.spoutapi.material.Block block, float friction) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (!originalFriction.containsKey(id, data)) {
-			originalFriction.put(id, data, getFriction(material));
+			originalFriction.put(id, data, getFriction(block));
 		}
 		net.minecraft.server.Block.byId[id].frictionFactor = friction;
 		updateBlockAttributes(id, (short) data); // invalidate cache
 	}
 
 	@Override
-	public void resetFriction(Material material) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void resetFriction(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (originalFriction.containsKey(id, data)) {
-			setFriction(material, originalFriction.get(id, data));
+			setFriction(block, originalFriction.get(id, data));
 			originalFriction.remove(id, data);
 		}
 		updateBlockAttributes(id, (short) data); // invalidate cache
 	}
 
 	@Override
-	public float getHardness(Material material) {
-		int id = material.getRawId();
+	public float getHardness(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
 		return net.minecraft.server.Block.byId[id].j();
 	}
 
 	@Override
-	public void setHardness(Material material, float hardness) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void setHardness(org.getspout.spoutapi.material.Block block, float hardness) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (!originalHardness.containsKey(id, data)) {
-			originalHardness.put(id, data, getHardness(material));
+			originalHardness.put(id, data, getHardness(block));
 		}
 		net.minecraft.server.Block b = net.minecraft.server.Block.byId[id];
 		if (b instanceof CustomMCBlock) {
@@ -531,67 +546,85 @@ public class SimpleMaterialManager implements MaterialManager {
 	}
 
 	@Override
-	public void resetHardness(Material material) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void resetHardness(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (originalHardness.containsKey(id, data)) {
-			setHardness(material, originalHardness.get(id, data));
+			setHardness(block, originalHardness.get(id, data));
 			originalHardness.remove(id, data);
 		}
 		updateBlockAttributes(id, (short) data); // invalidate cache
 	}
 
 	@Override
-	public boolean isOpaque(Material material) {
-		int id = material.getRawId();
+	public boolean isOpaque(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
 		return net.minecraft.server.Block.o[id];
 	}
 
 	@Override
-	public void setOpaque(Material material, boolean opacity) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void setOpaque(org.getspout.spoutapi.material.Block block, boolean opacity) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (!originalOpacity.containsKey(id)) {
-			originalOpacity.put(id, (byte) (isOpaque(material) ? 1 : 0));
+			originalOpacity.put(id, (byte) (isOpaque(block) ? 1 : 0));
 		}
 		net.minecraft.server.Block.o[id] = opacity;
 		updateBlockAttributes(id, (short) data); // invalidate cache
 	}
 
 	@Override
-	public void resetOpacity(Material material) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void resetOpacity(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (originalOpacity.containsKey(id)) {
-			setOpaque(material, originalOpacity.get(id) != 0);
+			setOpaque(block, originalOpacity.get(id) != 0);
 			originalOpacity.remove(id);
 		}
 		updateBlockAttributes(id, (short) data); // invalidate cache
 	}
 
 	@Override
-	public int getLightLevel(Material material) {
-		int id = material.getRawId();
+	public int getLightLevel(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
 		return net.minecraft.server.Block.s[id];
 	}
 
 	@Override
-	public void setLightLevel(Material material, int level) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void setLightLevel(org.getspout.spoutapi.material.Block block, int level) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (!originalLight.containsKey(id)) {
-			originalLight.put(id, getLightLevel(material));
+			originalLight.put(id, getLightLevel(block));
 		}
 		net.minecraft.server.Block.s[id] = level;
 		updateBlockAttributes(id, (short) data); // invalidate cache
 	}
 
 	@Override
-	public void resetLightLevel(Material material) {
-		int id = material.getRawId();
-		int data = material.getRawData();
+	public void resetLightLevel(org.getspout.spoutapi.material.Block block) {
+		int id = block.getRawId();
+		if(block instanceof CustomBlock) {
+			id = ((CustomBlock) block).getBlockId();
+		}
+		int data = block.getRawData();
 		if (originalLight.containsKey(id)) {
-			setLightLevel(material, originalLight.get(id));
+			setLightLevel(block, originalLight.get(id));
 			originalLight.remove(id);
 		}
 		updateBlockAttributes(id, (short) data); // invalidate cache
