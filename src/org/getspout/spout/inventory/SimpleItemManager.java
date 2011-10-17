@@ -27,77 +27,77 @@ public class SimpleItemManager implements ItemManager {
 
 	@Override
 	public String getStepSound(int id, short data) {
-		return mm.getStepSound(MaterialData.getMaterial(id, data));
+		return mm.getStepSound(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public void setStepSound(int id, short data, String url) {
-		mm.setStepSound(MaterialData.getMaterial(id, data), url);
+		mm.setStepSound(MaterialData.getBlock(id, data), url);
 	}
 
 	@Override
 	public void resetStepSound(int id, short data) {
-		mm.resetStepSound(MaterialData.getMaterial(id, data));
+		mm.resetStepSound(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public float getFriction(int id, short data) {
-		return mm.getFriction(MaterialData.getMaterial(id, data));
+		return mm.getFriction(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public void setFriction(int id, short data, float friction) {
-		mm.setFriction(MaterialData.getMaterial(id, data), friction);
+		mm.setFriction(MaterialData.getBlock(id, data), friction);
 	}
 
 	@Override
 	public void resetFriction(int id, short data) {
-		mm.resetFriction(MaterialData.getMaterial(id, data));
+		mm.resetFriction(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public float getHardness(int id, short data) {
-		return mm.getHardness(MaterialData.getMaterial(id, data));
+		return mm.getHardness(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public void setHardness(int id, short data, float hardness) {
-		mm.setHardness(MaterialData.getMaterial(id, data), hardness);
+		mm.setHardness(MaterialData.getBlock(id, data), hardness);
 	}
 
 	@Override
 	public void resetHardness(int id, short data) {
-		mm.resetHardness(MaterialData.getMaterial(id, data));
+		mm.resetHardness(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public boolean isOpaque(int id, short data) {
-		return mm.isOpaque(MaterialData.getMaterial(id, data));
+		return mm.isOpaque(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public void setOpaque(int id, short data, boolean opacity) {
-		mm.setOpaque(MaterialData.getMaterial(id, data), opacity);
+		mm.setOpaque(MaterialData.getBlock(id, data), opacity);
 	}
 
 	@Override
 	public void resetOpacity(int id, short data) {
-		mm.resetOpacity(MaterialData.getMaterial(id, data));
+		mm.resetOpacity(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public int getLightLevel(int id, short data) {
-		return mm.getLightLevel(MaterialData.getMaterial(id, data));
+		return mm.getLightLevel(MaterialData.getBlock(id, data));
 	}
 
 	@Override
 	public void setLightLevel(int id, short data, int level) {
-		mm.setLightLevel(MaterialData.getMaterial(id, data), level);
+		mm.setLightLevel(MaterialData.getBlock(id, data), level);
 	}
 
 	@Override
 	public void resetLightLevel(int id, short data) {
-		mm.resetLightLevel(MaterialData.getMaterial(id, data));
+		mm.resetLightLevel(MaterialData.getBlock(id, data));
 	}
 
 	@Override
