@@ -28,18 +28,15 @@ public class ConfigReader {
 	private static boolean autoUpdate = false;
 	private static int authTicks = 200;
 	private static String kickMessage = "This server requires Spoutcraft! http://bit.ly/unleashtheflow";
-        
-    private static boolean allowSkyCheat = false;
-    private static boolean allowClearWaterCheat = false;
-    private static boolean allowCloudHeightCheat = false;
-    private static boolean allowStarsCheat = false;
-    private static boolean allowWeatherCheat = false;
-    private static boolean allowTimeCheat = false;
-    private static boolean allowCoordsCheat = false;
-    private static boolean allowBrightnessCheat = false;
-    private static boolean allowEntityLabelCheat = false;
-    private static boolean allowRenderDistanceCheat = false;
-        
+ 
+	private static boolean allowSkyCheat = false;
+	private static boolean allowClearWaterCheat = false;
+	private static boolean allowStarsCheat = false;
+	private static boolean allowWeatherCheat = false;
+	private static boolean allowTimeCheat = false;
+	private static boolean allowCoordsCheat = false;
+	private static boolean allowEntityLabelCheat = false;
+ 
 	private static boolean chunkDataCache = true;
 	private static boolean teleportSmoothing = true;
 	private static boolean authenticateSpoutcraft = true;
@@ -90,27 +87,21 @@ public class ConfigReader {
 			else {
 				configuration.setProperty("AutoUpdate", true);
 			}
-                        
+
 			if (configuration.getProperty("AllowSkyCheat") != null) {
 				allowSkyCheat = configuration.getBoolean("AllowSkyCheat", false);
 			}
 			else {
 				configuration.setProperty("AllowSkyCheat", false);
 			}
-                        
+
 			if (configuration.getProperty("AllowClearWaterCheat") != null) {
 				allowClearWaterCheat = configuration.getBoolean("AllowClearWaterCheat", false);
 			}
 			else {
 				configuration.setProperty("AllowClearWaterCheat", false);
 			}
-                        
-			if (configuration.getProperty("AllowCloudHeightCheat") != null) {
-				allowCloudHeightCheat = configuration.getBoolean("AllowCloudHeightCheat", false);
-			}
-			else {
-				configuration.setProperty("AllowCloudHeightCheat", false);
-			}                        
+
 			
 			if (configuration.getProperty("AllowStarsCheat") != null) {
 				allowStarsCheat = configuration.getBoolean("AllowStarsCheat", false);
@@ -118,48 +109,34 @@ public class ConfigReader {
 			else {
 				configuration.setProperty("AllowStarsCheat", false);
 			}
-                        
+
 			if (configuration.getProperty("AllowWeatherCheat") != null) {
 				allowWeatherCheat = configuration.getBoolean("AllowWeatherCheat", false);
 			}
 			else {
 				configuration.setProperty("AllowWeatherCheat", false);
 			}
-                        
+
 			if (configuration.getProperty("AllowTimeCheat") != null) {
 				allowTimeCheat = configuration.getBoolean("AllowTimeCheat", false);
 			}
 			else {
 				configuration.setProperty("AllowTimeCheat", false);
-			}       
+			}
 			
 			if (configuration.getProperty("AllowCoordsCheat") != null) {
 				allowCoordsCheat = configuration.getBoolean("AllowCoordsCheat", false);
 			}
 			else {
 				configuration.setProperty("AllowCoordsCheat", false);
-			}      			
-                        
-			if (configuration.getProperty("AllowBrightnessCheat") != null) {
-				allowBrightnessCheat = configuration.getBoolean("AllowBrightnessCheat", false);
 			}
-			else {
-				configuration.setProperty("AllowBrightnessCheat", false);
-			}     
-			
+
 			if (configuration.getProperty("AllowEntityLabelCheat") != null) {
 				allowEntityLabelCheat = configuration.getBoolean("AllowEntityLabelCheat", false);
 			}
 			else {
 				configuration.setProperty("AllowEntityLabelCheat", false);
-			}     		
-			
-			if (configuration.getProperty("AllowRenderDistanceCheat") != null) {
-				allowRenderDistanceCheat = configuration.getBoolean("AllowRenderDistanceCheat", false);
-			}
-			else {
-				configuration.setProperty("AllowRenderDistanceCheat", false);
-			}    			
+			}	 					
 			
 			if (configuration.getProperty("ChunkDataCache") != null) {
 				chunkDataCache = configuration.getBoolean("ChunkDataCache", true);
@@ -172,6 +149,7 @@ public class ConfigReader {
 			} else {
 				configuration.setProperty("TeleportSmoothing", true);
 			}
+			
 			if (configuration.getProperty("AuthenticateSpoutcraft") != null) {
 				authenticateSpoutcraft = configuration.getBoolean("AuthenticateSpoutcraft", true);
 			} else {
@@ -201,47 +179,36 @@ public class ConfigReader {
 	public static int getAuthenticateTicks() {
 		return authTicks;
 	}
-        
-    public static boolean isAllowSkyCheat() {
-            return allowSkyCheat;
-    }
-    
-    public static boolean isAllowClearWaterCheat() {
-            return allowClearWaterCheat;
-    }
-    
-    public static boolean isAllowCloudHeightCheat() {
-            return allowCloudHeightCheat;
-    }
+ 
+	public static boolean isAllowSkyCheat() {
+	 return allowSkyCheat;
+	}
+	
+	public static boolean isAllowClearWaterCheat() {
+	 return allowClearWaterCheat;
+	}
+	
 
-    public static boolean isAllowStarsCheat() {
-            return allowStarsCheat;
-    }
-    
-    public static boolean isAllowWeatherCheat() {
-            return allowWeatherCheat;
-    }
-    
-    public static boolean isAllowTimeCheat() {
-            return allowTimeCheat;
-    }
-    
-    public static boolean isAllowCoordsCheat() {
-        return allowCoordsCheat;
-    }
-    
-    public static boolean isAllowBrightnessCheat() {
-    	return allowBrightnessCheat;
-    }
-    
-    public static boolean isAllowEntityLabelCheat() {
-    	return allowEntityLabelCheat;
-    }
-        
-    public static boolean isAllowRenderDistanceCheat() {
-    	return allowRenderDistanceCheat;
-    }    
-    
+	public static boolean isAllowStarsCheat() {
+		return allowStarsCheat;
+	}
+	
+	public static boolean isAllowWeatherCheat() {
+		return allowWeatherCheat;
+	}
+	
+	public static boolean isAllowTimeCheat() {
+		return allowTimeCheat;
+	}
+	
+	public static boolean isAllowCoordsCheat() {
+		return allowCoordsCheat;
+	}
+	
+	public static boolean isAllowEntityLabelCheat() {
+		return allowEntityLabelCheat;
+	}	
+	
 	public static boolean isChunkDataCache() {
 		return chunkDataCache;
 	}
