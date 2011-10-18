@@ -22,7 +22,7 @@ Compiling
 ---------
 Spout uses Maven to handle its dependencies.
 
-Spout requires SpoutAPI and Bukkit (preferrably the latest versions or source).
+Spout requires SpoutAPI and Bukkit (preferrably the latest versions or source).  
 * Install [Maven 2 or 3](http://maven.apache.org/download.html)  
 * Checkout this repo and run: `mvn clean package`
 
@@ -35,7 +35,7 @@ Coding and Pull Request Formatting
 * Pull requests must be formatted properly.
 * If you change a packet or widget's read/write/number of bytes, be sure to increment the version on both the server and client.
 
-Please follow the above conventions if you want your pull request(s) accepted.
+**Please follow the above conventions if you want your pull request(s) accepted.**
 
 [Project Logo]: http://assets.craftfire.com/img/logo/spout_327x150.png
 [License]: http://www.gnu.org/licenses/lgpl.html
@@ -44,7 +44,7 @@ Please follow the above conventions if you want your pull request(s) accepted.
 [GitHub]: https://github.com/SpoutDev/Spout
 [Javadoc]: http://spout.in/jddev
 [Jenkins]: http://spout.in/ci
-[Issues]: https://spout.in/issues
+[Issues]: http://spout.in/issues
 [Twitter]: http://spout.in/twitter
 [Twitter Logo]: http://cdn.getspout.org/img/button/twitter_follow_us.png
 [Facebook]: http://spout.in/facebook
