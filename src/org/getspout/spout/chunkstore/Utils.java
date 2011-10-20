@@ -27,7 +27,7 @@ import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.World.Environment
+import org.bukkit.World.Environment;
 
 import org.bukkit.craftbukkit.CraftServer;
 
