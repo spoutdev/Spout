@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
@@ -35,15 +36,19 @@ public class Utils {
 
 	public static File getWorldDirectory(World world) {
 		
-		File worldContainer = ((CraftServer)Bukkit.getServer()).getWorldContainer(); //Why isn't this public :(
+		File worldContainer = new File(".");
+		try {
+			worldContainer = ((CraftServer)Bukkit.getServer()).getWorldContainer(); //Why isn't this public :(
+			Method m = CraftServer.class.getDeclaredMethod("getWorldContainer", (Class<?>[])null);
+			worldContainer = (File) m.invoke((CraftServer)Bukkit.getServer(), (Object[])null);
+		}
+		catch (Exception ignore) {}
+		
 		File dir = new File(worldContainer, world.getName());
 		
-		
-		//TODO nether has a separate folder, world_nether, correct?
-		//This shouldn't be needed anymore then...
-		//if (world.getEnvironment() == Environment.NETHER) {
-		//	dir = new File(dir, "DIM-1");
-		//}
+		if (world.getEnvironment() == Environment.NETHER) {
+			dir = new File(dir, "DIM-1");
+		}
 		
 		if (dir.exists()) {
 			return dir;
