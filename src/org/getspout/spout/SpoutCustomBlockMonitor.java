@@ -33,7 +33,7 @@ public class SpoutCustomBlockMonitor extends PlayerListener{
 		if (!event.isCancelled()) {
 			return;
 		}
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {
 			return;
 		}
 		if (event.getClickedBlock() == null) {
