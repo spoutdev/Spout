@@ -158,7 +158,6 @@ public class SpoutPlayerListener extends PlayerListener{
 							canBuild = true;
 						} else {
 							Location spawn = event.getClickedBlock().getWorld().getSpawnLocation();
-							//event.getPlayer().sendMessage(Math.max(block.getX()-spawn.getBlockX(), block.getZ()-spawn.getBlockZ()) + "/" + spawnRadius);
 							if (Math.max(Math.abs(block.getX()-spawn.getBlockX()), Math.abs(block.getZ()-spawn.getBlockZ())) > spawnRadius) { // Slower check
 								canBuild = true;
 							}
