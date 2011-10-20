@@ -197,13 +197,15 @@ public class SpoutPlayerListener extends PlayerListener{
 		int id = event.getPlayer().getEntityId();
 		ChunkCache.playerQuit(id);
 		MapChunkThread.removeId(id);
-		SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
-		SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
-		if (netServerHandler.activeInventory) {
-			Inventory inventory = netServerHandler.getActiveInventory();
-
-			InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
-			Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+		if (event.getPlayer() instanceof SpoutCraftPlayer) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
+			SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
+			if (netServerHandler.activeInventory) {
+				Inventory inventory = netServerHandler.getActiveInventory();
+	
+				InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
+				Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+			}
 		}
 	}
 
