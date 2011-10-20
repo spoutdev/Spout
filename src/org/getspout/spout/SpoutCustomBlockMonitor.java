@@ -30,7 +30,7 @@ public class SpoutCustomBlockMonitor extends PlayerListener{
 	
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!event.isCancelled()) {
+		if (event.isCancelled()) {
 			return;
 		}
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {
