@@ -25,18 +25,25 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
+import org.bukkit.World.Environment
+
+import org.bukkit.craftbukkit.CraftServer;
 
 public class Utils {
 
 	public static File getWorldDirectory(World world) {
 		
-		File dir = new File(world.getName());
+		File worldContainer = ((CraftServer)Bukkit.getServer()).getWorldContainer(); //Why isn't this public :(
+		File dir = new File(worldContainer, world.getName());
 		
-		if (world.getEnvironment() == Environment.NETHER) {
-			dir = new File(dir, "DIM-1");
-		}
+		
+		//TODO nether has a separate folder, world_nether, correct?
+		//This shouldn't be needed anymore then...
+		//if (world.getEnvironment() == Environment.NETHER) {
+		//	dir = new File(dir, "DIM-1");
+		//}
 		
 		if (dir.exists()) {
 			return dir;
