@@ -22,8 +22,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -144,13 +146,37 @@ public class SpoutPlayerListener extends PlayerListener{
 					if (newBlockId != 0 ) {
 						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
 						CustomBlock cb = MaterialData.getCustomBlock(damage);
+						BlockState oldState = block.getState();
 						block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
 						mm.overrideBlock(block, cb);
 						
-						if(item.getAmount() == 1) {
-							event.getPlayer().setItemInHand(null);
+						// TODO: canBuild should be set properly, CraftEventFactory.canBuild() would do this... 
+						//       but it's private so... here it is >.>
+						int spawnRadius = Bukkit.getServer().getSpawnRadius();
+						boolean canBuild = false;
+						if (spawnRadius <= 0 || player.isOp()) { // Fast checks
+							canBuild = true;
 						} else {
-							item.setAmount(item.getAmount() - 1);
+							Location spawn = event.getClickedBlock().getWorld().getSpawnLocation();
+							if (Math.max(Math.abs(block.getX()-spawn.getBlockX()), Math.abs(block.getZ()-spawn.getBlockZ())) > spawnRadius) { // Slower check
+								canBuild = true;
+							}
+						}
+						
+						BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, oldState, event.getClickedBlock(), item, player, canBuild);
+						Bukkit.getPluginManager().callEvent(placeEvent);
+						
+						if (!placeEvent.isCancelled() && placeEvent.canBuild()) {
+							// Yay, take the item from inventory
+							if(item.getAmount() == 1) {
+								event.getPlayer().setItemInHand(null);
+							} else {
+								item.setAmount(item.getAmount() - 1);
+							}
+						} else {
+							// Event cancelled or can't build
+							mm.removeBlockOverride(block);
+							block.setTypeIdAndData(oldState.getTypeId(), oldState.getRawData(), true);
 						}
 					}
 				}
