@@ -37,10 +37,8 @@ public class SpoutCustomBlockMonitor extends PlayerListener{
 			return;
 		}
 		if (event.getClickedBlock() == null) {
-			return;
+		//	return;
 		}
-		SpoutBlock block = (SpoutBlock)event.getClickedBlock();
-		SpoutPlayer player = (SpoutPlayer)event.getPlayer();
 		ItemStack inHand = event.getItem();
 		if (inHand == null) {
 			return;
@@ -48,7 +46,7 @@ public class SpoutCustomBlockMonitor extends PlayerListener{
 		Material mat = MaterialData.getMaterial(inHand.getTypeId(), inHand.getDurability());
 		if (mat instanceof CustomItem) {
 			CustomItem item = (CustomItem)mat;
-			event.setCancelled(!item.onItemInteract(player, block, event.getBlockFace()));
+			event.setCancelled(!item.onItemInteract((SpoutPlayer)event.getPlayer(), (SpoutBlock)event.getClickedBlock(), event.getBlockFace()));
 		}
 	}
 
