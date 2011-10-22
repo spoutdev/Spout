@@ -40,6 +40,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -60,6 +61,7 @@ import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.SpoutPermissibleBase;
 import org.getspout.spout.block.SpoutCraftChunk;
+import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
@@ -128,6 +130,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	private boolean precachingComplete = false;
 	private ScreenType activeScreen = ScreenType.GAME_SCREEN;
 	private GenericOverlayScreen currentScreen = null;
+	private Location lastTickLocation = null;
 	public SpoutCraftChunk lastTickChunk = null;
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	private boolean screenOpenThisTick = false;
@@ -824,6 +827,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			sendPacket(packet);
 		}
 	}
+	
+	public Location getLastTickLocation() {
+		return lastTickLocation;
+	}
+	
+	public void setLastTickLocation(Location loc) {
+		lastTickLocation = loc;
+	}
 
 	/*Non Inteface public methods */
 
@@ -929,7 +940,27 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		}
 		getNetServerHandler().syncFlushPacketQueue();
 		screenOpenThisTick = false;
+		
+		//Because the player teleport event doesn't always fire :(
+		Location current = getLocation();
+		if (lastTickLocation != null) {
+			if (!lastTickLocation.getWorld().equals(current.getWorld())) {
+				doPostPlayerChangeWorld(lastTickLocation.getWorld(), current.getWorld());
+			}
+		}
+		lastTickLocation = current;
 	} 
+	
+	public void doPostPlayerChangeWorld(World oldWorld, World newWorld) {
+		SpoutCraftPlayer.updateBukkitEntity(this);
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
+		if (isSpoutCraftEnabled()) {
+			updateMovement();
+			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+			mm.sendBlockOverrideToPlayers(new Player[] {this}, newWorld);
+			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(this);
+		}
+	}
 
 	public void updateMovement() {
 		if (isSpoutCraftEnabled()) {

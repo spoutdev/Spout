@@ -68,11 +68,11 @@ public class EntityTracker {
 	public void onTick() {
 		if (!aliveNeedsUpdate.isEmpty()) {
 			trackedPlayer.sendPacket(new PacketUniqueId(aliveNeedsUpdate, true));
-			aliveNeedsUpdate.clear();
+			aliveNeedsUpdate = new LinkedList<Entity>();
 		}
 		if (!deadNeedsUpdate.isEmpty()) {
 			trackedPlayer.sendPacket(new PacketUniqueId(deadNeedsUpdate, false));
-			deadNeedsUpdate.clear();
+			deadNeedsUpdate = new LinkedList<Entity>();
 		}
 	}
 }

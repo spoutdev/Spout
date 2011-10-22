@@ -34,7 +34,7 @@ public class EntityTrackerManager {
 		}
 	}
 	
-	public void untrack(SpoutPlayer player) {
+	public void untrack(Player player) {
 		EntityTracker old = trackers.remove(player.getName());
 		if (old != null) {
 			old.untrackAllEntities();

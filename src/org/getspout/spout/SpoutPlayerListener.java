@@ -21,7 +21,6 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -68,20 +67,16 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getFrom() == null || event.getTo() == null || event.getFrom().getWorld() == null || event.getTo().getWorld()== null) {
-			return;
-		}
 		
-		Runnable update;
+		Runnable update = null;
 		final SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
 		
-		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
-			update = new PostPlayerChangeWorld(scp, event.getFrom().getWorld(), event.getTo().getWorld());
-		}
-		else {
+		if (event.getFrom().getWorld().equals(event.getTo().getWorld())) {
 			update = new PostTeleport(scp);
 		}
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
+		if (update != null) {
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
+		}
 	}
 
 	@Override
@@ -175,7 +170,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		if(event.isCancelled()) {
 			return;
 		}
-
+		
 		SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
 		SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
 
@@ -185,7 +180,6 @@ public class SpoutPlayerListener extends PlayerListener{
 		int cz = ((int)loc.getZ()) >> 4;
 
 		netServerHandler.setPlayerChunk(cx, cz);
-
 	}
 	
 	@Override
@@ -203,33 +197,11 @@ public class SpoutPlayerListener extends PlayerListener{
 				Bukkit.getServer().getPluginManager().callEvent(closeEvent);
 			}
 			
-			Spout.getInstance().getEntityTrackingManager().untrack(player);
+			
 		}
+		Spout.getInstance().getEntityTrackingManager().untrack(event.getPlayer());
 	}
 
-}
-
-class PostPlayerChangeWorld implements Runnable {
-	SpoutCraftPlayer player;
-	World oldWorld;
-	World newWorld;
-	public PostPlayerChangeWorld(SpoutCraftPlayer player, World oldWorld, World newWorld) {
-		this.player = player;
-		this.oldWorld = oldWorld;
-		this.newWorld = newWorld;
-	}
-
-	@Override
-	public void run() {
-		SpoutCraftPlayer.updateBukkitEntity(player);
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
-		if (player.isSpoutCraftEnabled()) {
-			player.updateMovement();
-			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-			mm.sendBlockOverrideToPlayers(new Player[] {player}, newWorld);
-			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player);
-		}
-	}
 }
 
 class PostTeleport implements Runnable {
