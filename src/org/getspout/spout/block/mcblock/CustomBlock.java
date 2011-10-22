@@ -257,7 +257,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
-		return parent.getDamage(entityhuman); //could have modified hardness, return super
+		return parent.getDamage(entityhuman);
 	}
 	
 	@Override

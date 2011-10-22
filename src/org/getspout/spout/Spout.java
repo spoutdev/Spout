@@ -43,16 +43,16 @@ import org.getspout.spout.chunkcache.SimpleCacheManager;
 import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
+import org.getspout.spout.entity.tracker.EntityTrackerManager;
 import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
+import org.getspout.spout.item.mcitem.CustomItemPickaxe;
 import org.getspout.spout.item.mcitem.CustomItemSpade;
 import org.getspout.spout.keyboard.SimpleKeyBindingManager;
 import org.getspout.spout.keyboard.SimpleKeyboardManager;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.SimplePacketManager;
-import org.getspout.spout.packet.listener.EntitySpawnListener;
-import org.getspout.spout.packet.listener.PacketListeners;
 import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleBiomeManager;
 import org.getspout.spout.player.SimpleFileManager;
@@ -66,8 +66,10 @@ import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 
+@SuppressWarnings("deprecation")
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
+	protected final EntityTrackerManager entityTrackingManager;
 	protected final SpoutWorldListener chunkListener;
 	protected final SpoutWorldMonitorListener chunkMonitorListener;
 	protected final SpoutBlockListener blockListener;
@@ -101,6 +103,7 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setMaterialManager(new SimpleMaterialManager());
 		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		blockListener = new SpoutBlockListener();
+		entityTrackingManager = new EntityTrackerManager();
 	}
 	@Override
 	public void onDisable() {
@@ -182,7 +185,6 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, blockMonitor, Priority.High, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_RESPAWN, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor, this);
@@ -193,17 +195,11 @@ public class Spout extends JavaPlugin{
 		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.CREATURE_SPAWN, entityListener, Priority.Monitor, this);
+		getServer().getPluginManager().registerEvent(Type.ITEM_SPAWN, entityListener, Priority.Monitor, this);
 
 		getCommand("spout").setExecutor(new SpoutCommand(this));
-		
-		//Listen to entity spawn packets to send over the UUID to the clients
-		EntitySpawnListener listener = new EntitySpawnListener();
-		PacketListeners.addListener(20, listener);
-		PacketListeners.addListener(21, listener);
-		PacketListeners.addListener(23, listener);
-		PacketListeners.addListener(24, listener);
-		PacketListeners.addListener(25, listener);
-		PacketListeners.addListener(30, listener);
 
 		SpoutPlayer[] online = SpoutManager.getOnlinePlayers();
 		for (SpoutPlayer player : online) {
@@ -221,6 +217,7 @@ public class Spout extends JavaPlugin{
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
 		
 		CustomItemSpade.replaceSpades();
+		CustomItemPickaxe.replacePickaxes();
 		CustomBlock.replaceBlocks();
 		
 		ChunkCompressionThread.startThread();
@@ -261,6 +258,9 @@ public class Spout extends JavaPlugin{
 		return instance;
 	}
 	
+	public EntityTrackerManager getEntityTrackingManager() {
+		return entityTrackingManager;
+	}
 	public void authenticate(Player player) {
 		if (ConfigReader.authenticateSpoutcraft()) {
 			Packet18ArmAnimation packet = new Packet18ArmAnimation();

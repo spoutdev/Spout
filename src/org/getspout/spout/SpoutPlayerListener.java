@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -32,7 +33,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -45,8 +45,6 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.MaterialData;
-import org.getspout.spoutapi.packet.PacketUniqueId;
-import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutPlayerListener extends PlayerListener{
@@ -59,6 +57,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		Spout.getInstance().authenticate(event.getPlayer());
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
+		Spout.getInstance().getEntityTrackingManager().onEntityJoin(event.getPlayer());
 	}
 
 	@Override
@@ -72,45 +71,16 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (event.getFrom() == null || event.getTo() == null || event.getFrom().getWorld() == null || event.getTo().getWorld()== null) {
 			return;
 		}
-		Runnable update = null;
+		
+		Runnable update;
 		final SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
+		
 		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
-			update = new Runnable() {
-				public void run() {
-					SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
-					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
-					if(scp.isSpoutCraftEnabled()) {
-						scp.updateMovement();
-						long newSeed = event.getTo().getWorld().getSeed();
-						scp.sendPacket(new PacketWorldSeed(newSeed));
-						SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-						mm.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
-					}
-				}
-			};
+			update = new PostPlayerChangeWorld(scp, event.getFrom().getWorld(), event.getTo().getWorld());
 		}
 		else {
-			update = new Runnable() {
-				public void run() {
-					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
-				}
-			};
+			update = new PostTeleport(scp);
 		}
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
-	}
-	
-	@Override
-	public void onPlayerRespawn(final PlayerRespawnEvent event) {
-		System.out.println("Player Respawning");
-		Runnable update = new Runnable() {
-			public void run() {
-				SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
-				if(scp.isSpoutCraftEnabled()) {
-					scp.sendPacket(new PacketUniqueId(scp.getUniqueId(), scp.getEntityId()));
-					scp.updateMovement();
-				}
-			}
-		};
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
 	}
 
@@ -232,7 +202,44 @@ public class SpoutPlayerListener extends PlayerListener{
 				InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
 				Bukkit.getServer().getPluginManager().callEvent(closeEvent);
 			}
+			
+			Spout.getInstance().getEntityTrackingManager().untrack(player);
 		}
 	}
 
+}
+
+class PostPlayerChangeWorld implements Runnable {
+	SpoutCraftPlayer player;
+	World oldWorld;
+	World newWorld;
+	public PostPlayerChangeWorld(SpoutCraftPlayer player, World oldWorld, World newWorld) {
+		this.player = player;
+		this.oldWorld = oldWorld;
+		this.newWorld = newWorld;
+	}
+
+	@Override
+	public void run() {
+		SpoutCraftPlayer.updateBukkitEntity(player);
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
+		if (player.isSpoutCraftEnabled()) {
+			player.updateMovement();
+			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+			mm.sendBlockOverrideToPlayers(new Player[] {player}, newWorld);
+			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player);
+		}
+	}
+}
+
+class PostTeleport implements Runnable {
+	SpoutCraftPlayer player;
+	public PostTeleport(SpoutCraftPlayer player){
+		this.player = player;
+	}
+	
+	@Override
+	public void run() {
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
+	}
 }

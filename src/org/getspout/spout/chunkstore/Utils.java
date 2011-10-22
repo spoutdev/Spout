@@ -38,8 +38,7 @@ public class Utils {
 		
 		File worldContainer = new File(".");
 		try {
-			worldContainer = ((CraftServer)Bukkit.getServer()).getWorldContainer(); //Why isn't this public :(
-			Method m = CraftServer.class.getDeclaredMethod("getWorldContainer", (Class<?>[])null);
+			Method m = CraftServer.class.getDeclaredMethod("getWorldContainer", (Class<?>[])null); //Why isn't this public :(
 			worldContainer = (File) m.invoke((CraftServer)Bukkit.getServer(), (Object[])null);
 		}
 		catch (Exception ignore) {}

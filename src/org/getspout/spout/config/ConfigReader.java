@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.bukkit.util.config.Configuration;
 import org.getspout.spout.Spout;
 
+@SuppressWarnings("deprecation")
 public class ConfigReader {
 	private static boolean forceClient = false;
 	private static boolean autoUpdate = false;
