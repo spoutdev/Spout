@@ -35,6 +35,7 @@ import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
+import org.getspout.spoutapi.packet.PacketServerPlugins;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -83,6 +84,7 @@ public class PlayerManager {
 		Spout.getInstance().getEntityTrackingManager().track(player);
 		Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player); //force tracking of all existing entities
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
+		player.sendPacket(new PacketServerPlugins(Bukkit.getServer().getPluginManager().getPlugins()));
 		p.reset = true;
 		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));	
 		player.sendPacket(new PacketBlockData(SpoutManager.getMaterialManager().getModifiedBlocks()));

@@ -451,8 +451,11 @@ public class SimpleMaterialManager implements MaterialManager {
 	}
 
 	private void updateCustomBlockDesigns(Player[] players, int blockId, int metaData, BlockDesign design) {
-
-		PacketCustomBlockDesign p = new PacketCustomBlockDesign(blockId, metaData, design);
+		CustomBlock block = MaterialData.getCustomBlock(blockId);
+		if (block == null) {
+			block = MaterialData.getCustomBlock(metaData);
+		}
+		PacketCustomBlockDesign p = new PacketCustomBlockDesign(block.getName(), block.isOpaque(), blockId, metaData, design);
 
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
