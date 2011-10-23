@@ -1,5 +1,6 @@
 package org.getspout.spout;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -35,7 +36,9 @@ public class SpoutBlockListener extends BlockListener {
 			
 			if (sb.isCustomBlock()) {
 				if(mm.hasItemDrop(sb.getCustomBlock())) {
-					sb.getWorld().dropItem(sb.getLocation(), mm.getItemDrop(sb.getCustomBlock()));
+					if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+						sb.getWorld().dropItem(sb.getLocation(), mm.getItemDrop(sb.getCustomBlock()));
+					}
 					sb.setTypeId(0);
 					event.setCancelled(true);
 				}

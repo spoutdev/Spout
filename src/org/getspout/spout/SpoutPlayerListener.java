@@ -19,6 +19,7 @@ package org.getspout.spout;
 import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -133,11 +134,14 @@ public class SpoutPlayerListener extends PlayerListener{
 						
 						if (!placeEvent.isCancelled() && placeEvent.canBuild()) {
 							// Yay, take the item from inventory
-							if(item.getAmount() == 1) {
-								event.getPlayer().setItemInHand(null);
-							} else {
-								item.setAmount(item.getAmount() - 1);
+							if (player.getGameMode() == GameMode.SURVIVAL) {
+								if(item.getAmount() == 1) {
+									event.getPlayer().setItemInHand(null);
+								} else {
+									item.setAmount(item.getAmount() - 1);
+								}
 							}
+							player.updateInventory();
 						} else {
 							// Event cancelled or can't build
 							mm.removeBlockOverride(block);
