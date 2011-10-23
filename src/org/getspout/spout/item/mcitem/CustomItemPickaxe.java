@@ -6,7 +6,6 @@ import net.minecraft.server.Block;
 import net.minecraft.server.EnumToolMaterial;
 import net.minecraft.server.Item;
 import net.minecraft.server.ItemPickaxe;
-import net.minecraft.server.ItemSpade;
 import net.minecraft.server.ItemTool;
 import net.minecraft.server.Material;
 
