@@ -56,7 +56,7 @@ public class SpoutCommand implements CommandExecutor {
 			} else {
 				SpoutCraftPlayer sp = (SpoutCraftPlayer)target;
 				if (!sp.isSpoutCraftEnabled()) {
-					sender.sendMessage("[Spout] Client version: Not a Spout client");
+					sender.sendMessage("[Spout] Client version: standard client");
 				} else {
 					sender.sendMessage("[Spout] Client version: " + sp.getVersionString());
 				}
@@ -64,7 +64,7 @@ public class SpoutCommand implements CommandExecutor {
 			return true;
 		} else if (c.equals("verify") && args.length > 1 && sender.isOp() && sender instanceof ConsoleCommandSender) {
 			sender.sendMessage("[Spout] Temporarily setting the motd to: " + args[1]);
-			sender.sendMessage("[Spout] It will return to its oringinal setting in ~5 mins");
+			sender.sendMessage("[Spout] It will return to its original setting in ~5 mins");
 			if (motd_temp == null) {
 				motd_temp = ((CraftServer) Bukkit.getServer()).getHandle().server.p;
 			} else {

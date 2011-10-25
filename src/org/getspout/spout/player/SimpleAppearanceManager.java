@@ -135,7 +135,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 			}
 			map.put(target.getName(), Url);
 			SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(p);
-			if (player.getVersion() > 4)
+			if (player.isSpoutCraftEnabled())
 				player.sendPacket(new PacketSkinURL(target.getEntityId(), Url));
 		}
 	}

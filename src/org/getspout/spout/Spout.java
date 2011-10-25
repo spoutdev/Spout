@@ -105,6 +105,7 @@ public class Spout extends JavaPlugin{
 		blockListener = new SpoutBlockListener();
 		entityTrackingManager = new EntityTrackerManager();
 	}
+
 	@Override
 	public void onDisable() {
 		//order matters
@@ -247,7 +248,18 @@ public class Spout extends JavaPlugin{
 		
 		SimpleMaterialManager.disableFlintStackMix();
 		
-		Logger.getLogger("Minecraft").info("Spout " + this.getDescription().getVersion() + " has been initialized");
+		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been initialized");
+	}
+	
+	public String getVersion() {
+		return getVersion(true);
+	}
+	
+	public String getVersion(boolean verbose) {
+		if (this.getDescription().getVersion().contains("${build.number}")) {
+			return "-1" + (verbose ? " [Custom Build]" : "");
+		}
+		return this.getDescription().getVersion();
 	}
 
 	/**
@@ -279,10 +291,11 @@ public class Spout extends JavaPlugin{
 
 		if (latest != null) {
 			try {
-				int current = Integer.parseInt(getDescription().getVersion().split("\\.")[3]);
-				int newest = Integer.parseInt(latest);
-	
-				return current < newest;
+				int current = Integer.parseInt(getVersion());
+				if (current != -1) { // -1 == custom build
+					int newest = Integer.parseInt(latest);
+					return current < newest;
+				}
 			}
 			catch (NumberFormatException e){
 				return false;

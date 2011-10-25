@@ -111,8 +111,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	protected Keyboard togglefog = Keyboard.KEY_UNKNOWN;
 	protected Keyboard sneak = Keyboard.KEY_UNKNOWN;
 	private int buildVersion = -1;
-	private int minorVersion = -1;
-	private int majorVersion = -1;
 	public RenderDistance currentRender = null;
 	protected RenderDistance maximumRender = null;
 	protected RenderDistance minimumRender = null;
@@ -386,14 +384,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 
 	@Override
 	public boolean isSpoutCraftEnabled() {
-		return getBuildVersion() > -1 && getMinorVersion() > -1 && getMajorVersion() > -1;
-	}
-
-	public int getVersion() {
-		if (isSpoutCraftEnabled()) {
-			return majorVersion * 100 + minorVersion * 10 + buildVersion;
-		}
-		return -1;
+		return getBuildVersion() > -1;
 	}
 
 	@Override
@@ -901,27 +892,18 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		return (SpoutNetServerHandler) getHandle().netServerHandler;
 	}
 
-	public int getMajorVersion() {
-		return majorVersion;
-	}
-
-	public int getMinorVersion() {
-		return minorVersion;
-	}
-
 	public int getBuildVersion() {
 		return buildVersion;
 	}
 
-	public void setVersion(int major, int minor, int build) {
+	public void setBuildVersion(int build) {
 		buildVersion = build;
-		minorVersion = minor;
-		majorVersion = major;
 		if (isSpoutCraftEnabled() && queued != null) {
 			for (SpoutPacket packet : queued) {
 				sendPacket(packet);
 			}
 		}
+		queued = null;
 	}
 
 	public void setVersionString(String versionString) {
