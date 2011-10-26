@@ -10,11 +10,11 @@ Visit our [website][Website].
 Get support on our [Bukkit forum thread][Forum].  
 Track and submit issues and bugs on our [issue tracker][Issues].
 
-Follow Spout on Twitter [@SpoutDev][Twitter]
+[![][Twitter Logo]][Twitter][![][Facebook Logo]][Facebook][![][Donate Logo]][Donate]
 
 Source
 ------
-The latest and greatest source of Spout can be found on [GitHub].  
+The latest and greatest source can be found on [GitHub].  
 Download the latest builds from [Jenkins].  
 View the latest [Javadoc].
 
@@ -28,23 +28,27 @@ Spout requires SpoutAPI and Bukkit (preferrably the latest versions or source).
 
 Coding and Pull Request Formatting
 ----------------------------------
-* Generally follows the Oracle coding standards.
-* Spout uses tabs, no spaces.
+* Generally follow the Oracle coding standards.
+* Use tabs, no spaces.
 * No 80 column limit or midstatement newlines.
 * Pull requests must compile and work.
 * Pull requests must be formatted properly.
-* If you change a Packet or Widget's read/write/number of bytes, be sure to increment the version on both the server and client.
-* When modifying Notch code (Minecraft vanilla code), include `//Spout start`and `//Spout end`
+* If you change a packet or widget's read/write/number of bytes, be sure to increment the version on both the server and client.
 
-Please follow the above conventions if you want your pull requests accepted.
+**Please follow the above conventions if you want your pull request(s) accepted.**
 
 [Project Logo]: http://assets.craftfire.com/img/logo/spout_327x150.png
 [License]: http://www.gnu.org/licenses/lgpl.html
 [Website]: http://www.getspout.org
-[Forum]: http://bit.ly/getspout
+[Forum]: http://spout.in/bukkit
 [GitHub]: https://github.com/SpoutDev/Spout
-[Javadoc]: http://jddev.getspout.org
-[Jenkins]: http://ci.getspout.org/view/SpoutDev
-[Issues]: https://github.com/SpoutDev/Spout/issues
-[Twitter]: http://twitter.com/SpoutDev
+[Javadoc]: http://spout.in/jddev
+[Jenkins]: http://spout.in/ci
+[Issues]: http://spout.in/issues
+[Twitter]: http://spout.in/twitter
+[Twitter Logo]: http://cdn.getspout.org/img/button/twitter_follow_us.png
+[Facebook]: http://spout.in/facebook
+[Facebook Logo]: http://cdn.getspout.org/img/button/facebook_like_us.png
+[Donate]: https://www.paypal.com/cgi-bin/webscr?hosted_button_id=QNJH72R72TZ64&item_name=Spoutcraft+%28from+GitHub.com%29&cmd=_s-xclick
+[Donate Logo]: http://cdn.getspout.org/img/button/donate_paypal_96x96.png
 [MCP]: http://mcp.ocean-labs.de/index.php/MCP_Releases

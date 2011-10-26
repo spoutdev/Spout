@@ -225,8 +225,14 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		return MaterialData.getCustomBlock(id);
 	}
 	
+	@Override
 	public boolean equals(Object other) {
 		return other == this;
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	@Override

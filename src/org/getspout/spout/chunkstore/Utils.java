@@ -23,16 +23,27 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+
+import org.bukkit.craftbukkit.CraftServer;
 
 public class Utils {
 
 	public static File getWorldDirectory(World world) {
 		
-		File dir = new File(world.getName());
+		File worldContainer = new File(".");
+		try {
+			Method m = CraftServer.class.getDeclaredMethod("getWorldContainer", (Class<?>[])null); //Why isn't this public :(
+			worldContainer = (File) m.invoke((CraftServer)Bukkit.getServer(), (Object[])null);
+		}
+		catch (Exception ignore) {}
+		
+		File dir = new File(worldContainer, world.getName());
 		
 		if (world.getEnvironment() == Environment.NETHER) {
 			dir = new File(dir, "DIM-1");

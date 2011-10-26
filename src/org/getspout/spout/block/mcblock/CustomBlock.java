@@ -257,7 +257,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
-		return parent.getDamage(entityhuman); //could have modified hardness, return super
+		return parent.getDamage(entityhuman);
 	}
 	
 	@Override
@@ -277,19 +277,11 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean canPlace(World world, int i, int j, int k, int l) {
-		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
-		if (block != null) {
-			return block.canPlaceBlockAt(world.getWorld(), i, j, k, CraftBlock.notchToBlockFace(l));
-		}
 		return parent.canPlace(world, i, j, k, l);
 	}
 	
 	@Override
 	public boolean canPlace(World world, int i, int j, int k) {
-		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
-		if (block != null) {
-			return block.canPlaceBlockAt(world.getWorld(), i, j, k);
-		}
 		return parent.canPlace(world, i, j, k);
 	}
 	

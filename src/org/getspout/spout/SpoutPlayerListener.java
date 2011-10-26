@@ -19,18 +19,20 @@ package org.getspout.spout;
 import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -43,8 +45,6 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.MaterialData;
-import org.getspout.spoutapi.packet.PacketUniqueId;
-import org.getspout.spoutapi.packet.PacketWorldSeed;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutPlayerListener extends PlayerListener{
@@ -57,6 +57,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		Spout.getInstance().authenticate(event.getPlayer());
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
+		Spout.getInstance().getEntityTrackingManager().onEntityJoin(event.getPlayer());
 	}
 
 	@Override
@@ -67,49 +68,16 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getFrom() == null || event.getTo() == null || event.getFrom().getWorld() == null || event.getTo().getWorld()== null) {
-			return;
-		}
+		
 		Runnable update = null;
 		final SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
-		if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName())) {
-			update = new Runnable() {
-				public void run() {
-					SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
-					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
-					if(scp.isSpoutCraftEnabled()) {
-						scp.updateMovement();
-						long newSeed = event.getTo().getWorld().getSeed();
-						scp.sendPacket(new PacketWorldSeed(newSeed));
-						SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-						mm.sendBlockOverrideToPlayers(new Player[] {event.getPlayer()}, event.getTo().getWorld());
-					}
-				}
-			};
+		
+		if (event.getFrom().getWorld().equals(event.getTo().getWorld())) {
+			update = new PostTeleport(scp);
 		}
-		else {
-			update = new Runnable() {
-				public void run() {
-					((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(scp);
-				}
-			};
+		if (update != null) {
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
 		}
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
-	}
-	
-	@Override
-	public void onPlayerRespawn(final PlayerRespawnEvent event) {
-		System.out.println("Player Respawning");
-		Runnable update = new Runnable() {
-			public void run() {
-				SpoutCraftPlayer scp = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(event.getPlayer());
-				if(scp.isSpoutCraftEnabled()) {
-					scp.sendPacket(new PacketUniqueId(scp.getUniqueId(), scp.getEntityId()));
-					scp.updateMovement();
-				}
-			}
-		};
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), update, 2);
 	}
 
 	@Override
@@ -126,11 +94,13 @@ public class SpoutPlayerListener extends PlayerListener{
 		SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(event.getPlayer());
 		if (event.getClickedBlock() != null) {
 			Material type = event.getClickedBlock().getType();
+			boolean action = false;
 			if (type == Material.CHEST || type == Material.DISPENSER || type == Material.WORKBENCH || type == Material.FURNACE) {
 				player.getNetServerHandler().activeLocation = event.getClickedBlock().getLocation();
+				action = true;
 			}
 			
-			if (event.hasItem()) {
+			if (event.hasItem() && !action) {
 				ItemStack item = event.getItem();
 				int damage = item.getDurability();
 				
@@ -143,14 +113,45 @@ public class SpoutPlayerListener extends PlayerListener{
 					
 					if (newBlockId != 0 ) {
 						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
-						CustomBlock cb = MaterialData.getCustomBlock(damage);
-						block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
-						mm.overrideBlock(block, cb);
 						
-						if(item.getAmount() == 1) {
-							event.getPlayer().setItemInHand(null);
-						} else {
-							item.setAmount(item.getAmount() - 1);
+						if (!player.getEyeLocation().getBlock().equals(block) && !player.getLocation().getBlock().equals(block)) {
+						
+							CustomBlock cb = MaterialData.getCustomBlock(damage);
+							BlockState oldState = block.getState();
+							block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
+							mm.overrideBlock(block, cb);
+							
+							// TODO: canBuild should be set properly, CraftEventFactory.canBuild() would do this... 
+							//       but it's private so... here it is >.>
+							int spawnRadius = Bukkit.getServer().getSpawnRadius();
+							boolean canBuild = false;
+							if (spawnRadius <= 0 || player.isOp()) { // Fast checks
+								canBuild = true;
+							} else {
+								Location spawn = event.getClickedBlock().getWorld().getSpawnLocation();
+								if (Math.max(Math.abs(block.getX()-spawn.getBlockX()), Math.abs(block.getZ()-spawn.getBlockZ())) > spawnRadius) { // Slower check
+									canBuild = true;
+								}
+							}
+							
+							BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, oldState, event.getClickedBlock(), item, player, canBuild);
+							Bukkit.getPluginManager().callEvent(placeEvent);
+							
+							if (!placeEvent.isCancelled() && placeEvent.canBuild()) {
+								// Yay, take the item from inventory
+								if (player.getGameMode() == GameMode.SURVIVAL) {
+									if(item.getAmount() == 1) {
+										event.getPlayer().setItemInHand(null);
+									} else {
+										item.setAmount(item.getAmount() - 1);
+									}
+								}
+								player.updateInventory();
+							} else {
+								// Event cancelled or can't build
+								mm.removeBlockOverride(block);
+								block.setTypeIdAndData(oldState.getTypeId(), oldState.getRawData(), true);
+							}
 						}
 					}
 				}
@@ -179,7 +180,7 @@ public class SpoutPlayerListener extends PlayerListener{
 		if(event.isCancelled()) {
 			return;
 		}
-
+		
 		SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
 		SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
 
@@ -189,7 +190,6 @@ public class SpoutPlayerListener extends PlayerListener{
 		int cz = ((int)loc.getZ()) >> 4;
 
 		netServerHandler.setPlayerChunk(cx, cz);
-
 	}
 	
 	@Override
@@ -197,14 +197,31 @@ public class SpoutPlayerListener extends PlayerListener{
 		int id = event.getPlayer().getEntityId();
 		ChunkCache.playerQuit(id);
 		MapChunkThread.removeId(id);
-		SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
-		SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
-		if (netServerHandler.activeInventory) {
-			Inventory inventory = netServerHandler.getActiveInventory();
-
-			InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
-			Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+		if (event.getPlayer() instanceof SpoutCraftPlayer) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
+			SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
+			if (netServerHandler.activeInventory) {
+				Inventory inventory = netServerHandler.getActiveInventory();
+	
+				InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
+				Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+			}
+			
+			
 		}
+		Spout.getInstance().getEntityTrackingManager().untrack(event.getPlayer());
 	}
 
+}
+
+class PostTeleport implements Runnable {
+	SpoutCraftPlayer player;
+	public PostTeleport(SpoutCraftPlayer player){
+		this.player = player;
+	}
+	
+	@Override
+	public void run() {
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
+	}
 }

@@ -35,7 +35,7 @@ import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
-import org.getspout.spoutapi.packet.PacketUniqueId;
+import org.getspout.spoutapi.packet.PacketServerPlugins;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -80,11 +80,18 @@ public class PlayerManager {
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		((SimpleKeyBindingManager)SpoutManager.getKeyBindingManager()).onPlayerJoin(player);
-		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowVisualCheats()));
-		player.sendPacket(new PacketUniqueId(player.getUniqueId(), player.getEntityId()));
+		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowSkyCheat(),ConfigReader.isAllowClearWaterCheat(),ConfigReader.isAllowStarsCheat(),ConfigReader.isAllowWeatherCheat(),ConfigReader.isAllowTimeCheat(),ConfigReader.isAllowCoordsCheat(),ConfigReader.isAllowEntityLabelCheat()));
+		Spout.getInstance().getEntityTrackingManager().track(player);
+		Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player); //force tracking of all existing entities
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
+		player.sendPacket(new PacketServerPlugins(Bukkit.getServer().getPluginManager().getPlugins()));
 		p.reset = true;
 		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));	
+		
+		//force bubble meter to update
+		player.setRemainingAir(player.getRemainingAir());
+		player.setMaximumAir(player.getMaximumAir());
+		
 		player.sendPacket(new PacketBlockData(SpoutManager.getMaterialManager().getModifiedBlocks()));
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}

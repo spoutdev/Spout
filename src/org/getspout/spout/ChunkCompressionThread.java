@@ -5,6 +5,7 @@
 package org.getspout.spout;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.zip.Deflater;
@@ -42,6 +43,7 @@ public final class ChunkCompressionThread implements Runnable {
 	public static void endThread() {
 		isRunning = false;
 		activeThread.interrupt();
+		instance.sendFinalChunks();
 	}
 
 	public void run() {
@@ -52,6 +54,18 @@ public final class ChunkCompressionThread implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void sendFinalChunks() {
+		//safely manage the chunks after interruption
+		Iterator<QueuedPacket> i = packetQueue.iterator();
+		while(i.hasNext()) {
+			QueuedPacket next = i.next();
+			if (next.compress){
+				handleMapChunk(next);
+			}
+			next.player.netServerHandler.networkManager.queue(next.packet);
 		}
 	}
 
