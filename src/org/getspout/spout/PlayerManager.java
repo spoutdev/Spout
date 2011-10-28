@@ -48,9 +48,6 @@ public class PlayerManager {
 	}
 	
 	public void onServerTick() {
-		if (!ConfigReader.isForceClient()) {
-			return;
-		}
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (timer.containsKey(player.getName())) {
 				int ticksLeft = timer.get(player.getName());
