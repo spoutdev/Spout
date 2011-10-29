@@ -350,7 +350,17 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	}
 	
 	@Override
-	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
+	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
+		
+		//Restore glass functionality
+		//Normal glass functionality blocks redstone power transmission of any kind
+		if (this.id == Block.GLASS.id){
+			if (block == null) {
+				return false;
+			}
+		}
+		
 		int index = CustomBlock.getIndex(x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
@@ -375,11 +385,9 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				}
 			}
 		}
-		if (iblockaccess instanceof World) {
-			org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
-			if (block != null) {
-				return block.isProvidingPowerTo(((World)iblockaccess).getWorld(), x, y, z, CraftBlock.notchToBlockFace(face));
-			}
+		
+		if (block != null) {
+			return block.isProvidingPowerTo(((World)iblockaccess).getWorld(), x, y, z, CraftBlock.notchToBlockFace(face));
 		}
 		return parent.a(iblockaccess, x, y, z, face);
 	}
