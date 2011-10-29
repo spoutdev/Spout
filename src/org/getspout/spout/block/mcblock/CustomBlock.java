@@ -350,7 +350,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	}
 	
 	@Override
-	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face
+	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
 		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
 		
 		//Restore glass functionality
