@@ -44,15 +44,19 @@
 
     <!-- Repository locations -->
     <repositories>
-        <repository>
-            <id>spout-repo</id>
-            <url>http://repo.getspout.org</url>
+       <repository>
+            <id>pev-repo</id>
+            <url>http://www.pevnostgames.net/repo</url>
             <releases>
                 <updatePolicy>always</updatePolicy>
             </releases>
             <snapshots>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
+        </repository>
+        <repository>
+            <id>spout-repo</id>
+            <url>http://repo.getspout.org</url>
         </repository>
          <repository>
             <id>craftfire-dbrepo</id>
