@@ -102,8 +102,6 @@ public abstract class AbstractBlockManager implements MaterialManager{
 		}
 	}
 
-	
-
 	@Override
 	public String getStepSound(org.getspout.spoutapi.material.Block block) {
 		// TODO Auto-generated method stub

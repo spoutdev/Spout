@@ -119,7 +119,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean b() {
-		return parent.b();
+		return parent.b() && id != Block.GLASS.id; //Prevent glass from transmitting redstone power
 	}
 	
 	@Override
