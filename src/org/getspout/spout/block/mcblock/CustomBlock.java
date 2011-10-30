@@ -405,6 +405,15 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public boolean d(World world, int i, int j, int k, int l) {
 		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
+		
+		//Restore glass functionality
+		//Normal glass functionality blocks redstone power transmission of any kind
+		if (this.id == Block.GLASS.id){
+			if (block == null) {
+				return false;
+			}
+		}
+		
 		if (block != null) {
 			return block.isProvidingPowerTo(world.getWorld(), i, j, k, CraftBlock.notchToBlockFace(l));
 		}
