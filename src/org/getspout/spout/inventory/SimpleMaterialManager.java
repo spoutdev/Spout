@@ -497,6 +497,17 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 			}
 		}
 	}
+	
+	private boolean glassUpdated = false;
+	//Fired when MaterialData.addCustomItem or MaterialData.addCustomBlock is called
+	public void onCustomMaterialRegistered(Material mat) {
+		if (mat instanceof CustomBlock && !glassUpdated) {
+			if (!((CustomBlock)mat).isOpaque()) {
+				org.getspout.spout.block.mcblock.CustomBlock.updateGlass();
+				glassUpdated = true;
+			}
+		}
+	}
 
 	private class BlockOverrides {
 		private World world;

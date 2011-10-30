@@ -22,7 +22,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -106,14 +105,6 @@ public class SpoutPlayerListener extends PlayerListener{
 				
 				ItemStack item = event.getItem();
 				int damage = item.getDurability();
-				if (type == Material.GLASS && ((SpoutBlock)event.getClickedBlock()).isCustomBlock()) {
-					if (canPlaceAt(block, block.getState(), (SpoutBlock)event.getClickedBlock(), item, player)) {
-						org.getspout.spoutapi.material.Material mat = MaterialData.getMaterial(item.getTypeId());
-						block.setTypeIdAndData(item.getTypeId(), (byte) (mat.hasSubtypes() ? item.getDurability() : 0), true);
-						action = true;
-					}
-				}
-				
 				if(item.getType() == Material.FLINT && damage != 0 && !action) {
 					
 					SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
@@ -122,8 +113,6 @@ public class SpoutPlayerListener extends PlayerListener{
 					short newMetaData = (short) mm.getItemMetaData(damage);
 					
 					if (newBlockId != 0 ) {
-						
-						
 						if (!player.getEyeLocation().getBlock().equals(block) && !player.getLocation().getBlock().equals(block)) {
 						
 							CustomBlock cb = MaterialData.getCustomBlock(damage);

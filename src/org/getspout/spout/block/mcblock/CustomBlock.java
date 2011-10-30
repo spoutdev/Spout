@@ -119,7 +119,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean b() {
-		return parent.b() && id != Block.GLASS.id; //Prevent glass from transmitting redstone power
+		return parent.b();
 	}
 	
 	@Override
@@ -352,15 +352,6 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
 		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
-		
-		//Restore glass functionality
-		//Normal glass functionality blocks redstone power transmission of any kind
-		if (this.id == Block.GLASS.id){
-			if (block == null) {
-				return false;
-			}
-		}
-		
 		int index = CustomBlock.getIndex(x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
@@ -405,15 +396,6 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public boolean d(World world, int i, int j, int k, int l) {
 		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
-		
-		//Restore glass functionality
-		//Normal glass functionality blocks redstone power transmission of any kind
-		if (this.id == Block.GLASS.id){
-			if (block == null) {
-				return false;
-			}
-		}
-		
 		if (block != null) {
 			return block.isProvidingPowerTo(world.getWorld(), i, j, k, CraftBlock.notchToBlockFace(l));
 		}
@@ -487,7 +469,11 @@ public class CustomBlock extends Block implements CustomMCBlock{
 
 			}
 		}
-		
+	}
+	
+	//TODO: This causes redstone issues with glass (allows power through glass, vanilla does not) but it can't
+	//Be solved from a plugin. Workaround: Don't update glass unless non-opaque custom blocks are on the server.
+	public static void updateGlass() {
 		//Allow placement of blocks on glass
 		try {
 			Field field = Material.SHATTERABLE.getClass().getDeclaredField("G");
