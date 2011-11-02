@@ -351,6 +351,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
+		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
 		int index = CustomBlock.getIndex(x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
@@ -375,11 +376,9 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				}
 			}
 		}
-		if (iblockaccess instanceof World) {
-			org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
-			if (block != null) {
-				return block.isProvidingPowerTo(((World)iblockaccess).getWorld(), x, y, z, CraftBlock.notchToBlockFace(face));
-			}
+		
+		if (block != null) {
+			return block.isProvidingPowerTo(((World)iblockaccess).getWorld(), x, y, z, CraftBlock.notchToBlockFace(face));
 		}
 		return parent.a(iblockaccess, x, y, z, face);
 	}
@@ -470,7 +469,11 @@ public class CustomBlock extends Block implements CustomMCBlock{
 
 			}
 		}
-		
+	}
+	
+	//TODO: This causes redstone issues with glass (allows power through glass, vanilla does not) but it can't
+	//Be solved from a plugin. Workaround: Don't update glass unless non-opaque custom blocks are on the server.
+	public static void updateGlass() {
 		//Allow placement of blocks on glass
 		try {
 			Field field = Material.SHATTERABLE.getClass().getDeclaredField("G");

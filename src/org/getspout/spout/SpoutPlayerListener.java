@@ -22,7 +22,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -42,6 +41,7 @@ import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.MaterialData;
@@ -101,10 +101,11 @@ public class SpoutPlayerListener extends PlayerListener{
 			}
 			
 			if (event.hasItem() && !action) {
+				SpoutBlock block = (SpoutBlock)event.getClickedBlock().getRelative(event.getBlockFace());
+				
 				ItemStack item = event.getItem();
 				int damage = item.getDurability();
-				
-				if(item.getType() == Material.FLINT && damage != 0) {
+				if(item.getType() == Material.FLINT && damage != 0 && !action) {
 					
 					SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 
@@ -112,8 +113,6 @@ public class SpoutPlayerListener extends PlayerListener{
 					short newMetaData = (short) mm.getItemMetaData(damage);
 					
 					if (newBlockId != 0 ) {
-						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
-						
 						if (!player.getEyeLocation().getBlock().equals(block) && !player.getLocation().getBlock().equals(block)) {
 						
 							CustomBlock cb = MaterialData.getCustomBlock(damage);
@@ -121,23 +120,7 @@ public class SpoutPlayerListener extends PlayerListener{
 							block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
 							mm.overrideBlock(block, cb);
 							
-							// TODO: canBuild should be set properly, CraftEventFactory.canBuild() would do this... 
-							//       but it's private so... here it is >.>
-							int spawnRadius = Bukkit.getServer().getSpawnRadius();
-							boolean canBuild = false;
-							if (spawnRadius <= 0 || player.isOp()) { // Fast checks
-								canBuild = true;
-							} else {
-								Location spawn = event.getClickedBlock().getWorld().getSpawnLocation();
-								if (Math.max(Math.abs(block.getX()-spawn.getBlockX()), Math.abs(block.getZ()-spawn.getBlockZ())) > spawnRadius) { // Slower check
-									canBuild = true;
-								}
-							}
-							
-							BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, oldState, event.getClickedBlock(), item, player, canBuild);
-							Bukkit.getPluginManager().callEvent(placeEvent);
-							
-							if (!placeEvent.isCancelled() && placeEvent.canBuild()) {
+							if (canPlaceAt(block, oldState, (SpoutBlock)event.getClickedBlock(), item, player)) {
 								// Yay, take the item from inventory
 								if (player.getGameMode() == GameMode.SURVIVAL) {
 									if(item.getAmount() == 1) {
@@ -157,6 +140,26 @@ public class SpoutPlayerListener extends PlayerListener{
 				}
 			}
 		}
+	}
+	
+	//TODO: canBuild should be set properly, CraftEventFactory.canBuild() would do this... 
+	//       but it's private so... here it is >.>
+	private boolean canPlaceAt(SpoutBlock result, BlockState oldState, SpoutBlock clicked, ItemStack item, SpoutPlayer player) {
+		int spawnRadius = Bukkit.getServer().getSpawnRadius();
+		boolean canBuild = false;
+		if (spawnRadius <= 0 || player.isOp()) { // Fast checks
+			canBuild = true;
+		} else {
+			Location spawn = clicked.getWorld().getSpawnLocation();
+			if (Math.max(Math.abs(result.getX()-spawn.getBlockX()), Math.abs(result.getZ()-spawn.getBlockZ())) > spawnRadius) { // Slower check
+				canBuild = true;
+			}
+		}
+		
+		BlockPlaceEvent placeEvent = new BlockPlaceEvent(result, oldState, clicked, item, player, canBuild);
+		Bukkit.getPluginManager().callEvent(placeEvent);
+		
+		return !placeEvent.isCancelled() && placeEvent.canBuild();
 	}
 	
 	private void updatePlayerEvent(PlayerEvent event) {

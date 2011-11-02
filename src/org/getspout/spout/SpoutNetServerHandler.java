@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -610,29 +611,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		manageChunkQueue(true);
 		SpoutPlayer player = SpoutManager.getPlayer(this.getPlayer());
 		boolean old = ((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight;
-		/*boolean oldCheckMovement = true;
-		Field checkMovement = null;
-		try {
-			checkMovement = NetServerHandler.class.getDeclaredField("checkMovement");
-			checkMovement.setAccessible(true);
-			oldCheckMovement = (Boolean) checkMovement.get(this);
-			checkMovement.set(this, false);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}*/
 		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = player.canFly();
 		super.a(packet);
-		
-		//Reset old settings
-		/*try {
-			checkMovement = NetServerHandler.class.getDeclaredField("checkMovement");
-			checkMovement.setAccessible(true);
-			checkMovement.set(this, oldCheckMovement);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}*/
 		((CraftServer)Bukkit.getServer()).getHandle().server.allowFlight = old;
 	}
 
@@ -645,23 +625,20 @@ public class SpoutNetServerHandler extends NetServerHandler {
 
 	// This may not catch 100% of packets, but should get most of them, a small number may end up being compressed by main thread
 	@SuppressWarnings("unchecked")
-	public void manageChunkQueue(boolean flag) {
+	public void manageChunkQueue(boolean flag1) {
 		List<ChunkCoordIntPair> playerChunkQueue = player.chunkCoordIntPairQueue;
 
-		if (!playerChunkQueue.isEmpty()) {
-			Iterator<ChunkCoordIntPair> i = playerChunkQueue.iterator();
-			while (i.hasNext()) {
-				ChunkCoordIntPair next = i.next();
-				chunkUpdateQueue.add(next);
+		try {
+			if (!playerChunkQueue.isEmpty()) {
+				chunkUpdateQueue.addAll(playerChunkQueue);
+				playerChunkQueue.clear();
 			}
-			playerChunkQueue.clear();
+		}
+		catch (ConcurrentModificationException e) {
+			//seems to be called from a separate thread during teleports (rogue plugins?)
 		}
 
-		int chunkCompressionThreadSize = 0;
-		try {
-			chunkCompressionThreadSize = ChunkCompressionThread.getPlayerQueueSize(this.player);
-		} catch (java.lang.NoClassDefFoundError err) {
-		}
+		int chunkCompressionThreadSize = ChunkCompressionThread.getPlayerQueueSize(this.player);
 		if (!chunkUpdateQueue.isEmpty() && (b() + chunkCompressionThreadSize + MapChunkThread.getQueueLength(this.player)) < 4) {
 			ChunkCoordIntPair playerChunk = getPlayerChunk();
 			Iterator<ChunkCoordIntPair> i = chunkUpdateQueue.iterator();
