@@ -23,12 +23,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.block.CraftBlock;
-import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.inventory.SimpleMaterialManager;
-import org.getspout.spout.inventory.SpoutCraftItemStack;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.block.SpoutChunk;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.MaterialData;
 
@@ -181,15 +180,15 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	}
 
 	@Override
-	public ItemStack toItemStack() {
+	public SpoutItemStack toItemStack() {
 		return toItemStack(1);
 	}
 
 	@Override
-	public ItemStack toItemStack(int amount) {
+	public SpoutItemStack toItemStack(int amount) {
 		int type = getTypeId();
 		int data = getBlockType().hasSubtypes() ? getData() : 0;
-		return new SpoutCraftItemStack(type, amount, (short) data);
+		return new SpoutItemStack(type, amount, (short) data);
 	}
 
 	public Integer getCustomBlockId() {
