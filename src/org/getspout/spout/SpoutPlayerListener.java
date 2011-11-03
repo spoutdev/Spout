@@ -51,10 +51,12 @@ public class SpoutPlayerListener extends PlayerListener{
 	public PlayerManager manager = new PlayerManager();
 	@Override
 	public void onPlayerJoin(final PlayerJoinEvent event) {
-		SpoutCraftPlayer.updateNetServerHandler(event.getPlayer());
-		SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
-		updatePlayerEvent(event);
-		Spout.getInstance().authenticate(event.getPlayer());
+		if (!event.getPlayer().getClass().equals(SpoutCraftPlayer.class)) {
+			SpoutCraftPlayer.updateNetServerHandler(event.getPlayer());
+			SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
+			updatePlayerEvent(event);
+			Spout.getInstance().authenticate(event.getPlayer());
+		}
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
 		Spout.getInstance().getEntityTrackingManager().onEntityJoin(event.getPlayer());

@@ -21,16 +21,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Logger;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.NetworkListenThread;
 import net.minecraft.server.Packet18ArmAnimation;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -169,6 +173,9 @@ public class Spout extends JavaPlugin{
 		MapChunkThread.endThread();
 		PacketCompressionThread.endThread();
 		ChunkCompressionThread.endThread();
+		
+		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been disabled");
+
 	}
 
 	@Override
@@ -249,6 +256,25 @@ public class Spout extends JavaPlugin{
 		SimpleMaterialManager.disableFlintStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been initialized");
+		try {
+			MinecraftServer server = ((CraftServer)getServer()).getServer();
+			NetworkListenThread thread = server.networkListenThread;
+			SpoutNetworkAcceptThread acceptThread = new SpoutNetworkAcceptThread(thread, "Spout Network Accept Thread", server);
+			
+			Field e = NetworkListenThread.class.getDeclaredField("e");
+			e.setAccessible(true);
+			Thread old = (Thread) e.get(thread);
+			thread.b = false;
+			old.interrupt();
+			old.join(1000);
+			System.out.println("Is Thread Active: " + old.isAlive());
+			e.set(thread, acceptThread);
+			acceptThread.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public String getVersion() {

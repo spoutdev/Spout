@@ -51,6 +51,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -137,9 +138,15 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
-		CraftPlayer player = entity.netServerHandler.getPlayer();
-		perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
-		perm.recalculatePermissions();
+		if (entity.netServerHandler != null) {
+			CraftPlayer player = entity.netServerHandler.getPlayer();
+			perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
+			perm.recalculatePermissions();
+		}
+		else {
+			perm = new SpoutPermissibleBase((Permissible)new PermissibleBase(this));
+			perm.recalculatePermissions();
+		}
 		mainScreen = new InGameScreen(this.getEntityId());
 
 		mainScreen.toggleSurvivalHUD(!getGameMode().equals(GameMode.CREATIVE));
@@ -999,7 +1006,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public static boolean updateNetServerHandler(Player player) {
 		CraftPlayer cp = (CraftPlayer)player;
 		CraftServer server = (CraftServer)Bukkit.getServer();
-
 		if (!(cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class))) {
 			NetServerHandler oldHandler = cp.getHandle().netServerHandler;
 			Location loc = player.getLocation();
@@ -1023,18 +1029,23 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		if (!(player instanceof SpoutCraftPlayer)) {
 			CraftPlayer cp = (CraftPlayer)player;
 			EntityPlayer ep = cp.getHandle();
-			Field bukkitEntity;
-			try {
-				bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-				bukkitEntity.setAccessible(true);
-				org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
-				if (!e.getClass().equals(SpoutCraftPlayer.class)) {
-					bukkitEntity.set(ep, new SpoutCraftPlayer((CraftServer)Bukkit.getServer(), ep));
-				}
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
+			return updateBukkitEntity(ep);
+		}
+		return false;
+	}
+	
+	public static boolean updateBukkitEntity(EntityPlayer ep) {
+		Field bukkitEntity;
+		try {
+			bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+			bukkitEntity.setAccessible(true);
+			org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
+			if (e == null || !e.getClass().equals(SpoutCraftPlayer.class)) {
+				bukkitEntity.set(ep, new SpoutCraftPlayer((CraftServer)Bukkit.getServer(), ep));
 			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
