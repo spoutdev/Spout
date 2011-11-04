@@ -134,7 +134,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	private boolean screenOpenThisTick = false;
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
-	public long velocityAdjustmentTime = System.currentTimeMillis();
+	public long velocityAdjustmentTime = System.currentTimeMillis() + 250; //login motion is often hacky
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);

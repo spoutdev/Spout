@@ -261,15 +261,15 @@ public class Spout extends JavaPlugin{
 			MinecraftServer server = ((CraftServer)getServer()).getServer();
 			NetworkListenThread thread = server.networkListenThread;
 			SpoutNetworkAcceptThread acceptThread = new SpoutNetworkAcceptThread(thread, "Spout Network Accept Thread", server);
+			acceptThread.start();
 			
 			Field e = NetworkListenThread.class.getDeclaredField("e");
 			e.setAccessible(true);
 			Thread old = (Thread) e.get(thread);
-			thread.b = false;
-			old.interrupt();
-			old.join(1000);
 			e.set(thread, acceptThread);
-			acceptThread.start();
+			
+			old.interrupt();
+			old.join(100);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

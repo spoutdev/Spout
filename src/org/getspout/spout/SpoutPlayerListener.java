@@ -71,7 +71,6 @@ public class SpoutPlayerListener extends PlayerListener{
 				if (player.canFly()) {
 					event.setCancelled(true);
 				}
-				System.out.println(System.currentTimeMillis() < player.velocityAdjustmentTime);
 				if (System.currentTimeMillis() < player.velocityAdjustmentTime) {
 					event.setCancelled(true);
 				}
