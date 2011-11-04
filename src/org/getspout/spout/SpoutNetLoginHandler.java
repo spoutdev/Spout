@@ -29,7 +29,6 @@ import net.minecraft.server.MobEffect;
 import net.minecraft.server.NetLoginHandler;
 import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.Packet1Login;
-import net.minecraft.server.Packet3Chat;
 import net.minecraft.server.Packet41MobEffect;
 import net.minecraft.server.Packet4UpdateTime;
 import net.minecraft.server.Packet6SpawnPosition;
@@ -79,7 +78,6 @@ public class SpoutNetLoginHandler extends NetLoginHandler{
 			
 			netserverhandler.sendPacket(new Packet6SpawnPosition(chunkcoordinates.x, chunkcoordinates.y, chunkcoordinates.z));
 			this.server.serverConfigurationManager.a(entityplayer, worldserver);
-			this.server.serverConfigurationManager.sendAll(new Packet3Chat("\u00A7e" + entityplayer.name + " joined the game."));
 			this.server.serverConfigurationManager.c(entityplayer);
 			netserverhandler.a(entityplayer.locX, entityplayer.locY, entityplayer.locZ, entityplayer.yaw, entityplayer.pitch);
 			this.server.networkListenThread.a(netserverhandler);

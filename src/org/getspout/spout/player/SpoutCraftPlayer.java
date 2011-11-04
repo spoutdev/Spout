@@ -134,6 +134,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	private boolean screenOpenThisTick = false;
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
+	public long velocityAdjustmentTime = System.currentTimeMillis();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
@@ -273,6 +274,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			if(!event.isCancelled()) {
 				sendPacket(new PacketSetVelocity(getEntityId(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
 			}
+			double speedX = Math.abs(event.getVelocity().getX() * event.getVelocity().getX());
+			double speedY = Math.abs(event.getVelocity().getY() * event.getVelocity().getY());
+			double speedZ = Math.abs(event.getVelocity().getZ() * event.getVelocity().getZ());
+			double speed = speedX + speedY + speedZ;
+			
+			velocityAdjustmentTime = System.currentTimeMillis() + (long)(speed * 3);
 			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but still tells the server about the new velocity
 		}
 	}

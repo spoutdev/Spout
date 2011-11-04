@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -60,6 +61,22 @@ public class SpoutPlayerListener extends PlayerListener{
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
 		Spout.getInstance().getEntityTrackingManager().onEntityJoin(event.getPlayer());
+	}
+	
+	@Override
+	public void onPlayerKick(PlayerKickEvent event) {
+		if (event.getPlayer() instanceof SpoutCraftPlayer) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
+			if (event.getReason().equals("You moved too quickly :( (Hacking?)")) {
+				if (player.canFly()) {
+					event.setCancelled(true);
+				}
+				System.out.println(System.currentTimeMillis() < player.velocityAdjustmentTime);
+				if (System.currentTimeMillis() < player.velocityAdjustmentTime) {
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 
 	@Override

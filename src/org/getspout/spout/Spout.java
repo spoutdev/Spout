@@ -188,6 +188,7 @@ public class Spout extends JavaPlugin{
 			}
 		}).start();
 		getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.PLAYER_KICK, playerListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
@@ -267,7 +268,6 @@ public class Spout extends JavaPlugin{
 			thread.b = false;
 			old.interrupt();
 			old.join(1000);
-			System.out.println("Is Thread Active: " + old.isAlive());
 			e.set(thread, acceptThread);
 			acceptThread.start();
 		}
