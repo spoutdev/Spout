@@ -26,6 +26,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import net.minecraft.server.MinecraftServer;
@@ -83,6 +85,7 @@ public class Spout extends JavaPlugin{
 	protected static Spout instance;
 	protected Configuration CRCConfig;
 	protected Configuration itemMapConfig;
+	protected List<SpoutPlayer> playersOnline = new ArrayList<SpoutPlayer>();
 	
 	public Spout() {
 		super();
@@ -219,6 +222,9 @@ public class Spout extends JavaPlugin{
 			playerListener.manager.onPlayerJoin(player);
 			((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(player);
 			player.setPreCachingComplete(true); //already done if we are already online!
+			synchronized(playersOnline) {
+				playersOnline.add(player);
+			}
 		}
 
 		SpoutCraftChunk.replaceAllBukkitChunks();

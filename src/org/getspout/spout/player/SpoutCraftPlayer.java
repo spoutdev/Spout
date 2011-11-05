@@ -50,6 +50,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
@@ -516,10 +517,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			sendPacket(new PacketRenderDistance(false, true));
 		}
 	}
+	
+	
 
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
 		if (isSpoutCraftEnabled()) {
+			if (toRender == null || toRender == Material.AIR)
+				throw new IllegalArgumentException("The item to render may not be null or air");
 			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
 			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
@@ -531,11 +536,26 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	@Override
 	public void sendNotification(String title, String message, Material toRender, short data, int time) {
 		if (isSpoutCraftEnabled()) {
+			if (toRender == null || toRender == Material.AIR)
+				throw new IllegalArgumentException("The item to render may not be null or air");
 			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
 			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
 				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars + 26 colors");
 			sendPacket(new PacketNotification(title, message, toRender.getId(), data, time));
+		}
+	}
+	
+	@Override
+	public void sendNotification(String title, String message, ItemStack item, int time) {
+		if (isSpoutCraftEnabled()) {
+			if (item == null || item.getTypeId() == Material.AIR.getId())
+				throw new IllegalArgumentException("The item to render may not be null or air");
+			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
+				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
+			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
+				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars + 26 colors");
+			sendPacket(new PacketNotification(title, message, item.getTypeId(), item.getDurability(), time));
 		}
 	}
 

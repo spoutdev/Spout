@@ -17,6 +17,7 @@
 package org.getspout.spout;
 
 import java.lang.reflect.Field;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -46,8 +47,15 @@ public class SpoutWorldListener extends WorldListener{
 			SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 			dm.loadChunk(event.getChunk());
 			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-			List<Player> players = event.getChunk().getWorld().getPlayers();
-			mm.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
+			try {
+				List<Player> players = event.getChunk().getWorld().getPlayers();
+				mm.sendBlockOverrideToPlayers(players.toArray(new Player[0]), event.getChunk());
+			}
+			catch (ConcurrentModificationException e) {
+				synchronized(Spout.getInstance().playersOnline) {
+					mm.sendBlockOverrideToPlayers(Spout.getInstance().playersOnline.toArray(new Player[0]), event.getChunk());
+				}	
+			}
 		}
 	}
 
