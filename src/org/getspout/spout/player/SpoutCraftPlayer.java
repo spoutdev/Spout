@@ -135,6 +135,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	private boolean screenOpenThisTick = false;
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
+	private LinkedList<SpoutPacket> delayedPackets = new LinkedList<SpoutPacket>();
 	public long velocityAdjustmentTime = System.currentTimeMillis();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
@@ -812,6 +813,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		this.togglefog = Keyboard.getKey(keys[8]);
 		this.sneak = Keyboard.getKey(keys[9]);
 	}
+	
+	//Sends a packet delayed by 1 tick
+	public void sendDelayedPacket(SpoutPacket packet) {
+		delayedPackets.add(packet);
+	}
 
 	public void sendPacket(SpoutPacket packet) {
 		if (!isSpoutCraftEnabled()) {
@@ -954,7 +960,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		if(currentScreen != null && currentScreen instanceof OverlayScreen){
 			currentScreen.onTick();
 		}
-		getNetServerHandler().syncFlushPacketQueue();
 		screenOpenThisTick = false;
 		
 		//Because the player teleport event doesn't always fire :(
@@ -965,17 +970,25 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			}
 		}
 		lastTickLocation = current;
+		
+		for (SpoutPacket packet : delayedPackets) {
+			sendPacket(packet);
+		}
+		delayedPackets.clear();
+		
+		//Do this last!
+		getNetServerHandler().syncFlushPacketQueue();
 	} 
 	
 	public void doPostPlayerChangeWorld(World oldWorld, World newWorld) {
 		SpoutCraftPlayer.updateBukkitEntity(this);
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
 		if (isSpoutCraftEnabled()) {
 			updateMovement();
 			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 			mm.sendBlockOverrideToPlayers(new Player[] {this}, newWorld);
 			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(this);
 		}
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
 	}
 
 	public void updateMovement() {

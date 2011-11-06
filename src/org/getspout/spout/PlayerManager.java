@@ -71,6 +71,8 @@ public class PlayerManager {
 	
 	public void onSpoutcraftEnable(SpoutPlayer player) {
 		timer.remove(player.getName());
+		Spout.getInstance().getEntityTrackingManager().track(player);
+		Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player); //force tracking of all existing entities
 		player.sendPacket(new PacketServerPlugins(Bukkit.getServer().getPluginManager().getPlugins()));
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
 		((SimpleMaterialManager)SpoutManager.getMaterialManager()).onPlayerJoin(player);
@@ -79,8 +81,6 @@ public class PlayerManager {
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		((SimpleKeyBindingManager)SpoutManager.getKeyBindingManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowSkyCheat(),ConfigReader.isAllowClearWaterCheat(),ConfigReader.isAllowStarsCheat(),ConfigReader.isAllowWeatherCheat(),ConfigReader.isAllowTimeCheat(),ConfigReader.isAllowCoordsCheat(),ConfigReader.isAllowEntityLabelCheat()));
-		Spout.getInstance().getEntityTrackingManager().track(player);
-		Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player); //force tracking of all existing entities
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;
 		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));	
