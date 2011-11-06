@@ -164,7 +164,7 @@ public class SimpleChunkDataManager implements ChunkDataManager {
 	public Serializable setBlockData(String id, World world, int x, int y, int z, Serializable data) {
 		
 		ChunkMetaData md = getMetaData(world, x >> 4, z >> 4, false);
-		System.out.println("Setting Block Data: " + md + " data" + data);
+		//System.out.println("Setting Block Data: " + md + " data" + data);
 		if (md == null) {
 			return null;
 		}
