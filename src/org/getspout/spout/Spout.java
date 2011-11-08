@@ -21,16 +21,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.NetworkListenThread;
 import net.minecraft.server.Packet18ArmAnimation;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -79,6 +85,7 @@ public class Spout extends JavaPlugin{
 	protected static Spout instance;
 	protected Configuration CRCConfig;
 	protected Configuration itemMapConfig;
+	protected List<SpoutPlayer> playersOnline = new ArrayList<SpoutPlayer>();
 	
 	public Spout() {
 		super();
@@ -169,6 +176,9 @@ public class Spout extends JavaPlugin{
 		MapChunkThread.endThread();
 		PacketCompressionThread.endThread();
 		ChunkCompressionThread.endThread();
+		
+		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been disabled");
+
 	}
 
 	@Override
@@ -181,6 +191,7 @@ public class Spout extends JavaPlugin{
 			}
 		}).start();
 		getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Lowest, this);
+		getServer().getPluginManager().registerEvent(Type.PLAYER_KICK, playerListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
@@ -211,6 +222,9 @@ public class Spout extends JavaPlugin{
 			playerListener.manager.onPlayerJoin(player);
 			((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(player);
 			player.setPreCachingComplete(true); //already done if we are already online!
+			synchronized(playersOnline) {
+				playersOnline.add(player);
+			}
 		}
 
 		SpoutCraftChunk.replaceAllBukkitChunks();
@@ -249,6 +263,24 @@ public class Spout extends JavaPlugin{
 		SimpleMaterialManager.disableFlintStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been initialized");
+		try {
+			MinecraftServer server = ((CraftServer)getServer()).getServer();
+			NetworkListenThread thread = server.networkListenThread;
+			SpoutNetworkAcceptThread acceptThread = new SpoutNetworkAcceptThread(thread, "Spout Network Accept Thread", server);
+			acceptThread.start();
+			
+			Field e = NetworkListenThread.class.getDeclaredField("e");
+			e.setAccessible(true);
+			Thread old = (Thread) e.get(thread);
+			e.set(thread, acceptThread);
+			
+			old.interrupt();
+			old.join(100);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public String getVersion() {

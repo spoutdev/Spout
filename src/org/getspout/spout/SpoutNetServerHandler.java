@@ -59,7 +59,6 @@ import net.minecraft.server.Packet11PlayerPosition;
 import net.minecraft.server.Packet13PlayerLookMove;
 import net.minecraft.server.Packet14BlockDig;
 import net.minecraft.server.Packet18ArmAnimation;
-import net.minecraft.server.Packet255KickDisconnect;
 import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet9Respawn;
@@ -503,9 +502,9 @@ public class SpoutNetServerHandler extends NetServerHandler {
 
 	@Override
 	public void disconnect(String kick) {
-		this.sendPacket(new Packet255KickDisconnect(kick));
-		syncFlushPacketQueue(new MCCraftPacket[256]);
 		super.disconnect(kick);
+		if (this.disconnected)
+			syncFlushPacketQueue(new MCCraftPacket[256]);
 	}
 	
 	public void syncFlushPacketQueue() {

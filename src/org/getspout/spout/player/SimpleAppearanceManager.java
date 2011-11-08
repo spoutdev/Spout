@@ -300,7 +300,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 							urlSkin = SpoutManager.getPlayerManager().getGlobalInfo().getEntitySkin(lv, type);
 						}
 						if (urlSkin != null) {
-							player.sendPacket(new PacketEntitySkin(lv, urlSkin, type.getId()));
+							player.sendDelayedPacket(new PacketEntitySkin(lv, urlSkin, type.getId()));
 						}
 					}
 					if (lv instanceof HumanEntity) {
@@ -476,7 +476,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 		//Delay sending to next tick.
 		Runnable r = new Runnable() {
 			public void run() {
-				viewingPlayer.sendPacket(packet);
+				((SpoutCraftPlayer)viewingPlayer).sendDelayedPacket(packet);
 			}
 		};
 		viewingPlayer.getInformation().setEntitySkin(target, url, type);
@@ -495,7 +495,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 				for(Player p : Bukkit.getServer().getOnlinePlayers()){
 					SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
 					if(player.isSpoutCraftEnabled()){
-						player.sendPacket(packet);
+						player.sendDelayedPacket(packet);
 					}
 				}
 			}

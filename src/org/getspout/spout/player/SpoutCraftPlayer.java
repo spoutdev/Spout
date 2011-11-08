@@ -50,7 +50,9 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -89,6 +91,7 @@ import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
 import org.getspout.spoutapi.packet.PacketOpenSignGUI;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
+import org.getspout.spoutapi.packet.PacketScreenshot;
 import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.PacketWidget;
@@ -133,13 +136,21 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public Set<SpoutCraftChunk> lastTickAdjacentChunks = new HashSet<SpoutCraftChunk>(); 
 	private boolean screenOpenThisTick = false;
 	public LinkedList<SpoutPacket> queued = new LinkedList<SpoutPacket>();
+	private LinkedList<SpoutPacket> delayedPackets = new LinkedList<SpoutPacket>();
+	public long velocityAdjustmentTime = System.currentTimeMillis();
 
 	public SpoutCraftPlayer(CraftServer server, EntityPlayer entity) {
 		super(server, entity);
 		createInventory(null);
-		CraftPlayer player = entity.netServerHandler.getPlayer();
-		perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
-		perm.recalculatePermissions();
+		if (entity.netServerHandler != null) {
+			CraftPlayer player = entity.netServerHandler.getPlayer();
+			perm = new SpoutPermissibleBase((Permissible) player.addAttachment(Bukkit.getServer().getPluginManager().getPlugin("Spout")).getPermissible());
+			perm.recalculatePermissions();
+		}
+		else {
+			perm = new SpoutPermissibleBase((Permissible)new PermissibleBase(this));
+			perm.recalculatePermissions();
+		}
 		mainScreen = new InGameScreen(this.getEntityId());
 
 		mainScreen.toggleSurvivalHUD(!getGameMode().equals(GameMode.CREATIVE));
@@ -266,6 +277,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			if(!event.isCancelled()) {
 				sendPacket(new PacketSetVelocity(getEntityId(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
 			}
+			double speedX = Math.abs(event.getVelocity().getX() * event.getVelocity().getX());
+			double speedY = Math.abs(event.getVelocity().getY() * event.getVelocity().getY());
+			double speedZ = Math.abs(event.getVelocity().getZ() * event.getVelocity().getZ());
+			double speed = speedX + speedY + speedZ;
+			
+			velocityAdjustmentTime = System.currentTimeMillis() + (long)(speed * 5);
 			getHandle().velocityChanged = false; //prevents nms from sending an override packet later, but still tells the server about the new velocity
 		}
 	}
@@ -502,10 +519,14 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			sendPacket(new PacketRenderDistance(false, true));
 		}
 	}
+	
+	
 
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
 		if (isSpoutCraftEnabled()) {
+			if (toRender == null || toRender == Material.AIR)
+				throw new IllegalArgumentException("The item to render may not be null or air");
 			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
 			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
@@ -517,11 +538,26 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	@Override
 	public void sendNotification(String title, String message, Material toRender, short data, int time) {
 		if (isSpoutCraftEnabled()) {
+			if (toRender == null || toRender == Material.AIR)
+				throw new IllegalArgumentException("The item to render may not be null or air");
 			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
 				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
 			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
 				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars + 26 colors");
 			sendPacket(new PacketNotification(title, message, toRender.getId(), data, time));
+		}
+	}
+	
+	@Override
+	public void sendNotification(String title, String message, ItemStack item, int time) {
+		if (isSpoutCraftEnabled()) {
+			if (item == null || item.getTypeId() == Material.AIR.getId())
+				throw new IllegalArgumentException("The item to render may not be null or air");
+			if (ChatColor.stripColor(title).length() > 26 || title.length() > 78)
+				throw new UnsupportedOperationException("Notification titles can not be greater than 26 chars + 26 colors");
+			if (ChatColor.stripColor(message).length() > 26 || message.length() > 78)
+				throw new UnsupportedOperationException("Notification messages can not be greater than 26 chars + 26 colors");
+			sendPacket(new PacketNotification(title, message, item.getTypeId(), item.getDurability(), time));
 		}
 	}
 
@@ -630,7 +666,13 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		openScreen(type, true);
 	}
 
-	@Override
+    @Override
+    public void sendScreenshotRequest() {
+        PacketScreenshot packets = new PacketScreenshot();
+        sendPacket(packets);
+    }
+
+    @Override
 	public void openScreen(ScreenType type, boolean packet) {
 		if(type == activeScreen || screenOpenThisTick) {
 			return;
@@ -778,6 +820,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		this.togglefog = Keyboard.getKey(keys[8]);
 		this.sneak = Keyboard.getKey(keys[9]);
 	}
+	
+	//Sends a packet delayed by 1 tick
+	public void sendDelayedPacket(SpoutPacket packet) {
+		delayedPackets.add(packet);
+	}
 
 	public void sendPacket(SpoutPacket packet) {
 		if (!isSpoutCraftEnabled()) {
@@ -920,7 +967,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		if(currentScreen != null && currentScreen instanceof OverlayScreen){
 			currentScreen.onTick();
 		}
-		getNetServerHandler().syncFlushPacketQueue();
 		screenOpenThisTick = false;
 		
 		//Because the player teleport event doesn't always fire :(
@@ -931,17 +977,25 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			}
 		}
 		lastTickLocation = current;
+		
+		for (SpoutPacket packet : delayedPackets) {
+			sendPacket(packet);
+		}
+		delayedPackets.clear();
+		
+		//Do this last!
+		getNetServerHandler().syncFlushPacketQueue();
 	} 
 	
 	public void doPostPlayerChangeWorld(World oldWorld, World newWorld) {
 		SpoutCraftPlayer.updateBukkitEntity(this);
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
 		if (isSpoutCraftEnabled()) {
 			updateMovement();
 			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 			mm.sendBlockOverrideToPlayers(new Player[] {this}, newWorld);
 			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(this);
 		}
+		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
 	}
 
 	public void updateMovement() {
@@ -999,7 +1053,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public static boolean updateNetServerHandler(Player player) {
 		CraftPlayer cp = (CraftPlayer)player;
 		CraftServer server = (CraftServer)Bukkit.getServer();
-
 		if (!(cp.getHandle().netServerHandler.getClass().equals(SpoutNetServerHandler.class))) {
 			NetServerHandler oldHandler = cp.getHandle().netServerHandler;
 			Location loc = player.getLocation();
@@ -1023,18 +1076,23 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		if (!(player instanceof SpoutCraftPlayer)) {
 			CraftPlayer cp = (CraftPlayer)player;
 			EntityPlayer ep = cp.getHandle();
-			Field bukkitEntity;
-			try {
-				bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
-				bukkitEntity.setAccessible(true);
-				org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
-				if (!e.getClass().equals(SpoutCraftPlayer.class)) {
-					bukkitEntity.set(ep, new SpoutCraftPlayer((CraftServer)Bukkit.getServer(), ep));
-				}
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
+			return updateBukkitEntity(ep);
+		}
+		return false;
+	}
+	
+	public static boolean updateBukkitEntity(EntityPlayer ep) {
+		Field bukkitEntity;
+		try {
+			bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
+			bukkitEntity.setAccessible(true);
+			org.bukkit.entity.Entity e = (org.bukkit.entity.Entity) bukkitEntity.get(ep);
+			if (e == null || !e.getClass().equals(SpoutCraftPlayer.class)) {
+				bukkitEntity.set(ep, new SpoutCraftPlayer((CraftServer)Bukkit.getServer(), ep));
 			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

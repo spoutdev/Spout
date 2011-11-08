@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -51,13 +52,33 @@ public class SpoutPlayerListener extends PlayerListener{
 	public PlayerManager manager = new PlayerManager();
 	@Override
 	public void onPlayerJoin(final PlayerJoinEvent event) {
-		SpoutCraftPlayer.updateNetServerHandler(event.getPlayer());
-		SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
-		updatePlayerEvent(event);
-		Spout.getInstance().authenticate(event.getPlayer());
+		if (!event.getPlayer().getClass().equals(SpoutCraftPlayer.class)) {
+			SpoutCraftPlayer.updateNetServerHandler(event.getPlayer());
+			SpoutCraftPlayer.updateBukkitEntity(event.getPlayer());
+			updatePlayerEvent(event);
+			Spout.getInstance().authenticate(event.getPlayer());
+		}
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPlayerJoin(event.getPlayer());
 		manager.onPlayerJoin(event.getPlayer());
 		Spout.getInstance().getEntityTrackingManager().onEntityJoin(event.getPlayer());
+		synchronized(Spout.getInstance().playersOnline) {
+			Spout.getInstance().playersOnline.add((SpoutPlayer) event.getPlayer());
+		}
+	}
+	
+	@Override
+	public void onPlayerKick(PlayerKickEvent event) {
+		if (event.getPlayer() instanceof SpoutCraftPlayer) {
+			SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
+			if (event.getReason().equals("You moved too quickly :( (Hacking?)")) {
+				if (player.canFly()) {
+					event.setCancelled(true);
+				}
+				if (System.currentTimeMillis() < player.velocityAdjustmentTime) {
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -213,6 +234,9 @@ public class SpoutPlayerListener extends PlayerListener{
 			
 		}
 		Spout.getInstance().getEntityTrackingManager().untrack(event.getPlayer());
+		synchronized(Spout.getInstance().playersOnline) {
+			Spout.getInstance().playersOnline.remove((SpoutPlayer) event.getPlayer());
+		}
 	}
 
 }
