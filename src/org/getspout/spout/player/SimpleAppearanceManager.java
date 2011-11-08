@@ -17,16 +17,19 @@
 package org.getspout.spout.player;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.getspout.spout.Spout;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.PacketEntitySkin;
 import org.getspout.spoutapi.packet.PacketEntityTitle;
 import org.getspout.spoutapi.packet.PacketSkinURL;
+import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.player.AppearanceManager;
 import org.getspout.spoutapi.player.EntitySkinType;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -38,6 +41,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 	HashMap<String, HashMap<String, String>> cloakMap = new HashMap<String, HashMap<String, String>>();
 	HashMap<Integer, String> globalTitleMap = new HashMap<Integer, String>();
 	HashMap<String, HashMap<Integer, String>> titleMap = new HashMap<String, HashMap<Integer, String>>();
+	
 	public SimpleAppearanceManager() {
 		
 	}
@@ -467,20 +471,36 @@ public class SimpleAppearanceManager implements AppearanceManager{
 	}*/
 
 	@Override
-	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url, EntitySkinType type) {
-		PacketEntitySkin packet = new PacketEntitySkin(target, url, type.getId());
-		viewingPlayer.sendPacket(packet);
+	public void setEntitySkin(final SpoutPlayer viewingPlayer, LivingEntity target, String url, EntitySkinType type) {
+		final PacketEntitySkin packet = new PacketEntitySkin(target, url, type.getId());
+		//Delay sending to next tick.
+		Runnable r = new Runnable() {
+			public void run() {
+				viewingPlayer.sendPacket(packet);
+			}
+		};
 		viewingPlayer.getInformation().setEntitySkin(target, url, type);
+		if(viewingPlayer.isSpoutCraftEnabled()) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), r);
+		}
 	}
 
 	@Override
 	public void setGlobalEntitySkin(LivingEntity entity, String url, EntitySkinType type) {
 		SpoutManager.getPlayerManager().getGlobalInfo().setEntitySkin(entity, url, type);
-		for(Player p : Bukkit.getServer().getOnlinePlayers()){
-			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
-			if(player.isSpoutCraftEnabled()){
-				player.sendPacket(new PacketEntitySkin(entity, url, type.getId()));
+		final PacketEntitySkin packet = new PacketEntitySkin(entity, url, type.getId());
+		//Delay sending to next tick!
+		Runnable r = new Runnable() {
+			public void run() {
+				for(Player p : Bukkit.getServer().getOnlinePlayers()){
+					SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(p);
+					if(player.isSpoutCraftEnabled()){
+						player.sendPacket(packet);
+					}
+				}
 			}
-		}
+		};
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Spout.getInstance(), r);
+		
 	}
 }
