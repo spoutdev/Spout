@@ -90,6 +90,7 @@ import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
 import org.getspout.spoutapi.packet.PacketOpenSignGUI;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
+import org.getspout.spoutapi.packet.PacketScreenshot;
 import org.getspout.spoutapi.packet.PacketSetVelocity;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.PacketWidget;
@@ -664,7 +665,13 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		openScreen(type, true);
 	}
 
-	@Override
+    @Override
+    public void sendScreenshotRequest() {
+        PacketScreenshot packets = new PacketScreenshot();
+        sendPacket(packets);
+    }
+
+    @Override
 	public void openScreen(ScreenType type, boolean packet) {
 		if(type == activeScreen || screenOpenThisTick) {
 			return;

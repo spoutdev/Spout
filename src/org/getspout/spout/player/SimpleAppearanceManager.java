@@ -469,7 +469,7 @@ public class SimpleAppearanceManager implements AppearanceManager{
 	@Override
 	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url, EntitySkinType type) {
 		PacketEntitySkin packet = new PacketEntitySkin(target, url, type.getId());
-		viewingPlayer.sendDelayedPacket(packet);
+		((SpoutCraftPlayer)viewingPlayer).sendDelayedPacket(packet);
 		viewingPlayer.getInformation().setEntitySkin(target, url, type);
 	}
 
