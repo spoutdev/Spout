@@ -192,24 +192,16 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	}
 
 	public Integer getCustomBlockId() {
-		return (Integer) getData(SimpleMaterialManager.blockIdString);
-	}
-
-	public Integer getCustomMetaData() {
-		return (Integer) getData(SimpleMaterialManager.metaDataString);
+		Serializable data = getData(SimpleMaterialManager.blockIdString);
+		return data == null ? null : Integer.valueOf((Short)data);
 	}
 
 	public void setCustomBlockId(int blockId) {
 		setData(SimpleMaterialManager.blockIdString, blockId);
 	}
 
-	public void setCustomMetaData(int metaData) {
-		setData(SimpleMaterialManager.metaDataString, metaData);
-	}
-
 	public void removeCustomBlockData() {
 		removeData(SimpleMaterialManager.blockIdString);
-		removeData(SimpleMaterialManager.metaDataString);
 	}
 
 	public boolean isCustomBlock() {

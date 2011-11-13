@@ -119,6 +119,16 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		try {
+			Field x = NetworkManager.class.getDeclaredField("x");
+			x.setAccessible(true);
+			int size = (Integer) x.get(this.networkManager);
+			x.set(this.networkManager, size - 1024 * 1024 * 9);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public EntityList getEntityList() {
@@ -748,6 +758,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		if (cur.x != cx || cur.z != cz) {
 			currentChunk.set(new ChunkCoordIntPair(cx, cz));
 			updateCounter.incrementAndGet();
+			
+			Spout.getInstance().getPlayerTrackingManager().onMoveChunk((SpoutPlayer) getPlayer());
 		}
 	}
 

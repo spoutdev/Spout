@@ -221,15 +221,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public void a(World world, int i, int j, int k) {
-		boolean handled = false;
-		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
-		if (block != null) {
-			block.onBlockPlace(world.getWorld(), i, j, k);
-			handled = true;
-		}
-		if (!handled) {
-			parent.a(world, i, j, k);
-		}
+		parent.a(world, i, j, k);
 	}
 	
 	@Override

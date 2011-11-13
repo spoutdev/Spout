@@ -37,7 +37,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.util.BlockVector;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutChunk;
 
@@ -256,7 +255,12 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	}
 	
 	@Override
-	public BlockVector[] getTaggedBlocks() {
-		return SpoutManager.getChunkDataManager().getTaggedBlocks(getWorld(), getX(), getZ());
+	public short[] getCustomBlockIds() {
+		return SpoutManager.getChunkDataManager().getCustomBlockIds(getWorld(), getX(), getZ());
+	}
+	
+	@Override
+	public void setCustomBlockIds(short[] ids){
+		SpoutManager.getChunkDataManager().setCustomBlockIds(getWorld(), getX(), getZ(), ids);
 	}
 }

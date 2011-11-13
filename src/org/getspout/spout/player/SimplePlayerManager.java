@@ -27,8 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.getspout.spout.inventory.SimpleMaterialManager;
-import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.PlayerManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -103,16 +101,11 @@ public class SimplePlayerManager implements PlayerManager{
 	
 	@Override
 	public void setVersionString(int playerId, String versionString) {
-		
 		SpoutPlayer sp = getPlayer(playerId);
 		if (sp instanceof SpoutCraftPlayer) {
 			SpoutCraftPlayer scp = (SpoutCraftPlayer)sp;
 			scp.setVersionString(versionString);
 			System.out.println("[Spout] Successfully authenticated " + scp.getName() + "'s Spoutcraft client. Running client version: " + scp.getVersionString());
-			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-			mm.updateCustomClientData(scp);
-			mm.updateAllCustomBlockDesigns(scp);
-			mm.sendBlockOverrideToPlayers(new Player[] {sp}, sp.getWorld());
 		}
 		
 	}

@@ -131,14 +131,13 @@ public class SpoutPlayerListener extends PlayerListener{
 					SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 
 					int newBlockId = mm.getItemBlock(damage);
-					short newMetaData = (short) mm.getItemMetaData(damage);
 					
 					if (newBlockId != 0 ) {
 						if (!player.getEyeLocation().getBlock().equals(block) && !player.getLocation().getBlock().equals(block)) {
 						
 							CustomBlock cb = MaterialData.getCustomBlock(damage);
 							BlockState oldState = block.getState();
-							block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
+							block.setTypeIdAndData(cb.getBlockId(), (byte)(0), true);
 							mm.overrideBlock(block, cb);
 							
 							if (canPlaceAt(block, oldState, (SpoutBlock)event.getClickedBlock(), item, player)) {
@@ -218,24 +217,23 @@ public class SpoutPlayerListener extends PlayerListener{
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		int id = event.getPlayer().getEntityId();
+		Player player = event.getPlayer();
+		int id = player.getEntityId();
 		ChunkCache.playerQuit(id);
 		MapChunkThread.removeId(id);
-		if (event.getPlayer() instanceof SpoutCraftPlayer) {
-			SpoutCraftPlayer player = (SpoutCraftPlayer)event.getPlayer();
-			SpoutNetServerHandler netServerHandler = player.getNetServerHandler();
+		if (player instanceof SpoutCraftPlayer) {
+			SpoutCraftPlayer scp = (SpoutCraftPlayer)player;
+			SpoutNetServerHandler netServerHandler = scp.getNetServerHandler();
 			if (netServerHandler.activeInventory) {
 				Inventory inventory = netServerHandler.getActiveInventory();
-	
-				InventoryCloseEvent closeEvent = new InventoryCloseEvent((Player) player, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
+				InventoryCloseEvent closeEvent = new InventoryCloseEvent(scp, inventory, netServerHandler.getDefaultInventory(), netServerHandler.activeLocation);
 				Bukkit.getServer().getPluginManager().callEvent(closeEvent);
 			}
-			
-			
 		}
-		Spout.getInstance().getEntityTrackingManager().untrack(event.getPlayer());
+		Spout.getInstance().getPlayerTrackingManager().onPlayerQuit(player);
+		Spout.getInstance().getEntityTrackingManager().untrack(player);
 		synchronized(Spout.getInstance().playersOnline) {
-			Spout.getInstance().playersOnline.remove((SpoutPlayer) event.getPlayer());
+			Spout.getInstance().playersOnline.remove((SpoutPlayer) player);
 		}
 	}
 

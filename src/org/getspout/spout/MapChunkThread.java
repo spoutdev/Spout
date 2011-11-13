@@ -35,7 +35,7 @@ public final class MapChunkThread implements Runnable {
 		
 		if (!runs) {
 			runs = true;
-			thread = new Thread(instance);
+			thread = new Thread(instance, "Spout Map Chunk Thread");
 			thread.start();
 		}
 	}

@@ -46,7 +46,6 @@ import org.bukkit.util.config.Configuration;
 import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.block.mcblock.CustomBlock;
 import org.getspout.spout.chunkcache.SimpleCacheManager;
-import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.entity.tracker.EntityTrackerManager;
@@ -67,6 +66,8 @@ import org.getspout.spout.player.SimpleSkyManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spout.sound.SimpleSoundManager;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.chunkstore.PlayerTrackingManager;
+import org.getspout.spoutapi.chunkstore.SimpleChunkDataManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -76,6 +77,7 @@ import org.getspout.spoutapi.util.UniqueItemStringMap;
 public class Spout extends JavaPlugin{
 	public final SpoutPlayerListener playerListener;
 	protected final EntityTrackerManager entityTrackingManager;
+	protected final PlayerTrackingManager playerTrackingManager;
 	protected final SpoutWorldListener chunkListener;
 	protected final SpoutWorldMonitorListener chunkMonitorListener;
 	protected final SpoutBlockListener blockListener;
@@ -86,6 +88,7 @@ public class Spout extends JavaPlugin{
 	protected Configuration CRCConfig;
 	protected Configuration itemMapConfig;
 	protected List<SpoutPlayer> playersOnline = new ArrayList<SpoutPlayer>();
+	protected Thread shutdownThread = null;
 	
 	public Spout() {
 		super();
@@ -111,6 +114,9 @@ public class Spout extends JavaPlugin{
 		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		blockListener = new SpoutBlockListener();
 		entityTrackingManager = new EntityTrackerManager();
+		playerTrackingManager = new PlayerTrackingManager();
+		shutdownThread = new ShutdownThread();
+		Runtime.getRuntime().addShutdownHook(shutdownThread);
 	}
 
 	@Override
@@ -175,7 +181,9 @@ public class Spout extends JavaPlugin{
 		//end the thread
 		MapChunkThread.endThread();
 		PacketCompressionThread.endThread();
-		ChunkCompressionThread.endThread();
+		ChunkCompressionThread.endThread();		
+		
+		Runtime.getRuntime().removeShutdownHook(shutdownThread);
 		
 		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been disabled");
 
@@ -305,6 +313,11 @@ public class Spout extends JavaPlugin{
 	public EntityTrackerManager getEntityTrackingManager() {
 		return entityTrackingManager;
 	}
+	
+	public PlayerTrackingManager getPlayerTrackingManager() {
+		return playerTrackingManager;
+	}
+	
 	public void authenticate(Player player) {
 		if (ConfigReader.authenticateSpoutcraft()) {
 			Packet18ArmAnimation packet = new Packet18ArmAnimation();
@@ -421,5 +434,13 @@ public class Spout extends JavaPlugin{
 			in.close();
 		}
 		catch (Exception e) {}
+	}
+}
+
+class ShutdownThread extends Thread {
+	public void run() {
+		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
+		dm.unloadAllChunks();
+		dm.closeAllFiles();
 	}
 }

@@ -5,6 +5,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -13,17 +14,15 @@ import java.util.Set;
 import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.BlockVector;
 import org.getspout.spout.Spout;
 import org.getspout.spout.block.SpoutCraftBlock;
-import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
@@ -49,16 +48,12 @@ import org.getspout.spoutapi.util.map.TIntPairObjectHashMap;
 
 public class SimpleMaterialManager extends AbstractBlockManager implements MaterialManager {
 	private final TIntIntHashMap itemBlock = new TIntIntHashMap();
-	private final TIntIntHashMap itemMetaData = new TIntIntHashMap();
 	private final TIntObjectHashMap<String> itemPlugin = new TIntObjectHashMap<String>();
 	private final TIntPairObjectHashMap<String> customTextures = new TIntPairObjectHashMap<String>(100);
 	private final TIntPairObjectHashMap<String> customTexturesPlugin = new TIntPairObjectHashMap<String>(100);
-	private final TIntPairObjectHashMap<ItemStack> customDrops = new TIntPairObjectHashMap<ItemStack>(100);
+	private final TIntObjectHashMap<ItemStack> customDrops = new TIntObjectHashMap<ItemStack>(100);
 	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
 	private final HashMap<World, TIntPairObjectHashMap<BlockOverrides>> queuedChunkBlockOverrides = new HashMap<World, TIntPairObjectHashMap<BlockOverrides>>(10);
-
-	public final static String blockIdString = "org.spout.customblocks.blockid";
-	public final static String metaDataString = "org.spout.customblocks.metadata";
 
 	public static void disableFlintStackMix() {
 		try {
@@ -173,17 +168,11 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	public void setCustomItemBlock(CustomItem item, CustomBlock block) {
 		int itemId = item.getCustomId();
 		itemBlock.put(itemId, block.getBlockId());
-		itemMetaData.put(itemId, block.getCustomMetaData());
-
 		updateCustomClientData(itemId);
 	}
 
 	public int getItemBlock(int damage) {
 		return itemBlock.get(damage);
-	}
-
-	public int getItemMetaData(int damage) {
-		return itemMetaData.get(damage);
 	}
 
 	public void updateCustomClientData(Player player) {
@@ -204,12 +193,10 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 		int blockId = itemBlock.get(id);
 
-		short metaData = (short) itemMetaData.get(id);
-
 		@SuppressWarnings("unused")
 		String pluginName = (String) itemPlugin.get(id);
 
-		PacketCustomItem p = new PacketCustomItem(id, blockId, metaData);
+		PacketCustomItem p = new PacketCustomItem(id, blockId);
 
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
@@ -233,7 +220,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
 		block.setTypeId(customBlock.getBlockId());
 		int blockId = customBlock.getCustomId();
-		int metaData = customBlock.getCustomMetaData();
 		if (!(block instanceof SpoutCraftBlock)) {
 			return false;
 		}
@@ -241,9 +227,7 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
 
 		scb.setCustomBlockId(blockId);
-		scb.setCustomMetaData(metaData);
-
-		queueBlockOverrides(scb, blockId, metaData);
+		queueBlockOverrides(scb, blockId);
 
 		return true;
 	}
@@ -258,101 +242,28 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 		scb.removeCustomBlockData();
 
-		queueBlockOverrides(scb, null, null);
+		queueBlockOverrides(scb, null);
 		return true;
 	}
 
 	@Override
 	public boolean overrideBlock(World world, int x, int y, int z, CustomBlock customBlock) {
 		int blockId = customBlock.getCustomId();
-		int metaData = customBlock.getCustomMetaData();
 
 		SpoutManager.getChunkDataManager().setBlockData(blockIdString, world, x, y, z, blockId);
-		SpoutManager.getChunkDataManager().setBlockData(metaDataString, world, x, y, z, metaData);
 
-		queueBlockOverrides(world, x, y, z, blockId, metaData);
+		queueBlockOverrides(world, x, y, z, blockId);
 
 		return true;
 	}
 
-	public void sendBlockOverrideToPlayers(Player[] players, World world) {
-
-		Chunk[] chunks = world.getLoadedChunks();
-
-		for (Chunk chunk : chunks) {
-			sendBlockOverrideToPlayers(players, chunk);
-		}
-
-	}
-
-	private SpoutCraftChunk getSpoutCraftChunk(Chunk chunk) {
-		if (!(chunk instanceof SpoutCraftChunk)) {
-			return null;
-		} else {
-			return (SpoutCraftChunk) chunk;
-		}
-	}
-
-	private SpoutCraftBlock getSpoutCraftBlock(Block block) {
-		if (!(block instanceof SpoutCraftBlock)) {
-			return null;
-		} else {
-			return (SpoutCraftBlock) block;
-		}
-	}
-
-	private BlockVector correctBlockVector(BlockVector vector, Chunk chunk) {
-
-		vector.setX(vector.getBlockX() & 0xF + (chunk.getX() << 4));
-		vector.setZ(vector.getBlockZ() & 0xF + (chunk.getZ() << 4));
-		vector.setY(vector.getBlockY() & 0xFF);
-		return vector;
-
-	}
-
-	public boolean sendBlockOverrideToPlayers(Player[] players, Chunk chunk) {
-
-		SpoutCraftChunk scc = getSpoutCraftChunk(chunk);
-		if (scc == null) {
-			return false;
-		}
-
-		BlockVector[] blocks = scc.getTaggedBlocks();
-
-		if (blocks == null) {
-			return false;
-		}
-
-		boolean success = true;
-		for (BlockVector block : blocks) {
-			correctBlockVector(block, scc);
-
-			SpoutCraftBlock scb = getSpoutCraftBlock(chunk.getWorld().getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
-
-			if (scb == null) {
-				success = false;
-				continue;
-			}
-
-			Integer blockId = scb.getCustomBlockId();
-			Integer metaData = scb.getCustomMetaData();
-
-			if (blockId != null && metaData != null) {
-				queueBlockOverrides(scb, blockId, metaData);
-			}
-		}
-
-		return success;
-
-	}
-
-	public void queueBlockOverrides(SpoutCraftBlock block, Integer blockId, Integer metaData) {
+	public void queueBlockOverrides(SpoutCraftBlock block, Integer blockId) {
 		if (block != null) {
-			queueBlockOverrides(block.getWorld(), block.getX(), block.getY(), block.getZ(), blockId, metaData);
+			queueBlockOverrides(block.getWorld(), block.getX(), block.getY(), block.getZ(), blockId);
 		}
 	}
 	
-	public void queueBlockOverrides(World world, int x, int y, int z, Integer blockId, Integer metaData) {
+	public void queueBlockOverrides(World world, int x, int y, int z, Integer blockId) {
 		if (world != null) {
 			TIntPairObjectHashMap<BlockOverrides> chunkOverrides = queuedChunkBlockOverrides.get(world);
 			if (chunkOverrides == null) {
@@ -364,7 +275,7 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 				overrides = new BlockOverrides(world);
 				chunkOverrides.put(x >> 4, z >> 4, overrides);
 			}
-			overrides.putOverride(x, y, z, blockId != null ? blockId.intValue() : -1, metaData != null ? metaData.intValue() : 0);
+			overrides.putOverride(x, y, z, blockId != null ? blockId.intValue() : -1);
 		}
 	}
 
@@ -374,7 +285,7 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		int metaData = material.getRawData();
 		if(material instanceof CustomBlock) {
 			blockId = ((CustomBlock) material).getCustomId();
-			metaData = ((CustomBlock) material).getCustomMetaData();
+			metaData = 0;
 		}
 		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
 
@@ -479,18 +390,18 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 	@Override
 	public CustomBlock registerItemDrop(CustomBlock block, ItemStack item) {
-		customDrops.put(block.getCustomId(), block.getCustomMetaData(), item);
+		customDrops.put(block.getCustomId(), item);
 		return block;
 	}
 
 	@Override
 	public boolean hasItemDrop(CustomBlock block) {
-		return customDrops.containsKey(block.getCustomId(), block.getCustomMetaData());
+		return customDrops.containsKey(block.getCustomId());
 	}
 
 	@Override
 	public ItemStack getItemDrop(CustomBlock block) {
-		return customDrops.get(block.getCustomId(), block.getCustomMetaData());
+		return customDrops.get(block.getCustomId());
 	}
 
 	public void onTick() {
@@ -525,23 +436,21 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		private TIntArrayList yCoords = new TIntArrayList();
 		private TIntArrayList zCoords = new TIntArrayList();
 		private TIntArrayList typeIds = new TIntArrayList();
-		private TIntArrayList metadata = new TIntArrayList();
 		BlockOverrides(World world) {
 			this.world = world;
 		}
 		
-		protected void putOverride(int x, int y, int z, int id, int data) {
+		protected void putOverride(int x, int y, int z, int id) {
 			xCoords.add(x);
 			yCoords.add(y);
 			zCoords.add(z);
 			typeIds.add(id);
-			metadata.add(data);
 		}
 
 		protected void sendPacket() {
 			List<Player> players = world.getPlayers();
 			if (xCoords.size() > 6) {
-				SpoutPacket packet = new PacketCustomMultiBlockOverride(xCoords, yCoords, zCoords, typeIds, metadata);
+				SpoutPacket packet = new PacketCustomMultiBlockOverride(xCoords, yCoords, zCoords, typeIds);
 				for (Player player : players) {
 					if (player instanceof SpoutCraftPlayer) {
 						SpoutCraftPlayer spc = (SpoutCraftPlayer) player;
@@ -552,7 +461,7 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 				}
 			} else {
 				for (int i = 0; i < xCoords.size(); i++) {
-					SpoutPacket packet = new PacketCustomBlockOverride(xCoords.get(i), yCoords.get(i), zCoords.get(i), typeIds.get(i), metadata.get(i));
+					SpoutPacket packet = new PacketCustomBlockOverride(xCoords.get(i), yCoords.get(i), zCoords.get(i), typeIds.get(i));
 					for (Player player : players) {
 						if (player instanceof SpoutCraftPlayer) {
 							SpoutCraftPlayer spc = (SpoutCraftPlayer) player;
@@ -563,6 +472,28 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 					}
 				}
 			}
+		}
+	}
+
+	@Override
+	public File getWorldDirectory(World world) {
+		File worldContainer = new File(".");
+		try {
+			Method m = org.bukkit.craftbukkit.CraftServer.class.getDeclaredMethod("getWorldContainer", (Class<?>[])null); //Why isn't this public :(
+			worldContainer = (File) m.invoke((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer(), (Object[])null);
+		}
+		catch (Exception ignore) {}
+		
+		File dir = new File(worldContainer, world.getName());
+		
+		if (world.getEnvironment() == Environment.NETHER) {
+			dir = new File(dir, "DIM-1");
+		}
+		
+		if (dir.exists()) {
+			return dir;
+		} else {
+			return null;
 		}
 	}
 

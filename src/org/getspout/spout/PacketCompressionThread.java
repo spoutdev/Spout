@@ -28,7 +28,7 @@ public class PacketCompressionThread extends Thread{
 	private final LinkedBlockingDeque<QueuedPacket> queue = new LinkedBlockingDeque<QueuedPacket>(QUEUE_CAPACITY);
 	
 	private PacketCompressionThread() {
-		
+		super("Spout Packet Compression Thread");
 	}
 	
 	public static void startThread() {

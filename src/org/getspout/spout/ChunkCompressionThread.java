@@ -35,7 +35,7 @@ public final class ChunkCompressionThread implements Runnable {
 	public static void startThread() {
 		if (!isRunning) {
 			isRunning = true;
-			activeThread = new Thread(instance);
+			activeThread = new Thread(instance, "Spout Chunk Packet Compression Thread");
 			activeThread.start();
 		}
 	}

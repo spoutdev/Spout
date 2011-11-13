@@ -20,8 +20,8 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
-import org.getspout.spout.chunkstore.SimpleChunkDataManager;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.chunkstore.SimpleChunkDataManager;
 
 public class SpoutWorldMonitorListener extends WorldListener {
 
@@ -31,7 +31,7 @@ public class SpoutWorldMonitorListener extends WorldListener {
 			return;
 		}
 		SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
-		dm.unloadChunk(event.getChunk());
+		dm.saveChunk(event.getChunk());
 
 	}
 

@@ -63,7 +63,6 @@ import org.getspout.spout.Spout;
 import org.getspout.spout.SpoutNetServerHandler;
 import org.getspout.spout.SpoutPermissibleBase;
 import org.getspout.spout.block.SpoutCraftChunk;
-import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutCraftInventory;
 import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
@@ -984,9 +983,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		SpoutCraftPlayer.updateBukkitEntity(this);
 		if (isSpoutCraftEnabled()) {
 			updateMovement();
-			SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-			mm.sendBlockOverrideToPlayers(new Player[] {this}, newWorld);
 			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(this);
+			Spout.getInstance().getPlayerTrackingManager().onWorldChange(this);
 		}
 		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
 	}
