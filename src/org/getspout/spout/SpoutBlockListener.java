@@ -35,6 +35,7 @@ public class SpoutBlockListener extends BlockListener {
 			}
 			
 			if (sb.isCustomBlock()) {
+				sb.getCustomBlock().onBlockDestroyed(block.getWorld(), block.getX(), block.getY(), block.getZ(), event.getPlayer());
 				if(mm.hasItemDrop(sb.getCustomBlock())) {
 					if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 						sb.getWorld().dropItem(sb.getLocation(), mm.getItemDrop(sb.getCustomBlock()));

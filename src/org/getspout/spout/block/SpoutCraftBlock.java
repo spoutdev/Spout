@@ -176,6 +176,10 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 
 	@Override
 	public org.getspout.spoutapi.material.Block getBlockType() {
+		CustomBlock custom = getCustomBlock();
+		if (custom != null) {
+			return custom;
+		}
 		return MaterialData.getBlock(getTypeId());
 	}
 

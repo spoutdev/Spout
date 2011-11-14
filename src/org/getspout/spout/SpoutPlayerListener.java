@@ -138,6 +138,7 @@ public class SpoutPlayerListener extends PlayerListener{
 							CustomBlock cb = MaterialData.getCustomBlock(damage);
 							BlockState oldState = block.getState();
 							block.setTypeIdAndData(cb.getBlockId(), (byte)(0), true);
+							cb.onBlockPlace(block.getWorld(), block.getX(), block.getY(), block.getZ(), player);
 							mm.overrideBlock(block, cb);
 							
 							if (canPlaceAt(block, oldState, (SpoutBlock)event.getClickedBlock(), item, player)) {

@@ -225,6 +225,8 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		}
 
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
+		
+		customBlock.onBlockPlace(scb.getWorld(), scb.getX(), scb.getY(), scb.getZ());
 
 		scb.setCustomBlockId(blockId);
 		queueBlockOverrides(scb, blockId);
@@ -239,6 +241,10 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		}
 
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
+		
+		if (scb.isCustomBlock()) {
+			scb.getCustomBlock().onBlockDestroyed(scb.getWorld(), scb.getX(), scb.getY(), scb.getZ());
+		}
 
 		scb.removeCustomBlockData();
 
@@ -368,8 +374,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		return true;
 	}
 
-
-
 	@Override
 	public boolean isCustomItem(ItemStack item) {
 		if (item.getTypeId() == 318 && item.getDurability() != 0) {
@@ -390,7 +394,12 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 	@Override
 	public CustomBlock registerItemDrop(CustomBlock block, ItemStack item) {
-		customDrops.put(block.getCustomId(), item);
+		if (item != null) {
+			customDrops.put(block.getCustomId(), item);
+		}
+		else {
+			customDrops.remove(block.getCustomId());
+		}
 		return block;
 	}
 

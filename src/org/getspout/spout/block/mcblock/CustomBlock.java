@@ -51,6 +51,7 @@ import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.getspout.spoutapi.block.SpoutBlock;
 
 public class CustomBlock extends Block implements CustomMCBlock{
 	protected Block parent;
@@ -249,6 +250,15 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
+		if (entityhuman instanceof EntityPlayer) {
+			SpoutPlayer player = (SpoutPlayer)((EntityPlayer)entityhuman).netServerHandler.getPlayer();
+			if (player.getLastClickedLocation() != null) {
+				org.getspout.spoutapi.material.Block b = ((SpoutBlock)player.getLastClickedLocation().getBlock()).getBlockType();
+				if (b instanceof org.getspout.spoutapi.material.CustomBlock) {
+					return b.getHardness();
+				}
+			}
+		}
 		return parent.getDamage(entityhuman);
 	}
 	
@@ -301,15 +311,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public void postPlace(World world, int i, int j, int k, int l) {
-		boolean handled = false;
-		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock(world, i, j, k);
-		if (block != null) {
-			block.onBlockPlace(world.getWorld(), i, j, k);
-			handled = true;
-		}
-		if (!handled) {
-			parent.postPlace(world, i, j, k, l);
-		}
+		parent.postPlace(world, i, j, k, l);
 	}
 	
 	@Override
