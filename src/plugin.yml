@@ -1,6 +1,6 @@
 name: Spout
 version: ${build.number}
-description: Spout is a framework to bridge the ever-widening chasm between singleplayer mods, and multiplayer Bukkit plugins.
+description: Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft multiplayer experience to parity with the single-player modding experience.
 authors: [Afforess, alta189, Wulfspider, Raphfrk, narrowtux, Top_Cat, Olloth, Rycochet]
 website: http://www.getspout.org
 
