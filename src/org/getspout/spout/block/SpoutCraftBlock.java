@@ -211,13 +211,16 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	public boolean isCustomBlock() {
 		if (getCustomBlockId() != null) {
 			return true;
-		} else
-			return false;
+		}
+		return false;
 	}
 	
 	public CustomBlock getCustomBlock() {
-		int id = getCustomBlockId();
-		return MaterialData.getCustomBlock(id);
+		if (isCustomBlock()) {
+			int id = getCustomBlockId();
+			return MaterialData.getCustomBlock(id);
+		}
+		return null;
 	}
 	
 	@Override
