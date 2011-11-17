@@ -1,7 +1,7 @@
 name: Spout
 version: ${build.number}
-description: Spout is a framework to bridge the ever-widening chasm between single player mods, and multiplayer Bukkit plugins.
-authors: [Afforess, alta189, Wulfspider, Raphfrk, Top_Cat, narrowtux, Olloth]
+description: Spout is a framework to bridge the ever-widening chasm between singleplayer mods, and multiplayer Bukkit plugins.
+authors: [Afforess, alta189, Wulfspider, Raphfrk, narrowtux, Top_Cat, Olloth, Rycochet]
 website: http://www.getspout.org
 
 main: org.getspout.spout.Spout
@@ -9,7 +9,7 @@ load: startup
 
 commands:
   spout:
-    aliases: [spoutcommand]
+    aliases: [spoutcommand, spoutcmd, spcmd]
     description: Spout commands
     usage: |
       Usage: /<command> version [player]
