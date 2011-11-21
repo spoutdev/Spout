@@ -123,7 +123,6 @@ public class Spout extends JavaPlugin{
 	public void onDisable() {
 		//order matters
 		CustomBlock.resetBlocks();
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginDisable();
 		((SimpleMaterialManager)SpoutManager.getMaterialManager()).reset();
 		((SimpleSkyManager)SpoutManager.getSkyManager()).reset();
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginDisable();
@@ -236,7 +235,6 @@ public class Spout extends JavaPlugin{
 		}
 
 		SpoutCraftChunk.replaceAllBukkitChunks();
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPluginEnable();
 		((SimplePlayerManager)SpoutManager.getPlayerManager()).onPluginEnable();
 		
 		CustomItemSpade.replaceSpades();

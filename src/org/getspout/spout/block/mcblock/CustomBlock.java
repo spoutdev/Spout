@@ -49,7 +49,10 @@ import org.getspout.spout.block.SpoutCraftChunk;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
+import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.material.MaterialData;
+import org.getspout.spoutapi.material.Tool;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.block.SpoutBlock;
 
@@ -250,16 +253,38 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
+		float def = parent.getDamage(entityhuman);
+		
 		if (entityhuman instanceof EntityPlayer) {
 			SpoutPlayer player = (SpoutPlayer)((EntityPlayer)entityhuman).netServerHandler.getPlayer();
 			if (player.getLastClickedLocation() != null) {
-				org.getspout.spoutapi.material.Block b = ((SpoutBlock)player.getLastClickedLocation().getBlock()).getBlockType();
-				if (b instanceof org.getspout.spoutapi.material.CustomBlock) {
-					return b.getHardness();
+				
+				org.getspout.spoutapi.material.Block block = ((SpoutBlock)player.getLastClickedLocation().getBlock()).getBlockType();
+				SpoutItemStack inHand = player.getItemInHand() == null ? null : new SpoutItemStack(player.getItemInHand());
+				org.getspout.spoutapi.material.Material item = inHand.getMaterial();
+				
+				if (!(item instanceof CustomItem)) {
+					return def;
 				}
+				
+				if (!(item instanceof Tool)) {
+					return def;
+				}
+				
+				Tool tool = (Tool)item;
+				
+				float hardness = block.getHardness();
+				if (hardness <= 0F) {
+					return 0F;
+				}
+				
+				float modifier = tool.getStrengthModifier(block);
+				
+				return modifier / hardness / (modifier > 1F ? 30F : 100F);
 			}
 		}
-		return parent.getDamage(entityhuman);
+		
+		return def;
 	}
 	
 	@Override

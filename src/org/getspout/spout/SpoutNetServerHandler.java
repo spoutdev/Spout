@@ -59,6 +59,7 @@ import net.minecraft.server.Packet11PlayerPosition;
 import net.minecraft.server.Packet13PlayerLookMove;
 import net.minecraft.server.Packet14BlockDig;
 import net.minecraft.server.Packet18ArmAnimation;
+import net.minecraft.server.Packet3Chat;
 import net.minecraft.server.Packet50PreChunk;
 import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet9Respawn;
@@ -69,6 +70,7 @@ import net.minecraft.server.TileEntityFurnace;
 import net.minecraft.server.WorldServer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.ChunkCompressionThread;
@@ -94,6 +96,9 @@ import org.getspout.spoutapi.event.inventory.InventoryCraftEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
 import org.getspout.spoutapi.event.inventory.InventoryPlayerClickEvent;
 import org.getspout.spoutapi.event.inventory.InventorySlotType;
+import org.getspout.spoutapi.gui.GenericLabel;
+import org.getspout.spoutapi.gui.Label;
+import org.getspout.spoutapi.gui.RenderPriority;
 import org.getspout.spoutapi.inventory.CraftingInventory;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -140,6 +145,37 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private boolean allowReload = false;
+	@Override
+	public void a(Packet3Chat packet) {
+		String chat = packet.message;
+		if (chat.trim().isEmpty()) {
+			return;
+		}
+		if (!allowReload && chat.equalsIgnoreCase("/reload")) {
+			allowReload = true;
+			SpoutCraftPlayer player = (SpoutCraftPlayer)SpoutCraftPlayer.getPlayer(getPlayer());
+			if (!player.isSpoutCraftEnabled()) {
+				player.sendMessage(ChatColor.RED + "Spout does not support the /reload command.");
+				player.sendMessage(ChatColor.RED + "Unexpected behavior may occur.");
+				player.sendMessage(ChatColor.RED + "We recommend using /stop and restarting.");
+				player.sendMessage(ChatColor.RED + "Or you can use /spout reload to reload the config.");
+				player.sendMessage(ChatColor.RED + "If you want to use /reload anyway, use the command again.");
+			}
+			else {
+				Label warning = new DecayingLabel(200, ChatColor.RED + "Spout does not support the /reload command." + "\n" +
+						ChatColor.RED + "Unexpected behavior may occur." + "\n" +
+						ChatColor.RED + "We recommend using /stop and restarting." + " \n" + 
+						ChatColor.RED + "Or you can use /spout reload to reload the config." + "\n" +
+						ChatColor.RED + "If you want to use /reload anyway, use the command again.");
+				warning.setX(100).setY(100).setPriority(RenderPriority.Lowest);
+				player.getMainScreen().attachWidget(Spout.getInstance(), warning);
+			}
+			return;
+		}
+		super.a(packet);
 	}
 
 	@Override
@@ -852,4 +888,20 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		return null;
 	}
 
+}
+
+class DecayingLabel extends GenericLabel {
+	private int ticksAlive = 0;
+	public DecayingLabel(int ticks, String s) {
+		super(s);
+		ticksAlive = ticks;
+	}
+	
+	@Override
+	public void onTick() {
+		ticksAlive--;
+		if (ticksAlive < 0) {
+			setVisible(false);
+		}
+	}
 }

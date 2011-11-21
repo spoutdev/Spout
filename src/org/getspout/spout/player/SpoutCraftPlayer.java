@@ -18,6 +18,7 @@ package org.getspout.spout.player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -47,6 +48,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
@@ -85,6 +87,8 @@ import org.getspout.spoutapi.packet.CompressablePacket;
 import org.getspout.spoutapi.packet.PacketAirTime;
 import org.getspout.spoutapi.packet.PacketAlert;
 import org.getspout.spoutapi.packet.PacketClipboardText;
+import org.getspout.spoutapi.packet.PacketEntitySkin;
+import org.getspout.spoutapi.packet.PacketEntityTitle;
 import org.getspout.spoutapi.packet.PacketMovementModifiers;
 import org.getspout.spoutapi.packet.PacketNotification;
 import org.getspout.spoutapi.packet.PacketOpenScreen;
@@ -92,10 +96,12 @@ import org.getspout.spoutapi.packet.PacketOpenSignGUI;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.packet.PacketScreenshot;
 import org.getspout.spoutapi.packet.PacketSetVelocity;
+import org.getspout.spoutapi.packet.PacketSkinURL;
 import org.getspout.spoutapi.packet.PacketTexturePack;
 import org.getspout.spoutapi.packet.PacketWidget;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.packet.standard.MCPacket;
+import org.getspout.spoutapi.player.EntitySkinType;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -364,6 +370,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		return true;*/
 	}
 
+	@Override
 	public boolean openWorkbenchWindow(Location location) {
 		if (location.getBlock().getType() != Material.WORKBENCH) {
 			throw new UnsupportedOperationException("Must be a valid workbench!");
@@ -387,7 +394,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public InGameScreen getMainScreen() {
 		return mainScreen;
 	}
-	
 
 	@Override
 	public Screen getCurrentScreen() {
@@ -453,7 +459,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		return sneak;
 	}
 
-
 	@Override
 	public RenderDistance getRenderDistance() {
 		return currentRender;
@@ -518,8 +523,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			sendPacket(new PacketRenderDistance(false, true));
 		}
 	}
-	
-	
 
 	@Override
 	public void sendNotification(String title, String message, Material toRender) {
@@ -570,8 +573,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		setClipboardText(text, true);
 	}
 
-	private byte[] urlBuffer = new byte[16384];
-
 	@Override
 	public void setTexturePack(String url) {
 		if (isSpoutCraftEnabled()) {
@@ -582,7 +583,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 				throw new IllegalArgumentException("A Texture Pack must be in a .zip format");
 			}
 			final String finalURL = url;
-			URLCheck urlCheck = new URLCheck(url, urlBuffer, new CRCStoreRunnable() {
+			URLCheck urlCheck = new URLCheck(url, new byte[16384], new CRCStoreRunnable() {
 				
 				Long CRC;
 				
@@ -606,6 +607,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		}
 	}
 
+	@Override
 	public void setClipboardText(String text, boolean updateClient) {
 		if (isSpoutCraftEnabled()) {
 			clipboard = text;
@@ -633,6 +635,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
 	}
 
+	@Override
 	public void reconnect(String hostname) {
 		if (hostname.indexOf(":") != -1) {
 			String[] split = hostname.split(":");
@@ -665,13 +668,13 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		openScreen(type, true);
 	}
 
-    @Override
-    public void sendScreenshotRequest() {
-        PacketScreenshot packets = new PacketScreenshot();
-        sendPacket(packets);
-    }
+	@Override
+	public void sendScreenshotRequest() {
+		PacketScreenshot packets = new PacketScreenshot();
+		sendPacket(packets);
+	}
 
-    @Override
+	@Override
 	public void openScreen(ScreenType type, boolean packet) {
 		if(type == activeScreen || screenOpenThisTick) {
 			return;
@@ -691,14 +694,17 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		}
 	}
 
+	@Override
 	public double getGravityMultiplier() {
 		return gravityMod;
 	}
 
+	@Override
 	public double getSwimmingMultiplier() {
 		return swimmingMod;
 	}
 
+	@Override
 	public double getWalkingMultiplier() {
 		return walkingMod;
 	}
@@ -799,8 +805,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 
 	@Override
 	public void openSignEditGUI(Sign sign) {
-		if(sign != null && isSpoutCraftEnabled())
-		{
+		if(sign != null && isSpoutCraftEnabled()) {
 			sendPacket(new PacketOpenSignGUI(sign.getX(), sign.getY(), sign.getZ()));
 			TileEntitySign tes = (TileEntitySign) ((CraftWorld)((CraftBlock)sign.getBlock()).getWorld()).getTileEntityAt(sign.getX(), sign.getY(), sign.getZ()); // Found a hidden trace to The Elder Scrolls. Bethesdas Lawyers are right!
 			tes.isEditable = true;
@@ -865,6 +870,184 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		}
 	}
 	
+	private void checkUrl(String url) {
+		if (url == null || url.length() < 5) {
+			throw new UnsupportedOperationException("Invalid URL");
+		}
+		if (!url.substring(url.length() - 4, url.length()).equalsIgnoreCase(".png")) {
+			throw new UnsupportedOperationException("All skins must be a PNG image");
+		}
+		if (url.length() > 255) {
+			throw new UnsupportedOperationException("All Url's must be shorter than 256 characters");
+		}
+	}
+	
+	private String skin = "http://s3.amazonaws.com/MinecraftSkins/" + getName() + ".png";
+	private HashMap<String, String> skinsFor = new HashMap<String, String>();
+	
+	private String cape = "http://s3.amazonaws.com/MinecraftCloaks/" + getName() + ".png";
+	private HashMap<String, String> capesFor = new HashMap<String, String>();
+	
+	private String title = getName();
+	private HashMap<String, String> titlesFor = new HashMap<String, String>();
+	
+	public void updateAppearance() {
+		for (LivingEntity le : getWorld().getLivingEntities()) {
+			//Update entity skins
+			for (EntitySkinType type : EntitySkinType.values()) {
+				if (getInformation().getEntitySkin(le, type) != null) {
+					sendDelayedPacket(new PacketEntitySkin(le, getInformation().getEntitySkin(le, type), type.getId()));
+				}
+			}
+		}
+		
+		for (Player p : getWorld().getPlayers()) {
+			sendDelayedPacket(new PacketSkinURL(p.getEntityId(), getSkin((SpoutPlayer) p), getCape((SpoutPlayer) p)));
+		}
+	}
+	
+	@Override
+	public void setSkin(String url) {
+		checkUrl(url);
+		skin = url;
+		
+		for (Player p : getWorld().getPlayers()) {
+			((SpoutPlayer)p).sendPacket(new PacketSkinURL(getEntityId(), getSkin((SpoutPlayer)p)));
+		}
+	}
+
+	@Override
+	public void setSkinFor(SpoutPlayer viewingPlayer, String url) {
+		checkUrl(url);
+		skinsFor.put(viewingPlayer.getName(), url);
+		viewingPlayer.sendPacket(new PacketSkinURL(getEntityId(), url));
+	}
+
+	@Override
+	public String getSkin() {
+		return skin;
+	}
+
+	@Override
+	public String getSkin(SpoutPlayer viewingPlayer) {
+		if (skinsFor.containsKey(viewingPlayer.getName())) {
+			return skinsFor.get(viewingPlayer.getName());
+		}
+		return getSkin();
+	}
+
+	@Override
+	public void resetSkin() {
+		setSkin("http://s3.amazonaws.com/MinecraftSkins/" + getName() + ".png");
+	}
+
+	@Override
+	public void resetSkinFor(SpoutPlayer viewingPlayer) {
+		setSkinFor(viewingPlayer, "http://s3.amazonaws.com/MinecraftSkins/" + getName() + ".png");
+	}
+
+	@Override
+	public void setCape(String url) {
+		checkUrl(url);
+		cape = url;
+		
+		for (Player p : getWorld().getPlayers()) {
+			((SpoutPlayer)p).sendPacket(new PacketSkinURL(getCape((SpoutPlayer)p), getEntityId()));
+		}
+	}
+
+	@Override
+	public void setCapeFor(SpoutPlayer viewingPlayer, String url) {
+		checkUrl(url);
+		capesFor.put(viewingPlayer.getName(), url);
+		viewingPlayer.sendPacket(new PacketSkinURL(url, getEntityId()));
+	}
+
+	@Override
+	public String getCape() {
+		return cape;
+	}
+
+	@Override
+	public String getCape(SpoutPlayer viewingPlayer) {
+		if (capesFor.containsKey(viewingPlayer.getName())) {
+			return capesFor.get(viewingPlayer.getName());
+		}
+		return getCape();
+	}
+
+	@Override
+	public void resetCape() {
+		setCape("http://s3.amazonaws.com/MinecraftCloaks/" + getName() + ".png");
+	}
+
+	@Override
+	public void resetCapeFor(SpoutPlayer viewingPlayer) {
+		setCapeFor(viewingPlayer, "http://s3.amazonaws.com/MinecraftCloaks/" + getName() + ".png");
+	}
+
+	@Override
+	public void setTitle(String title) {
+		this.title = title;
+		
+		for (Player p : getWorld().getPlayers()) {
+			((SpoutPlayer)p).sendPacket(new PacketEntityTitle(getEntityId(), getTitleFor((SpoutPlayer)p)));
+		}
+	}
+
+	@Override
+	public void setTitleFor(SpoutPlayer viewingPlayer, String title) {
+		titlesFor.put(viewingPlayer.getName(), title);
+		viewingPlayer.sendPacket(new PacketEntityTitle(getEntityId(), title));
+	}
+
+	@Override
+	public String getTitle() {
+		return title;
+	}
+
+	@Override
+	public String getTitleFor(SpoutPlayer viewingPlayer) {
+		if (titlesFor.containsKey(viewingPlayer.getName())) {
+			return titlesFor.get(viewingPlayer.getName());
+		}
+		return getTitle();
+	}
+
+	@Override
+	public void hideTitle() {
+		setTitle("[hide]");
+	}
+
+	@Override
+	public void hideTitleFrom(SpoutPlayer viewingPlayer) {
+		setTitleFor(viewingPlayer, "[hide]");
+	}
+
+	@Override
+	public void resetTitle() {
+		setTitle(getName());
+	}
+
+	@Override
+	public void resetTitleFor(SpoutPlayer viewingPlayer) {
+		setTitleFor(viewingPlayer, getName());
+	}
+
+	@Override
+	public void setEntitySkin(LivingEntity target, String url, EntitySkinType type) {
+		getInformation().setEntitySkin(target, url, type);
+		sendDelayedPacket(new PacketEntitySkin(target, url, type.getId()));
+	}
+
+	@Override
+	public void resetEntitySkin(LivingEntity target) {
+		getInformation().setEntitySkin(target, null);
+		sendPacket(new PacketEntitySkin(target, "[reset]", (byte) 0));
+	}
+	
+	/*Non Inteface public methods */
+	
 	public Location getLastTickLocation() {
 		return lastTickLocation;
 	}
@@ -872,8 +1055,6 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public void setLastTickLocation(Location loc) {
 		lastTickLocation = loc;
 	}
-
-	/*Non Inteface public methods */
 
 	public Location getRawLastClickedLocation() {
 		return lastClicked;
@@ -993,7 +1174,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			Spout.getInstance().getEntityTrackingManager().onPostWorldChange(this);
 			Spout.getInstance().getPlayerTrackingManager().onWorldChange(this);
 		}
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(this);
+		updateAppearance();
 	}
 
 	public void updateMovement() {

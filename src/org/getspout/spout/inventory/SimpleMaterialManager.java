@@ -34,10 +34,12 @@ import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.material.Material;
 import org.getspout.spoutapi.material.MaterialData;
+import org.getspout.spoutapi.material.block.GenericCustomBlock;
+import org.getspout.spoutapi.material.item.GenericCustomItem;
+import org.getspout.spoutapi.packet.PacketCustomBlockChunkOverride;
 import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
-import org.getspout.spoutapi.packet.PacketCustomItem;
-import org.getspout.spoutapi.packet.PacketCustomMaterial;
+import org.getspout.spoutapi.packet.PacketCustomId;
 import org.getspout.spoutapi.packet.PacketCustomMultiBlockOverride;
 import org.getspout.spoutapi.packet.PacketItemTexture;
 import org.getspout.spoutapi.packet.SpoutPacket;
@@ -83,11 +85,11 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 			}
 			for (Integer id : UniqueItemStringMap.getIds()) {
 				Material material = MaterialData.getMaterial(318, id.shortValue());
-				if(material instanceof CustomBlock) {
-					((SpoutPlayer) player).sendPacket(new PacketCustomMaterial((CustomBlock) material));
+				if(material instanceof GenericCustomBlock) {
+					((SpoutPlayer) player).sendPacket((GenericCustomBlock)material);
 				}
-				else if(material instanceof CustomItem) {
-					((SpoutPlayer) player).sendPacket(new PacketCustomMaterial((CustomItem) material));
+				else if(material instanceof GenericCustomItem) {
+					((SpoutPlayer) player).sendPacket((GenericCustomItem)material);
 				}
 			}
 		}
@@ -196,7 +198,7 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		@SuppressWarnings("unused")
 		String pluginName = (String) itemPlugin.get(id);
 
-		PacketCustomItem p = new PacketCustomItem(id, blockId);
+		PacketCustomId p = new PacketCustomId(id, blockId);
 
 		for (Player player : players) {
 			if (player instanceof SpoutCraftPlayer) {
@@ -459,7 +461,16 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		protected void sendPacket() {
 			List<Player> players = world.getPlayers();
 			if (xCoords.size() > 6) {
-				SpoutPacket packet = new PacketCustomMultiBlockOverride(xCoords, yCoords, zCoords, typeIds);
+				SpoutPacket packet;
+				if (xCoords.size() > 128) {
+					int chunkX = xCoords.get(0) >> 4;
+					int chunkZ = zCoords.get(0) >> 4;
+					packet = new PacketCustomBlockChunkOverride(SpoutManager.getChunkDataManager().getCustomBlockIds(world, chunkX, chunkZ), chunkX, chunkZ);
+				}
+				else {
+					packet = new PacketCustomMultiBlockOverride(xCoords, yCoords, zCoords, typeIds);
+				}
+				
 				for (Player player : players) {
 					if (player instanceof SpoutCraftPlayer) {
 						SpoutCraftPlayer spc = (SpoutCraftPlayer) player;

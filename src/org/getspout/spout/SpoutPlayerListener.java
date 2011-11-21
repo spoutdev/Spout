@@ -38,7 +38,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleMaterialManager;
-import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
@@ -248,6 +247,6 @@ class PostTeleport implements Runnable {
 	
 	@Override
 	public void run() {
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
+		player.updateAppearance();
 	}
 }

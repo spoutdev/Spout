@@ -96,12 +96,11 @@ public class CustomPacket extends Packet{
 				success = true;
 			}
 		}
-		catch (IOException e) {
-			throw new IOException(e);
-		}
 		catch (Exception e) {
+			System.out.println("------------------------");
+			System.out.println("Unexpected Exception: " + PacketType.getPacketFromId(packetId) + ", " + packetId);
 			e.printStackTrace();
-			throw new IllegalStateException("readData() for packetId " + packetId + " threw an exception");
+			System.out.println("------------------------");
 		}
 	}
 

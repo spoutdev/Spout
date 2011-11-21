@@ -8,6 +8,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 import org.getspout.spout.Spout;
+import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -36,6 +37,11 @@ public class SpoutCommand implements CommandExecutor {
 		
 		String c = args[0];
 
+		if (c.equals("reload")) {
+			(new ConfigReader()).read();
+			sender.sendMessage("Configuration for Spout has been reloaded.");
+			return true;
+		}
 		if (c.equals("version")) {
 			sender.sendMessage("[Spout] Server version: " + p.getDescription().getVersion());
 			
@@ -62,7 +68,8 @@ public class SpoutCommand implements CommandExecutor {
 				}
 			}
 			return true;
-		} else if (c.equals("verify") && args.length > 1 && sender.isOp() && sender instanceof ConsoleCommandSender) {
+		}
+		if (c.equals("verify") && args.length > 1 && sender.isOp() && sender instanceof ConsoleCommandSender) {
 			sender.sendMessage("[Spout] Temporarily setting the motd to: " + args[1]);
 			sender.sendMessage("[Spout] It will return to its original setting in ~5 mins");
 			if (motd_temp == null) {

@@ -24,7 +24,6 @@ import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.keyboard.SimpleKeyBindingManager;
 import org.getspout.spout.packet.CustomPacket;
-import org.getspout.spout.player.SimpleAppearanceManager;
 import org.getspout.spout.player.SimpleBiomeManager;
 import org.getspout.spout.player.SimpleFileManager;
 import org.getspout.spout.player.SimpleSkyManager;
@@ -77,7 +76,7 @@ public class PlayerManager {
 		
 		SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 		mm.updateCustomClientData(((SpoutCraftPlayer)player));
-		((SimpleAppearanceManager)SpoutManager.getAppearanceManager()).onPlayerJoin(player);
+		((SpoutCraftPlayer)player).updateAppearance();
 		((SimpleMaterialManager)SpoutManager.getMaterialManager()).onPlayerJoin(player);
 		((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
 		((SimpleBiomeManager)SpoutManager.getBiomeManager()).onPlayerJoin(player);
