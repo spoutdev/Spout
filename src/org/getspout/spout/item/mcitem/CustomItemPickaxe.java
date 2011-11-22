@@ -17,7 +17,7 @@ public class CustomItemPickaxe extends ItemPickaxe{
 	
 	@Override
 	public boolean a(Block block) {
-		return block.id == Block.OBSIDIAN.id ? this.a.d() == 3 : (block.id != Block.DIAMOND_BLOCK.id && block.id != Block.DIAMOND_ORE.id ? (block.id != Block.GOLD_BLOCK.id && block.id != Block.GOLD_ORE.id ? (block.id != Block.IRON_BLOCK.id && block.id != Block.IRON_ORE.id ? (block.id != Block.LAPIS_BLOCK.id && block.id != Block.LAPIS_ORE.id ? (block.id != Block.REDSTONE_ORE.id && block.id != Block.GLOWING_REDSTONE_ORE.id ? (block.material == Material.STONE ? true : block.material == Material.ORE) : this.a.d() >= 2) : this.a.d() >= 1) : this.a.d() >= 1) : this.a.d() >= 2) : this.a.d() >= 2);
+		return block.id == Block.OBSIDIAN.id ? this.b.d() == 3 : (block.id != Block.DIAMOND_BLOCK.id && block.id != Block.DIAMOND_ORE.id ? (block.id != Block.GOLD_BLOCK.id && block.id != Block.GOLD_ORE.id ? (block.id != Block.IRON_BLOCK.id && block.id != Block.IRON_ORE.id ? (block.id != Block.LAPIS_BLOCK.id && block.id != Block.LAPIS_ORE.id ? (block.id != Block.REDSTONE_ORE.id && block.id != Block.GLOWING_REDSTONE_ORE.id ? (block.material == Material.STONE ? true : block.material == Material.ORE) : this.b.d() >= 2) : this.b.d() >= 1) : this.b.d() >= 1) : this.b.d() >= 2) : this.b.d() >= 2);
 	}
 	
 	/**
@@ -30,7 +30,7 @@ public class CustomItemPickaxe extends ItemPickaxe{
 					ItemPickaxe pickaxe = (ItemPickaxe)Item.byId[i];
 					EnumToolMaterial etm = null;
 					try {
-						Field tool = ItemTool.class.getDeclaredField("a");
+						Field tool = ItemTool.class.getDeclaredField("b");
 						tool.setAccessible(true);
 						etm = (EnumToolMaterial) tool.get(pickaxe);
 					}

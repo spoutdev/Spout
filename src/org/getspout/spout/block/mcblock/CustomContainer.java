@@ -51,8 +51,8 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 		
 		updateField(parent, this, "strength");
 		updateField(parent, this, "durability");
-		updateField(parent, this, "bD");
-		updateField(parent, this, "bE");
+		updateField(parent, this, "bR");
+		updateField(parent, this, "bS");
 		this.minX = parent.minX;
 		this.minY = parent.minY;
 		this.minZ = parent.minZ;
@@ -60,7 +60,7 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 		this.maxY = parent.maxY;
 		this.maxZ = parent.maxZ;
 		this.stepSound = parent.stepSound;
-		this.bM = parent.bM;
+		this.ca = parent.ca;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
 		
@@ -98,11 +98,11 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	}
 	
 	@Override
-	protected void h() {
+	protected void j() {
 		try{
-			Method h = Block.class.getDeclaredMethod("h", (Class[])null);
-			h.setAccessible(true);
-			h.invoke(parent, (Object[]) null);
+			Method j = Block.class.getDeclaredMethod("j", (Class[])null);
+			j.setAccessible(true);
+			j.invoke(parent, (Object[]) null);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -115,8 +115,8 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	}
 	
 	@Override
-	public float j() {
-		return parent.j();
+	public float l() {
+		return parent.l();
 	}
 	
 	@Override
@@ -174,8 +174,8 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	}
 	
 	@Override
-	public boolean q_() {
-		return parent.q_();
+	public boolean v_() {
+		return parent.v_();
 	}
 	
 	@Override
@@ -224,8 +224,8 @@ public class CustomContainer extends BlockContainer implements CustomMCBlock{
 	}
 	
 	@Override
-	public void dropNaturally(World world, int i, int j, int k, int l, float f) {
-		parent.dropNaturally(world, i, j, k, l, f);
+	public void dropNaturally(World world, int i, int j, int k, int l, float f, int i1) {
+		parent.dropNaturally(world, i, j, k, l, f, i1);
 	}
 	
 	@Override
