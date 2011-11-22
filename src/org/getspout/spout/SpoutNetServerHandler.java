@@ -331,7 +331,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				InventoryOpenEvent event = new InventoryOpenEvent(player, inventory, getDefaultInventory(), activeLocation);
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) {
-					this.player.y();
+					this.player.C();
 					activeInventory = false;
 					activeLocation = null;
 					return;
@@ -392,7 +392,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				this.player.netServerHandler.sendPacket(new Packet106Transaction(windowId, packet.d, true));
 				this.player.h = true;
 				this.player.activeContainer.a();
-				this.player.y();
+				this.player.C();
 				this.player.h = false;
 			} else {
 				this.getEntityList().a(Integer.valueOf(this.player.activeContainer.windowId), Short.valueOf(packet.d));
@@ -512,7 +512,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	@Override
 	public void sendPacket(Packet packet) {
 		if (packet != null) {
-			if (packet.k) {
+			if (packet.l) {
 				MapChunkThread.sendPacket(this.player, packet);
 			} else {
 				queueOutputPacket(packet);
@@ -754,7 +754,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		for (Object tileEntityObject : tileEntities) {
 			if (tileEntityObject != null && tileEntityObject instanceof TileEntity) {
 				TileEntity tileEntity = (TileEntity) tileEntityObject;
-				Packet tilePacket = tileEntity.l();
+				Packet tilePacket = tileEntity.k();
 				if (tilePacket != null) {
 					MapChunkThread.sendPacket(player, tilePacket);
 				}
@@ -813,7 +813,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		}
 		Packet packet = new Packet51MapChunk(cx << 4, 0, cz << 4, 16, 128, 16, this.player.world);
 		try {
-			packet.k = false;
+			packet.l = false;
 			Field g = Packet51MapChunk.class.getDeclaredField("g");
 			g.setAccessible(true);
 			byte[] compressedData = (byte[])g.get(packet);

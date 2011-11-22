@@ -45,13 +45,13 @@ import org.getspout.spoutapi.SpoutManager;
 public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCBlock{
 	protected BlockMinecartTrack parent;
 	protected CustomMinecartTrack(BlockMinecartTrack parent) {
-		super(parent.id, parent.textureId, parent.f());
+		super(parent.id, parent.textureId, parent.h());
 		this.parent = parent;
 		
 		updateField(parent, this, "strength");
 		updateField(parent, this, "durability");
-		updateField(parent, this, "bD");
-		updateField(parent, this, "bE");
+		updateField(parent, this, "bR");
+		updateField(parent, this, "bS");
 		this.minX = parent.minX;
 		this.minY = parent.minY;
 		this.minZ = parent.minZ;
@@ -59,7 +59,7 @@ public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCB
 		this.maxY = parent.maxY;
 		this.maxZ = parent.maxZ;
 		this.stepSound = parent.stepSound;
-		this.bM = parent.bM;
+		this.ca = parent.ca;
 		this.frictionFactor = parent.frictionFactor;
 		updateField(parent, this, "name");
 	}
@@ -82,11 +82,11 @@ public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCB
 	}
 	
 	@Override
-	protected void h() {
+	protected void j() {
 		try{
-			Method h = Block.class.getDeclaredMethod("h", (Class[])null);
-			h.setAccessible(true);
-			h.invoke(parent, (Object[]) null);
+			Method j = Block.class.getDeclaredMethod("j", (Class[])null);
+			j.setAccessible(true);
+			j.invoke(parent, (Object[]) null);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -99,8 +99,8 @@ public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCB
 	}
 	
 	@Override
-	public float j() {
-		return parent.j();
+	public float l() {
+		return parent.l();
 	}
 	
 	@Override
@@ -158,8 +158,8 @@ public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCB
 	}
 	
 	@Override
-	public boolean q_() {
-		return parent.q_();
+	public boolean v_() {
+		return parent.v_();
 	}
 	
 	@Override
@@ -208,8 +208,8 @@ public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCB
 	}
 	
 	@Override
-	public void dropNaturally(World world, int i, int j, int k, int l, float f) {
-		parent.dropNaturally(world, i, j, k, l, f);
+	public void dropNaturally(World world, int i, int j, int k, int l, float f, int i1) {
+		parent.dropNaturally(world, i, j, k, l, f, i1);
 	}
 	
 	@Override

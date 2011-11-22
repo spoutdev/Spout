@@ -30,7 +30,7 @@ public class CustomItemSpade extends ItemSpade{
 					ItemSpade spade = (ItemSpade)Item.byId[i];
 					EnumToolMaterial etm = null;
 					try {
-						Field tool = ItemTool.class.getDeclaredField("a");
+						Field tool = ItemTool.class.getDeclaredField("b");
 						tool.setAccessible(true);
 						etm = (EnumToolMaterial) tool.get(spade);
 					}

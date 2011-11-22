@@ -163,7 +163,7 @@ public abstract class AbstractBlockManager implements MaterialManager{
 		if(block instanceof CustomBlock) {
 			id = ((CustomBlock) block).getBlockId();
 		}
-		return net.minecraft.server.Block.byId[id].j();
+		return net.minecraft.server.Block.byId[id].l();
 	}
 
 	@Override

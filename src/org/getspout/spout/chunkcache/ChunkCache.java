@@ -85,7 +85,7 @@ public class ChunkCache {
 				HashUpdate update = pending.removeFirst();
 				if(update.hashes.length != 0) {
 					Packet p = new CustomPacket(new PacketCacheHashUpdate(update.add, update.hashes));
-					p.k = true;
+					p.l = true;
 					MapChunkThread.sendPacketSkipQueue(player, p);
 				}
 			}
