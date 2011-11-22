@@ -795,7 +795,10 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			currentChunk.set(new ChunkCoordIntPair(cx, cz));
 			updateCounter.incrementAndGet();
 			
-			Spout.getInstance().getPlayerTrackingManager().onMoveChunk((SpoutPlayer) getPlayer());
+			SpoutPlayer player = (SpoutPlayer) getPlayer();
+			if (player != null && player.isSpoutCraftEnabled()) {
+				Spout.getInstance().getPlayerTrackingManager().onMoveChunk((SpoutPlayer) getPlayer());
+			}
 		}
 	}
 
