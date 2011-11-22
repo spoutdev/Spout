@@ -189,7 +189,6 @@ public class ConfigReader {
 	 return allowClearWaterCheat;
 	}
 	
-
 	public static boolean isAllowStarsCheat() {
 		return allowStarsCheat;
 	}

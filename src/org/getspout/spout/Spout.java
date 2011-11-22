@@ -269,7 +269,7 @@ public class Spout extends JavaPlugin{
 		SimpleMaterialManager.disableFlintStackMix();
 		
 		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been initialized");
-		try {
+		/*try {
 			MinecraftServer server = ((CraftServer)getServer()).getServer();
 			NetworkListenThread thread = server.networkListenThread;
 			SpoutNetworkAcceptThread acceptThread = new SpoutNetworkAcceptThread(thread, "Spout Network Accept Thread", server);
@@ -285,7 +285,7 @@ public class Spout extends JavaPlugin{
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 	

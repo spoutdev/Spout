@@ -27,7 +27,6 @@ import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.Entity;
-import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.NetServerHandler;
@@ -300,20 +299,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			return false;
 		}
 		
-		// Maintaining support for both CB 1185 RB and CB Dev builds. net.minecraft.server mappings were updated.
-		try {
-			Method x = EntityHuman.class.getDeclaredMethod("x", (Class[])null);
-			x.setAccessible(true);
-			x.invoke(getHandle(), (Object[])null);
-		} catch (Exception e) {
-			try {
-				Method closeInventory = EntityHuman.class.getDeclaredMethod("closeInventory", (Class[])null);
-				closeInventory.setAccessible(true);
-				closeInventory.invoke(getHandle(), (Object[])null);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-		}
+		getHandle().closeInventory();
 
 		getNetServerHandler().setActiveInventory(false);
 		getNetServerHandler().setActiveInventoryLocation(null);
