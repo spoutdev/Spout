@@ -131,12 +131,12 @@ public class CustomMCInventory implements IInventory{
 	}
 
 	@Override
-	public void e() {
+	public void f() {
 
 	}
 
 	@Override
-	public void t_() {
+	public void g() {
 
 	}
 

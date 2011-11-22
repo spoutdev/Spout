@@ -53,7 +53,7 @@ public class SpoutNetLoginHandler extends NetLoginHandler{
 			WorldServer worldserver = this.server.getWorldServer(entityplayer.dimension);
 			ChunkCoordinates chunkcoordinates = worldserver.getSpawn();
 
-			entityplayer.itemInWorldManager.b(worldserver.p().getGameType());
+			entityplayer.itemInWorldManager.b(worldserver.r().getGameType());
 			
 			SpoutCraftPlayer.updateBukkitEntity(entityplayer);
 			
@@ -66,7 +66,7 @@ public class SpoutNetLoginHandler extends NetLoginHandler{
 			byte b1 = (byte) worldserver.difficulty;
 
 			worldserver.getClass();
-			Packet1Login packet1login1 = new Packet1Login("", i, j, k, b0, b1, (byte) -128, (byte) this.server.serverConfigurationManager.h());
+			Packet1Login packet1login1 = new Packet1Login("", i, j, k, b0, b1, (byte) -128, (byte) this.server.serverConfigurationManager.k());
 
 			networkManager.queue(packet1login1);
 			
