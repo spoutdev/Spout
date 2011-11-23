@@ -77,19 +77,19 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 	@Override
 	public void onPlayerJoin(SpoutPlayer player) {
-		if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
+		if (player.isSpoutCraftEnabled()) {
 			for (TLongObjectIterator<String> it = customTextures.iterator(); it.hasNext();) {
 				it.advance();
 				String pluginName = (String) customTexturesPlugin.get(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()));
-				((SpoutPlayer) player).sendPacket(new PacketItemTexture(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), pluginName, it.value()));
+				player.sendPacket(new PacketItemTexture(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), pluginName, it.value()));
 			}
 			for (Integer id : UniqueItemStringMap.getIds()) {
 				Material material = MaterialData.getMaterial(318, id.shortValue());
 				if(material instanceof GenericCustomBlock) {
-					((SpoutPlayer) player).sendPacket((GenericCustomBlock)material);
+					player.sendPacket((GenericCustomBlock)material);
 				}
 				else if(material instanceof GenericCustomItem) {
-					((SpoutPlayer) player).sendPacket((GenericCustomItem)material);
+					player.sendPacket((GenericCustomItem)material);
 				}
 			}
 		}
@@ -112,11 +112,10 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		} else {
 			customTexturesPlugin.put(id, data, pluginName);
 		}
-		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			if (player instanceof SpoutCraftPlayer) {
-				if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-					((SpoutPlayer) player).sendPacket(new PacketItemTexture(id, (short) data, pluginName, texture));
-				}
+		SpoutPacket packet = new PacketItemTexture(id, (short) data, pluginName, texture);
+		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(packet);
 			}
 		}
 	}
@@ -147,11 +146,10 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		if (customTextures.containsKey(id, data)) {
 			customTextures.remove(id, data);
 			String pluginName = (String) customTexturesPlugin.remove(id, data);
-			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-				if (player instanceof SpoutCraftPlayer) {
-					if (((SpoutPlayer) player).isSpoutCraftEnabled()) {
-						((SpoutPlayer) player).sendPacket(new PacketItemTexture(id, (short) data, pluginName, "[reset]"));
-					}
+			SpoutPacket packet = new PacketItemTexture(id, (short) data, pluginName, "[reset]");
+			for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+				if (player.isSpoutCraftEnabled()) {
+					player.sendPacket(packet);
 				}
 			}
 		}
@@ -200,12 +198,9 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 		PacketCustomId p = new PacketCustomId(id, blockId);
 
-		for (Player player : players) {
-			if (player instanceof SpoutCraftPlayer) {
-				SpoutCraftPlayer sp = (SpoutCraftPlayer) player;
-				if (sp.isSpoutCraftEnabled()) {
-					sp.sendPacket(p);
-				}
+		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(p);
 			}
 		}
 	}
@@ -222,12 +217,9 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
 		block.setTypeId(customBlock.getBlockId());
 		int blockId = customBlock.getCustomId();
-		if (!(block instanceof SpoutCraftBlock)) {
-			return false;
-		}
 
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
-		
+
 		customBlock.onBlockPlace(scb.getWorld(), scb.getX(), scb.getY(), scb.getZ());
 
 		scb.setCustomBlockId(blockId);
@@ -238,10 +230,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 	@Override
 	public boolean removeBlockOverride(Block block) {
-		if (!(block instanceof SpoutCraftBlock)) {
-			return false;
-		}
-
 		SpoutCraftBlock scb = (SpoutCraftBlock) block;
 		
 		if (scb.isCustomBlock()) {
@@ -295,7 +283,7 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 			blockId = ((CustomBlock) material).getCustomId();
 			metaData = 0;
 		}
-		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
+		Player[] players = Bukkit.getServer().getOnlinePlayers();
 
 		if (design != null) {
 			customBlockDesigns.put(blockId, metaData, design);
@@ -325,14 +313,11 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		if (block == null) {
 			block = MaterialData.getCustomBlock(metaData);
 		}
-		PacketCustomBlockDesign p = new PacketCustomBlockDesign(block.getName(), block.isOpaque(), blockId, metaData, design);
+		PacketCustomBlockDesign packet = new PacketCustomBlockDesign(block.getName(), block.isOpaque(), blockId, metaData, design);
 
-		for (Player player : players) {
-			if (player instanceof SpoutCraftPlayer) {
-				SpoutCraftPlayer sp = (SpoutCraftPlayer) player;
-				if (sp.isSpoutCraftEnabled()) {
-					sp.sendPacket(p);
-				}
+		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
+			if (player.isSpoutCraftEnabled()) {
+				player.sendPacket(packet);
 			}
 		}
 	}

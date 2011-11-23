@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockListener;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutBlockListener extends BlockListener {
 	
@@ -27,24 +28,23 @@ public class SpoutBlockListener extends BlockListener {
 			return;
 		}
 		
-		Block block = event.getBlock();
-		if(block instanceof SpoutBlock) {
-			SpoutBlock sb = (SpoutBlock) block;
-			if (sb.getType() != Material.STONE && sb.getType() != Material.GLASS) {
-				return;
-			}
-			
-			if (sb.isCustomBlock()) {
-				sb.getCustomBlock().onBlockDestroyed(block.getWorld(), block.getX(), block.getY(), block.getZ(), event.getPlayer());
-				if(mm.hasItemDrop(sb.getCustomBlock())) {
-					if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-						sb.getWorld().dropItem(sb.getLocation(), mm.getItemDrop(sb.getCustomBlock()));
-					}
-					sb.setTypeId(0);
-					event.setCancelled(true);
+		SpoutBlock block = (SpoutBlock) event.getBlock();
+		if (block.getType() != Material.STONE && block.getType() != Material.GLASS) {
+			return;
+		}
+		
+		SpoutPlayer player = (SpoutPlayer)event.getPlayer();
+		
+		if (block.isCustomBlock()) {
+			block.getCustomBlock().onBlockDestroyed(block.getWorld(), block.getX(), block.getY(), block.getZ(), player);
+			if(mm.hasItemDrop(block.getCustomBlock())) {
+				if (player.getGameMode() == GameMode.SURVIVAL) {
+					block.getWorld().dropItem(block.getLocation(), mm.getItemDrop(block.getCustomBlock()));
 				}
-				mm.removeBlockOverride(sb);
+				block.setTypeId(0);
+				event.setCancelled(true);
 			}
+			mm.removeBlockOverride(block);
 		}
 	}
 	

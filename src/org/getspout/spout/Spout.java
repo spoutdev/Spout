@@ -36,7 +36,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.FileUtil;
 import org.bukkit.util.config.Configuration;
 import org.getspout.spout.block.SpoutCraftChunk;
@@ -67,10 +66,11 @@ import org.getspout.spoutapi.chunkstore.SimpleChunkDataManager;
 import org.getspout.spoutapi.io.CRCStore;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.getspout.spoutapi.plugin.SpoutPlugin;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
 
 @SuppressWarnings("deprecation")
-public class Spout extends JavaPlugin{
+public class Spout extends SpoutPlugin{
 	public final SpoutPlayerListener playerListener;
 	protected final EntityTrackerManager entityTrackingManager;
 	protected final PlayerTrackingManager playerTrackingManager;
@@ -193,31 +193,31 @@ public class Spout extends JavaPlugin{
 				update();
 			}
 		}).start();
-		getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_KICK, playerListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, blockMonitor, Priority.High, this);
-		getServer().getPluginManager().registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
-		getServer().getPluginManager().registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest, this);
-		getServer().getPluginManager().registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.CREATURE_SPAWN, entityListener, Priority.Monitor, this);
-		getServer().getPluginManager().registerEvent(Type.ITEM_SPAWN, entityListener, Priority.Monitor, this);
+		
+		registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Lowest);
+		registerEvent(Type.PLAYER_KICK, playerListener, Priority.Normal);
+		registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest);
+		registerEvent(Type.PLAYER_TELEPORT, playerListener, Priority.Monitor);
+		registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Monitor);
+		registerEvent(Type.PLAYER_INTERACT, blockMonitor, Priority.High);
+		registerEvent(Type.PLAYER_MOVE, playerListener, Priority.Monitor);
+		registerEvent(Type.CHUNK_LOAD, chunkListener, Priority.Lowest);
+		registerEvent(Type.WORLD_LOAD, chunkListener, Priority.Lowest);
+		registerEvent(Type.WORLD_SAVE, chunkMonitorListener, Priority.Monitor);
+		registerEvent(Type.WORLD_UNLOAD, chunkMonitorListener, Priority.Monitor);
+		registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor);
+		registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal);
+		registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Normal);
+		registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest);
+		registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest);
+		registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest);
+		registerEvent(Type.ENTITY_DEATH, entityListener, Priority.Monitor);
+		registerEvent(Type.CREATURE_SPAWN, entityListener, Priority.Monitor);
+		registerEvent(Type.ITEM_SPAWN, entityListener, Priority.Monitor);
 
 		getCommand("spout").setExecutor(new SpoutCommand(this));
 
-		SpoutPlayer[] online = SpoutManager.getOnlinePlayers();
-		for (SpoutPlayer player : online) {
+		for (SpoutPlayer player : getSpoutServer().getOnlinePlayers()) {
 			SpoutCraftPlayer.resetNetServerHandler(player);
 			SpoutCraftPlayer.updateNetServerHandler(player);
 			SpoutCraftPlayer.updateBukkitEntity(player);
@@ -238,7 +238,7 @@ public class Spout extends JavaPlugin{
 		CustomBlock.replaceBlocks();
 		
 		ChunkCompressionThread.startThread();
-		MapChunkThread.startThread(); // Always on
+		MapChunkThread.startThread();
 		PacketCompressionThread.startThread();
 		
 		//Start counting ticks
@@ -264,7 +264,8 @@ public class Spout extends JavaPlugin{
 		
 		SimpleMaterialManager.disableFlintStackMix();
 		
-		Logger.getLogger("Minecraft").info("Spout " + getVersion() + " has been initialized");
+		this.log("Spout %s has been initialized", getVersion());
+		
 		/*try {
 			MinecraftServer server = ((CraftServer)getServer()).getServer();
 			NetworkListenThread thread = server.networkListenThread;
@@ -285,6 +286,7 @@ public class Spout extends JavaPlugin{
 		
 	}
 	
+	@Override
 	public String getVersion() {
 		return getVersion(true);
 	}
