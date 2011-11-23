@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gnu.trove.set.hash.TIntHashSet;
-import net.glowstone.GlowServer;
 
-import net.glowstone.util.TargetBlock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
@@ -18,14 +16,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Vehicle;
 
+import net.glowstone.GlowServer;
+import net.glowstone.GlowWorld;
+import net.glowstone.msg.*;
+import net.glowstone.util.TargetBlock;
 import net.glowstone.util.Parameter;
 import net.glowstone.util.Position;
-import net.glowstone.msg.EntityRotationMessage;
-import net.glowstone.msg.EntityTeleportMessage;
-import net.glowstone.msg.Message;
-import net.glowstone.msg.RelativeEntityPositionMessage;
-import net.glowstone.msg.RelativeEntityPositionRotationMessage;
-import net.glowstone.GlowWorld;
 
 /**
  * A GlowLivingEntity is a {@link org.bukkit.entity.Player} or {@link org.bukkit.entity.Monster}.
@@ -49,37 +45,6 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
      */
     public GlowLivingEntity(GlowServer server, GlowWorld world) {
         super(server, world);
-    }
-
-    @Override
-    public Message createUpdateMessage() {
-        boolean moved = hasMoved();
-        boolean rotated = hasRotated();
-
-        int x = Position.getIntX(location);
-        int y = Position.getIntY(location);
-        int z = Position.getIntZ(location);
-
-        int dx = x - Position.getIntX(previousLocation);
-        int dy = y - Position.getIntY(previousLocation);
-        int dz = z - Position.getIntZ(previousLocation);
-
-        boolean teleport = dx > Byte.MAX_VALUE || dy > Byte.MAX_VALUE || dz > Byte.MAX_VALUE || dx < Byte.MIN_VALUE || dy < Byte.MIN_VALUE || dz < Byte.MIN_VALUE;
-
-        int yaw = Position.getIntYaw(previousLocation);
-        int pitch = Position.getIntPitch(previousLocation);
-
-        if (moved && teleport) {
-            return new EntityTeleportMessage(id, x, y, z, yaw, pitch);
-        } else if (moved && rotated) {
-            return new RelativeEntityPositionRotationMessage(id, dx, dy, dz, yaw, pitch);
-        } else if (moved) {
-            return new RelativeEntityPositionMessage(id, dx, dy, dz);
-        } else if (rotated) {
-            return new EntityRotationMessage(id, yaw, pitch);
-        }
-
-        return null;
     }
 
     public int getHealth() {
@@ -217,6 +182,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     }
 
     protected Parameter<?> getMetadata(int index) {
+        if (metadata.size() <= index) return null;
         return metadata.get(index);
     }
 
@@ -225,6 +191,19 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             metadata.set(data.getIndex(), data);
         } else {
             metadata.add(data);
+        }
+        EntityMetadataMessage msg = new EntityMetadataMessage(id, metadata);
+        for (GlowPlayer player : world.getRawPlayers()) {
+            if (player != this && player.canSee(this)) player.getSession().send(msg);
+        }
+    }
+
+    protected void setMetadataFlag(int index, int flag, boolean value) {
+        byte existingMeta = getMetadata(index) == null ? 0 : (Byte)getMetadata(index).getValue();
+        if (value) {
+            setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, index, (byte)(existingMeta | flag)));
+        } else {
+            setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, index, (byte)(existingMeta & -(flag + 1))));
         }
     }
 

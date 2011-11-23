@@ -1,5 +1,6 @@
 package net.glowstone.entity.objects;
 
+import net.glowstone.entity.Damager;
 import net.glowstone.entity.GlowEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.entity.Item;
@@ -9,6 +10,8 @@ import net.glowstone.msg.Message;
 import net.glowstone.msg.SpawnItemMessage;
 import net.glowstone.GlowWorld;
 import net.glowstone.GlowServer;
+
+import java.util.List;
 
 /**
  * Represents an item that is also an {@link net.glowstone.entity.GlowEntity} within the world.
@@ -66,9 +69,7 @@ public final class GlowItem extends GlowEntity implements Item {
     }
 
     @Override
-    public Message createUpdateMessage() {
-        // TODO we can probably use some generic implementation for all of
-        // these
+    public List<ItemStack> getLoot(Damager damager) {
         return null;
     }
 

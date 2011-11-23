@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import net.glowstone.entity.objects.GlowItem;
 import org.bukkit.BlockChangeDelegate;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -645,13 +646,30 @@ public final class GlowWorld implements World {
     // entity spawning
 
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        EntityProperties properties = EntityProperties.getByBukkitClass(clazz);
+        if (properties == null) {
+            throw new IllegalArgumentException("This entity type is unknown to Glowstone!");
+        }
+
+        T entity = (T)properties.getFactory().createEntity(server, this);
+        entity.teleport(location);
+        return entity;
+    }
+
+    public <T extends GlowEntity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
+        EntityProperties properties = EntityProperties.getByGlowClass(clazz);
+        if (properties == null) {
+            throw new IllegalArgumentException("This entity type is unknown to Glowstone!");
+        }
+
+        T entity = (T)properties.getFactory().createEntity(server, this);
+        entity.teleport(location);
+        return entity;
     }
 
     public Item dropItem(Location location, ItemStack item) {
-        // TODO: maybe spawn special due to item-ness?
-        Item itemEntity = spawn(location, Item.class);
-        itemEntity.setItemStack(item);
+        Item itemEntity = new GlowItem(server, this, item);
+        itemEntity.teleport(location);
         return itemEntity;
     }
 
@@ -661,6 +679,12 @@ public final class GlowWorld implements World {
         double zs = random.nextFloat() * 0.7F + (1.0F - 0.7F) * 0.5D;
         location = location.clone().add(new Location(this, xs, ys, zs));
         return dropItem(location, item);
+    }
+
+    public void dropItemNaturally(Location location, ItemStack item, int iterations) {
+        for (int i = 0; i < iterations; i++) {
+            dropItemNaturally(location, item.clone());
+        }
     }
 
     public Arrow spawnArrow(Location location, Vector velocity, float speed, float spread) {
@@ -682,57 +706,30 @@ public final class GlowWorld implements World {
     }
 
     public LivingEntity spawnCreature(Location loc, CreatureType type) {
-        switch (type) {
-            case CHICKEN:
-                return spawn(loc, org.bukkit.entity.Chicken.class);
-            case COW:
-                return spawn(loc, org.bukkit.entity.Cow.class);
-            case CREEPER:
-                return spawn(loc, org.bukkit.entity.Creeper.class);
-            case GHAST:
-                return spawn(loc, org.bukkit.entity.Ghast.class);
-            case GIANT:
-                return spawn(loc, org.bukkit.entity.Giant.class);
-            case MONSTER:
-                return spawn(loc, org.bukkit.entity.Monster.class);
-            case PIG:
-                return spawn(loc, org.bukkit.entity.Pig.class);
-            case PIG_ZOMBIE:
-                return spawn(loc, org.bukkit.entity.PigZombie.class);
-            case SHEEP:
-                return spawn(loc, org.bukkit.entity.Sheep.class);
-            case SKELETON:
-                return spawn(loc, org.bukkit.entity.Skeleton.class);
-            case SLIME:
-                return spawn(loc, org.bukkit.entity.Slime.class);
-            case SPIDER:
-                return spawn(loc, org.bukkit.entity.Spider.class);
-            case SQUID:
-                return spawn(loc, org.bukkit.entity.Squid.class);
-            case ZOMBIE:
-                return spawn(loc, org.bukkit.entity.Zombie.class);
-            case WOLF:
-                return spawn(loc, org.bukkit.entity.Wolf.class);
-            case CAVE_SPIDER:
-                return spawn(loc, org.bukkit.entity.CaveSpider.class);
-            case SILVERFISH:
-                return spawn(loc, org.bukkit.entity.Silverfish.class);
-            case ENDERMAN:
-                return spawn(loc, org.bukkit.entity.Enderman.class);
-            default:
-                throw new IllegalArgumentException();
+        EntityProperties properties = EntityProperties.getByCreatureType(type);
+        if (properties == null) {
+            throw new IllegalArgumentException("This CreatureType is unknown to Glowstone!");
         }
+        LivingEntity entity = (LivingEntity)properties.getFactory().createEntity(server, this);
+        entity.teleport(loc);
+        return entity;
     }
 
     public GlowLightningStrike strikeLightning(Location loc) {
-        GlowLightningStrike strike = new GlowLightningStrike(server, this, false);
-        strike.teleport(loc);
-        return strike;
+        return strikeLightning(loc, false);
     }
 
     public GlowLightningStrike strikeLightningEffect(Location loc) {
-        GlowLightningStrike strike = new GlowLightningStrike(server, this, true);
-        strike.teleport(loc);
+        return strikeLightning(loc, true);
+    }
+
+    public GlowLightningStrike strikeLightning(Location loc, boolean isEffect) {
+        GlowLightningStrike strike = new GlowLightningStrike(server, this, isEffect);
+        if (!EventFactory.onLightningStrike(strike, this).isCancelled()) {
+            strike.teleport(loc);
+        } else {
+            strike.remove();
+        }
         return strike;
     }
 
@@ -763,7 +760,9 @@ public final class GlowWorld implements World {
     }
 
     public void setStorm(boolean hasStorm) {
-        currentlyRaining = hasStorm;
+        if (!EventFactory.onWeatherChange(this, hasStorm).isCancelled()) {
+            currentlyRaining = hasStorm;
+        }
         
         // Numbers borrowed from CraftBukkit.
         if (currentlyRaining) {
@@ -790,7 +789,9 @@ public final class GlowWorld implements World {
     }
 
     public void setThundering(boolean thundering) {
-        currentlyThundering = thundering;
+        if (!EventFactory.onThunderChange(this, thundering).isCancelled()) {
+            currentlyThundering = thundering;
+        }
         
         // Numbers borrowed from CraftBukkit.
         if (currentlyThundering) {

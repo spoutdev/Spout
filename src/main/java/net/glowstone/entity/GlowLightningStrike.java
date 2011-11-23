@@ -8,6 +8,9 @@ import net.glowstone.util.Position;
 import net.glowstone.msg.Message;
 import net.glowstone.msg.SpawnLightningStrikeMessage;
 import net.glowstone.GlowWorld;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 /**
  * A GlowLightning strike is an entity produced during thunderstorms.
@@ -54,5 +57,10 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     public Message createUpdateMessage() {
         return null;
     }
-    
+
+    @Override
+    public List<ItemStack> getLoot(Damager damager) {
+        return null;
+    }
+
 }
