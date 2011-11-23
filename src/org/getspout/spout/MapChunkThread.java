@@ -134,12 +134,7 @@ public final class MapChunkThread implements Runnable {
 
 	private void handleMapChunk(QueuedPacket task) {
 		Packet51MapChunk packet = (Packet51MapChunk) task.packet;
-
-		try {
-			packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
-		} catch (NoSuchFieldError e) {
-		}
-
+		packet.rawData = ChunkCache.cacheChunk(task.players, packet.rawData);
 	}
 
 	private void sendToNetworkQueue(QueuedPacket task) {
@@ -158,7 +153,6 @@ public final class MapChunkThread implements Runnable {
 	// producer
 	private void putTask(QueuedPacket task, boolean skip) {
 		if(instance.kill.get()) {
-			//throw new RuntimeException("MapChunkData: attempting to add task to queue after thread has been killed");
 			//send the packet async, hopefully it doesn't break!
 			for (EntityPlayer player : task.players) {
 				player.netServerHandler.networkManager.queue(task.packet);
@@ -175,9 +169,7 @@ public final class MapChunkThread implements Runnable {
 					queue.put(task);
 				}
 				return;
-			} catch (InterruptedException e) {
-				// TODO: ignore?
-			}
+			} catch (InterruptedException e) {}
 		}
 	}
 

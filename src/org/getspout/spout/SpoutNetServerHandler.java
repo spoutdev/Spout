@@ -34,8 +34,10 @@ import java.util.zip.Deflater;
 
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.Container;
+import net.minecraft.server.ContainerBrewingStand;
 import net.minecraft.server.ContainerChest;
 import net.minecraft.server.ContainerDispenser;
+import net.minecraft.server.ContainerEnchantTable;
 import net.minecraft.server.ContainerFurnace;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
@@ -65,6 +67,7 @@ import net.minecraft.server.Packet51MapChunk;
 import net.minecraft.server.Packet9Respawn;
 import net.minecraft.server.Slot;
 import net.minecraft.server.TileEntity;
+import net.minecraft.server.TileEntityBrewingStand;
 import net.minecraft.server.TileEntityDispenser;
 import net.minecraft.server.TileEntityFurnace;
 import net.minecraft.server.WorldServer;
@@ -114,17 +117,15 @@ public class SpoutNetServerHandler extends NetServerHandler {
 	
 	public SpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, networkmanager, entityplayer);
+		//cache the field for later use
 		try {
 			entityListField = NetServerHandler.class.getDeclaredField("q");
 			entityListField.setAccessible(true);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		//Lower the active packet queue size in bytes by 9 megabytes, to allow for 10mb of data in a players queue
 		try {
 			Field x = NetworkManager.class.getDeclaredField("x");
 			x.setAccessible(true);
@@ -432,8 +433,8 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		if (event != null) {
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			result = event.getResult();
-			cursor = SpoutCraftItemStack.getContribCraftItemStack(event.getCursor());
-			slot = SpoutCraftItemStack.getContribCraftItemStack(event.getItem());
+			cursor = SpoutCraftItemStack.getCraftItemStack(event.getCursor());
+			slot = SpoutCraftItemStack.getCraftItemStack(event.getItem());
 		}
 
 		// initialize setup
@@ -455,7 +456,6 @@ public class SpoutNetServerHandler extends NetServerHandler {
 				}
 				if (event.getCursor() != null) {
 					setActiveSlot(packet.b, itemstack);
-					// cursorstack = new ItemStack(event.getCursor().getTypeId(), event.getCursor().getAmount(), event.getCursor().getDurability());
 					setCursorSlot(cursorstack);
 				}
 			}
@@ -883,6 +883,14 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			}
 			if (container instanceof ContainerWorkbench) {
 				return new SpoutCraftingInventory(((ContainerWorkbench) container).craftInventory, ((ContainerWorkbench) container).resultInventory);
+			}
+			if (container instanceof ContainerBrewingStand) {
+				Field a = ContainerBrewingStand.class.getDeclaredField("a");
+				a.setAccessible(true);
+				return new SpoutCraftInventory((TileEntityBrewingStand) a.get((ContainerBrewingStand) container));
+			}
+			if (container instanceof ContainerEnchantTable) {
+				return new SpoutCraftInventory(((ContainerEnchantTable)container).a);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

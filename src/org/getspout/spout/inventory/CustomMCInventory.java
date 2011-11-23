@@ -33,7 +33,7 @@ public class CustomMCInventory implements IInventory{
 				this.items[i] = null;
 			}
 			else {
-				SpoutCraftItemStack item = SpoutCraftItemStack.getContribCraftItemStack(items[i]);
+				SpoutCraftItemStack item = SpoutCraftItemStack.getCraftItemStack(items[i]);
 				this.items[i] = item == null ? null : item.getHandle();
 			}
 		}
@@ -48,7 +48,7 @@ public class CustomMCInventory implements IInventory{
 				this.items[pos] = null;
 			}
 			else {
-				SpoutCraftItemStack temp = SpoutCraftItemStack.getContribCraftItemStack(item);
+				SpoutCraftItemStack temp = SpoutCraftItemStack.getCraftItemStack(item);
 				this.items[pos] = temp == null ? null : temp.getHandle();
 			}
 			pos++;

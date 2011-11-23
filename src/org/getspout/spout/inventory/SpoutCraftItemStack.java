@@ -33,7 +33,7 @@ public class SpoutCraftItemStack extends CraftItemStack{
 		return new SpoutCraftItemStack(item.id, item.count, (short) item.getData());
 	}
 	
-	public static SpoutCraftItemStack getContribCraftItemStack(org.bukkit.inventory.ItemStack item) {
+	public static SpoutCraftItemStack getCraftItemStack(org.bukkit.inventory.ItemStack item) {
 		if (item == null) return null;
 		if (item instanceof SpoutCraftItemStack) {
 			return (SpoutCraftItemStack)item;
