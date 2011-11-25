@@ -888,7 +888,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		}
 		
 		for (Player p : getWorld().getPlayers()) {
-			sendDelayedPacket(new PacketSkinURL(p.getEntityId(), getSkin((SpoutPlayer) p), getCape((SpoutPlayer) p)));
+			sendDelayedPacket(new PacketSkinURL(p.getEntityId(), getSkin(SpoutManager.getPlayer(p)), getCape(SpoutManager.getPlayer(p))));
 		}
 	}
 	
