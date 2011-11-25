@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GlowPig extends GlowAminals implements Pig {
+public class GlowPig extends GlowAnimals implements Pig {
     
     /**
      * Whether this pig has a saddle

@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlowSheep extends GlowAminals implements Sheep {
+public class GlowSheep extends GlowAnimals implements Sheep {
     
     /**
      * Whether this sheep is sheared

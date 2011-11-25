@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlowChicken extends GlowAminals implements Chicken {
+public class GlowChicken extends GlowAnimals implements Chicken {
     /**
      * Creates a new monster.
      *

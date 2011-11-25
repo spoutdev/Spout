@@ -32,7 +32,7 @@ public class GlowCreeper extends GlowMonster implements Creeper {
         if (amount > 0) loot.add(new ItemStack(ItemID.SULPHUR, amount));
         if (damager != null && damager instanceof Arrow) {
             if (((Arrow)damager).getShooter() instanceof Skeleton) {
-                loot.add(new ItemStack(ItemID.GOLD_RECORD + random.nextInt(2), 1));
+                loot.add(new ItemStack(ItemID.DISC_13 + random.nextInt(2), 1));
             }
         }
         return loot;

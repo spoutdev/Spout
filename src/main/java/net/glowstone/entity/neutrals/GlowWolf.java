@@ -5,7 +5,7 @@ import net.glowstone.GlowWorld;
 import net.glowstone.entity.Angerable;
 import net.glowstone.entity.Damager;
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.entity.animals.GlowAminals;
+import net.glowstone.entity.animals.GlowAnimals;
 import net.glowstone.msg.EntityMetadataMessage;
 import net.glowstone.util.Parameter;
 import org.bukkit.OfflinePlayer;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlowWolf extends GlowAminals implements Wolf, Angerable {
+public class GlowWolf extends GlowAnimals implements Wolf, Angerable {
 
     private boolean angry, sitting, tamed;
     private String owner;

@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author zml2008
  */
-public class GlowCow extends GlowAminals implements Cow {
+public class GlowCow extends GlowAnimals implements Cow {
     
     /**
      * Creates a new monster.
