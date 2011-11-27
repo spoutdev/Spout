@@ -39,6 +39,7 @@ public class CustomItemSpade extends ItemSpade{
 					}
 					catch (Exception e) {
 						System.out.println("Unexpected error replacing the spade material");
+						System.out.println("Current item: " + i + " Total Items: " + Item.byId.length);
 						System.out.println("Crashed replacing: " + spade.getClass() + " " + spade.toString());
 						System.out.println("Was using reflection with: " + (tool != null ? tool.getName() : "null") + " " + tool);
 						e.printStackTrace();
