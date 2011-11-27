@@ -880,9 +880,11 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public void updateAppearance() {
 		for (LivingEntity le : getWorld().getLivingEntities()) {
 			//Update entity skins
-			for (EntitySkinType type : EntitySkinType.values()) {
-				if (getInformation().getEntitySkin(le, type) != null) {
-					sendDelayedPacket(new PacketEntitySkin(le, getInformation().getEntitySkin(le, type), type.getId()));
+			if (getInformation() != null) {
+				for (EntitySkinType type : EntitySkinType.values()) {
+					if (getInformation().getEntitySkin(le, type) != null) {
+						sendDelayedPacket(new PacketEntitySkin(le, getInformation().getEntitySkin(le, type), type.getId()));
+					}
 				}
 			}
 		}
