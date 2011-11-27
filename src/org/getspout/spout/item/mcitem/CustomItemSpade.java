@@ -29,16 +29,21 @@ public class CustomItemSpade extends ItemSpade{
 				if (Item.byId[i] instanceof ItemSpade) {
 					ItemSpade spade = (ItemSpade)Item.byId[i];
 					EnumToolMaterial etm = null;
+					Field tool = null;
 					try {
-						Field tool = ItemTool.class.getDeclaredField("b");
+						tool = ItemTool.class.getDeclaredField("b");
 						tool.setAccessible(true);
 						etm = (EnumToolMaterial) tool.get(spade);
+						Item.byId[i] = null;
+						Item.byId[i] = new CustomItemSpade(spade.id-256, etm);
 					}
 					catch (Exception e) {
+						System.out.println("Unexpected error replacing the spade material");
+						System.out.println("Crashed replacing: " + spade.getClass() + " " + spade.toString());
+						System.out.println("Was using reflection with: " + (tool != null ? tool.getName() : "null") + " " + tool);
 						e.printStackTrace();
 					}
-					Item.byId[i] = null;
-					Item.byId[i] = new CustomItemSpade(spade.id-256, etm);
+					
 				}
 			}
 		}
