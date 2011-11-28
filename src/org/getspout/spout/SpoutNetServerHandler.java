@@ -354,7 +354,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 					SpoutCraftItemStack[] recipeContents = new SpoutCraftItemStack[recipe.getSize()];
 					for (int i = 0; i < recipe.getSize(); i++) {
 						org.bukkit.inventory.ItemStack temp = crafting.getMatrix()[i];
-						recipeContents[i] = temp == null ? null : new SpoutCraftItemStack(temp.getTypeId(), temp.getAmount(), temp.getDurability());
+						recipeContents[i] = temp == null ? null : new SpoutCraftItemStack(temp.getTypeId(), temp.getAmount(), temp.getDurability(), temp.getEnchantments());
 					}
 
 					SpoutCraftItemStack[][] matrix = null;
@@ -375,7 +375,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 						InventoryCraftEvent craftEvent = new InventoryCraftEvent(this.getPlayer(), crafting, this.activeLocation, type, packet.b, matrix, craftResult, cursor, packet.c == 0, packet.f);
 						Bukkit.getServer().getPluginManager().callEvent(craftEvent);
 						craftEvent.getInventory().setResult(craftEvent.getResult());
-						cursor = craftEvent.getCursor() == null ? null : new SpoutCraftItemStack(craftEvent.getCursor().getTypeId(), craftEvent.getCursor().getAmount(), craftEvent.getCursor().getDurability());
+						cursor = craftEvent.getCursor() == null ? null : new SpoutCraftItemStack(craftEvent.getCursor().getTypeId(), craftEvent.getCursor().getAmount(), craftEvent.getCursor().getDurability(), craftEvent.getCursor().getEnchantments());
 						if (craftEvent.isCancelled()) {
 							craftEvent.getInventory().setMatrix(recipeContents);
 							setCursorSlot(cursor != null ? cursor.getHandle() : null);
