@@ -671,7 +671,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			sendPacket(new PacketOpenScreen(type));
 		}
 		if(activeScreen != ScreenType.GAME_SCREEN && activeScreen != ScreenType.CUSTOM_SCREEN) {
-			currentScreen = new GenericOverlayScreen(getEntityId(), getActiveScreen());
+			currentScreen = (GenericOverlayScreen) new GenericOverlayScreen(getEntityId(), getActiveScreen()).setX(0).setY(0);
 			PacketWidget packetw = new PacketWidget(currentScreen, currentScreen.getId());
 			sendPacket(packetw);
 			currentScreen.onTick();
