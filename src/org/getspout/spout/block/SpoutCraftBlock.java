@@ -195,9 +195,9 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 		return new SpoutItemStack(type, amount, (short) data);
 	}
 
-	public Integer getCustomBlockId() {
+	public short getCustomBlockId() {
 		Serializable data = getData(SimpleMaterialManager.blockIdString);
-		return data == null ? null : Integer.valueOf((Short)data);
+		return data == null ? 0 : (Short)data;
 	}
 
 	public void setCustomBlockId(int blockId) {
@@ -209,15 +209,15 @@ public class SpoutCraftBlock extends CraftBlock implements SpoutBlock {
 	}
 
 	public boolean isCustomBlock() {
-		if (getCustomBlockId() != null) {
+		if (getCustomBlock() != null) {
 			return true;
 		}
 		return false;
 	}
 	
 	public CustomBlock getCustomBlock() {
-		if (isCustomBlock()) {
-			int id = getCustomBlockId();
+		short id = getCustomBlockId();
+		if (id > 0) {
 			return MaterialData.getCustomBlock(id);
 		}
 		return null;
