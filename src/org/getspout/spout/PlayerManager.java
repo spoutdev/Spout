@@ -90,11 +90,7 @@ public class PlayerManager {
 		((SpoutCraftPlayer)player).getNetServerHandler().sendPacket(new CustomPacket(p));	
 		
 		Spout.getInstance().getPlayerTrackingManager().onPlayerJoin(player);
-		
-		//force bubble meter to update
-		player.setRemainingAir(player.getRemainingAir());
-		player.setMaximumAir(player.getMaximumAir());
-		
+
 		player.sendPacket(new PacketBlockData(SpoutManager.getMaterialManager().getModifiedBlocks()));
 		Bukkit.getServer().getPluginManager().callEvent(new SpoutCraftEnableEvent(player));
 	}

@@ -258,6 +258,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 
 	@Override
 	public void setMaximumAir(int time) {
+		if (time <= 0) {
+			throw new IllegalArgumentException("The Maximum Air can not be below 1");
+		}
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketAirTime(time, this.getRemainingAir()));
 		}
@@ -266,6 +269,9 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 
 	@Override
 	public void setRemainingAir(int time) {
+		if (time < 0) {
+			throw new IllegalArgumentException("The Remaining Air can not be below 0");
+		}
 		if (isSpoutCraftEnabled()) {
 			sendPacket(new PacketAirTime(this.getMaximumAir(), time));
 		}
