@@ -44,7 +44,7 @@ public class SpoutNetLoginHandler extends NetLoginHandler{
 	
 	@Override
 	public void b(Packet1Login packet1login) {
-		EntityPlayer entityplayer = this.server.serverConfigurationManager.a(this, packet1login.name);
+		EntityPlayer entityplayer = this.server.serverConfigurationManager.attemptLogin(this, packet1login.name);
 		if (entityplayer != null) {
 			this.server.serverConfigurationManager.b(entityplayer);
 			entityplayer.spawnIn(this.server.getWorldServer(entityplayer.dimension));
@@ -53,14 +53,14 @@ public class SpoutNetLoginHandler extends NetLoginHandler{
 			WorldServer worldserver = this.server.getWorldServer(entityplayer.dimension);
 			ChunkCoordinates chunkcoordinates = worldserver.getSpawn();
 
-			entityplayer.itemInWorldManager.b(worldserver.r().getGameType());
+			entityplayer.itemInWorldManager.b(worldserver.getWorldData().getGameType());
 			
 			SpoutCraftPlayer.updateBukkitEntity(entityplayer);
 			
 			SpoutNetServerHandler netserverhandler = new SpoutNetServerHandler(this.server, this.networkManager, entityplayer);
 
 			worldserver.getClass();
-			int maxPlayers = this.server.serverConfigurationManager.k();
+			int maxPlayers = this.server.serverConfigurationManager.getMaxPlayers();
 			if (maxPlayers > 60) {
 				maxPlayers = 60;
 			}

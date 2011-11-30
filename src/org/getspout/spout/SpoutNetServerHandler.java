@@ -42,7 +42,7 @@ import net.minecraft.server.ContainerFurnace;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.CraftingManager;
-import net.minecraft.server.EntityList;
+import net.minecraft.server.IntHashMap;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
 import net.minecraft.server.InventoryCraftResult;
@@ -137,9 +137,9 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		}
 	}
 	
-	public EntityList getEntityList() {
+	public IntHashMap getEntityList() {
 		try {
-			return (EntityList) entityListField.get(this);
+			return (IntHashMap) entityListField.get(this);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

@@ -201,8 +201,8 @@ public class CustomChest extends BlockChest implements CustomMCBlock{
 	}
 	
 	@Override
-	public void a(World world, int i, int j, int k) {
-		parent.a(world, i, j, k);
+	public void onPlace(World world, int i, int j, int k) {
+		parent.onPlace(world, i, j, k);
 	}
 	
 	@Override
@@ -216,8 +216,8 @@ public class CustomChest extends BlockChest implements CustomMCBlock{
 	}
 	
 	@Override
-	public int a(int i, Random random) {
-		return parent.a(i, random);
+	public int getDropCount(int i, Random random) {
+		return parent.getDropCount(i, random);
 	}
 	
 	@Override
@@ -280,8 +280,8 @@ public class CustomChest extends BlockChest implements CustomMCBlock{
 	}
 	
 	@Override
-	public void a(IBlockAccess iblockaccess, int i, int j, int k) {
-		parent.a(iblockaccess, i, j, k);
+	public void updateShape(IBlockAccess iblockaccess, int i, int j, int k) {
+		parent.updateShape(iblockaccess, i, j, k);
 	}
 	
 	@Override

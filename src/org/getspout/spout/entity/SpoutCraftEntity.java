@@ -153,9 +153,9 @@ public class SpoutCraftEntity extends CraftEntity{
 			}
 			return previous;
 		}
-		if (entity instanceof EntityFallingSand) {
+		if (entity instanceof EntityFallingBlock) {
 			if (!previous.getClass().equals(SpoutCraftFallingSand.class)) {
-				return new SpoutCraftFallingSand(server, (EntityFallingSand)entity);
+				return new SpoutCraftFallingSand(server, (EntityFallingBlock)entity);
 			}
 			return previous;
 		}
@@ -186,9 +186,9 @@ public class SpoutCraftEntity extends CraftEntity{
 		
 		//Weather
 		if (entity instanceof EntityWeather) {
-			if (entity instanceof EntityWeatherStorm) {
+			if (entity instanceof EntityWeatherLighting) {
 				if (!previous.getClass().equals(SpoutCraftLightningStrike.class)) {
-					return new SpoutCraftLightningStrike(server, (EntityWeatherStorm)entity);
+					return new SpoutCraftLightningStrike(server, (EntityWeatherLighting)entity);
 				}
 				return previous;
 			}

@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import net.minecraft.server.EntityList;
+import net.minecraft.server.IntHashMap;
 import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
 
@@ -155,7 +155,7 @@ public class CustomPacket extends Packet{
 		try {
 			Field field = Packet.class.getDeclaredField("a");
 			field.setAccessible(true);
-			EntityList temp = (EntityList) field.get(null);
+			IntHashMap temp = (IntHashMap) field.get(null);
 			temp.d(195);
 			field = Packet.class.getDeclaredField("b");
 			field.setAccessible(true);
