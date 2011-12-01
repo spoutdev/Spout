@@ -262,7 +262,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		if (ids == null) {
 			return 0;
 		}
-		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & worldworldHeightMinusOneHeight);
+		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & worldHeightMinusOne);
 		return ids[index];
 	}
 
