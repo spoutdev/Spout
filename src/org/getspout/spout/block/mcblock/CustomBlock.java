@@ -97,8 +97,8 @@ public class CustomBlock extends Block implements CustomMCBlock{
 		updateField(this, parent, "strength");
 	}
 			
-	protected static int getIndex(int x, int y, int z) {
-		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
+	protected static int getIndex(World world, int x, int y, int z) {
+		return (x & 0xF) << world.heightBitsPlusFour | (z & 0xF) << world.heightBits | (y & 0xFFFF);
 	}
 	
 	public float getExplosionResistance() {
@@ -371,7 +371,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
 		org.getspout.spoutapi.material.CustomBlock block = getCustomBlock((World)iblockaccess, x, y, z);
-		int index = CustomBlock.getIndex(x, y, z);
+		int index = CustomBlock.getIndex(((World)iblockaccess), x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
 			TIntIntHashMap powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;

@@ -268,7 +268,7 @@ public class CustomMinecartTrack extends BlockMinecartTrack implements CustomMCB
 	
 	@Override
 	public boolean a(IBlockAccess iblockaccess, int x, int y, int z, int face) {
-		int index = CustomBlock.getIndex(x, y, z);
+		int index = CustomBlock.getIndex(((World)iblockaccess), x, y, z);
 		Chunk chunk = ((World)iblockaccess).getChunkAt(x >> 4, z >> 4).bukkitChunk;
 		if (chunk.getClass().equals(SpoutCraftChunk.class)) { 
 			TIntIntHashMap powerOverrides = ((SpoutCraftChunk)chunk).powerOverrides;

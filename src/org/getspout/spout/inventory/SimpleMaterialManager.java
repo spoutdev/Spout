@@ -5,7 +5,6 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -479,27 +477,4 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 			}
 		}
 	}
-
-	@Override
-	public File getWorldDirectory(World world) {
-		File worldContainer = new File(".");
-		try {
-			Method m = org.bukkit.craftbukkit.CraftServer.class.getDeclaredMethod("getWorldContainer", (Class<?>[])null); //Why isn't this public :(
-			worldContainer = (File) m.invoke((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer(), (Object[])null);
-		}
-		catch (Exception ignore) {}
-		
-		File dir = new File(worldContainer, world.getName());
-		
-		if (world.getEnvironment() == Environment.NETHER) {
-			dir = new File(dir, "DIM-1");
-		}
-		
-		if (dir.exists()) {
-			return dir;
-		} else {
-			return null;
-		}
-	}
-
 }

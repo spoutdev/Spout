@@ -37,8 +37,12 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.getspout.spoutapi.Spout;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.SpoutWorld;
 import org.getspout.spoutapi.block.SpoutChunk;
+import org.getspout.spoutapi.material.CustomBlock;
+import org.getspout.spoutapi.material.MaterialData;
 
 import com.google.common.collect.MapMaker;
 
@@ -52,6 +56,10 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	public final Map<Integer, Block> blockCache = new MapMaker().weakValues().makeMap();
 	
 	protected Field cache;
+	
+	transient private final int worldHeight;
+	transient private final int xBitShifts;
+	transient private final int zBitShifts;
 
 	public SpoutCraftChunk(Chunk chunk) {
 		super(chunk);
@@ -63,6 +71,12 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 			cache = null;
 			//cache is not present in newer builds
 		}
+		
+		SpoutWorld world = Spout.getServer().getWorld(getWorld().getUID());
+		
+		this.worldHeight = world.getMaxHeight();
+		this.xBitShifts = world.getXBitShifts();
+		this.zBitShifts = world.getZBitShifts();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -76,11 +90,11 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	@Override
 	public Block getBlock(int x, int y, int z) {
 		try {
-			int pos = (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
+			int pos = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & 0xFFFF);
 			Map<Integer, Block> cache = getCache();
 			Block block = cache.get(pos);
 			if (block == null) {
-				Block newBlock = new SpoutCraftBlock(this, (getX() << 4) | (x & 0xF), y & 0x7F, (getZ() << 4) | (z & 0xF));
+				Block newBlock = new SpoutCraftBlock(this, (getX() << 4) | (x & 0xF), y & 0xFFFF, (getZ() << 4) | (z & 0xF));
 				Block oldBlock = cache.put(pos, newBlock);
 				if (oldBlock == null) {
 					block = newBlock;
@@ -94,30 +108,6 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		}
 	}
 
-	public boolean isLoaded() {
-		return getWorld().isChunkLoaded(this);
-	}
-
-	public boolean load() {
-		return getWorld().loadChunk(getX(), getZ(), true);
-	}
-
-	public boolean load(boolean generate) {
-		return getWorld().loadChunk(getX(), getZ(), generate);
-	}
-
-	public boolean unload() {
-		return getWorld().unloadChunk(getX(), getZ());
-	}
-
-	public boolean unload(boolean save) {
-		return getWorld().unloadChunk(getX(), getZ(), save);
-	}
-
-	public boolean unload(boolean save, boolean safe) {
-		return getWorld().unloadChunk(getX(), getZ(), save, safe);
-	}
-
 	private Block getBlockFromPos(int pos) throws IllegalAccessException, NoSuchFieldException {
 		Block block = getCache().get(pos);
 
@@ -125,9 +115,9 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 			return block;
 		}
 
-		int x = (pos >> 11) & 0xF;
-		int y = (pos >> 0) & 0xFF;
-		int z = (pos >> 7) & 0xF;
+		int x = (pos >> xBitShifts) & 0xF;
+		int y = (pos >> 0) & 0xFFFF;
+		int z = (pos >> zBitShifts) & 0xF;
 
 		return getBlock(x, y, z);
 
@@ -262,5 +252,37 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	@Override
 	public void setCustomBlockIds(short[] ids){
 		SpoutManager.getChunkDataManager().setCustomBlockIds(getWorld(), getX(), getZ(), ids);
+	}
+
+	@Override
+	public short getCustomBlockId(int x, int y, int z) {
+		short[] ids = getCustomBlockIds();
+		if (ids == null) {
+			return 0;
+		}
+		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & 0xFFFF);
+		return ids[index];
+	}
+
+	@Override
+	public short setCustomBlockId(int x, int y, int z, short id) {
+		short[] ids = getCustomBlockIds();
+		if (ids == null) {
+			ids = new short[16*16*worldHeight];
+			setCustomBlockIds(ids);
+		}
+		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & 0xFFFF);
+		short old = ids[index];
+		ids[index] = id;
+		return old;
+	}
+
+	@Override
+	public CustomBlock setCustomBlock(int x, int y, int z, CustomBlock block) {
+		if (block == null) {
+			throw new NullPointerException("Custom Block can not be null!");
+		}
+		short old = setCustomBlockId(x, y, z, (short) block.getCustomId());
+		return MaterialData.getCustomBlock(old);
 	}
 }

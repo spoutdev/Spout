@@ -108,6 +108,7 @@ public class Spout extends SpoutPlugin{
 		SpoutManager.getInstance().setKeyBindingManager(new SimpleKeyBindingManager());
 		SpoutManager.getInstance().setMaterialManager(new SimpleMaterialManager());
 		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
+		SpoutManager.getInstance().setWorldManager(new SimpleWorldManager());
 		blockListener = new SpoutBlockListener();
 		entityTrackingManager = new EntityTrackerManager();
 		playerTrackingManager = new PlayerTrackingManager();
