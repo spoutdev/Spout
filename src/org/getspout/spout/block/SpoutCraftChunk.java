@@ -90,11 +90,11 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 	@Override
 	public Block getBlock(int x, int y, int z) {
 		try {
-			int pos = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & 0xFFFF);
+			int pos = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & worldHeight);
 			Map<Integer, Block> cache = getCache();
 			Block block = cache.get(pos);
 			if (block == null) {
-				Block newBlock = new SpoutCraftBlock(this, (getX() << 4) | (x & 0xF), y & 0xFFFF, (getZ() << 4) | (z & 0xF));
+				Block newBlock = new SpoutCraftBlock(this, (getX() << 4) | (x & 0xF), y & worldHeight, (getZ() << 4) | (z & 0xF));
 				Block oldBlock = cache.put(pos, newBlock);
 				if (oldBlock == null) {
 					block = newBlock;
@@ -116,7 +116,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		}
 
 		int x = (pos >> xBitShifts) & 0xF;
-		int y = (pos >> 0) & 0xFFFF;
+		int y = (pos >> 0) & worldHeight;
 		int z = (pos >> zBitShifts) & 0xF;
 
 		return getBlock(x, y, z);
@@ -260,7 +260,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 		if (ids == null) {
 			return 0;
 		}
-		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & 0xFFFF);
+		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & worldHeight);
 		return ids[index];
 	}
 
@@ -271,7 +271,7 @@ public class SpoutCraftChunk extends CraftChunk implements SpoutChunk {
 			ids = new short[16*16*worldHeight];
 			setCustomBlockIds(ids);
 		}
-		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & 0xFFFF);
+		int index = ((x & 0xF) << xBitShifts) | ((z & 0xF) << zBitShifts) | (y & worldHeight);
 		short old = ids[index];
 		ids[index] = id;
 		return old;
