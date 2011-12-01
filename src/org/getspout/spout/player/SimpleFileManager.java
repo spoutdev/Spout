@@ -126,6 +126,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public List<String> getCache(Plugin plugin) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		List<String> cache = cachedFiles.get(plugin);
 		if (cache == null) {
 			return new ArrayList<String>(1);
@@ -135,6 +138,12 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToPreLoginCache(Plugin plugin, File file) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
+		if (file == null) {
+			throw new NullPointerException("File may not be null");
+		}
 		if (canCache(file)) {
 			List<File> cache = preLoginCache.get(plugin);
 			if (cache == null) {
@@ -149,6 +158,12 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToPreLoginCache(Plugin plugin, String fileUrl) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
+		if (fileUrl == null) {
+			throw new NullPointerException("The file url may not be null");
+		}
 		if (canCache(fileUrl)) {
 			List<String> cache = preLoginUrlCache.get(plugin);
 			if (cache == null) {
@@ -163,6 +178,12 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToPreLoginCache(Plugin plugin, Collection<File> files) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
+		if (files == null) {
+			throw new NullPointerException("The file collection may not be null");
+		}
 		for (File file: files) {
 			if (file == null || !file.exists() || file.isDirectory()) {
 				throw new IllegalArgumentException("Invalid Files! Files must not be null and must exist!");
@@ -182,6 +203,12 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToPreLoginCache(Plugin plugin, List<String> fileUrls) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
+		if (fileUrls == null) {
+			throw new NullPointerException("The url list may not be null");
+		}
 		for (String file: fileUrls) {
 			if (!canCache(file)) {
 				return false;
@@ -198,6 +225,15 @@ public class SimpleFileManager implements FileManager {
 	
 	@Override
 	public boolean addToPreLoginCache(Plugin plugin, InputStream input, String fileName) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
+		if (input == null) {
+			throw new NullPointerException("Inputstream may not be null");
+		}
+		if (fileName == null) {
+			throw new NullPointerException("Filename may not be null");
+		}
 		if (canCache(fileName)){
 			File result = addToTempDirectory(input, fileName);
 			if (result != null) {
@@ -209,6 +245,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToCache(Plugin plugin, File file) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		if (file == null || !file.exists() || file.isDirectory()) {
 			throw new IllegalArgumentException("Invalid File! Files must not be null and must exist!");
 		}
@@ -234,6 +273,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToCache(final Plugin plugin, final String fileUrl) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		if (addToPreLoginCache(plugin, fileUrl)) {
 			URLCheck urlCheck = new URLCheck(fileUrl, new byte[4096], new CRCStoreRunnable() {
 				
@@ -259,6 +301,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToCache(Plugin plugin, Collection<File> files) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		boolean success = true;
 		for (File file : files) {
 			if (!addToCache(plugin, file)) {
@@ -282,6 +327,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public boolean addToCache(Plugin plugin, InputStream input, String fileName) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		if (canCache(fileName)){
 			File result = addToTempDirectory(input, fileName);
 			if (result != null) {
@@ -293,6 +341,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public void removeFromCache(Plugin plugin, String file) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		List<File> cache = preLoginCache.get(plugin);
 		if (cache != null) {
 			Iterator<File> i = cache.iterator();
@@ -324,6 +375,9 @@ public class SimpleFileManager implements FileManager {
 
 	@Override
 	public void removeFromCache(Plugin plugin, List<String> files) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin may not be null");
+		}
 		for (String file : files) {
 			removeFromCache(plugin, file);
 		}
