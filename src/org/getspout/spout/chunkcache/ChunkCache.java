@@ -35,14 +35,13 @@ import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
 public class ChunkCache {
 
 	private final static int FULL_CHUNK_SIZE = 81920;
-	private final static int CACHED_SIZE = FULL_CHUNK_SIZE + 40*8 + 8;
 
 	private static HashMap<Integer,HashSet<Long>> activeHashes = new HashMap<Integer,HashSet<Long>>();
 	private static ConcurrentLinkedQueue<Integer> quittingPlayers = new ConcurrentLinkedQueue<Integer>();
 	private static ConcurrentLinkedQueue<HashUpdate> hashUpdateSync = new ConcurrentLinkedQueue<HashUpdate>();
 	private static HashMap<Integer,LinkedList<HashUpdate>> pendingHashUpdates = new HashMap<Integer,LinkedList<HashUpdate>>();
 
-	private static byte[] cachedData = new byte[CACHED_SIZE];
+	private static byte[] cachedData = new byte[0];
 	private static byte[] partition = new byte[2048];
 
 	public static byte[] cacheChunk(EntityPlayer[] players, byte[] uncompressedData) {
@@ -59,7 +58,7 @@ public class ChunkCache {
 			return uncompressedData;
 		}
 		
-		if(uncompressedData.length != FULL_CHUNK_SIZE || players.length != 1) {
+		if(uncompressedData.length % FULL_CHUNK_SIZE != 0 || players.length != 1) {
 			return uncompressedData;
 		}
 
@@ -90,6 +89,15 @@ public class ChunkCache {
 				}
 			}
 		}
+		
+		int segments = uncompressedData.length >> 11;
+		int height = uncompressedData.length / 640;
+		int heightBits = 31 - Integer.numberOfLeadingZeros(height);
+		int cachedSize = segments * (2048 + 8) + 8;
+		
+		if (cachedData.length < cachedSize) {
+			cachedData = new byte[cachedSize];
+		}
 
 		System.arraycopy(uncompressedData, 0, cachedData, 0, uncompressedData.length);
 
@@ -98,19 +106,19 @@ public class ChunkCache {
 			playerHashes = new HashSet<Long>();
 			activeHashes.put(id, playerHashes);
 		}
-
-		long CRC = ChunkHash.hash(uncompressedData);
-		PartitionChunk.setHash(cachedData, 40, CRC);
 		
-		for(int i = 0; i < 40; i++) {
-			PartitionChunk.copyFromChunkData(cachedData, i, partition);
+		long CRC = ChunkHash.hash(uncompressedData);
+		PartitionChunk.setHash(cachedData, segments, CRC, heightBits);
+		
+		for(int i = 0; i < segments; i++) {
+			PartitionChunk.copyFromChunkData(cachedData, i, partition, heightBits);
 			long hash = ChunkHash.hash(partition);
-			PartitionChunk.setHash(cachedData, i, hash);
+			PartitionChunk.setHash(cachedData, i, hash, heightBits);
 			
 			if(!playerHashes.add(hash)) {
-				PartitionChunk.copyToChunkData(cachedData, i, null);
+				PartitionChunk.copyToChunkData(cachedData, i, null, heightBits);
 			} else {
-				PartitionChunk.setHash(cachedData, i, 0);
+				PartitionChunk.setHash(cachedData, i, 0, heightBits);
 			}
 		}
 		
