@@ -531,7 +531,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		}
 		resyncQueue.addLast(packet);
 		if (processingKick.get()) {
-			this.syncFlushPacketQueue();
+			this.syncFlushPacketQueue(new MCCraftPacket[256]);
 		}
 	}
 
