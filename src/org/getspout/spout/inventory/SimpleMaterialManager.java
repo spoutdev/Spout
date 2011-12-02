@@ -76,11 +76,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	@Override
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
-			for (TLongObjectIterator<String> it = customTextures.iterator(); it.hasNext();) {
-				it.advance();
-				String pluginName = (String) customTexturesPlugin.get(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()));
-				player.sendPacket(new PacketItemTexture(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), pluginName, it.value()));
-			}
 			for (Integer id : UniqueItemStringMap.getIds()) {
 				Material material = MaterialData.getMaterial(318, id.shortValue());
 				if(material instanceof GenericCustomBlock) {
@@ -89,6 +84,11 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 				else if(material instanceof GenericCustomItem) {
 					player.sendPacket((GenericCustomItem)material);
 				}
+			}
+			for (TLongObjectIterator<String> it = customTextures.iterator(); it.hasNext();) {
+				it.advance();
+				String pluginName = (String) customTexturesPlugin.get(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()));
+				player.sendPacket(new PacketItemTexture(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), pluginName, it.value()));
 			}
 		}
 		super.onPlayerJoin(player);
