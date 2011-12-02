@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,9 +43,9 @@ import net.minecraft.server.ContainerFurnace;
 import net.minecraft.server.ContainerPlayer;
 import net.minecraft.server.ContainerWorkbench;
 import net.minecraft.server.CraftingManager;
-import net.minecraft.server.IntHashMap;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.IInventory;
+import net.minecraft.server.IntHashMap;
 import net.minecraft.server.InventoryCraftResult;
 import net.minecraft.server.InventoryCrafting;
 import net.minecraft.server.ItemStack;
@@ -529,6 +530,9 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			return;
 		}
 		resyncQueue.addLast(packet);
+		if (processingKick.get()) {
+			this.syncFlushPacketQueue();
+		}
 	}
 
 	public void sendImmediatePacket(Packet packet) {
@@ -546,11 +550,18 @@ public class SpoutNetServerHandler extends NetServerHandler {
 		super.a();
 	}
 
+	AtomicBoolean processingKick = new AtomicBoolean(false);
+	
 	@Override
 	public void disconnect(String kick) {
+	
+		processingKick.set(true); // If any packets are sent while this flag is true, it will flush the sync queue
+		
 		super.disconnect(kick);
 		if (this.disconnected)
 			syncFlushPacketQueue(new MCCraftPacket[256]);
+		
+		processingKick.set(false);
 	}
 	
 	public void syncFlushPacketQueue() {
@@ -565,7 +576,7 @@ public class SpoutNetServerHandler extends NetServerHandler {
 			}
 		}
 	}
-
+	
 	// Called from the main thread only
 	private void syncedSendPacket(Packet packet, MCCraftPacket[] packetWrappers) {
 
