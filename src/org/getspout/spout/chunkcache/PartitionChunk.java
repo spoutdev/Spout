@@ -76,8 +76,8 @@ public class PartitionChunk {
 			newStep1[cnt] = (height >> 1) - 8;
 		}
 
-		step1[heightBits] = new AtomicReference(newStep1);
-		startPoint[heightBits] = new AtomicReference(newStartPoint);
+		step1[heightBits] = new AtomicReference<int[]>(newStep1);
+		startPoint[heightBits] = new AtomicReference<int[]>(newStartPoint);
 
 		LUTSetup[heightBits].set(true);
 

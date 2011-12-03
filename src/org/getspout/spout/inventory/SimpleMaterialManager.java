@@ -76,13 +76,14 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	@Override
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
-			for (Integer id : UniqueItemStringMap.getIds()) {
-				Material material = MaterialData.getMaterial(318, id.shortValue());
-				if(material instanceof GenericCustomBlock) {
-					player.sendPacket((GenericCustomBlock)material);
+			for (CustomBlock block : MaterialData.getCustomBlocks()) {
+				if(block instanceof GenericCustomBlock) {
+					player.sendPacket((GenericCustomBlock)block);
 				}
-				else if(material instanceof GenericCustomItem) {
-					player.sendPacket((GenericCustomItem)material);
+			}
+			for (CustomItem block : MaterialData.getCustomItems()) {
+				if(block instanceof GenericCustomItem) {
+					player.sendPacket((GenericCustomItem)block);
 				}
 			}
 			for (TLongObjectIterator<String> it = customTextures.iterator(); it.hasNext();) {

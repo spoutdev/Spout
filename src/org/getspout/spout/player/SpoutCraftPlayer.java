@@ -862,7 +862,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		}
 	}
 	
-	private void checkUrl(String url) {
+	public void checkUrl(String url) {
 		if (url == null || url.length() < 5) {
 			throw new UnsupportedOperationException("Invalid URL");
 		}
