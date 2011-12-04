@@ -127,34 +127,30 @@ public class SpoutPlayerListener extends PlayerListener{
 				int damage = item.getDurability();
 				if(item.getType() == Material.FLINT && damage != 0 && !action) {
 					
-					SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
+				SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
 
-					int newBlockId = mm.getItemBlock(damage);
+					if (!player.getEyeLocation().getBlock().equals(block) && !player.getLocation().getBlock().equals(block)) {
 					
-					if (newBlockId != 0 ) {
-						if (!player.getEyeLocation().getBlock().equals(block) && !player.getLocation().getBlock().equals(block)) {
+						CustomBlock cb = MaterialData.getCustomBlock(damage);
+						BlockState oldState = block.getState();
+						block.setTypeIdAndData(cb.getBlockId(), (byte)(0), true);
+						cb.onBlockPlace(block.getWorld(), block.getX(), block.getY(), block.getZ(), player);
+						mm.overrideBlock(block, cb);
 						
-							CustomBlock cb = MaterialData.getCustomBlock(damage);
-							BlockState oldState = block.getState();
-							block.setTypeIdAndData(cb.getBlockId(), (byte)(0), true);
-							cb.onBlockPlace(block.getWorld(), block.getX(), block.getY(), block.getZ(), player);
-							mm.overrideBlock(block, cb);
-							
-							if (canPlaceAt(block, oldState, (SpoutBlock)event.getClickedBlock(), item, player)) {
-								// Yay, take the item from inventory
-								if (player.getGameMode() == GameMode.SURVIVAL) {
-									if(item.getAmount() == 1) {
-										event.getPlayer().setItemInHand(null);
-									} else {
-										item.setAmount(item.getAmount() - 1);
-									}
+						if (canPlaceAt(block, oldState, (SpoutBlock)event.getClickedBlock(), item, player)) {
+							// Yay, take the item from inventory
+							if (player.getGameMode() == GameMode.SURVIVAL) {
+								if(item.getAmount() == 1) {
+									event.getPlayer().setItemInHand(null);
+								} else {
+									item.setAmount(item.getAmount() - 1);
 								}
-								player.updateInventory();
-							} else {
-								// Event cancelled or can't build
-								mm.removeBlockOverride(block);
-								block.setTypeIdAndData(oldState.getTypeId(), oldState.getRawData(), true);
 							}
+							player.updateInventory();
+						} else {
+							// Event cancelled or can't build
+							mm.removeBlockOverride(block);
+							block.setTypeIdAndData(oldState.getTypeId(), oldState.getRawData(), true);
 						}
 					}
 				}

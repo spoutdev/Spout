@@ -1,30 +1,22 @@
 package org.getspout.spout.inventory;
 
-import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
 import net.minecraft.server.Item;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
-import org.getspout.spout.Spout;
 import org.getspout.spout.block.SpoutCraftBlock;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.block.SpoutBlock;
-import org.getspout.spoutapi.block.design.BlockDesign;
 import org.getspout.spoutapi.inventory.MaterialManager;
 import org.getspout.spoutapi.inventory.SpoutShapedRecipe;
 import org.getspout.spoutapi.inventory.SpoutShapelessRecipe;
@@ -32,27 +24,16 @@ import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.material.CustomItem;
 import org.getspout.spoutapi.material.Material;
 import org.getspout.spoutapi.material.MaterialData;
-import org.getspout.spoutapi.material.block.GenericCustomBlock;
-import org.getspout.spoutapi.material.item.GenericCustomItem;
 import org.getspout.spoutapi.packet.PacketCustomBlockChunkOverride;
-import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketCustomBlockOverride;
-import org.getspout.spoutapi.packet.PacketCustomId;
 import org.getspout.spoutapi.packet.PacketCustomMultiBlockOverride;
-import org.getspout.spoutapi.packet.PacketItemTexture;
 import org.getspout.spoutapi.packet.SpoutPacket;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.util.UniqueItemStringMap;
-import org.getspout.spoutapi.util.map.TIntPairHashSet;
 import org.getspout.spoutapi.util.map.TIntPairObjectHashMap;
 
 public class SimpleMaterialManager extends AbstractBlockManager implements MaterialManager {
-	private final TIntIntHashMap itemBlock = new TIntIntHashMap();
 	private final TIntObjectHashMap<String> itemPlugin = new TIntObjectHashMap<String>();
-	private final TIntPairObjectHashMap<String> customTextures = new TIntPairObjectHashMap<String>(100);
-	private final TIntPairObjectHashMap<String> customTexturesPlugin = new TIntPairObjectHashMap<String>(100);
-	private final TIntObjectHashMap<ItemStack> customDrops = new TIntObjectHashMap<ItemStack>(100);
-	private final TIntPairObjectHashMap<BlockDesign> customBlockDesigns = new TIntPairObjectHashMap<BlockDesign>(100);
 	private final HashMap<World, TIntPairObjectHashMap<BlockOverrides>> queuedChunkBlockOverrides = new HashMap<World, TIntPairObjectHashMap<BlockOverrides>>(10);
 
 	public static void disableFlintStackMix() {
@@ -69,7 +50,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	
 	@Override
 	public void reset() {
-		customTextures.clear();
 		super.reset();
 	}
 
@@ -77,81 +57,18 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	public void onPlayerJoin(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
 			for (CustomBlock block : MaterialData.getCustomBlocks()) {
-				if(block instanceof GenericCustomBlock) {
-					player.sendPacket((GenericCustomBlock)block);
+				if (block instanceof SpoutPacket) {
+					player.sendPacket((SpoutPacket)block);
 				}
 			}
-			for (CustomItem block : MaterialData.getCustomItems()) {
-				if(block instanceof GenericCustomItem) {
-					player.sendPacket((GenericCustomItem)block);
+			for (CustomItem item : MaterialData.getCustomItems()) {
+				CustomBlock owner = MaterialData.getCustomBlock(item.getCustomId());
+				if (item instanceof SpoutPacket && owner == null) {
+					player.sendPacket((SpoutPacket)item);
 				}
-			}
-			for (TLongObjectIterator<String> it = customTextures.iterator(); it.hasNext();) {
-				it.advance();
-				String pluginName = (String) customTexturesPlugin.get(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()));
-				player.sendPacket(new PacketItemTexture(TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), pluginName, it.value()));
 			}
 		}
 		super.onPlayerJoin(player);
-	}
-
-	@Override
-	public void setItemTexture(Material item, Plugin plugin, String texture) {
-		int id = item.getRawId();
-		int data = item.getRawData();
-		String pluginName;
-		if (plugin == null) {
-			pluginName = null;
-		} else {
-			pluginName = plugin.getDescription().getName();
-		}
-		customTextures.put(id, data, texture);
-		if (pluginName == null) {
-			customTexturesPlugin.remove(id, data);
-		} else {
-			customTexturesPlugin.put(id, data, pluginName);
-		}
-		SpoutPacket packet = new PacketItemTexture(id, (short) data, pluginName, texture);
-		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
-			if (player.isSpoutCraftEnabled()) {
-				player.sendPacket(packet);
-			}
-		}
-	}
-
-	@Override
-	public String getCustomItemTexture(Material item) {
-		int id = item.getRawId();
-		int data = item.getRawData();
-		if (customTextures.containsKey(id, data)) {
-			return (String) customTextures.get(id, data);
-		}
-		return null;
-	}
-
-	public String getCustomItemTexturePlugin(Material item) {
-		int id = item.getRawId();
-		int data = item.getRawData();
-		if (customTexturesPlugin.containsKey(id, data)) {
-			return (String) customTexturesPlugin.get(id, data);
-		}
-		return null;
-	}
-
-	@Override
-	public void resetTexture(Material item) {
-		int id = item.getRawId();
-		int data = item.getRawData();
-		if (customTextures.containsKey(id, data)) {
-			customTextures.remove(id, data);
-			String pluginName = (String) customTexturesPlugin.remove(id, data);
-			SpoutPacket packet = new PacketItemTexture(id, (short) data, pluginName, "[reset]");
-			for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
-				if (player.isSpoutCraftEnabled()) {
-					player.sendPacket(packet);
-				}
-			}
-		}
 	}
 
 	@Override
@@ -162,56 +79,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 
 		return id;
 	}
-
-	@Override
-	public void setCustomItemBlock(CustomItem item, CustomBlock block) {
-		int itemId = item.getCustomId();
-		itemBlock.put(itemId, block.getBlockId());
-		updateCustomClientData(itemId);
-	}
-
-	public int getItemBlock(int damage) {
-		return itemBlock.get(damage);
-	}
-
-	public void updateCustomClientData(Player player) {
-		Set<Integer> ids = UniqueItemStringMap.getIds();
-		Player[] players = new Player[1];
-		players[0] = player;
-		for (Integer id : ids) {
-			updateCustomClientData(players, id);
-		}
-	}
-
-	private void updateCustomClientData(int id) {
-		Player[] players = Spout.getInstance().getServer().getOnlinePlayers();
-		updateCustomClientData(players, id);
-	}
-
-	private void updateCustomClientData(Player[] players, int id) {
-
-		int blockId = itemBlock.get(id);
-
-		@SuppressWarnings("unused")
-		String pluginName = (String) itemPlugin.get(id);
-
-		PacketCustomId p = new PacketCustomId(id, blockId);
-
-		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
-			if (player.isSpoutCraftEnabled()) {
-				player.sendPacket(p);
-			}
-		}
-	}
-
-	public ItemStack getCustomItemStack(CustomBlock block, int size) {
-		return getCustomItemStack(block.getBlockItem(), size);
-	}
-
-	public ItemStack getCustomItemStack(CustomItem item, int size) {
-		return new ItemStack(item.getRawId(), size, (short) item.getCustomId());
-	}
-
 	@Override
 	public boolean overrideBlock(Block block, CustomBlock customBlock) {
 		block.setTypeId(customBlock.getBlockId());
@@ -275,74 +142,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 	}
 
 	@Override
-	public void setCustomBlockDesign(Material material, BlockDesign design) {
-		int blockId = material.getRawId();
-		int metaData = material.getRawData();
-		if(material instanceof CustomBlock) {
-			blockId = ((CustomBlock) material).getCustomId();
-			metaData = 0;
-		}
-		Player[] players = Bukkit.getServer().getOnlinePlayers();
-
-		if (design != null) {
-			customBlockDesigns.put(blockId, metaData, design);
-		} else {
-			customBlockDesigns.remove(blockId, metaData);
-		}
-
-		updateCustomBlockDesigns(players, blockId, metaData, design);
-
-	}
-
-	public void updateAllCustomBlockDesigns(Player player) {
-		Player[] players = new Player[1];
-		players[0] = player;
-		updateAllCustomBlockDesigns(players);
-	}
-
-	public void updateAllCustomBlockDesigns(Player[] players) {
-		for (TLongObjectIterator<BlockDesign> it = customBlockDesigns.iterator(); it.hasNext();) {
-			it.advance();
-			updateCustomBlockDesigns(players, TIntPairHashSet.longToKey1(it.key()), (short) TIntPairHashSet.longToKey2(it.key()), (BlockDesign) it.value());
-		}
-	}
-
-	private void updateCustomBlockDesigns(Player[] players, int blockId, int metaData, BlockDesign design) {
-		CustomBlock block = MaterialData.getCustomBlock(blockId);
-		if (block == null) {
-			block = MaterialData.getCustomBlock(metaData);
-		}
-		PacketCustomBlockDesign packet = new PacketCustomBlockDesign(block.getName(), block.isOpaque(), blockId, metaData, design);
-
-		for (SpoutPlayer player : SpoutManager.getOnlinePlayers()) {
-			if (player.isSpoutCraftEnabled()) {
-				player.sendPacket(packet);
-			}
-		}
-	}
-
-
-	@Override
-	public boolean isCustomBlock(Block block) {
-
-		if (!(block instanceof SpoutCraftBlock)) {
-			return false;
-		}
-		SpoutCraftBlock scb = (SpoutCraftBlock) block;
-
-		return scb.isCustomBlock();
-	}
-
-	@Override
-	public SpoutBlock getSpoutBlock(Block block) {
-		if (block instanceof SpoutBlock) {
-			return (SpoutBlock) block;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
 	public boolean registerSpoutRecipe(Recipe recipe) {
 		SpoutRecipe toAdd;
 		if (recipe instanceof SpoutRecipe) {
@@ -358,45 +157,6 @@ public class SimpleMaterialManager extends AbstractBlockManager implements Mater
 		}
 		toAdd.addToCraftingManager();
 		return true;
-	}
-
-	@Override
-	public boolean isCustomItem(ItemStack item) {
-		if (item.getTypeId() == 318 && item.getDurability() != 0) {
-			if (MaterialData.getCustomItem(item.getDurability()) != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public CustomItem getCustomItem(ItemStack item) {
-		if (isCustomItem(item)) {
-			return MaterialData.getCustomItem(item.getDurability());
-		}
-		return null;
-	}
-
-	@Override
-	public CustomBlock registerItemDrop(CustomBlock block, ItemStack item) {
-		if (item != null) {
-			customDrops.put(block.getCustomId(), item);
-		}
-		else {
-			customDrops.remove(block.getCustomId());
-		}
-		return block;
-	}
-
-	@Override
-	public boolean hasItemDrop(CustomBlock block) {
-		return customDrops.containsKey(block.getCustomId());
-	}
-
-	@Override
-	public ItemStack getItemDrop(CustomBlock block) {
-		return customDrops.get(block.getCustomId());
 	}
 
 	public void onTick() {

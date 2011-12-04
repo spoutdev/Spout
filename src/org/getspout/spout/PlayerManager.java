@@ -31,9 +31,12 @@ import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
+import org.getspout.spoutapi.material.CustomBlock;
+import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.packet.PacketBlockData;
 import org.getspout.spoutapi.packet.PacketCacheHashUpdate;
+import org.getspout.spoutapi.packet.PacketCustomBlockDesign;
 import org.getspout.spoutapi.packet.PacketServerPlugins;
 import org.getspout.spoutapi.player.PlayerInformation;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -74,8 +77,6 @@ public class PlayerManager {
 		Spout.getInstance().getEntityTrackingManager().onPostWorldChange(player); //force tracking of all existing entities
 		player.sendPacket(new PacketServerPlugins(Bukkit.getServer().getPluginManager().getPlugins()));
 		
-		SimpleMaterialManager mm = (SimpleMaterialManager)SpoutManager.getMaterialManager();
-		mm.updateCustomClientData(((SpoutCraftPlayer)player));
 		((SpoutCraftPlayer)player).updateAppearance();
 		((SimpleMaterialManager)SpoutManager.getMaterialManager()).onPlayerJoin(player);
 		((SimpleSkyManager)SpoutManager.getSkyManager()).onPlayerJoin(player);
@@ -83,7 +84,10 @@ public class PlayerManager {
 		((SimpleFileManager)SpoutManager.getFileManager()).onPlayerJoin(player);
 		((SimpleKeyBindingManager)SpoutManager.getKeyBindingManager()).onPlayerJoin(player);
 		player.sendPacket(new PacketAllowVisualCheats(ConfigReader.isAllowSkyCheat(),ConfigReader.isAllowClearWaterCheat(),ConfigReader.isAllowStarsCheat(),ConfigReader.isAllowWeatherCheat(),ConfigReader.isAllowTimeCheat(),ConfigReader.isAllowCoordsCheat(),ConfigReader.isAllowEntityLabelCheat()));
-		mm.updateAllCustomBlockDesigns(((SpoutCraftPlayer)player));
+		
+		for (CustomBlock block : MaterialData.getCustomBlocks()) {
+			player.sendPacket(new PacketCustomBlockDesign((short)block.getCustomId(), block.getBlockDesign()));
+		}
 		
 		PacketCacheHashUpdate p = new PacketCacheHashUpdate();
 		p.reset = true;

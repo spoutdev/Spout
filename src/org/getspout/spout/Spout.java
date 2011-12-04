@@ -44,7 +44,6 @@ import org.getspout.spout.chunkcache.SimpleCacheManager;
 import org.getspout.spout.command.SpoutCommand;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.entity.tracker.EntityTrackerManager;
-import org.getspout.spout.inventory.SimpleItemManager;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
 import org.getspout.spout.item.mcitem.CustomItemPickaxe;
@@ -107,7 +106,6 @@ public class Spout extends SpoutPlugin{
 		SpoutManager.getInstance().setFileManager(new SimpleFileManager());
 		SpoutManager.getInstance().setKeyBindingManager(new SimpleKeyBindingManager());
 		SpoutManager.getInstance().setMaterialManager(new SimpleMaterialManager());
-		SpoutManager.getInstance().setItemManager(new SimpleItemManager());
 		SpoutManager.getInstance().setWorldManager(new SimpleWorldManager());
 		blockListener = new SpoutBlockListener();
 		entityTrackingManager = new EntityTrackerManager();

@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockListener;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
+import org.getspout.spoutapi.material.CustomBlock;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutBlockListener extends BlockListener {
@@ -36,10 +37,11 @@ public class SpoutBlockListener extends BlockListener {
 		SpoutPlayer player = (SpoutPlayer)event.getPlayer();
 		
 		if (block.isCustomBlock()) {
-			block.getCustomBlock().onBlockDestroyed(block.getWorld(), block.getX(), block.getY(), block.getZ(), player);
-			if(mm.hasItemDrop(block.getCustomBlock())) {
+			CustomBlock material = block.getCustomBlock();
+			material.onBlockDestroyed(block.getWorld(), block.getX(), block.getY(), block.getZ(), player);
+			if (material.getItemDrop() != null) {
 				if (player.getGameMode() == GameMode.SURVIVAL) {
-					block.getWorld().dropItem(block.getLocation(), mm.getItemDrop(block.getCustomBlock()));
+					block.getWorld().dropItem(block.getLocation(), material.getItemDrop());
 				}
 				block.setTypeId(0);
 				event.setCancelled(true);
