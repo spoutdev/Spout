@@ -263,8 +263,13 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				SpoutItemStack inHand = player.getItemInHand() == null ? null : new SpoutItemStack(player.getItemInHand());
 				org.getspout.spoutapi.material.Material item = inHand.getMaterial();
 				
-				def = block.getHardness();
+				float hardness = block.getHardness();
+				if (hardness <= 0F) {
+					return 0F;
+				}
 				
+				def = (!entityhuman.b(this) ? 1.0F / hardness / 100.0F : entityhuman.a(this) / hardness / 30.0F);
+
 				if (!(item instanceof CustomItem)) {
 					return def;
 				}
@@ -275,10 +280,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				
 				Tool tool = (Tool)item;
 				
-				float hardness = block.getHardness();
-				if (hardness <= 0F) {
-					return 0F;
-				}
+				
 				
 				float modifier = tool.getStrengthModifier(block);
 				
