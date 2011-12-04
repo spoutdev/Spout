@@ -63,6 +63,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.chunkstore.PlayerTrackingManager;
 import org.getspout.spoutapi.chunkstore.SimpleChunkDataManager;
 import org.getspout.spoutapi.io.CRCStore;
+import org.getspout.spoutapi.io.FlatFileStore;
 import org.getspout.spoutapi.packet.PacketRenderDistance;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.getspout.spoutapi.plugin.SpoutPlugin;
@@ -81,7 +82,7 @@ public class Spout extends SpoutPlugin{
 	protected final SpoutCustomBlockMonitor blockMonitor;
 	protected static Spout instance;
 	protected Configuration CRCConfig;
-	protected Configuration itemMapConfig;
+	protected FlatFileStore itemMapConfig;
 	protected List<SpoutPlayer> playersOnline = new ArrayList<SpoutPlayer>();
 	protected Thread shutdownThread = null;
 	
@@ -256,8 +257,10 @@ public class Spout extends SpoutPlugin{
 		
 		CRCStore.setConfigFile(CRCConfig);
 		
-		itemMapConfig = new Configuration(new File(this.getDataFolder(), "itemMap.yml"));
-		itemMapConfig.load();
+		itemMapConfig = new FlatFileStore(new File(this.getDataFolder(), "itemMap.txt"));
+		if (!itemMapConfig.load()) {
+			this.log("Unable to load global item map");
+		}
 		
 		UniqueItemStringMap.setConfigFile(itemMapConfig);
 		
