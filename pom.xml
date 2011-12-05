@@ -84,7 +84,7 @@
 	</dependencies>
    
 	<build>
-		<defaultGoal>clean package</defaultGoal>
+		<defaultGoal>clean</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<!-- Resources -->
 		<resources>
