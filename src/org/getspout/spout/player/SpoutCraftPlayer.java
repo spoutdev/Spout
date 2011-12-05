@@ -69,6 +69,7 @@ import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.standard.MCCraftPacket;
+import org.getspout.spoutapi.ClientOnly;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
@@ -619,16 +620,36 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	public void setActiveInventoryLocation(Location loc) {
 		getNetServerHandler().setActiveInventoryLocation(loc);
 	}
-
+	
+	@Override
+	public void reconnect(String hostname) {
+		reconnect(null, hostname);
+	}
+	
+	@Override
 	public void reconnect(String hostname, int port) {
-		if (hostname.indexOf(":") != -1) {
-			throw new IllegalArgumentException("Hostnames may not the : symbol");
-		}
-		this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
+		reconnect(null, hostname, port);
 	}
 
 	@Override
-	public void reconnect(String hostname) {
+	public void reconnect(String message, String hostname, int port) {
+		if (hostname.indexOf(":") != -1) {
+			throw new IllegalArgumentException("Hostnames may not contain the : symbol");
+		}
+		if (message == null) {
+			message = "[Redirect] Please reconnect to";
+		} else if (message.indexOf(":") != -1) {
+			throw new IllegalArgumentException("Kick messages may not contain the : symbol");
+		}
+		if (port == 25565) {
+			this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
+		} else {
+			this.kickPlayer("[Redirect] Please reconnect to : " + hostname + ":" + port);
+		}
+	}
+
+	@Override
+	public void reconnect(String message, String hostname) {
 		if (hostname.indexOf(":") != -1) {
 			String[] split = hostname.split(":");
 			if (split.length != 2) {
@@ -640,9 +661,10 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			} catch (NumberFormatException nfe) {
 				throw new IllegalArgumentException("Unable to parse port number: " + split[1] + " in " + hostname);
 			}
-			reconnect(split[0], port);
+			reconnect(message, split[0], port);
+		} else {
+			reconnect(message, hostname, 25565);
 		}
-		this.kickPlayer("[Redirect] Please reconnect to : " + hostname);
 	}
 
 	@Override
