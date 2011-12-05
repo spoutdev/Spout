@@ -45,13 +45,9 @@
 
 	<!-- Repository locations -->
 	<repositories>
-	<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org</url>
-		</repository>
 		<repository>
 			<id>spout-repo</id>
-			<url>http://repo.getspout.org</url>
+			<url>http://repo.getspout.org/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
 
