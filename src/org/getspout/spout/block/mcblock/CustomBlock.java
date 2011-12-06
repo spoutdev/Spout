@@ -254,7 +254,8 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
 		float def = parent.getDamage(entityhuman);
-		
+		return def;
+		/* TODO until I can fix this...
 		if (entityhuman instanceof EntityPlayer) {
 			SpoutPlayer player = (SpoutPlayer)((EntityPlayer)entityhuman).netServerHandler.getPlayer();
 			if (player.getLastClickedLocation() != null) {
@@ -288,7 +289,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 			}
 		}
 		
-		return def;
+		return def;*/
 	}
 	
 	@Override
