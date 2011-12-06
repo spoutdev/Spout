@@ -111,7 +111,9 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
+		
 		SpoutCraftPlayer player = (SpoutCraftPlayer) SpoutCraftPlayer.getPlayer(event.getPlayer());
+		
 		if (event.getClickedBlock() != null) {
 			Material type = event.getClickedBlock().getType();
 			boolean action = false;

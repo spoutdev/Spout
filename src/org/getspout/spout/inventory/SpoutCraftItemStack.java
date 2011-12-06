@@ -16,16 +16,14 @@
  */
 package org.getspout.spout.inventory;
 
-import java.util.Map;
+import net.minecraft.server.NBTTagCompound;
 
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 
 public class SpoutCraftItemStack extends CraftItemStack{
 
-	public SpoutCraftItemStack(int type, int amount, short damage, Map<Enchantment, Integer> enchantments) {
-		super(type, amount, damage);
-		this.addUnsafeEnchantments(enchantments);
+	public SpoutCraftItemStack(net.minecraft.server.ItemStack item) {
+		super(item);
 	}
 	
 	public SpoutCraftItemStack(int type, int amount, short damage) {
@@ -38,8 +36,8 @@ public class SpoutCraftItemStack extends CraftItemStack{
 	
 	public static SpoutCraftItemStack fromItemStack(net.minecraft.server.ItemStack item) {
 		if (item == null) return null;
-		// TODO: Wrap VS Clone? The enchantments are cloned at the moment
-		return new SpoutCraftItemStack(item.id, item.count, (short) item.getData(), new CraftItemStack(item).getEnchantments());
+		
+		return new SpoutCraftItemStack(item);
 	}
 	
 	public static SpoutCraftItemStack getCraftItemStack(org.bukkit.inventory.ItemStack item) {
@@ -47,8 +45,21 @@ public class SpoutCraftItemStack extends CraftItemStack{
 		if (item instanceof SpoutCraftItemStack) {
 			return (SpoutCraftItemStack)item;
 		}
-		// TODO: Wrap VS Clone? The enchantments are cloned at the moment
-		return new SpoutCraftItemStack(item.getTypeId(), item.getAmount(), item.getDurability(), item.getEnchantments());
+		if (item instanceof CraftItemStack) {
+			CraftItemStack cis = (CraftItemStack)item;
+			if (cis.getHandle() != null) {
+				return new SpoutCraftItemStack(cis.getHandle());
+			}
+		}
+		
+		return new SpoutCraftItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
+	}
+	
+	public NBTTagCompound getTag() {
+		if (item.tag == null) {
+			item.tag = new NBTTagCompound();
+		}
+		return item.tag;
 	}
 
 }
