@@ -1,9 +1,9 @@
-[![SpoutcraftAPI][Project Logo]][Website]
+[![SpoutCommons][Project Logo]][Website]
 What is SpoutCommons?
 ----------------------
 Common API for the Spout client and server framework.
 
-Copyright &copy; 2011, SpoutDev <[Website]>  
+Copyright &copy; 2011, SpoutDev <http://www.getspout.org>  
 SpoutCommons is licensed under [GNU LESSER GENERAL PUBLIC LICENSE Version 3][License]
 
 Who is SpoutDev?
@@ -47,12 +47,12 @@ Coding and Pull Request Formatting
 
 **Please follow the above conventions if you want your pull request(s) accepted.**
 
-[Project Logo]: http://cdn.getspout.org/img/logo/spoutcraft_551x150.png
+[Project Logo]: http://cdn.getspout.org/img/logo/spout_327x150.png
 [License]: http://www.gnu.org/licenses/lgpl.html
-[Website]: http://www.spoutcraft.org
+[Website]: http://www.getspout.org
 [Forums]: http://forums.getspout.org
 [GitHub]: https://github.com/SpoutDev/SpoutCommons
-[Javadoc]: http://jd.spoutcraft.org/latest
+[Javadoc]: http://jd.getspout.org/latest
 [Jenkins]: http://spout.in/ci
 [Issues]: http://spout.in/issues
 [Twitter]: http://spout.in/twitter
@@ -61,4 +61,3 @@ Coding and Pull Request Formatting
 [Facebook Logo]: http://cdn.getspout.org/img/button/facebook_like_us.png
 [Donate]: https://www.paypal.com/cgi-bin/webscr?hosted_button_id=QNJH72R72TZ64&item_name=SpoutCommons+donation+%28from+github.com%29&cmd=_s-xclick
 [Donate Logo]: http://cdn.getspout.org/img/button/donate_paypal_96x96.png
-[MCP]: http://mcp.ocean-labs.de/index.php/MCP_Releases
