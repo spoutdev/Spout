@@ -69,7 +69,6 @@ import org.getspout.spout.inventory.SpoutCraftInventoryPlayer;
 import org.getspout.spout.inventory.SpoutCraftingInventory;
 import org.getspout.spout.packet.CustomPacket;
 import org.getspout.spout.packet.standard.MCCraftPacket;
-import org.getspout.spoutapi.ClientOnly;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
 import org.getspout.spoutapi.event.inventory.InventoryOpenEvent;
@@ -916,10 +915,12 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 				}
 			}
 		}
-		
+
 		for (Player p : getWorld().getPlayers()) {
-			if (p instanceof SpoutPlayer)
-				sendDelayedPacket(new PacketSkinURL(p.getEntityId(), getSkin((SpoutPlayer) p), getCape((SpoutPlayer) p)));
+			if (p instanceof SpoutPlayer && p != this) {
+				SpoutPlayer player = (SpoutPlayer)p;
+				sendDelayedPacket(new PacketSkinURL(player.getEntityId(), player.getSkin(this), player.getCape(this)));
+			}
 		}
 	}
 	
@@ -929,7 +930,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		skin = url;
 		
 		for (Player p : getWorld().getPlayers()) {
-			((SpoutPlayer)p).sendPacket(new PacketSkinURL(getEntityId(), getSkin((SpoutPlayer)p)));
+			if (p instanceof SpoutPlayer)
+				((SpoutPlayer)p).sendPacket(new PacketSkinURL(getEntityId(), getSkin((SpoutPlayer)p)));
 		}
 	}
 
