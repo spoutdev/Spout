@@ -264,7 +264,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				
 				float hardness = block.getHardness();
 				if (hardness <= 0F) {
-					return 0F;
+					return def;
 				}
 
 				def = (!entityhuman.b(parent) ? 1.0F / hardness / 100.0F : entityhuman.a(parent) / hardness / 30.0F);
