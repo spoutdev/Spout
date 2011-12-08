@@ -66,6 +66,6 @@ final public class Commons {
 	 */
 	@Deprecated
 	public static boolean isSpout() {
-		return isSpoutcraft;
+		return isSpout;
 	}
 }
