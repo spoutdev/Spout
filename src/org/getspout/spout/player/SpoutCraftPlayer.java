@@ -905,14 +905,27 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 	private HashMap<String, String> titlesFor = new HashMap<String, String>();
 	
 	public void updateAppearance() {
+		if (!isSpoutCraftEnabled()) {
+			return;
+		}
+		PlayerInformation info = getInformation();
+		PlayerInformation global = SpoutManager.getPlayerManager().getGlobalInfo();
 		for (LivingEntity le : getWorld().getLivingEntities()) {
-			//Update entity skins
-			if (getInformation() != null) {
-				for (EntitySkinType type : EntitySkinType.values()) {
-					if (getInformation().getEntitySkin(le, type) != null) {
-						sendDelayedPacket(new PacketEntitySkin(le, getInformation().getEntitySkin(le, type), type.getId()));
-					}
+			for (EntitySkinType type : EntitySkinType.values()) {
+				String skin = null;
+				if (info != null) {
+					skin = getInformation().getEntitySkin(le, type);
 				}
+				if (skin == null) {
+					skin = global.getEntitySkin(le, type);
+				}
+				if (skin != null) {
+					sendDelayedPacket(new PacketEntitySkin(le, skin, type.getId()));
+				}
+			}
+			String title = org.getspout.spoutapi.Spout.getServer().getTitle(le);
+			if (title != null) {
+				sendDelayedPacket(new PacketEntityTitle(le.getEntityId(), title));
 			}
 		}
 
@@ -920,6 +933,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			if (p instanceof SpoutPlayer && p != this) {
 				SpoutPlayer player = (SpoutPlayer)p;
 				sendDelayedPacket(new PacketSkinURL(player.getEntityId(), player.getSkin(this), player.getCape(this)));
+				sendDelayedPacket(new PacketEntityTitle(player.getEntityId(), player.getTitleFor(this)));
 			}
 		}
 	}

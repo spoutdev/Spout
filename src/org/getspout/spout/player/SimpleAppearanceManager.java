@@ -18,6 +18,7 @@ package org.getspout.spout.player;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
+import org.getspout.spoutapi.Spout;
 import org.getspout.spoutapi.player.AppearanceManager;
 import org.getspout.spoutapi.player.EntitySkinType;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -50,32 +51,31 @@ public class SimpleAppearanceManager implements AppearanceManager{
 
 	@Override
 	public void setPlayerTitle(SpoutPlayer viewingPlayer, LivingEntity target, String title) {
-		// TODO Auto-generated method stub
-		
+		if (target instanceof SpoutPlayer) {
+			((SpoutPlayer)target).setTitleFor(viewingPlayer, title);
+		}
 	}
 
 	@Override
 	public void setGlobalTitle(LivingEntity target, String title) {
-		// TODO Auto-generated method stub
-		
+		Spout.getServer().setTitle(target, title);
 	}
 
 	@Override
 	public void hidePlayerTitle(SpoutPlayer viewingPlayer, LivingEntity target) {
-		// TODO Auto-generated method stub
-		
+		if (target instanceof SpoutPlayer)
+			((SpoutPlayer)target).hideTitleFrom(viewingPlayer);
 	}
 
 	@Override
 	public void hideGlobalTitle(LivingEntity target) {
-		// TODO Auto-generated method stub
-		
+		if (target instanceof SpoutPlayer)
+			((SpoutPlayer)target).hideTitle();
 	}
 
 	@Override
 	public String getSkinUrl(SpoutPlayer viewingPlayer, HumanEntity target) {
-		// TODO Auto-generated method stub
-		return null;
+		return ((SpoutPlayer)target).getSkin(viewingPlayer);
 	}
 
 	@Override
@@ -116,13 +116,14 @@ public class SimpleAppearanceManager implements AppearanceManager{
 
 	@Override
 	public String getCloakUrl(SpoutPlayer viewingPlayer, HumanEntity target) {
-		// TODO Auto-generated method stub
-		return null;
+		return ((SpoutPlayer)target).getCape(viewingPlayer);
 	}
 
 	@Override
 	public String getTitle(SpoutPlayer viewingPlayer, LivingEntity target) {
-		// TODO Auto-generated method stub
+		if (target instanceof SpoutPlayer) {
+			return ((SpoutPlayer)target).getTitleFor(viewingPlayer);
+		}
 		return null;
 	}
 
@@ -148,12 +149,12 @@ public class SimpleAppearanceManager implements AppearanceManager{
 
 	@Override
 	public void setEntitySkin(SpoutPlayer viewingPlayer, LivingEntity target, String url, EntitySkinType type) {
-		
+		viewingPlayer.setEntitySkin(target, url, type);
 	}
 
 	@Override
 	public void setGlobalEntitySkin(LivingEntity entity, String url, EntitySkinType type) {
-		
+		Spout.getServer().setEntitySkin(entity, url, type);
 	}
 
 	@Override
