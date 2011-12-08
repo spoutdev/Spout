@@ -46,7 +46,6 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.getspout.spout.block.SpoutCraftChunk;
-import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
@@ -79,11 +78,11 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	}
 	
 	private org.getspout.spoutapi.material.CustomBlock getCustomBlock(World world, int x, int y, int z) {
-		if (this.id == MaterialData.stone.getRawId() || this.id == MaterialData.glass.getRawId()) {
-			Object o = SpoutManager.getChunkDataManager().getBlockData(SimpleMaterialManager.blockIdString, world.getWorld(), x, y, z);
-			if (o != null && o instanceof Integer) {
-				return MaterialData.getCustomBlock(((Integer)o).intValue());
-			}
+		short[] customIds = SpoutManager.getChunkDataManager().getCustomBlockIds(world.getWorld(), x >> 4, z >> 4);
+		if (customIds != null) {
+			int index = getIndex(world, x, y, z);
+			short id = customIds[index];
+			return MaterialData.getCustomBlock(id);
 		}
 		return null;
 	}
