@@ -891,7 +891,7 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 			throw new UnsupportedOperationException("All skins must be a PNG image");
 		}
 		if (url.length() > 255) {
-			throw new UnsupportedOperationException("All Url's must be shorter than 256 characters");
+			throw new UnsupportedOperationException("All URL's must be shorter than 256 characters");
 		}
 	}
 	
@@ -971,7 +971,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		cape = url;
 		
 		for (Player p : getWorld().getPlayers()) {
-			((SpoutPlayer)p).sendPacket(new PacketSkinURL(getCape((SpoutPlayer)p), getEntityId()));
+			if (p instanceof SpoutPlayer)
+				((SpoutPlayer)p).sendPacket(new PacketSkinURL(getCape((SpoutPlayer)p), getEntityId()));
 		}
 	}
 
@@ -1010,7 +1011,8 @@ public class SpoutCraftPlayer extends CraftPlayer implements SpoutPlayer {
 		this.title = title;
 		
 		for (Player p : getWorld().getPlayers()) {
-			((SpoutPlayer)p).sendPacket(new PacketEntityTitle(getEntityId(), getTitleFor((SpoutPlayer)p)));
+			if (p instanceof SpoutPlayer)
+				((SpoutPlayer)p).sendPacket(new PacketEntityTitle(getEntityId(), getTitleFor((SpoutPlayer)p)));
 		}
 	}
 

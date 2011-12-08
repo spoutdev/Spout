@@ -69,7 +69,7 @@ public class SpoutCommand implements CommandExecutor {
 			}
 			return true;
 		}
-		if (c.equals("verify") && args.length > 1 && sender.isOp() && sender instanceof ConsoleCommandSender) {
+		if (c.equals("verify") && args.length > 1) {
 			sender.sendMessage("[Spout] Temporarily setting the motd to: " + args[1]);
 			sender.sendMessage("[Spout] It will return to its original setting in ~5 mins");
 			if (motd_temp == null) {
