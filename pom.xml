@@ -144,7 +144,7 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>org.getspout:spoutapi</include>
+									<include>org.getspout:*</include>
 								</includes>
 							</artifactSet>
 						</configuration>
