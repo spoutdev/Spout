@@ -1,0 +1,123 @@
+<!--
+	Maven build file for SpoutCommons
+
+	Copyright (c) 2011 SpoutDev <http://www.getspout.org>
+	SpoutCommons is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Project information -->
+	<groupId>org.getspout</groupId>
+	<artifactId>commons</artifactId>
+	<version>dev-SNAPSHOT</version>
+	<name>SpoutCommons</name>
+	<url>http://www.getspout.org</url>
+	<description>Common API for the Spout client and server framework.</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- License -->
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE Version 3</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<!-- Source code -->
+	<scm>
+		<developerConnection>scm:git:git@github.com:SpoutDev/${project.name}.git</developerConnection>
+		<connection>scm:git:git://github.com/SpoutDev/${project.name}.git</connection>
+		<url>https://github.com/SpoutDev/${project.name}</url>
+	</scm>
+
+	<!-- Continuous integration -->
+	<ciManagement>
+		<system>jenkins</system>
+		<url>http://ci.getspout.org</url>
+	</ciManagement>
+
+	<!-- Repository locations -->
+	<repositories>
+		<repository>
+			<id>spout-repo</id>
+			<url>http://repo.getspout.org</url>
+		</repository>
+	</repositories>
+
+	<!--  Dependency Information -->
+	<dependencies>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.9</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>10.0.1</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+			<version>3.0.1</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>clean install</defaultGoal>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<!-- Resources -->
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>false</filtering>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>LICENSE.txt</include>
+				</includes>
+			</resource>
+		</resources>
+		<!-- Plugins -->
+		<plugins>
+			<!-- Compile plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+			</plugin>
+			<!-- JAR creation plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

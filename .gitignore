@@ -1,0 +1,56 @@
+# Compiled source #
+###################
+bin
+target
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Git #
+#######
+.git
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Project files #
+#################
+.classpath
+.project
+.settings
+MANIFEST.MF
+
+# Netbeans files #
+##################
+build
+dist
+nbproject
+build.xml
+
+# IntelliJ IDEA files #
+#######################
+.idea
