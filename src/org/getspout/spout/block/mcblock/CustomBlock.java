@@ -254,8 +254,6 @@ public class CustomBlock extends Block implements CustomMCBlock{
 	@Override
 	public float getDamage(EntityHuman entityhuman) {
 		float def = parent.getDamage(entityhuman);
-		return def;
-		/* TODO until I can fix this...
 		if (entityhuman instanceof EntityPlayer) {
 			SpoutPlayer player = (SpoutPlayer)((EntityPlayer)entityhuman).netServerHandler.getPlayer();
 			if (player.getLastClickedLocation() != null) {
@@ -268,8 +266,8 @@ public class CustomBlock extends Block implements CustomMCBlock{
 				if (hardness <= 0F) {
 					return 0F;
 				}
-				
-				def = (!entityhuman.b(this) ? 1.0F / hardness / 100.0F : entityhuman.a(this) / hardness / 30.0F);
+
+				def = (!entityhuman.b(parent) ? 1.0F / hardness / 100.0F : entityhuman.a(parent) / hardness / 30.0F);
 
 				if (!(item instanceof CustomItem)) {
 					return def;
@@ -289,7 +287,7 @@ public class CustomBlock extends Block implements CustomMCBlock{
 			}
 		}
 		
-		return def;*/
+		return def;
 	}
 	
 	@Override
