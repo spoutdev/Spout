@@ -125,6 +125,10 @@ public class SpoutPlayerListener extends PlayerListener{
 			if (event.hasItem() && !action) {
 				SpoutBlock block = (SpoutBlock)event.getClickedBlock().getRelative(event.getBlockFace());
 				
+				if (block.getType() == Material.SNOW) {
+					block = block.getRelative(0, -1, 0);
+				}
+				
 				ItemStack item = event.getItem();
 				int damage = item.getDurability();
 				if(item.getType() == Material.FLINT && damage != 0 && !action) {
