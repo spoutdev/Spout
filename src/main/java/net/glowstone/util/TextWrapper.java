@@ -28,11 +28,15 @@ public final class TextWrapper {
     private static final int CHAT_WINDOW_WIDTH = 320;
     private static final int CHAT_STRING_LENGTH = 119;
     
-    private static final String allowedChars = 
-            " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNO" +
-            "PQRSTUVWXYZ[\\]^_'abcdefghijklmnopqrstuvwxyz{|}~?" +
-            "ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»";
-    
+    private static final String allowedChars = " !\"#$%&\'()*+,-./"
+            + "0123456789:;<=>?"
+            + "@ABCDEFGHIJKLMNO"
+            + "PQRSTUVWXYZ[\\]^_"
+            + "\'abcdefghijklmno"
+            + "pqrstuvwxyz{|}~\u2302"
+            + "\u00C7\u00FC\u00E9\u00E2\u00E4\u00E0\u00E5\u00E7\u00EA\u00EB\u00E8\u00EF\u00EE\u00EC\u00C4\u00C5"
+            + "\u00C9\u00E6\u00C6\u00F4\u00F6\u00F2\u00FB\u00F9\u00FF\u00D6\u00DC\u00F8\u00A3\u00D8\u00D7\u0192";
+
     /**
      * Wrap the specified text taking character size and colors into account.
      * @param text The text to wrap.
