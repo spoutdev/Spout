@@ -17,6 +17,8 @@
 package org.getspout.spout;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.world.ChunkEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
@@ -37,6 +39,14 @@ public class SpoutWorldListener extends WorldListener{
 				chunk.set(event, event.getChunk().getWorld().getChunkAt(event.getChunk().getX(), event.getChunk().getZ()));
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+			
+			//grab all entities associated with the chunk being loaded
+			List entities = event.getWorld().getEntities();
+                        
+			for (int i = 0; i < entities.size(); i++) {
+			    Entity temp = (Entity) entities.get(i);
+			    Spout.getInstance().getEntityTrackingManager().onEntityJoin(temp);
 			}
 			
 			SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
