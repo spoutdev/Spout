@@ -40,16 +40,15 @@ public class SpoutWorldListener extends WorldListener{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-                        
-                        //grab all entities associated with this chunk load
-                        List entities = event.getWorld().getEntities();
 			
-                        for (int i = 0; i < entities.size(); i++) {
-                            Entity temp = (Entity) entities.get(i);
-                            Spout.getInstance().getEntityTrackingManager().onEntityJoin(temp);
-                        }
-                            
+			//grab all entities associated with this chunk load
+			List entities = event.getWorld().getEntities();
                         
+			for (int i = 0; i < entities.size(); i++) {
+			    Entity temp = (Entity) entities.get(i);
+			    Spout.getInstance().getEntityTrackingManager().onEntityJoin(temp);
+			}
+			
 			SimpleChunkDataManager dm = (SimpleChunkDataManager)SpoutManager.getChunkDataManager();
 			dm.loadChunk(event.getChunk());
 		}
