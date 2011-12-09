@@ -37,7 +37,7 @@ public class ConfigReader {
 	private static boolean allowTimeCheat = false;
 	private static boolean allowCoordsCheat = false;
 	private static boolean allowEntityLabelCheat = false;
- 
+	private static boolean allowVoidFogCheat = false;
 	private static boolean chunkDataCache = true;
 	private static boolean teleportSmoothing = true;
 	private static boolean authenticateSpoutcraft = true;
@@ -139,6 +139,13 @@ public class ConfigReader {
 				configuration.setProperty("AllowEntityLabelCheat", false);
 			}	 					
 			
+			if (configuration.getProperty("AllowVoidFogCheat") != null) {
+				allowEntityLabelCheat = configuration.getBoolean("AllowVoidFogCheat", false);
+			}
+			else {
+				configuration.setProperty("AllowEntityLabelCheat", false);
+			}	 					
+			
 			if (configuration.getProperty("ChunkDataCache") != null) {
 				chunkDataCache = configuration.getBoolean("ChunkDataCache", true);
 			} else {
@@ -182,11 +189,11 @@ public class ConfigReader {
 	}
  
 	public static boolean isAllowSkyCheat() {
-	 return allowSkyCheat;
+		return allowSkyCheat;
 	}
 	
 	public static boolean isAllowClearWaterCheat() {
-	 return allowClearWaterCheat;
+		return allowClearWaterCheat;
 	}
 	
 	public static boolean isAllowStarsCheat() {
@@ -199,6 +206,10 @@ public class ConfigReader {
 	
 	public static boolean isAllowTimeCheat() {
 		return allowTimeCheat;
+	}
+	
+	public static boolean isAllowVoidFogCheat() {
+		return allowVoidFogCheat;
 	}
 	
 	public static boolean isAllowCoordsCheat() {
