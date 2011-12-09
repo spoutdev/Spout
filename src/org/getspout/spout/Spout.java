@@ -46,6 +46,7 @@ import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.entity.tracker.EntityTrackerManager;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.inventory.SpoutInventoryBuilder;
+import org.getspout.spout.item.mcitem.CustomItemFlint;
 import org.getspout.spout.item.mcitem.CustomItemPickaxe;
 import org.getspout.spout.item.mcitem.CustomItemSpade;
 import org.getspout.spout.keyboard.SimpleKeyBindingManager;
@@ -237,6 +238,7 @@ public class Spout extends SpoutPlugin{
 		
 		CustomItemSpade.replaceSpades();
 		CustomItemPickaxe.replacePickaxes();
+		CustomItemFlint.replaceFlint();
 		CustomBlock.replaceBlocks();
 		
 		ChunkCompressionThread.startThread();
