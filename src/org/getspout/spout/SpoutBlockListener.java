@@ -1,11 +1,17 @@
 package org.getspout.spout;
 
+import java.util.List;
+import java.util.ListIterator;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockCanBuildEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockListener;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spoutapi.SpoutManager;
@@ -69,4 +75,40 @@ public class SpoutBlockListener extends BlockListener {
 		}
 	}
 
+	public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+		super.onBlockPistonExtend(event);
+		
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		List<Block> eventBlocks = event.getBlocks();
+		ListIterator<Block> itr = eventBlocks.listIterator(eventBlocks.size());
+		while(itr.hasPrevious()) {
+			pistonBlockMove((SpoutBlock)itr.previous(), event.getDirection());
+		}
+	}
+		
+	public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+		super.onBlockPistonRetract(event);
+		
+		if (event.isCancelled() || !event.isSticky()) {
+			return;
+		}
+		
+		pistonBlockMove((SpoutBlock)event.getBlock().getRelative(event.getDirection(), 2), event.getDirection().getOppositeFace());
+	}
+	
+	private void pistonBlockMove(SpoutBlock block, BlockFace blockFace) {
+		if (block.getType() != Material.STONE && block.getType() != Material.GLASS) {
+			return;
+		}
+				
+		if (block.isCustomBlock()) {
+			SpoutBlock targetBlock = block.getRelative(blockFace);
+			CustomBlock material = block.getCustomBlock();
+			mm.removeBlockOverride(block);
+			mm.overrideBlock(targetBlock.getWorld(), targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), material);
+		}
+	}
 }

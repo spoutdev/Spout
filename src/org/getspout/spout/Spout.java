@@ -208,6 +208,8 @@ public class Spout extends SpoutPlugin{
 		registerEvent(Type.CHUNK_UNLOAD, chunkMonitorListener, Priority.Monitor);
 		registerEvent(Type.PLUGIN_DISABLE, pluginListener, Priority.Normal);
 		registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Monitor);
+		registerEvent(Type.BLOCK_PISTON_EXTEND, blockListener, Priority.Monitor);
+		registerEvent(Type.BLOCK_PISTON_RETRACT, blockListener, Priority.Monitor);
 		registerEvent(Type.BLOCK_CANBUILD, blockListener, Priority.Lowest);
 		registerEvent(Type.ENTITY_TARGET, entityListener, Priority.Lowest);
 		registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Lowest);
