@@ -41,7 +41,7 @@ public class SpoutWorldListener extends WorldListener{
 				e.printStackTrace();
 			}
 			
-			//grab all entities associated with this chunk load
+			//grab all entities associated with the chunk being loaded
 			List entities = event.getWorld().getEntities();
                         
 			for (int i = 0; i < entities.size(); i++) {
