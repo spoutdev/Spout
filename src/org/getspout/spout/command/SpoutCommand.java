@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.getspout.spout.Spout;
 import org.getspout.spout.config.ConfigReader;
 import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spout.util.GhostBlock;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutCommand implements CommandExecutor {
@@ -39,6 +40,15 @@ public class SpoutCommand implements CommandExecutor {
 		if (c.equals("reload")) {
 			(new ConfigReader()).read();
 			sender.sendMessage("Configuration for Spout has been reloaded.");
+			return true;
+		}
+		if (c.equals("ghostblock")) {
+			GhostBlock.toggleGhostBlock();
+			if(GhostBlock.isRemoveGhostBlock()) { 
+				sender.sendMessage("Click the block which is showing a custom block texture incorrectly");
+			} else {
+				sender.sendMessage("Disabled Custom Block removal");
+			}
 			return true;
 		}
 		if (c.equals("version")) {

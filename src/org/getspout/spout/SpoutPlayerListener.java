@@ -40,6 +40,7 @@ import org.getspout.spout.chunkcache.ChunkCache;
 import org.getspout.spout.inventory.SimpleMaterialManager;
 import org.getspout.spout.player.SimplePlayerManager;
 import org.getspout.spout.player.SpoutCraftPlayer;
+import org.getspout.spout.util.GhostBlock;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.getspout.spoutapi.event.inventory.InventoryCloseEvent;
@@ -108,6 +109,11 @@ public class SpoutPlayerListener extends PlayerListener{
 		if (event.isCancelled()) {
 			return;
 		}
+		if (GhostBlock.isRemoveGhostBlock()) {
+			GhostBlock.clearCustomBlock((SpoutBlock)event.getClickedBlock(), event.getPlayer());
+			return;
+		}
+	
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
