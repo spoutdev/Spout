@@ -16,16 +16,23 @@
  */
 package org.getspout.spout.entity.tracker;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.getspout.spout.Spout;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class EntityTrackerManager {
-	private HashMap<String, EntityTracker> trackers = new HashMap<String, EntityTracker>();
-	//private long nanoTime =0;
+	private ConcurrentHashMap<String, EntityTracker> trackers = new ConcurrentHashMap<String, EntityTracker>();
+	public EntityTrackerManager() {
+		Thread thread = new EntityTrackingThread(Spout.getInstance(), trackers);
+		thread.run();
+	}
 	public void track(SpoutPlayer player) {
 		if (player.isSpoutCraftEnabled()) {
 			EntityTracker tracker = new EntityTracker(player);
@@ -42,17 +49,30 @@ public class EntityTrackerManager {
 	}
 	
 	public void onPostWorldChange(SpoutPlayer player) {
-		//long start = System.nanoTime();
 		EntityTracker tracker = trackers.get(player.getName());
 		if (tracker != null) {
 			tracker.untrackAllEntities();
 			tracker.trackEntities(player.getWorld().getEntities());
 		}
-		//nanoTime += (System.nanoTime() - start);
+	}
+	
+	public void onChunkLoad(Chunk chunk){
+		List<Player> players = chunk.getWorld().getPlayers();
+		Entity[] entities = chunk.getEntities();
+		for (Player p : players) {
+			if (p instanceof SpoutPlayer) {
+				SpoutPlayer player = (SpoutPlayer)p;
+				if (player.isSpoutCraftEnabled()) {
+					EntityTracker tracker = trackers.get(player.getName());
+					if (tracker != null) {
+						tracker.trackEntities(entities);
+					}
+				}
+			}
+		}
 	}
 	
 	public void onEntityJoin(Entity entity) {
-		//long start = System.nanoTime();
 		List<Player> players = entity.getWorld().getPlayers();
 		for (Player p : players) {
 			if (p instanceof SpoutPlayer) {
@@ -65,33 +85,46 @@ public class EntityTrackerManager {
 				}
 			}
 		}
-		//nanoTime += (System.nanoTime() - start);
 	}
 	
 	public void onEntityDeath(Entity entity) {
-		//long start = System.nanoTime();
-				List<Player> players = entity.getWorld().getPlayers();
-				for (Player p : players) {
-					if (p instanceof SpoutPlayer) {
-						SpoutPlayer player = (SpoutPlayer)p;
-						if (player.isSpoutCraftEnabled()) {
-							EntityTracker tracker = trackers.get(player.getName());
-							if (tracker != null) {
-								tracker.untrackEntity(entity);
-							}
-						}
+		List<Player> players = entity.getWorld().getPlayers();
+		for (Player p : players) {
+			if (p instanceof SpoutPlayer) {
+				SpoutPlayer player = (SpoutPlayer)p;
+				if (player.isSpoutCraftEnabled()) {
+					EntityTracker tracker = trackers.get(player.getName());
+					if (tracker != null) {
+						tracker.untrackEntity(entity);
 					}
 				}
-				//nanoTime += (System.nanoTime() - start);
+			}
+		}
 	}
 	
 	public void onTick() {
-		//long start = System.nanoTime();
-		for (EntityTracker tracker : trackers.values()) {
-			tracker.onTick();
+
+	}
+}
+
+class EntityTrackingThread extends Thread {
+	Plugin plugin;
+	Map<String, EntityTracker> trackers;
+	public EntityTrackingThread(Plugin plugin, Map<String, EntityTracker> trackers) {
+		this.plugin = plugin;
+		this.trackers = trackers;
+	}
+	
+	public void run() {
+		while(plugin.isEnabled()) {
+			try {
+				sleep(50);
+			}
+			catch (InterruptedException ignore) { }
+			
+			for (EntityTracker tracker : trackers.values()) {
+				tracker.onTick();
+			}
 		}
-		//nanoTime += (System.nanoTime() - start);
-		//System.out.println("Tracking " + trackers.size() + " players took " + nanoTime / 1E6D + " ms");
-		//nanoTime = 0L;
 	}
 }

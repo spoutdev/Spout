@@ -37,35 +37,44 @@ public class EntityTracker {
 		return trackedPlayer;
 	}
 	
-	public boolean isEntityTracked(int id) {
+	public synchronized boolean isEntityTracked(int id) {
 		return entitiesTracked.contains(id);
 	}
 	
-	public void trackEntity(Entity entity) {
+	public synchronized void trackEntity(Entity entity) {
 		if (!entitiesTracked.contains(entity.getEntityId())) {
 			entitiesTracked.add(entity.getEntityId());
 			aliveNeedsUpdate.add(entity);
 		}
 	}
 	
-	public void untrackEntity(Entity entity) {
-		entitiesTracked.remove(entity.getEntityId());
-		deadNeedsUpdate.add(entity);
+	public synchronized void untrackEntity(Entity entity) {
+		if (entitiesTracked.remove(entity.getEntityId())) {
+			deadNeedsUpdate.add(entity);
+		}
 	}
 	
+	//Unsynchronized because trackEntity(...) is already synchronized
+	public void trackEntities(Entity[] entities) {
+		for (Entity e : entities) {
+			trackEntity(e);
+		}
+	}
+	
+	//Unsynchronized because trackEntity(...) is already synchronized
 	public void trackEntities(List<Entity> entities) {
 		for (Entity e : entities) {
 			trackEntity(e);
 		}
 	}
 	
-	public void untrackAllEntities() {
+	public synchronized void untrackAllEntities() {
 		aliveNeedsUpdate.clear();
 		deadNeedsUpdate.clear();
 		entitiesTracked.clear();
 	}
 	
-	public void onTick() {
+	public synchronized void onTick() {
 		if (!aliveNeedsUpdate.isEmpty()) {
 			trackedPlayer.sendPacket(new PacketUniqueId(aliveNeedsUpdate, true));
 			aliveNeedsUpdate = new LinkedList<Entity>();
