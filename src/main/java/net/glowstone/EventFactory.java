@@ -12,8 +12,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.block.*;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -26,6 +27,10 @@ import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.event.vehicle.*;
+import org.bukkit.event.weather.LightningStrikeEvent;
+import org.bukkit.event.weather.ThunderChangeEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.net.InetAddress;
@@ -192,5 +197,63 @@ public final class EventFactory {
 
     public static WorldUnloadEvent onWorldUnload(GlowWorld world) {
         return callEvent(new WorldUnloadEvent(world));
+    }
+
+    // -- Weather Events
+
+    public static LightningStrikeEvent onLightningStrike(LightningStrike strike, GlowWorld world) {
+        return callEvent(new LightningStrikeEvent(world, strike));
+    }
+
+    public static ThunderChangeEvent onThunderChange(GlowWorld world, boolean to) {
+        return callEvent(new ThunderChangeEvent(world, to));
+    }
+
+    public static WeatherChangeEvent onWeatherChange(GlowWorld world, boolean to) {
+        return callEvent(new WeatherChangeEvent(world, to));
+    }
+
+    // -- Entity Events
+
+    public static CreatureSpawnEvent onCreatureSpawn(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
+        return callEvent(new CreatureSpawnEvent(entity, null, entity.getLocation(), reason));
+    }
+
+    // -- Vehicle Events
+
+    public static VehicleCreateEvent onVehicleCreate(Vehicle vehicle) {
+        return callEvent(new VehicleCreateEvent(vehicle));
+    }
+
+    public static VehicleMoveEvent onVehicleMove(Vehicle vehicle, Location from) {
+        return callEvent(new VehicleMoveEvent(vehicle, from, vehicle.getLocation()));
+    }
+
+    public static VehicleDamageEvent onVehicleDamage(Vehicle vehicle, Entity attacker, int damage) {
+        return callEvent(new VehicleDamageEvent(vehicle, attacker, damage));
+    }
+
+    public static VehicleDestroyEvent onVehicleDestroy(Vehicle vehicle, Entity attacker) {
+        return callEvent(new VehicleDestroyEvent(vehicle, attacker));
+    }
+
+    public static VehicleEnterEvent onVehicleEnter(Vehicle vehicle, LivingEntity entered) {
+        return callEvent(new VehicleEnterEvent(vehicle, entered));
+    }
+
+    public static VehicleExitEvent onVehicleExit(Vehicle vehicle, LivingEntity exiting) {
+        return callEvent(new VehicleExitEvent(vehicle, exiting));
+    }
+
+    public static VehicleBlockCollisionEvent onVehicleBlockCollide(Vehicle vehicle, Block block) {
+        return callEvent(new VehicleBlockCollisionEvent(vehicle, block));
+    }
+
+    public static VehicleEntityCollisionEvent onVehicleEntityCollide(Vehicle vehicle, Entity entity) {
+        return callEvent(new VehicleEntityCollisionEvent(vehicle, entity));
+    }
+
+    public static VehicleUpdateEvent onVehicleUpdate(Vehicle vehicle) {
+        return callEvent(new VehicleUpdateEvent(vehicle));
     }
 }

@@ -1,14 +1,7 @@
 package net.glowstone.entity;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 import net.glowstone.GlowOfflinePlayer;
@@ -133,6 +126,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     private String playerListName;
 
+
+    /**
+     * Whether the player is sprinting
+     */
+    private boolean isSprinting;
 
     /**
      * Creates a new player and adds it to the world.
@@ -383,11 +381,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     }
 
     public boolean isSprinting() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return  isSprinting;
     }
 
     public void setSprinting(boolean sprinting) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.isSprinting = sprinting;
+        setMetadataFlag(0, 0x03, sprinting);
     }
 
     public boolean isSleepingIgnored() {
@@ -402,7 +401,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public void setGameMode(GameMode mode) {
         boolean changed = getGameMode() != mode;
         super.setGameMode(mode);
-        if (changed) session.send(new StateChangeMessage((byte) 3, (byte) mode.getValue()));
+        if (changed) session.send(new StateChangeMessage((byte) 3, (byte) mode.getValue())); // The gamemode changed message is clientside (NOTCH!!!!!!!), so don't annoy users unnecessarily.
     }
 
     public int getExperience() {
@@ -537,6 +536,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         }
         
         return true;
+    }
+
+    @Override
+    public List<ItemStack> getLoot(Damager damager) {
+        return new ArrayList<ItemStack>(Arrays.asList(getInventory().getContents()));
     }
 
     public void sendMessage(String message) {

@@ -16,7 +16,11 @@ public final class PositionRotationMessageHandler extends MessageHandler<Positio
             return;
         }
 
-        PlayerMoveEvent event = EventFactory.onPlayerMove(player, player.getLocation(), new Location(player.getWorld(), message.getX(), message.getY(), message.getZ(), message.getRotation(), message.getPitch()));
+        float rot = (message.getRotation() - 90) % 360;
+        if (rot < 0) {
+            rot += 360.0;
+        }
+        PlayerMoveEvent event = EventFactory.onPlayerMove(player, player.getLocation(), new Location(player.getWorld(), message.getX(), message.getY(), message.getZ(), rot, message.getPitch()));
 
         if (event.isCancelled()) {
             return;

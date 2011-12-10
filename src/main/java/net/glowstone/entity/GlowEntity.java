@@ -1,7 +1,13 @@
 package net.glowstone.entity;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+
+import net.glowstone.msg.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.bukkit.entity.Entity;
 import org.bukkit.Location;
@@ -10,7 +16,6 @@ import net.glowstone.GlowChunk;
 import net.glowstone.GlowServer;
 import net.glowstone.util.Position;
 
-import net.glowstone.msg.Message;
 import net.glowstone.GlowWorld;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -19,7 +24,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  * Represents some entity in the world such as an item on the floor or a player.
  * @author Graham Edgecombe
  */
-public abstract class GlowEntity implements Entity {
+public abstract class GlowEntity implements Entity, Damager {
     
     /**
      * The server this entity belongs to.
@@ -66,7 +71,13 @@ public abstract class GlowEntity implements Entity {
      */
     private int ticksLived = 0;
     /**
+     * A Random for use in this entity.
+     */
+    protected final Random random = new Random();
+    
+    /**
      * Creates an entity and adds it to the specified world.
+     * @param server The server.
      * @param world The world.
      */
     public GlowEntity(GlowServer server, GlowWorld world) {
@@ -176,8 +187,13 @@ public abstract class GlowEntity implements Entity {
     }
 
     /**
+<<<<<<< Updated upstream
      * Sets this entity's location.
      * @param location The new location.
+=======
+     * Sets this entity's position.
+     * @param location The new position.
+>>>>>>> Stashed changes
      */
     public void setRawLocation(Location location) {
         this.location = location;
@@ -217,7 +233,35 @@ public abstract class GlowEntity implements Entity {
      * entity.
      * @return A message which can update this entity.
      */
-    public abstract Message createUpdateMessage();
+    public Message createUpdateMessage() {
+        boolean moved = hasMoved();
+        boolean rotated = hasRotated();
+
+        int x = Position.getIntX(location);
+        int y = Position.getIntY(location);
+        int z = Position.getIntZ(location);
+
+        int dx = x - Position.getIntX(previousLocation);
+        int dy = y - Position.getIntY(previousLocation);
+        int dz = z - Position.getIntZ(previousLocation);
+
+        boolean teleport = dx > Byte.MAX_VALUE || dy > Byte.MAX_VALUE || dz > Byte.MAX_VALUE || dx < Byte.MIN_VALUE || dy < Byte.MIN_VALUE || dz < Byte.MIN_VALUE;
+
+        int yaw = Position.getIntYaw(previousLocation);
+        int pitch = Position.getIntPitch(previousLocation);
+
+        if (moved && teleport) {
+            return new EntityTeleportMessage(id, x, y, z, yaw, pitch);
+        } else if (moved && rotated) {
+            return new RelativeEntityPositionRotationMessage(id, dx, dy, dz, yaw, pitch);
+        } else if (moved) {
+            return new RelativeEntityPositionMessage(id, dx, dy, dz);
+        } else if (rotated) {
+            return new EntityRotationMessage(id, yaw, pitch);
+        }
+
+        return null;
+    }
 
     /**
      * Checks if this entity has moved this cycle.
@@ -346,8 +390,36 @@ public abstract class GlowEntity implements Entity {
     public boolean isOnGround() {
         return onGround;
     }
+    
     public void setOnGround(boolean onGround) {
         this.onGround = onGround;
     }
+    
+    public BlockFace getFacingDirection() {
+        double rot = getLocation().getYaw();
+        if (0 <= rot && rot < 22.5) {
+            return BlockFace.NORTH;
+        } else if (22.5 <= rot && rot < 67.5) {
+            return BlockFace.NORTH_EAST;
+        } else if (67.5 <= rot && rot < 112.5) {
+            return BlockFace.EAST;
+        } else if (112.5 <= rot && rot < 157.5) {
+            return BlockFace.SOUTH_EAST;
+        } else if (157.5 <= rot && rot < 202.5) {
+            return BlockFace.SOUTH;
+        } else if (202.5 <= rot && rot < 247.5) {
+            return BlockFace.SOUTH_WEST;
+        } else if (247.5 <= rot && rot < 292.5) {
+            return BlockFace.WEST;
+        } else if (292.5 <= rot && rot < 337.5) {
+            return BlockFace.NORTH_WEST;
+        } else if (337.5 <= rot && rot < 360.0) {
+            return BlockFace.NORTH;
+        } else {
+            return null;
+        }
+    }
+
+    public abstract List<ItemStack> getLoot(Damager damager);
 
 }
