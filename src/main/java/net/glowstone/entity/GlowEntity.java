@@ -27,6 +27,11 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 public abstract class GlowEntity implements Entity, Damager {
     
     /**
+     * Indicates how often, in ticks, to send position refresh packets to the client
+     */
+    private static final int POSITION_REFRESH_RATE = 20;
+
+    /**
      * The server this entity belongs to.
      */
     protected final GlowServer server;
@@ -74,6 +79,11 @@ public abstract class GlowEntity implements Entity, Damager {
      * A Random for use in this entity.
      */
     protected final Random random = new Random();
+    
+    /**
+     * Indicates the last tick that the entity sent a refresh teleport packet
+     */
+    private int lastRefresh = 0;
     
     /**
      * Creates an entity and adds it to the specified world.
@@ -250,7 +260,10 @@ public abstract class GlowEntity implements Entity, Damager {
         int yaw = Position.getIntYaw(previousLocation);
         int pitch = Position.getIntPitch(previousLocation);
 
-        if (moved && teleport) {
+        boolean refreshPosition = (ticksLived - lastRefresh) > POSITION_REFRESH_RATE;
+
+        if (refreshPosition || (moved && teleport)) {
+            lastRefresh = ticksLived;
             return new EntityTeleportMessage(id, x, y, z, yaw, pitch);
         } else if (moved && rotated) {
             return new RelativeEntityPositionRotationMessage(id, dx, dy, dz, yaw, pitch);

@@ -645,8 +645,17 @@ public final class GlowWorld implements World {
     }
 
     // entity spawning
-
+    
+    @SuppressWarnings("unchecked")
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
+        if (clazz.isInstance(GlowEntity.class)) {
+            return (T)spawnGlowEntity(location, (Class<? extends GlowEntity>)clazz);
+        } else {
+            return spawnBukkitEntity(location, clazz);
+        }
+    }
+
+    public <T extends Entity> T spawnBukkitEntity(Location location, Class<T> clazz) throws IllegalArgumentException {
         EntityProperties properties = EntityProperties.getByBukkitClass(clazz);
         if (properties == null) {
             throw new IllegalArgumentException("This entity type is unknown to Glowstone!");
@@ -657,7 +666,7 @@ public final class GlowWorld implements World {
         return entity;
     }
 
-    public <T extends GlowEntity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
+    public <T extends GlowEntity> T spawnGlowEntity(Location location, Class<T> clazz) throws IllegalArgumentException {
         EntityProperties properties = EntityProperties.getByGlowClass(clazz);
         if (properties == null) {
             throw new IllegalArgumentException("This entity type is unknown to Glowstone!");

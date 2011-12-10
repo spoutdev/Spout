@@ -66,4 +66,20 @@ public abstract class GlowCreature extends GlowLivingEntity implements Creature 
     public int getMaxHealth() {
         throw new UnsupportedOperationException("Not supported yet!");
     }
+    
+    /**
+     * Gets the creature's age
+     * @return the creature's age
+     */
+    public int getAge() {
+        return getTicksLived();
+    }
+
+    /**
+     * Sets the creature's age
+     * @param age the creature's new age
+     */
+    public void setAge(int age) {
+        setTicksLived(age);
+    }
 }
