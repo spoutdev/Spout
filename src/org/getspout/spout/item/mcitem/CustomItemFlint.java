@@ -21,6 +21,7 @@ import org.getspout.spoutapi.material.Food;
 import org.getspout.spoutapi.material.MaterialData;
 
 import net.minecraft.server.EntityHuman;
+import net.minecraft.server.EnumAnimation;
 import net.minecraft.server.Item;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.World;
@@ -41,6 +42,15 @@ public class CustomItemFlint extends Item{
 		}
 		return itemstack;
 	}
+	
+	@Override
+    public EnumAnimation d(ItemStack itemstack) {
+		CustomItem item = MaterialData.getCustomItem(itemstack.getData());
+		if (item instanceof Food) {
+			return EnumAnimation.b;
+		}
+		return super.d(itemstack);
+    }
 	
 	@Override
 	public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {

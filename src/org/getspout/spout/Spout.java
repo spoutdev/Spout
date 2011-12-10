@@ -89,6 +89,7 @@ public class Spout extends SpoutPlugin{
 	
 	public Spout() {
 		super();
+		Spout.instance = this;
 		playerListener = new SpoutPlayerListener();
 		chunkListener = new SpoutWorldListener();
 		chunkMonitorListener = new SpoutWorldMonitorListener();
@@ -187,14 +188,13 @@ public class Spout extends SpoutPlugin{
 
 	@Override
 	public void onEnable() {
-		Spout.instance = this;
 		(new ConfigReader()).read();
 		(new Thread() {
 			public void run() {
 				update();
 			}
 		}).start();
-		
+
 		registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Lowest);
 		registerEvent(Type.PLAYER_KICK, playerListener, Priority.Normal);
 		registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Lowest);
