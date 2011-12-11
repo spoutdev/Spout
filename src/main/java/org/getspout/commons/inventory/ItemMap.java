@@ -59,7 +59,11 @@ public class ItemMap {
 		
 		// Check cache
 		if (other == this) {
-			return localId;
+			if (store.reverseGet(localId) != null) {
+				return localId;
+			} else {
+				return 0;
+			}
 		} else if (other == parent) {
 			foreignId = thisToParentMap[localId]; 
 		} else if (other.parent == this) {
