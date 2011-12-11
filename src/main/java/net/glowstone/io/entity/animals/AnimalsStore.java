@@ -6,9 +6,9 @@ import net.glowstone.entity.animals.GlowAnimals;
 import net.glowstone.io.entity.CreatureStore;
 import net.glowstone.util.nbt.CompoundTag;
 
-public abstract class AnimalStore<T extends GlowAnimals> extends CreatureStore<T> {
+public abstract class AnimalsStore<T extends GlowAnimals> extends CreatureStore<T> {
     
-    public AnimalStore(Class<T> clazz, String id) {
+    public AnimalsStore(Class<T> clazz, String id) {
         super(clazz, id);
     }
     

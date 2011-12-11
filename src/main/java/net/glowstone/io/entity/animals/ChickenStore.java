@@ -5,7 +5,7 @@ import net.glowstone.GlowWorld;
 import net.glowstone.entity.animals.GlowChicken;
 import net.glowstone.util.nbt.CompoundTag;
 
-public class ChickenStore extends AnimalStore<GlowChicken> {
+public class ChickenStore extends AnimalsStore<GlowChicken> {
 
     public ChickenStore() {
         super(GlowChicken.class, "Chicken");

@@ -1,10 +1,21 @@
 package net.glowstone.io.entity;
 
-import net.glowstone.entity.GlowEntity;
-import net.glowstone.io.entity.animals.ChickenStore;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import net.glowstone.entity.GlowEntity;
+import net.glowstone.io.entity.animals.ChickenStore;
+import net.glowstone.io.entity.animals.CowStore;
+import net.glowstone.io.entity.animals.PigStore;
+import net.glowstone.io.entity.animals.SheepStore;
+import net.glowstone.io.entity.monsters.CaveSpiderStore;
+import net.glowstone.io.entity.monsters.CreeperStore;
+import net.glowstone.io.entity.monsters.GhastStore;
+import net.glowstone.io.entity.monsters.SilverfishStore;
+import net.glowstone.io.entity.monsters.SkeletonStore;
+import net.glowstone.io.entity.monsters.SlimeStore;
+import net.glowstone.io.entity.monsters.SpiderStore;
+import net.glowstone.io.entity.monsters.ZombieStore;
 
 /**
  * A class used to lookup message codecs.
@@ -31,6 +42,17 @@ public final class EntityStoreLookupService {
         try {
             bind(PlayerStore.class);
             bind(ChickenStore.class);
+            bind(CowStore.class);
+            bind(PigStore.class);
+            bind(SheepStore.class);
+            bind(CaveSpiderStore.class);
+            bind(CreeperStore.class);
+            bind(GhastStore.class);
+            bind(SilverfishStore.class);
+            bind(SkeletonStore.class);
+            bind(SlimeStore.class);
+            bind(SpiderStore.class);
+            bind(ZombieStore.class);
         } catch (Exception ex) {
             throw new ExceptionInInitializerError(ex);
         }

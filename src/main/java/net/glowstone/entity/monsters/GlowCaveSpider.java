@@ -2,12 +2,8 @@ package net.glowstone.entity.monsters;
 
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
-import net.glowstone.entity.Damager;
-import org.bukkit.entity.CaveSpider;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.entity.CaveSpider;
 
 public class GlowCaveSpider extends GlowSpider implements CaveSpider {
     
