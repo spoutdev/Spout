@@ -23,6 +23,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.getspout.commons.io.store.FlatFileStore;
+
 
 public class CRCStore {
 
