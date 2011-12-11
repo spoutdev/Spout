@@ -58,7 +58,9 @@ public class ItemMap {
 		int foreignId = 0;
 		
 		// Check cache
-		if (other == parent) {
+		if (other == this) {
+			return localId;
+		} else if (other == parent) {
 			foreignId = thisToParentMap[localId]; 
 		} else if (other.parent == this) {
 			foreignId = other.parentToThisMap[localId];
