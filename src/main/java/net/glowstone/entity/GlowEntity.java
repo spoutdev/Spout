@@ -197,18 +197,13 @@ public abstract class GlowEntity implements Entity, Damager {
     }
 
     /**
-<<<<<<< Updated upstream
      * Sets this entity's location.
      * @param location The new location.
-=======
-     * Sets this entity's position.
-     * @param location The new position.
->>>>>>> Stashed changes
      */
     public void setRawLocation(Location location) {
         this.location = location;
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;

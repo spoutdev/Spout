@@ -1,11 +1,17 @@
 package net.glowstone.entity;
 
+import gnu.trove.set.hash.TIntHashSet;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.ArrayList;
 import java.util.List;
 
-import gnu.trove.set.hash.TIntHashSet;
+import net.glowstone.GlowServer;
+import net.glowstone.GlowWorld;
+import net.glowstone.msg.EntityMetadataMessage;
+import net.glowstone.util.Parameter;
+import net.glowstone.util.TargetBlock;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -13,15 +19,9 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Vehicle;
-
-import net.glowstone.GlowServer;
-import net.glowstone.GlowWorld;
-import net.glowstone.msg.*;
-import net.glowstone.util.TargetBlock;
-import net.glowstone.util.Parameter;
-import net.glowstone.util.Position;
 
 /**
  * A GlowLivingEntity is a {@link org.bukkit.entity.Player} or {@link org.bukkit.entity.Monster}.
@@ -178,6 +178,10 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     }
 
     public void setNoDamageTicks(int ticks) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public Player getKiller() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
