@@ -1,5 +1,6 @@
 server:
-    port: 25565
+    bind:
+    - 0.0.0.0@25565
     world-name: world
     max-players: 50
     spawn-radius: 16
