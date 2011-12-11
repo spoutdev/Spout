@@ -248,15 +248,15 @@ public final class GlowServer implements Server {
     private void init() {
         Bukkit.setServer(this);
         
+        monitor = new DeadlockMonitor();
+        monitor.start();
+        
         ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
         bootstrap.setFactory(factory);
 
         ChannelPipelineFactory pipelineFactory = new MinecraftPipelineFactory(this);
         bootstrap.setPipelineFactory(pipelineFactory);
         
-        monitor = new DeadlockMonitor();
-        monitor.start();
-
         // TODO: This needs a cleanup badly
         InputStream stream = getClass().getClassLoader().getResourceAsStream("defaults/glowstone.yml");
         if (stream == null) {
