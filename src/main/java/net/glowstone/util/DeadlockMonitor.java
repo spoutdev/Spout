@@ -8,11 +8,13 @@ public class DeadlockMonitor extends Thread {
 
     public void run() {
 
-        while(!interrupted()) {
+        boolean dead = false;
+        while(!dead && !interrupted()) {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                dead = true;
             }
             System.out.println("Checking for deadlocks");
             ThreadMXBean tmx = ManagementFactory.getThreadMXBean();

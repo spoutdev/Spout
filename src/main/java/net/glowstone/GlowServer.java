@@ -229,6 +229,11 @@ public final class GlowServer implements Server {
      * A cache of existing OfflinePlayers
      */
     private final Map<String, OfflinePlayer> offlineCache = new ConcurrentHashMap<String, OfflinePlayer>();
+    
+    /**
+     * Deadlock monitor detection thread;
+     */
+    DeadlockMonitor monitor;
 
     /**
      * Creates a new server.
@@ -249,7 +254,7 @@ public final class GlowServer implements Server {
         ChannelPipelineFactory pipelineFactory = new MinecraftPipelineFactory(this);
         bootstrap.setPipelineFactory(pipelineFactory);
         
-        DeadlockMonitor monitor = new DeadlockMonitor();
+        monitor = new DeadlockMonitor();
         monitor.start();
 
         // TODO: This needs a cleanup badly
@@ -498,6 +503,8 @@ public final class GlowServer implements Server {
         if (isShuttingDown) return;
         isShuttingDown = true;
         logger.info("The server is shutting down...");
+        
+        monitor.interrupt();
         
         // Stop scheduler and disable plugins
         scheduler.stop();
