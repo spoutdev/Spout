@@ -1,18 +1,21 @@
 package net.glowstone;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
-
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.entity.Entity;
 
 import net.glowstone.block.BlockProperties;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.entity.GlowEntity;
 import net.glowstone.msg.CompressedChunkMessage;
 import net.glowstone.msg.Message;
+
+import org.bukkit.Chunk;
+import org.bukkit.ChunkSnapshot;
+import org.bukkit.entity.Entity;
 
 /**
  * Represents a chunk of the map.
@@ -172,9 +175,24 @@ public final class GlowChunk implements Chunk {
     public GlowBlock getBlock(int x, int y, int z) {
         return getWorld().getBlockAt(this.x << 4 | x, y, this.z << 4 | z);
     }
+    
+    private final static Entity[] blankEntityArray = new Entity[0];
 
     public Entity[] getEntities() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Entity> entities = world.getEntities();
+        List<Entity> chunkEntities = new ArrayList<Entity>();
+        
+        for (Entity e : entities) {
+            int cx = (e.getLocation().getBlockX()) >> 4;
+            int cz = (e.getLocation().getBlockZ()) >> 4;
+
+            if (cx == x && cz == z) {
+                chunkEntities.add(e);
+            }
+        }
+        
+        return chunkEntities.toArray(blankEntityArray);
+        
     }
 
     public GlowBlockState[] getTileEntities() {

@@ -957,4 +957,8 @@ public final class GlowWorld implements World {
     public File getWorldFolder() {
         return storageProvider.getFolder();
     }
+    
+    public GlowServer getServer() {
+        return server;
+    }
 }

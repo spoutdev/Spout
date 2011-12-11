@@ -1,20 +1,72 @@
 package net.glowstone.entity;
 
-import net.glowstone.GlowServer;
-import net.glowstone.GlowWorld;
-import net.glowstone.entity.animals.*;
-import net.glowstone.entity.monsters.*;
-import net.glowstone.entity.neutrals.*;
-import net.glowstone.entity.objects.*;
-import net.glowstone.entity.vehicles.*;
-import net.glowstone.entity.water.GlowSquid;
-import org.bukkit.entity.*;
-import org.bukkit.util.Vector;
-
-import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.glowstone.GlowServer;
+import net.glowstone.GlowWorld;
+import net.glowstone.entity.animals.GlowChicken;
+import net.glowstone.entity.animals.GlowCow;
+import net.glowstone.entity.animals.GlowPig;
+import net.glowstone.entity.animals.GlowSheep;
+import net.glowstone.entity.monsters.GlowCaveSpider;
+import net.glowstone.entity.monsters.GlowCreeper;
+import net.glowstone.entity.monsters.GlowGhast;
+import net.glowstone.entity.monsters.GlowGiant;
+import net.glowstone.entity.monsters.GlowSilverfish;
+import net.glowstone.entity.monsters.GlowSkeleton;
+import net.glowstone.entity.monsters.GlowSlime;
+import net.glowstone.entity.monsters.GlowSpider;
+import net.glowstone.entity.monsters.GlowZombie;
+import net.glowstone.entity.neutrals.GlowEnderman;
+import net.glowstone.entity.neutrals.GlowPigZombie;
+import net.glowstone.entity.neutrals.GlowWolf;
+import net.glowstone.entity.objects.GlowArrow;
+import net.glowstone.entity.objects.GlowEgg;
+import net.glowstone.entity.objects.GlowFallingBlock;
+import net.glowstone.entity.objects.GlowFireball;
+import net.glowstone.entity.objects.GlowItem;
+import net.glowstone.entity.objects.GlowPrimedTNT;
+import net.glowstone.entity.objects.GlowSnowball;
+import net.glowstone.entity.vehicles.GlowBoat;
+import net.glowstone.entity.vehicles.GlowMinecart;
+import net.glowstone.entity.vehicles.GlowPoweredMinecart;
+import net.glowstone.entity.vehicles.GlowStorageMinecart;
+import net.glowstone.entity.water.GlowSquid;
+
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.CaveSpider;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Cow;
+import org.bukkit.entity.CreatureType;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingSand;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Giant;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Pig;
+import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.PoweredMinecart;
+import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Silverfish;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Spider;
+import org.bukkit.entity.Squid;
+import org.bukkit.entity.StorageMinecart;
+import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Zombie;
+import org.bukkit.util.Vector;
 
 public enum EntityProperties {
 

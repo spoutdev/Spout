@@ -1,6 +1,7 @@
 package net.glowstone.io.entity;
 
 import net.glowstone.entity.GlowEntity;
+import net.glowstone.io.entity.animals.ChickenStore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ public final class EntityStoreLookupService {
     static {
         try {
             bind(PlayerStore.class);
+            bind(ChickenStore.class);
         } catch (Exception ex) {
             throw new ExceptionInInitializerError(ex);
         }

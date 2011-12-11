@@ -1,16 +1,23 @@
 package net.glowstone.io.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.io.nbt.NbtSerialization;
-import net.glowstone.util.nbt.*;
+import net.glowstone.util.nbt.ByteTag;
+import net.glowstone.util.nbt.CompoundTag;
+import net.glowstone.util.nbt.IntTag;
+import net.glowstone.util.nbt.ListTag;
+import net.glowstone.util.nbt.LongTag;
+import net.glowstone.util.nbt.StringTag;
+import net.glowstone.util.nbt.Tag;
+
 import org.bukkit.Location;
 import org.bukkit.World;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public abstract class EntityStore<T extends GlowEntity> {
     private final String id;
@@ -20,7 +27,7 @@ public abstract class EntityStore<T extends GlowEntity> {
         this.id = id;
         this.clazz = clazz;
     }
-
+    
     public abstract T load(GlowServer server, GlowWorld world, CompoundTag compound);
 
     public void load(T entity, CompoundTag compound) {

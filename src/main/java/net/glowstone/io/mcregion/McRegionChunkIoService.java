@@ -1,26 +1,37 @@
 package net.glowstone.io.mcregion;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.glowstone.GlowChunk;
 import net.glowstone.GlowServer;
+import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.entity.GlowEntity;
 import net.glowstone.io.ChunkIoService;
-import net.glowstone.io.StorageOperation;
 import net.glowstone.io.blockstate.BlockStateStore;
 import net.glowstone.io.blockstate.BlockStateStoreLookupService;
+import net.glowstone.io.entity.EntityStore;
+import net.glowstone.io.entity.EntityStoreLookupService;
 import net.glowstone.io.mcregion.region.RegionFile;
 import net.glowstone.io.mcregion.region.RegionFileCache;
-import net.glowstone.GlowChunk;
-import net.glowstone.GlowWorld;
-import net.glowstone.util.nbt.*;
-import org.bukkit.block.BlockState;
+import net.glowstone.util.nbt.ByteArrayTag;
+import net.glowstone.util.nbt.ByteTag;
+import net.glowstone.util.nbt.CompoundTag;
+import net.glowstone.util.nbt.IntTag;
+import net.glowstone.util.nbt.ListTag;
+import net.glowstone.util.nbt.NBTInputStream;
+import net.glowstone.util.nbt.NBTOutputStream;
+import net.glowstone.util.nbt.StringTag;
+import net.glowstone.util.nbt.Tag;
+
+import org.bukkit.entity.Entity;
 
 /**
  * An implementation of the {@link net.glowstone.io.ChunkIoService} which reads and writes
@@ -65,6 +76,9 @@ public final class McRegionChunkIoService implements ChunkIoService {
         if (!region.hasChunk(regionX, regionZ)){
             return false;
         }
+        
+        GlowWorld world = chunk.getWorld();
+        GlowServer server = world.getServer();
 
         DataInputStream in = region.getChunkDataInputStream(regionX, regionZ);
 
@@ -117,7 +131,19 @@ public final class McRegionChunkIoService implements ChunkIoService {
                 }
             }
         }
+        
+        List<CompoundTag> storedEntities = ((ListTag<CompoundTag>)levelTags.get("Entities")).getValue();
+        for (CompoundTag entityTag : storedEntities) {
+            String id = ((StringTag)entityTag.getValue().get("id")).getValue();
+            EntityStore<?> store = EntityStoreLookupService.find(id);
 
+            if (store != null) {
+                store.load(server, world, entityTag);
+            } else {
+                GlowServer.logger.severe("Unable to find store for Entity " + id);
+            }
+        }
+        
         return true;
     }
 
@@ -165,14 +191,17 @@ public final class McRegionChunkIoService implements ChunkIoService {
         levelTags.put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte)(chunk.getPopulated() ? 1 : 0)));
 
         List<CompoundTag> entities = new ArrayList<CompoundTag>();
-        /* for (Entity entity : chunk.getEntities()) {
+
+        for (Entity entity : chunk.getEntities()) {
             GlowEntity glowEntity = (GlowEntity) entity;
             EntityStore store = EntityStoreLookupService.find(glowEntity.getClass());
-            if (store == null)
+            if (store == null) {
                 continue;
+            }
             entities.add(new CompoundTag("", store.save(glowEntity)));
-        } */
-        levelTags.put("Entities", new ListTag<CompoundTag>("Entities", CompoundTag.class, entities)); // TODO: entity storage
+        }
+        levelTags.put("Entities", new ListTag<CompoundTag>("Entities", CompoundTag.class, entities)); 
+
         List<CompoundTag> tileEntities = new ArrayList<CompoundTag>();
         for (GlowBlockState state : chunk.getTileEntities()) {
             if (state.getClass() != GlowBlockState.class) {
