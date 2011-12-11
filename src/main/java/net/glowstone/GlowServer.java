@@ -134,10 +134,25 @@ public final class GlowServer implements Server {
             config.options().indent(4);
             ConfigurationSerialization.registerClass(GlowOfflinePlayer.class);
 
-            int port = config.getInt("server.port", 25565);
             GlowServer server = new GlowServer();
             server.start();
-            server.bind(new InetSocketAddress(port));
+            List<String> binds = config.getStringList("server.bind");
+            boolean hasBound = false;
+            if (binds != null) {
+                for (String bind : binds) {
+                    String[] split = bind.split("@");
+                    if (split.length != 2) continue;
+                    int port = 25565;
+                    try {
+                        port = Integer.parseInt(split[1]);
+                    } catch (NumberFormatException e) {}
+                    server.bind(new InetSocketAddress(split[0], port));
+                    hasBound = true;
+                }
+            }
+            if (!hasBound) {
+                server.bind(new InetSocketAddress(config.getInt("server.port", 25565)));
+            }
             logger.info("Ready for connections.");
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "Error during server startup.", t);
