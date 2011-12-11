@@ -412,7 +412,7 @@ public final class GlowWorld implements World {
     // force-save
 
     public void save() {
-        save(true);
+        save(false);
     }
 
     public void save(boolean async) {
