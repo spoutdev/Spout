@@ -19,8 +19,8 @@ public abstract class PulsableThread extends Thread {
      * 
      */
     public boolean pulse() {
-        boolean localPulsing = pulsing.compareAndSet(false, true);
-        if (localPulsing) {
+        boolean success = pulsing.compareAndSet(false, true);
+        if (!success) {
             return false;
         }
         synchronized (pulsing) {
