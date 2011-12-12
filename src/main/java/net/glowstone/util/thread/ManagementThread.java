@@ -22,13 +22,22 @@ public abstract class ManagementThread extends PulsableThread {
     }
 
     /**
-     * Adds a task to this thread's queue and wakes it if necessary
+     * Adds a task to this thread's queue
      * 
      * @task the runnable to execute
      */
     public void addToQueue(Runnable task) {
         taskQueue.add(task);
-        pulse();
+    }
+    
+    /**
+     * Adds a task to this thread's queue and wakes it if necessary
+     * 
+     * @task the runnable to execute
+     */
+    public void addToQueueAndWake(Runnable task) {
+        taskQueue.add(task);
+        pulse(false);
     }
     
     /**
