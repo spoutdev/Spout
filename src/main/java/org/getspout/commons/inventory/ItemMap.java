@@ -159,6 +159,7 @@ public class ItemMap {
 			if (checkPos >= 1024 && store.reverseGet(checkPos) == null) {
 				freeFound = true;
 			}
+			offset++;
 		}
 		if (!freeFound) {
 			return 0;
