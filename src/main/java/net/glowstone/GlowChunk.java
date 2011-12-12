@@ -70,10 +70,12 @@ public final class GlowChunk implements Chunk {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
+            //final int prime = 31;
             int result = 1;
-            result = prime * result + x;
-            result = prime * result + z;
+            //result = prime * result + x;
+            //result = prime * result + z;
+            result = (result << 5) - result + x;
+            result = (result << 5) - result + z;
             return result;
         }
 
