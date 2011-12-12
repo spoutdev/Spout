@@ -292,6 +292,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean isWhitelisted() {
         return !server.hasWhitelist() || server.getWhitelist().contains(getName());
     }
+    
+    public boolean hasPlayedBefore() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
+    
+    public long getLastPlayed() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
+    
+    public long getFirstPlayed() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
 
     public void setWhitelisted(boolean value) {
         if (value) {
@@ -895,10 +907,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         return new SpawnPlayerMessage(id, dispNameAsEntityName ? displayName : getName(), x, y, z, yaw, pitch, 0);
     }
     
-    public boolean hasPlayedBefore() {
-        throw new UnsupportedOperationException("not suppored yet");
-    }
-
     public int getFoodLevel() {
         return food;
     }

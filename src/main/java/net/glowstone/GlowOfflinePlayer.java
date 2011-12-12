@@ -41,6 +41,18 @@ public class GlowOfflinePlayer implements OfflinePlayer {
     public boolean isWhitelisted() {
         return server.hasWhitelist() && server.getWhitelist().contains(name);
     }
+    
+    public boolean hasPlayedBefore() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
+    
+    public long getLastPlayed() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
+    
+    public long getFirstPlayed() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
 
     public void setWhitelisted(boolean value) {
         if (value) {
