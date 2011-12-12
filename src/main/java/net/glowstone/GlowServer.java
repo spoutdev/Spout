@@ -141,10 +141,15 @@ public final class GlowServer implements Server {
             if (binds != null) {
                 for (String bind : binds) {
                     String[] split = bind.split("@");
-                    if (split.length != 2) continue;
+                    if (split.length != 2) {
+                        split = bind.split(":");
+                    }
+                    if (split.length > 2) continue;
                     int port = 25565;
                     try {
-                        port = Integer.parseInt(split[1]);
+                        if (split.length > 1) {
+                            port = Integer.parseInt(split[1]);
+                        }
                     } catch (NumberFormatException e) {}
                     server.bind(new InetSocketAddress(split[0], port));
                     hasBound = true;
