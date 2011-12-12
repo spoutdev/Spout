@@ -894,6 +894,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         int pitch = Position.getIntPitch(location);
         return new SpawnPlayerMessage(id, dispNameAsEntityName ? displayName : getName(), x, y, z, yaw, pitch, 0);
     }
+    
+    public boolean hasPlayedBefore() {
+        throw new UnsupportedOperationException("not suppored yet");
+    }
 
     public int getFoodLevel() {
         return food;
