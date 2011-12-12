@@ -36,7 +36,7 @@ final public class Commons {
 	static {
 		boolean spoutcraft = false;
 		try {
-			Class.forName("org.spoutcraft.spoutcraftapi.Spoutcraft");
+			Class.forName("org.getspout.commons.Spoutcraft");
 			spoutcraft = true;
 		} catch (ClassNotFoundException e) {
 		}
