@@ -164,6 +164,7 @@ public class ItemMap {
 		if (!freeFound) {
 			return 0;
 		} else {
+			nextId = checkPos + 1;
 			return checkPos;
 		}
 	}
