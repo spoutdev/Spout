@@ -53,4 +53,17 @@ public interface WorldMetadataService {
      * @param player The player to save data for
      */
     public void writePlayerData(GlowPlayer player);
+
+    /**
+     * Returns whether this world has existing player information for player
+     * @param player The {@link GlowPlayer} to check for existence
+     * @return Whether this {@link GlowPlayer} has stored data for this WorldMetadataService
+     */
+    public boolean hasDataFor(GlowPlayer player);
+
+    /**
+     * Returns a {@link String[]} of player names that exist in this folder.
+     * @return The players that have data in this folder.
+     */
+    public String[] getPlayerNames();
 }

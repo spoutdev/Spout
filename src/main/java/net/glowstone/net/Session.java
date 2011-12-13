@@ -162,12 +162,17 @@ public final class Session {
             disconnect(event.getKickMessage(), true);
             return;
         }
-        player.getWorld().getRawPlayers().add(player);
 
-        String message = EventFactory.onPlayerJoin(player).getJoinMessage();
+		String message = EventFactory.onPlayerJoin(player).getJoinMessage();
         if (message != null) {
             server.broadcastMessage(message);
         }
+
+        player.loadData();
+        player.saveData();
+
+        player.getWorld().getRawPlayers().add(player);
+
         Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short)timeoutCounter);
         for (Player sendPlayer : server.getOnlinePlayers()) {
             ((GlowPlayer) sendPlayer).getSession().send(userListMessage);

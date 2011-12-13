@@ -776,7 +776,17 @@ public final class GlowServer implements Server {
      * @return Array containing all players
      */
     public OfflinePlayer[] getOfflinePlayers() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Set<OfflinePlayer> result = new HashSet<OfflinePlayer>();
+        for (GlowWorld world : worlds) {
+            result.addAll(world.getRawPlayers());
+            for (String name : world.getMetadataService().getPlayerNames()) {
+                OfflinePlayer offline = getOfflinePlayer(name);
+                if (!result.contains(offline)) {
+                    result.add(offline);
+                }
+            }
+        }
+        return result.toArray(new OfflinePlayer[result.size()]);
     }
     
     /**

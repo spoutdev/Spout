@@ -34,7 +34,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         if (!dir.exists())
             dir.mkdirs();
         this.dir = dir;
-        server = (GlowServer) Bukkit.getServer();
+        server = world.getServer();
     }
 
     public WorldFinalValues readWorldData() throws IOException {
@@ -200,11 +200,9 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 
     public void writePlayerData(GlowPlayer player) {
 
-        File playerDir = new File(world.getName(), "players");
-        if (!playerDir.exists())
-            playerDir.mkdirs();
 
-        File playerFile = new File(playerDir, player.getName() + ".dat");
+
+        File playerFile = new File(getPlayerDataFolder(), player.getName() + ".dat");
         if (!playerFile.exists()) try {
             playerFile.createNewFile();
         } catch (IOException e) {
@@ -220,6 +218,31 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         } catch (IOException e) {
             player.getSession().disconnect("Failed to write player.dat", true);
             server.getLogger().severe("Failed to write player.dat for player " + player.getName() + " in world " + world.getName() + "!");
+        }
+    }
+
+    public boolean hasDataFor(GlowPlayer player) {
+        File playerFile = new File(getPlayerDataFolder(), player.getName() + ".dat");
+        return playerFile.exists() && playerFile.isFile();
+    }
+
+    public String[] getPlayerNames() {
+        return getPlayerDataFolder().list(new DatFileFilenameFilter());
+    }
+
+    private File getPlayerDataFolder() {
+        File playerDir = new File(dir, "players");
+        if (!playerDir.exists()) playerDir.mkdirs();
+        return playerDir;
+    }
+
+    /**
+     * A simle filename filter that accepts only flies that have a .dot extension
+     */
+    private static class DatFileFilenameFilter implements FilenameFilter {
+
+        public boolean accept(File dir, String name) {
+            return name.endsWith(".dat");
         }
     }
 }

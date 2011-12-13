@@ -150,9 +150,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
         getInventory().addViewer(this);
         getInventory().getCraftingInventory().addViewer(this);
-
-        loadData();
-        saveData();
     }
     
     // -- Various internal mechanisms
@@ -294,7 +291,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     }
     
     public boolean hasPlayedBefore() {
-        throw new UnsupportedOperationException("not suppored yet");
+        return getWorld().getMetadataService().hasDataFor(this);
     }
     
     public long getLastPlayed() {
@@ -906,7 +903,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         int pitch = Position.getIntPitch(location);
         return new SpawnPlayerMessage(id, dispNameAsEntityName ? displayName : getName(), x, y, z, yaw, pitch, 0);
     }
-    
+
     public int getFoodLevel() {
         return food;
     }
