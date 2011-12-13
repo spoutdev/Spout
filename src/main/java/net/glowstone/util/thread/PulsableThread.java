@@ -67,6 +67,14 @@ public abstract class PulsableThread extends Thread {
         }
     }
 
+    /**
+     * This method indicates if the thread is currently pulsing
+     * 
+     * @return true if the thread is pulsing
+     */
+    public boolean isPulsing() {
+        return pulsing.get();
+    }
 
     /**
      * This method is executed once per pulse.
