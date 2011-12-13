@@ -15,7 +15,7 @@ public abstract class ManagementThread extends PulsableThread {
     /**
      * Sets this thread as manager for a given object
      * 
-     * @managed the object to give responsibility for
+     * @param managed the object to give responsibility for
      */
     public void addManaged(Managed managed) {
         managedSet.put(managed, Boolean.TRUE);
@@ -24,7 +24,7 @@ public abstract class ManagementThread extends PulsableThread {
     /**
      * Adds a task to this thread's queue
      * 
-     * @task the runnable to execute
+     * @param task the runnable to execute
      */
     public void addToQueue(Runnable task) {
         taskQueue.add(task);
@@ -33,7 +33,7 @@ public abstract class ManagementThread extends PulsableThread {
     /**
      * Adds a task to this thread's queue and wakes it if necessary
      * 
-     * @task the runnable to execute
+     * @param task the runnable to execute
      */
     public void addToQueueAndWake(Runnable task) {
         taskQueue.add(task);
@@ -43,17 +43,17 @@ public abstract class ManagementThread extends PulsableThread {
     /**
      * Returns if this thread is managing an object
      * 
-     * @managed the object to remove responsibility for
+     * @param managed the object to remove responsibility for
      * @return true if the thread was responsible for the object
      */
-    public void isManaging(Managed managed) {
-        managedSet.containsKey(managed);
+    public boolean isManaging(Managed managed) {
+        return managedSet.containsKey(managed);
     } 
     
     /**
      * Returns if this thread has completed its pulse and all submitted tasks associated with it
      * 
-     * @return true if the thread was responsible for the object
+     * @return true if the pulse was completed
      */
     public boolean isPulseFinished() {
         return managedSet.isEmpty();

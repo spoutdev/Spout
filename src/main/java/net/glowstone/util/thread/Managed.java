@@ -12,18 +12,18 @@ public abstract class Managed {
     /**
      * Checks if the current thread is managing this object
      * 
-     * @returns true if the object is managed by the current thread
+     * @return true if the object is managed by the current thread
      */    
-    public boolean isModifiable () {
+    public boolean isModifiable() {
         return Thread.currentThread() == manager;
     }
     
     /**
      * Returns the thread that is managing this object
      * 
-     * @returns the management thread
+     * @return the management thread
      */
-    public ManagementThread getManagementThread () {
+    public ManagementThread getManagementThread() {
         return manager;
     }
     

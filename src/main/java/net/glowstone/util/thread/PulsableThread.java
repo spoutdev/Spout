@@ -35,7 +35,6 @@ public abstract class PulsableThread extends Thread {
     /**
      * Puts the current thread to sleep until the current pulse operation has completed
      */
-
     public void pulseJoin() throws InterruptedException {
         synchronized(pulsing) {
             while (pulsing.get()) {
