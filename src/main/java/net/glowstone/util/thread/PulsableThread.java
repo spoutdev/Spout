@@ -69,9 +69,15 @@ public abstract class PulsableThread extends Thread {
 
 
     /**
-     * This method is executed once per pulse
+     * This method is executed once per pulse.
+     * 
+     * Interrupted exceptions MUST be thrown when interrupts happen.
+     * 
+     * Where InterruptedExceptions are caught for handling, InterruptedExceptions should be chained.
+     * 
+     * This is required in order to ensure that the thread can be automatically shut down.
      */
-    public abstract void pulsedRun(boolean copySnapShot);
+    public abstract void pulsedRun(boolean copySnapShot) throws InterruptedException;
     
     /**
      * The thread will continue until it is interrupted
