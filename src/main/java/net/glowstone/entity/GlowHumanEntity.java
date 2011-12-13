@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import net.glowstone.inventory.GlowItemStack;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -102,7 +103,7 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
         return inventory;
     }
 
-    public ItemStack getItemInHand() {
+    public GlowItemStack getItemInHand() {
         return getInventory().getItemInHand();
     }
 

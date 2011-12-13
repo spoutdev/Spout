@@ -2,7 +2,7 @@ package net.glowstone.entity.monsters;
 
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import net.glowstone.entity.Angerable;
 import net.glowstone.entity.Damager;
 import net.glowstone.util.Parameter;

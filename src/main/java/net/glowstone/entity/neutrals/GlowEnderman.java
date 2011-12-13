@@ -3,7 +3,7 @@ package net.glowstone.entity.neutrals;
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.BlockID;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import net.glowstone.entity.Damager;
 import net.glowstone.entity.monsters.GlowMonster;
 import net.glowstone.util.Parameter;

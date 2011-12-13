@@ -1,13 +1,12 @@
 package net.glowstone.inventory;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
 import net.glowstone.block.BlockID;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import org.bukkit.Material;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;

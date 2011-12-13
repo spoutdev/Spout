@@ -1,6 +1,10 @@
-package net.glowstone.block;
+package net.glowstone.item;
 
+import net.glowstone.block.BlockID;
+import net.glowstone.item.physics.*;
+import org.bukkit.CropState;
 import org.bukkit.Material;
+import org.bukkit.material.MaterialData;
 
 import java.util.Arrays;
 
@@ -48,7 +52,7 @@ public enum ItemProperties {
     IRON_HOE(ItemID.IRON_HOE, nbtData()),
     DIAMOND_HOE(ItemID.DIAMOND_HOE, nbtData()),
     GOLD_HOE(ItemID.GOLD_HOE, nbtData()),
-    SEEDS(ItemID.SEEDS),
+    SEEDS(ItemID.SEEDS, placedBlock(new MaterialData(BlockID.CROPS, CropState.VERY_TALL.getData()))), // Tall crops are tall
     WHEAT(ItemID.WHEAT),
     BREAD(ItemID.BREAD),
     LEATHER_HELMET(ItemID.LEATHER_HELMET, nbtData()),
@@ -76,22 +80,22 @@ public enum ItemProperties {
     GRILLED_PORK(ItemID.GRILLED_PORK),
     PAINTING(ItemID.PAINTING),
     GOLDEN_APPLE(ItemID.GOLDEN_APPLE),
-    SIGN(ItemID.SIGN),
-    WOOD_DOOR(ItemID.WOOD_DOOR),
-    BUCKET(ItemID.BUCKET),
-    WATER_BUCKET(ItemID.WATER_BUCKET),
-    LAVA_BUCKET(ItemID.LAVA_BUCKET),
+    SIGN(ItemID.SIGN, physics(new SignItemPhysics())),
+    WOOD_DOOR(ItemID.WOOD_DOOR, placedBlock(new MaterialData(BlockID.WOODEN_DOOR))),
+    BUCKET(ItemID.BUCKET, physics(new EmptyBucketPhysics(new int[] {BlockID.STATIONARY_LAVA, BlockID.STATIONARY_WATER}, new int[] {ItemID.LAVA_BUCKET, ItemID.WATER_BUCKET}))),
+    WATER_BUCKET(ItemID.WATER_BUCKET, physics(new FilledBucketPhysics(ItemID.WATER_BUCKET, BlockID.WATER, true))),
+    LAVA_BUCKET(ItemID.LAVA_BUCKET, physics(new FilledBucketPhysics(ItemID.LAVA_BUCKET, BlockID.LAVA, false))),
     MINECART(ItemID.MINECART),
     SADDLE(ItemID.SADDLE),
-    IRON_DOOR(ItemID.IRON_DOOR),
-    REDSTONE(ItemID.REDSTONE),
+    IRON_DOOR(ItemID.IRON_DOOR, placedBlock(new MaterialData(BlockID.IRON_DOOR_BLOCK))),
+    REDSTONE(ItemID.REDSTONE, placedBlock(new MaterialData(BlockID.REDSTONE_WIRE))),
     SNOW_BALL(ItemID.SNOW_BALL),
     BOAT(ItemID.BOAT),
     LEATHER(ItemID.LEATHER),
-    MILK_BUCKET(ItemID.MILK_BUCKET),
+    MILK_BUCKET(ItemID.MILK_BUCKET, physics(new FilledBucketPhysics(ItemID.MILK_BUCKET, BlockID.AIR, false))),
     CLAY_BRICK(ItemID.CLAY_BRICK),
     CLAY_BALL(ItemID.CLAY_BALL),
-    SUGAR_CANE(ItemID.SUGAR_CANE),
+    SUGAR_CANE(ItemID.SUGAR_CANE, placedBlock(new MaterialData(BlockID.SUGAR_CANE_BLOCK))),
     PAPER(ItemID.PAPER),
     BOOK(ItemID.BOOK),
     SLIME_BALL(ItemID.SLIME_BALL),
@@ -107,15 +111,15 @@ public enum ItemProperties {
     INK_SACK(ItemID.INK_SACK),
     BONE(ItemID.BONE),
     SUGAR(ItemID.SUGAR),
-    CAKE(ItemID.CAKE),
-    BED(ItemID.BED),
-    DIODE(ItemID.DIODE),
+    CAKE(ItemID.CAKE, placedBlock(new MaterialData(BlockID.CAKE_BLOCK))),
+    BED(ItemID.BED, placedBlock(new MaterialData(BlockID.BED_BLOCK))),
+    DIODE(ItemID.DIODE, placedBlock(new MaterialData(BlockID.DIODE_BLOCK_OFF))),
     COOKIE(ItemID.COOKIE),
     MAP(ItemID.MAP),
     SHEARS(ItemID.SHEARS, nbtData()),
     MELON(ItemID.MELON),
-    PUMPKIN_SEEDS(ItemID.PUMPKIN_SEEDS),
-    MELON_SEEDS(ItemID.MELON_SEEDS),
+    PUMPKIN_SEEDS(ItemID.PUMPKIN_SEEDS, placedBlock(new MaterialData(BlockID.PUMPKIN_STEM))),
+    MELON_SEEDS(ItemID.MELON_SEEDS, placedBlock(new MaterialData(BlockID.MELON_STEM))),
     RAW_BEEF(ItemID.RAW_BEEF),
     COOKED_BEEF(ItemID.COOKED_BEEF),
     RAW_CHICKEN(ItemID.RAW_CHICKEN),
@@ -125,15 +129,15 @@ public enum ItemProperties {
     BLAZE_ROD(ItemID.BLAZE_ROD),
     GHAST_TEAR(ItemID.GHAST_TEAR),
     GOLD_NUGGET(ItemID.GOLD_NUGGET),
-    NETHER_STALK(ItemID.NETHER_WART_SEED),
+    NETHER_STALK(ItemID.NETHER_WART_SEED, placedBlock(new MaterialData(BlockID.NETHER_WART))),
     POTION(ItemID.POTION),
-    GLASS_BOTTLE(ItemID.GLASS_BOTTLE),
+    GLASS_BOTTLE(ItemID.GLASS_BOTTLE, physics(new GlassBottlePhysics())),
     SPIDER_EYE(ItemID.SPIDER_EYE),
     FERMENTED_SPIDER_EYE(ItemID.FERMENTED_SPIDER_EYE),
     BLAZE_POWDER(ItemID.BLAZE_POWDER),
     MAGMA_CREAM(ItemID.MAGMA_CREAM),
-    BREWING_STAND_ITEM(ItemID.BREWING_STAND),
-    CAULDRON_ITEM(ItemID.CAULDRON),
+    BREWING_STAND_ITEM(ItemID.BREWING_STAND, placedBlock(new MaterialData(BlockID.BREWING_STAND))),
+    CAULDRON_ITEM(ItemID.CAULDRON, placedBlock(new MaterialData(BlockID.CAULDRON))),
     EYE_OF_ENDER(ItemID.EYE_OF_ENDER),
     GLISTERING_MELON(ItemID.GLISTERING_MELON),
     DISC_13(ItemID.DISC_13),
@@ -150,7 +154,7 @@ public enum ItemProperties {
 
     // -----------------
 
-    private static ItemProperties[] byId = new ItemProperties[32000];
+    private static ItemProperties[] byId = new ItemProperties[3200];
 
     static {
         for (ItemProperties prop : values()) {
@@ -180,9 +184,12 @@ public enum ItemProperties {
 
     private final int id;
     private boolean nbtData;
+    private MaterialData placedBlock;
+    private ItemPhysics physics;
 
     private ItemProperties(int id, Property... props) {
         this.id = id;
+        this.physics = new DefaultItemPhysics(id);
         
         for (Property p : props) {
             p.apply(this);
@@ -196,6 +203,14 @@ public enum ItemProperties {
     public int getId() {
         return id;
     }
+
+    public ItemPhysics getPhysics() {
+        return physics;
+    }
+
+    public MaterialData getPlacedBlock() {
+        return placedBlock;
+    }
     
     // -----------------
     
@@ -206,6 +221,18 @@ public enum ItemProperties {
     private static Property nbtData() {
         return new Property() { public void apply(ItemProperties p) {
             p.nbtData = true;
+        }};
+    }
+
+    private static Property physics(final ItemPhysics physics) {
+        return new Property() { public void apply(ItemProperties p) {
+                p.physics = physics;
+        }};
+    }
+
+    private static Property placedBlock(final MaterialData placedBlock) {
+        return new Property() { public void apply(ItemProperties p) {
+            p.placedBlock = placedBlock;
         }};
     }
 }

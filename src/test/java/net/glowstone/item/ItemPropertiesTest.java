@@ -2,8 +2,8 @@ package net.glowstone.item;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import net.glowstone.block.ItemID;
-import net.glowstone.block.ItemProperties;
+import net.glowstone.item.ItemID;
+import net.glowstone.item.ItemProperties;
 import org.bukkit.Material;
 import org.junit.Before;
 import org.junit.Test;

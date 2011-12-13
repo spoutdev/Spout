@@ -2,7 +2,7 @@ package net.glowstone.entity.vehicles;
 
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import net.glowstone.entity.Damager;
 import org.bukkit.entity.Minecart;
 import org.bukkit.inventory.ItemStack;

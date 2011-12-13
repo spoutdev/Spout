@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.glowstone.block.BlockID;
 import net.glowstone.block.BlockProperties;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;

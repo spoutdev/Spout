@@ -2,7 +2,7 @@ package net.glowstone.entity.animals;
 
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import net.glowstone.entity.Damager;
 import org.bukkit.entity.Cow;
 import org.bukkit.inventory.ItemStack;
@@ -10,9 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author zml2008
- */
 public class GlowCow extends GlowAnimals implements Cow {
     
     /**

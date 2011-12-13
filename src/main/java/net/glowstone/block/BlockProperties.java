@@ -2,7 +2,10 @@ package net.glowstone.block;
 
 import java.util.Arrays;
 
+import net.glowstone.block.data.Stairs;
+import net.glowstone.block.data.Trapdoor;
 import net.glowstone.block.physics.*;
+import net.glowstone.item.ItemID;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,9 +22,9 @@ public enum BlockProperties {
     WOOD(BlockID.WOOD),
     SAPLING(BlockID.SAPLING, passthru()),
     BEDROCK(BlockID.BEDROCK),
-    WATER(BlockID.WATER, passthru(), /*physics(),*/ opaque(2)),
+    WATER(BlockID.WATER, passthru(), physics(new FluidPhysics(BlockID.WATER, BlockID.STATIONARY_WATER, 10)), opaque(2)),
     STATIONARY_WATER(BlockID.STATIONARY_WATER, passthru(), /*physics(),*/ opaque(2)),
-    LAVA(BlockID.LAVA, passthru(), /*physics(),*/ emitsLight(15)),
+    LAVA(BlockID.LAVA, passthru(), physics(new FluidPhysics(BlockID.LAVA, BlockID.STATIONARY_LAVA, 3)), emitsLight(15)),
     STATIONARY_LAVA(BlockID.STATIONARY_LAVA, passthru(), /*physics(),*/ emitsLight(15)),
     SAND(BlockID.SAND /* , physics(new FallingBlockPhysics(BlockID.SAND))*/),
     GRAVEL(BlockID.GRAVEL/*, physics(new FallingBlockPhysics(BlockID.GRAVEL))*/),
@@ -64,7 +67,7 @@ public enum BlockProperties {
     TORCH(BlockID.TORCH, place(), passthru(), emitsLight(14)),
     FIRE(BlockID.FIRE, passthru(), emitsLight(15), drops()),
     MOB_SPAWNER(BlockID.MOB_SPAWNER, entity(GlowCreatureSpawner.class)),
-    WOOD_STAIRS(BlockID.WOOD_STAIRS, physics(new StairPhysics()), drops(BlockID.WOOD)),
+    WOOD_STAIRS(BlockID.WOOD_STAIRS, physics(new AttachablePhysics(new Stairs(BlockID.WOOD_STAIRS))), drops(BlockID.WOOD)),
     CHEST(BlockID.CHEST, interact()),
     REDSTONE_WIRE(BlockID.REDSTONE_WIRE, redstone()),
     DIAMOND_ORE(BlockID.DIAMOND_ORE, drops(ItemID.DIAMOND)),
@@ -78,7 +81,7 @@ public enum BlockProperties {
     WOODEN_DOOR(BlockID.WOODEN_DOOR, passthru(), interact(), place(), drops(ItemID.WOOD_DOOR)),
     LADDER(BlockID.LADDER, place(), passthru()),
     RAILS(BlockID.RAILS, place()),
-    COBBLESTONE_STAIRS(BlockID.COBBLESTONE_STAIRS, passthru(), drops(BlockID.COBBLESTONE), physics(new StairPhysics())),
+    COBBLESTONE_STAIRS(BlockID.COBBLESTONE_STAIRS, passthru(), drops(BlockID.COBBLESTONE), physics(new AttachablePhysics(new Stairs(BlockID.COBBLESTONE_STAIRS)))),
     WALL_SIGN(BlockID.WALL_SIGN, passthru(), entity(GlowSign.class), drops(ItemID.SIGN)),
     LEVER(BlockID.LEVER, place(), interact(), passthru(), redstone()),
     STONE_PLATE(BlockID.STONE_PLATE, place(), passthru(), redstone()),
@@ -92,7 +95,7 @@ public enum BlockProperties {
     SNOW(BlockID.SNOW, passthru()),
     ICE(BlockID.ICE, opaque(2)),
     SNOW_BLOCK(BlockID.SNOW_BLOCK),
-    CACTUS(BlockID.CACTUS, place(), physics(new SpecialPlaceBelowPhysics(BlockID.CACTUS, BlockID.SAND))),
+    CACTUS(BlockID.CACTUS, place(), physics(new SpecialPlaceBelowPhysics(BlockID.CACTUS, true, BlockID.SAND))),
     CLAY(BlockID.CLAY, drops(new ItemStack(ItemID.CLAY_BALL, 4))),
     SUGAR_CANE_BLOCK(BlockID.SUGAR_CANE_BLOCK, place(), drops(ItemID.SUGAR_CANE)),
     JUKEBOX(BlockID.JUKEBOX, interact()),
@@ -107,7 +110,7 @@ public enum BlockProperties {
     DIODE_BLOCK_OFF(BlockID.DIODE_BLOCK_OFF, passthru(), redstone(), interact()),
     DIODE_BLOCK_ON(BlockID.DIODE_BLOCK_ON, passthru(), redstone(), interact()),
     LOCKED_CHEST(BlockID.LOCKED_CHEST),
-    TRAP_DOOR(BlockID.TRAP_DOOR, redstone(), interact()),
+    TRAP_DOOR(BlockID.TRAP_DOOR, redstone(), interact(), physics(new ToggleableAttachablePhysics(new Trapdoor()))),
     SILVERFISH_BLOCK(BlockID.SILVERFISH_BLOCK, interact()),
     SMOOTH_BRICK(BlockID.SMOOTH_BRICK),
     HUGE_MUSHROOM_BROWN(BlockID.HUGE_MUSHROOM_BROWN, drops(BlockID.BROWN_MUSHROOM)),
@@ -119,13 +122,13 @@ public enum BlockProperties {
     MELON_STEM(BlockID.MELON_STEM, drops(), passthru()),
     VINE(BlockID.VINE, passthru()),
     FENCE_GATE(BlockID.FENCE_GATE, interact()),
-    BRICK_STAIRS(BlockID.BRICK_STAIRS, physics(new StairPhysics()), drops(BlockID.BRICK)),
-    SMOOTH_STAIRS(BlockID.SMOOTH_STAIRS, physics(new StairPhysics()), drops(BlockID.SMOOTH_BRICK)),
+    BRICK_STAIRS(BlockID.BRICK_STAIRS, physics(new AttachablePhysics(new Stairs(BlockID.BRICK_STAIRS))), drops(BlockID.BRICK)),
+    SMOOTH_STAIRS(BlockID.SMOOTH_STAIRS, physics(new AttachablePhysics(new Stairs(BlockID.SMOOTH_STAIRS))), drops(BlockID.SMOOTH_BRICK)),
     MYCELIUM(BlockID.MYCELIUM, drops(BlockID.DIRT)),
     LILY_PAD(BlockID.LILY_PAD, passthru()),
     NETHER_BRICK(BlockID.NETHER_BRICK),
     NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, drops(BlockID.NETHER_BRICK)),
-    NETHER_BRICK_STAIRS(BlockID.NETHER_BRICK_STAIRS, physics(new StairPhysics())),
+    NETHER_BRICK_STAIRS(BlockID.NETHER_BRICK_STAIRS, physics(new AttachablePhysics(new Stairs(BlockID.NETHER_BRICK_STAIRS)))),
     NETHER_WART(BlockID.NETHER_WART, passthru(), drops(ItemID.NETHER_WART_SEED)),
     ENCHANTMENT_TABLE(BlockID.ENCHANTMENT_TABLE),
     BREWING_STAND(BlockID.BREWING_STAND, drops(ItemID.BREWING_STAND)),

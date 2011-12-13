@@ -2,7 +2,7 @@ package net.glowstone.entity.water;
 
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
-import net.glowstone.block.ItemID;
+import net.glowstone.item.ItemID;
 import net.glowstone.entity.Damager;
 import org.bukkit.entity.Squid;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +17,7 @@ public class GlowSquid extends GlowWaterMob implements Squid {
      * Creates a new monster.
      *
      * @param world The world this monster is in.
-     * @param type  The type of monster.
+     * @param server The server this entity is part of
      */
     public GlowSquid(GlowServer server, GlowWorld world) {
         super(server, world, 94);

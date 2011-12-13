@@ -428,6 +428,23 @@ public abstract class GlowEntity implements Entity, Damager {
         }
     }
 
+    public BlockFace getCardinalDirection() {
+        double rot = getLocation().getYaw();
+        if (0 <= rot && rot < 45.5) {
+            return BlockFace.NORTH;
+        } else if (45.5 <= rot && rot < 135.5) {
+            return BlockFace.EAST;
+        } else if (135.5 <= rot && rot < 225.5) {
+            return BlockFace.SOUTH;
+        } else if (225.5 <= rot && rot < 315.5) {
+            return BlockFace.WEST;
+        } else if (315.5 <= rot && rot < 360.0) {
+            return BlockFace.NORTH;
+        } else {
+            return null;
+        }
+    }
+
     public abstract List<ItemStack> getLoot(Damager damager);
 
 }

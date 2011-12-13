@@ -1,6 +1,6 @@
 package net.glowstone.net.codec;
 
-import net.glowstone.block.ItemProperties;
+import net.glowstone.item.ItemProperties;
 import net.glowstone.msg.QuickBarMessage;
 import net.glowstone.util.ChannelBufferUtils;
 import net.glowstone.util.nbt.Tag;

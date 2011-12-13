@@ -3,9 +3,12 @@ package net.glowstone.msg.handler;
 import net.glowstone.block.BlockProperties;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.inventory.GlowItemStack;
+import net.glowstone.item.ItemProperties;
 import net.glowstone.msg.BlockChangeMessage;
 import org.bukkit.GameMode;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
@@ -15,6 +18,7 @@ import net.glowstone.EventFactory;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.BlockPlacementMessage;
 import net.glowstone.net.Session;
+import org.bukkit.material.MaterialData;
 
 /**
  * A {@link MessageHandler} which processes digging messages.
@@ -55,44 +59,59 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
 
 
         GlowBlock target = against.getRelative(face);
-        ItemStack holding = player.getItemInHand();
+        GlowItemStack holding = player.getItemInHand();
         boolean sendRevert = false;
-
-        if (EventFactory.onPlayerInteract(player, Action.RIGHT_CLICK_BLOCK, against, face).isCancelled()) {
-            sendRevert = true;
-            holding = null;
+        PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, Action.RIGHT_CLICK_BLOCK, against, face);
+        if (interactEvent.useInteractedBlock() != Event.Result.DENY) {
+            if (!BlockProperties.get(against.getTypeId()).getPhysics().interact(player, against, true, face)) {
+                sendRevert = true;
+            }
         }
-        
-        if (holding != null && holding.getTypeId() < 256) {
-            if (target.isEmpty() || target.isLiquid()) {
-                if (EventFactory.onBlockCanBuild(target, holding.getTypeId(), face).isBuildable()) {
-                    GlowBlockState newState = BlockProperties.get(holding.getTypeId()).getPhysics().placeAgainst(target.getState(), holding.getTypeId(), holding.getDurability(), face);
-                    BlockPlaceEvent event = EventFactory.onBlockPlace(target, newState, against, player);
+        if (interactEvent.isCancelled()) {
+            sendRevert = true;
+        }
+        if (holding != null) {
+            if (interactEvent.useItemInHand() != Event.Result.DENY) {
+                if (holding.getTypeId() > 255 && !ItemProperties.get(holding.getTypeId()).getPhysics().interact(player, against, holding, Action.RIGHT_CLICK_BLOCK, face)) {
+                    sendRevert = true;
+                }
+            }
+            MaterialData placedId = new MaterialData(holding.getTypeId(), (byte) holding.getDurability());
+            if (placedId.getItemTypeId() > 255)
+                placedId = ItemProperties.get(placedId.getItemTypeId()).getPhysics().getPlacedBlock(face, holding.getDurability());
+            if (placedId.getItemTypeId() == -1) sendRevert = true;
+            if (!sendRevert && placedId.getItemTypeId() < 256) {
+                if (target.isEmpty() || target.isLiquid()) {
+                    if (EventFactory.onBlockCanBuild(target, placedId.getItemTypeId(), face).isBuildable()) {
+                        GlowBlockState newState = BlockProperties.get(placedId.getItemTypeId()).getPhysics().placeAgainst(player, target.getState(), placedId, face);
+                        BlockPlaceEvent event = EventFactory.onBlockPlace(target, newState, against, player);
 
-                    if (!event.isCancelled() && event.canBuild()) {
-                        newState.update(true);
-                        if (newState.getX() != target.getX() || newState.getY() != target.getY() || newState.getZ() != target.getZ()) {
-                            sendRevert = true;
-                        }
-
-                        if (player.getGameMode() != GameMode.CREATIVE) {
-                            holding.setAmount(holding.getAmount() - 1);
-                            if (holding.getAmount() == 0) {
-                                player.setItemInHand(null);
-                            } else {
-                                player.setItemInHand(holding);
+                        if (!event.isCancelled() && event.canBuild()) {
+                            newState.update(true);
+                            if (newState.getX() != target.getX() || newState.getY() != target.getY() || newState.getZ() != target.getZ()) {
+                                sendRevert = true;
                             }
+
+                            if (player.getGameMode() != GameMode.CREATIVE) {
+                                holding.setAmount(holding.getAmount() - 1);
+                                if (holding.getAmount() == 0) {
+                                    player.setItemInHand(null);
+                                } else {
+                                    player.setItemInHand(holding);
+                                }
+                            }
+                        } else {
+                            sendRevert = true;
                         }
                     } else {
                         sendRevert = true;
                     }
-                } else {
-                    sendRevert = true;
                 }
             }
         }
         if (sendRevert) {
             player.getSession().send(new BlockChangeMessage(target.getX(), target.getY(), target.getZ(), target.getTypeId(), target.getData()));
+            player.setItemInHand(holding);
         }
     }
 

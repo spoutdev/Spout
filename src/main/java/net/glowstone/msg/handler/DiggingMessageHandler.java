@@ -2,10 +2,14 @@ package net.glowstone.msg.handler;
 
 import net.glowstone.block.BlockID;
 import net.glowstone.block.BlockProperties;
+import net.glowstone.block.GlowBlock;
+import net.glowstone.inventory.GlowItemStack;
+import net.glowstone.item.ItemProperties;
 import net.glowstone.msg.BlockPlacementMessage;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -37,7 +41,7 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
         int y = message.getY();
         int z = message.getZ();
 
-        Block block = world.getBlockAt(x, y, z);
+        GlowBlock block = world.getBlockAt(x, y, z);
 
         // Need to have some sort of verification to deal with malicious clients.
         if (message.getState() == DiggingMessage.STATE_START_DIGGING) {
@@ -45,10 +49,21 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
             if (player.getLocation().distanceSquared(block.getLocation()) > 36 || block.getTypeId() == BlockID.AIR) {
                 act = Action.LEFT_CLICK_AIR;
             }
-            PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, act, block, MessageHandlerUtils.messageToBlockFace(message.getFace()));
+            BlockFace face = MessageHandlerUtils.messageToBlockFace(message.getFace());
+            PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, act, block, face);
             if (interactEvent.isCancelled()) return;
-            if (interactEvent.useItemInHand() == Event.Result.DENY) return;
-            // TODO: Item interactions
+            if (interactEvent.useItemInHand() != Event.Result.DENY) {
+                GlowItemStack heldItem = player.getItemInHand();
+                if (heldItem != null && heldItem.getTypeId() > 255) {
+                    ItemProperties props = ItemProperties.get(heldItem.getTypeId());
+                    if (props != null) {
+                        if (!props.getPhysics().interact(player, block, heldItem, Action.LEFT_CLICK_BLOCK, face)) return;
+                    }
+                }
+            }
+            if (interactEvent.useInteractedBlock() != Event.Result.DENY) {
+                if (!BlockProperties.get(block.getTypeId()).getPhysics().interact(player, block, false, face)) return;
+            }
             BlockDamageEvent event = EventFactory.onBlockDamage(player, block);
             if (!event.isCancelled()) {
                 blockBroken = event.getInstaBreak() || player.getGameMode() == GameMode.CREATIVE;
@@ -62,7 +77,7 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
 
         if (blockBroken) {
             if (!block.isEmpty() && !block.isLiquid()) {
-                if ((!player.getInventory().contains(block.getType()) || player.getGameMode() != GameMode.CREATIVE)) {
+                if ((!player.getInventory().contains(block.getTypeId()) || player.getGameMode() != GameMode.CREATIVE)) {
                     player.getInventory().addItem(BlockProperties.get(block.getTypeId()).getDrops(block.getData()));
                 }
             }

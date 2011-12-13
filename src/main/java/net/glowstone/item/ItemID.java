@@ -1,4 +1,4 @@
-package net.glowstone.block;
+package net.glowstone.item;
 
 /**
  * Currently existing item ids.

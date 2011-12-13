@@ -3,7 +3,7 @@ package net.glowstone.net.codec;
 import java.io.IOException;
 import java.util.Map;
 
-import net.glowstone.block.ItemProperties;
+import net.glowstone.item.ItemProperties;
 import net.glowstone.util.ChannelBufferUtils;
 import net.glowstone.util.nbt.Tag;
 import org.jboss.netty.buffer.ChannelBuffer;
