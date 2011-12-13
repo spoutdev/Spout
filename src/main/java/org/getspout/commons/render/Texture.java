@@ -3,7 +3,7 @@ package org.getspout.commons.render;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spoutcraft.spoutcraftapi.addon.Addon;
+import org.getspout.commons.addon.Addon;
 
 public class Texture {
 

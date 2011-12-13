@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.getspout.commons.addon.Addon;
+import org.getspout.commons.block.Block;
+import org.getspout.commons.material.ItemMaterial;
+import org.getspout.commons.packet.PacketUtil;
+import org.getspout.commons.util.MutableIntegerVector;
 
 public class GenericBlockDesign implements BlockDesign {
 
@@ -19,7 +23,7 @@ public class GenericBlockDesign implements BlockDesign {
 	protected float highZBound;
 
 	protected String textureURL;
-	protected String textureAddon;
+	protected String texturePlugin;
 	
 	protected Texture texture;
 
@@ -52,69 +56,13 @@ public class GenericBlockDesign implements BlockDesign {
 		this.highYBound = highYBound;
 		this.highZBound = highZBound;
 		this.textureURL = textureURL;
-		this.textureAddon = textureAddon.getDescription().getName();
+		this.texturePlugin = textureAddon.getDescription().getName();
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.zPos = zPos;
 		this.textXPos = textXPos;
 		this.textYPos = textYPos;
 		this.renderPass = renderPass;
-	}
-	
-	public float[][] getX() {
-		return xPos;
-	}
-	
-	public float[][] getY() {
-		return yPos;
-	}
-	
-	public float[][] getZ() {
-		return zPos;
-	}
-	
-	public float[][] getTextureXPos() {
-		return textXPos;
-	}
-	
-	public float[][] getTextureYPos() {
-		return textYPos;
-	}
-	
-	public float getBrightness() {
-		return brightness;
-	}
-	
-	public float getMaxBrightness() {
-		return maxBrightness;
-	}
-	
-	public float getMinBrightness() {
-		return minBrightness;
-	}
-	
-	public float getLowXBound() {
-		return lowXBound;
-	}
-	
-	public float getLowYBound() {
-		return lowYBound;
-	}
-	
-	public float getLowZBound() {
-		return lowZBound;
-	}
-	
-	public float getHighXBound() {
-		return highXBound;
-	}
-	
-	public float getHighYBound() {
-		return highYBound;
-	}
-	
-	public float getHighZBound() {
-		return highZBound;
 	}
 
 	public BlockDesign setMaxBrightness(float maxBrightness) {
@@ -142,7 +90,7 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public int getNumBytes() {
-		return PacketUtil.getNumBytes(textureURL) + PacketUtil.getNumBytes(textureAddon) + PacketUtil.getDoubleArrayLength(xPos) + PacketUtil.getDoubleArrayLength(yPos) + PacketUtil.getDoubleArrayLength(zPos) + PacketUtil.getDoubleArrayLength(textXPos) + PacketUtil.getDoubleArrayLength(textYPos) + 9 * 4 + (3 + lightSourceXOffset.length + lightSourceXOffset.length + lightSourceXOffset.length) * 4;
+		return PacketUtil.getNumBytes(textureURL) + PacketUtil.getNumBytes(texturePlugin) + PacketUtil.getDoubleArrayLength(xPos) + PacketUtil.getDoubleArrayLength(yPos) + PacketUtil.getDoubleArrayLength(zPos) + PacketUtil.getDoubleArrayLength(textXPos) + PacketUtil.getDoubleArrayLength(textYPos) + 9 * 4 + (3 + lightSourceXOffset.length + lightSourceXOffset.length + lightSourceXOffset.length) * 4;
 	}
 
 	public int getVersion() {
@@ -156,7 +104,7 @@ public class GenericBlockDesign implements BlockDesign {
 			return;
 		}
 		reset = false;
-		textureAddon = PacketUtil.readString(input);
+		texturePlugin = PacketUtil.readString(input);
 		xPos = PacketUtil.readDoubleArray(input);
 		yPos = PacketUtil.readDoubleArray(input);
 		zPos = PacketUtil.readDoubleArray(input);
@@ -192,7 +140,7 @@ public class GenericBlockDesign implements BlockDesign {
 			return;
 		}
 		PacketUtil.writeString(output, textureURL);
-		PacketUtil.writeString(output, textureAddon);
+		PacketUtil.writeString(output, texturePlugin);
 		PacketUtil.writeDoubleArray(output, xPos);
 		PacketUtil.writeDoubleArray(output, yPos);
 		PacketUtil.writeDoubleArray(output, zPos);
@@ -213,7 +161,7 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public BlockDesign setTexture(Addon addon, String textureURL) {
-		this.textureAddon = addon.getDescription().getName();
+		this.texturePlugin = addon.getDescription().getName();
 		this.textureURL = textureURL;
 		return this;
 	}
@@ -274,11 +222,11 @@ public class GenericBlockDesign implements BlockDesign {
 		return textureURL;
 	}
 
-	public String getTextureAddon() {
-		return textureAddon;
+	public String getTexturePlugin() {
+		return texturePlugin;
 	}
 
-	public boolean isReset() {
+	public boolean getReset() {
 		return reset;
 	}
 
@@ -311,144 +259,29 @@ public class GenericBlockDesign implements BlockDesign {
 		return setVertex(vertex.getQuadNum(), vertex.getIndex(), vertex.getX(), vertex.getY(), vertex.getZ(), vertex.getTextureX(), vertex.getTextureY(), vertex.getTextureWidth(), vertex.getTextureHeight());
 	}
 
-	public boolean renderBlock(BlockMaterial block, int x, int y, int z) {
-		World world = Spoutcraft.getWorld();
-		if (block != null) {
-			boolean enclosed = true;
-			enclosed &= world.isOpaque(x, y + 1, z);
-			enclosed &= world.isOpaque(x, y - 1, z);
-			enclosed &= world.isOpaque(x, y, z + 1);
-			enclosed &= world.isOpaque(x, y, z - 1);
-			enclosed &= world.isOpaque(x + 1, y, z);
-			enclosed &= world.isOpaque(x - 1, y, z);
-			if (enclosed) {
-				return false;
-			}
-		}
-		
-		if (getX() == null) {
-			return false;
-		}
-	
-		setBrightness(1F);
-		
-		MinecraftTessellator tessellator = Spoutcraft.getTessellator();
-		
-		int internalLightLevel = 0;
-		if (block == null) {
-			internalLightLevel = 0x00F000F0;
-		} else {
-			internalLightLevel = world.getMixedBrightnessAt(block, x, y, z);
-		}
-	
-		for (int i = 0; i < getX().length; i++) {
-	
-			MutableIntegerVector sourceBlock = getLightSource(i, x, y, z);
-	
-			int sideBrightness;
-	
-			if (block != null && sourceBlock != null) {
-				sideBrightness = world.getMixedBrightnessAt(block, sourceBlock.getBlockX(), sourceBlock.getBlockY(), sourceBlock.getBlockZ());
-			} else {
-				sideBrightness = internalLightLevel;
-			}
-	
-			tessellator.setBrightness(sideBrightness);
-			
-			tessellator.setColorOpaqueFloat(1.0F, 1.0F, 1.0F);
-	
-			float[] xx = getX()[i];
-			float[] yy = getY()[i];
-			float[] zz = getZ()[i];
-			float[] tx = getTextureXPos()[i];
-			float[] ty = getTextureYPos()[i];
-	
-			for (int j = 0; j < 4; j++) {
-				tessellator.addVertexWithUV(x + xx[j], y + yy[j], z + zz[j], tx[j], ty[j]);
-			}
-		}
-		return true;
+	public String getTextureAddon() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isReset() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean renderBlock(Block block, int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	public boolean renderItemstack(ItemMaterial item, float x, float y, float depth, float rotation, float scale, Random rand) {
-		int items = 1;
-		if (item != null) {
-			int amt = item.getItemStack().getAmount();
-			if (amt > 1) {
-				items = 2;
-			}
-	
-			if (amt > 5) {
-				items = 3;
-			}
-	
-			if (amt > 20) {
-				items = 4;
-			}
-		}
-		
-		boolean result = false;
-		
-		GL11.glColor4f(1, 1, 1, 1);
-		GL11.glTranslatef(x, y, depth);
-		GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
-		GL11.glScalef(scale, scale, scale);
-		
-		Spoutcraft.getTessellator().startDrawingQuads();
-		Spoutcraft.getTessellator().setNormal(0.0F, -1.0F, 0.0F);
-
-		for (int i = 0; i < items; ++i) {
-			GL11.glPushMatrix();
-			if(i > 0) {
-				float rotX = (rand.nextFloat() * 2.0F - 1.0F) * 0.2F / 0.25F;
-				float rotY = (rand.nextFloat() * 2.0F - 1.0F) * 0.2F / 0.25F;
-				float rotZ = (rand.nextFloat() * 2.0F - 1.0F) * 0.2F / 0.25F;
-				GL11.glTranslatef(rotX, rotY, rotZ);
-			}
-			
-			result &= renderBlock(null, 0, 0, 0);
-			
-			GL11.glPopMatrix();
-		}
-
-		Spoutcraft.getTessellator().draw();
-		return result;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	public boolean renderItemOnHUD(float x, float y, float depth) {
-		/*
-		 * Block var16 = Block.blocksList[var3];
-			GL11.glPushMatrix();
-			GL11.glTranslatef((float)(var6 - 2), (float)(var7 + 3), -3.0F + this.field_40268_b);
-			GL11.glScalef(10.0F, 10.0F, 10.0F);
-			GL11.glTranslatef(1.0F, 0.5F, 1.0F);
-			GL11.glScalef(1.0F, 1.0F, -1.0F);
-			GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-			int var17 = Item.itemsList[var3].getColorFromDamage(var4);
-			var11 = (float)(var17 >> 16 & 255) / 255.0F;
-			var12 = (float)(var17 >> 8 & 255) / 255.0F;
-			float var13 = (float)(var17 & 255) / 255.0F;
-			if (this.field_27004_a) {
-				GL11.glColor4f(var11, var12, var13, 1.0F);
-			}
-
-			GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-			this.renderBlocks.useInventoryTint = this.field_27004_a;
-			this.renderBlocks.renderBlockOnInventory(var16, var4, 1.0F);
-			this.renderBlocks.useInventoryTint = true;
-			GL11.glPopMatrix();
-		 */
-		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, depth);
-		GL11.glScalef(10.0F, 10.0F, 10.0F);
-		GL11.glTranslatef(1.0F, 0.5F, 1.0F);
-		GL11.glScalef(1.0F, 1.0F, -1.0F);
-		GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-		GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);		
-		GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-		boolean result = renderBlock(null, 0, 0, 0);
-		GL11.glPopMatrix();
-		return result;
+		// TODO Auto-generated method stub
+		return false;
 	}
+
 }
