@@ -1,8 +1,8 @@
 package org.getspout.commons.material.item;
 
-import org.getspout.commons.material.item.GenericItem;
+import org.getspout.commons.material.item.GenericItemMaterial;
 
-public class Dye extends GenericItem{
+public class Dye extends GenericItemMaterial{
 
 	public Dye(String name, int id, int data) {
 		super(name, id, data);

@@ -14,14 +14,14 @@ import org.getspout.commons.entity.Entity;
 import org.getspout.commons.entity.LivingEntity;
 import org.getspout.commons.entity.Player;
 import org.getspout.commons.inventory.ItemStack;
-import org.getspout.commons.material.Block;
-import org.getspout.commons.material.CustomBlock;
+import org.getspout.commons.material.BlockMaterial;
+import org.getspout.commons.material.CustomBlockMaterial;
 import org.getspout.commons.material.CustomItem;
 import org.getspout.commons.material.MaterialData;
-import org.getspout.commons.material.item.GenericCustomItem;
+import org.getspout.commons.material.item.GenericCustomItemMaterial;
 import org.getspout.commons.packet.PacketUtil;
 
-public class GenericCustomBlock implements CustomBlock {
+public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public BlockDesign design = new GenericBlockDesign();
 	private ItemStack drop = null;
 	private String name;
@@ -38,7 +38,7 @@ public class GenericCustomBlock implements CustomBlock {
 	/**
 	 * Creates a GenericCustomBlock with no values, used for serialization purposes only.
 	 */
-	public GenericCustomBlock() {
+	public GenericCustomBlockMaterial() {
 		
 	}
 
@@ -49,8 +49,8 @@ public class GenericCustomBlock implements CustomBlock {
 	 * @param name of the block
 	 * @param isOpaque true if you want the block solid
 	 */
-	public GenericCustomBlock(Addon addon, String name, boolean isOpaque) {
-		this(addon, name, isOpaque, new GenericCustomItem(addon, name));
+	public GenericCustomBlockMaterial(Addon addon, String name, boolean isOpaque) {
+		this(addon, name, isOpaque, new GenericCustomItemMaterial(addon, name));
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class GenericCustomBlock implements CustomBlock {
 	 * @param isOpaque true if you want the block solid
 	 * @param item to use for the block
 	 */
-	public GenericCustomBlock(Addon addon, String name, boolean isOpaque, CustomItem item) {
+	public GenericCustomBlockMaterial(Addon addon, String name, boolean isOpaque, CustomItem item) {
 		opaque = isOpaque;
 		this.blockId = isOpaque ? 1 :20;
 		this.addon = addon;
@@ -81,7 +81,7 @@ public class GenericCustomBlock implements CustomBlock {
 	 * @param isOpaque true if you want the block solid
 	 * @param design to use for the block
 	 */
-	public GenericCustomBlock(Addon addon, String name, boolean isOpaque, BlockDesign design) {
+	public GenericCustomBlockMaterial(Addon addon, String name, boolean isOpaque, BlockDesign design) {
 		this(addon, name, isOpaque);
 		setBlockDesign(design);
 	}
@@ -92,7 +92,7 @@ public class GenericCustomBlock implements CustomBlock {
 	 * @param plugin creating the block
 	 * @param name of the block
 	 */
-	public GenericCustomBlock(Addon addon, String name) {
+	public GenericCustomBlockMaterial(Addon addon, String name) {
 		this(addon, name, true);
 	}
 	
@@ -111,7 +111,7 @@ public class GenericCustomBlock implements CustomBlock {
 		return design;
 	}
 
-	public CustomBlock setBlockDesign(BlockDesign design) {
+	public CustomBlockMaterial setBlockDesign(BlockDesign design) {
 		this.design = design;
 		return this;
 	}
@@ -120,7 +120,7 @@ public class GenericCustomBlock implements CustomBlock {
 		return opaque;
 	}
 	
-	public Block setOpaque(boolean opaque) {
+	public BlockMaterial setOpaque(boolean opaque) {
 		this.opaque = opaque;
 		return this;
 	}
@@ -165,7 +165,7 @@ public class GenericCustomBlock implements CustomBlock {
 		return drop.clone();
 	}
 	
-	public CustomBlock setItemDrop(ItemStack item) {
+	public CustomBlockMaterial setItemDrop(ItemStack item) {
 		drop = item != null ? item.clone() : null;
 		return this;
 	}
@@ -174,7 +174,7 @@ public class GenericCustomBlock implements CustomBlock {
 		return hardness;
 	}
 	
-	public CustomBlock setHardness(float hardness) {
+	public CustomBlockMaterial setHardness(float hardness) {
 		this.hardness = hardness;
 		return this;
 	}
@@ -183,7 +183,7 @@ public class GenericCustomBlock implements CustomBlock {
 		return friction;
 	}
 	
-	public CustomBlock setFriction(float friction) {
+	public CustomBlockMaterial setFriction(float friction) {
 		this.friction = friction;
 		return this;
 	}
@@ -192,7 +192,7 @@ public class GenericCustomBlock implements CustomBlock {
 		return lightLevel;
 	}
 	
-	public CustomBlock setLightLevel(int level) {
+	public CustomBlockMaterial setLightLevel(int level) {
 		lightLevel = level;
 		return this;
 	}
@@ -246,7 +246,7 @@ public class GenericCustomBlock implements CustomBlock {
 		setFriction(input.readFloat());
 		setHardness(input.readFloat());
 		setLightLevel(input.readInt());
-		item = new GenericCustomItem(addon, name, customId);
+		item = new GenericCustomItemMaterial(addon, name, customId);
 		MaterialData.addCustomBlock(this);
 		this.setItemDrop(new ItemStack(this, 1));
 		this.blockId = isOpaque() ? 1 :20;

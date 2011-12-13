@@ -1,8 +1,8 @@
 package org.getspout.commons.material;
 
-import org.getspout.commons.material.Block;
+import org.getspout.commons.material.BlockMaterial;
 
-public interface Plant extends Block{
+public interface Plant extends BlockMaterial{
 	
 	public boolean isHasGrowthStages();
 	

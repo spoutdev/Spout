@@ -32,7 +32,7 @@
  */
 package org.getspout.commons.inventory;
 
-import org.getspout.commons.material.CustomBlock;
+import org.getspout.commons.material.CustomBlockMaterial;
 import org.getspout.commons.material.CustomItem;
 import org.getspout.commons.material.Material;
 import org.getspout.commons.material.MaterialData;
@@ -91,11 +91,11 @@ public class ItemStack implements Cloneable{
 		this(item.getRawId(), amount, (short)item.getRawData());
 	}
 	
-	public ItemStack(CustomBlock block) {
+	public ItemStack(CustomBlockMaterial block) {
 		this(block.getBlockItem());
 	}
 	
-	public ItemStack(CustomBlock block, int amount) {
+	public ItemStack(CustomBlockMaterial block, int amount) {
 		this(block.getBlockItem(), amount);
 	}
 

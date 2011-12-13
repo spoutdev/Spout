@@ -14,7 +14,7 @@ import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.packet.PacketUtil;
 import org.getspout.commons.util.UniqueItemStringMap;
 
-public class GenericCustomItem implements CustomItem {
+public class GenericCustomItemMaterial implements CustomItem {
 	private String name;
 	private String fullName;
 	private Addon addon;
@@ -24,11 +24,11 @@ public class GenericCustomItem implements CustomItem {
 	/**
 	 * Creates a GenericCustomItem with no values, used for serialization purposes only.
 	 */
-	public GenericCustomItem() {
+	public GenericCustomItemMaterial() {
 		
 	}
 
-	public GenericCustomItem(Addon addon, String name, int customId) {
+	public GenericCustomItemMaterial(Addon addon, String name, int customId) {
 		this.name = name;
 		this.fullName = addon.getDescription().getName() + name;
 		this.customId = customId;
@@ -37,11 +37,11 @@ public class GenericCustomItem implements CustomItem {
 		MaterialData.addCustomItem(this);
 	}
 
-	public GenericCustomItem(Addon addon, String name) {
+	public GenericCustomItemMaterial(Addon addon, String name) {
 		this(addon, name, UniqueItemStringMap.getId(addon.getDescription().getName() + name));
 	}
 
-	public GenericCustomItem(Addon addon, String name, String texture) {
+	public GenericCustomItemMaterial(Addon addon, String name, String texture) {
 		this(addon, name);
 		this.setTexture(texture);
 	}

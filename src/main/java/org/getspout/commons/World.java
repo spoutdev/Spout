@@ -63,7 +63,7 @@ public interface World {
 	 * @param z
 	 * @return mixed brightness
 	 */
-	public int getMixedBrightnessAt(org.getspout.commons.material.Block block, int x, int y, int z);
+	public int getMixedBrightnessAt(org.getspout.commons.material.BlockMaterial block, int x, int y, int z);
 	
 	/**
 	 * Is true if the block at the x, y, z location is opaque (a solid block).

@@ -1,9 +1,9 @@
 package org.getspout.commons.material.block;
 
 import org.getspout.commons.material.SolidBlock;
-import org.getspout.commons.material.block.GenericBlock;
+import org.getspout.commons.material.block.GenericBlockMaterial;
 
-public class Solid extends GenericBlock implements SolidBlock{
+public class Solid extends GenericBlockMaterial implements SolidBlock{
 	private final boolean falling;
 	public Solid(String name, int id, int data, boolean falling) {
 		super(name, id, data);

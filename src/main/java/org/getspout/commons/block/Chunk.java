@@ -18,7 +18,7 @@ package org.getspout.commons.block;
 
 import org.getspout.commons.World;
 import org.getspout.commons.entity.Entity;
-import org.getspout.commons.material.CustomBlock;
+import org.getspout.commons.material.CustomBlockMaterial;
 
 public interface Chunk {
 
@@ -160,6 +160,6 @@ public interface Chunk {
 	 * @param custom block to set
 	 * @return the previous custom block at the location, or null if none existed.
 	 */
-	public CustomBlock setCustomBlockId(int x, int y, int z, CustomBlock block);
+	public CustomBlockMaterial setCustomBlockId(int x, int y, int z, CustomBlockMaterial block);
 
 }

@@ -1,9 +1,9 @@
 package org.getspout.commons.material.block;
 
-import org.getspout.commons.material.Block;
-import org.getspout.commons.material.block.GenericBlock;
+import org.getspout.commons.material.BlockMaterial;
+import org.getspout.commons.material.block.GenericBlockMaterial;
 
-public class Air extends GenericBlock implements Block {
+public class Air extends GenericBlockMaterial implements BlockMaterial {
 
 	public Air(String name) {
 		super(name, 0);
@@ -15,7 +15,7 @@ public class Air extends GenericBlock implements Block {
 	}
 
 	@Override
-	public Block setFriction(float slip) {
+	public BlockMaterial setFriction(float slip) {
 		return this;
 	}
 
@@ -25,7 +25,7 @@ public class Air extends GenericBlock implements Block {
 	}
 
 	@Override
-	public Block setHardness(float hardness) {
+	public BlockMaterial setHardness(float hardness) {
 		return this;
 	}
 
@@ -35,7 +35,7 @@ public class Air extends GenericBlock implements Block {
 	}
 
 	@Override
-	public Block setOpaque(boolean opaque) {
+	public BlockMaterial setOpaque(boolean opaque) {
 		return this;
 	}
 
@@ -45,7 +45,7 @@ public class Air extends GenericBlock implements Block {
 	}
 
 	@Override
-	public Block setLightLevel(int level) {
+	public BlockMaterial setLightLevel(int level) {
 		return this;
 	}
 

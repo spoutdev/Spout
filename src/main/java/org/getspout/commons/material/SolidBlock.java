@@ -1,8 +1,8 @@
 package org.getspout.commons.material;
 
-import org.getspout.commons.material.Block;
+import org.getspout.commons.material.BlockMaterial;
 
-public interface SolidBlock extends Block{
+public interface SolidBlock extends BlockMaterial{
 	
 	public boolean isFallingBlock();
 

@@ -1,8 +1,8 @@
 package org.getspout.commons.material.item;
 
-import org.getspout.commons.material.Item;
+import org.getspout.commons.material.ItemMaterial;
 
-public class GenericItem implements Item {
+public class GenericItemMaterial implements ItemMaterial {
 
 	private final int id;
 	private final int data;
@@ -10,18 +10,18 @@ public class GenericItem implements Item {
 	private final String name;
 	private String customName;
 
-	public GenericItem(String name, int id, int data, boolean subtypes) {
+	public GenericItemMaterial(String name, int id, int data, boolean subtypes) {
 		this.name = name;
 		this.id = id;
 		this.data = data;
 		this.subtypes = subtypes;
 	}
 
-	protected GenericItem(String name, int id, int data) {
+	protected GenericItemMaterial(String name, int id, int data) {
 		this(name, id, data, false);
 	}
 
-	public GenericItem(String name, int id) {
+	public GenericItemMaterial(String name, int id) {
 		this(name, id, 0, false);
 	}
 

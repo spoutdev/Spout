@@ -1,9 +1,9 @@
 package org.getspout.commons.material.block;
 
 import org.getspout.commons.material.Plant;
-import org.getspout.commons.material.block.GenericBlock;
+import org.getspout.commons.material.block.GenericBlockMaterial;
 
-public class LongGrass extends GenericBlock implements Plant{
+public class LongGrass extends GenericBlockMaterial implements Plant{
 
 	public LongGrass(String name, int id, int data) {
 		super(name, id, data);

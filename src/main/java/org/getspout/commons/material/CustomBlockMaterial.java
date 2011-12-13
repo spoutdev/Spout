@@ -1,10 +1,10 @@
 package org.getspout.commons.material;
 
 import org.getspout.commons.addon.Addon;
-import org.getspout.commons.material.Block;
+import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.material.CustomItem;
 
-public interface CustomBlock extends Block {
+public interface CustomBlockMaterial extends BlockMaterial {
 	
 	public int getCustomId();
 	

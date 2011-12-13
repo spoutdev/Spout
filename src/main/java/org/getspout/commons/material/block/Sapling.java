@@ -1,9 +1,9 @@
 package org.getspout.commons.material.block;
 
 import org.getspout.commons.material.Plant;
-import org.getspout.commons.material.block.GenericBlock;
+import org.getspout.commons.material.block.GenericBlockMaterial;
 
-public class Sapling extends GenericBlock implements Plant{
+public class Sapling extends GenericBlockMaterial implements Plant{
 
 	public Sapling(String name, int data) {
 		super(name, 6, data);

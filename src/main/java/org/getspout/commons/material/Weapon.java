@@ -1,7 +1,7 @@
 package org.getspout.commons.material;
 
-import org.getspout.commons.material.Item;
+import org.getspout.commons.material.ItemMaterial;
 
-public interface Weapon extends Item {
+public interface Weapon extends ItemMaterial {
 
 }

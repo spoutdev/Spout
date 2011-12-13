@@ -147,7 +147,7 @@ public interface Block {
 	 * 
 	 * @return material
 	 */
-	public org.getspout.commons.material.Block getType();
+	public org.getspout.commons.material.BlockMaterial getType();
 
 	/**
 	 * Gets the Location of the block

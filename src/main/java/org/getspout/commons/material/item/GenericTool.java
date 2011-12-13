@@ -1,10 +1,10 @@
 package org.getspout.commons.material.item;
 
-import org.getspout.commons.material.Block;
+import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.material.Tool;
-import org.getspout.commons.material.item.GenericItem;
+import org.getspout.commons.material.item.GenericItemMaterial;
 
-public class GenericTool extends GenericItem implements Tool {
+public class GenericTool extends GenericItemMaterial implements Tool {
 
 	public GenericTool(String name, int id) {
 		super(name, id);
@@ -20,17 +20,17 @@ public class GenericTool extends GenericItem implements Tool {
 		return this;
 	}
 
-	public float getStrengthModifier(Block block) {
+	public float getStrengthModifier(BlockMaterial block) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 		
-	public Tool setStrengthModifier(Block block, float modifier) {
+	public Tool setStrengthModifier(BlockMaterial block, float modifier) {
 		// TODO Auto-generated method stub
 		return this;
 	}
 
-	public Block[] getStrengthModifiedBlocks() {
+	public BlockMaterial[] getStrengthModifiedBlocks() {
 		// TODO Auto-generated method stub
 		return null;
 	}

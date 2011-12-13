@@ -32,7 +32,7 @@
  */
 package org.getspout.commons.block;
 
-import org.getspout.commons.material.Item;
+import org.getspout.commons.material.ItemMaterial;
 
 /**
  * Represents a Jukebox
@@ -42,13 +42,13 @@ public interface Jukebox extends BlockState {
 	 * Get the record currently playing
 	 * @return The record Material, or AIR if none is playing
 	 */
-	public Item getPlaying();
+	public ItemMaterial getPlaying();
 	
 	/**
 	 * Set the record currently playing
 	 * @param record The record Material, or null/AIR to stop playing
 	 */
-	public void setPlaying(Item record);
+	public void setPlaying(ItemMaterial record);
 	
 	/**
 	 * Check if the jukebox is currently playing a record

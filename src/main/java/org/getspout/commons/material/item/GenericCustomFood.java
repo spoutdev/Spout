@@ -22,9 +22,9 @@ import java.io.IOException;
 
 import org.getspout.commons.addon.Addon;
 import org.getspout.commons.material.Food;
-import org.getspout.commons.material.item.GenericCustomItem;
+import org.getspout.commons.material.item.GenericCustomItemMaterial;
 
-public class GenericCustomFood extends GenericCustomItem implements Food{
+public class GenericCustomFood extends GenericCustomItemMaterial implements Food{
 	private int hunger;
 	public GenericCustomFood(Addon addon, String name, String texture, int hungerRestored) {
 		super(addon, name, texture);

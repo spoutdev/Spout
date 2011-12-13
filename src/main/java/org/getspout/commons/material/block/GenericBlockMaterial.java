@@ -1,10 +1,9 @@
 package org.getspout.commons.material.block;
 
-import org.getspout.commons.Spoutcraft;
-import org.getspout.commons.block.design.BlockDesign;
-import org.getspout.commons.material.Block;
+import org.getspout.commons.material.BlockMaterial;
+import org.getspout.commons.render.BlockDesign;
 
-public class GenericBlock implements Block{
+public class GenericBlockMaterial implements BlockMaterial{
 	private final int id;
 	private final int data;
 	private final boolean subtypes;
@@ -12,18 +11,18 @@ public class GenericBlock implements Block{
 	private String customName;
 	private BlockDesign design;
 	
-	private GenericBlock(String name, int id, int data, boolean subtypes) {
+	private GenericBlockMaterial(String name, int id, int data, boolean subtypes) {
 		this.name = name;
 		this.id = id;
 		this.data = data;
 		this.subtypes = subtypes;
 	}
 	
-	protected GenericBlock(String name, int id, int data) {
+	protected GenericBlockMaterial(String name, int id, int data) {
 		this(name, id, data, true);
 	}
 	
-	protected GenericBlock(String name, int id) {
+	protected GenericBlockMaterial(String name, int id) {
 		this(name, id, 0, false);
 	}
 
@@ -55,10 +54,10 @@ public class GenericBlock implements Block{
 	}
 
 	public float getFriction() {
-		return Spoutcraft.getClient().getMaterialManager().getFriction(this);
+		return Game.getClient().getMaterialManager().getFriction(this);
 	}
 
-	public Block setFriction(float friction) {
+	public BlockMaterial setFriction(float friction) {
 		Spoutcraft.getClient().getMaterialManager().setFriction(this, friction);
 		return this;
 	}
@@ -67,7 +66,7 @@ public class GenericBlock implements Block{
 		return Spoutcraft.getClient().getMaterialManager().getHardness(this);
 	}
 
-	public Block setHardness(float hardness) {
+	public BlockMaterial setHardness(float hardness) {
 		Spoutcraft.getClient().getMaterialManager().setHardness(this, hardness);
 		return this;
 	}
@@ -76,7 +75,7 @@ public class GenericBlock implements Block{
 		return Spoutcraft.getClient().getMaterialManager().isOpaque(this);
 	}
 
-	public Block setOpaque(boolean opaque) {
+	public BlockMaterial setOpaque(boolean opaque) {
 		Spoutcraft.getClient().getMaterialManager().setOpaque(this, opaque);
 		return this;
 	}
@@ -85,7 +84,7 @@ public class GenericBlock implements Block{
 		return Spoutcraft.getClient().getMaterialManager().getLightLevel(this);
 	}
 
-	public Block setLightLevel(int level) {
+	public BlockMaterial setLightLevel(int level) {
 		Spoutcraft.getClient().getMaterialManager().setLightLevel(this, level);
 		return this;
 	}
@@ -94,7 +93,7 @@ public class GenericBlock implements Block{
 		return design;
 	}
 
-	public Block setBlockDesign(BlockDesign design) {
+	public BlockMaterial setBlockDesign(BlockDesign design) {
 		this.design = design;
 		return this;
 	}

@@ -21,17 +21,17 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.getspout.commons.addon.Addon;
-import org.getspout.commons.material.Block;
-import org.getspout.commons.material.CustomBlock;
+import org.getspout.commons.material.BlockMaterial;
+import org.getspout.commons.material.CustomBlockMaterial;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.material.Tool;
-import org.getspout.commons.material.item.GenericCustomItem;
+import org.getspout.commons.material.item.GenericCustomItemMaterial;
 
 import gnu.trove.map.hash.TObjectFloatHashMap;
 
-public class GenericCustomTool extends GenericCustomItem implements Tool{
+public class GenericCustomTool extends GenericCustomItemMaterial implements Tool{
 	private short durability = 1;
-	private TObjectFloatHashMap<Block> strengthMods = new TObjectFloatHashMap<Block>();
+	private TObjectFloatHashMap<BlockMaterial> strengthMods = new TObjectFloatHashMap<BlockMaterial>();
 	
 	public GenericCustomTool(){
 		super();
@@ -50,20 +50,20 @@ public class GenericCustomTool extends GenericCustomItem implements Tool{
 		return this;
 	}
 
-	public float getStrengthModifier(Block block) {
+	public float getStrengthModifier(BlockMaterial block) {
 		if (strengthMods.contains(block)) {
 			return strengthMods.get(block);
 		}
 		return 1.0F;
 	}
 
-	public Tool setStrengthModifier(Block block, float modifier) {
+	public Tool setStrengthModifier(BlockMaterial block, float modifier) {
 		strengthMods.put(block, modifier);
 		return this;
 	}
 
-	public Block[] getStrengthModifiedBlocks() {
-		return (Block[]) strengthMods.keys();
+	public BlockMaterial[] getStrengthModifiedBlocks() {
+		return (BlockMaterial[]) strengthMods.keys();
 	}
 	
 	@Override
@@ -80,7 +80,7 @@ public class GenericCustomTool extends GenericCustomItem implements Tool{
 			int id = input.readInt();
 			int data = input.readShort();
 			float mod = input.readFloat();
-			Block block = MaterialData.getBlock(id, (short) data);
+			BlockMaterial block = MaterialData.getBlock(id, (short) data);
 			if (data == -1) {
 				block = MaterialData.getCustomBlock(id);
 			}
@@ -92,12 +92,12 @@ public class GenericCustomTool extends GenericCustomItem implements Tool{
 	public void writeData(DataOutputStream output) throws IOException {
 		super.writeData(output);
 		output.writeShort(getDurability());
-		Block[] mod = getStrengthModifiedBlocks();
+		BlockMaterial[] mod = getStrengthModifiedBlocks();
 		output.writeShort(mod.length);
 		for (int i = 0; i < mod.length; i++) {
-			Block block =  mod[i];
-			if (block instanceof CustomBlock) {
-				output.writeInt(((CustomBlock)block).getCustomId());
+			BlockMaterial block =  mod[i];
+			if (block instanceof CustomBlockMaterial) {
+				output.writeInt(((CustomBlockMaterial)block).getCustomId());
 				output.writeShort(-1);
 			}
 			else {
