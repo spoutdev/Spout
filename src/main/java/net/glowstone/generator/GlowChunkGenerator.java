@@ -61,7 +61,7 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
         if (BlockProperties.get(fill) == null) {
             throw new IllegalArgumentException("Invalid block type!");
         }
-        byte[] data = new byte[GlowChunk.HEIGHT * GlowChunk.WIDTH * world.getMaxHeight()];
+        byte[] data = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * world.getMaxHeight()];
         Arrays.fill(data, (byte) fill);
         return data;
     }
@@ -81,10 +81,10 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
         if (BlockProperties.get(id) == null) {
             throw new IllegalArgumentException("Unknown block type!");
         }
-        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.HEIGHT || y >= world.getMaxHeight() || z >= GlowChunk.WIDTH) {
+        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.DEPTH || y >= world.getMaxHeight() || z >= GlowChunk.WIDTH) {
             return;
         }
-        data[(x * GlowChunk.HEIGHT + z) * world.getMaxHeight() + y] = (byte) id;
+        data[(x * GlowChunk.DEPTH + z) * world.getMaxHeight() + y] = (byte) id;
     }
 
     /**
@@ -99,10 +99,10 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
         if (data == null) {
             throw new IllegalStateException();
         }
-        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.HEIGHT || y >= world.getMaxHeight() || z >= GlowChunk.WIDTH) {
+        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.DEPTH || y >= world.getMaxHeight() || z >= GlowChunk.WIDTH) {
             return BlockID.AIR;
         }
-        return data[(x * GlowChunk.HEIGHT + z) * world.getMaxHeight() + y];
+        return data[(x * GlowChunk.DEPTH + z) * world.getMaxHeight() + y];
     }
 
     @Override

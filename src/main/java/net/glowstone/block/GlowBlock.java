@@ -114,7 +114,7 @@ public class GlowBlock implements Block {
     }
 
     public int getTypeId() {
-        return chunk.getType(x & 0xf, z & 0xf, y);
+        return chunk.getType(x & 0xf, y, z & 0xf);
     }
 
     public void setType(Material type) {
@@ -130,8 +130,8 @@ public class GlowBlock implements Block {
     }
 
     public boolean setTypeIdAndData(int type, byte data, boolean applyPhysics) {
-        chunk.setType(x & 0xf, z & 0xf, y, type);
-        chunk.setMetaData(x & 0xf, z & 0xf, y, data);
+        chunk.setType(x & 0xf, y, z & 0xf, type);
+        chunk.setMetaData(x & 0xf, y, z & 0xf, data);
         if (applyPhysics) {
             BlockPhysicsEngine.doPhysics(this);
         }
@@ -154,7 +154,7 @@ public class GlowBlock implements Block {
     // data and light getters/setters
 
     public byte getData() {
-        return (byte) chunk.getMetaData(x & 0xf, z & 0xf, y);
+        return (byte) chunk.getMetaData(x & 0xf, y, z & 0xf);
     }
 
     public void setData(byte data) {
@@ -162,7 +162,7 @@ public class GlowBlock implements Block {
     }
 
     public void setData(byte data, boolean applyPhyiscs) {
-        chunk.setMetaData(x & 0xf, z & 0xf, y & 0x7f, data);
+        chunk.setMetaData(x & 0xf, y & 0x7f, z & 0xf, data);
         if (applyPhyiscs) {
             BlockPhysicsEngine.doPhysics(this);
         }
@@ -173,7 +173,7 @@ public class GlowBlock implements Block {
     }
 
     public byte getLightLevel() {
-        return (byte) Math.max(chunk.getSkyLight(x & 0xf, z & 0xf, y), chunk.getBlockLight(x & 0xf, z & 0xf, y));
+        return (byte) Math.max(chunk.getSkyLight(x & 0xf, y, z & 0xf), chunk.getBlockLight(x & 0xf, y, z & 0xf));
     }
 
     // redstone-related shenanigans
