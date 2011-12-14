@@ -5,13 +5,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.getspout.commons.addon.Addon;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.block.Block;
 import org.getspout.commons.block.design.BlockDesign;
 import org.getspout.commons.block.design.Quad;
 import org.getspout.commons.block.design.Texture;
 import org.getspout.commons.block.design.Vertex;
 import org.getspout.commons.entity.Item;
-import org.getspout.commons.material.Block;
 import org.getspout.commons.packet.PacketUtil;
 import org.getspout.commons.util.MutableIntegerVector;
 
@@ -27,7 +27,7 @@ public class GenericBlockDesign implements BlockDesign {
 	protected float highZBound;
 
 	protected String textureURL;
-	protected String textureAddon;
+	protected String texturePlugin;
 	
 	protected Texture texture;
 
@@ -52,7 +52,7 @@ public class GenericBlockDesign implements BlockDesign {
 	public GenericBlockDesign() {
 	}
 
-	public GenericBlockDesign(float lowXBound, float lowYBound, float lowZBound, float highXBound, float highYBound, float highZBound, String textureURL, Addon textureAddon, float[][] xPos, float[][] yPos, float[][] zPos, float[][] textXPos, float[][] textYPos, int renderPass) {
+	public GenericBlockDesign(float lowXBound, float lowYBound, float lowZBound, float highXBound, float highYBound, float highZBound, String textureURL, Plugin texturePlugin, float[][] xPos, float[][] yPos, float[][] zPos, float[][] textXPos, float[][] textYPos, int renderPass) {
 		this.lowXBound = lowXBound;
 		this.lowYBound = lowYBound;
 		this.lowZBound = lowZBound;
@@ -60,7 +60,7 @@ public class GenericBlockDesign implements BlockDesign {
 		this.highYBound = highYBound;
 		this.highZBound = highZBound;
 		this.textureURL = textureURL;
-		this.textureAddon = textureAddon.getDescription().getName();
+		this.texturePlugin = texturePlugin.getDescription().getName();
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.zPos = zPos;
@@ -150,7 +150,7 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public int getNumBytes() {
-		return PacketUtil.getNumBytes(textureURL) + PacketUtil.getNumBytes(textureAddon) + PacketUtil.getDoubleArrayLength(xPos) + PacketUtil.getDoubleArrayLength(yPos) + PacketUtil.getDoubleArrayLength(zPos) + PacketUtil.getDoubleArrayLength(textXPos) + PacketUtil.getDoubleArrayLength(textYPos) + 9 * 4 + (3 + lightSourceXOffset.length + lightSourceXOffset.length + lightSourceXOffset.length) * 4;
+		return PacketUtil.getNumBytes(textureURL) + PacketUtil.getNumBytes(texturePlugin) + PacketUtil.getDoubleArrayLength(xPos) + PacketUtil.getDoubleArrayLength(yPos) + PacketUtil.getDoubleArrayLength(zPos) + PacketUtil.getDoubleArrayLength(textXPos) + PacketUtil.getDoubleArrayLength(textYPos) + 9 * 4 + (3 + lightSourceXOffset.length + lightSourceXOffset.length + lightSourceXOffset.length) * 4;
 	}
 
 	public int getVersion() {
@@ -164,7 +164,7 @@ public class GenericBlockDesign implements BlockDesign {
 			return;
 		}
 		reset = false;
-		textureAddon = PacketUtil.readString(input);
+		texturePlugin = PacketUtil.readString(input);
 		xPos = PacketUtil.readDoubleArray(input);
 		yPos = PacketUtil.readDoubleArray(input);
 		zPos = PacketUtil.readDoubleArray(input);
@@ -200,7 +200,7 @@ public class GenericBlockDesign implements BlockDesign {
 			return;
 		}
 		PacketUtil.writeString(output, textureURL);
-		PacketUtil.writeString(output, textureAddon);
+		PacketUtil.writeString(output, texturePlugin);
 		PacketUtil.writeDoubleArray(output, xPos);
 		PacketUtil.writeDoubleArray(output, yPos);
 		PacketUtil.writeDoubleArray(output, zPos);
@@ -220,8 +220,8 @@ public class GenericBlockDesign implements BlockDesign {
 		PacketUtil.writeIntArray(output, lightSourceZOffset);
 	}
 
-	public BlockDesign setTexture(Addon addon, String textureURL) {
-		this.textureAddon = addon.getDescription().getName();
+	public BlockDesign setTexture(Plugin plugin, String textureURL) {
+		this.texturePlugin = plugin.getDescription().getName();
 		this.textureURL = textureURL;
 		return this;
 	}
@@ -282,8 +282,8 @@ public class GenericBlockDesign implements BlockDesign {
 		return textureURL;
 	}
 
-	public String getTextureAddon() {
-		return textureAddon;
+	public String getTexturePlugin() {
+		return texturePlugin;
 	}
 
 	public boolean isReset() {
@@ -302,9 +302,9 @@ public class GenericBlockDesign implements BlockDesign {
 		return blockVector;
 	}
 
-	public BlockDesign setTexture(Addon addon, Texture texture) {
+	public BlockDesign setTexture(Plugin plugin, Texture texture) {
 		this.texture = texture;
-		return setTexture(addon, texture.getTexture());
+		return setTexture(plugin, texture.getTexture());
 	}
 	
 	public Texture getTexture() {

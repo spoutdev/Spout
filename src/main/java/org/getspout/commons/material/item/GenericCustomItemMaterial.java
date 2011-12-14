@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.commons.Spoutcraft;
 import org.getspout.commons.block.Block;
 import org.getspout.commons.block.BlockFace;
 import org.getspout.commons.entity.Player;
@@ -12,12 +11,11 @@ import org.getspout.commons.material.CustomItem;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.packet.PacketUtil;
 import org.getspout.commons.plugin.Plugin;
-import org.getspout.commons.util.UniqueItemStringMap;
 
 public class GenericCustomItemMaterial implements CustomItem {
 	private String name;
 	private String fullName;
-	private Plugin addon;
+	private Plugin plugin;
 	private int customId;
 	public String texture;
 	
@@ -28,21 +26,21 @@ public class GenericCustomItemMaterial implements CustomItem {
 		
 	}
 
-	public GenericCustomItemMaterial(Plugin addon, String name, int customId) {
+	public GenericCustomItemMaterial(Plugin plugin, String name, int customId) {
 		this.name = name;
-		this.fullName = addon.getDescription().getName() + name;
+		this.fullName = plugin.getDescription().getName() + name;
 		this.customId = customId;
-		this.addon = addon;
+		this.plugin = plugin;
 		this.setName(name);
 		MaterialData.addCustomItem(this);
 	}
 
-	public GenericCustomItemMaterial(Plugin addon, String name) {
-		this(addon, name, UniqueItemStringMap.getId(addon.getDescription().getName() + name));
+	public GenericCustomItemMaterial(Plugin plugin, String name) {
+		this(plugin, name, UniqueItemStringMap.getId(plugin.getDescription().getName() + name));
 	}
 
-	public GenericCustomItemMaterial(Plugin addon, String name, String texture) {
-		this(addon, name);
+	public GenericCustomItemMaterial(Plugin plugin, String name, String texture) {
+		this(plugin, name);
 		this.setTexture(texture);
 	}
 	
@@ -64,7 +62,7 @@ public class GenericCustomItemMaterial implements CustomItem {
 
 	public void setName(String name) {
 		this.name = name;
-		this.fullName = addon.getDescription().getName() + name;
+		this.fullName = plugin.getDescription().getName() + name;
 	}
 
 	public int getCustomId() {
@@ -79,8 +77,8 @@ public class GenericCustomItemMaterial implements CustomItem {
 		return getName();
 	}
 
-	public Plugin getAddon() {
-		return addon;
+	public Plugin getPlugin() {
+		return plugin;
 	}
 
 	public CustomItem setTexture(String texture) {
@@ -97,13 +95,13 @@ public class GenericCustomItemMaterial implements CustomItem {
 	}
 
 	public int getNumBytes() {
-		return 4 + PacketUtil.getNumBytes(getName()) + PacketUtil.getNumBytes(getAddon().getDescription().getName()) + PacketUtil.getNumBytes(getTexture());
+		return 4 + PacketUtil.getNumBytes(getName()) + PacketUtil.getNumBytes(getPlugin().getDescription().getName()) + PacketUtil.getNumBytes(getTexture());
 	}
 
 	public void readData(DataInputStream input) throws IOException {
 		customId = input.readInt();
 		name = PacketUtil.readString(input);
-		addon = Spoutcraft.getAddonManager().getOrCreateAddon(PacketUtil.readString(input));
+//		plugin = Spoutcraft.getPluginManager().getOrCreatePlugin(PacketUtil.readString(input));
 		texture = PacketUtil.readString(input);
 		setName(name);
 		MaterialData.addCustomItem(this);
@@ -112,7 +110,7 @@ public class GenericCustomItemMaterial implements CustomItem {
 	public void writeData(DataOutputStream output) throws IOException {
 		output.write(customId);
 		PacketUtil.writeString(output, getName());
-		PacketUtil.writeString(output, getAddon().getDescription().getName());
+		PacketUtil.writeString(output, getPlugin().getDescription().getName());
 		PacketUtil.writeString(output, getTexture());
 	}
 
