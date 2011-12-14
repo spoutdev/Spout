@@ -1,5 +1,6 @@
 package net.glowstone.msg.handler;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import net.glowstone.inventory.GlowItemStack;
@@ -10,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.inventory.CraftingInventory;
 import net.glowstone.inventory.GlowInventory;
+import net.glowstone.inventory.GlowPlayerInventory;
 import net.glowstone.msg.TransactionMessage;
 import net.glowstone.msg.WindowClickMessage;
 import net.glowstone.net.Session;
@@ -27,11 +29,12 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
         // Modify slot if needed
         if (slot < 0) {
             inv = player.getInventory().getCraftingInventory();
-            slot = inv.getItemSlot(message.getSlot());
+            slot = ((CraftingInventory)inv).getItemSlot(message.getSlot());
         }
         if (slot == -1) {
             player.setItemOnCursor(null);
             response(session, message, true);
+            return;
         }
         if (slot < 0) {
             response(session, message, false);
@@ -47,6 +50,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
             player.getServer().getLogger().log(Level.WARNING, "{0} tried to do an invalid inventory action in Creative mode!", new Object[]{player.getName()});
             return;
         }
+        
         if (currentItem == null) {
             if (message.getItem() != -1) {
                 player.onSlotSet(inv, slot, currentItem);
@@ -62,49 +66,231 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
         }
         
         if (message.isShift()) {
-            if (false /* inv == player.getInventory().getOpenWindow() */) {
-                // TODO: if player has e.g. chest open
+            if (false/*inv == player.getInventory().getOpenWindow()*/) {
+                // Chest takes precedence over all all moves
+                // Quickbar is filled first
+                
+                // TODO: Waiting on getOpenWindow implementation
             } else if (inv == player.getInventory().getCraftingInventory()) {
-                // TODO: crafting stuff
+                if (slot == CraftingInventory.RESULT_SLOT && currentItem != null) {
+                    player.getInventory().getCraftingInventory().craft(player, true);
+                }
+                else
+                {
+                    // If someone shift clicked in the crafting inventory, move all of the item down to regular inventory
+                    // Main inventory takes precedence, then quickbar
+                    GlowItemStack result = null;
+                    GlowItemStack[] slots = player.getInventory().getContents();
+
+                    int maxStackSize = currentItem.getType() == null ? 64 : currentItem.getType().getMaxStackSize();
+                    int mat = currentItem.getTypeId();
+                    int toAdd = currentItem.getAmount();
+                    short damage = currentItem.getDurability();
+
+                    for (int j = 9; toAdd > 0 && j < 36; ++j) {
+                        // Look for existing stacks to add to
+                        if (slots[j] != null && slots[j].getTypeId() == mat && slots[j].getDurability() == damage) {
+                            int space = maxStackSize - slots[j].getAmount();
+                            if (space < 0) continue;
+                            if (space > toAdd) space = toAdd;
+
+                            slots[j].setAmount(slots[j].getAmount() + space);
+                            player.getInventory().setItem(j, slots[j]);
+
+                            toAdd -= space;
+                        }
+                    }
+
+                    if (toAdd > 0) {
+                        // Look for empty slots to add to
+                        for (int j = 9; toAdd > 0 && j < 36; ++j) {
+                            if (slots[j] == null) {
+                                int num = toAdd > maxStackSize ? maxStackSize : toAdd;
+                                player.getInventory().setItem(j, new GlowItemStack(mat, num, damage));
+                                toAdd -= num;
+                            }
+                        }
+                    }
+
+                    if (toAdd > 0) {
+                        // Still couldn't stash them all.
+                        // Try stashing in the quickbar
+                        
+                        result = new GlowItemStack(mat, toAdd, damage);
+                        for (int j = 0; toAdd > 0 && j < 9; ++j) {
+                            // Look for existing stacks to add to
+                            if (slots[j] != null && slots[j].getTypeId() == mat && slots[j].getDurability() == damage) {
+                                int space = maxStackSize - slots[j].getAmount();
+                                if (space < 0) continue;
+                                if (space > toAdd) space = toAdd;
+
+                                slots[j].setAmount(slots[j].getAmount() + space);
+                                player.getInventory().setItem(j, slots[j]);
+
+                                toAdd -= space;
+                            }
+                        }
+
+                        if (toAdd > 0) {
+                            // Look for empty slots to add to
+                            for (int j = 0; toAdd > 0 && j < 9; ++j) {
+                                if (slots[j] == null) {
+                                    int num = toAdd > maxStackSize ? maxStackSize : toAdd;
+                                    player.getInventory().setItem(j, new GlowItemStack(mat, num, damage));
+                                    toAdd -= num;
+                                }
+                            }
+                        }
+
+                        if (toAdd > 0) {
+                            // Still couldn't stash them all.
+                            result = new GlowItemStack(mat, toAdd, damage);
+                        }                        
+                    }
+                    
+                    if(result == null)
+                    {
+                        player.getInventory().getCraftingInventory().setItem(slot, null);
+                        response(session, message, true);
+                        return;
+                    }
+                    else if(!result.equals(currentItem))
+                    {
+                        
+                        player.getInventory().getCraftingInventory().setItem(slot, result);
+                        response(session, message, true);
+                        return;
+                    }                        
+                }
             } else {
+                // If the quickbar if shift clicked, move it to main inventory, and vice versa
                 if (slot < 9) {
-                    for (int i = 9; i < 36; ++i) {
-                        if (inv.getItem(i) == null) {
-                            // TODO: deal with item stacks
-                            inv.setItem(i, currentItem);
-                            inv.setItem(slot, null);
-                            response(session, message, true);
-                            return;
+                    // Quickbar
+                    GlowItemStack result = null;
+                    GlowItemStack[] slots = player.getInventory().getContents();
+
+                    int maxStackSize = currentItem.getType() == null ? 64 : currentItem.getType().getMaxStackSize();
+                    int mat = currentItem.getTypeId();
+                    int toAdd = currentItem.getAmount();
+                    short damage = currentItem.getDurability();
+
+                    for (int j = 9; toAdd > 0 && j < 36; ++j) {
+                        // Look for existing stacks to add to
+                        if (slots[j] != null && slots[j].getTypeId() == mat && slots[j].getDurability() == damage) {
+                            int space = maxStackSize - slots[j].getAmount();
+                            if (space < 0) continue;
+                            if (space > toAdd) space = toAdd;
+
+                            slots[j].setAmount(slots[j].getAmount() + space);
+                            player.getInventory().setItem(j, slots[j]);
+
+                            toAdd -= space;
                         }
                     }
+
+                    if (toAdd > 0) {
+                        // Look for empty slots to add to
+                        for (int j = 9; toAdd > 0 && j < 36; ++j) {
+                            if (slots[j] == null) {
+                                int num = toAdd > maxStackSize ? maxStackSize : toAdd;
+                                player.getInventory().setItem(j, new GlowItemStack(mat, num, damage));
+                                toAdd -= num;
+                            }
+                        }
+                    }
+
+                    if (toAdd > 0) {
+                        // Still couldn't stash them all.
+                        result = new GlowItemStack(mat, toAdd, damage);                                        
+                    }
+                    
+                    if(result == null)
+                    {
+                        player.getInventory().setItem(slot, null);
+                        response(session, message, true);
+                        return;
+                    }
+                    else if(!result.equals(currentItem))
+                    {
+                        
+                        player.getInventory().setItem(slot, result);
+                        response(session, message, true);
+                        return;
+                    }    
                 } else {
-                    for (int i = 0; i < 9; ++i) {
-                        if (inv.getItem(i) == null) {
-                            // TODO: deal with item stacks
-                            inv.setItem(i, currentItem);
-                            inv.setItem(slot, null);
-                            response(session, message, true);
-                            return;
+                    // Main inventory
+                    GlowItemStack result = null;
+                    GlowItemStack[] slots = player.getInventory().getContents();
+
+                    int maxStackSize = currentItem.getType() == null ? 64 : currentItem.getType().getMaxStackSize();
+                    int mat = currentItem.getTypeId();
+                    int toAdd = currentItem.getAmount();
+                    short damage = currentItem.getDurability();
+
+                    for (int j = 0; toAdd > 0 && j < 9; ++j) {
+                        // Look for existing stacks to add to
+                        if (slots[j] != null && slots[j].getTypeId() == mat && slots[j].getDurability() == damage) {
+                            int space = maxStackSize - slots[j].getAmount();
+                            if (space < 0) continue;
+                            if (space > toAdd) space = toAdd;
+
+                            slots[j].setAmount(slots[j].getAmount() + space);
+                            player.getInventory().setItem(j, slots[j]);
+
+                            toAdd -= space;
                         }
                     }
+
+                    if (toAdd > 0) {
+                        // Look for empty slots to add to
+                        for (int j = 0; toAdd > 0 && j < 9; ++j) {
+                            if (slots[j] == null) {
+                                int num = toAdd > maxStackSize ? maxStackSize : toAdd;
+                                player.getInventory().setItem(j, new GlowItemStack(mat, num, damage));
+                                toAdd -= num;
+                            }
+                        }
+                    }
+
+                    if (toAdd > 0) {
+                        // Still couldn't stash them all.
+                        result = new GlowItemStack(mat, toAdd, damage);
+                    }
+                    
+                    if(result == null)
+                    {
+                        player.getInventory().setItem(slot, null);
+                        response(session, message, true);
+                        return;
+                    }
+                    else if(!result.equals(currentItem))
+                    {
+                        
+                        player.getInventory().setItem(slot, result);
+                        response(session, message, true);
+                        return;
+                    }          
                 }
             }
-            response(session, message, false);
-            return;
         }
         
-        if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && player.getItemOnCursor() != null) {
-            response(session, message, false);
+        if(message.isRightClick())
+        {
+            // TODO: Handle right-clicks
+        }
+        
+        if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && currentItem != null)
+        {
+            player.getInventory().getCraftingInventory().craft(player, false);
+                 
+            response(session, message, true);
             return;
         }
         
         response(session, message, true);
+        
         inv.setItem(slot, player.getItemOnCursor());
         player.setItemOnCursor(currentItem);
-        
-        if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && currentItem != null) {
-            player.getInventory().getCraftingInventory().craft();
-        }
     }
     
     private void response(Session session, WindowClickMessage message, boolean success) {
