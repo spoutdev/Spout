@@ -5,10 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.block.Block;
 import org.getspout.commons.material.ItemMaterial;
 import org.getspout.commons.packet.PacketUtil;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.commons.util.MutableIntegerVector;
 
 public class GenericBlockDesign implements BlockDesign {
@@ -48,7 +48,7 @@ public class GenericBlockDesign implements BlockDesign {
 	public GenericBlockDesign() {
 	}
 
-	public GenericBlockDesign(float lowXBound, float lowYBound, float lowZBound, float highXBound, float highYBound, float highZBound, String textureURL, Addon textureAddon, float[][] xPos, float[][] yPos, float[][] zPos, float[][] textXPos, float[][] textYPos, int renderPass) {
+	public GenericBlockDesign(float lowXBound, float lowYBound, float lowZBound, float highXBound, float highYBound, float highZBound, String textureURL, Plugin textureAddon, float[][] xPos, float[][] yPos, float[][] zPos, float[][] textXPos, float[][] textYPos, int renderPass) {
 		this.lowXBound = lowXBound;
 		this.lowYBound = lowYBound;
 		this.lowZBound = lowZBound;
@@ -160,7 +160,7 @@ public class GenericBlockDesign implements BlockDesign {
 		PacketUtil.writeIntArray(output, lightSourceZOffset);
 	}
 
-	public BlockDesign setTexture(Addon addon, String textureURL) {
+	public BlockDesign setTexture(Plugin addon, String textureURL) {
 		this.texturePlugin = addon.getDescription().getName();
 		this.textureURL = textureURL;
 		return this;
@@ -242,7 +242,7 @@ public class GenericBlockDesign implements BlockDesign {
 		return blockVector;
 	}
 
-	public BlockDesign setTexture(Addon addon, Texture texture) {
+	public BlockDesign setTexture(Plugin addon, Texture texture) {
 		this.texture = texture;
 		return setTexture(addon, texture.getTexture());
 	}

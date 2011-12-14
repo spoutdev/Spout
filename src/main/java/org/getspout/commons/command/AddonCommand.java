@@ -16,17 +16,17 @@
  */
 package org.getspout.commons.command;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.command.Command;
 import org.getspout.commons.command.CommandException;
 import org.getspout.commons.command.CommandExecutor;
 import org.getspout.commons.command.CommandSender;
+import org.getspout.commons.plugin.Plugin;
 
 public final class AddonCommand extends Command {
-	private final Addon owningAddon;
+	private final Plugin owningAddon;
 	private CommandExecutor executor;
 
-	protected AddonCommand(String name, Addon owner) {
+	protected AddonCommand(String name, Plugin owner) {
 		super(name);
 		this.executor = owner;
 		this.owningAddon = owner;
@@ -62,7 +62,7 @@ public final class AddonCommand extends Command {
 		return this.executor;
 	}
 
-	public Addon getAddon() {
+	public Plugin getAddon() {
 		return this.owningAddon;
 	}
 }

@@ -13,36 +13,18 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package org.getspout.commons.addon;
+ */
+package org.getspout.commons.plugin;
 
-public class UnknownDependencyException extends Exception {
+public class IllegalPluginAccessException extends RuntimeException {
 
-	private static final long serialVersionUID = 989022178855271278L;
-	private final Throwable cause;
-	private final String message;
+	private static final long serialVersionUID = -2402883487053693113L;
 
-	public UnknownDependencyException(Throwable throwable) {
-		this(throwable, "Unknown dependency");
+	public IllegalPluginAccessException() {
 	}
 
-	public UnknownDependencyException(String message) {
-		this(null, message);
+	public IllegalPluginAccessException(String msg) {
+		super(msg);
 	}
 
-	public UnknownDependencyException(Throwable throwable, String message) {
-		this.cause = null;
-		this.message = message;
-	}
-
-	public UnknownDependencyException() {
-		this(null, "Unknown dependency");
-	}
-
-	public Throwable getCause() {
-		return this.cause;
-	}
-
-	public String getMessage() {
-		return this.message;
-	}
 }

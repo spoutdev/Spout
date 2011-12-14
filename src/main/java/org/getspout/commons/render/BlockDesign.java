@@ -5,9 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.block.Block;
 import org.getspout.commons.material.ItemMaterial;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.commons.util.Vector;
 
 public interface BlockDesign {
@@ -97,7 +97,7 @@ public interface BlockDesign {
 	 * @param texture to set
 	 * @return this
 	 */
-	public BlockDesign setTexture(Addon addon, Texture texture);
+	public BlockDesign setTexture(Plugin addon, Texture texture);
 	
 	/**
 	 * Sets the bounding box for this block

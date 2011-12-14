@@ -14,26 +14,40 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
-/**
- * Determines the load order for Addons
- * 
- */
-public enum AddonLoadOrder {
+import java.util.logging.Logger;
 
-	/**
-	 * Loaded before the World is loaded
-	 */
-	PREWORLD,
+import org.getspout.commons.command.CommandExecutor;
+import org.getspout.commons.plugin.PluginDescriptionFile;
+import org.getspout.commons.plugin.PluginLoader;
 
-	/**
-	 * Loaded after the World is loaded
-	 */
-	POSTWORLD,
+public interface Plugin extends CommandExecutor {
 
-	/**
-	 * Loaded after the Game starts
-	 */
-	GAMESTART;
+	public PluginDescriptionFile getDescription();
+
+	public void onEnable();
+
+	public void onDisable();
+
+	public void onLoad();
+
+	public PluginLoader getAddonLoader();
+
+	public boolean isEnabled();
+
+	public void setEnabled(boolean arg);
+
+	public boolean isNaggable();
+
+	public void setNaggable(boolean b);
+	
+	public Logger getLogger();
+
+	public enum Mode {
+		SINGLE_PLAYER,
+		MULTIPLAYER,
+		BOTH;
+	}
+
 }

@@ -4,13 +4,13 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.getspout.commons.addon.AddonManager;
-import org.getspout.commons.addon.AddonStore;
 import org.getspout.commons.command.AddonCommand;
 import org.getspout.commons.command.CommandSender;
 import org.getspout.commons.World;
 import org.getspout.commons.entity.ActivePlayer;
 import org.getspout.commons.entity.Player;
+import org.getspout.commons.plugin.PluginManager;
+import org.getspout.commons.plugin.PluginStore;
 import org.getspout.commons.util.Location;
 
 /**
@@ -25,7 +25,7 @@ public interface Game {
 	
 	public World getWorld();
 
-	public AddonManager getAddonManager();
+	public PluginManager getAddonManager();
 
 	public Logger getLogger();
 
@@ -59,7 +59,7 @@ public interface Game {
 	
 	public ActivePlayer getActivePlayer();
 	
-	public AddonStore getAddonStore();
+	public PluginStore getAddonStore();
 	
 	/**
 	 * Gets a list of all Players

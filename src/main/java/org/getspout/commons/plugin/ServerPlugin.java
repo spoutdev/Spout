@@ -14,22 +14,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
-public class InvalidAddonException extends Exception {
+import java.io.File;
 
-	private static final long serialVersionUID = 2533779376266992189L;
-	private final Throwable cause;
+import org.getspout.commons.addon.java.JavaAddon;
+import org.getspout.commons.plugin.PluginDescriptionFile;
 
-	public InvalidAddonException(Throwable throwable) {
-		this.cause = throwable;
+public final class ServerPlugin extends JavaAddon {
+
+	public ServerPlugin(String name, String version, String main) {
+		//TODO fix
+		//initialize(null, Spoutcraft.getClient(), new AddonDescriptionFile(name, version, main), new File(Spoutcraft.getClient().getAddonFolder(), name), null, null);
 	}
 
-	public InvalidAddonException() {
-		this.cause = null;
+	@Override
+	public void onEnable() {
 	}
 
-	public Throwable getCause() {
-		return this.cause;
+	@Override
+	public void onDisable() {
+	}
+
+	public boolean equals(Object other) {
+		if (other instanceof JavaAddon) {
+			return ((JavaAddon) other).getDescription().getName().equals(getDescription().getName());
+		}
+		return false;
 	}
 }

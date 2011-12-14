@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map.Entry;
 
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.addon.IllegalAddonAccessException;
 import org.getspout.commons.event.Event;
 import org.getspout.commons.event.HandlerList;
 import org.getspout.commons.event.Listener;
 import org.getspout.commons.event.ListenerRegistration;
 import org.getspout.commons.event.Order;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.plugin.IllegalPluginAccessException;
 
 /**
  * @author lahwran
@@ -75,7 +75,7 @@ public class HandlerList<TEvent extends Event<TEvent>> {
 		}
 	}
 
-	public static void purgePlugin(Addon addon) {
+	public static void purgePlugin(Plugin addon) {
 		for (HandlerList h : alllists) {
 			h.unregister(addon);
 		}
@@ -114,9 +114,9 @@ public class HandlerList<TEvent extends Event<TEvent>> {
 	 * @param order order location at which to call provided listener
 	 * @param addon Addon this listener belongs to
 	 */
-	public void register(Listener<TEvent> listener, Order order, Addon addon) {
+	public void register(Listener<TEvent> listener, Order order, Plugin addon) {
 		if (!addon.isEnabled()) {
-			throw new IllegalAddonAccessException("Addon attempted to register a listener while not enabled");
+			throw new IllegalPluginAccessException("Addon attempted to register a listener while not enabled");
 		}
 		ListenerRegistration registration = new ListenerRegistration(listener, order, addon);
 		if (isRegistered(registration, order)) {
@@ -158,7 +158,7 @@ public class HandlerList<TEvent extends Event<TEvent>> {
 	 * 
 	 * @param addon plugin to remove
 	 */
-	public void unregister(Addon addon) {
+	public void unregister(Plugin addon) {
 		for (Order o : Order.values()) {
 			unregister(addon, o);
 		}
@@ -170,7 +170,7 @@ public class HandlerList<TEvent extends Event<TEvent>> {
 	 * @param addon plugin to remove
 	 * @param order order from which to remove plugin
 	 */
-	public void unregister(Addon addon, Order order) {
+	public void unregister(Plugin addon, Order order) {
 		for (ListenerRegistration registration : handlerslots.get(order)) {
 			if (registration.getAddon() == addon) {
 				baked = false;

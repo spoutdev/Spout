@@ -21,14 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.command.AddonCommand;
 import org.getspout.commons.command.Command;
+import org.getspout.commons.plugin.Plugin;
 
 public class AddonCommandYamlParser {
 
 	@SuppressWarnings("unchecked")
-	public static List<Command> parse(Addon plugin) {
+	public static List<Command> parse(Plugin plugin) {
 		List<Command> pluginCmds = new ArrayList<Command>();
 		Object object = plugin.getDescription().getCommands();
 

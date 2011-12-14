@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -23,17 +23,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.getspout.commons.addon.Addon.Mode;
-import org.getspout.commons.addon.AddonLoadOrder;
-import org.getspout.commons.addon.InvalidDescriptionException;
+import org.getspout.commons.plugin.PluginLoadOrder;
+import org.getspout.commons.plugin.InvalidDescriptionException;
+import org.getspout.commons.plugin.Plugin.Mode;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-public class AddonDescriptionFile {
+public class PluginDescriptionFile {
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
 	private String name = null;
 	private String main = null;
-	private AddonLoadOrder load = AddonLoadOrder.POSTWORLD;
+	private PluginLoadOrder load = PluginLoadOrder.POSTWORLD;
 	private ArrayList<String> depend = null;
 	private ArrayList<String> softDepend = null;
 	private String version = null;
@@ -44,16 +44,16 @@ public class AddonDescriptionFile {
 	private String website = null;
 
 	@SuppressWarnings({ "unchecked" })
-	public AddonDescriptionFile(InputStream stream) throws InvalidDescriptionException {
+	public PluginDescriptionFile(InputStream stream) throws InvalidDescriptionException {
 		loadMap((Map<String, Object>) yaml.load(stream));
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public AddonDescriptionFile(Reader reader) throws InvalidDescriptionException {
+	public PluginDescriptionFile(Reader reader) throws InvalidDescriptionException {
 		loadMap((Map<String, Object>) yaml.load(reader));
 	}
 
-	public AddonDescriptionFile(String addonName, String addonVersion, String mainClass) {
+	public PluginDescriptionFile(String addonName, String addonVersion, String mainClass) {
 		this.name = addonName;
 		this.version = addonVersion;
 		this.main = mainClass;
@@ -79,7 +79,7 @@ public class AddonDescriptionFile {
 		return this.main;
 	}
 	
-	public AddonLoadOrder getLoad() {
+	public PluginLoadOrder getLoad() {
 		return this.load;
 	}
 

@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.getspout.commons.addon.RestrictedClassException;
 import org.getspout.commons.addon.java.JavaAddonLoader;
+import org.getspout.commons.plugin.RestrictedClassException;
 
 public class AddonClassLoader extends URLClassLoader {
 	private final JavaAddonLoader loader;

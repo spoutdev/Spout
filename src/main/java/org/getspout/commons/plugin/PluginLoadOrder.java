@@ -14,17 +14,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
-public class IllegalAddonAccessException extends RuntimeException {
+/**
+ * Determines the load order for Addons
+ * 
+ */
+public enum PluginLoadOrder {
 
-	private static final long serialVersionUID = -2402883487053693113L;
+	/**
+	 * Loaded before the World is loaded
+	 */
+	PREWORLD,
 
-	public IllegalAddonAccessException() {
-	}
+	/**
+	 * Loaded after the World is loaded
+	 */
+	POSTWORLD,
 
-	public IllegalAddonAccessException(String msg) {
-		super(msg);
-	}
-
+	/**
+	 * Loaded after the Game starts
+	 */
+	GAMESTART;
 }

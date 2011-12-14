@@ -14,25 +14,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
-public class RestrictedClassException extends ClassNotFoundException {
+import org.getspout.commons.plugin.UnknownDependencyException;
 
-	private static final long serialVersionUID = -1772526528322888076L;
-	private final String message;
+public class UnknownSoftDependencyException extends UnknownDependencyException {
 
-	public RestrictedClassException(String message) {
-		this.message = message;
+	private static final long serialVersionUID = 5721389371901775899L;
+
+	public UnknownSoftDependencyException(Throwable throwable) {
+		this(throwable, "Unknown soft dependency");
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
+	public UnknownSoftDependencyException(final String message) {
+		this(null, message);
 	}
 
-	@Override
-	public String toString() {
-		return super.toString();
+	public UnknownSoftDependencyException(final Throwable throwable, final String message) {
+		super(throwable, message);
 	}
 
+	public UnknownSoftDependencyException() {
+		this(null, "Unknown dependency");
+	}
 }

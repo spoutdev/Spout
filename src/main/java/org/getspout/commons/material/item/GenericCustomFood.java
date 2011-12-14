@@ -20,13 +20,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.material.Food;
 import org.getspout.commons.material.item.GenericCustomItemMaterial;
+import org.getspout.commons.plugin.Plugin;
 
 public class GenericCustomFood extends GenericCustomItemMaterial implements Food{
 	private int hunger;
-	public GenericCustomFood(Addon addon, String name, String texture, int hungerRestored) {
+	public GenericCustomFood(Plugin addon, String name, String texture, int hungerRestored) {
 		super(addon, name, texture);
 		hunger = hungerRestored;
 	}

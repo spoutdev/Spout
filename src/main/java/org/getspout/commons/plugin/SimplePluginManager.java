@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -32,33 +32,33 @@ import java.util.regex.Pattern;
 
 import org.getspout.commons.addon.java.JavaAddonLoader;
 import org.getspout.commons.Game;
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.addon.AddonLoader;
-import org.getspout.commons.addon.AddonManager;
-import org.getspout.commons.addon.InvalidAddonException;
-import org.getspout.commons.addon.InvalidDescriptionException;
-import org.getspout.commons.addon.ServerAddon;
-import org.getspout.commons.addon.SimpleSecurityManager;
-import org.getspout.commons.addon.UnknownDependencyException;
 import org.getspout.commons.command.AddonCommandYamlParser;
 import org.getspout.commons.command.Command;
 import org.getspout.commons.command.SimpleCommandMap;
 import org.getspout.commons.event.Event;
 import org.getspout.commons.event.HandlerList;
 import org.getspout.commons.event.Listener;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.plugin.PluginLoader;
+import org.getspout.commons.plugin.PluginManager;
+import org.getspout.commons.plugin.InvalidPluginException;
+import org.getspout.commons.plugin.InvalidDescriptionException;
+import org.getspout.commons.plugin.ServerPlugin;
+import org.getspout.commons.plugin.SimpleSecurityManager;
+import org.getspout.commons.plugin.UnknownDependencyException;
 
-public class SimpleAddonManager implements AddonManager {
+public class SimplePluginManager implements PluginManager {
 
 	private Game client;
-	private final Map<Pattern, AddonLoader> fileAssociations = new HashMap<Pattern, AddonLoader>();
-	private final List<Addon> addons = new ArrayList<Addon>();
-	private final Map<String, Addon> lookupNames = new HashMap<String, Addon>();
+	private final Map<Pattern, PluginLoader> fileAssociations = new HashMap<Pattern, PluginLoader>();
+	private final List<Plugin> addons = new ArrayList<Plugin>();
+	private final Map<String, Plugin> lookupNames = new HashMap<String, Plugin>();
 	private static File updateDirectory = null;
 	private final SimpleCommandMap commandMap;
 	private final SimpleSecurityManager securityManager;
 	private final double key;
 
-	public SimpleAddonManager(Game instance, SimpleCommandMap commandMap, SimpleSecurityManager manager, double key) {
+	public SimplePluginManager(Game instance, SimpleCommandMap commandMap, SimpleSecurityManager manager, double key) {
 		client = instance;
 		this.commandMap = commandMap;
 		
@@ -72,14 +72,14 @@ public class SimpleAddonManager implements AddonManager {
 	 * @param loader Class name of the AddonLoader to register
 	 * @throws IllegalArgumentException Thrown when the given Class is not a valid AddonLoader
 	 */
-	public void registerInterface(Class<? extends AddonLoader> loader) throws IllegalArgumentException {
+	public void registerInterface(Class<? extends PluginLoader> loader) throws IllegalArgumentException {
 		if (!loader.equals(JavaAddonLoader.class)){
 			throw new UnsupportedOperationException("Spoutcraft does not currently support non-standard addon loaders. :(");
 		}
-		AddonLoader instance;
+		PluginLoader instance;
 
-		if (AddonLoader.class.isAssignableFrom(loader)) {
-			Constructor<? extends AddonLoader> constructor;
+		if (PluginLoader.class.isAssignableFrom(loader)) {
+			Constructor<? extends PluginLoader> constructor;
 
 			try {
 				constructor = loader.getConstructor(Game.class, SimpleSecurityManager.class, double.class);
@@ -110,8 +110,8 @@ public class SimpleAddonManager implements AddonManager {
 	 * @param directory Directory to check for addons
 	 * @return A list of all addons loaded
 	 */
-	public Addon[] loadAddons(File directory) {
-		List<Addon> result = new ArrayList<Addon>();
+	public Plugin[] loadAddons(File directory) {
+		List<Plugin> result = new ArrayList<Plugin>();
 		File[] files = directory.listFiles();
 
 		boolean allFailed = false;
@@ -129,7 +129,7 @@ public class SimpleAddonManager implements AddonManager {
 
 			while (itr.hasNext()) {
 				File file = itr.next();
-				Addon addon = null;
+				Plugin addon = null;
 
 				try {
 					addon = loadAddon(file, finalPass);
@@ -142,7 +142,7 @@ public class SimpleAddonManager implements AddonManager {
 					} else {
 						addon = null;
 					}
-				} catch (InvalidAddonException ex) {
+				} catch (InvalidPluginException ex) {
 					safelyLog(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "': " + ex.getMessage(), ex.getCause());
 					itr.remove();
 				} catch (InvalidDescriptionException ex) {
@@ -163,7 +163,7 @@ public class SimpleAddonManager implements AddonManager {
 			}
 		}
 
-		return result.toArray(new Addon[result.size()]);
+		return result.toArray(new Plugin[result.size()]);
 	}
 
 	/**
@@ -173,10 +173,10 @@ public class SimpleAddonManager implements AddonManager {
 	 * 
 	 * @param file File containing the addon to load
 	 * @return The Addon loaded, or null if it was invalid
-	 * @throws InvalidAddonException Thrown when the specified file is not a valid addon
+	 * @throws InvalidPluginException Thrown when the specified file is not a valid addon
 	 * @throws InvalidDescriptionException Thrown when the specified file contains an invalid description
 	 */
-	public synchronized Addon loadAddon(File file) throws InvalidAddonException, InvalidDescriptionException, UnknownDependencyException {
+	public synchronized Plugin loadAddon(File file) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		return loadAddon(file, true);
 	}
 
@@ -188,10 +188,10 @@ public class SimpleAddonManager implements AddonManager {
 	 * @param file File containing the addon to load
 	 * @param ignoreSoftDependencies Loader will ignore soft dependencies if this flag is set to true
 	 * @return The Addon loaded, or null if it was invalid
-	 * @throws InvalidAddonException Thrown when the specified file is not a valid addon
+	 * @throws InvalidPluginException Thrown when the specified file is not a valid addon
 	 * @throws InvalidDescriptionException Thrown when the specified file contains an invalid description
 	 */
-	public synchronized Addon loadAddon(File file, boolean ignoreSoftDependencies) throws InvalidAddonException, InvalidDescriptionException, UnknownDependencyException {
+	public synchronized Plugin loadAddon(File file, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		securityManager.lock(key);
 		File updateFile = null;
 
@@ -203,14 +203,14 @@ public class SimpleAddonManager implements AddonManager {
 		}
 
 		Set<Pattern> filters = fileAssociations.keySet();
-		Addon result = null;
+		Plugin result = null;
 
 		for (Pattern filter : filters) {
 			String name = file.getName();
 			Matcher match = filter.matcher(name);
 
 			if (match.find()) {
-				AddonLoader loader = fileAssociations.get(filter);
+				PluginLoader loader = fileAssociations.get(filter);
 
 				result = loader.loadAddon(file, ignoreSoftDependencies);
 			}
@@ -232,19 +232,19 @@ public class SimpleAddonManager implements AddonManager {
 	 * @param name Name of the addon to check
 	 * @return Addon if it exists, otherwise null
 	 */
-	public synchronized Addon getAddon(String name) {
+	public synchronized Plugin getAddon(String name) {
 		return lookupNames.get(name);
 	}
 	
-	public synchronized Addon getOrCreateAddon(String name) {
+	public synchronized Plugin getOrCreateAddon(String name) {
 		if(!lookupNames.containsKey(name)) {
-			addFakeAddon(new ServerAddon(name, null, null));
+			addFakeAddon(new ServerPlugin(name, null, null));
 		}
 		return lookupNames.get(name);
 	}
 
-	public synchronized Addon[] getAddons() {
-		return addons.toArray(new Addon[0]);
+	public synchronized Plugin[] getAddons() {
+		return addons.toArray(new Plugin[0]);
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class SimpleAddonManager implements AddonManager {
 	 * @return true if the addon is enabled, otherwise false
 	 */
 	public boolean isAddonEnabled(String name) {
-		Addon addon = getAddon(name);
+		Plugin addon = getAddon(name);
 
 		return isAddonEnabled(addon);
 	}
@@ -267,7 +267,7 @@ public class SimpleAddonManager implements AddonManager {
 	 * @param addon Addon to check
 	 * @return true if the addon is enabled, otherwise false
 	 */
-	public boolean isAddonEnabled(Addon addon) {
+	public boolean isAddonEnabled(Plugin addon) {
 		if ((addon != null) && (addons.contains(addon))) {
 			return addon.isEnabled();
 		} else {
@@ -275,8 +275,8 @@ public class SimpleAddonManager implements AddonManager {
 		}
 	}
 
-	public void enableAddon(final Addon addon) {
-		if (addon instanceof ServerAddon) {
+	public void enableAddon(final Plugin addon) {
+		if (addon instanceof ServerPlugin) {
 			return;
 		}
 		if (!addon.isEnabled()) {
@@ -303,13 +303,13 @@ public class SimpleAddonManager implements AddonManager {
 	}
 
 	public void disableAddons() {
-		for (Addon addon : getAddons()) {
+		for (Plugin addon : getAddons()) {
 			disableAddon(addon);
 		}
 	}
 
-	public void disableAddon(final Addon addon) {
-		if (addon instanceof ServerAddon) {
+	public void disableAddon(final Plugin addon) {
+		if (addon instanceof ServerPlugin) {
 			return;
 		}
 		if (addon.isEnabled()) {
@@ -387,7 +387,7 @@ public class SimpleAddonManager implements AddonManager {
 		}
 	}
 	
-	public void addFakeAddon(ServerAddon addon) {
+	public void addFakeAddon(ServerPlugin addon) {
 		addons.add(addon);
 		addon.setEnabled(true);
 		lookupNames.put(addon.getDescription().getName(), addon);

@@ -31,21 +31,21 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.addon.AddonDescriptionFile;
-import org.getspout.commons.addon.AddonLoader;
-import org.getspout.commons.addon.InvalidAddonException;
-import org.getspout.commons.addon.InvalidDescriptionException;
-import org.getspout.commons.addon.SimpleSecurityManager;
-import org.getspout.commons.addon.UnknownDependencyException;
-import org.getspout.commons.addon.UnknownSoftDependencyException;
 import org.getspout.commons.Game;
 import org.getspout.commons.UnsafeMethod;
 import org.getspout.commons.addon.java.AddonClassLoader;
 import org.getspout.commons.addon.java.JavaAddon;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.plugin.PluginDescriptionFile;
+import org.getspout.commons.plugin.PluginLoader;
+import org.getspout.commons.plugin.InvalidPluginException;
+import org.getspout.commons.plugin.InvalidDescriptionException;
+import org.getspout.commons.plugin.SimpleSecurityManager;
+import org.getspout.commons.plugin.UnknownDependencyException;
+import org.getspout.commons.plugin.UnknownSoftDependencyException;
 import org.yaml.snakeyaml.error.YAMLException;
 
-public final class JavaAddonLoader implements AddonLoader {
+public final class JavaAddonLoader implements PluginLoader {
 	private final Game game;
 	private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
@@ -59,36 +59,36 @@ public final class JavaAddonLoader implements AddonLoader {
 		this.key = key;
 	}
 
-	public Addon loadAddon(File file) throws InvalidAddonException, InvalidDescriptionException, UnknownDependencyException {
+	public Plugin loadAddon(File file) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		return loadAddon(file, false);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Addon loadAddon(File file, boolean ignoreSoftDependencies) throws InvalidAddonException, InvalidDescriptionException, UnknownDependencyException {
+	public Plugin loadAddon(File file, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		JavaAddon result = null;
-		AddonDescriptionFile description = null;
+		PluginDescriptionFile description = null;
 
 		if (!file.exists()) {
-			throw new InvalidAddonException(new FileNotFoundException(String.format("%s does not exist", file.getPath())));
+			throw new InvalidPluginException(new FileNotFoundException(String.format("%s does not exist", file.getPath())));
 		}
 		try {
 			JarFile jar = new JarFile(file);
 			JarEntry entry = jar.getJarEntry("addon.yml");
 
 			if (entry == null) {
-				throw new InvalidAddonException(new FileNotFoundException("Jar does not contain addon.yml"));
+				throw new InvalidPluginException(new FileNotFoundException("Jar does not contain addon.yml"));
 			}
 
 			InputStream stream = jar.getInputStream(entry);
 
-			description = new AddonDescriptionFile(stream);
+			description = new PluginDescriptionFile(stream);
 
 			stream.close();
 			jar.close();
 		} catch (IOException ex) {
-			throw new InvalidAddonException(ex);
+			throw new InvalidPluginException(ex);
 		} catch (YAMLException ex) {
-			throw new InvalidAddonException(ex);
+			throw new InvalidPluginException(ex);
 		}
 
 		File dataFolder = new File(file.getParentFile(), description.getName());
@@ -101,13 +101,13 @@ public final class JavaAddonLoader implements AddonLoader {
 			game.getLogger().log(Level.INFO, String.format("While loading %s (%s) found old-data folder: %s next to the new one: %s", description.getName(), file, oldDataFolder, dataFolder));
 		} else if (oldDataFolder.isDirectory() && !dataFolder.exists()) {
 			if (!oldDataFolder.renameTo(dataFolder)) {
-				throw new InvalidAddonException(new Exception("Unable to rename old data folder: '" + oldDataFolder + "' to: '" + dataFolder + "'"));
+				throw new InvalidPluginException(new Exception("Unable to rename old data folder: '" + oldDataFolder + "' to: '" + dataFolder + "'"));
 			}
 			game.getLogger().log(Level.INFO, String.format("While loading %s (%s) renamed data folder: '%s' to '%s'", description.getName(), file, oldDataFolder, dataFolder));
 		}
 
 		if (dataFolder.exists() && !dataFolder.isDirectory()) {
-			throw new InvalidAddonException(new Exception(String.format("Projected datafolder: '%s' for %s (%s) exists and is not a directory", dataFolder, description.getName(), file)));
+			throw new InvalidPluginException(new Exception(String.format("Projected datafolder: '%s' for %s (%s) exists and is not a directory", dataFolder, description.getName(), file)));
 		}
 
 		ArrayList<String> depend;
@@ -118,7 +118,7 @@ public final class JavaAddonLoader implements AddonLoader {
 				depend = new ArrayList<String>();
 			}
 		} catch (ClassCastException ex) {
-			throw new InvalidAddonException(ex);
+			throw new InvalidPluginException(ex);
 		}
 
 		for (String addonName : depend) {
@@ -141,7 +141,7 @@ public final class JavaAddonLoader implements AddonLoader {
 					softDepend = new ArrayList<String>();
 				}
 			} catch (ClassCastException ex) {
-				throw new InvalidAddonException(ex);
+				throw new InvalidPluginException(ex);
 			}
 
 			for (String addonName : softDepend) {
@@ -174,12 +174,12 @@ public final class JavaAddonLoader implements AddonLoader {
 			result.initialize(this, game, description, dataFolder, file, loader);
 			manager.unlock(key);
 		} catch (Throwable ex) {
-			throw new InvalidAddonException(ex);
+			throw new InvalidPluginException(ex);
 		}
 
 		loaders.put(description.getName(), (AddonClassLoader) loader);
 
-		return (Addon) result;
+		return (Plugin) result;
 	}
 
 	private File getDataFolder(File file) {
@@ -234,7 +234,7 @@ public final class JavaAddonLoader implements AddonLoader {
 	}
 
 	@UnsafeMethod
-	public void enableAddon(final Addon addon) {
+	public void enableAddon(final Plugin addon) {
 		if (!(addon instanceof JavaAddon)) {
 			throw new IllegalArgumentException("Addon is not associated with this AddonLoader");
 		}
@@ -262,7 +262,7 @@ public final class JavaAddonLoader implements AddonLoader {
 	}
 
 	@UnsafeMethod
-	public void disableAddon(Addon addon) {
+	public void disableAddon(Plugin addon) {
 		if (!(addon instanceof JavaAddon)) {
 			throw new IllegalArgumentException("Addon is not associated with this AddonLoader");
 		}

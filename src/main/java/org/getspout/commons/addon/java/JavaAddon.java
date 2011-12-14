@@ -20,26 +20,26 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.addon.AddonDescriptionFile;
-import org.getspout.commons.addon.AddonLoader;
 import org.getspout.commons.Game;
 import org.getspout.commons.UnsafeMethod;
 import org.getspout.commons.addon.java.AddonClassLoader;
 import org.getspout.commons.addon.java.JavaAddonLoader;
 import org.getspout.commons.command.Command;
 import org.getspout.commons.command.CommandSender;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.plugin.PluginDescriptionFile;
+import org.getspout.commons.plugin.PluginLoader;
 
-public abstract class JavaAddon implements Addon {
+public abstract class JavaAddon implements Plugin {
 
 	private boolean initialized = false;
-	private AddonLoader loader = null;
+	private PluginLoader loader = null;
 	private Game game = null;
 	private File file = null;
 	private File dataFolder = null;
 	private AddonClassLoader classLoader = null;
 	private boolean enabled = false;
-	private AddonDescriptionFile description = null;
+	private PluginDescriptionFile description = null;
 	private boolean naggable = false;
 	
 	@UnsafeMethod
@@ -47,12 +47,12 @@ public abstract class JavaAddon implements Addon {
 		
 	}
 
-	public final AddonDescriptionFile getDescription() {
+	public final PluginDescriptionFile getDescription() {
 		return description;
 	}
 
 	
-	public final void initialize(JavaAddonLoader loader, Game game, AddonDescriptionFile description, File dataFolder, File file, AddonClassLoader classLoader) {
+	public final void initialize(JavaAddonLoader loader, Game game, PluginDescriptionFile description, File dataFolder, File file, AddonClassLoader classLoader) {
 		if (!initialized) {
 			this.loader = loader;
 			this.game = game;
@@ -82,7 +82,7 @@ public abstract class JavaAddon implements Addon {
 		return game;
 	}
 
-	public final AddonLoader getAddonLoader() {
+	public final PluginLoader getAddonLoader() {
 		return loader;
 	}
 

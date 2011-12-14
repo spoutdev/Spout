@@ -20,12 +20,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.material.CustomBlockMaterial;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.material.Tool;
 import org.getspout.commons.material.item.GenericCustomItemMaterial;
+import org.getspout.commons.plugin.Plugin;
 
 import gnu.trove.map.hash.TObjectFloatHashMap;
 
@@ -37,7 +37,7 @@ public class GenericCustomTool extends GenericCustomItemMaterial implements Tool
 		super();
 	}
 	
-	public GenericCustomTool(Addon addon, String name, String texture) {
+	public GenericCustomTool(Plugin addon, String name, String texture) {
 		super(addon, name, texture);
 	}
 

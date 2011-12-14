@@ -27,14 +27,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.addon.AddonDescriptionFile;
 import org.getspout.commons.ChatColor;
 import org.getspout.commons.Client;
 import org.getspout.commons.command.Command;
 import org.getspout.commons.command.CommandException;
 import org.getspout.commons.command.CommandMap;
 import org.getspout.commons.command.CommandSender;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.plugin.PluginDescriptionFile;
 
 public final class SimpleCommandMap implements CommandMap {
 	private final Map<String, Command> knownCommands = new HashMap<String, Command>();
@@ -196,10 +196,10 @@ public final class SimpleCommandMap implements CommandMap {
 					name.append(arg);
 				}
 
-				Addon plugin = client.getAddonManager().getAddon(name.toString());
+				Plugin plugin = client.getAddonManager().getAddon(name.toString());
 
 				if (plugin != null) {
-					AddonDescriptionFile desc = plugin.getDescription();
+					PluginDescriptionFile desc = plugin.getDescription();
 
 					sender.sendMessage(ChatColor.GREEN + desc.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + desc.getVersion());
 
@@ -227,7 +227,7 @@ public final class SimpleCommandMap implements CommandMap {
 			return true;
 		}
 
-		private String getAuthors(final AddonDescriptionFile desc) {
+		private String getAuthors(final PluginDescriptionFile desc) {
 			StringBuilder result = new StringBuilder();
 			ArrayList<String> authors = desc.getAuthors();
 
@@ -293,9 +293,9 @@ public final class SimpleCommandMap implements CommandMap {
 
 		private String getAddonList() {
 			StringBuilder pluginList = new StringBuilder();
-			Addon[] plugins = client.getAddonManager().getAddons();
+			Plugin[] plugins = client.getAddonManager().getAddons();
 
-			for (Addon plugin : plugins) {
+			for (Plugin plugin : plugins) {
 				if (pluginList.length() > 0) {
 					pluginList.append(ChatColor.WHITE);
 					pluginList.append(", ");

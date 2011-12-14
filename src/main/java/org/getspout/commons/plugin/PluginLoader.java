@@ -14,26 +14,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
 import java.io.File;
 import java.util.regex.Pattern;
 
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.addon.InvalidAddonException;
-import org.getspout.commons.addon.InvalidDescriptionException;
-import org.getspout.commons.addon.UnknownDependencyException;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.plugin.InvalidPluginException;
+import org.getspout.commons.plugin.InvalidDescriptionException;
+import org.getspout.commons.plugin.UnknownDependencyException;
 
-public abstract interface AddonLoader {
+public abstract interface PluginLoader {
 
-	public abstract Addon loadAddon(File paramFile) throws InvalidAddonException, InvalidAddonException, UnknownDependencyException, InvalidDescriptionException;
+	public abstract Plugin loadAddon(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionException;
 
-	public abstract Addon loadAddon(File paramFile, boolean paramBoolean) throws InvalidAddonException, InvalidAddonException, UnknownDependencyException, InvalidDescriptionException;
+	public abstract Plugin loadAddon(File paramFile, boolean paramBoolean) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionException;
 
 	public abstract Pattern[] getAddonFileFilters();
 
-	public abstract void enableAddon(Addon paramAddon);
+	public abstract void enableAddon(Plugin paramAddon);
 
-	public abstract void disableAddon(Addon paramAddon);
+	public abstract void disableAddon(Plugin paramAddon);
 
 }

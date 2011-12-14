@@ -3,19 +3,19 @@ package org.getspout.commons.render;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.getspout.commons.addon.Addon;
+import org.getspout.commons.plugin.Plugin;
 
 public class Texture {
 
 	public String texture;
-	public Addon addon;
+	public Plugin addon;
 	public int width;
 	public int height;
 	public int spriteSize;
 
 	public List<SubTexture> subTextures;
 
-	public Texture(Addon addon, String texture, int width, int height, int spriteSize) {
+	public Texture(Plugin addon, String texture, int width, int height, int spriteSize) {
 		this.texture = texture;
 		this.addon = addon;
 		this.width = width;
@@ -56,7 +56,7 @@ public class Texture {
 		return height;
 	}
 	
-	public Addon getAddon() {
+	public Plugin getAddon() {
 		return addon;
 	}
 }

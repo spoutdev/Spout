@@ -14,32 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
-import java.io.File;
+public class RestrictedClassException extends ClassNotFoundException {
 
-import org.getspout.commons.addon.java.JavaAddon;
-import org.getspout.commons.addon.AddonDescriptionFile;
+	private static final long serialVersionUID = -1772526528322888076L;
+	private final String message;
 
-public final class ServerAddon extends JavaAddon {
-
-	public ServerAddon(String name, String version, String main) {
-		//TODO fix
-		//initialize(null, Spoutcraft.getClient(), new AddonDescriptionFile(name, version, main), new File(Spoutcraft.getClient().getAddonFolder(), name), null, null);
+	public RestrictedClassException(String message) {
+		this.message = message;
 	}
 
 	@Override
-	public void onEnable() {
+	public String getMessage() {
+		return message;
 	}
 
 	@Override
-	public void onDisable() {
+	public String toString() {
+		return super.toString();
 	}
 
-	public boolean equals(Object other) {
-		if (other instanceof JavaAddon) {
-			return ((JavaAddon) other).getDescription().getName().equals(getDescription().getName());
-		}
-		return false;
-	}
 }

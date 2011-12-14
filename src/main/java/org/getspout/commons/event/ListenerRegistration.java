@@ -16,10 +16,10 @@
  */
 package org.getspout.commons.event;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.event.Event;
 import org.getspout.commons.event.Listener;
 import org.getspout.commons.event.Order;
+import org.getspout.commons.plugin.Plugin;
 
 /**
  * @author lahwran
@@ -28,7 +28,7 @@ import org.getspout.commons.event.Order;
 public class ListenerRegistration<TEvent extends Event<TEvent>> {
 	private final Listener<TEvent> listener;
 	private final Order orderslot;
-	private final Addon addon;
+	private final Plugin addon;
 
 	/**
 	 * 
@@ -36,7 +36,7 @@ public class ListenerRegistration<TEvent extends Event<TEvent>> {
 	 * @param orderslot Order position this registration is in
 	 * @param addon addon that created this registration
 	 */
-	public ListenerRegistration(final Listener<TEvent> listener, final Order orderslot, final Addon addon) {
+	public ListenerRegistration(final Listener<TEvent> listener, final Order orderslot, final Plugin addon) {
 		this.listener = listener;
 		this.orderslot = orderslot;
 		this.addon = addon;
@@ -56,7 +56,7 @@ public class ListenerRegistration<TEvent extends Event<TEvent>> {
 	 * 
 	 * @return Registered Addon
 	 */
-	public Addon getAddon() {
+	public Plugin getAddon() {
 		return addon;
 	}
 

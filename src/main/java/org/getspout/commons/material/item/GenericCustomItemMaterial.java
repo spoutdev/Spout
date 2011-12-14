@@ -5,19 +5,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.getspout.commons.Spoutcraft;
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.block.Block;
 import org.getspout.commons.block.BlockFace;
 import org.getspout.commons.entity.Player;
 import org.getspout.commons.material.CustomItem;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.packet.PacketUtil;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.commons.util.UniqueItemStringMap;
 
 public class GenericCustomItemMaterial implements CustomItem {
 	private String name;
 	private String fullName;
-	private Addon addon;
+	private Plugin addon;
 	private int customId;
 	public String texture;
 	
@@ -28,7 +28,7 @@ public class GenericCustomItemMaterial implements CustomItem {
 		
 	}
 
-	public GenericCustomItemMaterial(Addon addon, String name, int customId) {
+	public GenericCustomItemMaterial(Plugin addon, String name, int customId) {
 		this.name = name;
 		this.fullName = addon.getDescription().getName() + name;
 		this.customId = customId;
@@ -37,11 +37,11 @@ public class GenericCustomItemMaterial implements CustomItem {
 		MaterialData.addCustomItem(this);
 	}
 
-	public GenericCustomItemMaterial(Addon addon, String name) {
+	public GenericCustomItemMaterial(Plugin addon, String name) {
 		this(addon, name, UniqueItemStringMap.getId(addon.getDescription().getName() + name));
 	}
 
-	public GenericCustomItemMaterial(Addon addon, String name, String texture) {
+	public GenericCustomItemMaterial(Plugin addon, String name, String texture) {
 		this(addon, name);
 		this.setTexture(texture);
 	}
@@ -79,7 +79,7 @@ public class GenericCustomItemMaterial implements CustomItem {
 		return getName();
 	}
 
-	public Addon getAddon() {
+	public Plugin getAddon() {
 		return addon;
 	}
 

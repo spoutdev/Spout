@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.getspout.commons.Spoutcraft;
 import org.getspout.commons.World;
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.block.BlockFace;
 import org.getspout.commons.block.design.BlockDesign;
 import org.getspout.commons.block.design.GenericBlockDesign;
@@ -20,6 +19,7 @@ import org.getspout.commons.material.CustomItem;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.material.item.GenericCustomItemMaterial;
 import org.getspout.commons.packet.PacketUtil;
+import org.getspout.commons.plugin.Plugin;
 
 public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public BlockDesign design = new GenericBlockDesign();
@@ -27,7 +27,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	private String name;
 	private String fullName;
 	private int customId;
-	private Addon addon;
+	private Plugin addon;
 	private CustomItem item;
 	private int blockId;
 	private boolean opaque;
@@ -49,7 +49,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	 * @param name of the block
 	 * @param isOpaque true if you want the block solid
 	 */
-	public GenericCustomBlockMaterial(Addon addon, String name, boolean isOpaque) {
+	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque) {
 		this(addon, name, isOpaque, new GenericCustomItemMaterial(addon, name));
 	}
 	
@@ -61,7 +61,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	 * @param isOpaque true if you want the block solid
 	 * @param item to use for the block
 	 */
-	public GenericCustomBlockMaterial(Addon addon, String name, boolean isOpaque, CustomItem item) {
+	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque, CustomItem item) {
 		opaque = isOpaque;
 		this.blockId = isOpaque ? 1 :20;
 		this.addon = addon;
@@ -81,7 +81,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	 * @param isOpaque true if you want the block solid
 	 * @param design to use for the block
 	 */
-	public GenericCustomBlockMaterial(Addon addon, String name, boolean isOpaque, BlockDesign design) {
+	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque, BlockDesign design) {
 		this(addon, name, isOpaque);
 		setBlockDesign(design);
 	}
@@ -92,7 +92,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	 * @param plugin creating the block
 	 * @param name of the block
 	 */
-	public GenericCustomBlockMaterial(Addon addon, String name) {
+	public GenericCustomBlockMaterial(Plugin addon, String name) {
 		this(addon, name, true);
 	}
 	
@@ -141,7 +141,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		return getName();
 	}
 
-	public Addon getAddon() {
+	public Plugin getAddon() {
 		return addon;
 	}
 

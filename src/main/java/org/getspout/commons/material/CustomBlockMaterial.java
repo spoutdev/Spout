@@ -1,8 +1,8 @@
 package org.getspout.commons.material;
 
-import org.getspout.commons.addon.Addon;
 import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.material.CustomItem;
+import org.getspout.commons.plugin.Plugin;
 
 public interface CustomBlockMaterial extends BlockMaterial {
 	
@@ -10,7 +10,7 @@ public interface CustomBlockMaterial extends BlockMaterial {
 	
 	public String getFullName();
 	
-	public Addon getAddon();
+	public Plugin getAddon();
 	
 	public CustomItem getBlockItem();
 	

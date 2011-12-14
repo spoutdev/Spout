@@ -13,41 +13,36 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-package org.getspout.commons.addon;
+ */package org.getspout.commons.plugin;
 
-import java.util.logging.Logger;
+public class UnknownDependencyException extends Exception {
 
-import org.getspout.commons.addon.AddonDescriptionFile;
-import org.getspout.commons.addon.AddonLoader;
-import org.getspout.commons.command.CommandExecutor;
+	private static final long serialVersionUID = 989022178855271278L;
+	private final Throwable cause;
+	private final String message;
 
-public interface Addon extends CommandExecutor {
-
-	public AddonDescriptionFile getDescription();
-
-	public void onEnable();
-
-	public void onDisable();
-
-	public void onLoad();
-
-	public AddonLoader getAddonLoader();
-
-	public boolean isEnabled();
-
-	public void setEnabled(boolean arg);
-
-	public boolean isNaggable();
-
-	public void setNaggable(boolean b);
-	
-	public Logger getLogger();
-
-	public enum Mode {
-		SINGLE_PLAYER,
-		MULTIPLAYER,
-		BOTH;
+	public UnknownDependencyException(Throwable throwable) {
+		this(throwable, "Unknown dependency");
 	}
 
+	public UnknownDependencyException(String message) {
+		this(null, message);
+	}
+
+	public UnknownDependencyException(Throwable throwable, String message) {
+		this.cause = null;
+		this.message = message;
+	}
+
+	public UnknownDependencyException() {
+		this(null, "Unknown dependency");
+	}
+
+	public Throwable getCause() {
+		return this.cause;
+	}
+
+	public String getMessage() {
+		return this.message;
+	}
 }

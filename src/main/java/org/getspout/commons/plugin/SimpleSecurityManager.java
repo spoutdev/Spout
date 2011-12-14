@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
 import java.io.FileDescriptor;
 import java.lang.reflect.Member;
@@ -23,8 +23,8 @@ import java.security.Permission;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.getspout.commons.addon.AddonSecureThread;
-import org.getspout.commons.addon.SimpleSecurityManager;
+import org.getspout.commons.plugin.PluginSecureThread;
+import org.getspout.commons.plugin.SimpleSecurityManager;
 
 public final class SimpleSecurityManager extends SecurityManager {
 	private final double key;
@@ -130,7 +130,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 		if (isLocked()) {
 			if (!t.getThreadGroup().equals(securityThreadGroup)) {
 				throw new SecurityException("Addon tried to start thread outside the security thread group (" + t.getThreadGroup().getName() + ")");
-			} else if (!(t instanceof AddonSecureThread)) {
+			} else if (!(t instanceof PluginSecureThread)) {
 				throw new SecurityException("Addon tried to start a thread that wasn't a subclass of AddonSecureThread");
 			}
 		}
@@ -208,7 +208,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 			* SecurityManager.checkMemberAccess [0]
 			*
 			*/
-			if ((stack.length<4) || (!(AddonSecureThread.class.isAssignableFrom(clazz)) && stack[3].getClassLoader() != clazz.getClassLoader())) {
+			if ((stack.length<4) || (!(PluginSecureThread.class.isAssignableFrom(clazz)) && stack[3].getClassLoader() != clazz.getClassLoader())) {
 				checkAccess();
 			}
 		}

@@ -14,27 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.addon;
+package org.getspout.commons.plugin;
 
-import org.getspout.commons.addon.UnknownDependencyException;
+public class InvalidPluginException extends Exception {
 
-public class UnknownSoftDependencyException extends UnknownDependencyException {
+	private static final long serialVersionUID = 2533779376266992189L;
+	private final Throwable cause;
 
-	private static final long serialVersionUID = 5721389371901775899L;
-
-	public UnknownSoftDependencyException(Throwable throwable) {
-		this(throwable, "Unknown soft dependency");
+	public InvalidPluginException(Throwable throwable) {
+		this.cause = throwable;
 	}
 
-	public UnknownSoftDependencyException(final String message) {
-		this(null, message);
+	public InvalidPluginException() {
+		this.cause = null;
 	}
 
-	public UnknownSoftDependencyException(final Throwable throwable, final String message) {
-		super(throwable, message);
-	}
-
-	public UnknownSoftDependencyException() {
-		this(null, "Unknown dependency");
+	public Throwable getCause() {
+		return this.cause;
 	}
 }
