@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import org.getspout.commons.command.AddonCommand;
 import org.getspout.commons.command.CommandSender;
 import org.getspout.commons.World;
-import org.getspout.commons.entity.ActivePlayer;
 import org.getspout.commons.entity.Player;
 import org.getspout.commons.plugin.PluginManager;
 import org.getspout.commons.plugin.PluginStore;
@@ -19,13 +18,34 @@ import org.getspout.commons.util.Location;
  */
 public interface Game {
 
+	/**
+	 * Gets the name of this game's implementation
+	 * @return name of the implementation
+	 */
 	public String getName();
 
+	/**
+	 * Gets the build version of this game's implementation
+	 * @return build version
+	 */
 	public long getVersion();
 	
+	/**
+	 * Gets all players currently active
+	 * @return array of all active players 
+	 */
+	public Player[] getPlayers();
+	
+	/**
+	 * Gets the maximum number of players this game can host, or -1 if infinite
+	 * @return
+	 */
+	public int getMaxPlayers();
+	
+
 	public World getWorld();
 
-	public PluginManager getAddonManager();
+	public PluginManager getPluginManager();
 
 	public Logger getLogger();
 
@@ -34,8 +54,6 @@ public interface Game {
 	public boolean dispatchCommand(CommandSender sender, String commandLine);
 
 	public File getUpdateFolder();
-
-	public boolean isSpoutEnabled();
 
 	public long getServerVersion();
 
@@ -57,16 +75,10 @@ public interface Game {
 
 	public Mode getMode();
 	
-	public ActivePlayer getActivePlayer();
+	public Player getActivePlayer();
 	
 	public PluginStore getAddonStore();
 	
-	/**
-	 * Gets a list of all Players
-	 *
-	 * @return An array of Players
-	 */
-	public Player[] getPlayers();
 	
 	/**
 	 * Gets a player object by the given username

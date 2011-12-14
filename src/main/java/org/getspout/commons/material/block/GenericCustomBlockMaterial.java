@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.commons.Spoutcraft;
 import org.getspout.commons.World;
 import org.getspout.commons.block.BlockFace;
 import org.getspout.commons.block.design.BlockDesign;
@@ -240,7 +239,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		setName(PacketUtil.readString(input));
 		String addonName = PacketUtil.readString(input);
 		//System.out.println("Block: " + getName()  + " Id: " + customId + " Addon: " + addonName);
-		addon = Spoutcraft.getAddonManager().getOrCreateAddon(addonName);
+		//addon = Spoutcraft.getAddonManager().getOrCreateAddon(addonName);
 		fullName = addon.getDescription().getFullName() + "." + getName();
 		opaque = input.readBoolean();
 		setFriction(input.readFloat());

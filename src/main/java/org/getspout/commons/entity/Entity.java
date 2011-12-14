@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.getspout.commons.World;
-import org.getspout.commons.property.PropertyInterface;
 import org.getspout.commons.util.FixedLocation;
 import org.getspout.commons.util.FixedVector;
 import org.getspout.commons.util.Vector;
