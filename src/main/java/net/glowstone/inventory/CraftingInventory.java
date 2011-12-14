@@ -9,9 +9,9 @@ import org.bukkit.inventory.Recipe;
  * Represents the portion of a player's inventory which handles crafting.
  */
 public class CraftingInventory extends GlowInventory {
-
+    
     public static final int RESULT_SLOT = 4;
-
+    
     public CraftingInventory() {
         super((byte) 0, 5);
     }
@@ -25,7 +25,7 @@ public class CraftingInventory extends GlowInventory {
     public String getName() {
         return "Crafting";
     }
-
+    
     /**
      * Stores the ItemStack at the given index.
      * Notifies all attached InventoryViewers of the change.
@@ -36,13 +36,13 @@ public class CraftingInventory extends GlowInventory {
     @Override
     public void setItem(int index, GlowItemStack item) {
         super.setItem(index, item);
-
+        
         if (index != RESULT_SLOT) {
             ItemStack[] items = new ItemStack[4];
             for (int i = 0; i < 4; ++i) {
                 items[i] = getItem(i);
             }
-
+            
             Recipe recipe = ((GlowServer) Bukkit.getServer()).getCraftingManager().getCraftingRecipe(items);
             if (recipe == null) {
                 setItem(RESULT_SLOT, null);
@@ -51,7 +51,7 @@ public class CraftingInventory extends GlowInventory {
             }
         }
     }
-
+    
     /**
      * Remove a layer of items from the inventory according to the current recipe.
      */
@@ -68,11 +68,13 @@ public class CraftingInventory extends GlowInventory {
             }
         }
     }
+    
     // Slot conversion
+    
     private final static int slotConversion[] = {
         1, 2, 3, 4, 0
     };
-
+    
     /**
      * Get the network index from a slot index.
      * @param itemSlot The index for use with getItem/setItem.
@@ -80,12 +82,10 @@ public class CraftingInventory extends GlowInventory {
      */
     @Override
     public int getNetworkSlot(int itemSlot) {
-        if (itemSlot > slotConversion.length) {
-            return -1;
-        }
+        if (itemSlot > slotConversion.length) return -1;
         return slotConversion[itemSlot];
     }
-
+    
     /**
      * Get the slot index from a network index.
      * @param networkSlot The index received over the network.
@@ -94,10 +94,9 @@ public class CraftingInventory extends GlowInventory {
     @Override
     public int getItemSlot(int networkSlot) {
         for (int i = 0; i < slotConversion.length; ++i) {
-            if (slotConversion[i] == networkSlot) {
-                return i;
-            }
+            if (slotConversion[i] == networkSlot) return i;
         }
         return -1;
     }
+    
 }
