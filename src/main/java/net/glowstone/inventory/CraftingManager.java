@@ -94,7 +94,19 @@ public final class CraftingManager {
      * @param recipe A recipe known to match the items.
      */
     public void removeItems(ItemStack[] items, Recipe recipe) {
-        // TODO
+        // If the recipe is known to match the ingredients then we can just reduce
+        //  the amount of everything on the table by 1
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] != null) {
+                int amount = items[i].getAmount();
+
+                if (amount <= 1) {
+                    items[i] = null;
+                } else {
+                    items[i].setAmount(items[i].getAmount() - 1);
+                }
+            }
+        }
     }
     
     /**
