@@ -48,7 +48,7 @@ public final class CompressedChunkCodec extends MessageCodec<CompressedChunkMess
             inflater.end();
         }
 
-        return new CompressedChunkMessage(x, z, y, width, height, depth, data);
+        return new CompressedChunkMessage(x, y, z, width, height, depth, data);
     }
 
     @Override

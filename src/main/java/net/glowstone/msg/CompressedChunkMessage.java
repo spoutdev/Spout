@@ -7,7 +7,7 @@ public final class CompressedChunkMessage extends Message {
     private final int width, height, depth;
     private final byte[] data;
 
-    public CompressedChunkMessage(int x, int z, int y, int width, int height, int depth, byte[] data) {
+    public CompressedChunkMessage(int x, int y, int z, int width, int height, int depth, byte[] data) {
         this.x = x;
         this.z = z;
         this.y = y;

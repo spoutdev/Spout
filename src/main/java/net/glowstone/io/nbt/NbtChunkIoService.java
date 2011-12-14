@@ -54,10 +54,10 @@ public final class NbtChunkIoService implements ChunkIoService {
         byte[] metaData = ((ByteArrayTag) levelTags.get("Data")).getValue();
 
         for (int cx = 0; cx < GlowChunk.WIDTH; cx++) {
-            for (int cz = 0; cz < GlowChunk.HEIGHT; cz++) {
+            for (int cz = 0; cz < GlowChunk.DEPTH; cz++) {
                 for (int cy = 0; cy < chunk.getWorld().getMaxHeight(); cy++) {
-                    boolean mostSignificantNibble = ((cx * GlowChunk.HEIGHT + cz) * chunk.getWorld().getMaxHeight() + cy) % 2 == 1;
-                    int offset = ((cx * GlowChunk.HEIGHT + cz) * chunk.getWorld().getMaxHeight() + cy) / 2;
+                    boolean mostSignificantNibble = ((cx * GlowChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) % 2 == 1;
+                    int offset = ((cx * GlowChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) / 2;
 
                     int skyLight, blockLight, meta;
                     if (mostSignificantNibble) {
@@ -70,9 +70,9 @@ public final class NbtChunkIoService implements ChunkIoService {
                         meta = metaData[offset] & 0x0F;
                     }
 
-                    chunk.setSkyLight(cx, cz, cy, skyLight);
-                    chunk.setBlockLight(cx, cz, cy, blockLight);
-                    chunk.setMetaData(cx, cz, cy, meta);
+                    chunk.setSkyLight(cx, cy, cz, skyLight);
+                    chunk.setBlockLight(cx, cy, cz, blockLight);
+                    chunk.setMetaData(cx, cy, cz, meta);
                 }
             }
         }

@@ -402,7 +402,7 @@ public final class GlowWorld implements World {
     }
 
     public int getMaxHeight() {
-        return GlowChunk.DEPTH;
+        return GlowChunk.HEIGHT;
     }
 
     public int getSeaLevel() {
@@ -490,7 +490,7 @@ public final class GlowWorld implements World {
     }
 
     public int getBlockTypeIdAt(int x, int y, int z) {
-        return getChunkAt(x >> 4, z >> 4).getType(x & 0xF, z & 0xF, y);
+        return getChunkAt(x >> 4, z >> 4).getType(x & 0xF, y, z & 0xF);
     }
 
     public int getHighestBlockYAt(int x, int z) {

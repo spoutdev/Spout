@@ -96,10 +96,10 @@ public final class McRegionChunkIoService implements ChunkIoService {
         byte[] metaData = ((ByteArrayTag) levelTags.get("Data")).getValue();
 
         for (int cx = 0; cx < GlowChunk.WIDTH; cx++) {
-            for (int cz = 0; cz < GlowChunk.HEIGHT; cz++) {
+            for (int cz = 0; cz < GlowChunk.DEPTH; cz++) {
                 for (int cy = 0; cy < world.getMaxHeight(); cy++) {
-                    boolean mostSignificantNibble = ((cx * GlowChunk.HEIGHT + cz) * world.getMaxHeight() + cy) % 2 == 1;
-                    int offset = ((cx * GlowChunk.HEIGHT + cz) * world.getMaxHeight() + cy) / 2;
+                    boolean mostSignificantNibble = ((cx * GlowChunk.DEPTH + cz) * world.getMaxHeight() + cy) % 2 == 1;
+                    int offset = ((cx * GlowChunk.DEPTH + cz) * world.getMaxHeight() + cy) / 2;
 
                     int skyLight, blockLight, meta;
                     if (mostSignificantNibble) {
@@ -112,9 +112,9 @@ public final class McRegionChunkIoService implements ChunkIoService {
                         meta = metaData[offset] & 0x0F;
                     }
 
-                    chunk.setSkyLight(cx, cz, cy, skyLight);
-                    chunk.setBlockLight(cx, cz, cy, blockLight);
-                    chunk.setMetaData(cx, cz, cy, meta);
+                    chunk.setSkyLight(cx, cy, cz, skyLight);
+                    chunk.setBlockLight(cx, cy, cz, blockLight);
+                    chunk.setMetaData(cx, cy, cz, meta);
                 }
             }
         }
@@ -163,19 +163,19 @@ public final class McRegionChunkIoService implements ChunkIoService {
         NBTOutputStream nbt = new NBTOutputStream(out, false);
         Map<String, Tag> levelTags = new HashMap<String, Tag>();
 
-        byte[] skyLightData = new byte[chunk.getWorld().getMaxHeight() * GlowChunk.WIDTH * GlowChunk.HEIGHT / 2];
-        byte[] blockLightData = new byte[chunk.getWorld().getMaxHeight() * GlowChunk.WIDTH * GlowChunk.HEIGHT / 2];
-        byte[] metaData = new byte[chunk.getWorld().getMaxHeight() * GlowChunk.WIDTH * GlowChunk.HEIGHT / 2];
-        byte[] heightMap = new byte[GlowChunk.WIDTH * GlowChunk.HEIGHT];
+        byte[] skyLightData = new byte[chunk.getWorld().getMaxHeight() * GlowChunk.WIDTH * GlowChunk.DEPTH / 2];
+        byte[] blockLightData = new byte[chunk.getWorld().getMaxHeight() * GlowChunk.WIDTH * GlowChunk.DEPTH / 2];
+        byte[] metaData = new byte[chunk.getWorld().getMaxHeight() * GlowChunk.WIDTH * GlowChunk.DEPTH / 2];
+        byte[] heightMap = new byte[GlowChunk.WIDTH * GlowChunk.DEPTH];
 
         for (int cx = 0; cx < GlowChunk.WIDTH; cx++) {
-			for (int cz = 0; cz < GlowChunk.HEIGHT; cz++) {
-                heightMap[(cx * GlowChunk.HEIGHT + cz) / 2] = (byte)chunk.getWorld().getHighestBlockYAt(x > 0 ? x * cx : cx, z > 0 ? z * cz : cz);
+			for (int cz = 0; cz < GlowChunk.DEPTH; cz++) {
+                heightMap[(cx * GlowChunk.DEPTH + cz) / 2] = (byte)chunk.getWorld().getHighestBlockYAt(x > 0 ? x * cx : cx, z > 0 ? z * cz : cz);
 				for (int cy = 0; cy < chunk.getWorld().getMaxHeight(); cy+=2) {
-					int offset = ((cx * GlowChunk.HEIGHT + cz) * chunk.getWorld().getMaxHeight() + cy) /2;
-					skyLightData[offset] = (byte) ((chunk.getSkyLight(cx, cz, cy + 1) << 4) | chunk.getSkyLight(cx, cz, cy));
-					blockLightData[offset] = (byte) ((chunk.getBlockLight(cx, cz, cy + 1) << 4) | chunk.getBlockLight(cx, cz, cy));
-					metaData[offset] = (byte) ((chunk.getMetaData(cx, cz, cy + 1) << 4) | chunk.getMetaData(cx, cz, cy));
+					int offset = ((cx * GlowChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) /2;
+					skyLightData[offset] = (byte) ((chunk.getSkyLight(cx, cy + 1, cz) << 4) | chunk.getSkyLight(cx, cy, cz));
+					blockLightData[offset] = (byte) ((chunk.getBlockLight(cx, cy + 1, cz) << 4) | chunk.getBlockLight(cx, cy, cz));
+					metaData[offset] = (byte) ((chunk.getMetaData(cx, cy + 1, cz) << 4) | chunk.getMetaData(cx, cy, cz));
 				}
 			}
 		}
