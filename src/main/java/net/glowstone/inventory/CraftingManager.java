@@ -16,6 +16,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 
 import net.glowstone.GlowServer;
+import net.glowstone.entity.GlowPlayer;
 
 /**
  * Manager for crafting and smelting recipes
@@ -103,7 +104,7 @@ public final class CraftingManager {
                     items[i] = null;
                 } else {
                     items[i].setAmount(items[i].getAmount() - 1);
-                }
+                } 
             }
         }
     }
