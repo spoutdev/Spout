@@ -36,6 +36,7 @@ import net.glowstone.command.SayCommand;
 import net.glowstone.command.StopCommand;
 import net.glowstone.command.TimeCommand;
 import net.glowstone.command.WhitelistCommand;
+import net.glowstone.config.SingleFileYamlConfiguration;
 import net.glowstone.inventory.CraftingManager;
 import net.glowstone.io.StorageQueue;
 import net.glowstone.io.mcregion.McRegionWorldStorageProvider;
@@ -63,7 +64,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.MultipleCommandAlias;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
@@ -83,7 +83,6 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * The core class of the Glowstone server.
@@ -109,7 +108,7 @@ public final class GlowServer implements Server {
     /**
      * The configuration the server uses.
      */
-    private static final YamlConfiguration config = new YamlConfiguration();
+    private static final SingleFileYamlConfiguration config = new SingleFileYamlConfiguration(configFile);
 
     /**
      * The protocol version supported by the server
@@ -130,7 +129,7 @@ public final class GlowServer implements Server {
 
             if (!configDir.exists() || !configDir.isDirectory())
                 configDir.mkdirs();
-            loadConfiguration();
+            config.load();
             config.options().indent(4);
             ConfigurationSerialization.registerClass(GlowOfflinePlayer.class);
 
@@ -413,41 +412,7 @@ public final class GlowServer implements Server {
             }
         }
         config.options().copyDefaults(true);
-        saveConfiguration();
-    }
-
-    private static boolean loadConfiguration() {
-        try {
-            if (!configDir.exists() || !configDir.isDirectory()) {
-                configDir.mkdirs();
-            }
-            if (!configFile.exists()) {
-                configFile.createNewFile();
-            }
-            config.load(configFile);
-            return true;
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Cannot load " + configFile, ex);
-        } catch (InvalidConfigurationException ex) {
-            if (ex.getCause() instanceof YAMLException) {
-                logger.severe("Config file " + configFile + " isn't valid! " + ex.getCause());
-            } else if ((ex.getCause() == null) || (ex.getCause() instanceof ClassCastException)) {
-                logger.severe("Config file " + configFile + " isn't valid!");
-            } else {
-                logger.log(Level.SEVERE, "Cannot load " + configFile + ": " + ex.getCause().getClass(), ex);
-            }
-        }
-        return false;
-    }
-
-    private static boolean saveConfiguration() {
-        try {
-            config.save(configFile);
-            return true;
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Cannot save " + configFile, ex);
-        }
-        return false;
+        config.save();
     }
 
     /**
@@ -464,7 +429,7 @@ public final class GlowServer implements Server {
      */
     public void start() {
         // Config should have already loaded by this point, but to be safe...
-        loadConfiguration();
+        config.load();
         consoleManager.setupConsole();
         
         // Load player lists
@@ -609,7 +574,7 @@ public final class GlowServer implements Server {
     public void reload() {
         try {
             // Reload relevant configuration
-            loadConfiguration();
+            config.load();
             opsList.load();
             whitelist.load();
             
@@ -730,8 +695,8 @@ public final class GlowServer implements Server {
      * @return A list of all commands at the time.
      */
     protected String[] getAllCommands() {
-        HashSet<String> knownCommands = new HashSet<String>(commandMap.getKnownCommandNames());
-        return knownCommands.toArray(new String[knownCommands.size()]);
+        Set<String> knownCommandNames = commandMap.getKnownCommandNames();
+        return knownCommandNames.toArray(new String[knownCommandNames.size()]);
     }
 
     /**
@@ -1348,6 +1313,10 @@ public final class GlowServer implements Server {
      */
     public File getWorldContainer() {
         return new File(config.getString("server.folders.world-container", "."));
+    }
+    
+    public void reloadConfiguration() {
+        config.load();
     }
      
 }
