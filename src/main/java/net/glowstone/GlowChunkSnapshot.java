@@ -113,17 +113,17 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
     }
     
     private int coordToIndex(int x, int y, int z) {
-        if (x < 0 || z < 0 || y < 0 || x >= GlowChunk.WIDTH || z >= GlowChunk.HEIGHT || y >= worldHeight)
+        if (x < 0 || z < 0 || y < 0 || x >= GlowChunk.WIDTH || z >= GlowChunk.DEPTH || y >= worldHeight)
             throw new IndexOutOfBoundsException();
 
-        return (x * GlowChunk.HEIGHT + z) * worldHeight + y;
+        return (x * GlowChunk.DEPTH + z) * worldHeight + y;
     }
     
     private int coordToIndex(int x, int z) {
-        if (x < 0 || z < 0 || x >= GlowChunk.WIDTH || z >= GlowChunk.HEIGHT)
+        if (x < 0 || z < 0 || x >= GlowChunk.WIDTH || z >= GlowChunk.DEPTH)
             throw new IndexOutOfBoundsException();
 
-        return x * GlowChunk.HEIGHT + z;
+        return x * GlowChunk.DEPTH + z;
     }
     
     public static class EmptySnapshot extends GlowChunkSnapshot {
