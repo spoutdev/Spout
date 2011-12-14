@@ -39,7 +39,7 @@ public class UndergroundGenerator extends GlowChunkGenerator {
         int stone = world.getEnvironment() == Environment.NETHER ? BlockID.NETHERRACK : BlockID.STONE;
         int height = world.getMaxHeight();
 
-        byte[] buf = start(stone);
+        byte[] buf = start(world, stone);
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -55,13 +55,13 @@ public class UndergroundGenerator extends GlowChunkGenerator {
                 }
 
                 if (min >= max) {
-                    set(buf, x, 0, z, BlockID.BEDROCK);
-                    set(buf, x, height - 1, z, BlockID.BEDROCK);
+                    set(buf, world, x, 0, z, BlockID.BEDROCK);
+                    set(buf, world, x, height - 1, z, BlockID.BEDROCK);
                     continue;
                 }
 
                 for (int y = min; y <= max; y++) {
-                    set(buf, x, y, z, BlockID.AIR);
+                    set(buf, world, x, y, z, BlockID.AIR);
                 }
 
                 int platform = (int) (noisePlatform1.noise(x + chunkX, z + chunkZ, 0.5, 0.5, true) * 20 - 4);
@@ -69,7 +69,7 @@ public class UndergroundGenerator extends GlowChunkGenerator {
                     platform -= random.nextInt(3);
                 }
                 while (platform-- > 0) {
-                    set(buf, x, height / 2 - platform - 1, z, stone);
+                    set(buf,world, x, height / 2 - platform - 1, z, stone);
                 }
 
                 platform = (int) (noisePlatform2.noise(x + chunkX, z + chunkZ, 0.5, 0.5, true) * 30 - 6);
@@ -77,16 +77,16 @@ public class UndergroundGenerator extends GlowChunkGenerator {
                     platform -= random.nextInt(3);
                 }
                 while (platform-- > 0) {
-                    set(buf, x, height / 4 - platform - 1, z, stone);
+                    set(buf, world, x, height / 4 - platform - 1, z, stone);
                 }
 
                 for (int i = 4; i > 0; i--) {
-                    if (get(buf, x, i, z) == BlockID.AIR) {
-                        set(buf, x, i, z, BlockID.LAVA);
+                    if (get(buf, world, x, i, z) == BlockID.AIR) {
+                        set(buf, world, x, i, z, BlockID.LAVA);
                     }
                 }
-                set(buf, x, 0, z, BlockID.BEDROCK);
-                set(buf, x, height - 1, z, BlockID.BEDROCK);
+                set(buf, world, x, 0, z, BlockID.BEDROCK);
+                set(buf, world, x, height - 1, z, BlockID.BEDROCK);
             }
         }
 

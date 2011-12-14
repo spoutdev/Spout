@@ -51,7 +51,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         int matUnder = nether ? BlockID.NETHERRACK : BlockID.STONE;
         int matLiquid = nether ? BlockID.STATIONARY_LAVA : BlockID.STATIONARY_WATER;
 
-        byte[] buf = start(BlockID.AIR);
+        byte[] buf = start(world, BlockID.AIR);
 
         int baseHeight = world.getMaxHeight() / 2;
         double terrainHeight = 50;
@@ -88,18 +88,18 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                         ground = matUnder;
                     }
 
-                    set(buf, x, y, z, ground);
+                    set(buf, world, x, y, z, ground);
                     deep++;
                 }
-                set(buf, x, 0, z, BlockID.BEDROCK);
+                set(buf, world, x, 0, z, BlockID.BEDROCK);
             }
         }
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for (int y = 0; y < waterLevel; y++) {
-                    if (get(buf, x, y, z) == BlockID.AIR) {
-                        set(buf, x, y, z, matLiquid);
+                    if (get(buf, world, x, y, z) == BlockID.AIR) {
+                        set(buf, world, x, y, z, matLiquid);
                     }
                 }
             }

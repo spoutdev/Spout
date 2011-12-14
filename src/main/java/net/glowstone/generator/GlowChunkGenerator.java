@@ -57,11 +57,11 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
      * @param fill The Material to fill with.
      * @return A new filled byte[16 * 16 * 128];
      */
-    protected byte[] start(int fill) {
+    protected byte[] start(World world, int fill) {
         if (BlockProperties.get(fill) == null) {
             throw new IllegalArgumentException("Invalid block type!");
         }
-        byte[] data = new byte[GlowChunk.HEIGHT * GlowChunk.WIDTH * GlowChunk.DEPTH];
+        byte[] data = new byte[GlowChunk.HEIGHT * GlowChunk.WIDTH * world.getMaxHeight()];
         Arrays.fill(data, (byte) fill);
         return data;
     }
@@ -74,17 +74,17 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
      * @param z The chunk Z coordinate.
      * @param id The block type.
      */
-    protected void set(byte[] data, int x, int y, int z, int id) {
+    protected void set(byte[] data, World world,  int x, int y, int z, int id) {
         if (data == null) {
             throw new IllegalStateException();
         }
         if (BlockProperties.get(id) == null) {
             throw new IllegalArgumentException("Unknown block type!");
         }
-        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.HEIGHT || y >= GlowChunk.DEPTH || z >= GlowChunk.WIDTH) {
+        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.HEIGHT || y >= world.getMaxHeight() || z >= GlowChunk.WIDTH) {
             return;
         }
-        data[(x * GlowChunk.HEIGHT + z) * GlowChunk.DEPTH + y] = (byte) id;
+        data[(x * GlowChunk.HEIGHT + z) * world.getMaxHeight() + y] = (byte) id;
     }
 
     /**
@@ -95,14 +95,14 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
      * @param z The chunk Z coordinate.
      * @return The type of block at the location.
      */
-    protected int get(byte[] data, int x, int y, int z) {
+    protected int get(byte[] data, World world, int x, int y, int z) {
         if (data == null) {
             throw new IllegalStateException();
         }
-        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.HEIGHT || y >= GlowChunk.DEPTH || z >= GlowChunk.WIDTH) {
+        if (x < 0 || y < 0 || z < 0 || x >= GlowChunk.HEIGHT || y >= world.getMaxHeight() || z >= GlowChunk.WIDTH) {
             return BlockID.AIR;
         }
-        return data[(x * GlowChunk.HEIGHT + z) * GlowChunk.DEPTH + y];
+        return data[(x * GlowChunk.HEIGHT + z) * world.getMaxHeight() + y];
     }
 
     @Override

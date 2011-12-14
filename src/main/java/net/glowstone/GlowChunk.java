@@ -286,23 +286,23 @@ public final class GlowChunk implements Chunk {
             return;
         }
         
-        this.types = new byte[WIDTH * HEIGHT * DEPTH];
-        metaData = new byte[WIDTH * HEIGHT * DEPTH];
-        skyLight = new byte[WIDTH * HEIGHT * DEPTH];
-        blockLight = new byte[WIDTH * HEIGHT * DEPTH];
-        for (int i = 0; i < WIDTH * HEIGHT * DEPTH; ++i) {
+        this.types = new byte[WIDTH * HEIGHT * world.getMaxHeight()];
+        metaData = new byte[WIDTH * HEIGHT * world.getMaxHeight()];
+        skyLight = new byte[WIDTH * HEIGHT * world.getMaxHeight()];
+        blockLight = new byte[WIDTH * HEIGHT * world.getMaxHeight()];
+        for (int i = 0; i < WIDTH * HEIGHT * world.getMaxHeight(); ++i) {
             skyLight[i] = 15;
         }
         
         //System.out.println("Init'd types, isLoaded = " + isLoaded());
         
-        if (types.length != WIDTH * HEIGHT * DEPTH) {
+        if (types.length != WIDTH * HEIGHT * world.getMaxHeight()) {
             throw new IllegalArgumentException();
         }
         System.arraycopy(types, 0, this.types, 0, types.length);
         
         for (int cx = 0; cx < WIDTH; ++cx) {
-            for (int cy = 0; cy < DEPTH; ++cy) {
+            for (int cy = 0; cy < world.getMaxHeight(); ++cy) {
                 for (int cz = 0; cz < HEIGHT; ++cz) {
                     BlockProperties properties = BlockProperties.get(getType(cx, cz, cy));
                     Class<? extends GlowBlockState> clazz = properties == null ? null : properties.getEntityClass();
@@ -480,7 +480,7 @@ public final class GlowChunk implements Chunk {
      * @return The {@link CompressedChunkMessage}.
      */
     public Message toMessage() {
-        return new CompressedChunkMessage(x * GlowChunk.WIDTH, z * GlowChunk.HEIGHT, 0, WIDTH, HEIGHT, DEPTH, serializeTileData());
+        return new CompressedChunkMessage(x * GlowChunk.WIDTH, z * GlowChunk.HEIGHT, 0, WIDTH, HEIGHT, world.getMaxHeight(), serializeTileData());
     }
 
     /**
@@ -503,7 +503,7 @@ public final class GlowChunk implements Chunk {
      * @return The byte array populated with the tile data.
      */
     private byte[] serializeTileData() {        
-        byte[] dest = new byte[((WIDTH * HEIGHT * DEPTH * 5) / 2)];
+        byte[] dest = new byte[((WIDTH * HEIGHT * world.getMaxHeight() * 5) / 2)];
 
         load();
         System.arraycopy(types, 0, dest, 0, types.length);

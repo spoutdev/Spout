@@ -30,7 +30,7 @@ public class CakeTownGenerator extends GlowChunkGenerator {
 
         Location center = new Location(world, 0, base, 0);
 
-        byte[] buf = start(BlockID.AIR);
+        byte[] buf = start(world, BlockID.AIR);
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -40,17 +40,17 @@ public class CakeTownGenerator extends GlowChunkGenerator {
                     double dist = new Location(world, realX, y, realZ).distance(center);
                     if (dist < 100) {
                         if (y <= base + 1 && y >= base) {
-                            set(buf, x, y, z, BlockID.BEDROCK);
+                            set(buf, world, x, y, z, BlockID.BEDROCK);
                         } else if (y == top) {
-                            set(buf, x, y, z, BlockID.GRASS);
+                            set(buf, world,x, y, z, BlockID.GRASS);
                         } else {
-                            set(buf, x, y, z, BlockID.STONE);
+                            set(buf, world, x, y, z, BlockID.STONE);
                         }
                     } else if (dist < 102) {
                         if (y <= base + 1 && y >= base) {
-                            set(buf, x, y, z, BlockID.BEDROCK);
+                            set(buf,world, x, y, z, BlockID.BEDROCK);
                         } else {
-                            set(buf, x, y, z, BlockID.GRASS);
+                            set(buf, world, x, y, z, BlockID.GRASS);
                         }
                     }
                 }

@@ -10,6 +10,7 @@ import org.bukkit.block.Biome;
 public class GlowChunkSnapshot implements ChunkSnapshot {
     
     private final int x, z;
+    private final int worldHeight;
     private final String world;
     private final long time;
     private final byte[] types, metaData, skyLight, blockLight, height;
@@ -21,6 +22,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
         this.z = z;
         this.world = world.getName();
         this.time = world.getFullTime();
+        this.worldHeight = world.getMaxHeight();
         this.types = types;
         this.metaData = metaData;
         this.skyLight = skyLight;
@@ -111,10 +113,10 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
     }
     
     private int coordToIndex(int x, int y, int z) {
-        if (x < 0 || z < 0 || y < 0 || x >= GlowChunk.WIDTH || z >= GlowChunk.HEIGHT || y >= GlowChunk.DEPTH)
+        if (x < 0 || z < 0 || y < 0 || x >= GlowChunk.WIDTH || z >= GlowChunk.HEIGHT || y >= worldHeight)
             throw new IndexOutOfBoundsException();
 
-        return (x * GlowChunk.HEIGHT + z) * GlowChunk.DEPTH + y;
+        return (x * GlowChunk.HEIGHT + z) * worldHeight + y;
     }
     
     private int coordToIndex(int x, int z) {

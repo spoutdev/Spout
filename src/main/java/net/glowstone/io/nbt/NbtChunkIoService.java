@@ -55,9 +55,9 @@ public final class NbtChunkIoService implements ChunkIoService {
 
         for (int cx = 0; cx < GlowChunk.WIDTH; cx++) {
             for (int cz = 0; cz < GlowChunk.HEIGHT; cz++) {
-                for (int cy = 0; cy < GlowChunk.DEPTH; cy++) {
-                    boolean mostSignificantNibble = ((cx * GlowChunk.HEIGHT + cz) * GlowChunk.DEPTH + cy) % 2 == 1;
-                    int offset = ((cx * GlowChunk.HEIGHT + cz) * GlowChunk.DEPTH + cy) / 2;
+                for (int cy = 0; cy < chunk.getWorld().getMaxHeight(); cy++) {
+                    boolean mostSignificantNibble = ((cx * GlowChunk.HEIGHT + cz) * chunk.getWorld().getMaxHeight() + cy) % 2 == 1;
+                    int offset = ((cx * GlowChunk.HEIGHT + cz) * chunk.getWorld().getMaxHeight() + cy) / 2;
 
                     int skyLight, blockLight, meta;
                     if (mostSignificantNibble) {
