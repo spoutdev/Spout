@@ -106,7 +106,7 @@ public abstract class GlowEntity implements Entity, Damager {
     public boolean isWithinDistance(GlowEntity other) {
         double dx = Math.abs(location.getX() - other.location.getX());
         double dz = Math.abs(location.getZ() - other.location.getZ());
-        return other.getWorld() == getWorld() && dx <= (server.getViewDistance() * GlowChunk.WIDTH) && dz <= (server.getViewDistance() * GlowChunk.HEIGHT);
+        return other.getWorld() == getWorld() && dx <= (server.getViewDistance() * GlowChunk.WIDTH) && dz <= (server.getViewDistance() * GlowChunk.DEPTH);
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class GlowEntity implements Entity, Damager {
     public boolean isWithinDistance(Location loc) {
         double dx = Math.abs(location.getX() - loc.getX());
         double dz = Math.abs(location.getZ() - loc.getZ());
-        return loc.getWorld() == getWorld() && dx <= (GlowChunk.VISIBLE_RADIUS * GlowChunk.WIDTH) && dz <= (GlowChunk.VISIBLE_RADIUS * GlowChunk.HEIGHT);
+        return loc.getWorld() == getWorld() && dx <= (GlowChunk.VISIBLE_RADIUS * GlowChunk.WIDTH) && dz <= (GlowChunk.VISIBLE_RADIUS * GlowChunk.DEPTH);
     }
 
     /**
