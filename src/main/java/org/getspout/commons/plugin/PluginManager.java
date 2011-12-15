@@ -42,7 +42,7 @@ public abstract interface PluginManager {
 
 	public abstract void clearAddons();
 
-	public abstract <TEvent extends Event<TEvent>> void callEvent(TEvent event);
+	public abstract <TEvent extends Event> TEvent callEvent(TEvent event);
 
 	public abstract void enableAddon(Plugin paramAddon);
 

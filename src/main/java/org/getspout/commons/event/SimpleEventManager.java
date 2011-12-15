@@ -21,7 +21,9 @@ public class SimpleEventManager implements EventManager {
 			for (int i = 0; i < listeners.length; i++) {
 				for (ListenerRegistration registration : listeners[i]) {
 					try {
-						registration.getExecutor().execute(event);
+						if (!event.isCancelled() || registration.getOrder().ignoresCancelled()) {
+							registration.getExecutor().execute(event);
+						}
 					} catch (Throwable ex) {
                         Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + registration.getOwner().getClass().getName(), ex);
 					}

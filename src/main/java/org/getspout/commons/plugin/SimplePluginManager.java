@@ -339,7 +339,7 @@ public class SimplePluginManager implements PluginManager {
 	 * @param event Event to handle
 	 * @author lahwran
 	 */
-	public <TEvent extends Event> void callEvent(TEvent event) {
+	public <TEvent extends Event> TEvent callEvent(TEvent event) {
 /*		TODO: fix
 		HandlerList<TEvent> handlerlist = event.getHandlers();
 		handlerlist.bake();
@@ -373,6 +373,7 @@ public class SimplePluginManager implements PluginManager {
 		if (!wasLocked) {
 			securityManager.unlock(key);
 		}*/
+		return event;
 	}
 	
 	private void safelyLog(Level level, String message, Throwable ex) {
