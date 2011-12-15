@@ -44,6 +44,9 @@ public class Vector3 {
 	public Vector3 subtract(Vector3 that){
 		return Vector3.subtract(this, that);
 	}
+	public Vector3 scale(double scale){
+		return Vector3.scale(this, scale);
+	}
 	
 	public double dot(Vector3 that){
 		return Vector3.dot(this, that);
@@ -51,7 +54,29 @@ public class Vector3 {
 	public Vector3 cross(Vector3 that){
 		return Vector3.cross(this, that);
 	}
+	public double lengthSquared(){
+		return Vector3.lengthSquared(this);
+	}
+	public double length(){
+		return Vector3.length(this);
+	}
+	public Vector3 normalize(){
+		return Vector3.normalize(this);
+	}
 	
+	
+	
+	public static double length(Vector3 a){
+		return Math.sqrt(lengthSquared(a));
+	}
+	
+	public static double lengthSquared(Vector3 a){
+		return Vector3.dot(a, a);
+	}
+	
+	public static Vector3 normalize(Vector3 a){
+		return Vector3.scale(a, (1.f / a.length()));
+	}
 	
 	public static Vector3 subtract(Vector3 a, Vector3 b){
 		return new Vector3(a.getX() - b.getX(), a.getY() - b.getY(), a.getZ() - b.getZ() );
@@ -59,6 +84,10 @@ public class Vector3 {
 	
 	public static Vector3 add(Vector3 a, Vector3 b){
 		return new Vector3(a.getX() + b.getX(), a.getY() + b.getY(), a.getZ() + b.getZ() );
+	}
+	
+	public static Vector3 scale(Vector3 a, double b){
+		return new Vector3(a.getX() * b, a.getY() * b, a.getZ() * b);
 	}
 	
 	public static double dot(Vector3 a, Vector3 b){
