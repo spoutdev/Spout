@@ -106,22 +106,14 @@ public interface Game {
 	public boolean dispatchCommand(CommandSender sender, String commandLine);
 
 	/**
-	 * Gets the name of the update folder. The update folder is used to safely update
+	 * Gets the update folder. The update folder is used to safely update
 	 * plugins at the right moment on a plugin load.
 	 *
 	 * The update folder name is relative to the plugins folder.
 	 *
 	 * @return The name of the update folder
 	 */
-	public String getUpdateFolder();
-
-	/**
-	 * Gets the update folder. The update folder is used to safely update
-	 * plugins at the right moment on a plugin load.
-	 *
-	 * @return The name of the update folder
-	 */
-	public File getUpdateFolderFile();
+	public File getUpdateFolder();
 	
 	/**
 	 * Gets a player by the given username.
