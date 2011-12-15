@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import static org.junit.Assert.*;
+
+import org.getspout.server.inventory.CraftingManager;
 import org.junit.Test;
 
 /**

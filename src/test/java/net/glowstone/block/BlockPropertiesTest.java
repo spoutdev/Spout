@@ -3,6 +3,8 @@ package net.glowstone.block;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.bukkit.Material;
+import org.getspout.server.block.BlockID;
+import org.getspout.server.block.BlockProperties;
 import org.junit.Before;
 import org.junit.Test;
 
