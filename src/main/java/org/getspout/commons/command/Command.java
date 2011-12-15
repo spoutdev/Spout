@@ -1,5 +1,26 @@
 package org.getspout.commons.command;
 
+/**
+ * Provides support for setting up commands for Plugins 
+ * 
+ * This uses chaining to allow concise setup of commands
+ * 
+ * Commands could be registered using the following structure.
+ * 
+ * Game.getCommandRoot()
+ *     .s(MyPlugin.MAIN_COMMAND)
+ *         .n("preferredname").a("alias1").a("alias2")
+ *         .h("This is the main command for MyPlugin")
+ *         .e(myExecutor)
+ *         .s(MyPlugin.SUB_COMMAND)
+ *             .n("subcommand")
+ *             .h("This is a sub command of main command")
+ *             .e(myExecutor)
+ *         .c()
+ *     .c();
+ * 
+ */
+
 public interface Command {
 
 	/**
