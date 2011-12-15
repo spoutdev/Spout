@@ -18,9 +18,9 @@ package org.getspout.commons.event;
 
 /**
  * Order of event listener calls.
- * 
+ * <p/>
  * Odd-numbered slots are called even when events are marked "not propogating". If an event stops propogating partway through an even slot, that slot will not cease execution, but future even slots will not be called.
- * 
+ *
  * @author lahwran
  */
 public enum Order {
@@ -28,56 +28,58 @@ public enum Order {
 	/**
 	 * Called before all other handlers. Should be used for high-priority event canceling.
 	 */
-	Earliest(0),
+	EARLIEST(0, false),
 
 	/**
 	 * Called after "Earliest" handlers and before "Early" handlers. Is called even when event has been canceled. Should generally be used to uncancel events canceled in Earliest.
 	 */
-	EarlyIgnoreCancelled(1),
+	EARLY_IGNORE_CANCELLED(1, true),
 
 	/**
 	 * Called after "Earliest" handlers. Should generally be used for low priority event canceling.
 	 */
-	Early(2),
+	EARLY(2, false),
 
 	/**
 	 * Called after "Early" handlers and before "Default" handlers. Is called even when event has been canceled. This is for general-purpose always-run events.
 	 */
-	DefaultIgnoreCancelled(3),
+	DEFAULT_IGNORE_CANCELLED(3, true),
 	/**
 	 * Default call, for general purpose handlers
 	 */
-	Default(4),
+	DEFAULT(4, false),
 
 	/**
 	 * Called after "Default" handlers and before "Late" handlers. Is called even when event has been canceled.
 	 */
-	LateIgnoreCancelled(5),
+	LATE_IGNORE_CANCELLED(5, true),
 
 	/**
 	 * Called after "Default" handlers.
 	 */
-	Late(6),
+	LATE(6, false),
 
 	/**
 	 * Called after "Late" handlers and before "Latest" handlers. Is called even when event has been canceled.
 	 */
-	LatestIgnoreCancelled(7),
+	LATEST_IGNORE_CANCELLED(7, true),
 
 	/**
 	 * Called after "Late" handlers.
 	 */
-	Latest(8),
+	LATEST(8, false),
 
 	/**
 	 * Called after "Latest" handlers. No changes to the event should be made in this order slot (though it is not enforced). Is called even when event has been cancelled.
 	 */
-	Monitor(9);
+	MONITOR(9, true);
 
-	private int index;
+	private final int index;
+	private final boolean ignoreCancelled;
 
-	Order(int index) {
+	Order(int index, boolean ignoreCancelled) {
 		this.index = index;
+		this.ignoreCancelled = ignoreCancelled;
 	}
 
 	/**
@@ -85,5 +87,13 @@ public enum Order {
 	 */
 	public int getIndex() {
 		return index;
+	}
+
+	/**
+	 *
+	 * @return whether this Order ignores cancellation status
+	 */
+	public boolean ignoresCancelled() {
+		return ignoreCancelled;
 	}
 }

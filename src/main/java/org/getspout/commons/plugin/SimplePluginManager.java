@@ -328,7 +328,7 @@ public class SimplePluginManager implements PluginManager {
 			disableAddons();
 			addons.clear();
 			lookupNames.clear();
-			HandlerList.clearAll();
+			//HandlerList.clearAll();
 		}
 	}
 
@@ -339,7 +339,7 @@ public class SimplePluginManager implements PluginManager {
 	 * @param event Event to handle
 	 * @author lahwran
 	 */
-	public <TEvent extends Event<TEvent>> void callEvent(TEvent event) {
+	public <TEvent extends Event> void callEvent(TEvent event) {
 /*		TODO: fix
 		HandlerList<TEvent> handlerlist = event.getHandlers();
 		handlerlist.bake();

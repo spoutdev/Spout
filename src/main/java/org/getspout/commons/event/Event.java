@@ -22,9 +22,8 @@ import org.getspout.commons.event.Order;
 
 /**
  * @author lahwran
- * @param <TEvent> Event class
  */
-public abstract class Event<TEvent extends Event<TEvent>> {
+public abstract class Event {
 
 	/**
 	 * Stores cancelled status. will be false unless a subclass publishes setCancelled.
@@ -36,14 +35,16 @@ public abstract class Event<TEvent extends Event<TEvent>> {
 	 * 
 	 * @return HandlerList to call event with
 	 */
-	public abstract HandlerList<TEvent> getHandlers();
+	public abstract HandlerList getHandlers();
 
 	/**
 	 * Get event type name.
 	 * 
 	 * @return event name
 	 */
-	protected abstract String getEventName();
+	protected String getEventName() {
+		return getClass().getSimpleName();
+	};
 
 	public String toString() {
 		return getEventName() + " (" + this.getClass().getName() + ")";

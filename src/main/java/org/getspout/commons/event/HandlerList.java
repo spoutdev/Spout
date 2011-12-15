@@ -20,199 +20,130 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map.Entry;
 
-import org.getspout.commons.event.Event;
-import org.getspout.commons.event.HandlerList;
-import org.getspout.commons.event.Listener;
-import org.getspout.commons.event.ListenerRegistration;
-import org.getspout.commons.event.Order;
-import org.getspout.commons.plugin.Plugin;
-import org.getspout.commons.plugin.IllegalPluginAccessException;
+import java.util.*;
 
 /**
- * @author lahwran
- * @param <TEvent> Event type
- * 
+ * A list of event handlers, stored per-event. Based on lahwran's fevents.
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public class HandlerList<TEvent extends Event<TEvent>> {
+@SuppressWarnings("unchecked")
+public class HandlerList {
 	/**
-	 * handler array. this field being an array is the key to this system's speed.
-	 * 
-	 * is initialized in bake().
+	 * Handler array. This field being an array is the key to this system's speed.
 	 */
-	public Listener<TEvent>[][] handlers;
+	private ListenerRegistration[][] handlers = new ListenerRegistration[Order.values().length][];
 
 	/**
-	 * Int array same length as handlers. each value in this array is the index of an Order slot, corossponding to the equivalent value in handlers.
-	 * 
-	 * is initialized in bake().
+	 * Dynamic handler lists. These are changed using register() and
+	 * unregister() and are automatically baked to the handlers array any
+	 * time they have changed.
 	 */
-	public int[] handlerids;
+	private final EnumMap<Order, ArrayList<ListenerRegistration>> handlerslots;
 
 	/**
-	 * Dynamic handler lists. These are changed using register() and unregister() and are automatically baked to the handlers array any time they have changed.
-	 */
-	private final EnumMap<Order, ArrayList<ListenerRegistration<TEvent>>> handlerslots;
-
-	/**
-	 * Whether the current handlerslist has been fully baked. When this is set to false, the Map<Order, List<Listener>> will be baked to Listener[][] next time the event is called.
-	 * 
-	 * @see EventManager.callEvent
+	 * Whether the current HandlerList has been fully baked. When this is set
+	 * to false, the Map<Order, List<RegisteredListener>> will be baked to RegisteredListener[][]
+	 * next time the event is called.
+	 *
+	 * @see
 	 */
 	private boolean baked = false;
 
 	/**
-	 * List of all handlerlists which have been created, for use in bakeall()
+	 * List of all HandlerLists which have been created, for use in bakeAll()
 	 */
 	private static ArrayList<HandlerList> alllists = new ArrayList<HandlerList>();
 
 	/**
-	 * Bake all handler lists. Best used just after all normal event registration is complete, ie just after all plugins are loaded if you're using fevents in a plugin system.
+	 * Bake all handler lists. Best used just after all normal event
+	 * registration is complete, ie just after all plugins are loaded if
+	 * you're using fevents in a plugin system.
 	 */
-	public static void bakeall() {
+	public static void bakeAll() {
 		for (HandlerList h : alllists) {
 			h.bake();
 		}
 	}
 
-	public static void purgePlugin(Plugin addon) {
+	public static void unregisterAll() {
 		for (HandlerList h : alllists) {
-			h.unregister(addon);
+			h.handlerslots.clear();
+			h.baked = false;
 		}
 	}
 
-	public static void clearAll() {
+	public static void unregisterAll(Object plugin) {
 		for (HandlerList h : alllists) {
-			h.clear();
+			h.unregister(plugin);
 		}
 	}
 
 	/**
-	 * Create a new handler list and initialize using EventManager.Order handlerlist is then added to meta-list for use in bakeall()
+	 * Create a new handler list and initialize using EventPriority
+	 * The HandlerList is then added to meta-list for use in bakeAll()
 	 */
 	public HandlerList() {
-		handlerslots = new EnumMap<Order, ArrayList<ListenerRegistration<TEvent>>>(Order.class);
+		handlerslots = new EnumMap<Order, ArrayList<ListenerRegistration>>(Order.class);
 		for (Order o : Order.values()) {
-			handlerslots.put(o, new ArrayList<ListenerRegistration<TEvent>>());
+			handlerslots.put(o, new ArrayList<ListenerRegistration>());
 		}
 		alllists.add(this);
 	}
 
-	private boolean isRegistered(ListenerRegistration registration, Order orderslot) {
-		for (ListenerRegistration other : handlerslots.get(orderslot)) {
-			if (other.getListener() == registration.getListener() && other.getAddon() == registration.getAddon()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Register a new listener in this handler list
-	 * 
+	 *
 	 * @param listener listener to register
-	 * @param order order location at which to call provided listener
-	 * @param addon Addon this listener belongs to
 	 */
-	public void register(Listener<TEvent> listener, Order order, Plugin addon) {
-		if (!addon.isEnabled()) {
-			throw new IllegalPluginAccessException("Addon attempted to register a listener while not enabled");
-		}
-		ListenerRegistration registration = new ListenerRegistration(listener, order, addon);
-		if (isRegistered(registration, order)) {
-			throw new IllegalStateException("This listener is already registered to order " + order.toString());
-		}
-
-		handlerslots.get(order).add(registration);
+	public void register(ListenerRegistration listener) {
+		if (handlerslots.get(listener.getOrder()).contains(listener))
+			throw new IllegalStateException("This listener is already registered to priority " + listener.getOrder().toString());
 		baked = false;
+		handlerslots.get(listener.getOrder()).add(listener);
 	}
 
-	/**
-	 * Remove a listener from all order slots
-	 * 
-	 * @param listener listener to purge
-	 */
-	public void unregister(Listener<TEvent> listener) {
-		for (Order o : Order.values()) {
-			unregister(listener, o);
+	public void registerAll(Collection<ListenerRegistration> listeners) {
+		for (ListenerRegistration listener : listeners) {
+			register(listener);
 		}
 	}
 
 	/**
 	 * Remove a listener from a specific order slot
-	 * 
+	 *
 	 * @param listener listener to remove
-	 * @param order order from which to remove listener
 	 */
-	public void unregister(Listener<TEvent> listener, Order order) {
-		for (ListenerRegistration registration : handlerslots.get(order)) {
-			if (registration.getListener() == listener) {
-				baked = false;
-				handlerslots.get(order).remove(registration);
+	public void unregister(ListenerRegistration listener) {
+		if (handlerslots.get(listener.getOrder()).contains(listener)) {
+			baked = false;
+			handlerslots.get(listener.getOrder()).remove(listener);
+		}
+	}
+
+	public void unregister(Object plugin) {
+		boolean changed = false;
+		for (List<ListenerRegistration> list : handlerslots.values()) {
+			for (ListIterator<ListenerRegistration> i = list.listIterator(); i.hasNext(); ) {
+				if (i.next().getOwner().equals(plugin)) {
+					i.remove();
+					changed = true;
+				}
 			}
 		}
-	}
-
-	/**
-	 * Remove a plugin from all order slots
-	 * 
-	 * @param addon plugin to remove
-	 */
-	public void unregister(Plugin addon) {
-		for (Order o : Order.values()) {
-			unregister(addon, o);
-		}
-	}
-
-	/**
-	 * Remove a plugin from a specific order slot
-	 * 
-	 * @param addon plugin to remove
-	 * @param order order from which to remove plugin
-	 */
-	public void unregister(Plugin addon, Order order) {
-		for (ListenerRegistration registration : handlerslots.get(order)) {
-			if (registration.getAddon() == addon) {
-				baked = false;
-				handlerslots.get(order).remove(registration);
-			}
-		}
-	}
-
-	private void clear() {
-		for (Entry<Order, ArrayList<ListenerRegistration<TEvent>>> entry : handlerslots.entrySet()) {
-			entry.getValue().clear();
-		}
-		baked = false;
+		if (changed) baked = false;
 	}
 
 	/**
 	 * Bake HashMap and ArrayLists to 2d array - does nothing if not necessary
 	 */
 	public void bake() {
-		if (baked)
-			return; // don't re-bake when still valid
-
-		ArrayList<Listener[]> handlerslist = new ArrayList<Listener[]>();
-		ArrayList<Integer> handleridslist = new ArrayList<Integer>();
-		for (Entry<Order, ArrayList<ListenerRegistration<TEvent>>> entry : handlerslots.entrySet()) {
-			Order orderslot = entry.getKey();
-
-			ArrayList<ListenerRegistration<TEvent>> list = entry.getValue();
-
-			int ord = orderslot.getIndex();
-			Listener[] array = new Listener[list.size()];
-			for (int i = 0; i < array.length; i++) {
-				array[i] = list.get(i).getListener();
-			}
-			handlerslist.add(array);
-			handleridslist.add(ord);
-		}
-		handlers = handlerslist.toArray(new Listener[handlerslist.size()][]);
-		handlerids = new int[handleridslist.size()];
-		for (int i = 0; i < handleridslist.size(); i++) {
-			handlerids[i] = handleridslist.get(i);
+		if (baked) return; // don't re-bake when still valid
+		for (Entry<Order, ArrayList<ListenerRegistration>> entry : handlerslots.entrySet()) {
+			handlers[entry.getKey().getIndex()] = (entry.getValue().toArray(new ListenerRegistration[entry.getValue().size()]));
 		}
 		baked = true;
+	}
+
+	public ListenerRegistration[][] getRegisteredListeners() {
+		return handlers;
 	}
 }

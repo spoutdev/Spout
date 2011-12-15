@@ -16,56 +16,49 @@
  */
 package org.getspout.commons.event;
 
-import org.getspout.commons.event.Event;
-import org.getspout.commons.event.Listener;
-import org.getspout.commons.event.Order;
-import org.getspout.commons.plugin.Plugin;
-
 /**
  * @author lahwran
- * @param <TEvent> Event class
  */
-public class ListenerRegistration<TEvent extends Event<TEvent>> {
-	private final Listener<TEvent> listener;
-	private final Order orderslot;
-	private final Plugin addon;
+public class ListenerRegistration {
+	private final EventExecutor executor;
+	private final Order orderSlot;
+	private final Object owner;
 
 	/**
-	 * 
-	 * @param listener Listener this registration represents
-	 * @param orderslot Order position this registration is in
-	 * @param addon addon that created this registration
+	 * @param executor  Listener this registration represents
+	 * @param orderSlot Order position this registration is in
+	 * @param owner	 object that created this registration
 	 */
-	public ListenerRegistration(final Listener<TEvent> listener, final Order orderslot, final Plugin addon) {
-		this.listener = listener;
-		this.orderslot = orderslot;
-		this.addon = addon;
+	public ListenerRegistration(final EventExecutor executor, final Order orderSlot, final Object owner) {
+		this.executor = executor;
+		this.orderSlot = orderSlot;
+		this.owner = owner;
 	}
 
 	/**
 	 * Gets the listener for this registration
-	 * 
+	 *
 	 * @return Registered Listener
 	 */
-	public Listener<TEvent> getListener() {
-		return listener;
+	public EventExecutor getExecutor() {
+		return executor;
 	}
 
 	/**
-	 * Gets the Addon for this registration
-	 * 
-	 * @return Registered Addon
+	 * Gets the {@link Object} for this registration
+	 *
+	 * @return Registered owner
 	 */
-	public Plugin getAddon() {
-		return addon;
+	public Object getOwner() {
+		return owner;
 	}
 
 	/**
 	 * Gets the order slot for this registration
-	 * 
+	 *
 	 * @return Registered order
 	 */
 	public Order getOrder() {
-		return orderslot;
+		return orderSlot;
 	}
 }

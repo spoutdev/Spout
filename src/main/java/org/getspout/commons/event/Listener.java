@@ -16,18 +16,9 @@
  */
 package org.getspout.commons.event;
 
-import org.getspout.commons.event.Event;
-
 /**
- * @author lahwran
- * @param <TEvent> Event type
+ * An empty interface that all event handler classes have to implement.
  */
-public interface Listener<TEvent extends Event<TEvent>> {
+public interface Listener {
 
-	/**
-	 * Handle an event
-	 * 
-	 * @param event Event to handle
-	 */
-	public void onEvent(TEvent event);
 }
