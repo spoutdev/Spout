@@ -43,7 +43,7 @@ public class Vector2 {
 		return Vector2.dot(this, that);
 	}
 	public Vector2 cross(Vector2 that){
-		return Vector2.cross(this, that);
+		return new Vector2(y, -x);
 	}
 	public double lengthSquared(){
 		return Vector2.lengthSquared(this);
@@ -90,8 +90,5 @@ public class Vector2 {
 		return (a.getX() * b.getX() + a.getY() * b.getY() );
 	}
 	
-	public static Vector2 cross(Vector2 a, Vector2 b){
-		return new Vector2(b.getY(), -b.getX());
-	}
 	
 }
