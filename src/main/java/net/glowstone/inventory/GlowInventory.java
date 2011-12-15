@@ -191,7 +191,7 @@ public class GlowInventory implements Inventory {
         
         return result;
     }
-
+    
     /**
      * Removes the given ItemStacks from the inventory.
      *
