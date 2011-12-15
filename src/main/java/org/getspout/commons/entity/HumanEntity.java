@@ -20,6 +20,7 @@ import org.getspout.commons.inventory.ItemStack;
 import org.getspout.commons.inventory.PlayerInventory;
 
 public interface HumanEntity extends LivingEntity, AnimalTamer {
+
 	/**
 	 * Returns the name of this player
 	 *

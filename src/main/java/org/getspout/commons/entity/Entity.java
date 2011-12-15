@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.getspout.commons.World;
+import org.getspout.commons.metadata.Metadatable;
 import org.getspout.commons.util.FixedLocation;
 import org.getspout.commons.util.FixedVector;
 import org.getspout.commons.util.Vector;
@@ -27,7 +28,7 @@ import org.getspout.commons.util.Vector;
 /**
  * Represents a base entity in the world
  */
-public interface Entity {
+public interface Entity extends Metadatable {
 
 	/**
 	 * Gets the current location of the entity
@@ -67,7 +68,7 @@ public interface Entity {
 	 */
 	public boolean teleport(Entity destination);
 
-	 /**
+	/**
 	 * Returns a set of entities within a bounding box defined by x,y,z centered around player
 	 *
 	 * @param x Size of the box along x axis
@@ -163,7 +164,7 @@ public interface Entity {
 	 * @return unique id
 	 */
 	public UUID getUniqueId();
-	
+
 	/**
 	 * Gets the amount of ticks this entity has lived for.
 	 * <p>
@@ -172,7 +173,7 @@ public interface Entity {
 	 * @return Age of entity
 	 */
 	public int getTicksLived();
-	
+
 	/**
 	 * Sets the amount of ticks this entity has lived for.
 	 * <p>
@@ -182,7 +183,7 @@ public interface Entity {
 	 * @param value Age of entity
 	 */
 	public void setTicksLived(int value);
-	
+
 	/**
 	 * Sets the skin of this entity to the skin URI
 	 * 
@@ -190,4 +191,5 @@ public interface Entity {
 	 * @param type
 	 */
 	public void setSkin(String skinURI, EntitySkinType type);
+
 }
