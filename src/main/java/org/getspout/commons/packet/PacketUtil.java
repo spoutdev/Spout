@@ -20,6 +20,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.getspout.commons.math.Vector2;
+import org.getspout.commons.math.Vector3;
 import org.getspout.commons.util.Color;
 
 public abstract class PacketUtil {
@@ -167,6 +169,22 @@ public abstract class PacketUtil {
 		for (int i = 0; i < floats.length; i++) {
 			writeQuadFloat(output, floats[i]);
 		}
+	}
+	public static void writeVector3(DataOutputStream output, Vector3 vector) throws IOException{
+		output.writeDouble(vector.getX());
+		output.writeDouble(vector.getY());
+		output.writeDouble(vector.getZ());
+	}
+	public static Vector3 readVector3(DataInputStream input) throws IOException{
+		return new Vector3(input.readDouble(), input.readDouble(), input.readDouble());
+	}
+	
+	public static void writeVector2(DataOutputStream output, Vector2 vector) throws IOException{
+		output.writeDouble(vector.getX());
+		output.writeDouble(vector.getY());
+	}
+	public static Vector2 readVector2(DataInputStream input) throws IOException{
+		return new Vector2(input.readDouble(), input.readDouble());
 	}
 
 }
