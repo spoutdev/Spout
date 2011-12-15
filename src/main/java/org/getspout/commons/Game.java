@@ -1,144 +1,160 @@
 package org.getspout.commons;
 
 import java.io.File;
-import java.util.List;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import org.getspout.commons.command.AddonCommand;
 import org.getspout.commons.command.CommandSender;
-import org.getspout.commons.World;
 import org.getspout.commons.entity.Player;
 import org.getspout.commons.plugin.PluginManager;
-import org.getspout.commons.plugin.PluginStore;
-import org.getspout.commons.util.Location;
 
 /**
- * Represents the instance of the game, whether it be a server instance or client instance
- * (Takes the place of the previous Bukkit.getServer or Spoutcraft.getClient())
+ * Represents the abstract, non-specific implementation of Minecraft.
  */
 public interface Game {
 
 	/**
 	 * Gets the name of this game's implementation
+	 * 
 	 * @return name of the implementation
 	 */
 	public String getName();
 
 	/**
 	 * Gets the build version of this game's implementation
+	 * 
 	 * @return build version
 	 */
 	public long getVersion();
 	
 	/**
 	 * Gets all players currently active
+	 * 
 	 * @return array of all active players 
 	 */
 	public Player[] getPlayers();
 	
 	/**
 	 * Gets the maximum number of players this game can host, or -1 if infinite
-	 * @return
+	 * @return max players
 	 */
 	public int getMaxPlayers();
 	
+	/**
+	 * Returns the current IP address.
+	 * 
+	 *  If this game is a server, this is the address being broadcasted.
+	 *  
+	 *  If this game is a client, and connected to a server, this is the address connected to.
+	 *  
+	 *  If niether, this is null.
+	 *  
+	 *   Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
+	 * @return address
+	 */
+	public String getAddress();
+	
+	/**
+	 * True if this game allows the Nether environment to exist.
+	 * 
+	 * @return whether the Nether exists
+	 */
+	public boolean hasNether();
+	
+	/**
+	 * True if this game allows 'The End' environment to exist.
+	 * 
+	 * @return whether the Nether exists
+	 */
+	public boolean hasTheEnd();
+	
+	/**
+	 * Broadcasts the given message to all players
+	 * 
+	 * The implementation of broadcast is identical to iterating over {@link #getPlayers()} and invoking {@link Player#sendMessage(String)} for each player.
+	 * 
+	 * @param message to send
+	 */
+	public void broadcastMessage(String message);
 
-	public World getWorld();
-
+	/**
+	 * Gets singleton instance of the plugin manager, used to interact with other plugins and register events.
+	 * 
+	 * @return plugin manager instance.
+	 */
 	public PluginManager getPluginManager();
 
+	/**
+	 * Gets the logger instance that is used to write to the console.
+	 * 
+	 * It should be identical to Logger.getLogger("minecraft");
+	 * 
+	 * @return logger
+	 */
 	public Logger getLogger();
 
 	public AddonCommand getAddonCommand(String name);
 
+	/**
+	 * Sends a command from the given command sender. The command will be handled as if the sender has sent it itself.
+	 * 
+	 * @param sender that is responsible for the command
+	 * @param commandLine text
+	 * @return true if dispatched
+	 */
 	public boolean dispatchCommand(CommandSender sender, String commandLine);
 
-	public File getUpdateFolder();
+	/**
+	 * Gets the name of the update folder. The update folder is used to safely update
+	 * plugins at the right moment on a plugin load.
+	 *
+	 * The update folder name is relative to the plugins folder.
+	 *
+	 * @return The name of the update folder
+	 */
+	public String getUpdateFolder();
 
-	public long getServerVersion();
-
-	public File getAddonFolder();
-	
-	public File getAudioCache();
-	
-	public File getTemporaryCache();
-	
-	public File getTextureCache();
-	
-	public File getTexturePackFolder();
-	
-	public File getSelectedTexturePackZip();
-	
-	public File getStatsFolder();
-
-	public long getTick();
-
-	public Mode getMode();
-	
-	public Player getActivePlayer();
-	
-	public PluginStore getAddonStore();
-	
+	/**
+	 * Gets the update folder. The update folder is used to safely update
+	 * plugins at the right moment on a plugin load.
+	 *
+	 * @return The name of the update folder
+	 */
+	public File getUpdateFolderFile();
 	
 	/**
-	 * Gets a player object by the given username
-	 *
-	 * This method may not return objects for offline players
-	 *
-	 * @param name Name to look up
-	 * @return Player if it was found, otherwise null
+	 * Gets a player by the given username.
+	 *<br/><br/>
+	 * This method will iterate over over all players and find the closest match to the given
+	 * name, by comparing the length of other player names that start with the given parameter.
+	 * <br/><br/>
+	 * This method is case-insensitive.
+	 * 
+	 * @param name to look up
+	 * @return Player if found, else null
 	 */
 	public Player getPlayer(String name);
 
 	/**
-	 * Gets the player with the exact given name, case insensitive
+	 * Gets the player bythe given username.
+	 * <br/><br/>
+	 * If searching for the exact name, this method will iterate and check for exact matches, ignoring case.
+	 * <br/><br/>
+	 * Otherwise, this method's implementation is described by {@link #getPlayer(String)}
 	 *
-	 * @param name Exact name of the player to retrieve
-	 * @return Player object or null if not found
+	 * @param name to look up
+	 * @return Player if found, else null
 	 */
-	public Player getPlayerExact(String name);
+	public Player getPlayer(String name, boolean exact);
 
 	/**
-	 * Attempts to match any players with the given name, and returns a list
-	 * of all possibly matches
+	 * Matches the given username to all players that contain it in their name.
+	 * 
+	 * If no matches are found, an empty collection will be returned. The return will always be non-null.
 	 *
-	 * This list is not sorted in any particular order. If an exact match is found,
-	 * the returned list will only contain a single result.
-	 *
-	 * @param name Name to match
-	 * @return List of all possible players
+	 * @param name to match
+	 * @return Collection of all possible matches
 	 */
-	public List<Player> matchPlayer(String name);
-
-	/**
-	 * The camera property holds the position and view of the camera. You can set it to a new location to influence it and to provide camera cutscenes.
-	 * @return the location and view of the camera
-	 */
-	public Location getCamera();
-
-	/**
-	 * The camera property holds the position and view of the camera. You can set it to a new location to influence it and to provide camera cutscenes.
-	 * Detaching the camera is mandatory before doing a cut scene, otherwise, the players movement will override your cutscene.
-	 * @see detachCamera(boolean)
-	 * @param loc the location and view of the camera
-	 */
-	public void setCamera(Location loc);
-	
-	/**
-	 * The detach property decides if player movements will influence the camera or not. If the camera is detached, player movements will be ignored.
-	 * @param detach if the camera should be detached
-	 */
-	public void detachCamera(boolean detach);
-	
-	/**
-	 * The detach property decides if player movements will influence the camera or not. If the camera is detached, player movements will be ignored.
-	 * @return if the camera is detached
-	 */
-	public boolean isCameraDetached();
-
-	public enum Mode {
-		Single_Player,
-		Multiplayer,
-		Menu;
-	}
+	public Collection<Player> matchPlayer(String name);
 }

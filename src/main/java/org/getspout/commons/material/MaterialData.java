@@ -483,7 +483,7 @@ public class MaterialData {
 		}
 		Material[] materials = (Material[])o;
 		Material m = materials[0];
-		if (m.hasSubtypes() && data < materials.length && data > -1)
+		if (data < materials.length && data > -1)
 			return materials[data];
 		return m;
 	}
