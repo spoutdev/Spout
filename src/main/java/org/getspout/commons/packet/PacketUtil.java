@@ -20,7 +20,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.commons.gui.Color;
+import org.getspout.commons.util.Color;
 
 public abstract class PacketUtil {
 	public static final int maxString = 32767;
