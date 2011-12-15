@@ -1,18 +1,18 @@
 package org.getspout.commons.material;
 
-import org.getspout.commons.material.CustomItem;
+import org.getspout.commons.material.CustomItemMaterial;
 import org.getspout.commons.material.ItemMaterial;
 import org.getspout.commons.plugin.Plugin;
 
-public interface CustomItem extends ItemMaterial {
+public interface CustomItemMaterial extends ItemMaterial {
 	
 	public int getCustomId();
 	
 	public String getFullName();
 	
-	public Plugin getAddon();
+	public Plugin getPlugin();
 	
-	public CustomItem setTexture(String texture);
+	public CustomItemMaterial setTexture(String texture);
 	
 	public String getTexture();
 }

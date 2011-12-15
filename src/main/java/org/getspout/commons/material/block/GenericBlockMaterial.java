@@ -1,5 +1,6 @@
 package org.getspout.commons.material.block;
 
+import org.getspout.commons.Spout;
 import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.render.BlockDesign;
 
@@ -54,38 +55,42 @@ public class GenericBlockMaterial implements BlockMaterial{
 	}
 
 	public float getFriction() {
-		return Game.getClient().getMaterialManager().getFriction(this);
+//		return Spout.getGame().getMaterialManager().getFriction(this);
+		return 0;
 	}
 
 	public BlockMaterial setFriction(float friction) {
-		Spoutcraft.getClient().getMaterialManager().setFriction(this, friction);
+//		Spoutcraft.getClient().getMaterialManager().setFriction(this, friction);
 		return this;
 	}
 
 	public float getHardness() {
-		return Spoutcraft.getClient().getMaterialManager().getHardness(this);
+//		return Spoutcraft.getClient().getMaterialManager().getHardness(this);
+		return 0;
 	}
 
 	public BlockMaterial setHardness(float hardness) {
-		Spoutcraft.getClient().getMaterialManager().setHardness(this, hardness);
+//		Spoutcraft.getClient().getMaterialManager().setHardness(this, hardness);
 		return this;
 	}
 
 	public boolean isOpaque() {
-		return Spoutcraft.getClient().getMaterialManager().isOpaque(this);
+//		return Spoutcraft.getClient().getMaterialManager().isOpaque(this);
+		return false;
 	}
 
 	public BlockMaterial setOpaque(boolean opaque) {
-		Spoutcraft.getClient().getMaterialManager().setOpaque(this, opaque);
+//		Spoutcraft.getClient().getMaterialManager().setOpaque(this, opaque);
 		return this;
 	}
 
 	public int getLightLevel() {
-		return Spoutcraft.getClient().getMaterialManager().getLightLevel(this);
+//		return Spoutcraft.getClient().getMaterialManager().getLightLevel(this);
+		return 0;
 	}
 
 	public BlockMaterial setLightLevel(int level) {
-		Spoutcraft.getClient().getMaterialManager().setLightLevel(this, level);
+//		Spoutcraft.getClient().getMaterialManager().setLightLevel(this, level);
 		return this;
 	}
 

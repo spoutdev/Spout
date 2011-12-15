@@ -1,6 +1,6 @@
 package org.getspout.commons.block.design;
 
-import org.getspout.commons.addon.Addon;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.commons.block.design.GenericBlockDesign;
 import org.getspout.commons.block.design.Quad;
 import org.getspout.commons.block.design.Texture;
@@ -10,11 +10,11 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 	/**
 	 * Creates a basic cube custom block model
 	 * 
-	 * @param addon making this block
+	 * @param plugin making this block
 	 * @param texture to use
 	 * @param textureId[6] Array of faces, give Id's for SubTexture locations
 	 */
-	public GenericCubeBlockDesign(Addon addon, Texture texture, int[] textureId) {
+	public GenericCubeBlockDesign(Plugin plugin, Texture texture, int[] textureId) {
 
 		if (textureId.length != 6) {
 			throw new IllegalArgumentException("Invalid textureId Array length: " + textureId.length + ". Should be 6");
@@ -24,7 +24,7 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 
 		setQuadNumber(6);
 
-		setMinBrightness(0.0F).setMaxBrightness(1.0F).setTexture(addon, texture);
+		setMinBrightness(0.0F).setMaxBrightness(1.0F).setTexture(plugin, texture);
 
 		Quad bottom = new Quad(0, texture.getSubTexture(textureId[0]));
 		bottom.addVertex(0, 0.0F, 0.0F, 0.0F);
@@ -74,23 +74,23 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 	/**
 	 * Creates a basic cube custom block model with only one texture
 	 * 
-	 * @param addon making this block
+	 * @param plugin making this block
 	 * @param texture to use
 	 * @param textureId to get the SubTexture to use
 	 */
-	public GenericCubeBlockDesign(Addon addon, Texture texture, int textureId) {
-		this(addon, texture, getIdMap(textureId));
+	public GenericCubeBlockDesign(Plugin plugin, Texture texture, int textureId) {
+		this(plugin, texture, getIdMap(textureId));
 	}
 	
 	/**
 	 * Creates a basic cube custom block model with only one texture
 	 * 
-	 * @param addon making this block
+	 * @param plugin making this block
 	 * @param texture url to use - must be square
 	 * @param textureSize size of the width/height of the texture in pixels
 	 */
-	public GenericCubeBlockDesign(Addon addon, String texture, int textureSize) {
-		this(addon, new Texture(addon, texture, textureSize, textureSize, textureSize), 0);
+	public GenericCubeBlockDesign(Plugin plugin, String texture, int textureSize) {
+		this(plugin, new Texture(plugin, texture, textureSize, textureSize, textureSize), 0);
 	}
 
 	private static int[] getIdMap(int textureId) {

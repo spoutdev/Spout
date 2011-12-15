@@ -3,22 +3,22 @@ package org.getspout.commons.block.design;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.getspout.commons.addon.Addon;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.commons.block.design.SubTexture;
 
 public class Texture {
 
 	public String texture;
-	public Addon addon;
+	public Plugin plugin;
 	public int width;
 	public int height;
 	public int spriteSize;
 
 	public List<SubTexture> subTextures;
 
-	public Texture(Addon addon, String texture, int width, int height, int spriteSize) {
+	public Texture(Plugin plugin, String texture, int width, int height, int spriteSize) {
 		this.texture = texture;
-		this.addon = addon;
+		this.plugin = plugin;
 		this.width = width;
 		this.height = height;
 		this.spriteSize = spriteSize;
@@ -57,7 +57,7 @@ public class Texture {
 		return height;
 	}
 	
-	public Addon getAddon() {
-		return addon;
+	public Plugin getPlugin() {
+		return plugin;
 	}
 }

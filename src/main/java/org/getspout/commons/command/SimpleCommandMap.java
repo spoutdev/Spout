@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.getspout.commons.ChatColor;
-import org.getspout.commons.Client;
+import org.getspout.commons.Game;
+import org.getspout.commons.Game;
 import org.getspout.commons.command.Command;
 import org.getspout.commons.command.CommandException;
 import org.getspout.commons.command.CommandMap;
@@ -39,17 +40,17 @@ import org.getspout.commons.plugin.PluginDescriptionFile;
 public final class SimpleCommandMap implements CommandMap {
 	private final Map<String, Command> knownCommands = new HashMap<String, Command>();
 	private final Set<String> aliases = new HashSet<String>();
-	private final Client client;
+	private final Game game;
 
-	public SimpleCommandMap(final Client client) {
-		this.client = client;
-		setDefaultCommands(client);
+	public SimpleCommandMap(final Game game) {
+		this.game = game;
+		setDefaultCommands(game);
 	}
 
-	private void setDefaultCommands(final Client client) {
-		register("bukkit", new VersionCommand("version", client));
-		register("bukkit", new ReloadCommand("reload", client));
-		register("bukkit", new AddonsCommand("plugins", client));
+	private void setDefaultCommands(final Game game) {
+		register("bukkit", new VersionCommand("version", game));
+		register("bukkit", new ReloadCommand("reload", game));
+		register("bukkit", new AddonsCommand("plugins", game));
 	}
 
 	/**
@@ -163,7 +164,7 @@ public final class SimpleCommandMap implements CommandMap {
 		}
 		knownCommands.clear();
 		aliases.clear();
-		setDefaultCommands(client);
+		setDefaultCommands(game);
 	}
 
 	public Command getCommand(String name) {
@@ -171,11 +172,11 @@ public final class SimpleCommandMap implements CommandMap {
 	}
 
 	private static class VersionCommand extends Command {
-		private final Client client;
+		private final Game game;
 
-		public VersionCommand(String name, Client client) {
+		public VersionCommand(String name, Game game) {
 			super(name);
-			this.client = client;
+			this.game = game;
 			this.description = "Gets the version of this spoutcraft including any plugins in use";
 			this.usageMessage = "/version [plugin name]";
 			this.setAliases(Arrays.asList("ver", "about"));
@@ -184,7 +185,7 @@ public final class SimpleCommandMap implements CommandMap {
 		@Override
 		public boolean execute(CommandSender sender, String currentAlias, String[] args) {
 			if (args.length == 0) {
-				sender.sendMessage("This spoutcraft is running " + ChatColor.GREEN + client.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + client.getVersion());
+				sender.sendMessage("This spoutcraft is running " + ChatColor.GREEN + game.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + game.getVersion());
 				sender.sendMessage("This spoutcraft is also sporting some funky dev build of Bukkit!");
 			} else {
 				StringBuilder name = new StringBuilder();
@@ -196,7 +197,7 @@ public final class SimpleCommandMap implements CommandMap {
 					name.append(arg);
 				}
 
-				Plugin plugin = client.getAddonManager().getAddon(name.toString());
+				Plugin plugin = game.getPluginManager().getAddon(name.toString());
 
 				if (plugin != null) {
 					PluginDescriptionFile desc = plugin.getDescription();
@@ -253,11 +254,11 @@ public final class SimpleCommandMap implements CommandMap {
 	private static class ReloadCommand extends Command {
 
 		@SuppressWarnings("unused")
-		private final Client client;
+		private final Game game;
 
-		public ReloadCommand(String name, Client client) {
+		public ReloadCommand(String name, Game game) {
 			super(name);
-			this.client = client;
+			this.game = game;
 			this.description = "Reloads the spoutcraft configuration and plugins";
 			this.usageMessage = "/reload";
 			this.setAliases(Arrays.asList("rl"));
@@ -275,11 +276,11 @@ public final class SimpleCommandMap implements CommandMap {
 
 	private static class AddonsCommand extends Command {
 
-		private final Client client;
+		private final Game game;
 
-		public AddonsCommand(String name, Client client) {
+		public AddonsCommand(String name, Game game) {
 			super(name);
-			this.client = client;
+			this.game = game;
 			this.description = "Gets a list of plugins running on the spoutcraft";
 			this.usageMessage = "/plugins";
 			this.setAliases(Arrays.asList("pl"));
@@ -293,7 +294,7 @@ public final class SimpleCommandMap implements CommandMap {
 
 		private String getAddonList() {
 			StringBuilder pluginList = new StringBuilder();
-			Plugin[] plugins = client.getAddonManager().getAddons();
+			Plugin[] plugins = game.getPluginManager().getAddons();
 
 			for (Plugin plugin : plugins) {
 				if (pluginList.length() > 0) {

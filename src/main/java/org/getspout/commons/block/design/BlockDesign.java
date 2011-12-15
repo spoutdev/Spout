@@ -5,8 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.getspout.commons.addon.Addon;
-import org.getspout.commons.material.Block;
+import org.getspout.commons.plugin.Plugin;
+import org.getspout.commons.block.Block;
 import org.getspout.commons.block.design.BlockDesign;
 import org.getspout.commons.block.design.Quad;
 import org.getspout.commons.block.design.Texture;
@@ -97,11 +97,11 @@ public interface BlockDesign {
 	/**
 	 * Sets the specified Texture for this BlockDesign
 	 * 
-	 * @param addon associated with the texture
+	 * @param plugin associated with the texture
 	 * @param texture to set
 	 * @return this
 	 */
-	public BlockDesign setTexture(Addon addon, Texture texture);
+	public BlockDesign setTexture(Plugin plugin, Texture texture);
 	
 	/**
 	 * Sets the bounding box for this block
@@ -199,10 +199,10 @@ public interface BlockDesign {
 	public String getTexureURL();
 	
 	/**
-	 * Gets the name of the addon associated with this blocks texture
-	 * @return name of the addon
+	 * Gets the name of the plugin associated with this blocks texture
+	 * @return name of the plugin
 	 */
-	public String getTextureAddon();
+	public String getTexturePlugin();
 	
 	/**
 	 * True if this design has been reset.
