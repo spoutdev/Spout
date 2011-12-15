@@ -268,7 +268,7 @@ public final class GlowServer implements Server {
         Bukkit.setServer(this);
         
         monitor = new DeadlockMonitor();
-        monitor.start();
+        //monitor.start();
         
         ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
         bootstrap.setFactory(factory);
