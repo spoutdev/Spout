@@ -63,7 +63,9 @@ public class Vector3 {
 	public Vector3 normalize(){
 		return Vector3.normalize(this);
 	}
-	
+	public double[] toArray(){
+		return Vector3.toArray(this);
+	}
 	
 	
 	public static Vector3 Zero = new Vector3(0,0,0);
@@ -102,6 +104,10 @@ public class Vector3 {
 	
 	public static Vector3 cross(Vector3 a, Vector3 b){
 		return new Vector3( a.getY()*b.getZ() - a.getZ() * b.getY(), a.getZ()*b.getX() - a.getX() * b.getZ(), a.getX() * b.getY() - a.getY() * b.getX());
+	}
+	
+	public static double[] toArray(Vector3 a){
+		return new double[]{a.getX(), a.getY(), a.getZ()};
 	}
 	
 }

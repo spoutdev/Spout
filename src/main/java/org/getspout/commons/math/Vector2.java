@@ -54,6 +54,9 @@ public class Vector2 {
 	public Vector2 normalize(){
 		return Vector2.normalize(this);
 	}
+	public double[] toArray(){
+		return Vector2.toArray(this);
+	}
 	
 	
 	
@@ -89,6 +92,8 @@ public class Vector2 {
 	public static double dot(Vector2 a, Vector2 b){
 		return (a.getX() * b.getX() + a.getY() * b.getY() );
 	}
-	
-	
+
+	public static double[] toArray(Vector2 a){
+		return new double[]{a.getX(), a.getY()};
+	}
 }
