@@ -26,11 +26,23 @@ public class Matrix {
 		return data[index(row, column, dimension)];
 	}
 	
+	public void set(int row, int column, double value){
+		if((row < 0 || row > dimension)) throw new IllegalArgumentException("Row must be between 0 and "+ dimension);
+		if((column < 0 || column > dimension)) throw new IllegalArgumentException("Column must be between 0 and "+ dimension);
+		data[index(row, column, dimension)] = value;
+	}
+	
+	public Matrix multiply(Matrix that){
+		return Matrix.multiply(this, that);
+	}
+	
+	public Matrix add(Matrix that){
+		return Matrix.add(this, that);
+	}
 	
 	
 	
-	
-	public static Matrix Add(Matrix a, Matrix b){
+	public static Matrix add(Matrix a, Matrix b){
 		if(a.dimension != b.dimension) throw new IllegalArgumentException("Matrix Dimensions must be equal");
 		Matrix res = new Matrix(a.dimension);
 		for(int x = 0; x < res.dimension; x++){
@@ -41,7 +53,7 @@ public class Matrix {
 		return res;
 	}
 	
-	public static Matrix Multiply(Matrix a, Matrix b){
+	public static Matrix multiply(Matrix a, Matrix b){
 		if(a.dimension != b.dimension) throw new IllegalArgumentException("Matrix Dimensions must be equal");
 		Matrix res = new Matrix(a.dimension);
 		for(int i = 0; i< res.dimension; i++)
@@ -60,12 +72,39 @@ public class Matrix {
 	}
 	
 	
+
+	
+	private static int index(int x, int y, int dim){
+		return (y * dim + x);
+	}
+	
+	
+	
 	public static Matrix createIdentity(){
 		return new Matrix(4);
 	}
 	
-	private static int index(int x, int y, int dim){
-		return (y * dim + x);
+	public static Matrix translate(Vector3 vector){
+		Matrix res = createIdentity();
+		res.set(0, 3, vector.getX());
+		res.set(1, 3, vector.getY());
+		res.set(2, 3, vector.getY());
+		return res;
+	}
+	
+	public static Matrix scale(double ammount){
+		Matrix res = createIdentity();
+		res.set(0, 0, ammount);
+		res.set(1, 1, ammount);
+		res.set(2, 2, ammount);
+		return res;
+	}
+	public static Matrix scale(Vector3 ammount){
+		Matrix res = createIdentity();
+		res.set(0, 0, ammount.getX());
+		res.set(1, 1, ammount.getY());
+		res.set(2, 2, ammount.getZ());
+		return res;
 	}
 	
 }
