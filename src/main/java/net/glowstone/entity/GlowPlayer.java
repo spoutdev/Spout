@@ -26,6 +26,7 @@ import net.glowstone.inventory.InventoryViewer;
 import net.glowstone.util.Parameter;
 import net.glowstone.util.TextWrapper;
 import net.glowstone.net.Session;
+import net.glowstone.window.WindowID;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.map.MapView;
 
@@ -131,6 +132,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      * Whether the player is sprinting
      */
     private boolean isSprinting;
+    
+    /*
+     * The ID of the window that the player has open
+     * -1 if nothing is open
+     */
+    private byte openedWindow = -1;
 
     /**
      * Creates a new player and adds it to the world.
@@ -921,6 +928,52 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         return new ExperienceMessage((byte)getExperience(), (byte)getLevel(), (short)getTotalExperience());
     }
 
+    /*
+     * Should check whether a window is open with hasWindowOpen first
+     * If no window is open it will return -1
+     */
+    public byte getOpenWindow()
+    {
+        return this.openedWindow;
+    }
+    
+    /*
+     * Keep in mind - own inventory does not count as a window on Notchian client!
+     */
+    public boolean hasWindowOpen()
+    {
+        return this.openedWindow > -1;
+    }
+    
+    public void onClosedWindow()
+    {
+        this.openedWindow = -1;
+    }
+    
+    /*
+     * Tries to open a window of the given type (WindowID.<type>)
+     * Returns false if the window could not be opened (one was already open)
+     *  True otherwise
+     * if no slotcount is necessary use the overloaded function without it
+     */
+    public boolean openWindow(byte windowid, byte slotcount)
+    {
+        if(!this.hasWindowOpen())
+        {
+            getSession().send(new OpenWindowMessage(WindowID.uniqueID, windowid, WindowID.getWindowTitle(windowid, slotcount), slotcount));
+            WindowID.incrementUniqueID();
+            this.openedWindow = windowid;
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean openWindow(byte windowid)
+    {
+        return openWindow(windowid, (byte)0);
+    }
 
     public Map<String, Object> serialize() {
         Map<String, Object> ret = new HashMap<String, Object>();
