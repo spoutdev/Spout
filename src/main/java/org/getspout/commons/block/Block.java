@@ -33,9 +33,11 @@
 package org.getspout.commons.block;
 
 import org.getspout.commons.World;
+import org.getspout.commons.material.Material;
+import org.getspout.commons.metadata.Metadatable;
 import org.getspout.commons.util.FixedLocation;
 
-public interface Block {
+public interface Block extends Metadatable {
 
 	/**
 	 * Gets the hardness of this block
@@ -43,7 +45,6 @@ public interface Block {
 	 */
 	public float getHardness();
 
-	
 	/**
 	 * Sets the hardness of this block
 	 * @param hardness to set to
@@ -68,14 +69,14 @@ public interface Block {
 	 * @return block type-id
 	 */
 	public int getTypeId();
-	
+
 	/**
 	 * Gets the metadata for this block
 	 *
 	 * @return block metadata
-	 */	
+	 */
 	public byte getData();
-	
+
 	/**
 	 * Gets the block at the given offsets
 	 *
@@ -141,7 +142,7 @@ public interface Block {
 	 * @return z-coordinate
 	 */
 	public int getZ();
-	
+
 	/**
 	 * Gets the material that this block represents
 	 * 
@@ -154,7 +155,6 @@ public interface Block {
 	 *
 	 * @return Location of block
 	 */
-
 	public FixedLocation getLocation();
 
 	/**

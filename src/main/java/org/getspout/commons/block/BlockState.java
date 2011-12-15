@@ -33,7 +33,9 @@
 package org.getspout.commons.block;
 
 import org.getspout.commons.World;
+import org.getspout.commons.metadata.Metadatable;
 import org.getspout.commons.util.FixedLocation;
+
 /**
  * Represents a captured state of a block, which will not change automatically.
  *
@@ -42,7 +44,7 @@ import org.getspout.commons.util.FixedLocation;
  * the state of the block and you will not know, or they may change the block to
  * another type entirely, causing your BlockState to become invalid.
  */
-public interface BlockState {
+public interface BlockState extends Metadatable {
 
 	/**
 	 * Gets the block represented by this BlockState
@@ -50,7 +52,7 @@ public interface BlockState {
 	 * @return Block that this BlockState represents
 	 */
 	Block getBlock();
-	
+
 	/**
 	 * Gets the location represented by this blockstate
 	 * 
@@ -136,4 +138,5 @@ public interface BlockState {
 	 * @return true if the update was successful, otherwise false
 	 */
 	boolean update(boolean force);
+
 }
