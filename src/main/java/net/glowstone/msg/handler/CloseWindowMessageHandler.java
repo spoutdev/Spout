@@ -19,6 +19,8 @@ public final class CloseWindowMessageHandler extends MessageHandler<CloseWindowM
             }
             player.setItemOnCursor(null);
         }
+        
+        player.onClosedWindow();
     }
     
 }
