@@ -1,7 +1,7 @@
 package org.getspout.commons.geo.cuboid;
 
 import org.getspout.commons.geo.point.Point;
-import org.getspout.commons.geo.point.Vector;
+import org.getspout.commons.math.Vector3;
 
 /**
  * Represents a Cuboid shaped volume that is located somewhere in a world.
@@ -10,9 +10,9 @@ import org.getspout.commons.geo.point.Vector;
 public class Cuboid {
 
 	private Point base;
-	private Vector size;
+	private Vector3 size;
 	
-	public Cuboid(Point base, Vector size) {
+	public Cuboid(Point base, Vector3 size) {
 		this.base = base;
 		this.size = size;
 	}
@@ -25,11 +25,11 @@ public class Cuboid {
 		this.base = base;
 	}
 	
-	public Vector getSize() {
+	public Vector3 getSize() {
 		return size;
 	}
 	
-	public void setSize(Vector size) {
+	public void setSize(Vector3 size) {
 		this.size = size;
 	}
 	

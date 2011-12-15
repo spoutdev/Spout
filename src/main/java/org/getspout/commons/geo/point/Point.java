@@ -1,12 +1,13 @@
 package org.getspout.commons.geo.point;
 
 import org.getspout.commons.geo.World;
+import org.getspout.commons.math.Vector3;
 
 /**
  * Represents an point located in a World
  */
 
-public class Point extends Vector {
+public class Point extends Vector3 {
 
 	private World world;
 	
