@@ -14,22 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.entity;
+package org.getspout.commons.metadata;
 
-import org.getspout.commons.OfflinePlayer;
+import org.getspout.commons.World;
 
-public interface Player extends HumanEntity, OfflinePlayer {
-
-	/**
-	 * Returns if the player is in sneak mode
-	 * @return true if player is in sneak mode
-	 */
-	public boolean isSneaking();
+/**
+ * An WorldMetadataStore stores metadata values for {@link World} objects.
+ */
+public class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
 
 	/**
-	 * Sets the sneak mode the player
-	 * @param sneak true if player should appear sneaking
+	 * Generates a unique metadata key for a {@link World} object based on the world UID.
+	 * @see WorldMetadataStore#Disambiguate(Object, String)
+	 * @param world
+	 * @param metadataKey
+	 * @return
 	 */
-	public void setSneaking(boolean sneak);
+	@Override
+	protected String disambiguate(World world, String metadataKey) {
+		return world.getUID().toString() + ":" + metadataKey;
+	}
 
 }

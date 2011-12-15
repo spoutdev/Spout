@@ -48,14 +48,16 @@ import org.getspout.commons.entity.LightningStrike;
 import org.getspout.commons.entity.LivingEntity;
 import org.getspout.commons.entity.Player;
 import org.getspout.commons.inventory.ItemStack;
+import org.getspout.commons.metadata.Metadatable;
 import org.getspout.commons.util.FixedLocation;
+import org.getspout.commons.util.Location;
 import org.getspout.commons.util.Vector;
 
 /**
  * A representation of the minecraft world
  */
-public interface World {
-	
+public interface World extends Metadatable {
+
 	/**
 	 * Gets the mixed brightness value at the given x, y, z location.
 	 * @param x
@@ -64,7 +66,7 @@ public interface World {
 	 * @return mixed brightness
 	 */
 	public int getMixedBrightnessAt(org.getspout.commons.material.BlockMaterial block, int x, int y, int z);
-	
+
 	/**
 	 * Is true if the block at the x, y, z location is opaque (a solid block).
 	 * @param x
@@ -109,7 +111,7 @@ public interface World {
 	 * @return Type ID of the block at the given location
 	 */
 	public int getBlockTypeIdAt(FixedLocation location);
-	
+
 	/**
 	 * Gets the block data at the given coordinates
 	 *
@@ -119,7 +121,7 @@ public interface World {
 	 * @return Type Data of the block at the given coordinates
 	 */
 	public int getBlockDataAt(int x, int y, int z);
-	
+
 	/**
 	 * Gets the block data at the given {@link Location}
 	 *
@@ -172,7 +174,7 @@ public interface World {
 	 * @return Chunk at the given coordinates
 	 */
 	public Chunk getChunkAt(int x, int z);
-	
+
 	/**
 	 * Gets the {@link Chunk} at the given <b>block</b> coordinates
 	 *
@@ -623,7 +625,6 @@ public interface World {
 	 * @return ChunkGenerator associated with this world
 	 */
 	//public ChunkGenerator getGenerator();
-
 	/**
 	 * Saves world to disk
 	 */
@@ -635,7 +636,6 @@ public interface World {
 	 * @return List containing any or none BlockPopulators
 	 */
 	//public List<BlockPopulator> getPopulators();
-
 	/**
 	 * Spawn an entity of a specific class at the given {@link Location}
 	 *
@@ -743,9 +743,9 @@ public interface World {
 	 * @return Maximum height of the world
 	 */
 	public int getMaxHeight();
-	
+
 	public int getXBitShifts();
-	
+
 	public int getZBitShifts();
 
 	/**
@@ -765,10 +765,10 @@ public interface World {
 	public boolean getKeepSpawnInMemory();
 
 	/**
-	* Sets whether the world's spawn area should be kept loaded into memory or not.
-	*
-	* @param keepLoaded if true then the world's spawn area will be kept loaded into memory.
-	*/
+	 * Sets whether the world's spawn area should be kept loaded into memory or not.
+	 *
+	 * @param keepLoaded if true then the world's spawn area will be kept loaded into memory.
+	 */
 	public void setKeepSpawnInMemory(boolean keepLoaded);
 
 	/**
@@ -784,21 +784,21 @@ public interface World {
 	 * @param value true if the world should automatically save, otherwise false
 	 */
 	public void setAutoSave(boolean value);
-	
+
 	/**
 	 * Returns true if this is a multiplayer world
 	 * 
 	 * @return true if the world is a multiplayer world
 	 */
 	public boolean isMultiplayerWorld();
-	
+
 	/**
 	 * Gets the entity from the entity id, or null if none exists
 	 * @param id to lookup
 	 * @return entity
 	 */
 	public Entity getEntityFromId(int id);
-	
+
 	/**
 	 * Gets the entity from the unique entity id, or null if none exists
 	 * @param id to lookup
@@ -810,6 +810,7 @@ public interface World {
 	 * Represents various map environment types that a world may be
 	 */
 	public enum Environment {
+
 		/**
 		 * Represents the "normal"/"surface world" map
 		 */
@@ -824,6 +825,7 @@ public interface World {
 		SKYLANDS(1);
 
 		private final int id;
+
 		private static final Map<Integer, Environment> lookup = new HashMap<Integer, Environment>();
 
 		private Environment(int id) {
@@ -848,6 +850,7 @@ public interface World {
 				lookup.put(env.getId(), env);
 			}
 		}
+
 	}
 
 }

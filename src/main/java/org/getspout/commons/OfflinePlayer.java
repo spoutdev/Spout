@@ -1,5 +1,5 @@
 /*
- * This file is part of SpoutcraftAPI (http://wiki.getspout.org/).
+ * This file is part of SpoutCommons (http://wiki.getspout.org/).
  * 
  * SpoutcraftAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,22 +14,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.entity;
+package org.getspout.commons;
 
-import org.getspout.commons.OfflinePlayer;
-
-public interface Player extends HumanEntity, OfflinePlayer {
-
-	/**
-	 * Returns if the player is in sneak mode
-	 * @return true if player is in sneak mode
-	 */
-	public boolean isSneaking();
+/**
+ * Represents a player, offline or not.
+ */
+public interface OfflinePlayer {
 
 	/**
-	 * Sets the sneak mode the player
-	 * @param sneak true if player should appear sneaking
+	 * Returns true if this player is online
+	 * @return online
 	 */
-	public void setSneaking(boolean sneak);
+	public boolean isOnline();
+
+	/**
+	 * Returns the name of this player
+	 *
+	 * @return Player name
+	 */
+	public String getName();
 
 }

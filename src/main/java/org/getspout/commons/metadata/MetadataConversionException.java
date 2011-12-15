@@ -14,22 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.entity;
+package org.getspout.commons.metadata;
 
-import org.getspout.commons.OfflinePlayer;
-
-public interface Player extends HumanEntity, OfflinePlayer {
-
-	/**
-	 * Returns if the player is in sneak mode
-	 * @return true if player is in sneak mode
-	 */
-	public boolean isSneaking();
-
-	/**
-	 * Sets the sneak mode the player
-	 * @param sneak true if player should appear sneaking
-	 */
-	public void setSneaking(boolean sneak);
-
+/**
+ * A MetadataConversionException is thrown any time a {@link LazyMetadataValue} attempts to convert a metadata value
+ * to an inappropriate data type.
+ */
+public class MetadataConversionException extends RuntimeException {
+    MetadataConversionException(String message) {
+        super(message);
+    }
 }

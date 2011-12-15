@@ -14,22 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.commons.entity;
+package org.getspout.commons.metadata;
 
-import org.getspout.commons.OfflinePlayer;
-
-public interface Player extends HumanEntity, OfflinePlayer {
-
-	/**
-	 * Returns if the player is in sneak mode
-	 * @return true if player is in sneak mode
-	 */
-	public boolean isSneaking();
-
-	/**
-	 * Sets the sneak mode the player
-	 * @param sneak true if player should appear sneaking
-	 */
-	public void setSneaking(boolean sneak);
-
+/**
+ * A MetadataEvaluationException is thrown any time a {@link LazyMetadataValue} fails to evaluate its value due to
+ * an exception. The originating exception will be included as this exception's cause.
+ */
+public class MetadataEvaluationException extends RuntimeException {
+    MetadataEvaluationException(Throwable cause) {
+        super(cause);
+    }
 }
