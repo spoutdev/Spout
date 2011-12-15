@@ -71,27 +71,23 @@ public class CraftingInventory extends GlowInventory {
         }
 
         Recipe recipe = ((GlowServer) Bukkit.getServer()).getCraftingManager().getCraftingRecipe(items);
-        if(recipe != null)
-        {
+        if (recipe != null) {
             ItemStack currentItem = recipe.getResult();
 
-            if(isShift)
-            {
+            if (isShift) {
                 // Rules of storage for shift clicking are different
                 int maxStackSize = currentItem.getType() == null ? 64 : currentItem.getType().getMaxStackSize();
                 int mat = currentItem.getTypeId();
-                
+
                 short damage = currentItem.getDurability();
-                GlowItemStack[] slots = player.getInventory().getContents();        
+                GlowItemStack[] slots = player.getInventory().getContents();
 
                 int iteration = 0;
-                do
-                {
+                do {
                     Recipe checkrecipe = ((GlowServer) Bukkit.getServer()).getCraftingManager().getCraftingRecipe(items);
                     if (checkrecipe != null) {
                         int toAdd = currentItem.getAmount();
-                        if(checkrecipe.equals(recipe))
-                        {
+                        if (checkrecipe.equals(recipe)) {
                             boolean couldfit = true;
                             // Put the items in the inventory
 
@@ -99,8 +95,12 @@ public class CraftingInventory extends GlowInventory {
                                 // Look for existing stacks to add to
                                 if (slots[craftinsertconversion[j]] != null && slots[craftinsertconversion[j]].getTypeId() == mat && slots[craftinsertconversion[j]].getDurability() == damage) {
                                     int space = maxStackSize - slots[craftinsertconversion[j]].getAmount();
-                                    if (space < 0) continue;
-                                    if (space > toAdd) space = toAdd;
+                                    if (space < 0) {
+                                        continue;
+                                    }
+                                    if (space > toAdd) {
+                                        space = toAdd;
+                                    }
 
                                     slots[craftinsertconversion[j]].setAmount(slots[craftinsertconversion[j]].getAmount() + space);
                                     player.getInventory().setItem(craftinsertconversion[j], slots[craftinsertconversion[j]]);
@@ -122,46 +122,42 @@ public class CraftingInventory extends GlowInventory {
                                 }
                             }
 
-                            if (toAdd > 0) couldfit = false;
+                            if (toAdd > 0) {
+                                couldfit = false;
+                            }
 
-                            if(couldfit)
-                            {
+                            if (couldfit) {
                                 ((GlowServer) Bukkit.getServer()).getCraftingManager().removeItems(items, recipe);
                                 iteration++;
-                            }
-                            else
-                            {
+                            } else {
                                 isShift = false;
                             }
                         }
+                    } else {
+                        isShift = false;
                     }
-                    else isShift = false;
-                } while(isShift && iteration < 64);
-            }
-            else
-            {
+                } while (isShift && iteration < 64);
+            } else {
                 if (recipe != null) {
-                    ItemStack inhand = player.getItemInHand();
+                    ItemStack inhand = player.getItemOnCursor();
                     ItemStack result = recipe.getResult();
-                    if(inhand != null)
-                    {
-                        if(inhand.getTypeId() == result.getTypeId() &&
-                           inhand.getDurability() == result.getDurability())
-                        {
-                            if(result.getAmount() + inhand.getAmount() <= result.getMaxStackSize())
-                            {
+                    if (inhand != null) {
+                        if (inhand.getTypeId() == result.getTypeId()
+                                && inhand.getDurability() == result.getDurability()) {
+                            int ramount = result.getAmount();
+                            int iamount = inhand.getAmount();
+                            int msize = result.getType().getMaxStackSize();
+                            if ((ramount + iamount) <= msize) {
                                 inhand.setAmount(inhand.getAmount() + result.getAmount());
                                 player.setItemOnCursor(new GlowItemStack(inhand));
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         player.setItemOnCursor(new GlowItemStack(result));
                     }
-                    
+
                     ((GlowServer) Bukkit.getServer()).getCraftingManager().removeItems(items, recipe);
-                }   
+                }
             }
             for (int i = 0; i < 4; ++i) {
                 setItem(i, items[i]);

@@ -74,6 +74,8 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
             } else if (inv == player.getInventory().getCraftingInventory()) {
                 if (slot == CraftingInventory.RESULT_SLOT && currentItem != null) {
                     player.getInventory().getCraftingInventory().craft(player, true);
+                    response(session, message, true);
+                    return;
                 }
                 else
                 {
@@ -274,23 +276,121 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
             }
         }
         
-        if(message.isRightClick())
-        {
-            // TODO: Handle right-clicks
-        }
-        
-        if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && currentItem != null)
+        if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT)
         {
             player.getInventory().getCraftingInventory().craft(player, false);
                  
             response(session, message, true);
             return;
+        }        
+        
+        ItemStack oncursor = player.getItemOnCursor();
+        GlowItemStack newoncursor = null;
+        GlowItemStack newinvitem = null;
+        if (message.isRightClick()) {
+            if (oncursor == null) {
+                if (currentItem != null) {
+                    // Pick up half of the items
+                    int newinvitemcount = (int) Math.floor(currentItem.getAmount() / 2);
+                    int newitemoncursorcount = currentItem.getAmount() - newinvitemcount;
+                    if (newitemoncursorcount > 0) newoncursor = new GlowItemStack(currentItem.getTypeId(), newitemoncursorcount, currentItem.getDurability(), currentItem.getNbtData());
+                    if (newinvitemcount > 0)      newinvitem = new GlowItemStack(currentItem.getTypeId(), newinvitemcount, currentItem.getDurability(), currentItem.getNbtData());
+                    
+                    response(session, message, true);
+                    inv.setItem(slot, newinvitem);
+                    player.setItemOnCursor(newoncursor);
+                }
+            } else {
+                // Right clicking to place a single item
+                int currentitemcount = 0;
+
+                if (currentItem != null) {
+                    currentitemcount = currentItem.getAmount();
+                    if (oncursor.getTypeId() != currentItem.getTypeId()) {
+                        // Item types differ, swap them
+                        response(session, message, true);
+                        
+                        inv.setItem(slot, player.getItemOnCursor());
+                        player.setItemOnCursor(currentItem);
+                    } else {
+                        // Try to add one to the item stack
+                        if (currentItem.getType().getMaxStackSize() <= currentitemcount) {
+                            // The stack is full
+                            response(session, message, false);
+                            return;
+                        }
+                    }
+                }
+                
+                if (oncursor.getType().getMaxStackSize() > 1) {
+                    int newitemoncursorcount = player.getItemOnCursor().getAmount() - 1;
+                    int newinvitemcount = currentitemcount + 1;
+                    
+                    if (newinvitemcount > oncursor.getType().getMaxStackSize()) {
+                        // No space, fail.
+                        response(session, message, false);
+                        return;
+                    }
+                    
+                    if (newitemoncursorcount > 0)   newoncursor = new GlowItemStack(oncursor.getTypeId(), newitemoncursorcount, oncursor.getDurability());
+                    if (newinvitemcount > 0)        newinvitem = new GlowItemStack(oncursor.getTypeId(), newinvitemcount, oncursor.getDurability());
+
+                    response(session, message, true);
+                    
+                    inv.setItem(slot, newinvitem);
+                    player.setItemOnCursor(newoncursor);
+                } else {
+                    // Item not stackable
+                    response(session, message, false);
+                    return;
+                }
+            }
+        } else {
+            // Handle left clicks
+            if (oncursor == null) {
+                newinvitem = null;
+                newoncursor = currentItem;
+            } else {
+                if (currentItem == null) {
+                    // Putting stack on an empty slot
+                    newinvitem = (GlowItemStack) oncursor;
+                    newoncursor = currentItem;
+                } else {
+                    // Putting a stack on another stack
+                    // Check if the stack is of the same type,
+                    //  Put as much as possible on the stack, rest in hand
+                    if (oncursor.getTypeId() == currentItem.getTypeId()) {
+                        int total = currentItem.getAmount() + oncursor.getAmount();
+                        int newinvitemcount = Math.min(currentItem.getType().getMaxStackSize(), total);
+                        int newitemoncursoramount = total - newinvitemcount;
+
+                        if (currentItem.getType().getMaxStackSize() >= newinvitemcount) {
+                            newinvitem = currentItem;
+                            newinvitem.setAmount(newinvitemcount);
+                            if (newitemoncursoramount == 0) {
+                                newoncursor = null;
+                            } else {
+                                newoncursor = (GlowItemStack) oncursor;
+                                newoncursor.setAmount(newitemoncursoramount);
+                            }
+                        } else {
+                            response(session, message, false);
+                            return;
+                        }
+                    } else {
+                        // Items are not the same type, swap them
+                        newinvitem = (GlowItemStack) oncursor;
+                        newoncursor = currentItem;
+                    }
+                }
+            }
+            
+            response(session, message, true);
+            
+            inv.setItem(slot, newinvitem);
+            player.setItemOnCursor(newoncursor);
+            return;
         }
-        
-        response(session, message, true);
-        
-        inv.setItem(slot, player.getItemOnCursor());
-        player.setItemOnCursor(currentItem);
     }
     
     private void response(Session session, WindowClickMessage message, boolean success) {
