@@ -48,7 +48,7 @@ public interface Game {
 	 *  
 	 *  If this game is a client, and connected to a server, this is the address connected to.
 	 *  
-	 *  If niether, this is null.
+	 *  If neither, this is null.
 	 *  
 	 *   Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
 	 * @return address
