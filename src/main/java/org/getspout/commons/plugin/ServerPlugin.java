@@ -16,10 +16,9 @@
  */
 package org.getspout.commons.plugin;
 
-import java.io.File;
-
 import org.getspout.commons.addon.java.JavaAddon;
-import org.getspout.commons.plugin.PluginDescriptionFile;
+import org.getspout.commons.command.Command;
+import org.getspout.commons.command.CommandSource;
 
 public final class ServerPlugin extends JavaAddon {
 
@@ -40,6 +39,11 @@ public final class ServerPlugin extends JavaAddon {
 		if (other instanceof JavaAddon) {
 			return ((JavaAddon) other).getDescription().getName().equals(getDescription().getName());
 		}
+		return false;
+	}
+
+	@Override
+	public boolean processCommand(CommandSource source, Command command, Enum<?> commandEnum, String[] args, int baseIndex) {
 		return false;
 	}
 }

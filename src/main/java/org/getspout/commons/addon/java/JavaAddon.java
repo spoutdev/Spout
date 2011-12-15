@@ -22,10 +22,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.getspout.commons.Game;
 import org.getspout.commons.UnsafeMethod;
-import org.getspout.commons.addon.java.AddonClassLoader;
-import org.getspout.commons.addon.java.JavaAddonLoader;
 import org.getspout.commons.command.Command;
-import org.getspout.commons.command.CommandSender;
 import org.getspout.commons.plugin.Plugin;
 import org.getspout.commons.plugin.PluginDescriptionFile;
 import org.getspout.commons.plugin.PluginLoader;
@@ -122,11 +119,6 @@ public abstract class JavaAddon implements Plugin {
 		return classLoader;
 	}
 
-	@UnsafeMethod
-	public boolean onCommand(CommandSender paramCommandSender, Command paramCommand, String paramString, String[] paramArrayOfString) {
-		return false;
-	}
-	
 	@Override
 	public final int hashCode() {
 		return (new HashCodeBuilder().append(file).append(dataFolder).append(description!=null?description.getName():"").toHashCode());

@@ -16,53 +16,40 @@
  */
 package org.getspout.commons.command;
 
-import org.getspout.commons.command.Command;
-import org.getspout.commons.command.CommandException;
-import org.getspout.commons.command.CommandExecutor;
-import org.getspout.commons.command.CommandSender;
 import org.getspout.commons.plugin.Plugin;
 
-public final class AddonCommand extends Command {
+public final class AddonCommand implements CommandExecutor {
 	private final Plugin owningAddon;
 	private CommandExecutor executor;
 
 	protected AddonCommand(String name, Plugin owner) {
-		super(name);
 		this.executor = owner;
 		this.owningAddon = owner;
-		this.usageMessage = "";
 	}
 
-	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+	@Override
+	public boolean processCommand(CommandSource source, Command command, Enum<?> commandEnum, String[] args, int baseIndex) {
+		
 		boolean success = false;
 
 		if (!this.owningAddon.isEnabled()) {
 			return false;
 		}
 		try {
-			success = this.executor.onCommand(sender, this, commandLabel, args);
+			success = this.executor.processCommand(source, command, commandEnum, args, baseIndex);
 		} catch (Throwable ex) {
-			throw new CommandException("Unhandled exception executing command '" + commandLabel + "' in plugin " + this.owningAddon.getDescription().getFullName(), ex);
+			throw new CommandException("Unhandled exception executing command '" + command.getPreferredName() + "' in plugin " + this.owningAddon.getDescription().getFullName(), ex);
 		}
 
-		if ((!success) && (this.usageMessage.length() > 0)) {
-			for (String line : this.usageMessage.replace("<command>", commandLabel).split("\n")) {
-				sender.sendMessage(line);
-			}
+		if ((!success) && (command.getUsageMessage() != null)) {
+			source.sendMessage(command.getUsageMessage());
 		}
 
 		return success;
 	}
 
-	public void setExecutor(CommandExecutor executor) {
-		this.executor = executor;
-	}
-
-	public CommandExecutor getExecutor() {
-		return this.executor;
-	}
-
 	public Plugin getAddon() {
 		return this.owningAddon;
 	}
+
 }

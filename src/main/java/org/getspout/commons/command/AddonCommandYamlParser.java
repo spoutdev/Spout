@@ -29,7 +29,7 @@ public class AddonCommandYamlParser {
 
 	@SuppressWarnings("unchecked")
 	public static List<Command> parse(Plugin plugin) {
-		List<Command> pluginCmds = new ArrayList<Command>();
+		/*List<Command> pluginCmds = new ArrayList<Command>();
 		Object object = plugin.getDescription().getCommands();
 
 		if (object == null) {
@@ -71,5 +71,7 @@ public class AddonCommandYamlParser {
 			}
 		}
 		return pluginCmds;
+		*/
+		return null;
 	}
 }

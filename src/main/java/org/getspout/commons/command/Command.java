@@ -1,130 +1,121 @@
-/*
- * This file is part of SpoutcraftAPI (http://wiki.getspout.org/).
- * 
- * SpoutcraftAPI is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SpoutcraftAPI is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package org.getspout.commons.command;
 
-import java.util.ArrayList;
-import java.util.List;
+public interface Command {
 
-import org.getspout.commons.command.Command;
-import org.getspout.commons.command.CommandMap;
-import org.getspout.commons.command.CommandSender;
-
-public abstract class Command {
-	private final String name;
-	private String nextLabel;
-	private String label;
-	private List<String> aliases;
-	private List<String> activeAliases;
-	private CommandMap commandMap = null;
-	protected String description = "";
-	protected String usageMessage;
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected Command(String name) {
-		this(name, "", "/" + name, new ArrayList());
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected Command(String name, String description, String usageMessage, List<String> aliases) {
-		this.name = name;
-		this.nextLabel = name;
-		this.label = name;
-		this.description = description;
-		this.usageMessage = usageMessage;
-		this.aliases = aliases;
-		this.activeAliases = new ArrayList(aliases);
-	}
-
-	public abstract boolean execute(CommandSender paramCommandSender, String paramString, String[] paramArrayOfString);
-
-	public String getName() {
-		return this.name;
-	}
-
-	public String getLabel() {
-		return this.label;
-	}
-
-	public boolean setLabel(String name) {
-		this.nextLabel = name;
-		if (!isRegistered()) {
-			this.label = name;
-			return true;
-		}
-		return false;
-	}
-
-	public boolean register(CommandMap commandMap) {
-		if (allowChangesFrom(commandMap)) {
-			this.commandMap = commandMap;
-			return true;
-		}
-
-		return false;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public boolean unregister(CommandMap commandMap) {
-		if (allowChangesFrom(commandMap)) {
-			this.commandMap = null;
-			this.activeAliases = new ArrayList(this.aliases);
-			this.label = this.nextLabel;
-			return true;
-		}
-
-		return false;
-	}
-
-	private boolean allowChangesFrom(CommandMap commandMap) {
-		return (null == this.commandMap) || (this.commandMap == commandMap);
-	}
-
-	public boolean isRegistered() {
-		return null != this.commandMap;
-	}
-
-	public List<String> getAliases() {
-		return this.activeAliases;
-	}
-
-	public String getDescription() {
-		return this.description;
-	}
-
-	public String getUsage() {
-		return this.usageMessage;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Command setAliases(List<String> aliases) {
-		this.aliases = aliases;
-		if (!isRegistered()) {
-			this.activeAliases = new ArrayList(aliases);
-		}
-		return this;
-	}
-
-	public Command setDescription(String description) {
-		this.description = description;
-		return this;
-	}
-
-	public Command setUsage(String usage) {
-		this.usageMessage = usage;
-		return this;
-	}
+	/**
+	 * Creates a command and adds it as a sub-command to the active Command.  
+	 * 
+	 * The sub-command is linked to the given Enum, made the active command and added to the top of the Command stack
+	 * 
+	 * Enums should be unique for every command
+	 * 
+	 * @param commandEnum the Enum to link sub-comamnd to
+	 * @return the new sub-command
+	 */
+	public Command addSubCommand(Enum<?> commandEnum);
+	
+	/**
+	 * Alias for addSubCommand
+	 * 
+	 * @param commandEnum the Enum to link sub-comamnd to
+	 * @return the new sub-command
+	 */
+	public Command s(Enum<?> command);
+	
+	/**
+	 * Completes creation of a sub-command.  There should be a matching call of this method for every call to addSubCommand.
+	 * 
+	 * The topmost Command on the stack is removed and the next highest becomes the active command.
+	 * 
+	 * @return the new active command or null if the stack was empty
+	 */
+	public Command closeSubCommand();
+	
+	/**
+	 * Alias for closeSubCommand.
+	 * 
+	 * @return the new active command
+	 */
+	public Command c();
+	
+	/**
+	 * Sets the name of the active Command.  If this is called more than once for a Command, subsequent calls will set aliases.
+	 * 
+	 * The first free name will be used for the command name.  If no alias is free, then the command will not be registered.  
+	 * 
+	 * Commands can always be accessed using the "plugin-name.command-name".
+	 * 
+	 * @param name the name or alias
+	 * @return the active Command
+	 */
+	public Command setCommandName(String name);
+	
+	/**
+	 * Alias for setCommandName
+	 * 
+	 * @param name the name or alias
+	 * @return the active Command
+	 */
+	public Command n(String name);
+	
+	/**
+	 * Sets the help string for the active Command.  
+	 * 
+	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
+	 * 
+	 * @param the help string
+	 * @return the active Command
+	 */
+	public Command setHelpString(String name);
+	
+	/**
+	 * Alias for setHelpString
+	 * 
+	 * @param the help string
+	 * @return the active Command
+	 */
+	public Command h(String name);
+	
+	/**
+	 * Sets the Executor for the active Command.  
+	 * 
+	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
+	 * 
+	 * @param the help string
+	 * @return the active Command
+	 */
+	public Command setExecutor(CommandExecutor executor);
+	
+	/**
+	 * Alias for setExecutor
+	 * 
+	 * @param the help string
+	 * @return the active Command
+	 */
+	public Command e(String name);
+	
+	/**
+	 * Executes a command based on the provided arguments.  
+	 * 
+	 * The base index is equal to the number of arguments that have already been processed by super commands.
+	 * 
+	 * @param args the command arguments
+	 * @param baseIndex the arguments that have already been processed by 
+	 * @return true on success
+	 */
+	public boolean execute(String[] args, int baseIndex);
+	
+	/**
+	 * Gets the usage message for the command.
+	 * 
+	 * @return the command's usage message
+	 */
+	public String getUsageMessage();
+	
+	/**
+	 * Gets the commands preferred name
+	 * 
+	 * @return the preferred name
+	 */
+	public String getPreferredName();
 }

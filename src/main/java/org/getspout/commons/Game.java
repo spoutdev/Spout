@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.logging.Logger;
 
 import org.getspout.commons.command.AddonCommand;
-import org.getspout.commons.command.CommandSender;
+import org.getspout.commons.command.CommandSource;
 import org.getspout.commons.entity.Player;
 import org.getspout.commons.plugin.PluginManager;
 
@@ -103,7 +103,7 @@ public interface Game {
 	 * @param commandLine text
 	 * @return true if dispatched
 	 */
-	public boolean dispatchCommand(CommandSender sender, String commandLine);
+	public boolean processCommand(CommandSource sender, String commandLine);
 
 	/**
 	 * Gets the update folder. The update folder is used to safely update

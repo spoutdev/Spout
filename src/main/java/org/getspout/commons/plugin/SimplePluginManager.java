@@ -30,22 +30,11 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getspout.commons.addon.java.JavaAddonLoader;
 import org.getspout.commons.Game;
+import org.getspout.commons.addon.java.JavaAddonLoader;
 import org.getspout.commons.command.AddonCommandYamlParser;
 import org.getspout.commons.command.Command;
-import org.getspout.commons.command.SimpleCommandMap;
 import org.getspout.commons.event.Event;
-import org.getspout.commons.event.HandlerList;
-import org.getspout.commons.event.Listener;
-import org.getspout.commons.plugin.Plugin;
-import org.getspout.commons.plugin.PluginLoader;
-import org.getspout.commons.plugin.PluginManager;
-import org.getspout.commons.plugin.InvalidPluginException;
-import org.getspout.commons.plugin.InvalidDescriptionException;
-import org.getspout.commons.plugin.ServerPlugin;
-import org.getspout.commons.plugin.SimpleSecurityManager;
-import org.getspout.commons.plugin.UnknownDependencyException;
 
 public class SimplePluginManager implements PluginManager {
 
@@ -54,13 +43,11 @@ public class SimplePluginManager implements PluginManager {
 	private final List<Plugin> addons = new ArrayList<Plugin>();
 	private final Map<String, Plugin> lookupNames = new HashMap<String, Plugin>();
 	private static File updateDirectory = null;
-	private final SimpleCommandMap commandMap;
 	private final SimpleSecurityManager securityManager;
 	private final double key;
 
-	public SimplePluginManager(Game instance, SimpleCommandMap commandMap, SimpleSecurityManager manager, double key) {
+	public SimplePluginManager(Game instance, SimpleSecurityManager manager, double key) {
 		client = instance;
-		this.commandMap = commandMap;
 		
 		this.key = key;
 		securityManager = manager;
@@ -288,10 +275,6 @@ public class SimplePluginManager implements PluginManager {
 			//}
 			securityManager.lock(key);
 			List<Command> addonCommands = AddonCommandYamlParser.parse(addon);
-
-			if (!addonCommands.isEmpty()) {
-				commandMap.registerAll(addon.getDescription().getName(), addonCommands);
-			}
 
 			try {
 				addon.getAddonLoader().enableAddon(addon);

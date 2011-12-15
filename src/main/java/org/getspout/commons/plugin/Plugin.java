@@ -19,8 +19,6 @@ package org.getspout.commons.plugin;
 import java.util.logging.Logger;
 
 import org.getspout.commons.command.CommandExecutor;
-import org.getspout.commons.plugin.PluginDescriptionFile;
-import org.getspout.commons.plugin.PluginLoader;
 
 public interface Plugin extends CommandExecutor {
 
