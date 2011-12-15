@@ -14,7 +14,7 @@ import org.getspout.commons.entity.Player;
 import org.getspout.commons.inventory.ItemStack;
 import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.material.CustomBlockMaterial;
-import org.getspout.commons.material.CustomItem;
+import org.getspout.commons.material.CustomItemMaterial;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.material.item.GenericCustomItemMaterial;
 import org.getspout.commons.packet.PacketUtil;
@@ -27,7 +27,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	private String fullName;
 	private int customId;
 	private Plugin addon;
-	private CustomItem item;
+	private CustomItemMaterial item;
 	private int blockId;
 	private boolean opaque;
 	private float hardness = 1.5F;
@@ -60,7 +60,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	 * @param isOpaque true if you want the block solid
 	 * @param item to use for the block
 	 */
-	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque, CustomItem item) {
+	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque, CustomItemMaterial item) {
 		opaque = isOpaque;
 		this.blockId = isOpaque ? 1 :20;
 		this.addon = addon;
@@ -144,7 +144,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		return addon;
 	}
 
-	public CustomItem getBlockItem() {
+	public CustomItemMaterial getBlockItem() {
 		return item;
 	}
 	

@@ -29,7 +29,7 @@ import org.getspout.commons.material.item.GenericTool;
 import org.getspout.commons.material.item.GenericWeapon;
 import org.getspout.commons.material.BlockMaterial;
 import org.getspout.commons.material.CustomBlockMaterial;
-import org.getspout.commons.material.CustomItem;
+import org.getspout.commons.material.CustomItemMaterial;
 import org.getspout.commons.material.ItemMaterial;
 import org.getspout.commons.material.Material;
 import org.getspout.commons.material.MaterialData;
@@ -37,8 +37,8 @@ import org.getspout.commons.material.MaterialData;
 public class MaterialData {
 	private final static Object[] idLookup = new Object[3200];
 	private final static List<CustomBlockMaterial> customBlocks = new LinkedList<CustomBlockMaterial>();
-	private final static List<CustomItem> customItems = new LinkedList<CustomItem>();
-	private final static TIntObjectHashMap<CustomItem> customItemLookup = new TIntObjectHashMap<CustomItem>(250);
+	private final static List<CustomItemMaterial> customItems = new LinkedList<CustomItemMaterial>();
+	private final static TIntObjectHashMap<CustomItemMaterial> customItemLookup = new TIntObjectHashMap<CustomItemMaterial>(250);
 	private final static TIntObjectHashMap<CustomBlockMaterial> customBlockLookup = new TIntObjectHashMap<CustomBlockMaterial>(250);
 	private final static HashMap<String, Material> nameLookup = new HashMap<String, Material>(1000);
 	private final static int FLINT_ID = 318;
@@ -436,7 +436,7 @@ public class MaterialData {
 	 * Adds a custom item to the material list
 	 * @param item to add
 	 */
-	public static void addCustomItem(CustomItem item) {
+	public static void addCustomItem(CustomItemMaterial item) {
 		customItemLookup.put(item.getCustomId(), item);
 		customItems.add(item);
 		nameLookup.put(item.getNotchianName().toLowerCase(), item);
@@ -576,8 +576,8 @@ public class MaterialData {
 	 * Gets an array of all currently registered custom items
 	 * @return all registered custom items
 	 */
-	public static CustomItem[] getCustomItems() {
-		CustomItem[] items = new CustomItem[customItems.size()];
+	public static CustomItemMaterial[] getCustomItems() {
+		CustomItemMaterial[] items = new CustomItemMaterial[customItems.size()];
 		for (int i = 0; i < items.length; i++) {
 			items[i] = customItems.get(i);
 		}
@@ -598,7 +598,7 @@ public class MaterialData {
 	 * @param customId to look up from
 	 * @return custom item
 	 */
-	public static CustomItem getCustomItem(int customId) {
+	public static CustomItemMaterial getCustomItem(int customId) {
 		return customItemLookup.get(customId);
 	}
 	

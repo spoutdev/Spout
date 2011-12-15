@@ -7,12 +7,13 @@ import java.io.IOException;
 import org.getspout.commons.block.Block;
 import org.getspout.commons.block.BlockFace;
 import org.getspout.commons.entity.Player;
-import org.getspout.commons.material.CustomItem;
+import org.getspout.commons.inventory.ItemMap;
+import org.getspout.commons.material.CustomItemMaterial;
 import org.getspout.commons.material.MaterialData;
 import org.getspout.commons.packet.PacketUtil;
 import org.getspout.commons.plugin.Plugin;
 
-public class GenericCustomItemMaterial implements CustomItem {
+public class GenericCustomItemMaterial implements CustomItemMaterial {
 	private String name;
 	private String fullName;
 	private Plugin plugin;
@@ -36,7 +37,7 @@ public class GenericCustomItemMaterial implements CustomItem {
 	}
 
 	public GenericCustomItemMaterial(Plugin plugin, String name) {
-		this(plugin, name, UniqueItemStringMap.getId(plugin.getDescription().getName() + name));
+		this(plugin, name, ItemMap.getRootMap().register(plugin.getDescription().getName() + name));
 	}
 
 	public GenericCustomItemMaterial(Plugin plugin, String name, String texture) {
@@ -81,7 +82,7 @@ public class GenericCustomItemMaterial implements CustomItem {
 		return plugin;
 	}
 
-	public CustomItem setTexture(String texture) {
+	public CustomItemMaterial setTexture(String texture) {
 		this.texture = texture;
 		return this;
 	}
