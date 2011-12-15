@@ -46,13 +46,14 @@ public class DefaultBlockPhysics implements BlockPhysicsHandler {
             
             if(blockType == BlockID.WORKBENCH)
             {
-                return GlowWorkbench.interacted(player, rightClick, against);
+                GlowWorkbench.interacted(player, rightClick, against);
+                return false;
             }
             else return block.interacted(player, rightClick, against);
         }
         else
         {
-            return false;
+            return true;
         }
     }
 }

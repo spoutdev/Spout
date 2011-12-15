@@ -225,7 +225,7 @@ public class GlowBlock implements Block {
     
     public boolean interacted(GlowPlayer player, boolean rightClick, BlockFace against)
     {
-        return false;
+        return true;
     }
 
 }
