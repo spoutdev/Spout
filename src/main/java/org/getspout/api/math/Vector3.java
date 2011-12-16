@@ -4,13 +4,30 @@ package org.getspout.api.math;
  * Represents a 3d vector.
  */
 public class Vector3{
-
+	public static Vector3 Zero = new Vector3(0,0,0);
+	public static Vector3 UnitX = new Vector3(1,0,0);
+	public static Vector3 UnitY = new Vector3(0,1,0);
+	public static Vector3 UnitZ = new Vector3(0,0,1);
+	public static Vector3 One = new Vector3(1,1,1);
+	
 	protected double x, y, z;
 	
 	public Vector3(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	public Vector3(){
+		this(0,0,0);
+	}
+	
+	public Vector3(Vector2 vector, double z){
+		this(vector.getX(), vector.getY(), z);
+	}
+	
+	public Vector3(Vector2 vector){
+		this(vector, 0);
 	}
 	
 	public double getX() {
@@ -107,11 +124,6 @@ public class Vector3{
 	}
 	
 	
-	public static Vector3 Zero = new Vector3(0,0,0);
-	public static Vector3 UnitX = new Vector3(1,0,0);
-	public static Vector3 UnitY = new Vector3(0,1,0);
-	public static Vector3 UnitZ = new Vector3(0,0,1);
-	public static Vector3 One = new Vector3(1,1,1);
 	
 	public static double length(Vector3 a){
 		return MathHelper.sqrt(lengthSquared(a));

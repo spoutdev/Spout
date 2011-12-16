@@ -1,6 +1,10 @@
 package org.getspout.api.math;
 
 public class Vector2 {
+	public static Vector2 Zero = new Vector2(0,0);
+	public static Vector2 UnitX = new Vector2(1,0);
+	public static Vector2 UnitY = new Vector2(0,1);
+	public static Vector2 One = new Vector2(1,1);
 	
 	protected double x, y;
 	
@@ -8,6 +12,9 @@ public class Vector2 {
 		this.x = x;
 		this.y = y;
 		
+	}
+	public Vector2(){
+		this(0,0);
 	}
 	
 	public double getX() {
@@ -35,6 +42,7 @@ public class Vector2 {
 	public Vector2 subtract(Vector2 that){
 		return Vector2.subtract(this, that);
 	}
+	
 	public Vector2 scale(double scale){
 		return Vector2.scale(this, scale);
 	}
@@ -42,28 +50,29 @@ public class Vector2 {
 	public double dot(Vector2 that){
 		return Vector2.dot(this, that);
 	}
+	
 	public Vector2 cross(Vector2 that){
 		return new Vector2(y, -x);
 	}
+	
 	public double lengthSquared(){
 		return Vector2.lengthSquared(this);
 	}
+	
 	public double length(){
 		return Vector2.length(this);
 	}
+	
 	public Vector2 normalize(){
 		return Vector2.normalize(this);
 	}
+	
 	public double[] toArray(){
 		return Vector2.toArray(this);
 	}
 	
 	
 	
-	public static Vector2 Zero = new Vector2(0,0);
-	public static Vector2 UnitX = new Vector2(1,0);
-	public static Vector2 UnitY = new Vector2(0,1);
-	public static Vector2 One = new Vector2(1,1);
 	
 	public static double length(Vector2 a){
 		return MathHelper.sqrt(lengthSquared(a));
