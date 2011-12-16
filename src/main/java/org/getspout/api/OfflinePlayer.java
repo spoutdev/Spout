@@ -17,18 +17,21 @@
 package org.getspout.api;
 
 /**
- * Represents a player, offline or not.
+ * Represents a player, regardless of whether they are online or offline.
  */
 public interface OfflinePlayer {
 
 	/**
-	 * Returns true if this player is online
-	 * @return online
+	 * Returns true if this player is online.
+	 * <br/><br/>
+	 * If the player is online, this can be safely cast to {@link Player}.
+	 * 
+	 * @return true if online
 	 */
 	public boolean isOnline();
 
 	/**
-	 * Returns the name of this player
+	 * Gets the name of this player.
 	 *
 	 * @return Player name
 	 */
