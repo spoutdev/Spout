@@ -70,7 +70,7 @@ import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
 import org.getspout.server.command.StopCommand;
 import org.getspout.server.command.TimeCommand;
-import org.getspout.server.command.ToggleDownfallCommand;
+import org.getspout.server.command.ToggleStormCommand;
 import org.getspout.server.command.WhitelistCommand;
 import org.getspout.server.config.SingleFileYamlConfiguration;
 import org.getspout.server.inventory.CraftingManager;
@@ -462,7 +462,7 @@ public final class SpoutServer implements Server {
 		commandMap.removeAllOfType(ReloadCommand.class);
 		commandMap.register(new ReloadCommand(this));
 		commandMap.register(new HelpCommand(this, commandMap.getKnownCommands(false)));
-		commandMap.register(new ToggleDownfallCommand(this));
+		commandMap.register(new ToggleStormCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 

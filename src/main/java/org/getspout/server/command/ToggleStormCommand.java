@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.getspout.server.SpoutServer;
 
-public class ToggleDownfallCommand extends SpoutCommand {
-	public ToggleDownfallCommand(SpoutServer server) {
-		super(server, "toggledownfall", "Toggles the weather in a world", "<world>");
+public class ToggleStormCommand extends SpoutCommand {
+	public ToggleStormCommand(SpoutServer server) {
+		super(server, "togglestorm", "Toggles a storm in a world", "<world>");
 	}
 
 	@Override
