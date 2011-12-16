@@ -1,70 +1,55 @@
 package org.getspout.api.command;
 
 public class SimpleCommand implements Command {
-
 	public Command addSubCommand(Enum<?> commandEnum) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command s(Enum<?> command) {
-		// TODO Auto-generated method stub
-		return null;
+	public Command sub(Enum<?> commandEnum) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public Command closeSubCommand() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command c() {
-		// TODO Auto-generated method stub
-		return null;
+	public Command closeSub() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public Command setCommandName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command n(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Command name(String name) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public Command setHelpString(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command h(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Command help(String name) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public Command setExecutor(CommandExecutor executor) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command e(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Command executor(CommandExecutor executor) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public boolean execute(String[] args, int baseIndex) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public String getPreferredName() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public String getUsageMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
 }

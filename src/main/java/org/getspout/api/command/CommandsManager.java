@@ -23,6 +23,15 @@ public interface CommandsManager {
 	public boolean register(String collisionPrefix, Command command);
 
 	/**
+	 *
+	 * @param commands The {@link T} containing commands to register with factory
+	 * @param factory The {@link CommandRegistrationsFactory} that converts {@code commands} into a List of Commands
+	 * @param <T> The type accepted by {@code factory}
+	 * @return Whether this registration was successful.
+	 */
+	public <T> boolean register(T commands, CommandRegistrationsFactory<T> factory);
+
+	/**
 	 * Returns a {@link java.util.Set&lt;Command&gt;} of commands that have been registered with this CommandsManager
 	 * This is a copy, so changes made will not affect the original set that this CommandsManager has.
 	 *

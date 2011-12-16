@@ -41,7 +41,14 @@ public class SimpleCommandsManager implements CommandsManager {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	
+	public <T> boolean register(T commands, CommandRegistrationsFactory<T> factory) {
+		boolean success = true;
+		for (Command command : factory.create(commands)) {
+			success &= register("", command);
+		}
+		return success;
+	}
+
 	public Set<Command> getRegisteredCommands() {
 		return new HashSet<Command>(commands.values());
 	}

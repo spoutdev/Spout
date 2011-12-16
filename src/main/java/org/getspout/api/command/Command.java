@@ -34,14 +34,14 @@ public interface Command {
 	 * @return the new sub-command
 	 */
 	public Command addSubCommand(Enum<?> commandEnum);
-	
+
 	/**
 	 * Alias for addSubCommand
-	 * 
+	 *
 	 * @param commandEnum the Enum to link sub-comamnd to
 	 * @return the new sub-command
 	 */
-	public Command s(Enum<?> command);
+	public Command sub(Enum<?> commandEnum);
 	
 	/**
 	 * Completes creation of a sub-command.  There should be a matching call of this method for every call to addSubCommand.
@@ -51,14 +51,14 @@ public interface Command {
 	 * @return the new active command or null if the stack was empty
 	 */
 	public Command closeSubCommand();
-	
+
 	/**
 	 * Alias for closeSubCommand.
-	 * 
+	 *
 	 * @return the new active command
 	 */
-	public Command c();
-	
+	public Command closeSub();
+
 	/**
 	 * Sets the name of the active Command.  If this is called more than once for a Command, subsequent calls will set aliases.
 	 * 
@@ -70,21 +70,21 @@ public interface Command {
 	 * @return the active Command
 	 */
 	public Command setCommandName(String name);
-	
+
 	/**
 	 * Alias for setCommandName
-	 * 
+	 *
 	 * @param name the name or alias
 	 * @return the active Command
 	 */
-	public Command n(String name);
-	
+	public Command name(String name);
+
 	/**
 	 * Sets the help string for the active Command.  
 	 * 
 	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
 	 * 
-	 * @param the help string
+	 * @param name the help string
 	 * @return the active Command
 	 */
 	public Command setHelpString(String name);
@@ -92,17 +92,17 @@ public interface Command {
 	/**
 	 * Alias for setHelpString
 	 * 
-	 * @param the help string
+	 * @param name the help string
 	 * @return the active Command
 	 */
-	public Command h(String name);
+	public Command help(String name);
 	
 	/**
 	 * Sets the Executor for the active Command.  
 	 * 
 	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
 	 * 
-	 * @param the help string
+	 * @param executor the help string
 	 * @return the active Command
 	 */
 	public Command setExecutor(CommandExecutor executor);
@@ -110,10 +110,10 @@ public interface Command {
 	/**
 	 * Alias for setExecutor
 	 * 
-	 * @param the help string
+	 * @param executor the help string
 	 * @return the active Command
 	 */
-	public Command e(String name);
+	public Command executor(CommandExecutor executor);
 	
 	/**
 	 * Executes a command based on the provided arguments.  

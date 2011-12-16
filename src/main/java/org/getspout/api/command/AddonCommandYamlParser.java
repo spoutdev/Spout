@@ -17,17 +17,14 @@
 package org.getspout.api.command;
 
 
-import java.util.List;
-
-
+import java.util.Set;
 
 import org.getspout.api.command.Command;
 import org.getspout.api.plugin.Plugin;
 
-public class AddonCommandYamlParser {
+public class AddonCommandYamlParser implements CommandRegistrationsFactory<Plugin> {
 
-	
-	public static List<Command> parse(Plugin plugin) {
+	public Set<Command> create(Plugin plugin) {
 		/*List<Command> pluginCmds = new ArrayList<Command>();
 		Object object = plugin.getDescription().getCommands();
 

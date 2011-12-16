@@ -274,7 +274,7 @@ public class SimplePluginManager implements PluginManager {
 			//	return;
 			//}
 			securityManager.lock(key);
-			List<Command> addonCommands = AddonCommandYamlParser.parse(addon);
+			Set<Command> addonCommands = new AddonCommandYamlParser().create(addon);
 
 			try {
 				addon.getAddonLoader().enableAddon(addon);
