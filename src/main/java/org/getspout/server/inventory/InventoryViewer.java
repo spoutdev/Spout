@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public interface InventoryViewer {
 	/**
 	 * Inform the viewer that an item has changed.
-	 * @param inventory The GlowInventory in which a slot has changed.
+	 * @param inventory The SpoutInventory in which a slot has changed.
 	 * @param slot The slot number which has changed.
 	 * @param item The ItemStack which the slot has changed to.
 	 */

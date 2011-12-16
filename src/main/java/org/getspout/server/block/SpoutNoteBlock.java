@@ -18,7 +18,7 @@ public class SpoutNoteBlock extends SpoutBlockState implements NoteBlock {
 	public SpoutNoteBlock(SpoutBlock block) {
 		super(block);
 		if (block.getTypeId() != BlockID.NOTE_BLOCK) {
-			throw new IllegalArgumentException("GlowNoteBlock: expected NOTE_BLOCK, got " + block.getType());
+			throw new IllegalArgumentException("SpoutNoteBlock: expected NOTE_BLOCK, got " + block.getType());
 		}
 	}
 

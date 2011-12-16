@@ -327,7 +327,7 @@ public final class SpoutChunk implements Chunk {
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
-	 * @return A GlowBlockState if the entity exists, or null otherwise.
+	 * @return A SpoutBlockState if the entity exists, or null otherwise.
 	 */
 	public SpoutBlockState getEntity(int x, int y, int z) {
 		if (y >= world.getMaxHeight() - 1 || y < 0) return null;

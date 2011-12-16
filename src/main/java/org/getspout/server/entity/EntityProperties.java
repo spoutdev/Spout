@@ -47,7 +47,7 @@ import org.getspout.server.entity.monsters.SpoutCaveSpider;
 import org.getspout.server.entity.monsters.SpoutCreeper;
 import org.getspout.server.entity.monsters.SpoutGhast;
 import org.getspout.server.entity.monsters.SpoutGiant;
-import org.getspout.server.entity.monsters.GlowSilverfish;
+import org.getspout.server.entity.monsters.SpoutSilverfish;
 import org.getspout.server.entity.monsters.SpoutSkeleton;
 import org.getspout.server.entity.monsters.SpoutSlime;
 import org.getspout.server.entity.monsters.SpoutSpider;
@@ -113,9 +113,9 @@ public enum EntityProperties {
 			return new SpoutGiant(server, world);
 		}
 	}, bukkit(CreatureType.GIANT, Giant.class)),
-	SILVERFISH(GlowSilverfish.class, new EntityFactory<GlowSilverfish>() {
-		public GlowSilverfish createEntity(SpoutServer server, SpoutWorld world) {
-			return new GlowSilverfish(server, world);
+	SILVERFISH(SpoutSilverfish.class, new EntityFactory<SpoutSilverfish>() {
+		public SpoutSilverfish createEntity(SpoutServer server, SpoutWorld world) {
+			return new SpoutSilverfish(server, world);
 		}
 	}, bukkit(CreatureType.SILVERFISH, Silverfish.class)),
 	SKELETON(SpoutSkeleton.class, new EntityFactory<SpoutSkeleton>() {
@@ -232,7 +232,7 @@ public enum EntityProperties {
 
 	private static final Map<CreatureType, EntityProperties> creatureTypeLookup = new EnumMap<CreatureType, EntityProperties>(CreatureType.class);
 	private static final Map<Class<? extends Entity>, EntityProperties> bukkitClassLookup = new HashMap<Class<? extends Entity>, EntityProperties>();
-	private static final Map<Class <? extends SpoutEntity>, EntityProperties> glowClassLookup = new HashMap<Class<? extends SpoutEntity>, EntityProperties>();
+	private static final Map<Class <? extends SpoutEntity>, EntityProperties> spoutClassLookup = new HashMap<Class<? extends SpoutEntity>, EntityProperties>();
 
 	static {
 		for (EntityProperties prop : EntityProperties.values()) {
@@ -242,7 +242,7 @@ public enum EntityProperties {
 				if (prop.bukkitClass != null && !bukkitClassLookup.containsKey(prop.bukkitClass)) {
 					bukkitClassLookup.put(prop.bukkitClass, prop);
 				}
-			glowClassLookup.put(prop.entityClass, prop);
+			spoutClassLookup.put(prop.entityClass, prop);
 		}
 	}
 
@@ -254,8 +254,8 @@ public enum EntityProperties {
 		return bukkitClassLookup.get(clazz);
 	}
 
-	public static EntityProperties getByGlowClass(Class<? extends SpoutEntity> clazz) {
-		return glowClassLookup.get(clazz);
+	public static EntityProperties getBySpoutClass(Class<? extends SpoutEntity> clazz) {
+		return spoutClassLookup.get(clazz);
 	}
 
 	private int maxHealth;

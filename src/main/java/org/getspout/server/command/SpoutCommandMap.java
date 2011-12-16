@@ -152,7 +152,7 @@ public class SpoutCommandMap extends SimpleCommandMap {
 	/**
 	 * Perpares the spout command permissions. Should be only run once per plugin manager
 	 */
-	public static void initGlowPermissions(Server server) {
+	public static void initSpoutPermissions(Server server) {
 		PluginManager pm = server.getPluginManager();
 		parent = new Permission(SpoutCommand.PERM_PREFIX, "Gives access to all Spout commads");
 		betterParent = new Permission("spout", "Gives access to all Spout commands and functions");
@@ -170,7 +170,7 @@ public class SpoutCommandMap extends SimpleCommandMap {
 	}
 
 	/**
-	 * Registers GlowCommands using the extra information available from them
+	 * Registers SpoutCommands using the extra information available from them
 	 * @param command
 	 */
 	public void register(SpoutCommand command) {

@@ -192,12 +192,12 @@ public final class McRegionChunkIoService implements ChunkIoService {
 		List<CompoundTag> entities = new ArrayList<CompoundTag>();
 
 		for (Entity entity : chunk.getEntities()) {
-			SpoutEntity glowEntity = (SpoutEntity) entity;
-			EntityStore store = EntityStoreLookupService.find(glowEntity.getClass());
+			SpoutEntity spoutEntity = (SpoutEntity) entity;
+			EntityStore store = EntityStoreLookupService.find(spoutEntity.getClass());
 			if (store == null) {
 				continue;
 			}
-			entities.add(new CompoundTag("", store.save(glowEntity)));
+			entities.add(new CompoundTag("", store.save(spoutEntity)));
 		}
 		levelTags.put("Entities", new ListTag<CompoundTag>("Entities", CompoundTag.class, entities));
 

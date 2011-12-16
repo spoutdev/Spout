@@ -12,7 +12,7 @@ import org.getspout.server.msg.SpawnLightningStrikeMessage;
 import org.getspout.server.util.Position;
 
 /**
- * A GlowLightning strike is an entity produced during thunderstorms.
+ * A SpoutLightning strike is an entity produced during thunderstorms.
  */
 public class SpoutLightningStrike extends SpoutWeather implements LightningStrike {
 	/**

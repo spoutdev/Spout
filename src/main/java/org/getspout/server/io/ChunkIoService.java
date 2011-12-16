@@ -14,7 +14,7 @@ import org.getspout.server.SpoutChunk;
 public interface ChunkIoService {
 	/**
 	 * Reads a single chunk.
-	 * @param chunk The GlowChunk to read into.
+	 * @param chunk The SpoutChunk to read into.
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @throws IOException if an I/O error occurs.

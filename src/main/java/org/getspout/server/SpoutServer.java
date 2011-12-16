@@ -444,7 +444,7 @@ public final class SpoutServer implements Server {
 		DefaultPermissions.registerCorePermissions();
 
 		// Register these first so they're usable while the worlds are loading
-		SpoutCommandMap.initGlowPermissions(this);
+		SpoutCommandMap.initSpoutPermissions(this);
 		commandMap.register(new MeCommand(this));
 		commandMap.register(new ColorCommand(this));
 		commandMap.register(new KickCommand(this));
@@ -584,7 +584,7 @@ public final class SpoutServer implements Server {
 			// Load plugins
 			loadPlugins();
 			DefaultPermissions.registerCorePermissions();
-			SpoutCommandMap.initGlowPermissions(this);
+			SpoutCommandMap.initSpoutPermissions(this);
 			commandMap.registerAllPermissions();
 			enablePlugins(PluginLoadOrder.STARTUP);
 			enablePlugins(PluginLoadOrder.POSTWORLD);
@@ -874,7 +874,7 @@ public final class SpoutServer implements Server {
 	/**
 	 * Gets the PluginManager for interfacing with plugins
 	 *
-	 * @return PluginManager for this GlowServer instance
+	 * @return PluginManager for this SpoutServer instance
 	 */
 	public SimplePluginManager getPluginManager() {
 		return pluginManager;
@@ -883,7 +883,7 @@ public final class SpoutServer implements Server {
 	/**
 	 * Gets the Scheduler for managing scheduled events
 	 *
-	 * @return Scheduler for this GlowServer instance
+	 * @return Scheduler for this SpoutServer instance
 	 */
 	public SpoutScheduler getScheduler() {
 		return scheduler;
@@ -1112,8 +1112,8 @@ public final class SpoutServer implements Server {
 		com.avaje.ebean.config.DataSourceConfig ds = new com.avaje.ebean.config.DataSourceConfig();
 		ds.setDriver(config.getString("database.driver", "org.sqlite.JDBC"));
 		ds.setUrl(config.getString("database.url", "jdbc:sqlite:{DIR}{NAME}.db"));
-		ds.setUsername(config.getString("database.username", "glow"));
-		ds.setPassword(config.getString("database.password", "stone"));
+		ds.setUsername(config.getString("database.username", "spout"));
+		ds.setPassword(config.getString("database.password", "unleashtheflow"));
 		ds.setIsolationLevel(com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation.getLevel(config.getString("database.isolation", "SERIALIZABLE")));
 
 		if (ds.getDriver().contains("sqlite")) {

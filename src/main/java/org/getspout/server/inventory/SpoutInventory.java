@@ -136,7 +136,7 @@ public class SpoutInventory implements Inventory {
 	}
 
 	public void setItem(int index, ItemStack item) {
-		setItem(index, getGlowItemStack(item));
+		setItem(index, getSpoutItemStack(item));
 	}
 
 	/**
@@ -478,7 +478,7 @@ public class SpoutInventory implements Inventory {
 		}
 	}
 
-	public SpoutItemStack getGlowItemStack(ItemStack stack) {
+	public SpoutItemStack getSpoutItemStack(ItemStack stack) {
 		if (stack == null) {
 			return null;
 		} else if (stack instanceof SpoutItemStack) {

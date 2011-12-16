@@ -16,7 +16,7 @@ import org.getspout.server.entity.SpoutPlayer;
  * Represents a map item.
  */
 public final class SpoutMapView implements MapView {
-	//private final Map<GlowPlayer, RenderData> renderCache = new HashMap<GlowPlayer, RenderData>();
+	//private final Map<SpoutPlayer, RenderData> renderCache = new HashMap<SpoutPlayer, RenderData>();
 	private final List<MapRenderer> renderers = new ArrayList<MapRenderer>();
 	private final Map<MapRenderer, Map<SpoutPlayer, SpoutMapCanvas>> canvases = new HashMap<MapRenderer, Map<SpoutPlayer, SpoutMapCanvas>>();
 	private final short id;

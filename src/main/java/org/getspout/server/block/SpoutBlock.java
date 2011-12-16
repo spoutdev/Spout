@@ -220,7 +220,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public String toString() {
-		return "GlowBlock{loc=" + getLocation().toString() + ",type=" + getTypeId() + ",data=" + getData() + "}";
+		return "SpoutBlock{loc=" + getLocation().toString() + ",type=" + getTypeId() + ",data=" + getData() + "}";
 	}
 
 	public boolean interacted(SpoutPlayer player, boolean rightClick, BlockFace against)

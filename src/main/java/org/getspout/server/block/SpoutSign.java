@@ -12,7 +12,7 @@ public class SpoutSign extends SpoutBlockState implements Sign {
 	public SpoutSign(SpoutBlock block) {
 		super(block);
 		if (block.getTypeId() != BlockID.WALL_SIGN && block.getTypeId() != BlockID.SIGN_POST) {
-			throw new IllegalArgumentException("GlowSign: expected WALL_SIGN or SIGN_POST, got " + block.getType());
+			throw new IllegalArgumentException("SpoutSign: expected WALL_SIGN or SIGN_POST, got " + block.getType());
 		}
 		lines = new String[4];
 	}

@@ -310,7 +310,7 @@ public final class SpoutWorld implements World {
 		return entities.getAll(SpoutPlayer.class);
 	}
 
-	// GlowEntity lists
+	// SpoutEntity lists
 
 	public List<Player> getPlayers() {
 		Collection<SpoutPlayer> players = entities.getAll(SpoutPlayer.class);
@@ -648,7 +648,7 @@ public final class SpoutWorld implements World {
 	@SuppressWarnings("unchecked")
 	public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
 		if (clazz.isInstance(SpoutEntity.class)) {
-			return (T)spawnGlowEntity(location, (Class<? extends SpoutEntity>)clazz);
+			return (T)spawnSpoutEntity(location, (Class<? extends SpoutEntity>)clazz);
 		} else {
 			return spawnBukkitEntity(location, clazz);
 		}
@@ -665,8 +665,8 @@ public final class SpoutWorld implements World {
 		return entity;
 	}
 
-	public <T extends SpoutEntity> T spawnGlowEntity(Location location, Class<T> clazz) throws IllegalArgumentException {
-		EntityProperties properties = EntityProperties.getByGlowClass(clazz);
+	public <T extends SpoutEntity> T spawnSpoutEntity(Location location, Class<T> clazz) throws IllegalArgumentException {
+		EntityProperties properties = EntityProperties.getBySpoutClass(clazz);
 		if (properties == null) {
 			throw new IllegalArgumentException("This entity type is unknown to Spout!");
 		}
@@ -717,7 +717,7 @@ public final class SpoutWorld implements World {
 	public LivingEntity spawnCreature(Location loc, CreatureType type) {
 		EntityProperties properties = EntityProperties.getByCreatureType(type);
 		if (properties == null) {
-			throw new IllegalArgumentException("This CreatureType is unknown to Glowstone!");
+			throw new IllegalArgumentException("This CreatureType is unknown to Spoutstone!");
 		}
 		LivingEntity entity = (LivingEntity)properties.getFactory().createEntity(server, this);
 		entity.teleport(loc);
