@@ -1,16 +1,17 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.glowstone</groupId>
     <artifactId>glowstone</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Glowstone</name>
-    <url>https://github.com/SpaceManiac/Glowstone</url>
-    
+    <url>https://github.com/SpoutDev/Glowstone</url>
+
     <scm>
-        <connection>scm:git:git://github.com/SpaceManiac/Glowstone.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/SpaceManiac/Glowstone.git</developerConnection>
-        <url>https://github.com/SpaceManiac/Glowstone</url>
+        <connection>scm:git:git://github.com/SpoutDev/Glowstone.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/SpoutDev/Glowstone.git</developerConnection>
+        <url>https://github.com/SpoutDev/Glowstone</url>
     </scm>
 
     <properties>
@@ -23,7 +24,7 @@
             <id>bukkit</id>
             <name>Bukkit Artifactory</name>
             <layout>default</layout>
-            <url>http://repo.bukkit.org/content/groups/bukkit_repos/</url>
+            <url>http://repo.bukkit.org/content/groups/repo/</url>
         </repository>
         <repository>
             <id>jboss</id>
@@ -43,15 +44,24 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype OSS</name>
+            <layout>default</layout>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
-    
+
     <pluginRepositories>
         <pluginRepository>
             <id>bukkit-plugins</id>
             <url>http://repo.bukkit.org/content/repositories/plugins-release-local/</url>
         </pluginRepository>
     </pluginRepositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
@@ -102,12 +112,17 @@
         <dependency>
             <groupId>com.grahamedgecombe.jterminal</groupId>
             <artifactId>jterminal</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.getspout</groupId>
+            <artifactId>commons</artifactId>
+            <version>dev-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    
+
     <build>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>com.lukegb.mojo</groupId>
@@ -126,7 +141,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -137,7 +152,7 @@
                             <Main-Class>net.glowstone.GlowServer</Main-Class>
                             <Implementation-Title>${project.name}</Implementation-Title>
                             <Implementation-Version>${describe}</Implementation-Version>
-                            <Implementation-Vendor>SpaceManiac</Implementation-Vendor>
+                            <Implementation-Vendor>SpoutDev</Implementation-Vendor>
                             <Specification-Title>Bukkit</Specification-Title>
                             <Specification-Version>${bukkit.version}</Specification-Version>
                             <Specification-Vendor>Bukkit Team</Specification-Vendor>
@@ -154,14 +169,14 @@
                     </archive>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.4</version>
                 <executions>
-                <execution>
-                    <phase>package</phase>
+                    <execution>
+                        <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
@@ -175,7 +190,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -223,5 +238,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>
