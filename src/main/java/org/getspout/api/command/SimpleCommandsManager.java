@@ -15,7 +15,7 @@ public class SimpleCommandsManager implements CommandsManager {
 	private Map<String, Command> commands = new HashMap<String, Command>();
 	private Set<String> aliases;
 
-	//@Override
+	
 	public boolean execute(String input, CommandSource sender, boolean fuzzyLookup) {
 		String[] split = input.split(" ");
 		return execute(null, split, sender, fuzzyLookup);
@@ -36,22 +36,22 @@ public class SimpleCommandsManager implements CommandsManager {
 		return true;
 	}
 
-	@Override
+	
 	public boolean register(String collisionPrefix, Command command) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	@Override
+	
 	public Set<Command> getRegisteredCommands() {
 		return new HashSet<Command>(commands.values());
 	}
 
-	@Override
+	
 	public Set<String> getRegisteredCommandNames() {
 		return new HashSet<String>(commands.keySet());
 	}
 
-	@Override
+	
 	public Command getCommand(String name) {
 		return getCommand(name, false);
 	}
@@ -69,7 +69,7 @@ public class SimpleCommandsManager implements CommandsManager {
 		return command;
 	}
 
-	@Override
+	
 	public boolean unregisterCommandsOfType(Class<? extends Command> clazz) {
 		List<String> toRemove = new ArrayList<String>();
 		for (Iterator<Command> i = commands.values().iterator(); i.hasNext(); ) {
@@ -91,7 +91,7 @@ public class SimpleCommandsManager implements CommandsManager {
 		return toRemove.size() > 0;
 	}
 
-	@Override
+	
 	public boolean unregisterCommand(Command cmd) {
 		List<String> toRemove = new ArrayList<String>();
 		for (Iterator<Command> i = commands.values().iterator(); i.hasNext(); ) {
