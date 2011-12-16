@@ -2,13 +2,12 @@ package org.getspout.server.generator.populators;
 
 import java.util.Random;
 
+import org.getspout.server.generator.populators.trees.GenericTreeGenerator;
+import org.getspout.server.generator.populators.trees.NormalTree;
+
 import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
-
-import org.getspout.server.block.BlockID;
-import static org.getspout.server.block.BlockID.LEAVES;
 
 /**
  * BlockPopulator that adds trees based on the biome.
@@ -55,6 +54,7 @@ public class TreePopulator extends BlockPopulator {
 				chance = 120;
 				break;
 			case TAIGA:
+				// Redwood
 				chance = 120;
 				data = 1;
 				height = 8 + random.nextInt(3);
@@ -78,67 +78,9 @@ public class TreePopulator extends BlockPopulator {
 			centerX = (source.getX() << 4) + random.nextInt(16);
 			centerZ = (source.getZ() << 4) + random.nextInt(16);
 			if (random.nextInt(300) < chance) {
-				int centerY = world.getHighestBlockYAt(centerX, centerZ) - 1;
-				Block sourceBlock = world.getBlockAt(centerX, centerY, centerZ);
-
-				if (sourceBlock.getTypeId() == BlockID.GRASS) {
-					world.getBlockAt(centerX, centerY + height + 1, centerZ).setTypeIdAndData(LEAVES, data, true);
-					for (int j = 0; j < 4; j++) {
-						world.getBlockAt(centerX, centerY + height + 1 - j, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-						world.getBlockAt(centerX, centerY + height + 1 - j, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-						world.getBlockAt(centerX - 1, centerY + height + 1 - j, centerZ).setTypeIdAndData(LEAVES, data, true);
-						world.getBlockAt(centerX + 1, centerY + height + 1 - j, centerZ).setTypeIdAndData(LEAVES, data, true);
-					}
-
-					if (random.nextBoolean()) {
-						world.getBlockAt(centerX + 1, centerY + height, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-					}
-					if (random.nextBoolean()) {
-						world.getBlockAt(centerX + 1, centerY + height, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-					}
-					if (random.nextBoolean()) {
-						world.getBlockAt(centerX - 1, centerY + height, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-					}
-					if (random.nextBoolean()) {
-						world.getBlockAt(centerX - 1, centerY + height, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-					}
-
-					world.getBlockAt(centerX + 1, centerY + height - 1, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX + 1, centerY + height - 1, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX - 1, centerY + height - 1, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX - 1, centerY + height - 1, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX + 1, centerY + height - 2, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX + 1, centerY + height - 2, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX - 1, centerY + height - 2, centerZ + 1).setTypeIdAndData(LEAVES, data, true);
-					world.getBlockAt(centerX - 1, centerY + height - 2, centerZ - 1).setTypeIdAndData(LEAVES, data, true);
-
-					for (int j = 0; j < 2; j++) {
-						for (int k = -2; k <= 2; k++) {
-							for (int l = -2; l <= 2; l++) {
-								world.getBlockAt(centerX + k, centerY + height - 1 - j, centerZ + l).setTypeIdAndData(LEAVES, data, true);
-							}
-						}
-					}
-
-					for (int j = 0; j < 2; j++) {
-						if (random.nextBoolean()) {
-							world.getBlockAt(centerX + 2, centerY + height - 1 - j, centerZ + 2).setTypeIdAndData(0, (byte) 0, true);
-						}
-						if (random.nextBoolean()) {
-							world.getBlockAt(centerX + 2, centerY + height - 1 - j, centerZ - 2).setTypeIdAndData(0, (byte) 0, true);
-						}
-						if (random.nextBoolean()) {
-							world.getBlockAt(centerX - 2, centerY + height - 1 - j, centerZ + 2).setTypeIdAndData(0, (byte) 0, true);
-						}
-						if (random.nextBoolean()) {
-							world.getBlockAt(centerX - 2, centerY + height - 1 - j, centerZ - 2).setTypeIdAndData(0, (byte) 0, true);
-						}
-					}
-
-					// Trunk
-					for (int y = 1; y <= height; y++) {
-						world.getBlockAt(centerX, centerY + y, centerZ).setTypeIdAndData(BlockID.LOG, data, true);
-					}
+				if (data == 0) {
+					GenericTreeGenerator treegen = new NormalTree();
+					treegen.generate(random, centerX, centerZ, height, world);
 				}
 			}
 		}
