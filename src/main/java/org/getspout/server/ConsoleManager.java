@@ -69,7 +69,7 @@ public final class ConsoleManager {
 
 	private boolean running = true;
 	private boolean jLine = false;
-
+    
 	public ConsoleManager(SpoutServer server, String mode) {
 		this.server = server;
 
