@@ -6,23 +6,21 @@ import org.getspout.server.entity.monsters.SpoutGhast;
 import org.getspout.server.util.nbt.CompoundTag;
 
 public class GhastStore extends FlyingStore<SpoutGhast> {
+	public GhastStore() {
+		super(SpoutGhast.class, "Ghast");
+	}
 
-    public GhastStore() {
-        super(SpoutGhast.class, "Ghast");
-    }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public GhastStore(Class clazz, String id) {
-        super(clazz, id);
-    }
-    
-    public SpoutGhast load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
-        
-        SpoutGhast entity = new SpoutGhast(server, world);
-        
-        super.load(entity, compound);
-        
-        return entity;
-    }
-    
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public GhastStore(Class clazz, String id) {
+		super(clazz, id);
+	}
+
+	public SpoutGhast load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
+
+		SpoutGhast entity = new SpoutGhast(server, world);
+
+		super.load(entity, compound);
+
+		return entity;
+	}
 }

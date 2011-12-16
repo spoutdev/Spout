@@ -1,35 +1,34 @@
 package org.getspout.server.msg;
 
 public final class OpenWindowMessage extends Message {
+	private final int id, type, slots;
+	private final String title;
 
-    private final int id, type, slots;
-    private final String title;
+	public OpenWindowMessage(int id, int type, String title, int slots) {
+		this.id = id;
+		this.type = type;
+		this.title = title;
+		this.slots = slots;
+	}
 
-    public OpenWindowMessage(int id, int type, String title, int slots) {
-        this.id = id;
-        this.type = type;
-        this.title = title;
-        this.slots = slots;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public int getId() {
-        return id;
-    }
+	public int getType() {
+		return type;
+	}
 
-    public int getType() {
-        return type;
-    }
+	public int getSlots() {
+		return slots;
+	}
 
-    public int getSlots() {
-        return slots;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public String toString() {
-    return "OpenWindowMessage{id=" + id + ",type=" + type + ",slots=" + slots + ",title=" + title + "}";
-    }
+	@Override
+	public String toString() {
+	return "OpenWindowMessage{id=" + id + ",type=" + type + ",slots=" + slots + ",title=" + title + "}";
+	}
 }

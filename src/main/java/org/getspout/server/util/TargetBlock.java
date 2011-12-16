@@ -1,4 +1,3 @@
-// $Id$
 /*
  * Copyright (c) 2011 toi
  *
@@ -24,178 +23,180 @@
 package org.getspout.server.util;
 
 import gnu.trove.set.hash.TIntHashSet;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
+
 import org.getspout.server.block.BlockID;
 import org.getspout.server.entity.SpoutLivingEntity;
 
 /**
  * This class uses an inefficient method to figure out what block a player
  * is looking towards.
- * 
+ *
  * Originally written by toi. It was ported to WorldEdit and trimmed down by
  * sk89q. Thanks to Raphfrk for optimization of toi's original class.
- * Ported to Glowstone by zml2008. This classs has come a long way. Treat it nicely.
- * 
+ * Ported to Spout by zml2008. This classs has come a long way. Treat it nicely.
+ *
  * @author toi
  */
 public class TargetBlock {
-    private World world;
-    private int maxDistance;
-    private double checkDistance, curDistance;
-    private Vector targetPos = new Vector();
-    private Vector targetPosDouble = new Vector();
-    private Vector prevPos = new Vector();
-    private Vector offset = new Vector();
-    private TIntHashSet transparentBlocks = null;
+	private World world;
+	private int maxDistance;
+	private double checkDistance, curDistance;
+	private Vector targetPos = new Vector();
+	private Vector targetPosDouble = new Vector();
+	private Vector prevPos = new Vector();
+	private Vector offset = new Vector();
+	private TIntHashSet transparentBlocks = null;
 
-    /**
-     * Constructor requiring a player, uses default values
-     * 
-     * @param player player to work with
-     */
-    public TargetBlock(SpoutLivingEntity player, TIntHashSet transparent) {
-        this.world = player.getWorld();
-        this.setValues(player.getLocation(), 300, player.getEyeHeight(), 0.2, transparent);
-    }
+	/**
+	 * Constructor requiring a player, uses default values
+	 *
+	 * @param player player to work with
+	 */
+	public TargetBlock(SpoutLivingEntity player, TIntHashSet transparent) {
+		this.world = player.getWorld();
+		this.setValues(player.getLocation(), 300, player.getEyeHeight(), 0.2, transparent);
+	}
 
-    /**
-     * Constructor requiring a player, max distance and a checking distance
-     * 
-     * @param player LocalPlayer to work with
-     * @param maxDistance how far it checks for blocks
-     * @param checkDistance how often to check for blocks, the smaller the more precise
-     */
-    public TargetBlock(SpoutLivingEntity player, int maxDistance, double checkDistance, TIntHashSet transparent) {
-        this.world = player.getWorld();
-        this.setValues(player.getLocation(),
-                maxDistance, player.getEyeHeight(), checkDistance, transparent);
-    }
+	/**
+	 * Constructor requiring a player, max distance and a checking distance
+	 *
+	 * @param player LocalPlayer to work with
+	 * @param maxDistance how far it checks for blocks
+	 * @param checkDistance how often to check for blocks, the smaller the more precise
+	 */
+	public TargetBlock(SpoutLivingEntity player, int maxDistance, double checkDistance, TIntHashSet transparent) {
+		this.world = player.getWorld();
+		this.setValues(player.getLocation(),
+				maxDistance, player.getEyeHeight(), checkDistance, transparent);
+	}
 
-    /**
-     * Set the values, all constructors uses this function
-     * 
-     * @param loc location of the view
-     * @param maxDistance how far it checks for blocks
-     * @param viewHeight where the view is positioned in y-axis
-     * @param checkDistance how often to check for blocks, the smaller the more precise
-     */
-    private void setValues(Location loc,
-            int maxDistance, double viewHeight, double checkDistance, TIntHashSet transparent) {
-        this.maxDistance = maxDistance;
-        this.checkDistance = checkDistance;
-        this.curDistance = 0;
-        int xRotation = (int)(loc.getYaw() + 90) % 360;
-        int yRotation = (int)loc.getPitch() * -1;
+	/**
+	 * Set the values, all constructors uses this function
+	 *
+	 * @param loc location of the view
+	 * @param maxDistance how far it checks for blocks
+	 * @param viewHeight where the view is positioned in y-axis
+	 * @param checkDistance how often to check for blocks, the smaller the more precise
+	 */
+	private void setValues(Location loc,
+			int maxDistance, double viewHeight, double checkDistance, TIntHashSet transparent) {
+		this.maxDistance = maxDistance;
+		this.checkDistance = checkDistance;
+		this.curDistance = 0;
+		int xRotation = (int)(loc.getYaw() + 90) % 360;
+		int yRotation = (int)loc.getPitch() * -1;
 
-        double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
-        
-        offset = new Vector((h * Math.cos(Math.toRadians(xRotation))),
-                            (checkDistance * Math.sin(Math.toRadians(yRotation))),
-                            (h * Math.sin(Math.toRadians(xRotation))));
+		double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
 
-        targetPosDouble = loc.add(0, viewHeight, 0).toVector();
-        targetPos = targetPosDouble.toBlockVector();
-        prevPos = targetPos;
-        this.transparentBlocks = transparent;
-        if (transparentBlocks == null) {
-            transparentBlocks = new TIntHashSet(new int[] {0});
-        }
-    }
+		offset = new Vector((h * Math.cos(Math.toRadians(xRotation))),
+							(checkDistance * Math.sin(Math.toRadians(yRotation))),
+							(h * Math.sin(Math.toRadians(xRotation))));
 
-    /**
-     * Returns any block at the sight. Returns null if out of range or if no
-     * viable target was found. Will try to return the last valid air block it finds.
-     * 
-     * @return Block
-     */
-    public Location getAnyTargetBlock() {
-        boolean searchForLastBlock = true;
-        Location lastBlock = null;
-        while (getNextBlock()) {
-            if (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR) {
-                if(searchForLastBlock) {
-                    lastBlock = getCurrentBlock();
-                    if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxHeight() - 1) {
-                        searchForLastBlock = false;
-                    }
-                }
-            } else {
-                break;
-            }
-        }
-        Location currentBlock = getCurrentBlock();
-        return (currentBlock != null ? currentBlock : lastBlock);
-    }
-    
-    /**
-     * Returns the block at the sight. Returns null if out of range or if no
-     * viable target was found
-     * 
-     * @return Block
-     */
-    public Location getTargetBlock() {
-        while (getNextBlock()
-                && (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR));
-        return getCurrentBlock();
-    }
+		targetPosDouble = loc.add(0, viewHeight, 0).toVector();
+		targetPos = targetPosDouble.toBlockVector();
+		prevPos = targetPos;
+		this.transparentBlocks = transparent;
+		if (transparentBlocks == null) {
+			transparentBlocks = new TIntHashSet(new int[] {0});
+		}
+	}
 
-    /**
-     * Returns the block at the sight. Returns null if out of range or if no
-     * viable target was found
-     * 
-     * @return Block
-     */
-    public Location getSolidTargetBlock() {
-        while (getNextBlock()
-                && transparentBlocks.contains(world.getBlockTypeIdAt(getCurrentBlock())));
-        return getCurrentBlock();
-    }
+	/**
+	 * Returns any block at the sight. Returns null if out of range or if no
+	 * viable target was found. Will try to return the last valid air block it finds.
+	 *
+	 * @return Block
+	 */
+	public Location getAnyTargetBlock() {
+		boolean searchForLastBlock = true;
+		Location lastBlock = null;
+		while (getNextBlock()) {
+			if (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR) {
+				if(searchForLastBlock) {
+					lastBlock = getCurrentBlock();
+					if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxHeight() - 1) {
+						searchForLastBlock = false;
+					}
+				}
+			} else {
+				break;
+			}
+		}
+		Location currentBlock = getCurrentBlock();
+		return (currentBlock != null ? currentBlock : lastBlock);
+	}
 
-    /**
-     * Get next block
-     * 
-     * @return next block position
-     */
-    public boolean getNextBlock() {
-        prevPos = targetPos;
-        do {
-            curDistance += checkDistance;
-            
-            targetPosDouble.add(offset);
-            targetPos = targetPosDouble.toBlockVector();
-        } while (curDistance <= maxDistance
-                && targetPos.getBlockX() == prevPos.getBlockX()
-                && targetPos.getBlockY() == prevPos.getBlockY()
-                && targetPos.getBlockZ() == prevPos.getBlockZ());
-        
-        if (curDistance > maxDistance) {
-            return false;
-        }
+	/**
+	 * Returns the block at the sight. Returns null if out of range or if no
+	 * viable target was found
+	 *
+	 * @return Block
+	 */
+	public Location getTargetBlock() {
+		while (getNextBlock()
+				&& (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR));
+		return getCurrentBlock();
+	}
 
-        return true;
-    }
+	/**
+	 * Returns the block at the sight. Returns null if out of range or if no
+	 * viable target was found
+	 *
+	 * @return Block
+	 */
+	public Location getSolidTargetBlock() {
+		while (getNextBlock()
+				&& transparentBlocks.contains(world.getBlockTypeIdAt(getCurrentBlock())));
+		return getCurrentBlock();
+	}
 
-    /**
-     * Returns the current block along the line of vision
-     * 
-     * @return block position
-     */
-    public Location getCurrentBlock() {
-        if (curDistance > maxDistance) {
-            return null;
-        } else {
-            return targetPos.toLocation(world);
-        }
-    }
+	/**
+	 * Get next block
+	 *
+	 * @return next block position
+	 */
+	public boolean getNextBlock() {
+		prevPos = targetPos;
+		do {
+			curDistance += checkDistance;
 
-    /**
-     * Returns the previous block in the aimed path
-     * 
-     * @return block position
-     */
-    public Location getPreviousBlock() {
-        return prevPos.toLocation(world);
-    }
+			targetPosDouble.add(offset);
+			targetPos = targetPosDouble.toBlockVector();
+		} while (curDistance <= maxDistance
+				&& targetPos.getBlockX() == prevPos.getBlockX()
+				&& targetPos.getBlockY() == prevPos.getBlockY()
+				&& targetPos.getBlockZ() == prevPos.getBlockZ());
+
+		if (curDistance > maxDistance) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns the current block along the line of vision
+	 *
+	 * @return block position
+	 */
+	public Location getCurrentBlock() {
+		if (curDistance > maxDistance) {
+			return null;
+		} else {
+			return targetPos.toLocation(world);
+		}
+	}
+
+	/**
+	 * Returns the previous block in the aimed path
+	 *
+	 * @return block position
+	 */
+	public Location getPreviousBlock() {
+		return prevPos.toLocation(world);
+	}
 }

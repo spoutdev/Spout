@@ -12,21 +12,22 @@ server:
     allow-end: true
     allow-flight: false
     view-distance: 10
-    motd: Glowstone Server
+    motd: Spout Server
     def-game-mode: SURVIVAL
     fuzzy-command-matching: false
     folders:
         plugins: plugins
         update: update
-
 database:
     driver: "org.sqlite.JDBC"
     url: jdbc:sqlite:{DIR}{NAME}.db
-    username: glowstone
+    username: spout
     password: nether
     isolation: SERIALIZABLE
-
 aliases:
-    "<3glowstone":
+    "icanhazspout":
+        - version
+        - plugins
+    "<3spout":
         - version
         - plugins

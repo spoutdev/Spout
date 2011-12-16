@@ -1,9 +1,8 @@
 package org.getspout.server.entity;
 
-      
 import org.bukkit.entity.Creature;
-
 import org.bukkit.entity.LivingEntity;
+
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.msg.Message;
@@ -16,70 +15,69 @@ import org.getspout.server.util.Position;
  * @author Graham Edgecombe
  */
 public abstract class SpoutCreature extends SpoutLivingEntity implements Creature {
+	/**
+	 * The type of monster.
+	 */
+	private final int type;
 
-    /**
-     * The type of monster.
-     */
-    private final int type;
-   
-    /**
-     * The monster's target.
-     */
-    private LivingEntity target;
+	/**
+	 * The monster's target.
+	 */
+	private LivingEntity target;
 
-    /**
-     * Creates a new monster.
-     * @param world The world this monster is in.
-     * @param type The type of monster.
-     */
-    public SpoutCreature(SpoutServer server, SpoutWorld world, int type) {
-        super(server, world);
-        this.type = type;
-    }
+	/**
+	 * Creates a new monster.
+	 * @param world The world this monster is in.
+	 * @param type The type of monster.
+	 */
+	public SpoutCreature(SpoutServer server, SpoutWorld world, int type) {
+		super(server, world);
+		this.type = type;
+	}
 
-    /**
-     * Gets the type of monster.
-     * @return The type of monster.
-     */
-    public int getType() {
-        return type;
-    }
+	/**
+	 * Gets the type of monster.
+	 * @return The type of monster.
+	 */
+	public int getType() {
+		return type;
+	}
 
-    @Override
-    public Message createSpawnMessage() {
-        int x = Position.getIntX(location);
-        int y = Position.getIntY(location);
-        int z = Position.getIntZ(location);
-        int yaw = Position.getIntYaw(location);
-        int pitch = Position.getIntPitch(location);
-        return new SpawnMobMessage(id, type, x, y, z, yaw, pitch, metadata);
-    }
+	@Override
+	public Message createSpawnMessage() {
+		int x = Position.getIntX(location);
+		int y = Position.getIntY(location);
+		int z = Position.getIntZ(location);
+		int yaw = Position.getIntYaw(location);
+		int pitch = Position.getIntPitch(location);
+		return new SpawnMobMessage(id, type, x, y, z, yaw, pitch, metadata);
+	}
 
-    public void setTarget(LivingEntity target) {
-        this.target = target;
-    }
+	public void setTarget(LivingEntity target) {
+		this.target = target;
+	}
 
-    public LivingEntity getTarget() {
-        return target;
-    }
+	public LivingEntity getTarget() {
+		return target;
+	}
 
-    public int getMaxHealth() {
-        throw new UnsupportedOperationException("Not supported yet!");
-    }
-    
-    /**
-     * Gets the creature's age
-     * @return the creature's age
-     */
-    public int getAge() {
-        return getTicksLived();
-    }
+	public int getMaxHealth() {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
 
-    /**
-     * Sets the creature's age
-     * @param age the creature's new age
-     */
-    public void setAge(int age) {
-        setTicksLived(age);
-    }
+	/**
+	 * Gets the creature's age
+	 * @return the creature's age
+	 */
+	public int getAge() {
+		return getTicksLived();
+	}
+
+	/**
+	 * Sets the creature's age
+	 * @param age the creature's new age
+	 */
+	public void setAge(int age) {
+		setTicksLived(age);
+	}
 }

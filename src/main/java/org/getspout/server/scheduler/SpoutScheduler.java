@@ -10,12 +10,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import org.bukkit.World;
 
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
+
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 
@@ -24,210 +25,208 @@ import org.getspout.server.SpoutWorld;
  * @author Graham Edgecombe
  */
 public final class SpoutScheduler implements BukkitScheduler {
+	/**
+	 * The number of milliseconds between pulses.
+	 */
+	private static final int PULSE_EVERY = 50;
 
-    /**
-     * The number of milliseconds between pulses.
-     */
-    private static final int PULSE_EVERY = 50;
-    
-    /**
-     * The server this scheduler is managing for.
-     */
-    private final SpoutServer server;
+	/**
+	 * The server this scheduler is managing for.
+	 */
+	private final SpoutServer server;
 
-    /**
-     * The scheduled executor service which backs this scheduler.
-     */
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	/**
+	 * The scheduled executor service which backs this scheduler.
+	 */
+	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    /**
-     * A list of new tasks to be added.
-     */
-    private final List<SpoutTask> newTasks = new ArrayList<SpoutTask>();
+	/**
+	 * A list of new tasks to be added.
+	 */
+	private final List<SpoutTask> newTasks = new ArrayList<SpoutTask>();
 
-    /**
-     * A list of tasks to be removed.
-     */
-    private final List<SpoutTask> oldTasks = new ArrayList<SpoutTask>();
+	/**
+	 * A list of tasks to be removed.
+	 */
+	private final List<SpoutTask> oldTasks = new ArrayList<SpoutTask>();
 
-    /**
-     * A list of active tasks.
-     */
-    private final List<SpoutTask> tasks = new ArrayList<SpoutTask>();
+	/**
+	 * A list of active tasks.
+	 */
+	private final List<SpoutTask> tasks = new ArrayList<SpoutTask>();
 
-    private final List<SpoutWorker> activeWorkers = Collections.synchronizedList(new ArrayList<SpoutWorker>());
+	private final List<SpoutWorker> activeWorkers = Collections.synchronizedList(new ArrayList<SpoutWorker>());
 
-    /**
-     * Creates a new task scheduler.
-     */
-    public SpoutScheduler(SpoutServer server) {
-        this.server = server;
-        
-        executor.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                try {
-                    pulse();
-                }
-                catch (Exception ex) {
-                    SpoutServer.logger.log(Level.SEVERE, "Error while pulsing: {0}", ex.getMessage());
-                    ex.printStackTrace();
-                }
-            }
-        }, 0, PULSE_EVERY, TimeUnit.MILLISECONDS);
-    }
-    
-    /**
-     * Stops the scheduler and all tasks.
-     */
-    public void stop() {
-        cancelAllTasks();
-        executor.shutdown();
-    }
+	/**
+	 * Creates a new task scheduler.
+	 */
+	public SpoutScheduler(SpoutServer server) {
+		this.server = server;
 
-    /**
-     * Schedules the specified task.
-     * @param task The task.
-     */
-    private int schedule(SpoutTask task) {
-        synchronized (newTasks) {
-            newTasks.add(task);
-        }
-        return task.getTaskId();
-    }
+		executor.scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				try {
+					pulse();
+				}
+				catch (Exception ex) {
+					SpoutServer.logger.log(Level.SEVERE, "Error while pulsing: {0}", ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		}, 0, PULSE_EVERY, TimeUnit.MILLISECONDS);
+	}
 
-    /**
-     * Adds new tasks and updates existing tasks, removing them if necessary.
-     */
-    private void pulse() {
-        // Perform basic world pulse.
-        server.getSessionRegistry().pulse();
-        for (World world : server.getWorlds())
-            ((SpoutWorld) world).pulse();
-        
-        // Bring in new tasks this tick.
-        synchronized (newTasks) {
-            for (SpoutTask task : newTasks) {
-                tasks.add(task);
-            }
-            newTasks.clear();
-        }
-        
-        // Remove old tasks this tick.
-        synchronized (oldTasks) {
-            for (SpoutTask task : oldTasks) {
-                tasks.remove(task);
-            }
-            oldTasks.clear();
-        }
+	/**
+	 * Stops the scheduler and all tasks.
+	 */
+	public void stop() {
+		cancelAllTasks();
+		executor.shutdown();
+	}
 
-        // Run the relevant tasks.
-        for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
-            SpoutTask task = it.next();
-            boolean cont = false;
-            try {
-                if (task.isSync()) {
-                    cont = task.pulse();
-                } else {
-                    activeWorkers.add(new SpoutWorker(task, this));
-                }
-            } finally {
-                if (!cont) it.remove();
-            }
-        }
-    }
+	/**
+	 * Schedules the specified task.
+	 * @param task The task.
+	 */
+	private int schedule(SpoutTask task) {
+		synchronized (newTasks) {
+			newTasks.add(task);
+		}
+		return task.getTaskId();
+	}
 
-    public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
-        return scheduleSyncRepeatingTask(plugin, task, delay, -1);
-    }
+	/**
+	 * Adds new tasks and updates existing tasks, removing them if necessary.
+	 */
+	private void pulse() {
+		// Perform basic world pulse.
+		server.getSessionRegistry().pulse();
+		for (World world : server.getWorlds())
+			((SpoutWorld) world).pulse();
 
-    public int scheduleSyncDelayedTask(Plugin plugin, Runnable task) {
-        return scheduleSyncDelayedTask(plugin, task, 0);
-    }
+		// Bring in new tasks this tick.
+		synchronized (newTasks) {
+			for (SpoutTask task : newTasks) {
+				tasks.add(task);
+			}
+			newTasks.clear();
+		}
 
-    public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
-        return schedule(new SpoutTask(plugin, task, true, delay, period));
-    }
+		// Remove old tasks this tick.
+		synchronized (oldTasks) {
+			for (SpoutTask task : oldTasks) {
+				tasks.remove(task);
+			}
+			oldTasks.clear();
+		}
 
-    public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay) {
-        return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
-    }
+		// Run the relevant tasks.
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
+			SpoutTask task = it.next();
+			boolean cont = false;
+			try {
+				if (task.isSync()) {
+					cont = task.pulse();
+				} else {
+					activeWorkers.add(new SpoutWorker(task, this));
+				}
+			} finally {
+				if (!cont) it.remove();
+			}
+		}
+	}
 
-    public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task) {
-        return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
-    }
+	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
+		return scheduleSyncRepeatingTask(plugin, task, delay, -1);
+	}
 
-    public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
-        return schedule(new SpoutTask(plugin, task, false, delay, period));
-    }
+	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task) {
+		return scheduleSyncDelayedTask(plugin, task, 0);
+	}
 
-    public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> task) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
+		return schedule(new SpoutTask(plugin, task, true, delay, period));
+	}
 
-    public void cancelTask(int taskId) {
-        synchronized(oldTasks) {
-            for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
-                SpoutTask task = it.next();
-                if (task.getTaskId() == taskId) {
-                    oldTasks.add(task);
-                    return;
-                }
-            }
-        }
-    }
+	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay) {
+		return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
+	}
 
-    public void cancelTasks(Plugin plugin) {
-        synchronized(oldTasks) {
-            for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
-                SpoutTask task = it.next();
-                if (task.getOwner() == plugin) {
-                    oldTasks.add(task);
-                }
-            }
-        }
-    }
+	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task) {
+		return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
+	}
 
-    public void cancelAllTasks() {
-        synchronized(oldTasks) {
-            for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
-                oldTasks.add(it.next());
-            }
-        }
-    }
+	public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
+		return schedule(new SpoutTask(plugin, task, false, delay, period));
+	}
 
-    public boolean isCurrentlyRunning(int taskId) {
-        for (SpoutWorker worker : activeWorkers) {
-            if (worker.getTaskId() == taskId && worker.getThread().isAlive()) return true;
-        }
-        return false;
-    }
+	public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> task) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
-    public boolean isQueued(int taskId) {
-        synchronized (tasks) {
-            for (SpoutTask task : tasks) {
-                if (task.getTaskId() == taskId) return true;
-            }
-        }
-        return false;
-    }
+	public void cancelTask(int taskId) {
+		synchronized(oldTasks) {
+			for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
+				SpoutTask task = it.next();
+				if (task.getTaskId() == taskId) {
+					oldTasks.add(task);
+					return;
+				}
+			}
+		}
+	}
 
-    public List<BukkitWorker> getActiveWorkers() {
-        return new ArrayList<BukkitWorker>(activeWorkers);
-    }
+	public void cancelTasks(Plugin plugin) {
+		synchronized(oldTasks) {
+			for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
+				SpoutTask task = it.next();
+				if (task.getOwner() == plugin) {
+					oldTasks.add(task);
+				}
+			}
+		}
+	}
 
-    public List<BukkitTask> getPendingTasks() {
-        ArrayList<BukkitTask> result = new ArrayList<BukkitTask>();
-        for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
-            result.add(it.next());
-        }
-        return result;
-    }
+	public void cancelAllTasks() {
+		synchronized(oldTasks) {
+			for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
+				oldTasks.add(it.next());
+			}
+		}
+	}
 
-    synchronized void workerComplete(SpoutWorker worker) {
-        activeWorkers.remove(worker);
-        if (!worker.shouldContinue()) {
-            oldTasks.add(worker.getTask());
-        }
-    }
+	public boolean isCurrentlyRunning(int taskId) {
+		for (SpoutWorker worker : activeWorkers) {
+			if (worker.getTaskId() == taskId && worker.getThread().isAlive()) return true;
+		}
+		return false;
+	}
 
+	public boolean isQueued(int taskId) {
+		synchronized (tasks) {
+			for (SpoutTask task : tasks) {
+				if (task.getTaskId() == taskId) return true;
+			}
+		}
+		return false;
+	}
+
+	public List<BukkitWorker> getActiveWorkers() {
+		return new ArrayList<BukkitWorker>(activeWorkers);
+	}
+
+	public List<BukkitTask> getPendingTasks() {
+		ArrayList<BukkitTask> result = new ArrayList<BukkitTask>();
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
+			result.add(it.next());
+		}
+		return result;
+	}
+
+	synchronized void workerComplete(SpoutWorker worker) {
+		activeWorkers.remove(worker);
+		if (!worker.shouldContinue()) {
+			oldTasks.add(worker.getTask());
+		}
+	}
 }

@@ -6,18 +6,16 @@ import org.getspout.server.entity.animals.SpoutPig;
 import org.getspout.server.util.nbt.CompoundTag;
 
 public class PigStore extends AnimalsStore<SpoutPig> {
+	public PigStore() {
+		super(SpoutPig.class, "Pig");
+	}
 
-    public PigStore() {
-        super(SpoutPig.class, "Pig");
-    }
-    
-    public SpoutPig load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
-        
-        SpoutPig entity = new SpoutPig(server, world);
-        
-        super.load(entity, compound);
-        
-        return entity;
-    }
-    
+	public SpoutPig load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
+
+		SpoutPig entity = new SpoutPig(server, world);
+
+		super.load(entity, compound);
+
+		return entity;
+	}
 }

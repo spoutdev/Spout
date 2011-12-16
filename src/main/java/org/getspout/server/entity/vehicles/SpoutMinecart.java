@@ -1,72 +1,72 @@
 package org.getspout.server.entity.vehicles;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Minecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.Damager;
 import org.getspout.server.item.ItemID;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SpoutMinecart extends SpoutVehicle implements Minecart {
-    
-    private int damage = 0;
-    
-    protected boolean slowWhenEmpty;
-    
-    /**
-     * Creates an entity and adds it to the specified world.
-     *
-     * @param server The server.
-     * @param world The world.
-     */
-    public SpoutMinecart(SpoutServer server, SpoutWorld world) {
-        super(server, world, 10);
-    }
+	private int damage = 0;
 
-    @Override
-    public List<ItemStack> getLoot(Damager damager) {
-        List<ItemStack> items = new ArrayList<ItemStack>();
-        items.add(new ItemStack(ItemID.MINECART));
-        return items;
-    }
+	protected boolean slowWhenEmpty;
 
-    protected SpoutMinecart(SpoutServer server, SpoutWorld world, int id) {
-        super(server, world, id);
-    }
+	/**
+	 * Creates an entity and adds it to the specified world.
+	 *
+	 * @param server The server.
+	 * @param world The world.
+	 */
+	public SpoutMinecart(SpoutServer server, SpoutWorld world) {
+		super(server, world, 10);
+	}
 
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
+	@Override
+	public List<ItemStack> getLoot(Damager damager) {
+		List<ItemStack> items = new ArrayList<ItemStack>();
+		items.add(new ItemStack(ItemID.MINECART));
+		return items;
+	}
 
-    public int getDamage() {
-        return damage;
-    }
+	protected SpoutMinecart(SpoutServer server, SpoutWorld world, int id) {
+		super(server, world, id);
+	}
 
-    public boolean isSlowWhenEmpty() {
-        return slowWhenEmpty;
-    }
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
 
-    public void setSlowWhenEmpty(boolean slow) {
-        slowWhenEmpty = slow;
-    }
+	public int getDamage() {
+		return damage;
+	}
 
-    public Vector getFlyingVelocityMod() {
-        throw new UnsupportedOperationException("Not supported yet!");
-    }
+	public boolean isSlowWhenEmpty() {
+		return slowWhenEmpty;
+	}
 
-    public void setFlyingVelocityMod(Vector flying) {
-        throw new UnsupportedOperationException("Not supported yet!");
-    }
+	public void setSlowWhenEmpty(boolean slow) {
+		slowWhenEmpty = slow;
+	}
 
-    public Vector getDerailedVelocityMod() {
-        throw new UnsupportedOperationException("Not supported yet!");
-    }
+	public Vector getFlyingVelocityMod() {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
 
-    public void setDerailedVelocityMod(Vector derailed) {
-        throw new UnsupportedOperationException("Not supported yet!");
-    }
+	public void setFlyingVelocityMod(Vector flying) {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
+
+	public Vector getDerailedVelocityMod() {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
+
+	public void setDerailedVelocityMod(Vector derailed) {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
 }

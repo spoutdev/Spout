@@ -1,30 +1,29 @@
 package org.getspout.server.msg;
 
 public class ExperienceMessage extends Message {
+	private final float barValue;
+	private final short level, totalExp;
 
-    private final float barValue;
-    private final short level, totalExp;
+	public ExperienceMessage(float barValue, short level, short  totalExp) {
+		this.barValue = barValue;
+		this.level = level;
+		this.totalExp = totalExp;
+	}
 
-    public ExperienceMessage(float barValue, short level, short  totalExp) {
-        this.barValue = barValue;
-        this.level = level;
-        this.totalExp = totalExp;
-    }
+	public float getBarValue() {
+		return barValue;
+	}
 
-    public float getBarValue() {
-        return barValue;
-    }
+	public short getLevel() {
+		return level;
+	}
 
-    public short getLevel() {
-        return level;
-    }
+	public short getTotalExp() {
+		return totalExp;
+	}
 
-    public short getTotalExp() {
-        return totalExp;
-    }
-
-    @Override
-    public String toString() {
-        return "ExperienceMessage{barValue=" + barValue + ",level=" + level + ",totalExp=" + totalExp + "}";
-    }
+	@Override
+	public String toString() {
+		return "ExperienceMessage{barValue=" + barValue + ",level=" + level + ",totalExp=" + totalExp + "}";
+	}
 }
