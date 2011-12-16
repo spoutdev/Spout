@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class CommandContext {
 
 	protected final String command;
@@ -41,7 +43,7 @@ public class CommandContext {
 		List<String> argList = new ArrayList<String>(args.length);
 		for (int i = 1; i < args.length; ++i) {
 			String arg = args[i];
-			if (arg.isEmpty()) {
+			if (StringUtils.isEmpty(arg)) {
 				continue;
 			}
 
