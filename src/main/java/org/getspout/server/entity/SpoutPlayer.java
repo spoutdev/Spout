@@ -28,7 +28,6 @@ import org.getspout.server.net.Session;
 import org.getspout.server.util.Parameter;
 import org.getspout.server.util.Position;
 import org.getspout.server.util.TextWrapper;
-import org.getspout.server.window.WindowID;
 
 /**
  * Represents an in-game player.
@@ -136,7 +135,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 * The ID of the window that the player has open
 	 * -1 if nothing is open
 	 */
-	private byte openedWindow = -1;
+	private SpoutInventory openInventory;
 
 	/**
 	 * Creates a new player and adds it to the world.
@@ -396,7 +395,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	}
 
 	public boolean isSprinting() {
-		return  isSprinting;
+		return isSprinting;
 	}
 
 	public void setSprinting(boolean sprinting) {
@@ -459,7 +458,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 */
 	public void giveExp(int xp) {
 		experience += xp;
-		while(experience > (getLevel() + 1) * 7){
+		while (experience > (getLevel() + 1) * 7){
 			experience -= (getLevel() + 1) * 7;
 			++level;
 		}
@@ -596,8 +595,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 					sendMessage(ChatColor.GRAY + "Command not found: " + firstword);
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				sendMessage(ChatColor.RED + "An internal error occured while executing your command.");
 				getServer().getLogger().log(Level.SEVERE, "Exception while executing command: {0}", ex.getMessage());
 				ex.printStackTrace();
@@ -748,6 +746,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Set the item on the player's cursor, for inventory screen purposes.
+	 *
 	 * @param item The ItemStack to set the cursor to.
 	 */
 	public void setItemOnCursor(SpoutItemStack item) {
@@ -927,51 +926,39 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		return new ExperienceMessage((byte)getExperience(), (byte)getLevel(), (short)getTotalExperience());
 	}
 
-	/*
+	/**
 	 * Should check whether a window is open with hasWindowOpen first
-	 * If no window is open it will return -1
+	 * @return null if no inventory is open
 	 */
-	public byte getOpenWindow()
-	{
-		return this.openedWindow;
+	public SpoutInventory getOpenInventory() {
+		return openInventory;
 	}
 
-	/*
+	/**
 	 * Keep in mind - own inventory does not count as a window on Notchian client!
 	 */
-	public boolean hasWindowOpen()
-	{
-		return this.openedWindow > -1;
+	public boolean hasWindowOpen() {
+		return openInventory != null;
 	}
 
-	public void onClosedWindow()
-	{
-		this.openedWindow = -1;
+	public void onClosedWindow() {
+		openInventory.removeViewer(this);
+		openInventory = null;
 	}
 
-	/*
+	/**
 	 * Tries to open a window of the given type (WindowID.<type>)
-	 * Returns false if the window could not be opened (one was already open)
-	 *  True otherwise
-	 * if no slotcount is necessary use the overloaded function without it
+	 * @param inv The inventory to open
+	 * @return false if the window could not be opened (one was already open)
+	 *         True otherwise
 	 */
-	public boolean openWindow(byte windowid, byte slotcount)
-	{
-		if(!this.hasWindowOpen())
-		{
-			getSession().send(new OpenWindowMessage(WindowID.uniqueID, windowid, WindowID.getWindowTitle(windowid, slotcount), slotcount));
-			WindowID.incrementUniqueID();
-			this.openedWindow = windowid;
-
+	public boolean openWindow(SpoutInventory inv) {
+		if (!this.hasWindowOpen()) {
+			inv.addViewer(this);
+			this.openInventory = inv;
 			return true;
 		}
-
 		return false;
-	}
-
-	public boolean openWindow(byte windowid)
-	{
-		return openWindow(windowid, (byte)0);
 	}
 
 	public Map<String, Object> serialize() {

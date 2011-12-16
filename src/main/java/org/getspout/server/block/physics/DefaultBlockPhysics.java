@@ -3,13 +3,12 @@ package org.getspout.server.block.physics;
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
 
-import org.getspout.server.block.BlockID;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.SpoutBlockState;
-import org.getspout.server.block.SpoutWorkbench;
 import org.getspout.server.entity.SpoutPlayer;
 
 public class DefaultBlockPhysics implements BlockPhysicsHandler {
+
 	@Override
 	public boolean canPlaceAt(SpoutBlock loc, BlockFace against) {
 		return true;
@@ -40,20 +39,6 @@ public class DefaultBlockPhysics implements BlockPhysicsHandler {
 
 	@Override
 	public boolean interact(SpoutPlayer player, SpoutBlock block, boolean rightClick, BlockFace against) {
-		if(block.isInteractable())
-		{
-			int blockType = block.getTypeId();
-
-			if(blockType == BlockID.WORKBENCH)
-			{
-				SpoutWorkbench.interacted(player, rightClick, against);
-				return false;
-			}
-			else return block.interacted(player, rightClick, against);
-		}
-		else
-		{
-			return true;
-		}
+		return true;
 	}
 }

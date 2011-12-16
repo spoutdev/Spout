@@ -1,18 +1,14 @@
 package org.getspout.server.block;
 
-import org.bukkit.block.BlockFace;
+public class SpoutWorkbench extends SpoutContainerBlock {
 
-import org.getspout.server.entity.SpoutPlayer;
-import org.getspout.server.window.WindowID;
+    public SpoutWorkbench(SpoutBlock block) {
+        super(block, null);
+    }
 
-public class SpoutWorkbench  {
-	public static boolean interacted(SpoutPlayer player, boolean rightClick, BlockFace against)
-	{
-		if(rightClick)
-		{
-			player.openWindow(WindowID.WORKBENCH);
-		}
-
-		return true;
+	public SpoutWorkbench shallowClone() {
+		SpoutWorkbench result = new SpoutWorkbench(getBlock());
+		result.inventory = inventory;
+		return result;
 	}
 }
