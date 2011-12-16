@@ -42,7 +42,6 @@ public final class ServerPlugin extends JavaAddon {
 		return false;
 	}
 
-	@Override
 	public boolean processCommand(CommandSource source, Command command, Enum<?> commandEnum, String[] args, int baseIndex) {
 		return false;
 	}

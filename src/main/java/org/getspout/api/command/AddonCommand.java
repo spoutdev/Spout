@@ -27,7 +27,6 @@ public final class AddonCommand implements CommandExecutor {
 		this.owningAddon = owner;
 	}
 
-	@Override
 	public boolean processCommand(CommandSource source, Command command, Enum<?> commandEnum, String[] args, int baseIndex) {
 		
 		boolean success = false;
