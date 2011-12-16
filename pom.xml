@@ -77,6 +77,13 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.getspout</groupId>
+			<artifactId>commons</artifactId>
+			<version>dev-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.netty</groupId>
 			<artifactId>netty</artifactId>
 			<version>3.2.7.Final</version>

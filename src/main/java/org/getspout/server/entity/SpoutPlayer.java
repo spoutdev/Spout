@@ -13,6 +13,8 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.map.MapView;
 
+import org.getspout.commons.metadata.MetadataValue;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutOfflinePlayer;
@@ -978,5 +980,25 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put("name", getName());
 		return ret;
+	}
+	
+	@Override
+	public void setMetadata(String metadataKey, MetadataValue metadataValue) {
+		server.getPlayerMetadata().setMetadata(null, metadataKey, metadataValue);
+	}
+
+	@Override
+	public List<MetadataValue> getMetadata(String metadataKey) {
+		return server.getPlayerMetadata().getMetadata(null, metadataKey);
+	}
+
+	@Override
+	public boolean hasMetadata(String metadataKey) {
+		return server.getPlayerMetadata().hasMetadata(null, metadataKey);
+	}
+
+	@Override
+	public void removeMetadata(String metadataKey, Plugin plugin) {
+		server.getPlayerMetadata().removeMetadata(null, metadataKey, plugin);
 	}
 }

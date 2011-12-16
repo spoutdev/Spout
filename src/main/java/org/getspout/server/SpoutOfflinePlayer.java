@@ -1,18 +1,22 @@
 package org.getspout.server;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
+import org.getspout.commons.metadata.MetadataValue;
+import org.getspout.commons.plugin.Plugin;
 
 /**
  * Represents a player which is not connected to the server.
  */
 @SerializableAs("Player")
 public class SpoutOfflinePlayer implements OfflinePlayer {
+
 	private final SpoutServer server;
 	private final String name;
 
@@ -86,5 +90,21 @@ public class SpoutOfflinePlayer implements OfflinePlayer {
 
 	public static OfflinePlayer deserialize(Map<String, Object> val) {
 		return Bukkit.getServer().getOfflinePlayer(val.get("name").toString());
+	}
+
+	public void setMetadata(String metadataKey, MetadataValue metadataValue) {
+		server.getPlayerMetadata().setMetadata(null, metadataKey, metadataValue);
+	}
+
+	public List<MetadataValue> getMetadata(String metadataKey) {
+		return server.getPlayerMetadata().getMetadata(null, metadataKey);
+	}
+
+	public boolean hasMetadata(String metadataKey) {
+		return server.getPlayerMetadata().hasMetadata(null, metadataKey);
+	}
+
+	public void removeMetadata(String metadataKey, Plugin plugin) {
+		server.getPlayerMetadata().removeMetadata(null, metadataKey, plugin);
 	}
 }

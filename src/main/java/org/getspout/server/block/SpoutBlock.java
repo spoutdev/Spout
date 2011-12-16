@@ -1,5 +1,6 @@
 package org.getspout.server.block;
 
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -7,6 +8,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 
+import org.getspout.commons.metadata.MetadataValue;
+import org.getspout.commons.plugin.Plugin;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.physics.BlockPhysicsEngine;
@@ -227,4 +230,20 @@ public class SpoutBlock implements Block {
 	{
 		return true;
 	}
+
+    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+        getWorld().getBlockMetadata().setMetadata(null, metadataKey, newMetadataValue);
+    }
+
+    public List<MetadataValue> getMetadata(String metadataKey) {
+        return getWorld().getBlockMetadata().getMetadata(null, metadataKey);
+    }
+
+    public boolean hasMetadata(String metadataKey) {
+        return getWorld().getBlockMetadata().hasMetadata(null, metadataKey);
+    }
+
+    public void removeMetadata(String metadataKey, Plugin owningPlugin) {
+        getWorld().getBlockMetadata().removeMetadata(null, metadataKey, owningPlugin);
+    }
 }
