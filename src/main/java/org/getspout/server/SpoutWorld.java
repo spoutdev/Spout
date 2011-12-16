@@ -27,9 +27,9 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import org.getspout.commons.metadata.BlockMetadataStore;
-import org.getspout.commons.metadata.MetadataValue;
-import org.getspout.commons.plugin.Plugin;
+import org.getspout.api.metadata.BlockMetadataStore;
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.entity.*;
 import org.getspout.server.entity.objects.SpoutItem;

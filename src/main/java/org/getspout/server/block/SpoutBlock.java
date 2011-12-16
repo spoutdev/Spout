@@ -8,8 +8,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 
-import org.getspout.commons.metadata.MetadataValue;
-import org.getspout.commons.plugin.Plugin;
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.physics.BlockPhysicsEngine;

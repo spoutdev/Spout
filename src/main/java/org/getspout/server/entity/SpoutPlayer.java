@@ -13,8 +13,8 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.map.MapView;
 
-import org.getspout.commons.metadata.MetadataValue;
-import org.getspout.commons.plugin.Plugin;
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutOfflinePlayer;

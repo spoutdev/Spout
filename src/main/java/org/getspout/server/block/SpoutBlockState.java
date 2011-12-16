@@ -6,8 +6,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 
-import org.getspout.commons.metadata.MetadataValue;
-import org.getspout.commons.plugin.Plugin;
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;

@@ -12,8 +12,8 @@ import org.bukkit.Location;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import org.getspout.commons.metadata.MetadataValue;
-import org.getspout.commons.plugin.Plugin;
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;

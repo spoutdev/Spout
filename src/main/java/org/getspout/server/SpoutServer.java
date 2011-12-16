@@ -55,9 +55,9 @@ import org.bukkit.plugin.SimpleServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.util.permissions.DefaultPermissions;
 
-import org.getspout.commons.metadata.EntityMetadataStore;
-import org.getspout.commons.metadata.PlayerMetadataStore;
-import org.getspout.commons.metadata.WorldMetadataStore;
+import org.getspout.api.metadata.EntityMetadataStore;
+import org.getspout.api.metadata.PlayerMetadataStore;
+import org.getspout.api.metadata.WorldMetadataStore;
 import org.getspout.server.command.BanCommand;
 import org.getspout.server.command.ColorCommand;
 import org.getspout.server.command.DeopCommand;
