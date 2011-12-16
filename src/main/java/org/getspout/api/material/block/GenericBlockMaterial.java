@@ -1,6 +1,6 @@
 package org.getspout.api.material.block;
 
-import org.getspout.api.Spout;
+
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.render.BlockDesign;
 

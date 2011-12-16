@@ -25,7 +25,6 @@ import java.util.*;
 /**
  * A list of event handlers, stored per-event. Based on lahwran's fevents.
  */
-@SuppressWarnings("unchecked")
 public class HandlerList {
 	/**
 	 * Handler array. This field being an array is the key to this system's speed.

@@ -1,6 +1,6 @@
 package org.getspout.api.event;
 
-import org.getspout.api.plugin.Plugin;
+
 
 public interface EventManager {
 	/**

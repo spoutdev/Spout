@@ -16,18 +16,17 @@
  */
 package org.getspout.api.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.getspout.api.command.AddonCommand;
+import java.util.List;
+
+
+
 import org.getspout.api.command.Command;
 import org.getspout.api.plugin.Plugin;
 
 public class AddonCommandYamlParser {
 
-	@SuppressWarnings("unchecked")
+	
 	public static List<Command> parse(Plugin plugin) {
 		/*List<Command> pluginCmds = new ArrayList<Command>();
 		Object object = plugin.getDescription().getCommands();

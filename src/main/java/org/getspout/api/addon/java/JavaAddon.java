@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.getspout.api.Game;
 import org.getspout.api.UnsafeMethod;
-import org.getspout.api.command.Command;
 import org.getspout.api.plugin.Plugin;
 import org.getspout.api.plugin.PluginDescriptionFile;
 import org.getspout.api.plugin.PluginLoader;

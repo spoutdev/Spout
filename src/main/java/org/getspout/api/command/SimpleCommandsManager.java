@@ -1,6 +1,6 @@
 package org.getspout.api.command;
 
-import org.bukkit.util.Java15Compat;
+
 import org.getspout.api.util.StringUtil;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class SimpleCommandsManager implements CommandsManager {
 	private Map<String, Command> commands = new HashMap<String, Command>();
-	private Set<String> aliases;
+	//private Set<String> aliases;
 
 	
 	public boolean execute(String input, CommandSource sender, boolean fuzzyLookup) {
