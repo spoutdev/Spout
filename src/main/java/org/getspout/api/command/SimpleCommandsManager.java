@@ -15,7 +15,7 @@ public class SimpleCommandsManager implements CommandsManager {
 	private Map<String, Command> commands = new HashMap<String, Command>();
 	private Set<String> aliases;
 
-	@Override
+	//@Override
 	public boolean execute(String input, CommandSource sender, boolean fuzzyLookup) {
 		String[] split = input.split(" ");
 		return execute(null, split, sender, fuzzyLookup);
