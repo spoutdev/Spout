@@ -254,5 +254,12 @@ public interface Game {
 	 */
 	public void setDefaultGameMode(GameMode mode);
 	
-	
+	/**
+	 * Gets the folder that contains the world save data. 
+	 * 
+	 * If the folder is unusued, the file path will be '.'
+	 * 
+	 * @return world folder
+	 */
+	public File getWorldFolder();
 }
