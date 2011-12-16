@@ -12,7 +12,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.getspout.server.SpoutServer;
 
 /**
- * Command to ban players or IP addresses.
+ * Command to give items to players.
  */
 public class GiveCommand extends SpoutCommand {
 
