@@ -66,7 +66,7 @@ public class Vector2 {
 	public static Vector2 One = new Vector2(1,1);
 	
 	public static double length(Vector2 a){
-		return Math.sqrt(lengthSquared(a));
+		return MathHelper.sqrt(lengthSquared(a));
 	}
 	
 	public static double lengthSquared(Vector2 a){

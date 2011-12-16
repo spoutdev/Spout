@@ -114,7 +114,7 @@ public class Vector3{
 	public static Vector3 One = new Vector3(1,1,1);
 	
 	public static double length(Vector3 a){
-		return Math.sqrt(lengthSquared(a));
+		return MathHelper.sqrt(lengthSquared(a));
 	}
 	
 	public static double lengthSquared(Vector3 a){
