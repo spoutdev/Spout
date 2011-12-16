@@ -1,11 +1,12 @@
 package org.getspout.api.command;
 
 public class SimpleCommand implements Command {
-	public Command addSubCommand(Enum<?> commandEnum) {
+
+	public Command addSubCommand(String primaryName) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command sub(Enum<?> commandEnum) {
+	public Command sub(String primaryName) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -17,7 +18,7 @@ public class SimpleCommand implements Command {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public Command setCommandName(String name) {
+	public Command addCommandName(String name) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

@@ -18,6 +18,7 @@ package org.getspout.api.plugin;
 
 import org.getspout.api.addon.java.JavaAddon;
 import org.getspout.api.command.Command;
+import org.getspout.api.command.CommandContext;
 import org.getspout.api.command.CommandSource;
 
 public final class ServerPlugin extends JavaAddon {
@@ -42,7 +43,7 @@ public final class ServerPlugin extends JavaAddon {
 		return false;
 	}
 
-	public boolean processCommand(CommandSource source, Command command, Enum<?> commandEnum, String[] args, int baseIndex) {
+	public boolean processCommand(CommandSource source, Command command, CommandContext args) {
 		return false;
 	}
 }

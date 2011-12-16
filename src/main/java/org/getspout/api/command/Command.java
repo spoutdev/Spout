@@ -8,16 +8,15 @@ package org.getspout.api.command;
  * Commands could be registered using the following structure.
  * 
  * Game.getCommandRoot()
- *     .s(MyPlugin.MAIN_COMMAND)
- *         .n("preferredname").a("alias1").a("alias2")
- *         .h("This is the main command for MyPlugin")
- *         .e(myExecutor)
- *         .s(MyPlugin.SUB_COMMAND)
- *             .n("subcommand")
- *             .h("This is a sub command of main command")
+ *     .sub("preferredname")
+ *         .alias("alias1").alias("alias2")
+ *         .help("This is the main command for MyPlugin")
+ *         .executor(myExecutor)
+ *         .sub("subcommand")
+ *             .help("This is a sub command of main command")
  *             .e(myExecutor)
- *         .c()
- *     .c();
+ *         .closeSub()
+ *     .closeSub();
  * 
  */
 
@@ -30,18 +29,18 @@ public interface Command {
 	 * 
 	 * Enums should be unique for every command
 	 * 
-	 * @param commandEnum the Enum to link sub-comamnd to
+	 * @param primaryName the name to link sub-comamnd to
 	 * @return the new sub-command
 	 */
-	public Command addSubCommand(Enum<?> commandEnum);
+	public Command addSubCommand(String primaryName);
 
 	/**
 	 * Alias for addSubCommand
 	 *
-	 * @param commandEnum the Enum to link sub-comamnd to
+	 * @param primaryName the Enum to link sub-comamnd to
 	 * @return the new sub-command
 	 */
-	public Command sub(Enum<?> commandEnum);
+	public Command sub(String primaryName);
 	
 	/**
 	 * Completes creation of a sub-command.  There should be a matching call of this method for every call to addSubCommand.
@@ -69,7 +68,7 @@ public interface Command {
 	 * @param name the name or alias
 	 * @return the active Command
 	 */
-	public Command setCommandName(String name);
+	public Command addCommandName(String name);
 
 	/**
 	 * Alias for setCommandName

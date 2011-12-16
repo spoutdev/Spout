@@ -27,7 +27,7 @@ public final class AddonCommand implements CommandExecutor {
 		this.owningAddon = owner;
 	}
 
-	public boolean processCommand(CommandSource source, Command command, Enum<?> commandEnum, String[] args, int baseIndex) {
+	public boolean processCommand(CommandSource source, Command command, CommandContext args) {
 		
 		boolean success = false;
 
@@ -35,7 +35,7 @@ public final class AddonCommand implements CommandExecutor {
 			return false;
 		}
 		try {
-			success = this.executor.processCommand(source, command, commandEnum, args, baseIndex);
+			success = this.executor.processCommand(source, command, args);
 		} catch (Throwable ex) {
 			throw new CommandException("Unhandled exception executing command '" + command.getPreferredName() + "' in plugin " + this.owningAddon.getDescription().getFullName(), ex);
 		}
