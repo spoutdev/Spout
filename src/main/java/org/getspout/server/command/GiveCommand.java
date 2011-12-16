@@ -28,7 +28,7 @@ public class GiveCommand extends SpoutCommand {
     @Override
     public boolean run(CommandSender sender, String commandLabel, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("You must be a player to give yourself items!");//TODO implement giving to other players
+            sender.sendMessage("You must be a player to give yourself items!");
             return true;
         }
         Player plr = (Player) sender;
@@ -39,7 +39,6 @@ public class GiveCommand extends SpoutCommand {
         } else {
             itemname = args[1];
         }
-        //TODO just /give [item] gives 64!
         if (args.length != 1) {
             try {
                 if (args.length == 2) {
