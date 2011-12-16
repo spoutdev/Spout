@@ -34,6 +34,7 @@ public final class BlockStateStoreLookupService {
 			bind(NoteBlockStore.class);
 			bind(SignStore.class);
 			bind(CreatureSpawnerStore.class);
+			bind(WorkbenchStore.class);
 		} catch (Exception ex) {
 			throw new ExceptionInInitializerError(ex);
 		}

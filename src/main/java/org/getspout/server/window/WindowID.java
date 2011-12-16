@@ -1,7 +1,7 @@
 package org.getspout.server.window;
 
 public class WindowID {
-	public static byte uniqueID = 1;
+	public static byte uniqueID = 0;
 
 	public static final byte CHEST = 0;
 	public static final byte WORKBENCH = 1;
@@ -12,7 +12,13 @@ public class WindowID {
 
 	// The Notchian way of doing things
 	public static void incrementUniqueID() {
-		if (uniqueID >= 127) uniqueID = 1;
+		if (uniqueID >= 127) uniqueID = 0;
 		else uniqueID++;
+	}
+	
+	public static byte getUniqueID()
+	{
+		incrementUniqueID();
+		return uniqueID;
 	}
 }

@@ -97,6 +97,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @return The inventory name
 	 */
+    @Override
 	public String getName() {
 		return "Generic Inventory";
 	}

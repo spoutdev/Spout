@@ -72,7 +72,7 @@ public enum BlockProperties {
 	REDSTONE_WIRE(BlockID.REDSTONE_WIRE, redstone()),
 	DIAMOND_ORE(BlockID.DIAMOND_ORE, drops(ItemID.DIAMOND)),
 	DIAMOND_BLOCK(BlockID.DIAMOND_BLOCK),
-	WORKBENCH(BlockID.WORKBENCH, interact()),
+	WORKBENCH(BlockID.WORKBENCH, interact(), entity(SpoutWorkbench.class), physics(new ContainerPhysics())),
 	CROPS(BlockID.CROPS, passthru()),
 	SOIL(BlockID.SOIL, drops(BlockID.DIRT)),
 	FURNACE(BlockID.FURNACE, interact(), place()),
