@@ -1,12 +1,30 @@
+/*
+ * This file is part of SpoutAPI (http://www.getspout.org/).
+ * 
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.getspout.api;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.getspout.api.command.AddonCommand;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Player;
+import org.getspout.api.inventory.Recipe;
 import org.getspout.api.plugin.PluginManager;
 
 /**
@@ -149,4 +167,99 @@ public interface Game {
 	 * @return Collection of all possible matches
 	 */
 	public Collection<Player> matchPlayer(String name);
+	
+	
+	/**
+	 * Searches for an actively loaded world that exactly matches the given name.
+	 * <br/><br/>
+	 * The implementation is identical to iterating over {@link #getWorlds()} and checking for a world that matches {@link World#getName()}.
+	 * <br/><br/>
+	 * @param name of the world to search for
+	 * @return world if found, else null
+	 */
+	public World getWorld(String name);
+	
+	/**
+	 * Searches for an actively loaded world has the given {@link UUID}.
+	 * <br/><br/>
+	 * The implementation is identical to iterating over {@link #getWorlds()} and checking for a world that matches {@link World#getUID()}.
+	 * <br/><br/>
+	 * @param uid of the world to search for
+	 * @return world if found, else null
+	 */
+	public World getWorld(UUID uid);
+	
+	/**
+	 * Initiates a full reload of the server, reloading all server relating configuration, and plugins, if possible.
+	 */
+	public void reload();
+	
+	/**
+	 * Initiates a save of the server state, including configuration files.
+	 * 
+	 * It will save the state of the world, if specificed, and the state of players, if specified.
+	 * 
+	 * @param worlds whether or not to save the state of all active worlds
+	 * @param players whether or not to save the state of all active players
+	 */
+	public void save(boolean worlds, boolean players);
+	
+	/**
+	 * Registers the recipe with the recipe database.
+	 * 
+	 * @param recipe to register
+	 * @return true if the recipe was registered, false if there was a conflict with an existing recipe.
+	 */
+	public boolean registerRecipe(Recipe recipe);
+	
+	/**
+	 * Gets the radius of the area around the spawn that is protected, in blocks.
+	 * 
+	 * @return spawn protect radius
+	 */
+	public int getSpawnProtectRadius();
+	
+	/**
+	 * Sets the radius of the area around the spawn that is protected, in blocks.
+	 * 
+	 * @param radius to protect
+	 */
+	public void setSpawnProtectRadius(int radius);
+	
+	/**
+	 * True if this server does not check if players are flying or not.
+	 * 
+	 * If disabled, the server will attempt to verify that players are not flying, and kick any players that are flying.
+	 * 
+	 * @return allow flight
+	 */
+	public boolean allowFlight();
+	
+	/**
+	 * Ends this game instance safely. All worlds, players, and configuration data is saved, and all threads are ended cleanly.
+	 */
+	public void shutdown();
+	
+	/**
+	 * Gets the default {@link GameMode} that is applied to all new players that join.
+	 * 
+	 * @return default game mode
+	 */
+	public GameMode getDefaultGameMode();
+	
+	/**
+	 * Sets the default {@link GameMode} that is applied to all new players that join.
+	 * 
+	 * @param mode to set
+	 */
+	public void setDefaultGameMode(GameMode mode);
+	
+	/**
+	 * Gets the folder that contains the world save data. 
+	 * 
+	 * If the folder is unusued, the file path will be '.'
+	 * 
+	 * @return world folder
+	 */
+	public File getWorldFolder();
 }
