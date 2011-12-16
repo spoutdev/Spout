@@ -53,6 +53,12 @@
 			<url>http://repo.getspout.org</url>
 		</repository>
 	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spout-plugins</id>
+			<url>http://repo.getspout.org</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<!-- Dependencies -->
 	<dependencies>
@@ -118,26 +124,6 @@
    
 	<build>
 		<defaultGoal>clean package install</defaultGoal>
-		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<!-- Resources -->
-		<resources>
-			<resource>
-				<targetPath>.</targetPath>
-				<filtering>false</filtering>
-				<directory>${basedir}</directory>
-				<includes>
-					<include>LICENSE.txt</include>
-				</includes>
-			</resource>
-			<resource>
-				<targetPath>.</targetPath>
-				<filtering>true</filtering>
-				<directory>${basedir}/src</directory>
-				<includes>
-					<include>plugin.yml</include>
-				</includes>
-			</resource>
-		</resources>
 		<!-- Plugins -->
 		<plugins>
 			<plugin>
