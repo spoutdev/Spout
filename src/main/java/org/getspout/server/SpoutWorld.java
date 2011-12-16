@@ -717,7 +717,7 @@ public final class SpoutWorld implements World {
 	public LivingEntity spawnCreature(Location loc, CreatureType type) {
 		EntityProperties properties = EntityProperties.getByCreatureType(type);
 		if (properties == null) {
-			throw new IllegalArgumentException("This CreatureType is unknown to Spoutstone!");
+			throw new IllegalArgumentException("This CreatureType is unknown to Spout!");
 		}
 		LivingEntity entity = (LivingEntity)properties.getFactory().createEntity(server, this);
 		entity.teleport(loc);

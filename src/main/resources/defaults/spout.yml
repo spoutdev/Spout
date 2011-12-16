@@ -25,9 +25,9 @@ database:
     password: nether
     isolation: SERIALIZABLE
 aliases:
-    "icanhazspout":
+    spout:
         - version
         - plugins
-    "<3spout":
+    icanhazspout:
         - version
         - plugins
