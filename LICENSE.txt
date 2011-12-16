@@ -2,7 +2,7 @@ The software is licensed under the LGPL version 3.0 given below.
 
 The files originating from the GlowStone and LightStone projects, were 
 licensed uy their respective authors under the MIT license.  However,
-any subsequent changes amde as part of this project are licensed under
+any subsequent changes made as part of this project are licensed under
 the LGPL version 3.0.
 
 The LGPL version 3.0 license and the MIT license, including copyright 
@@ -178,6 +178,9 @@ permanent authorization for you to choose that version for the
 Library.
 
 -----------------------------------------------------------------------
+
+For information purposes, the license file from the GlowStone project 
+follows.  
 
 Glowstone Copyright (C) 2011 Tad Hardesty.
 Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
