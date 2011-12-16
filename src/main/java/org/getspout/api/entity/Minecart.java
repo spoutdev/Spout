@@ -33,7 +33,9 @@
 
 package org.getspout.api.entity;
 
-import org.getspout.api.util.Vector;
+import org.getspout.api.math.Vector3;
+
+
 
 /**
  * Represents a minecart entity.
@@ -88,7 +90,7 @@ public interface Minecart extends Vehicle {
 	 *
 	 * @return The vector factor
 	 */
-	public Vector getFlyingVelocityMod();
+	public Vector3 getFlyingVelocityMod();
 
 	/**
 	 * Sets the flying velocity modifier. Used for minecarts that are in mid-air.
@@ -96,7 +98,7 @@ public interface Minecart extends Vehicle {
 	 *
 	 * @param flying velocity modifier vector
 	 */
-	public void setFlyingVelocityMod(Vector flying);
+	public void setFlyingVelocityMod(Vector3 flying);
 
 	/**
 	 * Gets the derailed velocity modifier. Used for minecarts that are on the ground, but not on rails.
@@ -104,7 +106,7 @@ public interface Minecart extends Vehicle {
 	 * A derailed minecart's velocity is multiplied by this factor each tick.
 	 * @return derailed visible speed
 	 */
-	public Vector getDerailedVelocityMod();
+	public Vector3 getDerailedVelocityMod();
 
 	/**
 	 * Sets the derailed velocity modifier. Used for minecarts that are on the ground, but not on rails.
@@ -112,5 +114,5 @@ public interface Minecart extends Vehicle {
 	 *
 	 * @param derailed visible speed
 	 */
-	public void setDerailedVelocityMod(Vector derailed);
+	public void setDerailedVelocityMod(Vector3 derailed);
 }

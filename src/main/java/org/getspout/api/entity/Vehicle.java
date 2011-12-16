@@ -16,7 +16,8 @@
  */
 package org.getspout.api.entity;
 
-import org.getspout.api.util.Vector;
+import org.getspout.api.math.Vector3;
+
 
 /**
  * Represents a vehicle entity.
@@ -30,12 +31,12 @@ public interface Vehicle extends Entity {
 	 * 
 	 * @return velocity vector
 	 */
-	public Vector getVelocity();
+	public Vector3 getVelocity();
 
 	/**
 	 * Sets the vehicle's velocity.
 	 * 
 	 * @param vel velocity vector
 	 */
-	public void setVelocity(Vector vel);
+	public void setVelocity(Vector3 vel);
 }

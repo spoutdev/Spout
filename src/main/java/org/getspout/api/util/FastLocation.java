@@ -18,17 +18,20 @@ package org.getspout.api.util;
 
 import org.getspout.api.World;
 import org.getspout.api.block.Block;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
-public class FastLocation extends FastVector implements FixedLocation {
+public class FastLocation extends Location {
 	private final double yaw;
 	private final double pitch;
 	private final World world;
 
 	public FastLocation(int x, int y, int z, double yaw, double pitch, World world) {
-		super(x, y, z);
+		super(world, x, y, z, yaw, pitch);
 		this.yaw = yaw;
 		this.pitch = pitch;
 		this.world = world;
+
 	}
 
 	public double getYaw() {
@@ -43,8 +46,8 @@ public class FastLocation extends FastVector implements FixedLocation {
 		return world;
 	}
 
-	public Vector getDirection() {
-		Vector vector = new MutableVector();
+	public Vector3 getDirection() {
+		Vector3 vector = new Vector3m(0,0,0);
 
 		double rotX = this.getYaw();
 		double rotY = this.getPitch();
@@ -59,8 +62,8 @@ public class FastLocation extends FastVector implements FixedLocation {
 		return vector;
 	}
 	
-	public Vector toVector() {
-		return new MutableVector(x, y, z);
+	public Vector3 toVector() {
+		return new Vector3m(x, y, z);
 	}
 	
 	public Block getBlock() {

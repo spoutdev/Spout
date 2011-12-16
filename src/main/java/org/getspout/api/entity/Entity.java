@@ -20,10 +20,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.getspout.api.World;
+import org.getspout.api.math.Vector3;
 import org.getspout.api.metadata.Metadatable;
-import org.getspout.api.util.FixedLocation;
-import org.getspout.api.util.FixedVector;
-import org.getspout.api.util.Vector;
+import org.getspout.api.util.Location;
 
 /**
  * Represents a base entity in the world
@@ -34,22 +33,21 @@ public interface Entity extends Metadatable {
 	 * Gets the current location of the entity
 	 * @return location
 	 */
-	public FixedLocation getLocation();
+	public Location getLocation();
 
 	/**
 	 * Sets the velocity of the entity
 	 * @param velocity to set
 	 */
-	public void setVelocity(Vector velocity);
+	public void setVelocity(Vector3 velocity);
 
 	/**
 	 * Gets the current velocity of the entity
 	 * @return velocity
 	 */
-	public FixedVector getVelocity();
+	public Vector3 getVelocity();
 
 	/**
-	 * Gets the world this entity is in
 	 * @return world
 	 */
 	public World getWorld();
@@ -59,7 +57,7 @@ public interface Entity extends Metadatable {
 	 * @param location to teleport to
 	 * @return true if successful
 	 */
-	public boolean teleport(FixedLocation location);
+	public boolean teleport(Location location);
 
 	/**
 	 * Teleports the entity to the given entity

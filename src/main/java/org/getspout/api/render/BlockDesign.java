@@ -7,8 +7,9 @@ import java.util.Random;
 
 import org.getspout.api.block.Block;
 import org.getspout.api.material.ItemMaterial;
+import org.getspout.api.math.Vector3;
 import org.getspout.api.plugin.Plugin;
-import org.getspout.api.util.Vector;
+
 
 public interface BlockDesign {
 
@@ -226,7 +227,7 @@ public interface BlockDesign {
 	 * @param z offset from this block
 	 * @return Vector
 	 */
-	public Vector getLightSource(int quad, int x, int y, int z);
+	public Vector3 getLightSource(int quad, int x, int y, int z);
 
 	/**
 	 * Gets the Texture associated with this BlockDesign

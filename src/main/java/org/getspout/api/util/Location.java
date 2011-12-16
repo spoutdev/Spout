@@ -16,31 +16,113 @@
  */
 package org.getspout.api.util;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.getspout.api.World;
+import org.getspout.api.block.Block;
+import org.getspout.api.math.*;
 
-public interface Location extends Vector, FixedLocation {
+public class Location extends Vector3m  {
+	private double pitch;
+	private double yaw;
+	private World world;
 
-	/**
-	 * Sets the yaw of this location
-	 * 
-	 * @param yaw New yaw
-	 * @return this location
-	 */
-	public Location setYaw(double yaw);
-
-	/**
-	 * Sets the pitch of this location
-	 * 
-	 * @param pitch New pitch
-	 * @return this location
-	 */
-	public Location setPitch(double pitch);
+	public Location() {
+		this(null, 0,0,0, 0,0);
+	
+	}
 
 	/**
-	 * Sets the world of this location
+	 * Constructs a new Location with the given coordinates
 	 * 
-	 * @param world New world
-	 * @return this location
+	 * @param world The world in which this location resides
+	 * @param x The x-coordinate of this new location
+	 * @param y The y-coordinate of this new location
+	 * @param z The z-coordinate of this new location
 	 */
-	public Location setWorld(World world);
+	public Location(final World world, final double x, final double y, final double z) {
+		this(world, x, y, z, 0, 0);
+	}
+
+	/**
+	 * Constructs a new Location with the given coordinates and direction
+	 * 
+	 * @param world The world in which this location resides
+	 * @param x The x-coordinate of this new location
+	 * @param y The y-coordinate of this new location
+	 * @param z The z-coordinate of this new location
+	 * @param yaw The absolute rotation on the x-plane, in degrees
+	 * @param pitch The absolute rotation on the y-plane, in degrees
+	 */
+	public Location(final World world, final double x, final double y, final double z, final double yaw, final double pitch) {
+		super(x,y,z);
+		this.world = world;
+		this.pitch = pitch;
+		this.yaw = yaw;
+	}
+
+	public double getYaw() {
+		return yaw;
+	}
+
+	public double getPitch() {
+		return pitch;
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+	public Location setYaw(double yaw) {
+		this.yaw = yaw;
+		return this;
+	}
+
+	public Location setPitch(double pitch) {
+		this.pitch = pitch;
+		return this;
+	}
+
+	public Location setWorld(World world) {
+		this.world = world;
+		return this;
+	}
+
+	public Vector3 getDirection() {
+		Vector3 vector = new Vector3m(0,0,0);
+
+		double rotX = this.getYaw();
+		double rotY = this.getPitch();
+
+		vector.setY(-Math.sin(Math.toRadians(rotY)));
+
+		double h = Math.cos(Math.toRadians(rotY));
+
+		vector.setX(-h * Math.sin(Math.toRadians(rotX)));
+		vector.setZ(h * Math.cos(Math.toRadians(rotX)));
+
+		return vector;
+	}
+	
+	public Block getBlock() {
+		return world.getBlockAt(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Location) {
+			Location other = (Location) obj;
+			return (new EqualsBuilder()).append(getX(), other.getX()).append(getY(), other.getY()).append(getZ(), other.getZ()).append(getYaw(), other.getYaw()).append(getPitch(), other.getPitch()).append(getWorld(), other.getWorld()).isEquals();
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return (new HashCodeBuilder()).append(getX()).append(getY()).append(getZ()).append(getYaw()).append(getPitch()).append(getWorld()).toHashCode();
+	}
+
+	public Vector3 toVector() {
+		return new Vector3m(x, y, z);
+	}
 }

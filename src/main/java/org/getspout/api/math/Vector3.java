@@ -3,7 +3,7 @@ package org.getspout.api.math;
 /**
  * Represents a 3d vector.
  */
-public class Vector3 {
+public class Vector3{
 
 	protected double x, y, z;
 	

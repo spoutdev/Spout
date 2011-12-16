@@ -48,10 +48,10 @@ import org.getspout.api.entity.LightningStrike;
 import org.getspout.api.entity.LivingEntity;
 import org.getspout.api.entity.Player;
 import org.getspout.api.inventory.ItemStack;
+import org.getspout.api.math.Vector3;
 import org.getspout.api.metadata.Metadatable;
-import org.getspout.api.util.FixedLocation;
 import org.getspout.api.util.Location;
-import org.getspout.api.util.Vector;
+
 
 /**
  * A representation of the minecraft world
@@ -92,7 +92,7 @@ public interface World extends Metadatable {
 	 * @param location Location of the block
 	 * @return Block at the given location
 	 */
-	public Block getBlockAt(FixedLocation location);
+	public Block getBlockAt(Location location);
 
 	/**
 	 * Gets the block type ID at the given coordinates
@@ -110,7 +110,7 @@ public interface World extends Metadatable {
 	 * @param location Location of the block
 	 * @return Type ID of the block at the given location
 	 */
-	public int getBlockTypeIdAt(FixedLocation location);
+	public int getBlockTypeIdAt(Location location);
 
 	/**
 	 * Gets the block data at the given coordinates
@@ -128,7 +128,7 @@ public interface World extends Metadatable {
 	 * @param location Location of the block
 	 * @return Type Data of the block at the given location
 	 */
-	public int getBlockDataAt(FixedLocation location);
+	public int getBlockDataAt(Location location);
 
 	/**
 	 * Gets the highest non-air coordinate at the given coordinates
@@ -145,7 +145,7 @@ public interface World extends Metadatable {
 	 * @param location Location of the blocks
 	 * @return Y-coordinate of the highest non-air block
 	 */
-	public int getHighestBlockYAt(FixedLocation location);
+	public int getHighestBlockYAt(Location location);
 
 	/**
 	 * Gets the highest non-empty block at the given coordinates
@@ -164,7 +164,7 @@ public interface World extends Metadatable {
 	 *
 	 * @return Highest non-empty block
 	 */
-	public Block getHighestBlockAt(FixedLocation location);
+	public Block getHighestBlockAt(Location location);
 
 	/**
 	 * Gets the {@link Chunk} at the given coordinates
@@ -191,7 +191,7 @@ public interface World extends Metadatable {
 	 * @param location Location of the chunk
 	 * @return Chunk at the given location
 	 */
-	public Chunk getChunkAt(FixedLocation location);
+	public Chunk getChunkAt(Location location);
 
 	/**
 	 * Gets the {@link Chunk} that contains the given {@link Block}
@@ -343,7 +343,7 @@ public interface World extends Metadatable {
 	 * @param item ItemStack to drop
 	 * @return ItemDrop entity created as a result of this method
 	 */
-	public Item dropItem(FixedLocation location, ItemStack item);
+	public Item dropItem(Location location, ItemStack item);
 
 	/**
 	 * Drops an item at the specified {@link Location} with a random offset
@@ -352,7 +352,7 @@ public interface World extends Metadatable {
 	 * @param item ItemStack to drop
 	 * @return ItemDrop entity created as a result of this method
 	 */
-	public Item dropItemNaturally(FixedLocation location, ItemStack item);
+	public Item dropItemNaturally(Location location, ItemStack item);
 
 	/**
 	 * Creates an {@link Arrow} entity at the given {@link Location}
@@ -363,7 +363,7 @@ public interface World extends Metadatable {
 	 * @param spread Spread of the arrow. A recommend spread is 12
 	 * @return Arrow entity spawned as a result of this method
 	 */
-	public Arrow spawnArrow(FixedLocation location, Vector velocity, float speed, float spread);
+	public Arrow spawnArrow(Location location, Vector3 velocity, float speed, float spread);
 
 	/**
 	 * Creates a tree at the given {@link Location}
@@ -372,7 +372,7 @@ public interface World extends Metadatable {
 	 * @param type Type of the tree to create
 	 * @return true if the tree was created successfully, otherwise false
 	 */
-	public boolean generateTree(FixedLocation location, TreeType type);
+	public boolean generateTree(Location location, TreeType type);
 
 	/**
 	 * Creates a tree at the given {@link Location}
@@ -382,7 +382,7 @@ public interface World extends Metadatable {
 	 * @param delegate A class to call for each block changed as a result of this method
 	 * @return true if the tree was created successfully, otherwise false
 	 */
-	public boolean generateTree(FixedLocation loc, TreeType type, BlockChangeDelegate delegate);
+	public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate);
 
 	/**
 	 * Creates a creature at the given {@link Location}
@@ -391,7 +391,7 @@ public interface World extends Metadatable {
 	 * @param type The creature to spawn
 	 * @return Resulting LivingEntity of this method, or null if it was unsuccessful
 	 */
-	public LivingEntity spawnCreature(FixedLocation loc, CreatureType type);
+	public LivingEntity spawnCreature(Location loc, CreatureType type);
 
 	/**
 	 * Strikes lightning at the given {@link Location}
@@ -399,7 +399,7 @@ public interface World extends Metadatable {
 	 * @param loc The location to strike lightning
 	 * @return The lightning entity.
 	 */
-	public LightningStrike strikeLightning(FixedLocation loc);
+	public LightningStrike strikeLightning(Location loc);
 
 	/**
 	 * Strikes lightning at the given {@link Location} without doing damage
@@ -407,7 +407,7 @@ public interface World extends Metadatable {
 	 * @param loc The location to strike lightning
 	 * @return The lightning entity.
 	 */
-	public LightningStrike strikeLightningEffect(FixedLocation loc);
+	public LightningStrike strikeLightningEffect(Location loc);
 
 	/**
 	 * Get a list of all entities in this World
@@ -449,7 +449,7 @@ public interface World extends Metadatable {
 	 *
 	 * @return The spawn location of this world
 	 */
-	public FixedLocation getSpawnLocation();
+	public Location getSpawnLocation();
 
 	/**
 	 * Sets the spawn location of the world
@@ -592,7 +592,7 @@ public interface World extends Metadatable {
 	 * @param power The power of explosion, where 4F is TNT
 	 * @return false if explosion was canceled, otherwise true
 	 */
-	public boolean createExplosion(FixedLocation loc, float power);
+	public boolean createExplosion(Location loc, float power);
 
 	/**
 	 * Creates explosion at given coordinates with given power and optionally setting
@@ -603,7 +603,7 @@ public interface World extends Metadatable {
 	 * @param setFire Whether or not to set blocks on fire
 	 * @return false if explosion was canceled, otherwise true
 	 */
-	public boolean createExplosion(FixedLocation loc, float power, boolean setFire);
+	public boolean createExplosion(Location loc, float power, boolean setFire);
 
 	/**
 	 * Gets the {@link Environment} type of this world
@@ -645,7 +645,7 @@ public interface World extends Metadatable {
 	 * @return an instance of the spawned {@link Entity}
 	 * @throws IllegalArgumentException if either parameter is null or the {@link Entity} requested cannot be spawned
 	 */
-	public <T extends Entity> T spawn(FixedLocation location, Class<T> clazz) throws IllegalArgumentException;
+	public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException;
 
 	/**
 	 * Plays an effect to all players within a default radius around a given location.
@@ -654,7 +654,7 @@ public interface World extends Metadatable {
 	 * @param effect the {@link Effect}
 	 * @param data a data bit needed for the RECORD_PLAY, SMOKE, and STEP_SOUND sounds
 	 */
-	public void playEffect(FixedLocation location, Effect effect, int data);
+	public void playEffect(Location location, Effect effect, int data);
 
 	/**
 	 * Plays an effect to all players within a given radius around a location.
@@ -664,7 +664,7 @@ public interface World extends Metadatable {
 	 * @param data a data bit needed for the RECORD_PLAY, SMOKE, and STEP effects
 	 * @param radius the radius around the location
 	 */
-	public void playEffect(FixedLocation location, Effect effect, int data, int radius);
+	public void playEffect(Location location, Effect effect, int data, int radius);
 
 	/**
 	 * Get empty chunk snapshot (equivalent to all air blocks), optionally including valid biome

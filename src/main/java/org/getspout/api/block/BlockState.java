@@ -34,7 +34,7 @@ package org.getspout.api.block;
 
 import org.getspout.api.World;
 import org.getspout.api.metadata.Metadatable;
-import org.getspout.api.util.FixedLocation;
+import org.getspout.api.util.Location;
 
 /**
  * Represents a captured state of a block, which will not change automatically.
@@ -58,7 +58,7 @@ public interface BlockState extends Metadatable {
 	 * 
 	 * @return location that this block state represents
 	 */
-	FixedLocation getLocation();
+	Location getLocation();
 
 	/**
 	 * Gets the type-id of this block

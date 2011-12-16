@@ -11,9 +11,10 @@ import org.getspout.api.block.design.Quad;
 import org.getspout.api.block.design.Texture;
 import org.getspout.api.block.design.Vertex;
 import org.getspout.api.entity.Item;
+import org.getspout.api.math.Vector3m;
 import org.getspout.api.packet.PacketUtil;
 import org.getspout.api.plugin.Plugin;
-import org.getspout.api.util.MutableIntegerVector;
+
 
 public class GenericBlockDesign implements BlockDesign {
 
@@ -297,8 +298,8 @@ public class GenericBlockDesign implements BlockDesign {
 		return this;
 	}
 
-	public MutableIntegerVector getLightSource(int quad, int x, int y, int z) {
-		MutableIntegerVector blockVector = new MutableIntegerVector(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
+	public Vector3m getLightSource(int quad, int x, int y, int z) {
+		Vector3m blockVector = new Vector3m(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
 		return blockVector;
 	}
 

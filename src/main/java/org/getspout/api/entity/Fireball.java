@@ -33,7 +33,8 @@
 
 package org.getspout.api.entity;
 
-import org.getspout.api.util.Vector;
+import org.getspout.api.math.Vector3;
+
 
 /**
  * Represents a Fireball.
@@ -45,13 +46,13 @@ public interface Fireball extends Projectile, Explosive {
 	 * @param direction
 	 *			the direction this fireball is flying toward
 	 */
-	public void setDirection(Vector direction);
+	public void setDirection(Vector3 direction);
 
 	/**
 	 * Retrieve the direction this fireball is heading toward
 	 *
 	 * @return the direction
 	 */
-	public Vector getDirection();
+	public Vector3 getDirection();
 
 }

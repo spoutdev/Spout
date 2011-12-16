@@ -20,7 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.getspout.api.block.Block;
-import org.getspout.api.util.FixedLocation;
+import org.getspout.api.util.Location;
+
 
 public interface LivingEntity extends Entity {
 
@@ -75,7 +76,7 @@ public interface LivingEntity extends Entity {
 	 *
 	 * @return a Location at the eyes of the LivingEntity.
 	 */
-	public FixedLocation getEyeLocation();
+	public Location getEyeLocation();
 
 	/**
 	 * Gets all blocks along the player's line of sight
