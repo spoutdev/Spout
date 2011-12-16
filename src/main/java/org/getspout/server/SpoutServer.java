@@ -57,20 +57,21 @@ import org.bukkit.util.permissions.DefaultPermissions;
 
 import org.getspout.server.command.BanCommand;
 import org.getspout.server.command.ColorCommand;
+import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.DeopCommand;
 import org.getspout.server.command.GameModeCommand;
-import org.getspout.server.command.SpoutCommandMap;
+import org.getspout.server.command.GiveCommand;
 import org.getspout.server.command.HelpCommand;
 import org.getspout.server.command.KickCommand;
-import org.getspout.server.command.ListCommand;
-import org.getspout.server.command.MeCommand;
-import org.getspout.server.command.OpCommand;
-import org.getspout.server.command.ReloadCommand;
 import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
-import org.getspout.server.command.StopCommand;
-import org.getspout.server.command.TimeCommand;
+import org.getspout.server.command.ReloadCommand;
+import org.getspout.server.command.MeCommand;
 import org.getspout.server.command.WhitelistCommand;
+import org.getspout.server.command.TimeCommand;
+import org.getspout.server.command.OpCommand;
+import org.getspout.server.command.StopCommand;
+import org.getspout.server.command.ListCommand;
 import org.getspout.server.config.SingleFileYamlConfiguration;
 import org.getspout.server.inventory.CraftingManager;
 import org.getspout.server.io.StorageQueue;
@@ -460,6 +461,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new SayCommand(this));
 		commandMap.removeAllOfType(ReloadCommand.class);
 		commandMap.register(new ReloadCommand(this));
+		commandMap.register(new GiveCommand(this));
 		commandMap.register(new HelpCommand(this, commandMap.getKnownCommands(false)));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
