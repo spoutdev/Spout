@@ -2,10 +2,10 @@ package org.getspout.server.generator.populators.trees;
 
 import java.util.ArrayList;
 import java.util.Random;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.getspout.server.block.BlockID;
 
 public class NormalTree implements GenericTreeGenerator {
 
@@ -17,12 +17,12 @@ public class NormalTree implements GenericTreeGenerator {
 
         // TODO check for nearby trees
 
-       if (sourceBlock.getType() != Material.GRASS) {
+       if (sourceBlock.getTypeId() != BlockID.GRASS) {
            return false;
        }
 
         BlockState dirtState = sourceBlock.getState();
-        dirtState.setType(Material.DIRT);
+        dirtState.setTypeId(BlockID.DIRT);
         allBlocks.add(dirtState);
 
         ArrayList<BlockState> leaves = new ArrayList<BlockState>();
@@ -63,7 +63,7 @@ public class NormalTree implements GenericTreeGenerator {
             }
         }
         for (BlockState block : leaves) {
-            block.setType(Material.LEAVES);
+            block.setTypeId(BlockID.LEAVES);
         }
         allBlocks.addAll(leaves);
 
@@ -83,7 +83,7 @@ public class NormalTree implements GenericTreeGenerator {
             }
         }
         for (BlockState block : air) {
-            block.setType(Material.AIR);
+            block.setTypeId(BlockID.GRASS);
         }
         allBlocks.addAll(air);
 
@@ -92,7 +92,7 @@ public class NormalTree implements GenericTreeGenerator {
             log.add(world.getBlockAt(centerX, centerY + y, centerZ).getState());
         }
         for (BlockState block : log) {
-            block.setType(Material.LOG);
+            block.setTypeId(BlockID.LOG);
         }
         allBlocks.addAll(log);
         // TODO event
