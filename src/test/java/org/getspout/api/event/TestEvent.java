@@ -1,7 +1,4 @@
-package org.getspout.commons.event;
-
-import org.getspout.api.event.Event;
-import org.getspout.api.event.HandlerList;
+package org.getspout.api.event;
 
 public class TestEvent extends Event {
 

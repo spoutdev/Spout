@@ -1,7 +1,4 @@
-package org.getspout.commons.event;
-
-import org.getspout.api.event.EventHandler;
-import org.getspout.api.event.Order;
+package org.getspout.api.event;
 
 public class TestListener {
 
