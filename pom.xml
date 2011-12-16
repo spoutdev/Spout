@@ -71,7 +71,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.getspout</groupId>
-			<artifactId>spoutapi</artifactId>
+			<artifactId>api</artifactId>
 			<version>dev-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>

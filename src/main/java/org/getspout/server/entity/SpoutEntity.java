@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -13,6 +12,8 @@ import org.bukkit.Location;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
@@ -28,47 +29,38 @@ public abstract class SpoutEntity implements Entity, Damager {
 	 * Indicates how often, in ticks, to send position refresh packets to the client
 	 */
 	private static final int POSITION_REFRESH_RATE = 20;
-
 	/**
 	 * The server this entity belongs to.
 	 */
 	protected final SpoutServer server;
-
 	/**
 	 * The world this entity belongs to.
 	 */
 	protected SpoutWorld world;
-
 	/**
 	 * A flag indicating if this entity is currently active.
 	 */
 	protected boolean active = true;
-
 	/**
 	 * This entity's unique id.
 	 */
 	protected int id;
-
 	/**
 	 * The current position.
 	 */
 	protected Location location = Position.ZERO;
-
 	/**
 	 * The position in the last cycle.
 	 */
 	protected Location previousLocation = Position.ZERO;
-
 	/**
 	 * An EntityDamageEvent representing the last damage cause on this entity.
 	 */
 	private EntityDamageEvent lastDamageCause;
-
 	/**
 	 * A flag indicting if the entity is on the ground
 	 */
 	private boolean onGround = true;
-
 	/**
 	 * A counter of how long this entity has existed
 	 */
@@ -77,7 +69,6 @@ public abstract class SpoutEntity implements Entity, Damager {
 	 * A Random for use in this entity.
 	 */
 	protected final Random random = new Random();
-
 	/**
 	 * Indicates the last tick that the entity sent a refresh teleport packet
 	 */
@@ -212,15 +203,19 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		SpoutEntity other = (SpoutEntity) obj;
-		if (id != other.id)
+		if (id != other.id) {
 			return false;
+		}
 		return true;
 	}
 
@@ -284,7 +279,6 @@ public abstract class SpoutEntity implements Entity, Damager {
 	public boolean hasRotated() {
 		return Position.hasRotated(location, previousLocation);
 	}
-
 
 	public void setVelocity(Vector velocity) {
 		throw new UnsupportedOperationException("Not supported yet.");
@@ -444,4 +438,20 @@ public abstract class SpoutEntity implements Entity, Damager {
 	}
 
 	public abstract List<ItemStack> getLoot(Damager damager);
+
+	public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+		server.getEntityMetadata().setMetadata(null, metadataKey, newMetadataValue);
+	}
+
+	public List<MetadataValue> getMetadata(String metadataKey) {
+		return server.getEntityMetadata().getMetadata(null, metadataKey);
+	}
+
+	public boolean hasMetadata(String metadataKey) {
+		return server.getEntityMetadata().hasMetadata(null, metadataKey);
+	}
+
+	public void removeMetadata(String metadataKey, Plugin owningPlugin) {
+		server.getEntityMetadata().removeMetadata(null, metadataKey, owningPlugin);
+	}
 }

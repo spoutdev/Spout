@@ -55,6 +55,9 @@ import org.bukkit.plugin.SimpleServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.util.permissions.DefaultPermissions;
 
+import org.getspout.api.metadata.EntityMetadataStore;
+import org.getspout.api.metadata.PlayerMetadataStore;
+import org.getspout.api.metadata.WorldMetadataStore;
 import org.getspout.server.command.BanCommand;
 import org.getspout.server.command.ColorCommand;
 import org.getspout.server.command.DeopCommand;
@@ -94,28 +97,37 @@ public final class SpoutServer implements Server {
 	 * The logger for this class.
 	 */
 	public static final Logger logger = Logger.getLogger("Minecraft");
-
 	/**
 	 * The directory configurations are stored in
 	 */
 	private static final File configDir = new File("config");
-
 	/**
 	 * The main configuration file
 	 */
 	private static final File configFile = new File(configDir, "spout.yml");
-
 	/**
 	 * The configuration the server uses.
 	 */
 	private static final SingleFileYamlConfiguration config = new SingleFileYamlConfiguration(configFile);
-
 	/**
 	 * The protocol version supported by the server
 	 */
 	public static final int PROTOCOL_VERSION = 22;
-
-
+	/**
+	 * The entity metadata store.
+	 */
+	private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
+	/**
+	 * The player metadata store.
+	 */
+	private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
+	/**
+	 * The world metadata store.
+	 */
+	private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
+	/**
+	 * The storage queue.
+	 */
 	public static final StorageQueue storeQueue = new StorageQueue();
 
 	/**
@@ -127,8 +139,9 @@ public final class SpoutServer implements Server {
 		try {
 			storeQueue.start();
 
-			if (!configDir.exists() || !configDir.isDirectory())
+			if (!configDir.exists() || !configDir.isDirectory()) {
 				configDir.mkdirs();
+			}
 			config.load();
 			config.options().indent(4);
 			ConfigurationSerialization.registerClass(SpoutOfflinePlayer.class);
@@ -143,13 +156,16 @@ public final class SpoutServer implements Server {
 					if (split.length != 2) {
 						split = bind.split(":");
 					}
-					if (split.length > 2) continue;
+					if (split.length > 2) {
+						continue;
+					}
 					int port = 25565;
 					try {
 						if (split.length > 1) {
 							port = Integer.parseInt(split[1]);
 						}
-					} catch (NumberFormatException e) {}
+					} catch (NumberFormatException e) {
+					}
 					server.bind(new InetSocketAddress(split[0], port));
 					hasBound = true;
 				}
@@ -162,93 +178,75 @@ public final class SpoutServer implements Server {
 			logger.log(Level.SEVERE, "Error during server startup.", t);
 		}
 	}
-
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
-
 	/**
 	 * A group containing all of the channels.
 	 */
 	private final ChannelGroup group = new DefaultChannelGroup();
-
 	/**
 	 * The network executor service - Netty dispatches events to this thread
 	 * pool.
 	 */
 	private final ExecutorService executor = Executors.newCachedThreadPool();
-
 	/**
 	 * A list of all the active {@link Session}s.
 	 */
 	private final SessionRegistry sessions = new SessionRegistry();
-
 	/**
 	 * The console manager of this server.
 	 */
 	private final ConsoleManager consoleManager = new ConsoleManager(this, config.getString("server.terminal-mode", "jline"));
-
 	/**
 	 * The services manager of this server.
 	 */
 	private final SimpleServicesManager servicesManager = new SimpleServicesManager();
-
 	/**
 	 * The command map of this server.
 	 */
 	private final SpoutCommandMap commandMap = new SpoutCommandMap(this);
-
 	/**
 	 * The plugin manager of this server.
 	 */
 	private final SimplePluginManager pluginManager = new SimplePluginManager(this, commandMap);
-
 	/**
 	 * The crafting manager for this server.
 	 */
 	private final CraftingManager craftingManager = new CraftingManager();
-
 	/**
 	 * The list of OPs on the server.
 	 */
 	private final PlayerListFile opsList = new PlayerListFile(new File(configDir, "ops.txt"));
-
 	/**
 	 * The list of players whitelisted on the server.
 	 */
 	private final PlayerListFile whitelist = new PlayerListFile(new File(configDir, "whitelist.txt"));
-
 	/**
 	 * The server's ban manager.
 	 */
 	private BanManager banManager = new FlatFileBanManager(this);
-
 	/**
 	 * The world this server is managing.
 	 */
 	private final ArrayList<SpoutWorld> worlds = new ArrayList<SpoutWorld>();
-
 	/**
 	 * The task scheduler used by this server.
 	 */
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
-
 	/**
 	 * The server's default game mode
 	 */
 	private GameMode defaultGameMode = GameMode.SURVIVAL;
-
 	/**
 	 * Whether the server is shutting down
 	 */
 	private boolean isShuttingDown = false;
-
 	/**
 	 * A cache of existing OfflinePlayers
 	 */
 	private final Map<String, OfflinePlayer> offlineCache = new ConcurrentHashMap<String, OfflinePlayer>();
-
 	/**
 	 * Deadlock monitor detection thread;
 	 */
@@ -287,7 +285,8 @@ public final class SpoutServer implements Server {
 		} finally {
 			try {
 				stream.close();
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 		config.set("server.view-distance", SpoutChunk.VISIBLE_RADIUS);
 
@@ -319,7 +318,7 @@ public final class SpoutServer implements Server {
 					separator = ", ";
 				}
 
-				if(bukkit.getString("settings.world-container") != null) {
+				if (bukkit.getString("settings.world-container") != null) {
 					config.set("server.folders.world-container", bukkit.getString("settings.world-container"));
 					moved += separator + "world container";
 					separator = "m ";
@@ -368,8 +367,8 @@ public final class SpoutServer implements Server {
 							config.set("server.port", port);
 							moved += separator + "port";
 							separator = ", ";
+						} catch (NumberFormatException ex) {
 						}
-						catch (NumberFormatException ex) {}
 					}
 
 					if (properties.containsKey("max-players")) {
@@ -379,8 +378,8 @@ public final class SpoutServer implements Server {
 							config.set("server.max-players", players);
 							moved += separator + "max players";
 							separator = ", ";
+						} catch (NumberFormatException e) {
 						}
-						catch (NumberFormatException e) {}
 					}
 
 					if (properties.containsKey("motd")) {
@@ -395,11 +394,14 @@ public final class SpoutServer implements Server {
 						try {
 							int mode = Integer.parseInt(value);
 							GameMode gMode = GameMode.getByValue(mode);
-							if (gMode == null) gMode = GameMode.SURVIVAL;
+							if (gMode == null) {
+								gMode = GameMode.SURVIVAL;
+							}
 							config.set("server.def-game-mode", gMode.name());
 							moved += separator + "default game mode";
 							separator = ", ";
-						} catch (NumberFormatException ex) {}
+						} catch (NumberFormatException ex) {
+						}
 					}
 
 					// TODO: move nether, view distance, monsters, etc when implemented
@@ -407,8 +409,8 @@ public final class SpoutServer implements Server {
 					if (moved.length() > 0) {
 						System.out.println("Copied " + moved + " from server.properties");
 					}
+				} catch (IOException ex) {
 				}
-				catch (IOException ex) {}
 			}
 		}
 		config.options().copyDefaults(true);
@@ -485,7 +487,9 @@ public final class SpoutServer implements Server {
 	 */
 	public void shutdown() {
 		// This is so we don't run this twice (/stop and actual shutdown)
-		if (isShuttingDown) return;
+		if (isShuttingDown) {
+			return;
+		}
 		isShuttingDown = true;
 		logger.info("The server is shutting down...");
 
@@ -590,8 +594,7 @@ public final class SpoutServer implements Server {
 			enablePlugins(PluginLoadOrder.POSTWORLD);
 			commandMap.registerServerAliases();
 			consoleManager.refreshCommands();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Uncaught error while reloading: {0}", ex.getMessage());
 			ex.printStackTrace();
 		}
@@ -662,8 +665,9 @@ public final class SpoutServer implements Server {
 	 */
 	public SpoutWorld getWorld(String name) {
 		for (SpoutWorld world : worlds) {
-			if (world.getName().equalsIgnoreCase(name))
+			if (world.getName().equalsIgnoreCase(name)) {
 				return world;
+			}
 		}
 		return null;
 	}
@@ -676,8 +680,9 @@ public final class SpoutServer implements Server {
 	 */
 	public SpoutWorld getWorld(UUID uid) {
 		for (SpoutWorld world : worlds) {
-			if (uid.equals(world.getUID()))
+			if (uid.equals(world.getUID())) {
 				return world;
+			}
 		}
 		return null;
 	}
@@ -729,8 +734,9 @@ public final class SpoutServer implements Server {
 	public Player[] getOnlinePlayers() {
 		ArrayList<Player> result = new ArrayList<Player>();
 		for (World world : getWorlds()) {
-			for (Player player : world.getPlayers())
+			for (Player player : world.getPlayers()) {
 				result.add(player);
+			}
 		}
 		return result.toArray(new Player[result.size()]);
 	}
@@ -837,16 +843,18 @@ public final class SpoutServer implements Server {
 	 */
 	public Player getPlayer(String name) {
 		for (Player player : getOnlinePlayers()) {
-			if (player.getName().equalsIgnoreCase(name))
+			if (player.getName().equalsIgnoreCase(name)) {
 				return player;
+			}
 		}
 		return null;
 	}
 
 	public Player getPlayerExact(String name) {
 		for (Player player : getOnlinePlayers()) {
-			if (player.getName().equalsIgnoreCase(name))
+			if (player.getName().equalsIgnoreCase(name)) {
 				return player;
+			}
 		}
 		return null;
 	}
@@ -1014,7 +1022,9 @@ public final class SpoutServer implements Server {
 	 */
 	public boolean unloadWorld(String name, boolean save) {
 		SpoutWorld world = getWorld(name);
-		if (world == null) return false;
+		if (world == null) {
+			return false;
+		}
 		return unloadWorld(world, save);
 	}
 
@@ -1036,7 +1046,7 @@ public final class SpoutServer implements Server {
 		if (worlds.contains((SpoutWorld) world)) {
 			worlds.remove((SpoutWorld) world);
 			((SpoutWorld) world).unload();
-			EventFactory.onWorldUnload((SpoutWorld)world);
+			EventFactory.onWorldUnload((SpoutWorld) world);
 			return true;
 		}
 		return false;
@@ -1070,8 +1080,9 @@ public final class SpoutServer implements Server {
 	 * Writes loaded players to disk
 	 */
 	public void savePlayers() {
-		for (Player player : getOnlinePlayers())
+		for (Player player : getOnlinePlayers()) {
 			player.saveData();
+		}
 	}
 
 	/**
@@ -1094,11 +1105,9 @@ public final class SpoutServer implements Server {
 			}
 
 			return false;
-		}
-		catch (CommandException ex) {
+		} catch (CommandException ex) {
 			throw ex;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new CommandException("Unhandled exception executing command", ex);
 		}
 	}
@@ -1144,7 +1153,9 @@ public final class SpoutServer implements Server {
 	public Map<String, String[]> getCommandAliases() {
 		Map<String, String[]> aliases = new HashMap<String, String[]>();
 		ConfigurationSection section = config.getConfigurationSection("aliases");
-		if (section == null) return aliases;
+		if (section == null) {
+			return aliases;
+		}
 		List<String> cmdAliases = new ArrayList<String>();
 		for (String key : section.getKeys(false)) {
 			cmdAliases.clear();
@@ -1193,7 +1204,7 @@ public final class SpoutServer implements Server {
 			players.add(getOfflinePlayer(name));
 		}
 		return players;
-	 }
+	}
 
 	public void reloadWhitelist() {
 		whitelist.load();
@@ -1234,7 +1245,7 @@ public final class SpoutServer implements Server {
 	}
 
 	public void banIP(String address) {
-	   banManager.setIpBanned(address, true);
+		banManager.setIpBanned(address, true);
 	}
 
 	public void unbanIP(String address) {
@@ -1317,5 +1328,17 @@ public final class SpoutServer implements Server {
 
 	public void reloadConfiguration() {
 		config.load();
+	}
+
+	public EntityMetadataStore getEntityMetadata() {
+		return entityMetadata;
+	}
+
+	public PlayerMetadataStore getPlayerMetadata() {
+		return playerMetadata;
+	}
+
+	public WorldMetadataStore getWorldMetadata() {
+		return worldMetadata;
 	}
 }

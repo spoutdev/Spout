@@ -1,10 +1,13 @@
 package org.getspout.server.block;
 
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;
@@ -136,4 +139,20 @@ public class SpoutBlockState implements BlockState {
 	public void destroy() {
 		throw new IllegalStateException("Cannot destroy a generic BlockState");
 	}
+    
+    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+        getBlock().setMetadata(metadataKey, newMetadataValue);
+    }
+
+    public List<MetadataValue> getMetadata(String metadataKey) {
+        return getBlock().getMetadata(metadataKey);
+    }
+
+    public boolean hasMetadata(String metadataKey) {
+        return getBlock().hasMetadata(metadataKey);
+    }
+
+    public void removeMetadata(String metadataKey, Plugin owningPlugin) {
+        getBlock().removeMetadata(metadataKey, owningPlugin);
+    }
 }

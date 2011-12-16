@@ -27,6 +27,9 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import org.getspout.api.metadata.BlockMetadataStore;
+import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.entity.*;
 import org.getspout.server.entity.objects.SpoutItem;
@@ -47,102 +50,82 @@ public final class SpoutWorld implements World {
 	 * The server of this world.
 	 */
 	private final SpoutServer server;
-
 	/**
 	 * The name of this world.
 	 */
 	private final String name;
-
 	/**
 	 * The chunk manager.
 	 */
 	private final ChunkManager chunks;
-
 	/**
 	 * The entity manager.
 	 */
 	private final EntityManager entities = new EntityManager();
-
 	/**
 	 * This world's Random instance.
 	 */
 	private final Random random = new Random();
-
 	/**
 	 * A map between locations and cached Block objects.
 	 */
 	private final Map<Location, SpoutBlock> blockCache = new ConcurrentHashMap<Location, SpoutBlock>();
-
 	/**
 	 * The world populators for this world.
 	 */
 	private final List<BlockPopulator> populators;
-
 	/**
 	 * The environment.
 	 */
 	private final Environment environment;
-
 	/**
 	 * The world seed.
 	 */
 	private final long seed;
-
 	/**
 	 * The spawn position.
 	 */
 	private Location spawnLocation;
-
 	/**
 	 * Whether to keep the spawn chunks in memory (prevent them from being unloaded)
 	 */
 	private boolean keepSpawnLoaded = true;
-
 	/**
 	 * Whether PvP is allowed in this world.
 	 */
 	private boolean pvpAllowed = true;
-
 	/**
 	 * Whether animals can spawn in this world.
 	 */
 	private boolean spawnAnimals = true;
-
 	/**
 	 * Whether monsters can spawn in this world.
 	 */
 	private boolean spawnMonsters = true;
-
 	/**
 	 * Whether it is currently raining/snowing on this world.
 	 */
 	private boolean currentlyRaining = false;
-
 	/**
 	 * How many ticks until the rain/snow status is expected to change.
 	 */
 	private int rainingTicks = 0;
-
 	/**
 	 * Whether it is currently thundering on this world.
 	 */
 	private boolean currentlyThundering = false;
-
 	/**
 	 * How many ticks until the thundering status is expected to change.
 	 */
 	private int thunderingTicks = 0;
-
 	/**
 	 * The current world time.
 	 */
 	private long time = 0;
-
 	/**
 	 * The time until the next full-save.
 	 */
 	private int saveTimer = 0;
-
 	/**
 	 * The check to autosave
 	 */
@@ -152,11 +135,15 @@ public final class SpoutWorld implements World {
 	 * The world metadata service used
 	 */
 	private final WorldStorageProvider storageProvider;
-
 	/**
 	 * The world's UUID
 	 */
 	private final UUID uid;
+	/**
+	 * Block metadata store.
+	 * TODO: this instead of null
+	 */
+	private final BlockMetadataStore blockMetadata = new BlockMetadataStore(null);
 
 	/**
 	 * Creates a new world with the specified chunk I/O service, environment,
@@ -193,7 +180,9 @@ public final class SpoutWorld implements World {
 			this.uid = UUID.randomUUID();
 		}
 		populators = generator.getDefaultPopulators(this);
-		if (spawnLocation == null) spawnLocation = generator.getFixedSpawnLocation(this, random);
+		if (spawnLocation == null) {
+			spawnLocation = generator.getFixedSpawnLocation(this, random);
+		}
 
 		int centerX = (spawnLocation == null) ? 0 : spawnLocation.getBlockX() >> 4;
 		int centerZ = (spawnLocation == null) ? 0 : spawnLocation.getBlockZ() >> 4;
@@ -240,7 +229,6 @@ public final class SpoutWorld implements World {
 
 	////////////////////////////////////////
 	// Various internal mechanisms
-
 	/**
 	 * Get the world chunk manager.
 	 * @return The ChunkManager for the world.
@@ -255,11 +243,13 @@ public final class SpoutWorld implements World {
 	public void pulse() {
 		ArrayList<SpoutEntity> temp = new ArrayList<SpoutEntity>(entities.getAll());
 
-		for (SpoutEntity entity : temp)
+		for (SpoutEntity entity : temp) {
 			entity.pulse();
+		}
 
-		for (SpoutEntity entity : temp)
+		for (SpoutEntity entity : temp) {
 			entity.reset();
+		}
 
 		// We currently tick at 1/4 the speed of regular MC
 		// Modulus by 12000 to force permanent day.
@@ -284,8 +274,8 @@ public final class SpoutWorld implements World {
 				SpoutChunk[] chunkList = chunks.getLoadedChunks();
 				SpoutChunk chunk = chunkList[random.nextInt(chunkList.length)];
 
-				int x = (chunk.getX() << 4) + (int)(random.nextDouble() * 16);
-				int z = (chunk.getZ() << 4) + (int)(random.nextDouble() * 16);
+				int x = (chunk.getX() << 4) + (int) (random.nextDouble() * 16);
+				int z = (chunk.getZ() << 4) + (int) (random.nextDouble() * 16);
 				int y = getHighestBlockYAt(x, z);
 
 				strikeLightning(new Location(this, x, y, z));
@@ -311,7 +301,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// SpoutEntity lists
-
 	public List<Player> getPlayers() {
 		Collection<SpoutPlayer> players = entities.getAll(SpoutPlayer.class);
 		ArrayList<Player> result = new ArrayList<Player>();
@@ -334,13 +323,14 @@ public final class SpoutWorld implements World {
 		Collection<SpoutEntity> list = entities.getAll();
 		ArrayList<LivingEntity> result = new ArrayList<LivingEntity>();
 		for (Entity e : list) {
-			if (e instanceof SpoutLivingEntity) result.add((SpoutLivingEntity) e);
+			if (e instanceof SpoutLivingEntity) {
+				result.add((SpoutLivingEntity) e);
+			}
 		}
 		return result;
 	}
 
 	// Various malleable world properties
-
 	public Location getSpawnLocation() {
 		return spawnLocation;
 	}
@@ -379,7 +369,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// various fixed world properties
-
 	public Environment getEnvironment() {
 		return environment;
 	}
@@ -409,7 +398,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// force-save
-
 	public void save() {
 		save(false);
 	}
@@ -418,6 +406,7 @@ public final class SpoutWorld implements World {
 		EventFactory.onWorldSave(this);
 		if (async) {
 			server.getStorageQueue().queue(new StorageOperation() {
+
 				@Override
 				public boolean isParallel() {
 					return true;
@@ -458,7 +447,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// map generation
-
 	public ChunkGenerator getGenerator() {
 		return chunks.getGenerator();
 	}
@@ -476,7 +464,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// get block, chunk, id, highest methods with coords
-
 	public synchronized SpoutBlock getBlockAt(int x, int y, int z) {
 		Location blockLoc = new Location(this, x, y, z);
 		if (blockCache.containsKey(blockLoc)) {
@@ -506,7 +493,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// get block, chunk, id, highest with locations
-
 	public SpoutBlock getBlockAt(Location location) {
 		return getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 	}
@@ -536,7 +522,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// Chunk loading and unloading
-
 	public boolean isChunkLoaded(Chunk chunk) {
 		return chunk.isLoaded();
 	}
@@ -597,7 +582,9 @@ public final class SpoutWorld implements World {
 	}
 
 	public boolean regenerateChunk(int x, int z) {
-		if (!chunks.forceRegeneration(x, z)) return false;
+		if (!chunks.forceRegeneration(x, z)) {
+			return false;
+		}
 		refreshChunk(x, z);
 		return true;
 	}
@@ -624,7 +611,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// biomes
-
 	public Biome getBiome(int x, int z) {
 		if (environment == Environment.THE_END) {
 			return Biome.SKY;
@@ -644,11 +630,10 @@ public final class SpoutWorld implements World {
 	}
 
 	// entity spawning
-
 	@SuppressWarnings("unchecked")
 	public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
 		if (clazz.isInstance(SpoutEntity.class)) {
-			return (T)spawnSpoutEntity(location, (Class<? extends SpoutEntity>)clazz);
+			return (T) spawnSpoutEntity(location, (Class<? extends SpoutEntity>) clazz);
 		} else {
 			return spawnBukkitEntity(location, clazz);
 		}
@@ -660,7 +645,7 @@ public final class SpoutWorld implements World {
 			throw new IllegalArgumentException("This entity type is unknown to Spout!");
 		}
 
-		T entity = (T)properties.getFactory().createEntity(server, this);
+		T entity = (T) properties.getFactory().createEntity(server, this);
 		entity.teleport(location);
 		return entity;
 	}
@@ -671,7 +656,7 @@ public final class SpoutWorld implements World {
 			throw new IllegalArgumentException("This entity type is unknown to Spout!");
 		}
 
-		T entity = (T)properties.getFactory().createEntity(server, this);
+		T entity = (T) properties.getFactory().createEntity(server, this);
 		entity.teleport(location);
 		return entity;
 	}
@@ -719,7 +704,7 @@ public final class SpoutWorld implements World {
 		if (properties == null) {
 			throw new IllegalArgumentException("This CreatureType is unknown to Spout!");
 		}
-		LivingEntity entity = (LivingEntity)properties.getFactory().createEntity(server, this);
+		LivingEntity entity = (LivingEntity) properties.getFactory().createEntity(server, this);
 		entity.teleport(loc);
 		return entity;
 	}
@@ -743,14 +728,17 @@ public final class SpoutWorld implements World {
 	}
 
 	// Time related methods
-
 	public long getTime() {
 		return time;
 	}
 
 	public void setTime(long time) {
-		if (time < 0) time = (time % 24000) + 24000;
-		if (time > 24000) time %= 24000;
+		if (time < 0) {
+			time = (time % 24000) + 24000;
+		}
+		if (time > 24000) {
+			time %= 24000;
+		}
 		this.time = time;
 	}
 
@@ -763,7 +751,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// Weather related methods
-
 	public boolean hasStorm() {
 		return currentlyRaining;
 	}
@@ -781,7 +768,7 @@ public final class SpoutWorld implements World {
 		}
 
 		for (SpoutPlayer player : getRawPlayers()) {
-			player.getSession().send(new StateChangeMessage((byte)(currentlyRaining ? 1 : 2), (byte)0));
+			player.getSession().send(new StateChangeMessage((byte) (currentlyRaining ? 1 : 2), (byte) 0));
 		}
 	}
 
@@ -819,7 +806,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// explosions
-
 	public boolean createExplosion(Location loc, float power, boolean setFire) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -837,7 +823,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// effects
-
 	public void playEffect(Location location, Effect effect, int data) {
 		playEffect(location, effect, data, 64);
 	}
@@ -859,7 +844,6 @@ public final class SpoutWorld implements World {
 	}
 
 	// misc
-
 	public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {
 		return new SpoutChunkSnapshot.EmptySnapshot(x, z, this, includeBiome, includeBiomeTempRain);
 	}
@@ -889,39 +873,39 @@ public final class SpoutWorld implements World {
 	}
 
 	// level data write
-
 	void writeWorldData(boolean async) {
 		if (async) {
-		server.getStorageQueue().queue(new StorageOperation() {
-			@Override
-			public boolean isParallel() {
-				return true;
-			}
+			server.getStorageQueue().queue(new StorageOperation() {
 
-			@Override
-			public String getGroup() {
-				return getName();
-			}
-
-			@Override
-			public boolean queueMultiple() {
-				return false;
-			}
-
-			@Override
-			public String getOperation() {
-				return "world-metadata-save";
-			}
-
-			public void run() {
-				try {
-					storageProvider.getMetadataService().writeWorldData();
-				} catch (IOException e) {
-					server.getLogger().severe("Could not save world metadata file for world" + getName());
-					e.printStackTrace();
+				@Override
+				public boolean isParallel() {
+					return true;
 				}
-			}
-		});
+
+				@Override
+				public String getGroup() {
+					return getName();
+				}
+
+				@Override
+				public boolean queueMultiple() {
+					return false;
+				}
+
+				@Override
+				public String getOperation() {
+					return "world-metadata-save";
+				}
+
+				public void run() {
+					try {
+						storageProvider.getMetadataService().writeWorldData();
+					} catch (IOException e) {
+						server.getLogger().severe("Could not save world metadata file for world" + getName());
+						e.printStackTrace();
+					}
+				}
+			});
 		} else {
 			try {
 				storageProvider.getMetadataService().writeWorldData();
@@ -959,5 +943,27 @@ public final class SpoutWorld implements World {
 
 	public SpoutServer getServer() {
 		return server;
+	}
+	//Metadata
+	//TODO: this instead of null when this implements Spout World
+
+	public BlockMetadataStore getBlockMetadata() {
+		return blockMetadata;
+	}
+
+	public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+		server.getWorldMetadata().setMetadata(null, metadataKey, newMetadataValue);
+	}
+
+	public List<MetadataValue> getMetadata(String metadataKey) {
+		return server.getWorldMetadata().getMetadata(null, metadataKey);
+	}
+
+	public boolean hasMetadata(String metadataKey) {
+		return server.getWorldMetadata().hasMetadata(null, metadataKey);
+	}
+
+	public void removeMetadata(String metadataKey, Plugin owningPlugin) {
+		server.getWorldMetadata().removeMetadata(null, metadataKey, owningPlugin);
 	}
 }
