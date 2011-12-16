@@ -16,7 +16,6 @@ import org.getspout.api.plugin.Plugin;
  */
 @SerializableAs("Player")
 public class SpoutOfflinePlayer implements OfflinePlayer {
-
 	private final SpoutServer server;
 	private final String name;
 

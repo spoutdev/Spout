@@ -46,7 +46,6 @@ import org.getspout.server.msg.TimeMessage;
  * @author Graham Edgecombe
  */
 public final class SpoutWorld implements World {
-
 	/**
 	 * The server of this world.
 	 */

@@ -93,7 +93,6 @@ import org.getspout.server.util.bans.FlatFileBanManager;
  * @author Graham Edgecombe
  */
 public final class SpoutServer implements Server {
-
 	/**
 	 * The logger for this class.
 	 */

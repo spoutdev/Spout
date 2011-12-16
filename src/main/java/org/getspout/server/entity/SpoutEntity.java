@@ -25,7 +25,6 @@ import org.getspout.server.util.Position;
  * @author Graham Edgecombe
  */
 public abstract class SpoutEntity implements Entity, Damager {
-
 	/**
 	 * Indicates how often, in ticks, to send position refresh packets to the client
 	 */
