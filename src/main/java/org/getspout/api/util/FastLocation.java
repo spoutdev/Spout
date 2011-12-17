@@ -16,6 +16,8 @@
  */
 package org.getspout.api.util;
 
+// TODO I (raphfrk) think I wrote this, need to check - anyway can be redone
+
 import org.getspout.api.World;
 import org.getspout.api.block.Block;
 import org.getspout.api.math.Vector3;
@@ -67,7 +69,7 @@ public class FastLocation extends Location {
 	}
 	
 	public Block getBlock() {
-		return world.getBlockAt(this);
+		return null; // world.getBlockAt(this);
 	}
 
 }

@@ -30,16 +30,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+// TODO This needs to be completed re-done.  Ints or not, the double version was faster
+ 
 package org.getspout.api.util;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.getspout.api.World;
-import org.getspout.api.block.Block;
 import org.getspout.api.block.BlockFace;
 import org.getspout.api.entity.LivingEntity;
-import org.getspout.api.math.*;
+import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
 
 /**
@@ -97,7 +101,7 @@ public class BlockIterator implements Iterator<Block> {
 		double secondPosition = 0;
 		double thirdPosition = 0;
 
-		Block startBlock = world.getBlockAt((int) Math.floor(startClone.getX()), (int) Math.floor(startClone.getY()), (int) Math.floor(startClone.getZ()));
+		Block startBlock = world.getBlock((int) Math.floor(startClone.getX()), (int) Math.floor(startClone.getY()), (int) Math.floor(startClone.getZ()));
 
 		if (getXLength(direction) > mainDirection) {
 			mainFace = getXFace(direction);
@@ -163,8 +167,7 @@ public class BlockIterator implements Iterator<Block> {
 
 		Block lastBlock;
 
-		lastBlock = startBlock.getRelative(reverseFace(mainFace));
-
+		/*
 		if (secondError < 0) {
 			secondError += gridSize;
 			lastBlock = lastBlock.getRelative(reverseFace(secondFace));
@@ -200,7 +203,7 @@ public class BlockIterator implements Iterator<Block> {
 
 		// Calculate the number of planes passed to give max distance
 		maxDistanceInt = (int) Math.round(maxDistance / (Math.sqrt(mainDirection * mainDirection + secondDirection * secondDirection + thirdDirection * thirdDirection) / mainDirection));
-
+		*/
 	}
 
 	private boolean blockEquals(Block a, Block b) {
@@ -376,7 +379,7 @@ public class BlockIterator implements Iterator<Block> {
 
 		secondError += secondStep;
 		thirdError += thirdStep;
-
+		/*
 		if (secondError > 0 && thirdError > 0) {
 			blockQueue[2] = blockQueue[0].getRelative(mainFace);
 			if (((long) secondStep) * ((long) thirdError) < ((long) thirdStep) * ((long) secondError)) {
@@ -407,5 +410,6 @@ public class BlockIterator implements Iterator<Block> {
 			currentBlock = 0;
 			return;
 		}
+		*/
 	}
 }

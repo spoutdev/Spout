@@ -16,6 +16,9 @@
  */
 package org.getspout.api.util;
 
+// Bukkit code ?
+// TODO need to fix
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.getspout.api.World;
@@ -105,7 +108,7 @@ public class Location extends Vector3m  {
 	}
 	
 	public Block getBlock() {
-		return world.getBlockAt(this);
+		return null; // world.getBlockAt(this);
 	}
 
 	@Override
