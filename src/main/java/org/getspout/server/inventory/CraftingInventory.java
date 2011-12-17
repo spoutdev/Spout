@@ -10,12 +10,15 @@ import org.getspout.server.entity.SpoutPlayer;
 /**
  * Represents the portion of a player's inventory which handles crafting.
  */
-public class CraftingInventory extends SpoutInventory {
-	public static final int RESULT_SLOT = 4;
-
+public class CraftingInventory extends SpoutInventory {	
 	public CraftingInventory() {
 		super((byte) 0, 5);
 	}
+    
+    public CraftingInventory(byte id, int slots)
+    {
+        super(id, slots);
+    }
 
 	/**
 	 * Return the name of the inventory
@@ -26,6 +29,10 @@ public class CraftingInventory extends SpoutInventory {
 	public String getName() {
 		return "Crafting";
 	}
+    
+    public int getResultSlot() {
+        return 4;
+    }
 
 	/**
 	 * Stores the ItemStack at the given index.
@@ -38,7 +45,7 @@ public class CraftingInventory extends SpoutInventory {
 	public void setItem(int index, SpoutItemStack item) {
 		super.setItem(index, item);
 
-		if (index != RESULT_SLOT) {
+		if (index != getResultSlot()) {
 			ItemStack[] items = new ItemStack[4];
 			for (int i = 0; i < 4; ++i) {
 				items[i] = getItem(i);
@@ -46,9 +53,9 @@ public class CraftingInventory extends SpoutInventory {
 
 			Recipe recipe = ((SpoutServer) Bukkit.getServer()).getCraftingManager().getCraftingRecipe(items);
 			if (recipe == null) {
-				setItem(RESULT_SLOT, null);
+				setItem(getResultSlot(), null);
 			} else {
-				setItem(RESULT_SLOT, recipe.getResult());
+				setItem(getResultSlot(), recipe.getResult());
 			}
 		}
 	}

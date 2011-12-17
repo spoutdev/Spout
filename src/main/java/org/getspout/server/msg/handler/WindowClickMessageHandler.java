@@ -71,7 +71,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 
 				// TODO: Waiting on getOpenWindow implementation
 			} else if (inv == player.getInventory().getCraftingInventory()) {
-				if (slot == CraftingInventory.RESULT_SLOT && currentItem != null) {
+				if (slot == player.getInventory().getCraftingInventory().getResultSlot() && currentItem != null) {
 					player.getInventory().getCraftingInventory().craft(player, true);
 					response(session, message, true);
 					return;
@@ -275,7 +275,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 			}
 		}
 
-		if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT)
+		if (inv == player.getInventory().getCraftingInventory() && slot == player.getInventory().getCraftingInventory().getResultSlot())
 		{
 			player.getInventory().getCraftingInventory().craft(player, false);
 

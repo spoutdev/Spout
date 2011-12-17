@@ -28,6 +28,7 @@ import org.getspout.server.net.Session;
 import org.getspout.server.util.Parameter;
 import org.getspout.server.util.Position;
 import org.getspout.server.util.TextWrapper;
+import org.getspout.server.window.WindowID;
 
 /**
  * Represents an in-game player.
@@ -956,6 +957,8 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		if (!this.hasWindowOpen()) {
 			inv.addViewer(this);
 			this.openInventory = inv;
+			this.getSession().send(new OpenWindowMessage(WindowID.getUniqueID(), inv.getId(), inv.getName(), inv.getSize()));
+			
 			return true;
 		}
 		return false;

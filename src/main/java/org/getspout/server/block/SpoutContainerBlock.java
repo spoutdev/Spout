@@ -16,8 +16,11 @@ public abstract class SpoutContainerBlock extends SpoutBlockState implements Con
 		//inventory.removeViewer();
 	}
 
-	@Override
 	public SpoutInventory getInventory() {
 		return inventory;
+	}
+	
+	public SpoutBlockState shallowClone() {
+		return getBlock().getState();
 	}
 }
