@@ -942,8 +942,10 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	}
 
 	public void onClosedWindow() {
-		openInventory.removeViewer(this);
-		openInventory = null;
+		if (openInventory != null) {
+			openInventory.removeViewer(this);
+			openInventory = null;
+		}
 	}
 
 	/**
