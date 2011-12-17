@@ -185,7 +185,7 @@ Library.
 
 -----------------------------------------------------------------------
 
-For information purposes, the license file from the GlowStone project 
+For information purposes, the license file from the Glowstone project 
 follows.  This is the license referred to as the MIT license in the 
 first paragraph.
 
