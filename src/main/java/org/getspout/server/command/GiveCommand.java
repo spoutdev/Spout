@@ -27,14 +27,13 @@ public class GiveCommand extends SpoutCommand {
 
     @Override
     public boolean run(CommandSender sender, String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("You must be a player to give yourself items!");
+        if(args.length==0) {
+            sender.sendMessage("You need to specify a player name!");
             return true;
         }
-        Player plr = (Player) sender;
         String itemname;
         Integer amount = 64;
-        if (args.length == 2) {
+        if (args.length <3) {
             itemname = args[0];
         } else {
             itemname = args[1];
@@ -52,34 +51,40 @@ public class GiveCommand extends SpoutCommand {
                 return false;
             }
         }
-        Player giveplr = plr;
-        if(args.length==3) {
+        Player giveplr = null;
+        if (sender instanceof Player) {
+            giveplr = (Player) sender;
+        }
+        if (args.length == 3) {
             giveplr = srv.getPlayer(args[0]);
-            if(giveplr==null) {
-                plr.sendMessage(ChatColor.RED+"Could not find a player called "+args[0]+"! Please check your spelling!");
+            if (giveplr == null) {
+                sender.sendMessage(ChatColor.RED + "Could not find a player called " + args[0] + "! Please check your spelling!");
                 return true;
             }
         }
+        if (giveplr == null) {
+            sender.sendMessage("You can't give yourself items, you're the console! Please use /give [name] [itemName] [amount]!");
+            return true;
+        }
+
         for (Material curmat : mats) {
             if (curmat.name().equalsIgnoreCase(itemname)) {
                 ItemStack item = new ItemStack(curmat, amount);
                 giveplr.getInventory().addItem(item);
                 giveplr.sendMessage(ChatColor.GREEN + "You were given " + amount + " " + itemname + "!");
-                if (!giveplr.getName().equals(plr.getName())) {
-                    plr.sendMessage(ChatColor.GREEN + "Gave " + giveplr.getName() + " " + amount + " " + itemname + "!");
+                if (!(sender instanceof Player)||(sender instanceof Player && !((Player) sender).getName().equals(giveplr.getName()))) {//if the 2 players are different
+                    sender.sendMessage(ChatColor.GREEN + "Gave " + giveplr.getName() + " " + amount + " " + itemname + "!");
                 }
                 return true;
             }
         }
-        plr.sendMessage(ChatColor.RED + "Could not find the material \"" + itemname + "\"!");
+        sender.sendMessage(ChatColor.RED + "Could not find the material \"" + itemname + "\"!");
         return true;
     }
 
     @Override
     public Set<Permission> registerPermissions(String prefix) {
         Set<Permission> perms = new HashSet<Permission>();
-        //perms.add(new Permission(prefix + ".give", "Allows player to give himself items!"));
-        //not needed right now :P
         return perms;
     }
 

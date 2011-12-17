@@ -72,6 +72,7 @@ import org.getspout.server.command.TimeCommand;
 import org.getspout.server.command.OpCommand;
 import org.getspout.server.command.StopCommand;
 import org.getspout.server.command.ListCommand;
+import org.getspout.server.command.TpCommand;
 import org.getspout.server.config.SingleFileYamlConfiguration;
 import org.getspout.server.inventory.CraftingManager;
 import org.getspout.server.io.StorageQueue;
@@ -459,6 +460,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new StopCommand(this));
 		commandMap.register(new SaveCommand(this));
 		commandMap.register(new SayCommand(this));
+		commandMap.register(new TpCommand(this));
 		commandMap.removeAllOfType(ReloadCommand.class);
 		commandMap.register(new ReloadCommand(this));
 		commandMap.register(new GiveCommand(this));

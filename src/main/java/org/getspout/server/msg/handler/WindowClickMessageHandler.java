@@ -1,17 +1,12 @@
 package org.getspout.server.msg.handler;
 
-import java.util.HashMap;
 import java.util.logging.Level;
-
 import org.bukkit.GameMode;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.inventory.CraftingInventory;
 import org.getspout.server.inventory.SpoutInventory;
 import org.getspout.server.inventory.SpoutItemStack;
-import org.getspout.server.inventory.SpoutPlayerInventory;
-import org.getspout.server.msg.CloseWindowMessage;
 import org.getspout.server.msg.TransactionMessage;
 import org.getspout.server.msg.WindowClickMessage;
 import org.getspout.server.net.Session;
@@ -23,6 +18,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 			return;
 
 		SpoutInventory inv = player.getInventory();
+      
 		int slot = inv.getItemSlot(message.getSlot());
 
 		// Modify slot if needed
