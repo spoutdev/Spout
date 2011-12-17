@@ -83,7 +83,7 @@ public class BlockIterator implements Iterator<Block> {
 	public BlockIterator(World world, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
 		this.maxDistance = maxDistance;
 
-		Vector3 startClone = new Vector3m(start.getX(), start.getY(), start.getZ());
+		Vector3m startClone = new Vector3m(start.getX(), start.getY(), start.getZ());
 
 		startClone.setY(startClone.getY() + yOffset);
 

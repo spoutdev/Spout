@@ -89,7 +89,7 @@ public class Location extends Vector3m  {
 	}
 
 	public Vector3 getDirection() {
-		Vector3 vector = new Vector3m(0,0,0);
+		Vector3m vector = new Vector3m(0,0,0);
 
 		double rotX = this.getYaw();
 		double rotY = this.getPitch();
