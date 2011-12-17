@@ -2,10 +2,10 @@ package org.getspout.server.msg;
 
 public final class RespawnMessage extends Message {
 	private final byte dimension, difficulty, mode;
-	private final short worldHeight;
+	private final int worldHeight;
 	private final long seed;
 
-	public RespawnMessage(byte dimension, byte difficulty, byte mode, short worldHeight, long seed) {
+	public RespawnMessage(byte dimension, byte difficulty, byte mode, int worldHeight, long seed) {
 		this.dimension = dimension;
 		this.difficulty = difficulty;
 		this.mode = mode;
@@ -25,7 +25,7 @@ public final class RespawnMessage extends Message {
 		return mode;
 	}
 
-	public short getWorldHeight() {
+	public int getWorldHeight() {
 		return worldHeight;
 	}
 
