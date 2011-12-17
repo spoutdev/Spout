@@ -8,9 +8,9 @@ In addition, the software as it existed no less than 180 days previously,
 is licensed under the MIT license.  For clarity, files in a state that
 includes changes published less than 180 days previously, are NOT licensed 
 under the MIT license.  However, files in a state that only includes changes
-made more than 180 days previously, are licensed under the MIT license.
+published more than 180 days previously, are licensed under the MIT license.
 
-The files originating from, the Glowstone and Lightstone projects were 
+The files, originating from the Glowstone and Lightstone projects, were 
 licensed by their respective authors under the MIT license.  However,
 any subsequent changes made as part of this project are licensed in 
 accordance with this license.
