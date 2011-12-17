@@ -58,6 +58,7 @@ import org.bukkit.util.permissions.DefaultPermissions;
 import org.getspout.server.command.BanCommand;
 import org.getspout.server.command.ColorCommand;
 import org.getspout.server.command.DeopCommand;
+import org.getspout.server.command.ExperienceCommand;
 import org.getspout.server.command.GameModeCommand;
 import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.HelpCommand;
@@ -69,6 +70,7 @@ import org.getspout.server.command.ReloadCommand;
 import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
 import org.getspout.server.command.StopCommand;
+import org.getspout.server.command.TellCommand;
 import org.getspout.server.command.TimeCommand;
 import org.getspout.server.command.ToggleStormCommand;
 import org.getspout.server.command.WhitelistCommand;
@@ -463,6 +465,8 @@ public final class SpoutServer implements Server {
 		commandMap.register(new ReloadCommand(this));
 		commandMap.register(new HelpCommand(this, commandMap.getKnownCommands(false)));
 		commandMap.register(new ToggleStormCommand(this));
+		commandMap.register(new TellCommand(this));
+		commandMap.register(new ExperienceCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 
