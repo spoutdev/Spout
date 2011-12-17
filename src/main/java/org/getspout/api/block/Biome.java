@@ -28,5 +28,6 @@ public enum Biome {
 	TUNDRA,
 	MUSHROOM,
 	NETHER,
-	END
+	END,
+
 }
