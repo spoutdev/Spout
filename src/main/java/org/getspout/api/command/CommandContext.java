@@ -1,5 +1,9 @@
 package org.getspout.api.command;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TCharObjectMap;
+import gnu.trove.map.hash.TCharObjectHashMap;
 import gnu.trove.set.TCharSet;
 import gnu.trove.set.hash.TCharHashSet;
 
@@ -12,14 +16,17 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * This class serves as a wrapper for command arguments. It also provides boolean and value flag parsing and several command helper methods.
+ */
 public class CommandContext {
 
 	protected final String command;
 	protected final List<String> parsedArgs;
-	protected final List<Integer> originalArgIndices;
+	protected final TIntList originalArgIndices;
 	protected final String[] originalArgs;
-	protected final Set<Character> booleanFlags = new HashSet<Character>();
-	protected final Map<Character, String> valueFlags = new HashMap<Character, String>();
+	protected final TCharSet booleanFlags = new TCharHashSet();
+	protected final TCharObjectMap<String> valueFlags = new TCharObjectHashMap<String>();
 
 	public CommandContext(String[] args) throws CommandException {
 		this(args, null);
@@ -39,7 +46,7 @@ public class CommandContext {
 		command = args[0];
 
 		// Eliminate empty args and combine multiword args first
-		List<Integer> argIndexList = new ArrayList<Integer>(args.length);
+		TIntList argIndexList = new TIntArrayList(args.length);
 		List<String> argList = new ArrayList<String>(args.length);
 		for (int i = 1; i < args.length; ++i) {
 			String arg = args[i];
@@ -80,7 +87,7 @@ public class CommandContext {
 
 		// Then flags
 
-		this.originalArgIndices = new ArrayList<Integer>(argIndexList.size());
+		this.originalArgIndices = new TIntArrayList(argIndexList.size());
 		this.parsedArgs = new ArrayList<String>(argList.size());
 
 		for (int nextArg = 0; nextArg < argList.size(); ) {
@@ -161,11 +168,11 @@ public class CommandContext {
 		return booleanFlags.contains(ch) || valueFlags.containsKey(ch);
 	}
 
-	public Set<Character> getFlags() {
+	public TCharSet getFlags() {
 		return booleanFlags;
 	}
 
-	public Map<Character, String> getValueFlags() {
+	public TCharObjectMap<String> getValueFlags() {
 		return valueFlags;
 	}
 
@@ -206,5 +213,18 @@ public class CommandContext {
 		}
 
 		return Double.parseDouble(value);
+	}
+	
+	public String getJoinedString(int initialIndex) {
+		initialIndex = originalArgIndices.get(initialIndex);
+		StringBuilder buffer = new StringBuilder(originalArgs[initialIndex]);
+		for (int i = initialIndex + 1; i < originalArgs.length; ++i) {
+			buffer.append(" ").append(originalArgs[i]);
+		}
+		return buffer.toString();
+	}
+	
+	public String[] getRawArgs() {
+		return originalArgs;
 	}
 }

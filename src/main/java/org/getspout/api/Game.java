@@ -22,15 +22,17 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.getspout.api.command.AddonCommand;
+import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Player;
 import org.getspout.api.inventory.Recipe;
 import org.getspout.api.plugin.PluginManager;
+import org.getspout.api.util.Named;
 
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
  */
-public interface Game {
+public interface Game extends Named {
 
 	/**
 	 * Gets the name of this game's implementation
@@ -262,4 +264,12 @@ public interface Game {
 	 * @return world folder
 	 */
 	public File getWorldFolder();
+
+	/**
+	 * Returns the game's root {@link Command}.
+	 *
+	 * All command registration and execution is performed through here.
+	 * @return the {@link Game}'s root {@link Command}
+	 */
+	public Command getRootCommand();
 }
