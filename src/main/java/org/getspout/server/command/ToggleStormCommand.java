@@ -6,6 +6,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.getspout.server.SpoutServer;
 
+/**
+ * A built-in command to toggle a storm in a world
+ * @author Paul
+ *
+ */
 public class ToggleStormCommand extends SpoutCommand {
 	public ToggleStormCommand(SpoutServer server) {
 		super(server, "togglestorm", "Toggles a storm in a world", "<world>");
