@@ -4,7 +4,9 @@ What is SpoutCommons?
 Common API for the Spout client and server framework.
 
 Copyright &copy; 2011, SpoutDev <http://www.getspout.org>  
-SpoutCommons is licensed under [GNU LESSER GENERAL PUBLIC LICENSE Version 3][License]
+SpoutCommons is licensed under [GNU LESSER GENERAL PUBLIC LICENSE Version 3][License], but with a 
+provision that files are released under the MIT license 180 days after they
+are published. Please see the `LICENSE.txt` file for details.
 
 Who is SpoutDev?
 ----------------
