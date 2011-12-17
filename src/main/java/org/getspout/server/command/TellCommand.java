@@ -30,6 +30,10 @@ public class TellCommand extends SpoutCommand {
 		for (int i = 1; i < args.length; i++) {
 			msg.append(args[i] + " ");
 		}
+		if (msg.length() == 0) {
+			sender.sendMessage("You must include a message.");
+			return false;
+		}
 		toTell.sendMessage(ChatColor.GRAY + (sender instanceof Player ? ((Player) sender).getDisplayName() : "Console")
 				+ " whispers: " + ChatColor.WHITE + msg.toString());
 		return true;
