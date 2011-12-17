@@ -22,5 +22,4 @@ public class Cubem extends Cube implements MovableCuboid {
 	public void setZ(int z) {
 		base.setZ(z * size.getZ());
 	}
-
 }

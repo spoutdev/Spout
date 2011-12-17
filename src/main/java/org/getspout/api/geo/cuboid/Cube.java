@@ -13,5 +13,4 @@ public class Cube extends Cuboid {
 	public Cube(Point base, double size) {
 		super(base, new Vector3(size, size, size));
 	}
-	
 }

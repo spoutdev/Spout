@@ -124,9 +124,9 @@ public interface Scheduler {
 	/**
 	 * Tests whether the given task is queued for execution in the future.
 	 * <br/><br/>
-	 * <b>Note:</b> Repeating tasks may return anamolous results if they are currently executing.
+	 * <b>Note:</b> Repeating tasks may return anomalous results if they are currently executing.
 	 *<br/><br/>
-	 * @param taskId The task to check.
+	 * @param id The task to check.
 	 *
 	 * @return If the task is queued to be run.
 	 */

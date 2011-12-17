@@ -27,5 +27,4 @@ public interface MovableCuboid {
 	 * @param z the integer coordinate
 	 */
 	public void setZ(int z);
-
 }

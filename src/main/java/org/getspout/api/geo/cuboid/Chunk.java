@@ -13,5 +13,4 @@ public class Chunk extends Cube {
 	public Chunk(World world, double x, double y, double z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
-
 }

@@ -22,5 +22,4 @@ public class Blockm extends Block implements MovableCuboid {
 	public void setZ(int z) {
 		base.setZ(z * size.getZ());
 	}
-
 }

@@ -22,5 +22,4 @@ public class Voxelm extends Voxel implements MovableCuboid {
 	public void setZ(int z) {
 		base.setZ(z * size.getZ());
 	}
-	
 }

@@ -13,5 +13,4 @@ public class Region extends Cube {
 	public Region(World world, double x, double y, double z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
-
 }
