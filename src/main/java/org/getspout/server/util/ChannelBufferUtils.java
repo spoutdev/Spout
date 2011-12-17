@@ -235,10 +235,12 @@ public final class ChannelBufferUtils {
 	}
 
 	public static int getExpandedHeight(int shift) {
-		if (shift > 0 && shift < 14) {
+		if (shift > 0 && shift < 12) {
 			return 2 << shift;
+		} else if (shift >= 32) {
+			return shift;
 		}
-		return shift > 0 ? shift : 128;
+		return 128;
 	}
 
 	/**

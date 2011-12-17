@@ -10,21 +10,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class PulsableThread extends Thread {
 	private AtomicBoolean pulsing = new AtomicBoolean(false);
-	private volatile boolean copySnapshot = false;
 
 	/**
 	 * Causes the thread to execute one pulse by calling pulseRun();
 	 *
-	 * @param copySnapshot true if the pulse is for copying the snapshot
 	 * @return false if the thread was already pulsing
-	 *
 	 */
-	public boolean pulse(boolean copySnapshot) {
+	public boolean pulse() {
 		boolean success = pulsing.compareAndSet(false, true);
 		if (!success) {
 			return false;
 		}
-		this.copySnapshot = copySnapshot;
 		synchronized (pulsing) {
 			pulsing.notifyAll();
 		}
@@ -76,7 +72,7 @@ public abstract class PulsableThread extends Thread {
 	}
 
 	/**
-	 * This method is executed once per pulse.
+	 * This method is called when the thread is woken up.
 	 *
 	 * Interrupted exceptions MUST be thrown when interrupts happen.
 	 *
@@ -84,8 +80,8 @@ public abstract class PulsableThread extends Thread {
 	 *
 	 * This is required in order to ensure that the thread can be automatically shut down.
 	 */
-	public abstract void pulsedRun(boolean copySnapShot) throws InterruptedException;
-
+	protected abstract void pulsedRun() throws InterruptedException;
+	
 	/**
 	 * The thread will continue until it is interrupted
 	 */
@@ -99,7 +95,7 @@ public abstract class PulsableThread extends Thread {
 				}
 
 				try {
-					pulsedRun(copySnapshot);
+					pulsedRun();
 				} finally {
 					synchronized(pulsing) {
 						pulsing.set(false);

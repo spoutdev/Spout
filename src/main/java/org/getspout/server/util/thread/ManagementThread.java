@@ -12,9 +12,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class ManagementThread extends PulsableThread {
 	private WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
-	private ConcurrentLinkedQueue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
+	private ConcurrentLinkedQueue<InterruptableRunnable> taskQueue = new ConcurrentLinkedQueue<InterruptableRunnable>();
 	private AtomicBoolean wakePending = new AtomicBoolean(false);
 	private AtomicInteger wakeCounter = new AtomicInteger(0);
+	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
+	private StartTickTask startTickTask = new StartTickTask();
+	private long ticks = 0;
 
 	/**
 	 * Waits for a list of ManagedThreads to complete a pulse
@@ -24,6 +27,8 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 */
 	public static void pulseJoinAll(List<ManagementThread> threads, long timeout) throws TimeoutException, InterruptedException {
+		ThreadsafetyManager.checkMainThread();
+		
 		long currentTime = System.currentTimeMillis();
 		long endTime = currentTime + timeout;
 		boolean waitForever = timeout == 0;
@@ -77,7 +82,8 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * @param managed the object to give responsibility for
 	 */
-	public void addManaged(Managed managed) {
+	public final void addManaged(Managed managed) {
+		ThreadsafetyManager.checkManagerThread(this);
 		managedSet.put(managed, Boolean.TRUE);
 	}
 
@@ -86,7 +92,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * @param task the runnable to execute
 	 */
-	public void addToQueue(Runnable task) {
+	public final void addToQueue(InterruptableRunnable task) {
 		taskQueue.add(task);
 	}
 
@@ -95,47 +101,53 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * @param task the runnable to execute
 	 */
-	public void addToQueueAndWake(Runnable task) {
+	public final void addToQueueAndWake(InterruptableRunnable task) {
 		taskQueue.add(task);
-		pulse(false);
+		pulse();
 	}
-
+	
 	/**
-	 * Causes the thread to execute one pulse by calling pulseRun();
-	 *
-	 * @param copySnapshot true if the pulse is for copying the snapshot
-	 * @return false if the thread was already pulsing
-	 *
+	 * Executes any tasks on the queue.  
+	 * 
+	 * Other tasks can be processed while event processing steps that require waiting for other threads are waiting. 
 	 */
-	public boolean pulse(boolean copySnapshot) {
-		if (wakeCounter.get() <= 0) {
-			return pulse(copySnapshot);
-		} else {
-			if (copySnapshot) {
-				throw new IllegalArgumentException("Wake was disabled when a Management thread started the copy snapshot phase");
-			} else {
-				wakePending.set(true);
-				return false;
-			}
+	public final void executeOtherTasks() throws InterruptedException {
+		ThreadsafetyManager.checkManagerThread(this);
+		InterruptableRunnable task;
+		while ((task = taskQueue.poll()) != null) {
+			task.run();
 		}
+		// TODO - need a way to wait for return values from other threads, but still allow this one to be woken, when new tasks arrive.
 	}
-
+	
 	/**
-	 * Returns if this thread is managing an object
+	 * Instructs the thread to copy all updated data to its snapshot
 	 *
-	 * @param managed the object to remove responsibility for
-	 * @return true if the thread was responsible for the object
+	 * @return false if the thread was already pulsing
 	 */
-	public boolean isManaging(Managed managed) {
-		return managedSet.containsKey(managed);
+	public final boolean copySnapshot() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(copySnapshotTask);
+		return pulse();
 	}
-
+	
+	/**
+	 * Instructs the thread to start a new tick
+	 *
+	 * @return false if the thread was already pulsing
+	 */
+	public final boolean startTick(long ticks) {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(startTickTask.setTicks(ticks));
+		return pulse();
+	}
+	
 	/**
 	 * Returns if this thread has completed its pulse and all submitted tasks associated with it
 	 *
 	 * @return true if the pulse was completed
 	 */
-	public boolean isPulseFinished() {
+	public final boolean isPulseFinished() {
 		try {
 			disableWake();
 			return (!isPulsing()) && taskQueue.isEmpty();
@@ -149,7 +161,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * This functionality is implemented using a counter, so every call to disableWake must be matched by a call to enableWake.
 	 */
-	public void disableWake() {
+	public final void disableWake() {
 		wakeCounter.incrementAndGet();
 	}
 
@@ -158,10 +170,69 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * This functionality is implemented using a counter, so every call to enableWake must be matched by a call to disableWake.
 	 */
-	public void enableWake() {
+	public final void enableWake() {
 		int localCounter = wakeCounter.decrementAndGet();
 		if (localCounter == 0 && wakePending.compareAndSet(true, false)) {
-			pulse(false);
+			pulse();
 		}
+	}
+	
+	/**
+	 * All tasks on the queue are executed whenever the thread is pulsed
+	 */
+	protected final void pulsedRun() throws InterruptedException {
+		ThreadsafetyManager.checkManagerThread(this);
+		InterruptableRunnable task;
+		while ((task = taskQueue.poll()) != null) {
+			task.run();
+		}
+	}
+	
+	/**
+	 * This method is called once at the end of every tick
+	 * 
+	 * This method should be overridden.  
+	 */
+	public abstract void copySnapshotRun() throws InterruptedException;
+
+	/**
+	 * This method is called once at the start of every tick
+	 * 
+	 * This method should be overridden.  
+	 */
+	public abstract void startTickRun() throws InterruptedException;
+	
+	/*
+	 * Only one instance of the CopySnapshotTask is created for each ManagementThread.
+	 * 
+	 * This task is passed to the task queue to copy the snapshot
+	 */
+	private final class CopySnapshotTask implements InterruptableRunnable {
+		
+		public void run() throws InterruptedException {
+			copySnapshotRun();
+		}
+		
+	}
+	
+	/*
+	 * Only one instance of the StartTickTask is created for each ManagementThread.
+	 * 
+	 * This task is passed to the task queue to start a tick
+	 */
+	private final class StartTickTask implements InterruptableRunnable  {
+		
+		private long t;
+		
+		public StartTickTask setTicks(long ticks) {
+			t = ticks;
+			return this;
+		}
+		
+		public void run() throws InterruptedException {
+			ticks = t;
+			startTickRun();
+		}
+		
 	}
 }

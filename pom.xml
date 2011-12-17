@@ -21,6 +21,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<minecraft.version>1.0.1</minecraft.version>
 		<bukkit.version>1.0.0-R1-SNAPSHOT</bukkit.version>
 	</properties>
 
