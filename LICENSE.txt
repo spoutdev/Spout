@@ -1,3 +1,26 @@
+The dual license described in this file is called the SpoutDev license.
+
+-----------------------------------------------------------------------
+
+The software is licensed under the LGPL version 3.0.  
+
+In addition, the software as it existed no less than 180 days previously, 
+is licensed under the MIT license.  For clarity, files in a state that
+includes changes published less than 180 days previously, are NOT licensed 
+under the MIT license.  However, files in a state that only includes changes
+made more than 180 days previously, are licensed under the MIT license.
+
+The files originating from, the Glowstone and Lightstone projects were 
+licensed by their respective authors under the MIT license.  However,
+any subsequent changes made as part of this project are licensed in 
+accordance with this license.
+
+The LGPL version 3.0 license and the MIT license, including copyright 
+notice relating to the GlowStone and LightStone projects, are provided 
+below.
+
+-----------------------------------------------------------------------
+
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -163,3 +186,31 @@ whether future versions of the GNU Lesser General Public License shall
 apply, that proxy's public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
+
+-----------------------------------------------------------------------
+
+For information purposes, the license file from the Glowstone project 
+follows.  This is the license referred to as the MIT license in the 
+first paragraph.
+
+Glowstone Copyright (C) 2011 Tad Hardesty.
+Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
+Spout Copyright (C) 2011 SpoutDev.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
