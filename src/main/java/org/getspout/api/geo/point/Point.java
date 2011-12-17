@@ -9,19 +9,20 @@ import org.getspout.api.math.Vector3;
 
 public class Point extends Vector3 {
 
-	private World world;
+	protected World world;
 	
 	public Point(World world, double x, double y, double z) {
 		super(x, y, z);
 		this.world = world;
 	}
 	
+	/**
+	 * Gets the world this point is locate in
+	 * 
+	 * @return the world
+	 */
 	public World getWorld() {
 		return world;
-	}
-	
-	public void setWorld(World world) {
-		this.world = world;
 	}
 	
 }

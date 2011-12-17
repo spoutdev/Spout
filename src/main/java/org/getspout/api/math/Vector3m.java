@@ -4,7 +4,9 @@ public class Vector3m extends Vector3 {
 
 	public Vector3m(double x, double y, double z) {
 		super(x, y, z);
-	
+	}
+	public Vector3m(Vector3 vector) {
+		super(vector.getX(), vector.getY(), vector.getZ());
 	}
 	public void setZ(double z) {
 		this.z = z;

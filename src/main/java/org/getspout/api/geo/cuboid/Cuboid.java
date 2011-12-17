@@ -1,60 +1,40 @@
 package org.getspout.api.geo.cuboid;
 
 import org.getspout.api.geo.point.Point;
+import org.getspout.api.geo.point.Pointm;
 import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
 /**
  * Represents a Cuboid shaped volume that is located somewhere in a world.
  */
-
 public class Cuboid {
 
-	private Point base;
-	private Vector3 size;
+	protected Pointm base;
+	protected Vector3m size;
 	
 	public Cuboid(Point base, Vector3 size) {
-		this.base = base;
-		this.size = size;
+		this.base = new Pointm(base);
+		this.size = new Vector3m(size);
 	}
 	
 	public Point getBase() {
 		return base;
 	}
 	
-	public void setBase(Point base) {
-		this.base = base;
-	}
-	
 	public Vector3 getSize() {
 		return size;
-	}
-	
-	public void setSize(Vector3 size) {
-		this.size = size;
 	}
 	
 	public int getX() {
 		return (int)(base.getX() / size.getX());
 	}
 
-	public void setX(int x) {
-		base.setX(x * size.getX());
-	}
-
 	public int getY() {
 		return (int)(base.getY() / size.getY());
 	}
 
-	public void setY(int y) {
-		base.setY(y * size.getY());
-	}
-	
 	public int getZ() {
 		return (int)(base.getZ() / size.getZ());
 	}
-
-	public void setZ(int z) {
-		base.setZ(z * size.getZ());
-	}
-	
 }
