@@ -1,11 +1,7 @@
 package org.getspout.server.command;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import org.getspout.server.SpoutServer;
