@@ -2,6 +2,7 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.util.ChannelBufferUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
@@ -17,7 +18,7 @@ public final class RespawnCodec extends MessageCodec<RespawnMessage> {
 		byte dimension = buffer.readByte();
 		byte difficulty = buffer.readByte();
 		byte mode = buffer.readByte();
-		short worldHeight = buffer.readShort();
+		int worldHeight = ChannelBufferUtils.getExpandedHeight(buffer.readShort());
 		long seed = buffer.readLong();
 		return new RespawnMessage(dimension, difficulty, mode, worldHeight, seed);
 	}
@@ -28,7 +29,7 @@ public final class RespawnCodec extends MessageCodec<RespawnMessage> {
 		buffer.writeByte(message.getDimension());
 		buffer.writeByte(message.getDifficulty());
 		buffer.writeByte(message.getGameMode());
-		buffer.writeShort(message.getWorldHeight());
+		buffer.writeShort(ChannelBufferUtils.getShifts(message.getWorldHeight()));
 		buffer.writeLong(message.getSeed());
 		return buffer;
 	}

@@ -534,7 +534,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 			}
 			knownChunks.clear();
 
-			session.send(new RespawnMessage((byte) world.getEnvironment().getId(), (byte)1, (byte) getGameMode().getValue(), (short) world.getMaxHeight(), world.getSeed()));
+			session.send(new RespawnMessage((byte) world.getEnvironment().getId(), (byte)1, (byte) getGameMode().getValue(), world.getMaxHeight(), world.getSeed()));
 			streamBlocks(); // stream blocks
 
 			setCompassTarget(world.getSpawnLocation()); // set our compass target

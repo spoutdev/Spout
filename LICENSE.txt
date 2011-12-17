@@ -1,9 +1,19 @@
-The software is licensed under the LGPL version 3.0 given below.
+The dual license described in this file is called the SpoutDev license.
 
-The files originating from, the GlowStone and LightStone projects, were 
+-----------------------------------------------------------------------
+
+The software is licensed under the LGPL version 3.0.  
+
+In addition, the software as it existed no less than 180 days previously, 
+is licensed under the MIT license.  For clarity, files in a state that
+includes changes published less than 180 days previously, are NOT licensed 
+under the MIT license.  However, files in a state that only includes changes
+published more than 180 days previously, are licensed under the MIT license.
+
+The files originating from, the Glowstone and Lightstone projects were 
 licensed by their respective authors under the MIT license.  However,
-any subsequent changes made as part of this project are licensed under
-the LGPL version 3.0.
+any subsequent changes made as part of this project are licensed in 
+accordance with this license.
 
 The LGPL version 3.0 license and the MIT license, including copyright 
 notice relating to the GlowStone and LightStone projects, are provided 
@@ -179,11 +189,13 @@ Library.
 
 -----------------------------------------------------------------------
 
-For information purposes, the license file from the GlowStone project 
-follows.  
+For information purposes, the license file from the Glowstone project 
+follows.  This is the license referred to as the MIT license in the 
+first paragraph.
 
 Glowstone Copyright (C) 2011 Tad Hardesty.
 Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
+Spout Copyright (C) 2011 SpoutDev.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

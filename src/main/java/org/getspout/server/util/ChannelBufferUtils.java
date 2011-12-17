@@ -224,6 +224,23 @@ public final class ChannelBufferUtils {
 		}
 	}
 
+	public static int getShifts(int height) {
+		int shifts = 0;
+		int tempVal = height;
+		while (tempVal != 1) {
+			tempVal >>= 1;
+			++shifts;
+		}
+		return shifts;
+	}
+
+	public static int getExpandedHeight(int shift) {
+		if (shift > 0 && shift < 14) {
+			return 2 << shift;
+		}
+		return shift > 0 ? shift : 128;
+	}
+
 	/**
 	 * Default private constructor to prevent instantiation.
 	 */
