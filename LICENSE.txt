@@ -1,3 +1,7 @@
+The dual license described in this file is called the SpoutDev license.
+
+-----------------------------------------------------------------------
+
 The software is licensed under the LGPL version 3.0.  
 
 In addition, the software as it existed no less than 180 days previously, 
