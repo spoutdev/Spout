@@ -1,0 +1,30 @@
+package org.getspout.api.command.annotated;
+
+import org.getspout.api.command.*;
+
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ *
+ * @author zml2008
+ */
+public class SimpleAnnotatedCommandExecutorFactory implements AnnotatedCommandExecutorFactory {
+
+	public AnnotatedCommandExecutor getAnnotatedCommandExecutor(Object instance, Method method) {
+		return new SimpleAnnotatedCommandExecutor(instance, method);
+	}
+
+	public static class SimpleAnnotatedCommandExecutor extends AnnotatedCommandExecutor {
+
+		public SimpleAnnotatedCommandExecutor(Object instance, Method method) {
+			super(instance, method);
+		}
+
+		@Override
+		public List<Object> getAdditionalArgs(CommandSource source, org.getspout.api.command.Command command) {
+			return Collections.emptyList();
+		}
+	}
+}

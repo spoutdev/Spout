@@ -40,8 +40,8 @@ public final class AddonCommand implements CommandExecutor {
 			throw new CommandException("Unhandled exception executing command '" + command.getPreferredName() + "' in plugin " + this.owningAddon.getDescription().getFullName(), ex);
 		}
 
-		if ((!success) && (command.getUsageMessage() != null)) {
-			source.sendMessage(command.getUsageMessage());
+		if ((!success) && (command.getUsage(args.getRawArgs()) != null)) {
+			source.sendMessage(command.getUsage(args.getRawArgs()));
 		}
 
 		return success;

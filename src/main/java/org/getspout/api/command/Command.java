@@ -2,6 +2,9 @@ package org.getspout.api.command;
 
 import org.getspout.api.util.Named;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Provides support for setting up commands for Plugins 
  * 
@@ -69,24 +72,24 @@ public interface Command {
 	public Command closeSub();
 
 	/**
-	 * Adds a name to the active Command.  If this is called more than once for a Command, subsequent calls will set aliases.
+	 * Adds an alias to the active Command.
 	 * 
 	 * The first free name will be used for the command name.  If no alias is free, then the command will not be registered.  
 	 * 
-	 * Commands can always be accessed using the "plugin-name:command-name".
+	 * Commands can always be accessed using the "plugin-name:primary-name".
 	 * 
 	 * @param name the name or alias
 	 * @return the active Command
 	 */
-	public Command addCommandName(String name);
+	public Command addAlias(String name);
 
 	/**
-	 * Alias for addCommandName
+	 * Alias for addAlias
 	 *
 	 * @param name the name or alias
 	 * @return the active Command
 	 */
-	public Command name(String name);
+	public Command alias(String name);
 
 	/**
 	 * Sets the help string for the active Command.  
@@ -96,7 +99,7 @@ public interface Command {
 	 * @param help the help string
 	 * @return the active Command
 	 */
-	public Command setHelpString(String help);
+	public Command setHelp(String help);
 	
 	/**
 	 * Alias for setHelpString
@@ -114,12 +117,12 @@ public interface Command {
 	 * @param usage the usage string
 	 * @return the active Command
 	 */
-	public Command setUsageString(String usage);
+	public Command setUsage(String usage);
 
 	/**
 	 * Alias for setHelpString
 	 *
-	 * @see #setUsageString(String)
+	 * @see #setUsage(String)
 	 */
 	public Command usage(String usage);
 	
@@ -139,6 +142,22 @@ public interface Command {
 	 * @see #setExecutor(CommandExecutor)
 	 */
 	public Command executor(CommandExecutor executor);
+
+	/**
+	 * Adds flags to this Command's list of allowed flags.
+	 * Flags are given in the format of a String containing the allowed flag characters, where value flag characters are followed by a :.
+	 * @param flags The flags to add to this command's list of allowed flags.
+	 * @return The active command
+	 */
+	public Command addFlags(String flags);
+
+	/**
+	 * Alias for #addFlags(String)
+	 *
+	 * @param flags The flags to add to this command's list of allowed flags.
+	 * @return The active command
+	 */
+	public Command flags(String flags);
 	
 	/**
 	 * Executes a command based on the provided arguments.  
@@ -147,10 +166,11 @@ public interface Command {
 	 *
 	 * @param source the {@link CommandSource} that sent this command.
 	 * @param args the command arguments
-	 * @param baseIndex the arguments that have already been processed by 
+	 * @param baseIndex the arguments that have already been processed by
+	 * @param fuzzyLookup Whether to use levenschtein distance while looking up commands.
 	 * @return true on success
 	 */
-	public boolean execute(CommandSource source, String[] args, int baseIndex);
+	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup);
 	
 	/**
 	 * Gets the usage message for the command.
@@ -158,7 +178,7 @@ public interface Command {
 	 * @param input The raw input that was given
 	 * @return the command's usage message
 	 */
-	public String getUsageMessage(String[] input);
+	public String getUsage(String[] input);
 	
 	/**
 	 * Gets the command's preferred name
@@ -166,4 +186,63 @@ public interface Command {
 	 * @return the preferred name
 	 */
 	public String getPreferredName();
+
+	/**
+	 *
+	 * @return all children commands nested with this command.
+	 */
+	public Set<Command> getChildCommands();
+
+	/**
+	 *
+	 * @return the names of all children commands registered with this command.
+	 */
+	public Set<String> getChildNames();
+
+	/**
+	 * Returns the registered names for this command.
+	 * This includes the primary name and aliases.
+	 * @return the registered names for this command.
+	 */
+	public List<String> getNames();
+
+	/**
+	 * Removes this command from the list of children.
+	 * @param cmd The command to remove
+	 * @return The active Command
+	 */
+	public Command removeChild(Command cmd);
+
+	/**
+	 * Removes a child command named {@code name} from this command
+	 * @param name The name to remove
+	 * @return The active command
+	 */
+	public Command removeChild(String name);
+
+	/**
+	 * Removes an alias
+	 * @param name The name of the alias to remove.
+	 * @return the active Command
+	 */
+	public Command removeAlias(String name);
+
+	/**
+	 * Locks the command to prevent it from being modified by other owners.
+	 * @param owner The owner of this command.
+	 * @return Whether this operation was successful
+	 */
+	public boolean lock(Named owner);
+
+	/**
+	 * Unlocks this command so that it can be modified again.
+	 * @param owner The owner of this command to attempt to unlock it.
+	 * @return Whether this operation was successful
+	 */
+	public boolean unlock(Named owner);
+
+	/**
+	 * @return whether this command is locked.
+	 */
+	public boolean isLocked();
 }

@@ -16,12 +16,11 @@
  */
 package org.getspout.api.command;
 
-public class CommandException extends RuntimeException {
+import org.getspout.api.SpoutRuntimeException;
+
+public class CommandException extends SpoutRuntimeException {
 
 	private static final long serialVersionUID = 7936404856385100186L;
-
-	public CommandException() {
-	}
 
 	public CommandException(String msg) {
 		super(msg);
@@ -29,6 +28,10 @@ public class CommandException extends RuntimeException {
 
 	public CommandException(String msg, Throwable cause) {
 		super(msg, cause);
+	}
+	
+	public CommandException(Throwable cause) {
+		super(cause);
 	}
 
 }
