@@ -6,6 +6,21 @@ public class Vector2m extends Vector2 {
 		super(x, y);
 		
 	}
+	/**
+	 * Sets the X coordinate
+	 * @param x The x coordinate
+	 */
+	public void setX(double x) {
+		this.x = x;
+	}
+	/**
+	 * Sets the Y coordinate
+	 * @param x The Y coordinate
+	 */
+	public void setY(double y) {
+		this.y = y;
+	}
+	
 	
 	public Vector2 add(Vector2 that){
 		this.x += that.x;
@@ -24,20 +39,11 @@ public class Vector2m extends Vector2 {
 		return this;
 	}
 	
-	public double dot(Vector2 that){
-		return Vector2.dot(this, that);
-	}
 	public Vector2 cross(Vector2 that){
 		double tmp = this.y;
 		this.y = -this.x;
 		this.x = tmp;
 		return this;
-	}
-	public double lengthSquared(){
-		return Vector2.lengthSquared(this);
-	}
-	public double length(){
-		return Vector2.length(this);
 	}
 	public Vector2 normalize(){
 		double length = this.length();
@@ -45,8 +51,6 @@ public class Vector2m extends Vector2 {
 		this.y *= 1/length;
 		return this;
 	}
-	public double[] toArray(){
-		return Vector2.toArray(this);
-	}
+	
 
 }

@@ -46,13 +46,7 @@ public class Vector2 {
 	public double getX() {
 		return x;
 	}
-	/**
-	 * Sets the X coordinate
-	 * @param x The x coordinate
-	 */
-	public void setX(double x) {
-		this.x = x;
-	}
+	
 
 	/**
 	 * Gets the Y coordiante
@@ -60,13 +54,6 @@ public class Vector2 {
 	 */
 	public double getY() {
 		return y;
-	}
-	/**
-	 * Sets the Y coordinate
-	 * @param x The Y coordinate
-	 */
-	public void setY(double y) {
-		this.y = y;
 	}
 	
 	

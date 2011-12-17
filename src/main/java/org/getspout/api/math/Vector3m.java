@@ -6,6 +6,16 @@ public class Vector3m extends Vector3 {
 		super(x, y, z);
 	
 	}
+	public void setZ(double z) {
+		this.z = z;
+	}
+	public void setY(double y) {
+		this.y = y;
+	}
+	public void setX(double x) {
+		this.x = x;
+	}
+
 	
 	/**
 	 * Adds two vectors
@@ -40,14 +50,7 @@ public class Vector3m extends Vector3 {
 		this.z *= scale;
 		return this;
 	}
-	/**
-	 * Takes the dot product of two vectors
-	 * @param that
-	 * @return
-	 */
-	public double dot(Vector3 that){
-		return Vector3.dot(this, that);
-	}
+	
 	/**
 	 * Takes the cross product of two vectors
 	 * @param that
@@ -61,20 +64,6 @@ public class Vector3m extends Vector3 {
 		return this;
 	}
 	/**
-	 * returns the squared length of the vector
-	 * @return
-	 */
-	public double lengthSquared(){
-		return Vector3.lengthSquared(this);
-	}
-	/**
-	 * returns the length of this vector.  Note: makes use of Math.sqrt and is not cached.
-	 * @return
-	 */
-	public double length(){
-		return Vector3.length(this);
-	}
-	/**
 	 * returns the vector with a length of 1
 	 * @return
 	 */
@@ -85,13 +74,6 @@ public class Vector3m extends Vector3 {
 		this.z *= 1/length;
 		return this;
 	}
-	/**
-	 * returns the vector as [x,y,z]
-	 * @return
-	 */
-	public double[] toArray(){
-		return Vector3.toArray(this);
-	}
-	
+		
 
 }
