@@ -1,4 +1,5 @@
-The dual license described in this file is called the SpoutDev license.
+The dual license described in this file is called the SpoutDev license
+version 1.
 
 -----------------------------------------------------------------------
 
