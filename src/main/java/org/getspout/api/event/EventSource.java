@@ -14,39 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event.block;
-
-import org.getspout.api.entity.Player;
-import org.getspout.api.event.Cancellable;
-import org.getspout.api.event.HandlerList;
+package org.getspout.api.event;
 
 /**
- * Called when a player breaks a block.
+ * The source of an event. It may be a plugin, the world, the server, or a specific entity.
  */
-public class PlayerBreakBlockEvent extends BlockBreakEvent implements Cancellable {
-	private static HandlerList handlers;
-
-	private Player player;
-
-	public Player getPlayer() {
-		return player;
-	}
-
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
-	}
-
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+public interface EventSource {
 
 }

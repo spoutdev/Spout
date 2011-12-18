@@ -16,12 +16,18 @@
  */
 package org.getspout.api.event.block;
 
+import org.getspout.api.block.Block;
+import org.getspout.api.event.EventSource;
 import org.getspout.api.event.HandlerList;
 
 /**
  * Called when a block is formed.
  */
 public class BlockFormEvent extends BlockChangeEvent {
+	public BlockFormEvent(Block block, EventSource source) {
+		super(block, source);
+	}
+
 	private static HandlerList handlers;
 
 	@Override

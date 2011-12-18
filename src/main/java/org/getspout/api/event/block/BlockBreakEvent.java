@@ -16,26 +16,20 @@
  */
 package org.getspout.api.event.block;
 
-import java.util.List;
+import org.getspout.api.block.Block;
 import org.getspout.api.event.Cancellable;
+import org.getspout.api.event.EventSource;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.inventory.ItemStack;
 
 /**
  * Called when a block is broken.
  */
 public class BlockBreakEvent extends BlockEvent implements Cancellable {
+	public BlockBreakEvent(Block block, EventSource source) {
+		super(block, source);
+	}
+
 	private static HandlerList handlers;
-
-	private BreakCause cause;
-
-	public BreakCause getCause() {
-		return cause;
-	}
-
-	public void setCause(BreakCause cause) {
-		this.cause = cause;
-	}
 
 	@Override
 	public void setCancelled(boolean cancelled) {
@@ -49,21 +43,4 @@ public class BlockBreakEvent extends BlockEvent implements Cancellable {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-
-	public enum BreakCause {
-		/**
-		 * Explosion breaks a block.
-		 */
-		EXPLOSION,
-		/**
-		 * Player breaks a block.
-		 */
-		PLAYER,
-		/**
-		 * Likely a fake event through the API.
-		 */
-		OTHER;
-
-	}
-
 }

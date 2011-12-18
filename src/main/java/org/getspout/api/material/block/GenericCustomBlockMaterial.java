@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.block.BlockFace;
 import org.getspout.api.block.design.BlockDesign;
 import org.getspout.api.block.design.GenericBlockDesign;

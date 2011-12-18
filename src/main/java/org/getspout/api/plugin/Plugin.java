@@ -19,8 +19,9 @@ package org.getspout.api.plugin;
 import java.util.logging.Logger;
 
 import org.getspout.api.command.CommandExecutor;
+import org.getspout.api.event.EventSource;
 
-public interface Plugin extends CommandExecutor {
+public interface Plugin extends CommandExecutor, EventSource {
 
 	public PluginDescriptionFile getDescription();
 

@@ -16,7 +16,7 @@
  */
 package org.getspout.api.event.entity;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.event.HandlerList;
 
 /**

@@ -32,7 +32,7 @@
  */
 package org.getspout.api.block;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.material.Material;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.util.Location;

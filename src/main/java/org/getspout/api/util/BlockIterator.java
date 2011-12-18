@@ -38,7 +38,7 @@ package org.getspout.api.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.block.BlockFace;
 import org.getspout.api.entity.LivingEntity;
 import org.getspout.api.geo.cuboid.Block;

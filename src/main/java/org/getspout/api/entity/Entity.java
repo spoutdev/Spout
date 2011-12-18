@@ -19,7 +19,8 @@ package org.getspout.api.entity;
 import java.util.Set;
 import java.util.UUID;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
+import org.getspout.api.event.EventSource;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.util.Location;
@@ -27,7 +28,7 @@ import org.getspout.api.util.Location;
 /**
  * Represents a base entity in the world
  */
-public interface Entity extends Metadatable {
+public interface Entity extends Metadatable, EventSource {
 
 	/**
 	 * Gets the current location of the entity

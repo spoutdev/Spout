@@ -16,7 +16,7 @@
  */
 package org.getspout.api.block;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.material.CustomBlockMaterial;
 

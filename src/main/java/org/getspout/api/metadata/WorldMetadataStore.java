@@ -16,7 +16,7 @@
  */
 package org.getspout.api.metadata;
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 
 /**
  * An WorldMetadataStore stores metadata values for {@link World} objects.

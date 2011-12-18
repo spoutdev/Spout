@@ -25,6 +25,8 @@ import org.getspout.api.command.AddonCommand;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Player;
+import org.getspout.api.event.EventSource;
+import org.getspout.api.geo.World;
 import org.getspout.api.inventory.Recipe;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.util.Named;
@@ -32,7 +34,7 @@ import org.getspout.api.util.Named;
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
  */
-public interface Game extends Named {
+public interface Game extends Named, EventSource {
 
 	/**
 	 * Gets the name of this game's implementation

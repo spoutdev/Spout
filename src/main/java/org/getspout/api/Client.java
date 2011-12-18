@@ -3,6 +3,7 @@ package org.getspout.api;
 import java.io.File;
 
 import org.getspout.api.entity.Player;
+import org.getspout.api.geo.World;
 import org.getspout.api.plugin.PluginStore;
 import org.getspout.api.util.Location;
 

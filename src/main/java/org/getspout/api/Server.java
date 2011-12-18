@@ -19,6 +19,8 @@ package org.getspout.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.getspout.api.geo.World;
+
 /**
  * Represents the server-specific implementation of Minecraft.
  */

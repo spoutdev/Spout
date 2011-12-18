@@ -16,20 +16,34 @@
  */
 package org.getspout.api.event.block;
 
+import org.getspout.api.block.Block;
 import org.getspout.api.block.BlockState;
+import org.getspout.api.event.EventSource;
 
 /**
  * Called when a block changes its state.
  */
 public abstract class BlockChangeEvent extends BlockEvent {
+	public BlockChangeEvent(Block block, EventSource source) {
+		super(block, source);
+	}
+
 	private BlockState newState;
 
+	/**
+	 * Gets the final block state that the block will change to after this event executes.
+	 * @return final block state
+	 */
 	public BlockState getNewState() {
 		return newState;
 	}
 
-	public void setNewState(BlockState newState) {
-		this.newState = newState;
+	/**
+	 * Sets the final block state.
+	 * @param state to set
+	 */
+	public void setNewState(BlockState state) {
+		this.newState = state;
 	}
 
 	@Override

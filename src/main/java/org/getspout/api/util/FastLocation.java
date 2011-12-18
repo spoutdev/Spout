@@ -17,8 +17,9 @@
 package org.getspout.api.util;
 
 // TODO I (raphfrk) think I wrote this, need to check - anyway can be redone
+//No worries, I wrote it based on your work - Afforess
 
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.block.Block;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.math.Vector3m;

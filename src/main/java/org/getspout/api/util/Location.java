@@ -16,12 +16,12 @@
  */
 package org.getspout.api.util;
 
-// Bukkit code ?
+// Bukkit code - yes, this one is heavily cut/paste from bukkit. (Afforess)
 // TODO need to fix
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.getspout.api.World;
+import org.getspout.api.geo.World;
 import org.getspout.api.block.Block;
 import org.getspout.api.math.*;
 

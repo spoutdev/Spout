@@ -18,18 +18,40 @@ package org.getspout.api.event.block;
 
 import org.getspout.api.block.Block;
 import org.getspout.api.event.Event;
+import org.getspout.api.event.EventSource;
 
 /**
  * Block-related event.
  */
 public abstract class BlockEvent extends Event {
 	private Block block;
+	private EventSource source;
+	public BlockEvent(Block block, EventSource source) {
+		this.block = block;
+		this.source = source;
+	}
+	
+	/**
+	 * Gets the source of this event. It may be a player, an entity, the world, a plugin, etc.
+	 * @return event source
+	 */
+	public final EventSource getSource() {
+		return source;
+	}
+	
+	protected void setSource(EventSource source) {
+		this.source = source;
+	}
 
-	public Block getBlock() {
+	/**
+	 * Gets the block involved in this event.
+	 * @return
+	 */
+	public final Block getBlock() {
 		return block;
 	}
 
-	public void setBlock(Block block) {
+	protected void setBlock(Block block) {
 		this.block = block;
 	}
 

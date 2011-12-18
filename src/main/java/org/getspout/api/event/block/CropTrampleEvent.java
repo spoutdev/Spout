@@ -16,12 +16,18 @@
  */
 package org.getspout.api.event.block;
 
+import org.getspout.api.block.Block;
+import org.getspout.api.event.EventSource;
 import org.getspout.api.event.HandlerList;
 
 /**
  * Called when a crop is trampled.
  */
 public class CropTrampleEvent extends BlockChangeEvent {
+	public CropTrampleEvent(Block block, EventSource source) {
+		super(block, source);
+	}
+
 	private static HandlerList handlers;
 
 	public HandlerList getHandlers() {
