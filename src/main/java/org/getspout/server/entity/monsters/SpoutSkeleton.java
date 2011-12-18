@@ -12,6 +12,12 @@ import org.getspout.server.entity.Damager;
 import org.getspout.server.item.ItemID;
 
 public class SpoutSkeleton extends SpoutMonster implements Skeleton {
+	/**
+	 * Creates a new skeleton.
+	 *
+	 * @param server This server this skeleton is on.
+	 * @param world The world this skeleton is in.
+	 */
 	public SpoutSkeleton(SpoutServer server, SpoutWorld world) {
 		super(server, world, 51);
 	}

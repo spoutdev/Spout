@@ -19,10 +19,10 @@ public class SpoutPig extends SpoutAnimals implements Pig {
 	private boolean saddled;
 
 	/**
-	 * Creates a new monster.
+	 * Creates a new pig.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param server This server this pig is on.
+	 * @param world The world this pig is in.
 	 */
 	public SpoutPig(SpoutServer server, SpoutWorld world) {
 		super(server, world, 90);

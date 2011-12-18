@@ -19,6 +19,12 @@ public class SpoutGhast extends SpoutFlying implements Ghast, Angerable {
 	 */
 	private boolean angry;
 
+	/**
+	 * Creates a new ghast.
+	 *
+	 * @param server This server this ghast is on.
+	 * @param world The world this ghast is in.
+	 */
 	public SpoutGhast(SpoutServer server, SpoutWorld world) {
 		super(server, world, 56);
 	}

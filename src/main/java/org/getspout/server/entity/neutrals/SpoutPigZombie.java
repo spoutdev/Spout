@@ -17,6 +17,12 @@ public class SpoutPigZombie extends SpoutZombie implements PigZombie, Angerable 
 	private int anger;
 	private boolean angry;
 
+	/**
+	 * Creates a new pig zombie.
+	 *
+	 * @param server This server this pig zombie is on.
+	 * @param world The world this pig zombie is in.
+	 */
 	public SpoutPigZombie(SpoutServer server, SpoutWorld world) {
 		super(server, world, 57);
 	}

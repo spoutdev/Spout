@@ -20,6 +20,12 @@ public class SpoutCreeper extends SpoutMonster implements Creeper {
 	 */
 	private boolean powered;
 
+	/**
+	 * Creates a new creeper.
+	 *
+	 * @param server This server this creeper is on.
+	 * @param world The world this creeper is in.
+	 */
 	public SpoutCreeper(SpoutServer server, SpoutWorld world) {
 		super(server, world, 50);
 	}

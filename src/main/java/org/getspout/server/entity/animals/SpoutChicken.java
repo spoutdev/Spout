@@ -13,10 +13,10 @@ import org.getspout.server.item.ItemID;
 
 public class SpoutChicken extends SpoutAnimals implements Chicken {
 	/**
-	 * Creates a new monster.
+	 * Creates a new chicken.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param server The server this chicken is on.
+	 * @param world The world this chicken is in.
 	 */
 	public SpoutChicken(SpoutServer server, SpoutWorld world) {
 		super(server, world, 93);
@@ -28,8 +28,8 @@ public class SpoutChicken extends SpoutAnimals implements Chicken {
 		int amount = random.nextInt(3);
 		if (amount > 0) {
 			loot.add(new ItemStack(ItemID.FEATHER, amount));
-			loot.add(new ItemStack(getFireTicks() > 0 ? ItemID.COOKED_CHICKEN : ItemID.RAW_CHICKEN, 1));
 		}
+		loot.add(new ItemStack(getFireTicks() > 0 ? ItemID.COOKED_CHICKEN : ItemID.RAW_CHICKEN, 1));
 		return loot;
 	}
 }

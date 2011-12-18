@@ -12,6 +12,12 @@ import org.getspout.server.entity.Damager;
 import org.getspout.server.item.ItemID;
 
 public class SpoutSpider extends SpoutMonster implements Spider {
+	/**
+	 * Creates a new spider.
+	 *
+	 * @param server This server this spider is on.
+	 * @param world The world this spider is in.
+	 */
 	public SpoutSpider(SpoutServer server, SpoutWorld world) {
 		super(server, world, 52);
 	}

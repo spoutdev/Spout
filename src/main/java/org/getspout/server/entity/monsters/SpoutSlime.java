@@ -17,6 +17,12 @@ public class SpoutSlime extends SpoutMonster implements Slime {
 	private int size;
 	private int[] sizes = new int[] {0, 1, 2, 4};
 
+	/**
+	 * Creates a new slime.
+	 *
+	 * @param server This server this slime is on.
+	 * @param world The world this slime is in.
+	 */
 	public SpoutSlime(SpoutServer server, SpoutWorld world) {
 		super(server, world, 55);
 		setSize(sizes[new Random().nextInt(sizes.length)]);
