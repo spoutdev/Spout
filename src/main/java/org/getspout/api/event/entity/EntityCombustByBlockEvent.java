@@ -14,24 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.entity;
+
+import org.getspout.api.block.Block;
 
 /**
- * Interface for events that can be cancelled.
+ * Called when an entity combusts from a block.
  */
-public interface Cancellable {
+public class EntityCombustByBlockEvent extends EntityCombustEvent {
+	private Block block;
 
-	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
-	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
-	 */
-	public void setCancelled(boolean cancelled);
+	public Block getBlock() {
+		return block;
+	}
 
-	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
+	public void setBlock(Block block) {
+		this.block = block;
+	}
+
 }

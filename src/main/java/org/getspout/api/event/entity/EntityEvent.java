@@ -14,24 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.entity;
+
+import org.getspout.api.entity.Entity;
+import org.getspout.api.event.Event;
 
 /**
- * Interface for events that can be cancelled.
+ * Represents an entity-related event.
  */
-public interface Cancellable {
+public abstract class EntityEvent extends Event {
+	private Entity entity;
 
-	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
-	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
-	 */
-	public void setCancelled(boolean cancelled);
+	public Entity getEntity() {
+		return entity;
+	}
 
-	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
+	public void setEntity(Entity entity) {
+		this.entity = entity;
+	}
+
 }

@@ -14,24 +14,43 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.entity;
+
+import org.getspout.api.event.HandlerList;
 
 /**
- * Interface for events that can be cancelled.
+ * Called when an entity combusts.
  */
-public interface Cancellable {
+public class EntityCombustEvent extends EntityEvent {
+	private static HandlerList handlers = new HandlerList();
+
+	private int duration;
 
 	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
+	 * Gets the time that the entity should burn for.
 	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
+	 * @return The time in seconds
 	 */
-	public void setCancelled(boolean cancelled);
+	public int getDuration() {
+		return duration;
+	}
 
-	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+
 }

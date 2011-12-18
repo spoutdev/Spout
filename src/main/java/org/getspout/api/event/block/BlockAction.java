@@ -14,24 +14,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.block;
 
-/**
- * Interface for events that can be cancelled.
- */
-public interface Cancellable {
-
+public enum BlockAction {
 	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
-	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
+	 * Left-clicking a block
 	 */
-	public void setCancelled(boolean cancelled);
-
+	LEFT_CLICK_BLOCK,
 	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
+	 * Right-clicking a block
 	 */
-	public boolean isCancelled();
+	RIGHT_CLICK_BLOCK,
+	/**
+	 * Left-clicking the air
+	 */
+	LEFT_CLICK_AIR,
+	/**
+	 * Right-clicking the air
+	 */
+	RIGHT_CLICK_AIR,
+	/**
+	 * Triggered with stuff like pressure plates
+	 */
+	PHYSICAL;
+
 }

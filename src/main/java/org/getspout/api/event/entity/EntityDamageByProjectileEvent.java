@@ -14,24 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.entity;
+
+import org.getspout.api.entity.Projectile;
 
 /**
- * Interface for events that can be cancelled.
+ * Called when an entity is damaged by a projectile.
  */
-public interface Cancellable {
-
+public class EntityDamageByProjectileEvent extends EntityDamageByEntityEvent {
 	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
+	 * Gets the projectile that damaged the entity.
 	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
+	 * @return The projectile that damaged the entity.
 	 */
-	public void setCancelled(boolean cancelled);
+	@Override
+	public Projectile getDamager() {
+		return (Projectile) super.getDamager();
+	}
 
-	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
 }

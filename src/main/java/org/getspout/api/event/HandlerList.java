@@ -145,4 +145,8 @@ public class HandlerList {
 	public ListenerRegistration[][] getRegisteredListeners() {
 		return handlers;
 	}
+	
+	public static HandlerList create() {
+		return new HandlerList();
+	}
 }

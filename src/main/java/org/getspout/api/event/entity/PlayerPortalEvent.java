@@ -14,24 +14,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.entity;
+
+import org.getspout.api.TravelAgent;
+import org.getspout.api.entity.Player;
+import org.getspout.api.event.HandlerList;
 
 /**
- * Interface for events that can be cancelled.
+ * Called when a player teleports via a portal.
  */
-public interface Cancellable {
+public class PlayerPortalEvent extends EntityTeleportEvent {
+	private static HandlerList handlers = new HandlerList();
 
-	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
-	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
-	 */
-	public void setCancelled(boolean cancelled);
+	protected TravelAgent travelAgent;
 
-	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
+	public Player getPlayer() {
+		return (Player) this.getEntity();
+	}
+
+	public TravelAgent getTravelAgent() {
+		return this.travelAgent;
+	}
+
+	public void setTravelAgent(TravelAgent travelAgent) {
+		this.travelAgent = travelAgent;
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+
 }

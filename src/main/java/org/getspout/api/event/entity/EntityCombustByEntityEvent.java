@@ -14,24 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event;
+package org.getspout.api.event.entity;
+
+import org.getspout.api.entity.Entity;
 
 /**
- * Interface for events that can be cancelled.
+ * Called when an entity causes another to combust.
  */
-public interface Cancellable {
+public class EntityCombustByEntityEvent extends EntityCombustEvent {
+	private Entity combuster;
 
-	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
-	 * 
-	 * @param cancelled True to set event canceled, False to uncancel event.
-	 */
-	public void setCancelled(boolean cancelled);
+	public Entity getCombuster() {
+		return combuster;
+	}
 
-	/**
-	 * Get event canceled state.
-	 * 
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
+	public void setCombuster(Entity combuster) {
+		this.combuster = combuster;
+	}
 }

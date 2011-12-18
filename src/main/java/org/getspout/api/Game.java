@@ -47,20 +47,20 @@ public interface Game extends Named {
 	 * @return build version
 	 */
 	public long getVersion();
-	
+
 	/**
 	 * Gets all players currently active
 	 * 
 	 * @return array of all active players 
 	 */
 	public Player[] getPlayers();
-	
+
 	/**
 	 * Gets the maximum number of players this game can host, or -1 if infinite
 	 * @return max players
 	 */
 	public int getMaxPlayers();
-	
+
 	/**
 	 * Returns the current IP address.
 	 * 
@@ -74,21 +74,21 @@ public interface Game extends Named {
 	 * @return address
 	 */
 	public String getAddress();
-	
+
 	/**
 	 * True if this game allows the Nether environment to exist.
 	 * 
 	 * @return whether the Nether exists
 	 */
 	public boolean hasNether();
-	
+
 	/**
 	 * True if this game allows 'The End' environment to exist.
 	 * 
 	 * @return whether the Nether exists
 	 */
 	public boolean hasTheEnd();
-	
+
 	/**
 	 * Broadcasts the given message to all players
 	 * 
@@ -134,7 +134,7 @@ public interface Game extends Named {
 	 * @return The name of the update folder
 	 */
 	public File getUpdateFolder();
-	
+
 	/**
 	 * Gets a player by the given username.
 	 *<br/><br/>
@@ -169,8 +169,8 @@ public interface Game extends Named {
 	 * @return Collection of all possible matches
 	 */
 	public Collection<Player> matchPlayer(String name);
-	
-	
+
+
 	/**
 	 * Searches for an actively loaded world that exactly matches the given name.
 	 * <br/><br/>
@@ -180,7 +180,7 @@ public interface Game extends Named {
 	 * @return world if found, else null
 	 */
 	public World getWorld(String name);
-	
+
 	/**
 	 * Searches for an actively loaded world has the given {@link UUID}.
 	 * <br/><br/>
@@ -190,12 +190,12 @@ public interface Game extends Named {
 	 * @return world if found, else null
 	 */
 	public World getWorld(UUID uid);
-	
+
 	/**
 	 * Initiates a full reload of the server, reloading all server relating configuration, and plugins, if possible.
 	 */
 	public void reload();
-	
+
 	/**
 	 * Initiates a save of the server state, including configuration files.
 	 * 
@@ -205,7 +205,7 @@ public interface Game extends Named {
 	 * @param players whether or not to save the state of all active players
 	 */
 	public void save(boolean worlds, boolean players);
-	
+
 	/**
 	 * Registers the recipe with the recipe database.
 	 * 
@@ -213,21 +213,21 @@ public interface Game extends Named {
 	 * @return true if the recipe was registered, false if there was a conflict with an existing recipe.
 	 */
 	public boolean registerRecipe(Recipe recipe);
-	
+
 	/**
 	 * Gets the radius of the area around the spawn that is protected, in blocks.
 	 * 
 	 * @return spawn protect radius
 	 */
 	public int getSpawnProtectRadius();
-	
+
 	/**
 	 * Sets the radius of the area around the spawn that is protected, in blocks.
 	 * 
 	 * @param radius to protect
 	 */
 	public void setSpawnProtectRadius(int radius);
-	
+
 	/**
 	 * True if this server does not check if players are flying or not.
 	 * 
@@ -236,26 +236,26 @@ public interface Game extends Named {
 	 * @return allow flight
 	 */
 	public boolean allowFlight();
-	
+
 	/**
 	 * Ends this game instance safely. All worlds, players, and configuration data is saved, and all threads are ended cleanly.
 	 */
 	public void shutdown();
-	
+
 	/**
 	 * Gets the default {@link GameMode} that is applied to all new players that join.
 	 * 
 	 * @return default game mode
 	 */
 	public GameMode getDefaultGameMode();
-	
+
 	/**
 	 * Sets the default {@link GameMode} that is applied to all new players that join.
 	 * 
 	 * @param mode to set
 	 */
 	public void setDefaultGameMode(GameMode mode);
-	
+
 	/**
 	 * Gets the folder that contains the world save data. 
 	 * 

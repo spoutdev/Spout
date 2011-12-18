@@ -1,5 +1,6 @@
 package org.getspout.api.event;
 
+import java.util.logging.Logger;
 import org.getspout.api.Spout;
 import org.getspout.api.plugin.IllegalPluginAccessException;
 
@@ -78,7 +79,6 @@ public class SimpleEventManager implements EventManager {
 			}
 		}
 	}
-
 	public Map<Class<? extends Event>, Set<ListenerRegistration>> createRegisteredListeners(final Listener listener, Object plugin) {
 		Map<Class<? extends Event>, Set<ListenerRegistration>> ret = new HashMap<Class<? extends Event>, Set<ListenerRegistration>>();
 		Method[] methods;
@@ -91,7 +91,9 @@ public class SimpleEventManager implements EventManager {
 		for (int i = 0; i < methods.length; i++) {
 			final Method method = methods[i];
 			final EventHandler eh = method.getAnnotation(EventHandler.class);
-			if (eh == null) continue;
+			if (eh == null) {
+				continue;
+			}
 			final Class<?> checkClass = method.getParameterTypes()[0];
 			if (!checkClass.isAssignableFrom(eh.event()) || method.getParameterTypes().length != 1) {
 				Spout.getGame().getLogger().severe("Wrong method arguments used for event type registered");
@@ -114,8 +116,10 @@ public class SimpleEventManager implements EventManager {
 						throw new EventException(t);
 					}
 				}
+
 			}, eh.priority(), plugin));
 		}
 		return ret;
 	}
+
 }

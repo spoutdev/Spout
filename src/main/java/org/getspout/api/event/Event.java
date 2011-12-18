@@ -16,15 +16,12 @@
  */
 package org.getspout.api.event;
 
-import org.getspout.api.event.Event;
-import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.Order;
+import org.getspout.api.Spout;
 
 /**
- * @author lahwran
+ * Represents a callable event.
  */
 public abstract class Event {
-
 	/**
 	 * Stores cancelled status. will be false unless a subclass publishes setCancelled.
 	 */
@@ -44,7 +41,7 @@ public abstract class Event {
 	 */
 	protected String getEventName() {
 		return getClass().getSimpleName();
-	};
+	}
 
 	public String toString() {
 		return getEventName() + " (" + this.getClass().getName() + ")";
