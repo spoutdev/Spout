@@ -31,6 +31,8 @@ public class SpoutSpider extends SpoutMonster implements Spider {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int count = random.nextInt(3);
 		if (count > 0) loot.add(new ItemStack(ItemID.STRING, count));
+		count = random.nextInt(2);
+		if (count > 0) loot.add(new ItemStack(ItemID.SPIDER_EYE, count));
 		return loot;
 	}
 }

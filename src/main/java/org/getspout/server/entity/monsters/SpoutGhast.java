@@ -34,6 +34,8 @@ public class SpoutGhast extends SpoutFlying implements Ghast, Angerable {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
 		if (amount > 0) loot.add(new ItemStack(ItemID.SULPHUR, amount));
+		amount = random.nextInt(2);
+		if (amount > 0) loot.add(new ItemStack(ItemID.GHAST_TEAR, amount));
 		return loot;
 	}
 

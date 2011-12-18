@@ -47,7 +47,7 @@ public class SpoutPigZombie extends SpoutZombie implements PigZombie, Angerable 
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
-		if (amount > 0) loot.add(new ItemStack(ItemID.GRILLED_PORK, amount));
+		if (amount > 0) loot.add(new ItemStack(ItemID.ROTTEN_FLESH, amount));
 		return loot;
 	}
 }
