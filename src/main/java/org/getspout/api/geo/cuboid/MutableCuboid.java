@@ -1,6 +1,6 @@
 package org.getspout.api.geo.cuboid;
 
-import org.getspout.api.geo.point.Point;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.math.Vector3;
 
 /**

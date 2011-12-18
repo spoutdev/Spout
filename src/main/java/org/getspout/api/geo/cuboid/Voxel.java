@@ -1,7 +1,7 @@
 package org.getspout.api.geo.cuboid;
 
 import org.getspout.api.geo.World;
-import org.getspout.api.geo.point.Point;
+import org.getspout.api.geo.discrete.Point;
 
 /**
  * Represents a cube with an edge length of 1/16 of the edge of a Block.

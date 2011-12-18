@@ -1,9 +1,9 @@
-package org.getspout.api.geo.point;
+package org.getspout.api.geo.discrete;
 
 import org.getspout.api.geo.World;
 
 /**
- * Represents a mutable point located in a World
+ * Represents a mutable position in a World
  */
 
 public class Pointm extends Point {

@@ -1,15 +1,20 @@
-package org.getspout.api.geo.point;
+package org.getspout.api.geo.discrete;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.math.Vector3;
 
 /**
- * Represents an point located in a World
+ * Represents a position in a World
  */
 
 public class Point extends Vector3 {
 
 	protected World world;
+	
+	public Point(Point point) {
+		super(point.getX(), point.getY(), point.getZ());
+		world = point.getWorld();
+	}
 	
 	public Point(World world, double x, double y, double z) {
 		super(x, y, z);
