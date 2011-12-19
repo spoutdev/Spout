@@ -235,7 +235,7 @@ public class Vector3 {
 	}
 	/**
 	 * Creates a new Vector that is the A x B
-	 * The Cross Product is the vector orthoganal to both A and B
+	 * The Cross Product is the vector orthogonal to both A and B
 	 * @param a
 	 * @param b
 	 * @return
