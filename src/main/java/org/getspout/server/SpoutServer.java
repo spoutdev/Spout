@@ -60,6 +60,7 @@ import org.getspout.server.command.ColorCommand;
 import org.getspout.server.command.DeopCommand;
 import org.getspout.server.command.ExperienceCommand;
 import org.getspout.server.command.GameModeCommand;
+import org.getspout.server.command.KillCommand;
 import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.HelpCommand;
 import org.getspout.server.command.KickCommand;
@@ -70,6 +71,7 @@ import org.getspout.server.command.ReloadCommand;
 import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
 import org.getspout.server.command.StopCommand;
+import org.getspout.server.command.TeleportCommand;
 import org.getspout.server.command.TellCommand;
 import org.getspout.server.command.TimeCommand;
 import org.getspout.server.command.ToggleStormCommand;
@@ -468,6 +470,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new TellCommand(this));
 		commandMap.register(new ExperienceCommand(this));
 		commandMap.register(new TeleportCommand(this));
+		commandMap.register(new KillCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 
