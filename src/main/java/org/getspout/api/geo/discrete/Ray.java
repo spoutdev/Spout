@@ -9,7 +9,7 @@ import org.getspout.api.math.Vector3m;
  */
 public class Ray extends Point {
 
-	protected final static Vector3 UNIT_SCALE = new Vector3(1, 1, 1);
+	protected final static Vector3 UNIT_SCALE = Vector3.ONE;
 
 	protected final Vector3m direction;
 	
