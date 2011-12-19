@@ -20,5 +20,8 @@ public class BoundingSphere {
 	public boolean intersects(BoundingSphere a, BoundingSphere b){
 		return CollisionHelper.checkCollision(a, b);
 	}
+	public boolean intersects(BoundingBox b){
+		return CollisionHelper.checkCollision(b, this);
+	}
 
 }

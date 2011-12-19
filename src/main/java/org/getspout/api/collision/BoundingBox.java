@@ -20,10 +20,19 @@ public class BoundingBox {
 		this(Vector3.ZERO, Vector3.ONE);		
 	}
 	
-	
+	public boolean intersects(BoundingBox b){
+		return BoundingBox.intersects(this, b);
+	}
+	public boolean intersects(BoundingSphere b){
+		return BoundingBox.intersects(this, b);
+	}
 	
 	
 	public static boolean intersects(BoundingBox a, BoundingBox b){
 		return CollisionHelper.checkCollision(a, b);
 	}
+	public static boolean intersects(BoundingBox a, BoundingSphere b){
+		return CollisionHelper.checkCollision(a, b);
+	}
 }
+ 
