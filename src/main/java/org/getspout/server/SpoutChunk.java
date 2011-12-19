@@ -9,11 +9,13 @@ import java.util.logging.Level;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.SpoutBlockState;
 import org.getspout.server.entity.SpoutEntity;
+import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.CompressedChunkMessage;
 import org.getspout.server.msg.Message;
 
@@ -110,6 +112,11 @@ public final class SpoutChunk implements Chunk {
 	 * The coordinates of this chunk.
 	 */
 	private final int x, z;
+	
+	/**
+	 * The chunk key
+	 */
+	private final Key key;
 
 	/**
 	 * The data in this chunk representing all of the blocks and their state.
@@ -136,6 +143,7 @@ public final class SpoutChunk implements Chunk {
 		this.world = world;
 		this.x = x;
 		this.z = z;
+		this.key = new Key(x, z);
 	}
 
 	// ======== Basic stuff ========
@@ -260,8 +268,10 @@ public final class SpoutChunk implements Chunk {
 
 	public boolean unload(boolean save, boolean safe) {
 		if (safe) {
-			if (false /* TODO: if we ought not to unload */) {
-				return false;
+			for (Player player : getWorld().getPlayers()) {
+				if (((SpoutPlayer)player).canSee(this.key)) {
+					return false;
+				}
 			}
 		}
 
