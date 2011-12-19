@@ -10,23 +10,53 @@ public class MathHelper {
 	public static final double TWO_PI = 2.0 * PI;
 	public static final double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
-
+	/**
+	 * Calculates the linear interpolation between a and b with the given percent
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static double lerp(double a, double b, double percent) {
 		return a + (b * percent);
 	}
-
+	/**
+	 * Calculates the linear interpolation between a and b with the given percent
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static int lerp(int a, int b, double percent) {
 		return (int) (a + (b * percent));
 	}
-
+	/**
+	 * Calculates the linear interpolation between a and b with the given percent
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static Vector3 lerp(Vector3 a, Vector3 b, double percent) {
 		return (a.add(b.scale(percent)));
 	}
-
+	/**
+	 * Calculates the linear interpolation between a and b with the given percent
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static Vector2 lerp(Vector2 a, Vector2 b, double percent) {
 		return (a.add(b.scale(percent)));
 	}
-
+	/**
+	 * Calculates the linear interpolation between a and b with the given percent
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static Color lerp(Color a, Color b, double percent) {
 		int red = lerp(a.getRedI(), b.getRedI(), percent);
 		int blue = lerp(a.getBlueI(), b.getBlueI(), percent);
@@ -48,6 +78,22 @@ public class MathHelper {
 		return value;
 	}
 
+	/**
+	 * Returns the forward vector transformed by the provided pitch and yaw
+	 * @param pitch
+	 * @param yaw
+	 * @return
+	 */
+	public static Vector3 getDirectVector(double pitch, double yaw){
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotateY(pitch).multiply(Matrix.rotateZ(yaw)));
+	}
+	
+	
+	
+	
+	
+	
+	
 	//Fast Math Implementation
 
 	public final static double cos(final double x) {

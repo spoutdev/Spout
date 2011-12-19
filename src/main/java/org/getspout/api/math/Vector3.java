@@ -120,6 +120,9 @@ public class Vector3 {
 		return Vector3.toArray(this);
 	}
 
+	public Vector3 transform(Matrix transformation){
+		return Vector3.transform(this, transformation);
+	}
 
 	public static double length(Vector3 a) {
 		return MathHelper.sqrt(lengthSquared(a));
@@ -155,5 +158,20 @@ public class Vector3 {
 
 	public static double[] toArray(Vector3 a) {
 		return new double[]{a.getX(), a.getY(), a.getZ()};
+	}
+	/**
+	 * Calculates and returns a new Vector3 transformed by the transformation matrix
+	 * @param vector the vector to transform
+	 * @param transformation the transformation matrix
+	 * @return
+	 */
+	public static Vector3 transform(Vector3 vector, Matrix transformation){
+		Matrix v3 = Matrix.createIdentity();
+		v3.set(0, 0, vector.getX());
+		v3.set(0, 1, vector.getY());
+		v3.set(0, 2, vector.getZ());
+		
+		Matrix t = Matrix.multiply(transformation, v3);
+		return new Vector3(t.get(0,0), t.get(0, 1), t.get(0,2));
 	}
 }
