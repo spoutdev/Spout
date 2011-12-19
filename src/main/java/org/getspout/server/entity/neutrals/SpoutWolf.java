@@ -1,6 +1,5 @@
 package org.getspout.server.entity.neutrals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;
@@ -12,15 +11,19 @@ import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.Angerable;
 import org.getspout.server.entity.Damager;
-import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.entity.animals.SpoutAnimals;
-import org.getspout.server.msg.EntityMetadataMessage;
 import org.getspout.server.util.Parameter;
 
 public class SpoutWolf extends SpoutAnimals implements Wolf, Angerable {
 	private boolean angry, sitting, tamed;
 	private String owner;
 
+	/**
+	 * Creates a new wolf.
+	 *
+	 * @param server This server this wolf is on.
+	 * @param world The world this wolf is in.
+	 */
 	public SpoutWolf(SpoutServer server, SpoutWorld world) {
 		super(server, world, 95);
 	}

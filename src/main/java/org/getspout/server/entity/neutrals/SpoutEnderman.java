@@ -21,6 +21,12 @@ public class SpoutEnderman extends SpoutMonster implements Enderman {
 	 */
 	private MaterialData carriedMaterial;
 
+	/**
+	 * Creates a new enderman.
+	 *
+	 * @param server This server this enderman is on.
+	 * @param world The world this enderman is in.
+	 */
 	public SpoutEnderman(SpoutServer server, SpoutWorld world) {
 		super(server, world, 58);
 	}

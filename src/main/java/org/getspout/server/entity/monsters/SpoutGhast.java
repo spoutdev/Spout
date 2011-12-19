@@ -19,6 +19,12 @@ public class SpoutGhast extends SpoutFlying implements Ghast, Angerable {
 	 */
 	private boolean angry;
 
+	/**
+	 * Creates a new ghast.
+	 *
+	 * @param server This server this ghast is on.
+	 * @param world The world this ghast is in.
+	 */
 	public SpoutGhast(SpoutServer server, SpoutWorld world) {
 		super(server, world, 56);
 	}
@@ -28,6 +34,8 @@ public class SpoutGhast extends SpoutFlying implements Ghast, Angerable {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
 		if (amount > 0) loot.add(new ItemStack(ItemID.SULPHUR, amount));
+		amount = random.nextInt(2);
+		if (amount > 0) loot.add(new ItemStack(ItemID.GHAST_TEAR, amount));
 		return loot;
 	}
 

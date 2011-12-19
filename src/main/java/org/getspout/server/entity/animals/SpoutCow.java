@@ -13,10 +13,10 @@ import org.getspout.server.item.ItemID;
 
 public class SpoutCow extends SpoutAnimals implements Cow {
 	/**
-	 * Creates a new monster.
+	 * Creates a new cow.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param server This server this cow is on.
+	 * @param world The world this cow is in.
 	 */
 	public SpoutCow(SpoutServer server, SpoutWorld world) {
 		super(server, world, 5);

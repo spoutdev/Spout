@@ -12,6 +12,12 @@ import org.getspout.server.entity.Damager;
 import org.getspout.server.item.ItemID;
 
 public class SpoutZombie extends SpoutMonster implements Zombie {
+	/**
+	 * Creates a new zombie.
+	 *
+	 * @param server This server this zombie is on.
+	 * @param world The world this zombie is in.
+	 */
 	public SpoutZombie(SpoutServer server, SpoutWorld world) {
 		super(server, world, 54);
 	}
