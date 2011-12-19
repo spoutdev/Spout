@@ -8,6 +8,6 @@ import java.io.Serializable;
 
 public interface ManagementTask extends Serializable {
 
-	public void run() throws InterruptedException;
+	public void run(AsyncExecutor executor) throws InterruptedException;
 	
 }

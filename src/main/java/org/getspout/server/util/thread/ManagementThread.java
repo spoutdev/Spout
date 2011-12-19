@@ -1,81 +1,24 @@
 package org.getspout.server.util.thread;
 
-import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
+import org.getspout.server.util.thread.coretasks.StartTickTask;
 
 /**
  * This is a thread that is responsible for managing various objects.
  */
-public abstract class ManagementThread extends PulsableThread {
+public abstract class ManagementThread extends PulsableThread implements AsyncExecutor {
 	private WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
 	private ConcurrentLinkedQueue<ManagementTask> taskQueue = new ConcurrentLinkedQueue<ManagementTask>();
 	private AtomicBoolean wakePending = new AtomicBoolean(false);
 	private AtomicInteger wakeCounter = new AtomicInteger(0);
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
-	private long ticks = 0;
-
-	/**
-	 * Waits for a list of ManagedThreads to complete a pulse
-	 *
-	 * @param threads the threads to join for
-	 * @param timeout how long to wait
-	 *
-	 */
-	public static void pulseJoinAll(List<ManagementThread> threads, long timeout) throws TimeoutException, InterruptedException {
-		ThreadsafetyManager.checkMainThread();
-		
-		long currentTime = System.currentTimeMillis();
-		long endTime = currentTime + timeout;
-		boolean waitForever = timeout == 0;
-
-		if (timeout < 0) {
-			throw new IllegalArgumentException("Negative timeouts are not allowed (" + timeout + ")");
-		}
-
-		boolean done = false;
-		while (!done && (endTime > currentTime || waitForever)) {
-			done = false;
-			while (!done && (endTime > currentTime || waitForever)) {
-				done = true;
-				for (ManagementThread t : threads) {
-					currentTime = System.currentTimeMillis();
-					if (endTime <= currentTime && !waitForever) {
-						break;
-					}
-					if (!t.isPulseFinished()) {
-						done = false;
-						t.pulseJoin(endTime - currentTime);
-					}
-				}
-			}
-			try {
-				for (ManagementThread t : threads) {
-					t.disableWake();
-				}
-				done = true;
-				for (ManagementThread t : threads) {
-					if (!t.isPulseFinished()) {
-						done = false;
-						break;
-					}
-				}
-			} finally {
-				for (ManagementThread t : threads) {
-					t.enableWake();
-				}
-			}
-		}
-
-		if (endTime <= currentTime && !waitForever) {
-			throw new TimeoutException("pulseJoinAll timed out");
-		}
-
-	}
+	private long tick;
 
 	/**
 	 * Sets this thread as manager for a given object
@@ -115,7 +58,7 @@ public abstract class ManagementThread extends PulsableThread {
 		ThreadsafetyManager.checkManagerThread(this);
 		ManagementTask task;
 		while ((task = taskQueue.poll()) != null) {
-			task.run();
+			task.run(this);
 		}
 		// TODO - need a way to wait for return values from other threads, but still allow this one to be woken, when new tasks arrive.
 	}
@@ -184,7 +127,7 @@ public abstract class ManagementThread extends PulsableThread {
 		ThreadsafetyManager.checkManagerThread(this);
 		ManagementTask task;
 		while ((task = taskQueue.poll()) != null) {
-			task.run();
+			task.run(this);
 		}
 	}
 	
@@ -202,37 +145,5 @@ public abstract class ManagementThread extends PulsableThread {
 	 */
 	public abstract void startTickRun() throws InterruptedException;
 	
-	/*
-	 * Only one instance of the CopySnapshotTask is created for each ManagementThread.
-	 * 
-	 * This task is passed to the task queue to copy the snapshot
-	 */
-	private final class CopySnapshotTask implements ManagementTask {
-		
-		public void run() throws InterruptedException {
-			copySnapshotRun();
-		}
-		
-	}
-	
-	/*
-	 * Only one instance of the StartTickTask is created for each ManagementThread.
-	 * 
-	 * This task is passed to the task queue to start a tick
-	 */
-	private final class StartTickTask implements ManagementTask  {
-		
-		private long t;
-		
-		public StartTickTask setTicks(long ticks) {
-			t = ticks;
-			return this;
-		}
-		
-		public void run() throws InterruptedException {
-			ticks = t;
-			startTickRun();
-		}
-		
-	}
+
 }
