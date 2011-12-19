@@ -240,7 +240,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	@Override
+	
 	public Command removeAlias(String name) {
 		if (isLocked()) return this;
 		aliases.remove(name);
@@ -254,7 +254,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	@Override
+	
 	public boolean lock(Named owner) {
 		if (owner == this.owner) {
 			locked = true;
@@ -263,7 +263,7 @@ public class SimpleCommand implements Command {
 		return false;
 	}
 
-	@Override
+	
 	public boolean unlock(Named owner) {
 		if (owner == this.owner) {
 			locked = false;

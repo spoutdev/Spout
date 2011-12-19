@@ -21,7 +21,7 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 		this.method = method;
 	}
 	
-	@Override
+	
 	public boolean processCommand(CommandSource source, Command command, CommandContext args) {
 		try {
 			List<Object> commandArgs = new ArrayList<Object>(4);

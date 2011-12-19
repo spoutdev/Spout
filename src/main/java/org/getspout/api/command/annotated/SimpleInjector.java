@@ -18,7 +18,7 @@ public class SimpleInjector implements Injector {
 			argClasses[i] = args[i].getClass();
 		}
 	}
-	@Override
+	
 	public Object newInstance(Class<?> clazz) {
 		try {
 			Constructor<?> ctr = clazz.getConstructor(argClasses);
