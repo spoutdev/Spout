@@ -18,6 +18,7 @@ package org.getspout.api;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ import org.getspout.api.command.AddonCommand;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Player;
+import org.getspout.api.event.EventManager;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.World;
 import org.getspout.api.inventory.Recipe;
@@ -194,9 +196,10 @@ public interface Game extends Named, EventSource {
 	public World getWorld(UUID uid);
 
 	/**
-	 * Initiates a full reload of the server, reloading all server relating configuration, and plugins, if possible.
+	 * Gets a List of actively loaded worlds
+	 * @return a {@link List} of actively loaded worlds
 	 */
-	public void reload();
+	public List<World> getWorlds();
 
 	/**
 	 * Initiates a save of the server state, including configuration files.
@@ -242,7 +245,7 @@ public interface Game extends Named, EventSource {
 	/**
 	 * Ends this game instance safely. All worlds, players, and configuration data is saved, and all threads are ended cleanly.
 	 */
-	public void shutdown();
+	public void stop();
 
 	/**
 	 * Gets the default {@link GameMode} that is applied to all new players that join.
@@ -274,4 +277,12 @@ public interface Game extends Named, EventSource {
 	 * @return the {@link Game}'s root {@link Command}
 	 */
 	public Command getRootCommand();
+
+	/**
+	 * Returns the game's {@link EventManager}
+	 * Event listener registration and calling is handled through this.
+	 * ß
+	 * @return Our EventManager instance
+	 */
+    public EventManager getEventManager();
 }
