@@ -10,9 +10,9 @@
 
 	<!-- Project information -->
 	<groupId>org.getspout</groupId>
-	<artifactId>commons</artifactId>
+	<artifactId>api</artifactId>
 	<version>dev-SNAPSHOT</version>
-	<name>SpoutCommons</name>
+	<name>SpoutAPI</name>
 	<url>http://www.getspout.org</url>
 	<description>Common API for the Spout client and server framework.</description>
 
