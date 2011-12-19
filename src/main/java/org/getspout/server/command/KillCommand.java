@@ -24,7 +24,7 @@ public class KillCommand extends SpoutCommand{
 
 	@Override
 	public PermissionDefault getPermissionDefault() {
-		return PermissionDefault.OP;
+		return PermissionDefault.TRUE;
 	}
 
 }
