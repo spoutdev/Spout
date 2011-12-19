@@ -151,7 +151,7 @@ public class SimpleCommand implements Command {
 		return addFlags(flags);
 	}
 
-	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) {
+	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		if (args.length > 1 && children.size() > 0) {
 			Command sub = getChild(args[0], fuzzyLookup);
 			if (sub == null) return false;
@@ -168,7 +168,13 @@ public class SimpleCommand implements Command {
 			}
 		})) return false;
 
-		executor.processCommand(source, this, context);
+		try {
+			executor.processCommand(source, this, context);
+		} catch (CommandException e) {
+			throw e;
+		} catch (Throwable t) {
+			throw new WrappedCommandException(t);
+		}
 		return true;
 	}
 

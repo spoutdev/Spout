@@ -14,7 +14,7 @@ import java.util.Set;
  * <pre>
  * Game.getCommandRoot()
  *     .sub("preferredname")
- *         .alias("alias1").alias("alias2")
+ *         .alias("alias1", "alias2")
  *         .help("This is the main command for MyPlugin")
  *         .executor(myExecutor)
  *         .sub("subcommand")
@@ -170,7 +170,7 @@ public interface Command {
 	 * @param fuzzyLookup Whether to use levenschtein distance while looking up commands.
 	 * @return true on success
 	 */
-	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup);
+	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
 	
 	/**
 	 * Gets the usage message for the command.
