@@ -84,7 +84,7 @@ public class MathHelper {
 	 * @param yaw
 	 * @return
 	 */
-	public static Vector3 getDirectVector(double pitch, double yaw){
+	public static Vector3 getDirectionVector(double pitch, double yaw){
 		return Vector3.transform(Vector3.UNIT_X, Matrix.rotateY(pitch).multiply(Matrix.rotateZ(yaw)));
 	}
 	
