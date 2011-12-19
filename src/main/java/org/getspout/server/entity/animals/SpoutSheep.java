@@ -25,10 +25,10 @@ public class SpoutSheep extends SpoutAnimals implements Sheep {
 	private DyeColor dyeColor = DyeColor.WHITE;
 
 	/**
-	 * Creates a new monster.
+	 * Creates a new sheep.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param server This server this sheep is on.
+	 * @param world The world this sheep is in.
 	 */
 	public SpoutSheep(SpoutServer server, SpoutWorld world) {
 		super(server, world, 91);
