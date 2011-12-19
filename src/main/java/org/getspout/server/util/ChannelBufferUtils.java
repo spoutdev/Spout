@@ -17,6 +17,10 @@ import org.getspout.server.util.nbt.NBTInputStream;
 import org.getspout.server.util.nbt.NBTOutputStream;
 import org.getspout.server.util.nbt.Tag;
 
+import org.getspout.api.math.Vector2;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.util.Color;
+
 /**
  * Contains several {@link ChannelBuffer}-related utility methods.
  * @author Graham Edgecombe
@@ -61,6 +65,24 @@ public final class ChannelBufferUtils {
 				buf.writeShort(item.getTypeId());
 				buf.writeByte(item.getAmount());
 				buf.writeShort(item.getDurability());
+				break;				
+			case Parameter.TYPE_VECTOR3:
+				Vector3 vector = ((Parameter<Vector3>) parameter).getValue();
+				buf.writeDouble(vector.getX());
+				buf.writeDouble(vector.getY());
+				buf.writeDouble(vector.getZ());
+				break;
+			case Parameter.TYPE_VECTOR2:
+				Vector2 vect = ((Parameter<Vector2>) parameter).getValue();
+				buf.writeDouble(vect.getX());
+				buf.writeDouble(vect.getY());
+				break;
+			case Parameter.TYPE_COLOR:
+				Color c = ((Parameter<Color>) parameter).getValue();
+				buf.writeShort((short)c.getRedI());
+				buf.writeShort((short)c.getBlueI());
+				buf.writeShort((short)c.getGreenI());
+				buf.writeShort((short)c.getAlphaI());
 				break;
 			}
 		}
@@ -102,6 +124,15 @@ public final class ChannelBufferUtils {
 				short damage = buf.readShort();
 				ItemStack item = new ItemStack(id, count, damage);
 				parameters.add(new Parameter<ItemStack>(type, index, item));
+				break;
+			case Parameter.TYPE_VECTOR3:
+				parameters.add(new Parameter<Vector3>(type, index, new Vector3(buf.readDouble(),buf.readDouble(),buf.readDouble())));
+				break;
+			case Parameter.TYPE_VECTOR2:
+				parameters.add(new Parameter<Vector2>(type, index, new Vector2(buf.readDouble(),buf.readDouble())));
+				break;
+			case Parameter.TYPE_COLOR:
+				parameters.add(new Parameter<Color>(type, index, new Color(buf.readShort(),buf.readShort(), buf.readShort())));
 				break;
 			}
 		}

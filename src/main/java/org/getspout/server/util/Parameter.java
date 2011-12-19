@@ -35,6 +35,21 @@ public class Parameter<T> {
 	 * The id which represents an item parameter.
 	 */
 	public static final int TYPE_ITEM = 5;
+	
+	/**
+	 * the id which represents a Vector3
+	 */
+	public static final int TYPE_VECTOR3 = 6;
+	
+	/**
+	 * the id which represents a Vector2
+	 */
+	public static final int TYPE_VECTOR2 = 7;
+	
+	/**
+	 * the id which represents a Color
+	 */
+	public static final int TYPE_COLOR = 8;
 
 	/**
 	 * The type of parameter.
