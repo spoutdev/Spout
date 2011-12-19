@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class ManagementThread extends PulsableThread {
 	private WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
-	private ConcurrentLinkedQueue<InterruptableRunnable> taskQueue = new ConcurrentLinkedQueue<InterruptableRunnable>();
+	private ConcurrentLinkedQueue<ManagementTask> taskQueue = new ConcurrentLinkedQueue<ManagementTask>();
 	private AtomicBoolean wakePending = new AtomicBoolean(false);
 	private AtomicInteger wakeCounter = new AtomicInteger(0);
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
@@ -92,7 +92,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * @param task the runnable to execute
 	 */
-	public final void addToQueue(InterruptableRunnable task) {
+	public final void addToQueue(ManagementTask task) {
 		taskQueue.add(task);
 	}
 
@@ -101,7 +101,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 *
 	 * @param task the runnable to execute
 	 */
-	public final void addToQueueAndWake(InterruptableRunnable task) {
+	public final void addToQueueAndWake(ManagementTask task) {
 		taskQueue.add(task);
 		pulse();
 	}
@@ -113,7 +113,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 */
 	public final void executeOtherTasks() throws InterruptedException {
 		ThreadsafetyManager.checkManagerThread(this);
-		InterruptableRunnable task;
+		ManagementTask task;
 		while ((task = taskQueue.poll()) != null) {
 			task.run();
 		}
@@ -182,7 +182,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 */
 	protected final void pulsedRun() throws InterruptedException {
 		ThreadsafetyManager.checkManagerThread(this);
-		InterruptableRunnable task;
+		ManagementTask task;
 		while ((task = taskQueue.poll()) != null) {
 			task.run();
 		}
@@ -207,7 +207,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 * 
 	 * This task is passed to the task queue to copy the snapshot
 	 */
-	private final class CopySnapshotTask implements InterruptableRunnable {
+	private final class CopySnapshotTask implements ManagementTask {
 		
 		public void run() throws InterruptedException {
 			copySnapshotRun();
@@ -220,7 +220,7 @@ public abstract class ManagementThread extends PulsableThread {
 	 * 
 	 * This task is passed to the task queue to start a tick
 	 */
-	private final class StartTickTask implements InterruptableRunnable  {
+	private final class StartTickTask implements ManagementTask  {
 		
 		private long t;
 		
