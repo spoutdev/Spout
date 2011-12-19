@@ -467,6 +467,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new ToggleStormCommand(this));
 		commandMap.register(new TellCommand(this));
 		commandMap.register(new ExperienceCommand(this));
+		commandMap.register(new TeleportCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 
