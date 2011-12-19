@@ -12,7 +12,7 @@ public class Point extends Vector3 {
 	protected World world;
 	
 	public Point(Point point) {
-		super(point.getX(), point.getY(), point.getZ());
+		super(point);
 		world = point.getWorld();
 	}
 	

@@ -56,7 +56,15 @@ public class Vector3 {
 	public Vector3() {
 		this(0, 0, 0);
 	}
-
+	
+	/**
+	 * Constructs a new Vector3 that is a clone of the given vector3
+	 * @param clone
+	 */
+	public Vector3(Vector3 clone){
+		this(clone.getX(), clone.getY(), clone.getZ());
+	}
+	
 	/**
 	 * Constructs a new Vector3 from the given Vector2 and z
 	 * @param vector

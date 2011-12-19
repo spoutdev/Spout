@@ -1,6 +1,7 @@
 package org.getspout.api.geo.discrete;
 
 import org.getspout.api.geo.World;
+import org.getspout.api.math.Matrix;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.math.Vector3m;
 
@@ -20,6 +21,10 @@ public class Ray extends Point {
 
 	public Ray(World world, double px, double py, double pz, double dx, double dy, double dz) {
 		this(new Pointm(world, px, py, pz), new Vector3m(dx, dy, dz));
+	}
+	
+	public Ray(Point position, double pitch, double yaw){
+		this(position, Vector3.transform(position, Matrix.rotateY(pitch).multiply(Matrix.rotateZ(yaw))));
 	}
 
 	/**
