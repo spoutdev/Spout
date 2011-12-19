@@ -6,10 +6,6 @@ import org.getspout.api.util.Named;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-/**
- *
- * @author zml2008
- */
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
 
 	/**

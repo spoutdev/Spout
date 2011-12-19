@@ -6,10 +6,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-/**
- *
- * @author zml2008
- */
 public class SimpleAnnotatedCommandExecutorFactory implements AnnotatedCommandExecutorFactory {
 
 	public AnnotatedCommandExecutor getAnnotatedCommandExecutor(Object instance, Method method) {

@@ -8,10 +8,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author zml2008
- */
 public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 	private final Object instance;
 	private final Method method;

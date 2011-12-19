@@ -3,10 +3,6 @@ package org.getspout.api.command.annotated;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- *
- * @author zml2008
- */
 public class SimpleInjector implements Injector {
 	private Object[] args;
 	private Class<?>[] argClasses;

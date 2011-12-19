@@ -19,7 +19,7 @@ import java.util.Set;
 public class SimpleCommand implements Command {
 
 	protected final Map<String, Command> children = new HashMap<String, Command>();
-	protected SimpleCommand parent;
+	protected Command parent;
 	private final Named owner;
 	private boolean locked;
 	protected List<String> aliases = new ArrayList<String>();
@@ -44,6 +44,18 @@ public class SimpleCommand implements Command {
 		sub.parent = this;
 		return sub;
 	}
+	
+	public Command registerAsSub(Named owner, Command command) {
+		if (isLocked()) return this;
+		String primaryName = command.getPreferredName();
+		while (children.containsKey(primaryName)) {
+			primaryName = owner.getName() + ":" + primaryName;
+		}
+		children.put(primaryName, command);
+		command.setParent(this);
+		command.lock(owner);
+		return command;
+	}
 
 	public Command sub(Named owner, String primaryName) {
 		return addSubCommand(owner, primaryName);
@@ -66,22 +78,26 @@ public class SimpleCommand implements Command {
 		return closeSubCommand();
 	}
 
-	public Command addAlias(String name) {
+	public Command addAlias(String... names) {
 		if (!isLocked()) {
 			if (parent != null) {
-				if (!parent.children.containsKey(name)) {
-					parent.children.put(name, this);
-					aliases.add(name);
+				boolean changed = false;
+				for (String name : names) {
+					if (!parent.hasChild(name)) {
+						aliases.add(name);
+						changed = true;
+					}
 				}
+				if (changed) parent.updateAliases(this);
 			} else {
-				aliases.add(name);
+				aliases.addAll(Arrays.asList(names));
 			}
 		}
 		return this;
 	}
 
-	public Command alias(String name) {
-		return addAlias(name);
+	public Command alias(String... names) {
+		return addAlias(names);
 	}
 
 	public Command setHelp(String help) {
@@ -245,11 +261,7 @@ public class SimpleCommand implements Command {
 		if (isLocked()) return this;
 		aliases.remove(name);
 		if (parent != null) {
-			boolean removeFromParent = false;
-			for (Map.Entry<String, Command> entry : parent.children.entrySet()) {
-				if (entry.getKey().equals(name) && entry.getValue().equals(this)) removeFromParent = true;  
-			}
-			parent.children.remove(name);
+			parent.updateAliases(this);
 		}
 		return this;
 	}
@@ -274,5 +286,38 @@ public class SimpleCommand implements Command {
 	
 	public boolean isLocked() {
 		return locked;
+	}
+
+	public boolean updateAliases(Command child) {
+		boolean changed = false;
+		List<String> names = child.getNames();
+		synchronized (children) {
+			for (Iterator<Map.Entry<String, Command>> i = children.entrySet().iterator(); i.hasNext(); ) {
+				Map.Entry<String, Command> entry = i.next();
+				if (entry.getValue() != child) continue;
+				if (!names.contains(entry.getKey())) {
+					i.remove();
+					changed = true;
+				}
+			}
+			for (String alias : names) {
+				if (!children.containsKey(alias)) {
+					children.put(alias, child);
+				}
+			}
+			return changed;
+		}
+	}
+
+	public boolean hasChild(String name) {
+		return children.containsKey(name);
+	}
+	
+	public Command setParent(Command parent) {
+		if (this.parent == null) {
+			this.parent = parent;
+			parent.updateAliases(this);
+		}
+		return this;
 	}
 }

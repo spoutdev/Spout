@@ -78,18 +78,18 @@ public interface Command {
 	 * 
 	 * Commands can always be accessed using the "plugin-name:primary-name".
 	 * 
-	 * @param name the name or alias
+	 * @param names the aliases
 	 * @return the active Command
 	 */
-	public Command addAlias(String name);
+	public Command addAlias(String... names);
 
 	/**
 	 * Alias for addAlias
 	 *
-	 * @param name the name or alias
+	 * @param names the aliases to add
 	 * @return the active Command
 	 */
-	public Command alias(String name);
+	public Command alias(String... names);
 
 	/**
 	 * Sets the help string for the active Command.  
@@ -245,4 +245,24 @@ public interface Command {
 	 * @return whether this command is locked.
 	 */
 	public boolean isLocked();
+
+	/**
+	 * Updates the aliases list for this child command
+	 * @param child The child command to update.
+	 * @return Whether any aliases were changed.
+	 */
+	public boolean updateAliases(Command child);
+
+	/**
+	 * @param name The name to check
+	 * @return whether this Command has a child named {@code name}
+	 */
+	public boolean hasChild(String name);
+
+	/**
+	 * Sets {@code parent} as this Command's parent if this command does not already have a parent
+	 * @param parent The command to set as this command's parent command.
+	 * @return The active command.
+	 */
+	public Command setParent(Command parent);
 }
