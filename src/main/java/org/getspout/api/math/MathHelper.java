@@ -18,7 +18,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static double lerp(double a, double b, double percent) {
-		return a + (b * percent);
+		return (1-percent) * a + percent * b;
 	}
 	/**
 	 * Calculates the linear interpolation between a and b with the given percent
@@ -28,7 +28,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static int lerp(int a, int b, double percent) {
-		return (int) (a + (b * percent));
+		return (int) ((1-percent) * a + percent * b);
 	}
 	/**
 	 * Calculates the linear interpolation between a and b with the given percent
@@ -38,7 +38,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 lerp(Vector3 a, Vector3 b, double percent) {
-		return (a.add(b.scale(percent)));
+		return a.scale(1-percent).add(b.scale(percent));
 	}
 	/**
 	 * Calculates the linear interpolation between a and b with the given percent
@@ -48,7 +48,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector2 lerp(Vector2 a, Vector2 b, double percent) {
-		return (a.add(b.scale(percent)));
+		return a.scale(1-percent).add(b.scale(percent));
 	}
 	/**
 	 * Calculates the linear interpolation between a and b with the given percent
