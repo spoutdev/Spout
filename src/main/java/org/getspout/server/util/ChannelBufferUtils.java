@@ -65,24 +65,6 @@ public final class ChannelBufferUtils {
 				buf.writeShort(item.getTypeId());
 				buf.writeByte(item.getAmount());
 				buf.writeShort(item.getDurability());
-				break;				
-			case Parameter.TYPE_VECTOR3:
-				Vector3 vector = ((Parameter<Vector3>) parameter).getValue();
-				buf.writeDouble(vector.getX());
-				buf.writeDouble(vector.getY());
-				buf.writeDouble(vector.getZ());
-				break;
-			case Parameter.TYPE_VECTOR2:
-				Vector2 vect = ((Parameter<Vector2>) parameter).getValue();
-				buf.writeDouble(vect.getX());
-				buf.writeDouble(vect.getY());
-				break;
-			case Parameter.TYPE_COLOR:
-				Color c = ((Parameter<Color>) parameter).getValue();
-				buf.writeShort((short)c.getRedI());
-				buf.writeShort((short)c.getBlueI());
-				buf.writeShort((short)c.getGreenI());
-				buf.writeShort((short)c.getAlphaI());
 				break;
 			}
 		}
@@ -124,15 +106,6 @@ public final class ChannelBufferUtils {
 				short damage = buf.readShort();
 				ItemStack item = new ItemStack(id, count, damage);
 				parameters.add(new Parameter<ItemStack>(type, index, item));
-				break;
-			case Parameter.TYPE_VECTOR3:
-				parameters.add(new Parameter<Vector3>(type, index, new Vector3(buf.readDouble(),buf.readDouble(),buf.readDouble())));
-				break;
-			case Parameter.TYPE_VECTOR2:
-				parameters.add(new Parameter<Vector2>(type, index, new Vector2(buf.readDouble(),buf.readDouble())));
-				break;
-			case Parameter.TYPE_COLOR:
-				parameters.add(new Parameter<Color>(type, index, new Color(buf.readShort(),buf.readShort(), buf.readShort())));
 				break;
 			}
 		}
@@ -272,6 +245,45 @@ public final class ChannelBufferUtils {
 			return shift;
 		}
 		return 128;
+	}
+
+	public static Vector3 readVector3(ChannelBuffer buf) {
+		double x = buf.readDouble();
+		double y = buf.readDouble();
+		double z = buf.readDouble();
+		return new Vector3(x, y, z);
+	}
+
+	public static void writeVector3(Vector3 vec, ChannelBuffer buf) {
+		buf.writeDouble(vec.getX());
+		buf.writeDouble(vec.getY());
+		buf.writeDouble(vec.getZ());
+	}
+
+	public static Vector2 readVector2(ChannelBuffer buf) {
+		double x = buf.readDouble();
+		double z = buf.readDouble();
+		return new Vector2(x, z);
+	}
+
+	public static void writeVector2(Vector2 vec, ChannelBuffer buf) {
+		buf.writeDouble(vec.getX());
+		buf.writeDouble(vec.getY());
+	}
+	
+	public static Color readColor(ChannelBuffer buf) {
+		int red = buf.readInt();
+		int green = buf.readInt();
+		int blue = buf.readInt();
+		int alpha = buf.readInt();
+		return new Color(red, green, blue, alpha);
+	}
+
+	public static void writeColor(Color color, ChannelBuffer buf) {
+		buf.writeInt(color.getRedI());
+		buf.writeInt(color.getGreenI());
+		buf.writeInt(color.getBlueI());
+		buf.writeInt(color.getAlphaI());
 	}
 
 	/**
