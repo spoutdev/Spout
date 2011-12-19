@@ -18,7 +18,7 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 	}
 	
 	
-	public boolean processCommand(CommandSource source, Command command, CommandContext args) {
+	public boolean processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 		try {
 			List<Object> commandArgs = new ArrayList<Object>(4);
 			commandArgs.add(source);
@@ -26,16 +26,16 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 			commandArgs.addAll(getAdditionalArgs(source, command));
 			method.invoke(instance, commandArgs.toArray(new Object[commandArgs.size()]));
 		} catch (IllegalAccessException e) {
-			throw new CommandException(e);
+			throw new WrappedCommandException(e);
 		} catch (InvocationTargetException e) {
 			if (e.getCause() == null) {
-				throw new CommandException(e);
+				throw new WrappedCommandException(e);
 			} else {
 				Throwable cause = e.getCause();
 				if (cause instanceof CommandException) {
 					throw (CommandException)cause;
 				} else {
-					throw new CommandException(cause);
+					throw new WrappedCommandException(cause);
 				}
 			}
 		}

@@ -27,7 +27,7 @@ public final class AddonCommand implements CommandExecutor {
 		this.owningAddon = owner;
 	}
 
-	public boolean processCommand(CommandSource source, Command command, CommandContext args) {
+	public boolean processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 		
 		boolean success = false;
 
