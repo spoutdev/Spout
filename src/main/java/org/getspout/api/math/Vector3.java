@@ -3,7 +3,7 @@ package org.getspout.api.math;
 /**
  * Represents a 3d vector.
  */
-public class Vector3 {
+public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Vector with all elements set to 0.  (0, 0, 0)
 	 */
@@ -179,6 +179,18 @@ public class Vector3 {
 		return Vector3.transform(this, transformation);
 	}
 	
+	/**
+	 * Compares two Vector3s
+	 */
+	public int compareTo(Vector3 o) {
+		return Vector3.compareTo(this, o);	
+	}
+	/**
+	 * Checks if two Vector3s are equal
+	 */
+	public boolean equals(Object o){
+		return Vector3.equals(this, o);
+	}
 	
 	/**
 	 * Returns the length of the given vector
@@ -274,4 +286,22 @@ public class Vector3 {
 		Matrix t = Matrix.multiply(transformation, v3);
 		return new Vector3(t.get(0,0), t.get(0, 1), t.get(0,2));
 	}
+
+	
+	/**
+	 * Compares two Vector3s
+	 */
+	public static int compareTo(Vector3 a,Vector3 b) {
+		return (int)a.lengthSquared() - (int)b.lengthSquared();		
+	}
+	
+	/**
+	 * Checks if two Vector2s are equal
+	 */
+	public static  boolean equals(Object a,Object b){
+		if(!(a instanceof Vector3) || !(b instanceof Vector3))return false;	
+		if(a == b) return true;			
+		return compareTo((Vector3)a,(Vector3)b) == 0;
+	}
+	
 }

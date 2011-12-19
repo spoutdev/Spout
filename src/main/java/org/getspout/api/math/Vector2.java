@@ -5,7 +5,7 @@ package org.getspout.api.math;
  *
  * Note, this is the Immutable form of Vector2.  All operations will construct a new Vector2.
  */
-public class Vector2 {
+public class Vector2 implements Comparable<Vector2> {
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
@@ -144,6 +144,20 @@ public class Vector2 {
 
 
 	/**
+	 * Compares two Vector3s
+	 */
+	public int compareTo(Vector2 o) {
+		return Vector2.compareTo(this, o);		
+	}
+	
+	/**
+	 * Checks if two Vector2s are equal
+	 */
+	public boolean equals(Object o){
+		return Vector2.equals(this, o);
+	}
+
+	/**
 	 * Returns the length of the provided Vector2
 	 * Note: This makes use of the sqrt function, and is not cached.  This could affect performance.
 	 * @param a The Vector2 to calculate the length of
@@ -221,4 +235,21 @@ public class Vector2 {
 	public static double[] toArray(Vector2 a) {
 		return new double[]{a.getX(), a.getY()};
 	}
+
+	/**
+	 * Compares two Vector3s
+	 */
+	public static int compareTo(Vector2 a,Vector2 b) {
+		return (int)a.lengthSquared() - (int)b.lengthSquared();		
+	}
+	
+	/**
+	 * Checks if two Vector2s are equal
+	 */
+	public static  boolean equals(Object a,Object b){
+		if(!(a instanceof Vector2) || !(b instanceof Vector2))return false;	
+		if(a == b) return true;			
+		return compareTo((Vector2)a,(Vector2)b) == 0;
+	}
+
 }
