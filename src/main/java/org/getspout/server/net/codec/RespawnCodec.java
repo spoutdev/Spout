@@ -29,7 +29,7 @@ public final class RespawnCodec extends MessageCodec<RespawnMessage> {
 		buffer.writeByte(message.getDimension());
 		buffer.writeByte(message.getDifficulty());
 		buffer.writeByte(message.getGameMode());
-		buffer.writeShort(ChannelBufferUtils.getShifts(message.getWorldHeight()));
+		buffer.writeShort(ChannelBufferUtils.getShifts(message.getWorldHeight()) - 1);
 		buffer.writeLong(message.getSeed());
 		return buffer;
 	}
