@@ -107,8 +107,10 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 getDirectionVector(double pitch, double yaw) {
-		return Vector3.transform(Vector3.UNIT_X, Matrix.rotateY(pitch).multiply(Matrix.rotateZ(yaw)));
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate((new Quaternion(pitch, Vector3.UNIT_Y)).multiply(new Quaternion(yaw, Vector3.UNIT_Z))));
 	}
+	
+	
 
 	//Fast Math Implementation
 

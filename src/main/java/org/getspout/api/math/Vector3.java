@@ -328,6 +328,16 @@ public class Vector3 implements Comparable<Vector3> {
 		Matrix t = Matrix.multiply(transformation, v3);
 		return new Vector3(t.get(0, 0), t.get(0, 1), t.get(0, 2));
 	}
+	/**
+	 * Calculates and returns a new Vector3 transformed by the given quaternion
+	 * @param vector
+	 * @param rot
+	 * @return
+	 */
+	public static Vector3 transform(Vector3 vector, Quaternion rot){
+		return Vector3.transform(vector, Matrix.rotate(rot));
+	}
+	
 
 	/**
 	 * Compares two Vector3s
