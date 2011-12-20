@@ -153,7 +153,7 @@ public class Quaternion {
 	 * @return
 	 */
 	public static Quaternion rotate(Quaternion a, double angle, Vector3 axis){
-		return multiply(a, new Quaternion(angle, axis));
+		return multiply(new Quaternion(angle, axis), a);
 	}
 	
 	
