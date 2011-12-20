@@ -1,5 +1,7 @@
 package org.getspout.api.collision;
 
+import org.getspout.api.math.Vector3;
+
 public class CollisionHelper {
 	/**
 	 * Checks the collision between two BoundingBoxes
@@ -59,4 +61,9 @@ public class CollisionHelper {
 		
 		return d <= b.radius * b.radius;
 	}
+	
+	public static boolean checkCollision(CollisionRay a, BoundingBox b){
+		return false; //TODO Implement this
+	}
+	
 }

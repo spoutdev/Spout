@@ -91,8 +91,7 @@ public class MathHelper {
 	
 	
 	
-	
-	
+
 	
 	//Fast Math Implementation
 
