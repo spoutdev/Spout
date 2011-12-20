@@ -165,7 +165,7 @@ public enum BlockProperties {
 	}
 
 	public static BlockProperties get(int id) {
-		if (byId.length > id) {
+		if (id >= 0 && byId.length > id) {
 			return byId[id];
 		} else {
 			return null;

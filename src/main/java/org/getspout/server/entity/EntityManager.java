@@ -1,7 +1,7 @@
 package org.getspout.server.entity;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +39,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	public <T extends SpoutEntity> Collection<T> getAll(Class<T> type) {
 		Set<T> set = (Set<T>) groupedEntities.get(type);
 		if (set == null) {
-			set = new HashSet<T>();
+			set = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
 			groupedEntities.put(type, set);
 		}
 		return set;

@@ -33,15 +33,19 @@ public class QuickBarCodec extends MessageCodec<QuickBarMessage> {
 	public QuickBarMessage decode(ChannelBuffer buffer) throws IOException {
 		short slot = buffer.readShort();
 		short id = buffer.readShort();
-		short amount = buffer.readByte();
-		short damage = buffer.readShort();
-		Map<String, Tag> nbtData = null;
-		if (id > 255) {
-			ItemProperties props = ItemProperties.get(id);
-			if (props != null && props.hasNbtData()) {
-				ChannelBufferUtils.readCompound(buffer);
+		if (id != -1) {
+			short amount = buffer.readByte();
+			short damage = buffer.readShort();
+			Map<String, Tag> nbtData = null;
+			if (id > 255) {
+				ItemProperties props = ItemProperties.get(id);
+				if (props != null && props.hasNbtData()) {
+					ChannelBufferUtils.readCompound(buffer);
+				}
 			}
+			return new QuickBarMessage(slot, id, amount, damage, nbtData);
+		} else {
+			return new QuickBarMessage(slot, id, (short) 0, (short) 0, null);
 		}
-		return new QuickBarMessage(slot, id, amount, damage, nbtData);
 	}
 }

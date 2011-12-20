@@ -58,6 +58,9 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
 
 		SpoutBlock target = against.getRelative(face);
 		SpoutItemStack holding = player.getItemInHand();
+		if (target.getY() >= player.getWorld().getMaxHeight()) {
+			return;
+		}
 		boolean sendRevert = false;
 		PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, Action.RIGHT_CLICK_BLOCK, against, face);
 		if (interactEvent.useInteractedBlock() != Event.Result.DENY) {
