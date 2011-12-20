@@ -105,7 +105,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 		player.setItemOnCursor(currentItem);
 
 		if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && currentItem != null) {
-			player.getInventory().getCraftingInventory().craft(player, message.isShift());
+			player.getInventory().getCraftingInventory().craft();
 		}
 	}
 
