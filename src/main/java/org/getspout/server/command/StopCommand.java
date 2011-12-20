@@ -10,17 +10,24 @@ import org.getspout.server.SpoutServer;
  */
 public class StopCommand extends SpoutCommand {
 	public StopCommand(SpoutServer server) {
-		super(server, "stop", "Stops the server", "");
+		super(server, "stop", "Stops the server", "[message]");
 	}
 
 	@Override
 	public boolean run(CommandSender sender, String commandLabel, String[] args) {
-		if (!checkArgs(sender, args, 0)) {
-			return false;
-		} else {
-			server.shutdown();
-			return tellOps(sender, "Stopping the server");
+		if(args.length>0) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < args.length; i++) {
+				if(i!=0) sb.append(" ");
+			    sb.append(args[i]);
+			}
+			String message = sb.toString();
+			server.shutdown(message);
 		}
+		else {
+			server.shutdown();
+		}
+		return tellOps(sender, "Stopping the server");
 	}
 
 	@Override

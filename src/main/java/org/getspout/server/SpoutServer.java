@@ -499,9 +499,11 @@ public final class SpoutServer implements Server {
 	}
 
 	/**
-	 * Stops this server.
+	 * Stops this server with a given kick message.
+	 * 
+	 * @param message The message to display as kick message.
 	 */
-	public void shutdown() {
+	public void shutdown(String message) {
 		// This is so we don't run this twice (/stop and actual shutdown)
 		if (isShuttingDown) {
 			return;
@@ -517,7 +519,7 @@ public final class SpoutServer implements Server {
 
 		// Kick (and save) all players
 		for (Player player : getOnlinePlayers()) {
-			player.kickPlayer("Server shutting down.");
+			player.kickPlayer(message);
 		}
 
 		// Save worlds
@@ -533,6 +535,13 @@ public final class SpoutServer implements Server {
 		// And finally kill the console
 		consoleManager.stop();
 
+	}
+	
+	/**
+	 * Stops this server with the default kick message.
+	 */
+	public void shutdown() {
+		shutdown("Server shutting down.");
 	}
 
 	/**
