@@ -70,6 +70,7 @@ import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
 import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.StopCommand;
+import org.getspout.server.command.TeleportCommand;
 import org.getspout.server.command.TellCommand;
 import org.getspout.server.command.TimeCommand;
 import org.getspout.server.command.ToggleStormCommand;
@@ -477,6 +478,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new ToggleStormCommand(this));
 		commandMap.register(new TellCommand(this));
 		commandMap.register(new ExperienceCommand(this));
+		commandMap.register(new TeleportCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 
