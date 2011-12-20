@@ -172,7 +172,7 @@ public enum ItemProperties {
 	}
 
 	public static ItemProperties get(int id) {
-		if (byId.length > id) {
+		if (id >= 0 && byId.length > id) {
 			return byId[id];
 		} else {
 			return null;
