@@ -19,7 +19,9 @@ public class ListCommand extends SpoutCommand {
 	public boolean run(CommandSender sender, String commandLabel, String[] args) {
 		String result = "";
 		for (Player p : server.getOnlinePlayers()) {
-			if (result.length() > 0) result += ", ";
+			if (result.length() > 0) {
+				result += ", ";
+			}
 			result += p.getName();
 		}
 		sender.sendMessage(ChatColor.GRAY + "Players online (" + server.getOnlinePlayers().length + "): " + result);

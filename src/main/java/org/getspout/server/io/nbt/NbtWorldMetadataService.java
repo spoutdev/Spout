@@ -1,12 +1,18 @@
 package org.getspout.server.io.nbt;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import org.getspout.server.SpoutServer;
@@ -31,12 +37,14 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 
 	public NbtWorldMetadataService(SpoutWorld world, File dir) {
 		this.world = world;
-		if (!dir.exists())
+		if (!dir.exists()) {
 			dir.mkdirs();
+		}
 		this.dir = dir;
 		server = world.getServer();
 	}
 
+	@Override
 	public WorldFinalValues readWorldData() throws IOException {
 		Map<String, Tag> level = new HashMap<String, Tag>();
 
@@ -52,7 +60,9 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 				NBTInputStream in = new NBTInputStream(new FileInputStream(levelFile));
 				CompoundTag levelTag = (CompoundTag) in.readTag();
 				in.close();
-				if (levelTag != null) level.putAll(levelTag.getValue());
+				if (levelTag != null) {
+					level.putAll(levelTag.getValue());
+				}
 			} catch (EOFException e) {
 			} catch (IOException e) {
 				handleWorldException("level.dat", e);
@@ -69,8 +79,8 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 		} else {
 			DataInputStream str = null;
 			try {
-			str = new DataInputStream(new FileInputStream(uuidFile));
-			uid = new UUID(str.readLong(), str.readLong());
+				str = new DataInputStream(new FileInputStream(uuidFile));
+				uid = new UUID(str.readLong(), str.readLong());
 			} catch (EOFException e) {
 			} finally {
 				if (str != null) {
@@ -111,7 +121,9 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 			world.setSpawnLocation(spawnXTag.getValue(), spawnYTag.getValue(), spawnZTag.getValue());
 		}
 		unknownTags.putAll(level);
-		if (uid == null) uid= UUID.randomUUID();
+		if (uid == null) {
+			uid = UUID.randomUUID();
+		}
 		return new WorldFinalValues(seed, uid);
 	}
 
@@ -121,6 +133,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 		e.printStackTrace();
 	}
 
+	@Override
 	public void writeWorldData() throws IOException {
 		Map<String, Tag> out = new HashMap<String, Tag>();
 		File uuidFile = new File(dir, "uid.dat");
@@ -155,8 +168,9 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 		out.put("LastPlayed", new LongTag("LastPlayed", Calendar.getInstance().getTimeInMillis()));
 		out.put("version", new IntTag("version", 19132));
 
-		if (!out.containsKey("SizeOnDisk"))
+		if (!out.containsKey("SizeOnDisk")) {
 			out.put("SizeOnDisk", new LongTag("SizeOnDisk", 0)); // Not sure how to calculate this, so ignoring for now
+		}
 		try {
 			NBTOutputStream nbtOut = new NBTOutputStream(new FileOutputStream(new File(dir, "level.dat")));
 			nbtOut.writeTag(new CompoundTag("Data", out));
@@ -166,13 +180,15 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 		}
 	}
 
+	@Override
 	public void readPlayerData(SpoutPlayer player) {
 		CompoundTag playerTag = null;
 		// Map<PlayerData, Object> ret = new HashMap<PlayerData, Object>();
 
 		File playerDir = new File(world.getName(), "players");
-		if (!playerDir.exists())
+		if (!playerDir.exists()) {
 			playerDir.mkdirs();
+		}
 
 		File playerFile = new File(playerDir, player.getName() + ".dat");
 		if (!playerFile.exists()) {
@@ -194,20 +210,23 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 			}
 		}
 
-		if (playerTag == null) playerTag = new CompoundTag("", new HashMap<String, Tag>());
+		if (playerTag == null) {
+			playerTag = new CompoundTag("", new HashMap<String, Tag>());
+		}
 		EntityStoreLookupService.find(SpoutPlayer.class).load(player, playerTag);
 	}
 
+	@Override
 	public void writePlayerData(SpoutPlayer player) {
 
-
-
 		File playerFile = new File(getPlayerDataFolder(), player.getName() + ".dat");
-		if (!playerFile.exists()) try {
-			playerFile.createNewFile();
-		} catch (IOException e) {
-			player.getSession().disconnect("Failed to access player.dat");
-			server.getLogger().severe("Failed to access player.dat for player " + player.getName() + " in world " + world.getName() + "!");
+		if (!playerFile.exists()) {
+			try {
+				playerFile.createNewFile();
+			} catch (IOException e) {
+				player.getSession().disconnect("Failed to access player.dat");
+				server.getLogger().severe("Failed to access player.dat for player " + player.getName() + " in world " + world.getName() + "!");
+			}
 		}
 
 		Map<String, Tag> out = EntityStoreLookupService.find(SpoutPlayer.class).save(player);
@@ -221,26 +240,32 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 		}
 	}
 
+	@Override
 	public boolean hasDataFor(SpoutPlayer player) {
 		File playerFile = new File(getPlayerDataFolder(), player.getName() + ".dat");
 		return playerFile.exists() && playerFile.isFile();
 	}
 
+	@Override
 	public String[] getPlayerNames() {
 		return getPlayerDataFolder().list(new DatFileFilenameFilter());
 	}
 
 	private File getPlayerDataFolder() {
 		File playerDir = new File(dir, "players");
-		if (!playerDir.exists()) playerDir.mkdirs();
+		if (!playerDir.exists()) {
+			playerDir.mkdirs();
+		}
 		return playerDir;
 	}
 
 	/**
-	 * A simle filename filter that accepts only flies that have a .dot extension
+	 * A simle filename filter that accepts only flies that have a .dot
+	 * extension
 	 */
 	private static class DatFileFilenameFilter implements FilenameFilter {
 
+		@Override
 		public boolean accept(File dir, String name) {
 			return name.endsWith(".dat");
 		}

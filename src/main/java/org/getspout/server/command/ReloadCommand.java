@@ -18,7 +18,9 @@ public class ReloadCommand extends SpoutCommand {
 	@Override
 	public boolean run(CommandSender sender, String commandLabel, String[] args) {
 		if (args[0].matches("([Aa]ll|\\*)")) {
-			if (!checkPermission(sender, "all")) return false;
+			if (!checkPermission(sender, "all")) {
+				return false;
+			}
 			if (args.length > 3 && args[2].equalsIgnoreCase("yesiamthatdumb")) {
 				tellOps(sender, "Reloading full server");
 				server.reload();
@@ -27,12 +29,16 @@ public class ReloadCommand extends SpoutCommand {
 				return false;
 			}
 		} else if (args[0].matches("[Aa]liases")) {
-			if (!checkPermission(sender, "aliases")) return false;
+			if (!checkPermission(sender, "aliases")) {
+				return false;
+			}
 			tellOps(sender, "Reloading command aliases");
 			server.reloadCommandAliases();
 		} else if (args[0].matches("config(uration)?")) {
-			if (!checkPermission(sender, "config")) return false;
-			tellOps(sender,  "Reloading server configuration");
+			if (!checkPermission(sender, "config")) {
+				return false;
+			}
+			tellOps(sender, "Reloading server configuration");
 			server.reloadConfiguration();
 
 		} else {

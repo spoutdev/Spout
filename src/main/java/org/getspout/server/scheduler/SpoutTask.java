@@ -5,6 +5,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  * Represents a task which is executed periodically.
+ *
  * @author Graham Edgecombe
  */
 public class SpoutTask implements BukkitTask {
@@ -56,33 +57,37 @@ public class SpoutTask implements BukkitTask {
 	private final boolean sync;
 
 	/**
-	 * Creates a new task with the specified number of ticks between
-	 * consecutive calls to {@link #execute()}.
+	 * Creates a new task with the specified number of ticks between consecutive
+	 * calls to {@link #execute()}.
+	 *
 	 * @param ticks The number of ticks.
 	 */
 	public SpoutTask(Plugin owner, Runnable task, boolean sync, long delay, long period) {
 		synchronized (nextTaskIdLock) {
-			this.taskId = nextTaskId++;
+			taskId = nextTaskId++;
 		}
 		this.owner = owner;
 		this.task = task;
 		this.delay = delay;
 		this.period = period;
-		this.counter = 0;
+		counter = 0;
 		this.sync = sync;
 	}
 
 	/**
 	 * Gets the ID of this task.
 	 */
+	@Override
 	public int getTaskId() {
 		return taskId;
 	}
 
+	@Override
 	public boolean isSync() {
 		return sync;
 	}
 
+	@Override
 	public Plugin getOwner() {
 		return owner;
 	}
@@ -97,11 +102,13 @@ public class SpoutTask implements BukkitTask {
 	/**
 	 * Called every 'pulse' which is around 200ms in Minecraft. This method
 	 * updates the counters and calls {@link #execute()} if necessary.
+	 *
 	 * @return The {@link #isRunning()} flag.
 	 */
 	boolean pulse() {
-		if (!running)
+		if (!running) {
 			return false;
+		}
 
 		++counter;
 		if (counter >= delay) {

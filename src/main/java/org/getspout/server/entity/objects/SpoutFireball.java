@@ -15,33 +15,39 @@ public class SpoutFireball extends SpoutProjectile implements Fireball {
 	 * Creates an entity and adds it to the specified world.
 	 *
 	 * @param server The server.
-	 * @param world  The world.
+	 * @param world The world.
 	 */
 	public SpoutFireball(SpoutServer server, SpoutWorld world, Vector direction) {
 		super(server, world, 63);
 		this.direction = direction;
 	}
 
+	@Override
 	public void setDirection(Vector direction) {
 		this.direction = direction;
 	}
 
+	@Override
 	public Vector getDirection() {
 		return direction;
 	}
 
+	@Override
 	public void setYield(float yield) {
-		this.radius = yield;
+		radius = yield;
 	}
 
+	@Override
 	public float getYield() {
 		return radius;
 	}
 
+	@Override
 	public void setIsIncendiary(boolean isIncendiary) {
-		this.incendiary = isIncendiary;
+		incendiary = isIncendiary;
 	}
 
+	@Override
 	public boolean isIncendiary() {
 		return incendiary;
 	}

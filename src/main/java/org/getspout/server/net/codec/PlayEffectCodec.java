@@ -6,7 +6,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import org.getspout.server.msg.PlayEffectMessage;
-import org.getspout.server.util.ChannelBufferUtils;
 
 public final class PlayEffectCodec extends MessageCodec<PlayEffectMessage> {
 	public PlayEffectCodec() {

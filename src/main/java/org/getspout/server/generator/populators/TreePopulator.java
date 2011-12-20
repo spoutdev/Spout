@@ -2,12 +2,12 @@ package org.getspout.server.generator.populators;
 
 import java.util.Random;
 
-import org.getspout.server.generator.populators.trees.GenericTreeGenerator;
-import org.getspout.server.generator.populators.trees.NormalTree;
-
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
+
+import org.getspout.server.generator.populators.trees.GenericTreeGenerator;
+import org.getspout.server.generator.populators.trees.NormalTree;
 
 /**
  * BlockPopulator that adds trees based on the biome.

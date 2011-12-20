@@ -28,10 +28,11 @@ public abstract class PulsableThread extends Thread {
 	}
 
 	/**
-	 * Puts the current thread to sleep until the current pulse operation has completed
+	 * Puts the current thread to sleep until the current pulse operation has
+	 * completed
 	 */
 	public void pulseJoin() throws InterruptedException {
-		synchronized(pulsing) {
+		synchronized (pulsing) {
 			while (pulsing.get()) {
 				pulsing.wait();
 			}
@@ -39,9 +40,11 @@ public abstract class PulsableThread extends Thread {
 	}
 
 	/**
-	 * Puts the current thread to sleep until the current pulse operation has completed
+	 * Puts the current thread to sleep until the current pulse operation has
+	 * completed
 	 *
-	 * @param millis the time in milliseconds to wait before throwing a TimeoutException
+	 * @param millis the time in milliseconds to wait before throwing a
+	 *            TimeoutException
 	 */
 
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException {
@@ -51,7 +54,7 @@ public abstract class PulsableThread extends Thread {
 		}
 		long currentTime = System.currentTimeMillis();
 		long endTime = currentTime + millis;
-		synchronized(pulsing) {
+		synchronized (pulsing) {
 			while (currentTime < endTime && pulsing.get()) {
 				pulsing.wait(endTime - currentTime);
 				currentTime = System.currentTimeMillis();
@@ -76,15 +79,18 @@ public abstract class PulsableThread extends Thread {
 	 *
 	 * Interrupted exceptions MUST be thrown when interrupts happen.
 	 *
-	 * Where InterruptedExceptions are caught for handling, InterruptedExceptions should be chained.
+	 * Where InterruptedExceptions are caught for handling,
+	 * InterruptedExceptions should be chained.
 	 *
-	 * This is required in order to ensure that the thread can be automatically shut down.
+	 * This is required in order to ensure that the thread can be automatically
+	 * shut down.
 	 */
 	protected abstract void pulsedRun() throws InterruptedException;
-	
+
 	/**
 	 * The thread will continue until it is interrupted
 	 */
+	@Override
 	public final void run() {
 		try {
 			while (!isInterrupted()) {
@@ -97,7 +103,7 @@ public abstract class PulsableThread extends Thread {
 				try {
 					pulsedRun();
 				} finally {
-					synchronized(pulsing) {
+					synchronized (pulsing) {
 						pulsing.set(false);
 						pulsing.notifyAll();
 					}

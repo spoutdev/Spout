@@ -29,6 +29,6 @@ public final class OpenWindowMessage extends Message {
 
 	@Override
 	public String toString() {
-	return "OpenWindowMessage{id=" + id + ",type=" + type + ",slots=" + slots + ",title=" + title + "}";
+		return "OpenWindowMessage{id=" + id + ",type=" + type + ",slots=" + slots + ",title=" + title + "}";
 	}
 }

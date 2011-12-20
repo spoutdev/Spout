@@ -4,7 +4,7 @@ public class ExperienceMessage extends Message {
 	private final float barValue;
 	private final short level, totalExp;
 
-	public ExperienceMessage(float barValue, short level, short  totalExp) {
+	public ExperienceMessage(float barValue, short level, short totalExp) {
 		this.barValue = barValue;
 		this.level = level;
 		this.totalExp = totalExp;

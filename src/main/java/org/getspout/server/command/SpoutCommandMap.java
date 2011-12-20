@@ -1,6 +1,14 @@
 package org.getspout.server.command;
 
-import java.util.*;
+import static org.bukkit.util.Java15Compat.Arrays_copyOfRange;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -10,12 +18,12 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
-import static org.bukkit.util.Java15Compat.Arrays_copyOfRange;
 
 import org.getspout.server.util.StringUtil;
 
 /**
- * SimpleCommandMap that ignores certain "vanilla" commands and supports fuzzy command matching.
+ * SimpleCommandMap that ignores certain "vanilla" commands and supports fuzzy
+ * command matching.
  */
 public class SpoutCommandMap extends SimpleCommandMap {
 	private final Server server;
@@ -45,8 +53,8 @@ public class SpoutCommandMap extends SimpleCommandMap {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * This is an additional method to allow fuzzy command matching.
+	 * {@inheritDoc} This is an additional method to allow fuzzy command
+	 * matching.
 	 */
 	public boolean dispatch(CommandSender sender, String commandLine, boolean fuzzy) throws CommandException {
 		String[] args = commandLine.split(" ");
@@ -94,6 +102,7 @@ public class SpoutCommandMap extends SimpleCommandMap {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean register(String label, String fallbackPrefix, Command command) {
 		boolean registeredPassedLabel = register(label, fallbackPrefix, command, false);
 
@@ -111,8 +120,8 @@ public class SpoutCommandMap extends SimpleCommandMap {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * This is overridden so that command aliases override Spout commands
+	 * {@inheritDoc} This is overridden so that command aliases override Spout
+	 * commands
 	 */
 	private synchronized boolean register(String label, String fallbackPrefix, Command command, boolean isAlias) {
 		String lowerLabel = label.trim().toLowerCase();
@@ -145,12 +154,15 @@ public class SpoutCommandMap extends SimpleCommandMap {
 
 	public Command getIgnoringVanilla(String label) {
 		Command cmd = knownCommands.get(label);
-		if (cmd instanceof SpoutCommand) return null;
+		if (cmd instanceof SpoutCommand) {
+			return null;
+		}
 		return cmd;
 	}
 
 	/**
-	 * Perpares the spout command permissions. Should be only run once per plugin manager
+	 * Perpares the spout command permissions. Should be only run once per
+	 * plugin manager
 	 */
 	public static void initSpoutPermissions(Server server) {
 		PluginManager pm = server.getPluginManager();
@@ -171,6 +183,7 @@ public class SpoutCommandMap extends SimpleCommandMap {
 
 	/**
 	 * Registers SpoutCommands using the extra information available from them
+	 *
 	 * @param command
 	 */
 	public void register(SpoutCommand command) {
@@ -206,7 +219,8 @@ public class SpoutCommandMap extends SimpleCommandMap {
 	}
 
 	/**
-	 * Returns a list of command permissions registered through this command map.
+	 * Returns a list of command permissions registered through this command
+	 * map.
 	 */
 	public Set<String> getCommandPermissions() {
 		HashSet<String> perms = new HashSet<String>();

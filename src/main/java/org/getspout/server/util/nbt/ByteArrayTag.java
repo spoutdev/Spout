@@ -2,6 +2,7 @@ package org.getspout.server.util.nbt;
 
 /**
  * The {@code TAG_Byte_Array} tag.
+ *
  * @author Graham Edgecombe
  */
 public final class ByteArrayTag extends Tag {
@@ -12,6 +13,7 @@ public final class ByteArrayTag extends Tag {
 
 	/**
 	 * Creates the tag.
+	 *
 	 * @param name The name.
 	 * @param value The value.
 	 */
@@ -39,7 +41,7 @@ public final class ByteArrayTag extends Tag {
 		String name = getName();
 		String append = "";
 		if (name != null && !name.equals("")) {
-			append = "(\"" + this.getName() + "\")";
+			append = "(\"" + getName() + "\")";
 		}
 		return "TAG_Byte_Array" + append + ": " + hex.toString();
 	}

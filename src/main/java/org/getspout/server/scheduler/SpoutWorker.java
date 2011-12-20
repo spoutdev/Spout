@@ -11,10 +11,11 @@ public class SpoutWorker implements BukkitWorker, Runnable {
 	private boolean shouldContinue = true;
 
 	protected SpoutWorker(final SpoutTask task, final SpoutScheduler scheduler) {
-		this.id = task.getTaskId();
-		this.owner = task.getOwner();
+		id = task.getTaskId();
+		owner = task.getOwner();
 		this.task = task;
-		this.thread = new Thread(new Runnable() {
+		thread = new Thread(new Runnable() {
+			@Override
 			public void run() {
 				task.pulse();
 				scheduler.workerComplete(SpoutWorker.this);
@@ -23,14 +24,17 @@ public class SpoutWorker implements BukkitWorker, Runnable {
 		thread.start();
 	}
 
+	@Override
 	public int getTaskId() {
 		return id;
 	}
 
+	@Override
 	public Plugin getOwner() {
 		return owner;
 	}
 
+	@Override
 	public Thread getThread() {
 		return thread;
 	}
@@ -44,7 +48,9 @@ public class SpoutWorker implements BukkitWorker, Runnable {
 	}
 
 	public void cancel() {
-		if (thread == null) return;
+		if (thread == null) {
+			return;
+		}
 		if (!thread.isAlive()) {
 			thread.interrupt();
 			return;
@@ -52,6 +58,7 @@ public class SpoutWorker implements BukkitWorker, Runnable {
 		task.stop();
 	}
 
+	@Override
 	public void run() {
 
 		shouldContinue = task.pulse();

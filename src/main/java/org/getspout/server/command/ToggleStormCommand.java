@@ -4,6 +4,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
+
 import org.getspout.server.SpoutServer;
 
 /**
@@ -33,8 +34,7 @@ public class ToggleStormCommand extends SpoutCommand {
 				return false;
 			}
 		}
-		server.broadcastMessage((sender instanceof Player ? ((Player) sender).getDisplayName() : "Console")
-				+ " toggled a storm in the world '" + world.getName() + "'.");
+		server.broadcastMessage((sender instanceof Player ? ((Player) sender).getDisplayName() : "Console") + " toggled a storm in the world '" + world.getName() + "'.");
 		world.setStorm(!world.hasStorm());
 		return true;
 	}

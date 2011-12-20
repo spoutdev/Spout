@@ -7,12 +7,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.logging.Level;
 
-import org.bukkit.GameMode;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutServer;
-import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.IdentificationMessage;
 import org.getspout.server.net.Session;
@@ -43,7 +41,7 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
 					allow = result.equals("YES"); // Get minecraft.net's result. If the result is YES, allow login to continue
 				} catch (IOException ex) {
 					// Something went wrong, disconnect the player
-					session.getServer().getLogger().log(Level.WARNING, "Failed to authenticate {0} with minecraft.net: {1}", new Object[]{message.getName(), ex.getMessage()});
+					session.getServer().getLogger().log(Level.WARNING, "Failed to authenticate {0} with minecraft.net: {1}", new Object[] {message.getName(), ex.getMessage()});
 					session.disconnect("Player identification failed [" + ex.getMessage() + "]");
 				}
 			}

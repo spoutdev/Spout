@@ -19,12 +19,13 @@ import org.getspout.server.io.entity.monsters.ZombieStore;
 
 /**
  * A class used to lookup message codecs.
+ *
  * @author Graham Edgecombe
  */
 public final class EntityStoreLookupService {
 	/**
-	 * A table which maps entity ids to compound readers. This is generally used to map
-	 * stored entities to actual entities.
+	 * A table which maps entity ids to compound readers. This is generally used
+	 * to map stored entities to actual entities.
 	 */
 	private static final Map<String, EntityStore<?>> idTable = new HashMap<String, EntityStore<?>>();
 
@@ -59,12 +60,13 @@ public final class EntityStoreLookupService {
 
 	/**
 	 * Binds a store by adding entries for it to the tables.
+	 *
 	 * @param clazz The store's class.
 	 * @param <T> The type of store.
 	 * @param <C> The type of entity.
 	 * @throws InstantiationException if the store could not be instantiated.
 	 * @throws IllegalAccessException if the store could not be instantiated due
-	 * to an access violation.
+	 *             to an access violation.
 	 */
 	private static <T extends SpoutEntity, C extends EntityStore<T>> void bind(Class<C> clazz) throws InstantiationException, IllegalAccessException {
 		EntityStore<T> store = clazz.newInstance();
@@ -75,6 +77,7 @@ public final class EntityStoreLookupService {
 
 	/**
 	 * Finds an entity store by entity id.
+	 *
 	 * @param id The entity id.
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
@@ -84,6 +87,7 @@ public final class EntityStoreLookupService {
 
 	/**
 	 * Finds a store by entity class.
+	 *
 	 * @param clazz The entity class.
 	 * @param <T> The type of entity.
 	 * @return The codec, or {@code null} if it could not be found.

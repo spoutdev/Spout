@@ -10,6 +10,7 @@ public class CaveSpiderStore extends SpiderStore {
 		super(SpoutCaveSpider.class, "CaveSpider");
 	}
 
+	@Override
 	public SpoutCaveSpider load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutCaveSpider entity = new SpoutCaveSpider(server, world);

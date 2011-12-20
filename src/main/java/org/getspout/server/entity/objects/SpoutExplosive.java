@@ -18,25 +18,29 @@ public abstract class SpoutExplosive extends SpoutEntity implements Explosive {
 	 * Creates an entity and adds it to the specified world.
 	 *
 	 * @param server The server.
-	 * @param world  The world.
+	 * @param world The world.
 	 */
 	public SpoutExplosive(SpoutServer server, SpoutWorld world, int type) {
 		super(server, world);
 		this.type = type;
 	}
 
+	@Override
 	public void setYield(float yield) {
-		this.radius = yield;
+		radius = yield;
 	}
 
+	@Override
 	public float getYield() {
 		return radius;
 	}
 
+	@Override
 	public void setIsIncendiary(boolean isIncendiary) {
-		this.incendiary = isIncendiary;
+		incendiary = isIncendiary;
 	}
 
+	@Override
 	public boolean isIncendiary() {
 		return incendiary;
 	}

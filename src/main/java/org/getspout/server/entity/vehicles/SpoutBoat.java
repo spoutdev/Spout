@@ -35,26 +35,32 @@ public class SpoutBoat extends SpoutVehicle implements Boat {
 		return loot;
 	}
 
+	@Override
 	public double getOccupiedDeceleration() {
 		return occupiedDeceleration;
 	}
 
+	@Override
 	public void setOccupiedDeceleration(double rate) {
-		this.occupiedDeceleration = rate;
+		occupiedDeceleration = rate;
 	}
 
+	@Override
 	public double getUnoccupiedDeceleration() {
 		return unoccupiedDeceleration;
 	}
 
+	@Override
 	public void setUnoccupiedDeceleration(double rate) {
-		this.unoccupiedDeceleration = rate;
+		unoccupiedDeceleration = rate;
 	}
 
+	@Override
 	public boolean getWorkOnLand() {
 		return workOnLand;
 	}
 
+	@Override
 	public void setWorkOnLand(boolean workOnLand) {
 		this.workOnLand = workOnLand;
 	}

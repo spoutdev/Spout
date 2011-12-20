@@ -14,13 +14,13 @@ import org.bukkit.entity.Player;
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.SpoutBlockState;
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.CompressedChunkMessage;
 import org.getspout.server.msg.Message;
 
 /**
  * Represents a chunk of the map.
+ *
  * @author Graham Edgecombe
  */
 public final class SpoutChunk implements Chunk {
@@ -34,6 +34,7 @@ public final class SpoutChunk implements Chunk {
 	 * A chunk key represents the X and Z coordinates of a chunk and implements
 	 * the {@link #hashCode()} and {@link #equals(Object)} methods making it
 	 * suitable for use as a key in a hash table or set.
+	 *
 	 * @author Graham Edgecombe
 	 */
 	public static final class Key {
@@ -45,6 +46,7 @@ public final class SpoutChunk implements Chunk {
 
 		/**
 		 * Creates a new chunk key with the specified X and Z coordinates.
+		 *
 		 * @param x The X coordinate.
 		 * @param z The Z coordinate.
 		 */
@@ -55,6 +57,7 @@ public final class SpoutChunk implements Chunk {
 
 		/**
 		 * Gets the X coordinate.
+		 *
 		 * @return The X coordinate.
 		 */
 		public int getX() {
@@ -63,6 +66,7 @@ public final class SpoutChunk implements Chunk {
 
 		/**
 		 * Gets the Z coordinate.
+		 *
 		 * @return The Z coordinate.
 		 */
 		public int getZ() {
@@ -82,17 +86,22 @@ public final class SpoutChunk implements Chunk {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (getClass() != obj.getClass()) {
 				return false;
+			}
 			Key other = (Key) obj;
-			if (x != other.x)
+			if (x != other.x) {
 				return false;
-			if (z != other.z)
+			}
+			if (z != other.z) {
 				return false;
+			}
 			return true;
 		}
 
@@ -112,7 +121,7 @@ public final class SpoutChunk implements Chunk {
 	 * The coordinates of this chunk.
 	 */
 	private final int x, z;
-	
+
 	/**
 	 * The chunk key
 	 */
@@ -129,13 +138,14 @@ public final class SpoutChunk implements Chunk {
 	private final HashMap<Integer, SpoutBlockState> tileEntities = new HashMap<Integer, SpoutBlockState>();
 
 	/**
-	 * Whether the chunk has been populated by special features.
-	 * Used in map generation.
+	 * Whether the chunk has been populated by special features. Used in map
+	 * generation.
 	 */
 	private boolean populated = false;
 
 	/**
 	 * Creates a new chunk with a specified X and Z coordinate.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 */
@@ -143,7 +153,7 @@ public final class SpoutChunk implements Chunk {
 		this.world = world;
 		this.x = x;
 		this.z = z;
-		this.key = new Key(x, z);
+		key = new Key(x, z);
 	}
 
 	// ======== Basic stuff ========
@@ -153,22 +163,27 @@ public final class SpoutChunk implements Chunk {
 	 *
 	 * @return Parent World
 	 */
+	@Override
 	public SpoutWorld getWorld() {
 		return world;
 	}
 
 	/**
 	 * Gets the X coordinate of this chunk.
+	 *
 	 * @return The X coordinate of this chunk.
 	 */
+	@Override
 	public int getX() {
 		return x;
 	}
 
 	/**
 	 * Gets the Z coordinate of this chunk.
+	 *
 	 * @return The Z coordinate of this chunk.
 	 */
+	@Override
 	public int getZ() {
 		return z;
 	}
@@ -181,19 +196,21 @@ public final class SpoutChunk implements Chunk {
 	 * @param z 0-15
 	 * @return the Block
 	 */
+	@Override
 	public SpoutBlock getBlock(int x, int y, int z) {
 		return getWorld().getBlockAt(this.x << 4 | x, y, this.z << 4 | z);
 	}
 
 	private final static Entity[] blankEntityArray = new Entity[0];
 
+	@Override
 	public Entity[] getEntities() {
 		List<Entity> entities = world.getEntities();
 		List<Entity> chunkEntities = new ArrayList<Entity>();
 
 		for (Entity e : entities) {
-			int cx = (e.getLocation().getBlockX()) >> 4;
-			int cz = (e.getLocation().getBlockZ()) >> 4;
+			int cx = e.getLocation().getBlockX() >> 4;
+			int cz = e.getLocation().getBlockZ() >> 4;
 
 			if (cx == x && cz == z) {
 				chunkEntities.add(e);
@@ -204,31 +221,40 @@ public final class SpoutChunk implements Chunk {
 
 	}
 
+	@Override
 	public SpoutBlockState[] getTileEntities() {
 		return tileEntities.values().toArray(new SpoutBlockState[tileEntities.size()]);
 	}
 
 	/**
 	 * Capture thread-safe read-only snapshot of chunk data
+	 *
 	 * @return ChunkSnapshot
 	 */
+	@Override
 	public ChunkSnapshot getChunkSnapshot() {
 		return getChunkSnapshot(true, false, false);
 	}
 
 	/**
 	 * Capture thread-safe read-only snapshot of chunk data
-	 * @param includeMaxblocky - if true, snapshot includes per-coordinate maximum Y values
-	 * @param includeBiome - if true, snapshot includes per-coordinate biome type
-	 * @param includeBiomeTempRain - if true, snapshot includes per-coordinate raw biome temperature and rainfall
+	 *
+	 * @param includeMaxblocky - if true, snapshot includes per-coordinate
+	 *            maximum Y values
+	 * @param includeBiome - if true, snapshot includes per-coordinate biome
+	 *            type
+	 * @param includeBiomeTempRain - if true, snapshot includes per-coordinate
+	 *            raw biome temperature and rainfall
 	 * @return ChunkSnapshot
 	 */
+	@Override
 	public ChunkSnapshot getChunkSnapshot(boolean includeMaxblocky, boolean includeBiome, boolean includeBiomeTempRain) {
 		return new SpoutChunkSnapshot(x, z, world, types, metaData, skyLight, blockLight, includeMaxblocky, includeBiome, includeBiomeTempRain);
 	}
 
 	/**
 	 * Gets whether this chunk has been populated by special features.
+	 *
 	 * @return Population status.
 	 */
 	public boolean getPopulated() {
@@ -237,6 +263,7 @@ public final class SpoutChunk implements Chunk {
 
 	/**
 	 * Sets the population status of this chunk.
+	 *
 	 * @param populated Population status.
 	 */
 	public void setPopulated(boolean populated) {
@@ -245,31 +272,39 @@ public final class SpoutChunk implements Chunk {
 
 	// ======== Helper Functions ========
 
+	@Override
 	public boolean isLoaded() {
 		return types != null;
 	}
 
+	@Override
 	public boolean load() {
 		return load(true);
 	}
 
+	@Override
 	public boolean load(boolean generate) {
-		if (isLoaded()) return true;
+		if (isLoaded()) {
+			return true;
+		}
 		return world.getChunkManager().loadChunk(x, z, generate);
 	}
 
+	@Override
 	public boolean unload() {
 		return unload(true, true);
 	}
 
+	@Override
 	public boolean unload(boolean save) {
 		return unload(save, true);
 	}
 
+	@Override
 	public boolean unload(boolean save, boolean safe) {
 		if (safe) {
 			for (Player player : getWorld().getPlayers()) {
-				if (((SpoutPlayer)player).canSee(this.key)) {
+				if (((SpoutPlayer) player).canSee(key)) {
 					return false;
 				}
 			}
@@ -287,11 +322,12 @@ public final class SpoutChunk implements Chunk {
 
 	/**
 	 * Sets the types of all tiles within the chunk.
+	 *
 	 * @param types The array of types.
 	 */
 	public void initializeTypes(byte[] types) {
 		if (isLoaded()) {
-			SpoutServer.logger.log(Level.SEVERE, "Tried to initialize already loaded chunk ({0},{1})", new Object[]{x, z});
+			SpoutServer.logger.log(Level.SEVERE, "Tried to initialize already loaded chunk ({0},{1})", new Object[] {x, z});
 			return;
 		}
 
@@ -321,7 +357,7 @@ public final class SpoutChunk implements Chunk {
 							SpoutBlockState state = constructor.newInstance(getBlock(cx, cy, cz));
 							tileEntities.put(coordToIndex(cx, cy, cz), state);
 						} catch (Exception ex) {
-							SpoutServer.logger.log(Level.SEVERE, "Unable to initialize tile entity {0}: {1}", new Object[]{clazz.getName(), ex.getMessage()});
+							SpoutServer.logger.log(Level.SEVERE, "Unable to initialize tile entity {0}: {1}", new Object[] {clazz.getName(), ex.getMessage()});
 							ex.printStackTrace();
 						}
 					}
@@ -334,32 +370,39 @@ public final class SpoutChunk implements Chunk {
 
 	/**
 	 * Attempt to get the tile entity located at the given coordinates.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
 	 * @return A SpoutBlockState if the entity exists, or null otherwise.
 	 */
 	public SpoutBlockState getEntity(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) return null;
+		if (y >= world.getMaxHeight() - 1 || y < 0) {
+			return null;
+		}
 		load();
 		return tileEntities.get(coordToIndex(x, y, z));
 	}
 
 	/**
 	 * Gets the type of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
 	 * @return The type.
 	 */
 	public int getType(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) return 0;
+		if (y >= world.getMaxHeight() - 1 || y < 0) {
+			return 0;
+		}
 		load();
 		return types[coordToIndex(x, y, z)];
 	}
 
 	/**
 	 * Sets the type of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
@@ -367,8 +410,9 @@ public final class SpoutChunk implements Chunk {
 	 */
 	public void setType(int x, int y, int z, int type) {
 		load();
-		if (type < 0 || type >= 256)
+		if (type < 0 || type >= 256) {
 			throw new IllegalArgumentException();
+		}
 
 		if (tileEntities.containsKey(coordToIndex(x, y, z))) {
 			getEntity(x, y, z).destroy();
@@ -385,7 +429,7 @@ public final class SpoutChunk implements Chunk {
 					SpoutBlockState state = constructor.newInstance(getBlock(x, y, z));
 					tileEntities.put(coordToIndex(x, y, z), state);
 				} catch (Exception ex) {
-					SpoutServer.logger.log(Level.SEVERE, "Unable to initialize tile entity {0}: {1}", new Object[]{clazz.getName(), ex.getMessage()});
+					SpoutServer.logger.log(Level.SEVERE, "Unable to initialize tile entity {0}: {1}", new Object[] {clazz.getName(), ex.getMessage()});
 					ex.printStackTrace();
 				}
 			}
@@ -394,19 +438,23 @@ public final class SpoutChunk implements Chunk {
 
 	/**
 	 * Gets the metadata of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
 	 * @return The metadata.
 	 */
 	public int getMetaData(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) return 0;
+		if (y >= world.getMaxHeight() - 1 || y < 0) {
+			return 0;
+		}
 		load();
 		return metaData[coordToIndex(x, y, z)];
 	}
 
 	/**
 	 * Sets the metadata of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
@@ -414,27 +462,32 @@ public final class SpoutChunk implements Chunk {
 	 */
 	public void setMetaData(int x, int y, int z, int metaData) {
 		load();
-		if (metaData < 0 || metaData >= 16)
+		if (metaData < 0 || metaData >= 16) {
 			throw new IllegalArgumentException();
+		}
 
 		this.metaData[coordToIndex(x, y, z)] = (byte) metaData;
 	}
 
 	/**
 	 * Gets the sky light level of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
 	 * @return The sky light level.
 	 */
 	public int getSkyLight(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) return 0;
+		if (y >= world.getMaxHeight() - 1 || y < 0) {
+			return 0;
+		}
 		load();
 		return skyLight[coordToIndex(x, y, z)];
 	}
 
 	/**
 	 * Sets the sky light level of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
@@ -442,27 +495,32 @@ public final class SpoutChunk implements Chunk {
 	 */
 	public void setSkyLight(int x, int y, int z, int skyLight) {
 		load();
-		if (skyLight < 0 || skyLight >= 16)
+		if (skyLight < 0 || skyLight >= 16) {
 			throw new IllegalArgumentException();
+		}
 
 		this.skyLight[coordToIndex(x, y, z)] = (byte) skyLight;
 	}
 
 	/**
 	 * Gets the block light level of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
 	 * @return The block light level.
 	 */
 	public int getBlockLight(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) return 0;
+		if (y >= world.getMaxHeight() - 1 || y < 0) {
+			return 0;
+		}
 		load();
 		return blockLight[coordToIndex(x, y, z)];
 	}
 
 	/**
 	 * Sets the block light level of a block within this chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
@@ -470,8 +528,9 @@ public final class SpoutChunk implements Chunk {
 	 */
 	public void setBlockLight(int x, int y, int z, int blockLight) {
 		load();
-		if (blockLight < 0 || blockLight >= 16)
+		if (blockLight < 0 || blockLight >= 16) {
 			throw new IllegalArgumentException();
+		}
 
 		this.blockLight[coordToIndex(x, y, z)] = (byte) blockLight;
 	}
@@ -486,6 +545,7 @@ public final class SpoutChunk implements Chunk {
 	/**
 	 * Creates a new {@link Message} which can be sent to a client to stream
 	 * this chunk to them.
+	 *
 	 * @return The {@link CompressedChunkMessage}.
 	 */
 	public Message toMessage() {
@@ -495,24 +555,27 @@ public final class SpoutChunk implements Chunk {
 	/**
 	 * Converts a three-dimensional coordinate to an index within the
 	 * one-dimensional arrays.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param y The Y coordinate.
 	 * @return The index within the arrays.
 	 */
 	private int coordToIndex(int x, int y, int z) {
-		if (x < 0 || z < 0 || y < 0 || x >= WIDTH || z >= DEPTH || y >= world.getMaxHeight())
+		if (x < 0 || z < 0 || y < 0 || x >= WIDTH || z >= DEPTH || y >= world.getMaxHeight()) {
 			throw new IndexOutOfBoundsException();
+		}
 
 		return (x * DEPTH + z) * world.getMaxHeight() + y;
 	}
 
 	/**
 	 * Serializes tile data into a byte array.
+	 *
 	 * @return The byte array populated with the tile data.
 	 */
 	private byte[] serializeTileData() {
-		byte[] dest = new byte[((WIDTH * DEPTH * world.getMaxHeight() * 5) / 2)];
+		byte[] dest = new byte[(WIDTH * DEPTH * world.getMaxHeight() * 5 / 2)];
 
 		load();
 		System.arraycopy(types, 0, dest, 0, types.length);
@@ -522,19 +585,19 @@ public final class SpoutChunk implements Chunk {
 		for (int i = 0; i < metaData.length; i += 2) {
 			byte meta1 = metaData[i];
 			byte meta2 = metaData[i + 1];
-			dest[pos++] = (byte) ((meta2 << 4) | meta1);
+			dest[pos++] = (byte) (meta2 << 4 | meta1);
 		}
 
 		for (int i = 0; i < skyLight.length; i += 2) {
 			byte light1 = skyLight[i];
 			byte light2 = skyLight[i + 1];
-			dest[pos++] = (byte) ((light2 << 4) | light1);
+			dest[pos++] = (byte) (light2 << 4 | light1);
 		}
 
 		for (int i = 0; i < blockLight.length; i += 2) {
 			byte light1 = blockLight[i];
 			byte light2 = blockLight[i + 1];
-			dest[pos++] = (byte) ((light2 << 4) | light1);
+			dest[pos++] = (byte) (light2 << 4 | light1);
 		}
 
 		return dest;

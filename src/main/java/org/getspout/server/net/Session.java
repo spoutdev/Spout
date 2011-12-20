@@ -2,7 +2,9 @@ package org.getspout.server.net;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
@@ -15,13 +17,18 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.entity.SpoutPlayer;
-import org.getspout.server.msg.*;
+import org.getspout.server.msg.BlockPlacementMessage;
+import org.getspout.server.msg.KickMessage;
+import org.getspout.server.msg.Message;
+import org.getspout.server.msg.PingMessage;
+import org.getspout.server.msg.UserListItemMessage;
 import org.getspout.server.msg.handler.HandlerLookupService;
 import org.getspout.server.msg.handler.MessageHandler;
 
 /**
  * A single connection to the server, which may or may not be associated with a
  * player.
+ *
  * @author Graham Edgecombe
  */
 public final class Session {
@@ -102,11 +109,6 @@ public final class Session {
 	private int pingMessageId;
 
 	/**
-	 * Handling per-session debug mode.
-	 */
-	private boolean isDebugging;
-
-	/**
 	 * Stores the last block placement message to work around a bug in the
 	 * vanilla client where duplicate packets are sent.
 	 */
@@ -114,6 +116,7 @@ public final class Session {
 
 	/**
 	 * Creates a new session.
+	 *
 	 * @param server The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
@@ -124,6 +127,7 @@ public final class Session {
 
 	/**
 	 * Gets the state of this session.
+	 *
 	 * @return The session's state.
 	 */
 	public State getState() {
@@ -132,6 +136,7 @@ public final class Session {
 
 	/**
 	 * Sets the state of this session.
+	 *
 	 * @param state The new state.
 	 */
 	public void setState(State state) {
@@ -140,6 +145,7 @@ public final class Session {
 
 	/**
 	 * Gets the player associated with this session.
+	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
 	public SpoutPlayer getPlayer() {
@@ -148,13 +154,15 @@ public final class Session {
 
 	/**
 	 * Sets the player associated with this session.
+	 *
 	 * @param player The new player.
 	 * @throws IllegalStateException if there is already a player associated
-	 * with this session.
+	 *             with this session.
 	 */
 	public void setPlayer(SpoutPlayer player) {
-		if (this.player != null)
+		if (this.player != null) {
 			throw new IllegalStateException();
+		}
 
 		this.player = player;
 		PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
@@ -173,10 +181,10 @@ public final class Session {
 
 		player.getWorld().getRawPlayers().add(player);
 
-		Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short)timeoutCounter);
+		Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short) timeoutCounter);
 		for (Player sendPlayer : server.getOnlinePlayers()) {
 			((SpoutPlayer) sendPlayer).getSession().send(userListMessage);
-			send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, (short)((SpoutPlayer)sendPlayer).getSession().timeoutCounter));
+			send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, (short) ((SpoutPlayer) sendPlayer).getSession().timeoutCounter));
 		}
 	}
 
@@ -193,7 +201,7 @@ public final class Session {
 			timeoutCounter = 0;
 		}
 
-		if (timeoutCounter >= TIMEOUT_TICKS)
+		if (timeoutCounter >= TIMEOUT_TICKS) {
 			if (pingMessageId == 0) {
 				pingMessageId = new Random().nextInt();
 				send(new PingMessage(pingMessageId));
@@ -201,10 +209,12 @@ public final class Session {
 			} else {
 				disconnect("Timed out");
 			}
+		}
 	}
 
 	/**
 	 * Sends a message to the client.
+	 *
 	 * @param message The message.
 	 */
 	public void send(Message message) {
@@ -215,6 +225,7 @@ public final class Session {
 	 * Disconnects the session with the specified reason. This causes a
 	 * {@link KickMessage} to be sent. When it has been delivered, the channel
 	 * is closed.
+	 *
 	 * @param reason The reason for disconnection.
 	 */
 	public void disconnect(String reason) {
@@ -225,6 +236,7 @@ public final class Session {
 	 * Disconnects the session with the specified reason. This causes a
 	 * {@link KickMessage} to be sent. When it has been delivered, the channel
 	 * is closed.
+	 *
 	 * @param reason The reason for disconnection.
 	 * @param overrideKick Whether to override the kick event.
 	 */
@@ -241,7 +253,7 @@ public final class Session {
 				server.broadcastMessage(event.getLeaveMessage());
 			}
 
-			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
+			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
 			dispose(false);
 		}
 
@@ -250,6 +262,7 @@ public final class Session {
 
 	/**
 	 * Gets the server associated with this session.
+	 *
 	 * @return The server.
 	 */
 	public SpoutServer getServer() {
@@ -258,6 +271,7 @@ public final class Session {
 
 	/**
 	 * Returns the address of this session.
+	 *
 	 * @return The remote address.
 	 */
 	public InetSocketAddress getAddress() {
@@ -276,6 +290,7 @@ public final class Session {
 
 	/**
 	 * Adds a message to the unprocessed queue.
+	 *
 	 * @param message The message.
 	 * @param <T> The type of message.
 	 */
@@ -290,13 +305,13 @@ public final class Session {
 	void dispose(boolean broadcastQuit) {
 		if (player != null) {
 			player.remove();
-			Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, (short)0);
+			Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, (short) 0);
 			for (Player player : server.getOnlinePlayers()) {
 				((SpoutPlayer) player).getSession().send(userListMessage);
 			}
 
 			String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-			if (broadcastQuit &&text != null) {
+			if (broadcastQuit && text != null) {
 				server.broadcastMessage(text);
 			}
 			player = null; // in case we are disposed twice
@@ -321,6 +336,6 @@ public final class Session {
 	}
 
 	public void setPreviousPlacement(BlockPlacementMessage message) {
-		this.previousPlacement = message;
+		previousPlacement = message;
 	}
 }

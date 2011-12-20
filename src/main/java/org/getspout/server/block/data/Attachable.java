@@ -12,13 +12,16 @@ public abstract class Attachable extends BlockData {
 
 	/**
 	 * Returns the BlockFace the applicable type is attached to.
+	 *
 	 * @param existing The block's current metadata
 	 * @return The face this block is attached to.
 	 */
 	public abstract BlockFace getAttachedFace(int existing);
 
 	/**
-	 * Returns the metadata that a block should be set to to get the target attachment.
+	 * Returns the metadata that a block should be set to to get the target
+	 * attachment.
+	 *
 	 * @param existing The block's existing metadata.
 	 * @param target The target attached face for the block.
 	 * @return The metadata that should be set.

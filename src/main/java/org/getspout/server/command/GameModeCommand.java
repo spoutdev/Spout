@@ -34,11 +34,12 @@ public class GameModeCommand extends SpoutCommand {
 		}
 		GameMode targetMode = null;
 		try {
-		targetMode = GameMode.valueOf(target.toUpperCase());
+			targetMode = GameMode.valueOf(target.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			try {
 				targetMode = GameMode.getByValue(Integer.parseInt(target));
-			} catch (NumberFormatException ex) {}
+			} catch (NumberFormatException ex) {
+			}
 		}
 		if (targetMode == null) {
 			sender.sendMessage(ChatColor.RED + "Unknown game mode: " + target);

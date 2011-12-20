@@ -14,6 +14,7 @@ public class GiantStore extends ZombieStore {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutGiant load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutGiant entity = new SpoutGiant(server, world);

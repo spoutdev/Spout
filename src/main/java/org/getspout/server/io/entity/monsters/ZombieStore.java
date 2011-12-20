@@ -10,11 +10,12 @@ public class ZombieStore extends MonsterStore<SpoutZombie> {
 		super(SpoutZombie.class, "Zombie");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ZombieStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutZombie load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutZombie entity = new SpoutZombie(server, world);

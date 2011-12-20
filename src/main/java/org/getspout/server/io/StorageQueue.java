@@ -29,14 +29,13 @@ public class StorageQueue extends Thread {
 
 	public synchronized void queue(StorageOperation op) {
 		if (!running) {
-				throw new IllegalStateException(
-						"Cannot queue tasks while thread is not running");
+			throw new IllegalStateException("Cannot queue tasks while thread is not running");
 		}
 		if (op.isParallel()) {
 			synchronized (active) {
 				ParallelTaskThread thread = new ParallelTaskThread(op);
 				if (!active.contains(thread)) {
-				   thread.start();
+					thread.start();
 				} else if (op.queueMultiple()) {
 					active.get(active.indexOf(thread)).addOperation(op);
 				}
@@ -75,6 +74,7 @@ public class StorageQueue extends Thread {
 
 	class ParallelTaskThread extends Thread {
 		private final Queue<StorageOperation> ops = new LinkedList<StorageOperation>();
+
 		public ParallelTaskThread(StorageOperation op) {
 			setDaemon(false);
 			ops.add(op);
@@ -94,8 +94,9 @@ public class StorageQueue extends Thread {
 		}
 
 		public void addOperation(StorageOperation op) {
-			if (!isAlive() || isInterrupted())
+			if (!isAlive() || isInterrupted()) {
 				throw new IllegalStateException("Thread is not running");
+			}
 			ops.offer(op);
 		}
 

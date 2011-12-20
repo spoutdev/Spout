@@ -21,38 +21,47 @@ public class SpoutOfflinePlayer implements OfflinePlayer {
 		this.name = name;
 	}
 
+	@Override
 	public boolean isOnline() {
 		return false;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public boolean isBanned() {
 		return server.getBanManager().isBanned(name);
 	}
 
+	@Override
 	public void setBanned(boolean banned) {
 		server.getBanManager().setBanned(name, banned);
 	}
 
+	@Override
 	public boolean isWhitelisted() {
 		return server.hasWhitelist() && server.getWhitelist().contains(name);
 	}
 
+	@Override
 	public boolean hasPlayedBefore() {
 		throw new UnsupportedOperationException("not suppored yet");
 	}
 
+	@Override
 	public long getLastPlayed() {
 		throw new UnsupportedOperationException("not suppored yet");
 	}
 
+	@Override
 	public long getFirstPlayed() {
 		throw new UnsupportedOperationException("not suppored yet");
 	}
 
+	@Override
 	public void setWhitelisted(boolean value) {
 		if (value) {
 			server.getWhitelist().add(name);
@@ -61,14 +70,17 @@ public class SpoutOfflinePlayer implements OfflinePlayer {
 		}
 	}
 
+	@Override
 	public Player getPlayer() {
 		return server.getPlayerExact(name);
 	}
 
+	@Override
 	public boolean isOp() {
 		return server.getOpsList().contains(name);
 	}
 
+	@Override
 	public void setOp(boolean value) {
 		if (value) {
 			server.getOpsList().add(name);
@@ -77,6 +89,7 @@ public class SpoutOfflinePlayer implements OfflinePlayer {
 		}
 	}
 
+	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

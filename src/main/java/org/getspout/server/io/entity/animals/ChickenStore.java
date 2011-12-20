@@ -10,6 +10,7 @@ public class ChickenStore extends AnimalsStore<SpoutChicken> {
 		super(SpoutChicken.class, "Chicken");
 	}
 
+	@Override
 	public SpoutChicken load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutChicken entity = new SpoutChicken(server, world);

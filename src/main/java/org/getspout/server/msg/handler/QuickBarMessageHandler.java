@@ -1,8 +1,6 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.entity.SpoutPlayer;
@@ -22,8 +20,7 @@ public class QuickBarMessageHandler extends MessageHandler<QuickBarMessage> {
 		SpoutInventory inv = player.getInventory();
 		int slot = inv.getItemSlot(message.getSlot());
 
-		if (slot < 0 || slot > 8
-				|| !checkValidId(message.getSlot())) {
+		if (slot < 0 || slot > 8 || !checkValidId(message.getSlot())) {
 			player.onSlotSet(inv, slot, inv.getItem(slot));
 		}
 		SpoutItemStack newItem = new SpoutItemStack(message.getId(), message.getAmount(), message.getDamage(), message.getNbtData());

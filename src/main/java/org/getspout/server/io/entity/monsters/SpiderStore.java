@@ -10,11 +10,12 @@ public class SpiderStore extends MonsterStore<SpoutSpider> {
 		super(SpoutSpider.class, "Spider");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public SpiderStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutSpider load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutSpider entity = new SpoutSpider(server, world);

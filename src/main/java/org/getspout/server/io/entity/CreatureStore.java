@@ -11,5 +11,6 @@ public abstract class CreatureStore<T extends SpoutCreature> extends EntityStore
 		super(clazz, id);
 	}
 
+	@Override
 	public abstract T load(SpoutServer server, SpoutWorld world, CompoundTag compound);
 }

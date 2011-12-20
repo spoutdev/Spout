@@ -10,11 +10,12 @@ public class SkeletonStore extends MonsterStore<SpoutSkeleton> {
 		super(SpoutSkeleton.class, "Skeleton");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public SkeletonStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutSkeleton load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutSkeleton entity = new SpoutSkeleton(server, world);
