@@ -226,7 +226,7 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * returns the length squared ot the given vector
+	 * returns the length squared to the given vector
 	 *
 	 * @param a
 	 * @return
