@@ -6,7 +6,7 @@ package org.getspout.server.util.thread;
 public class ThreadTimingException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public ThreadTimingException(String message) {
 		super(message);
 	}

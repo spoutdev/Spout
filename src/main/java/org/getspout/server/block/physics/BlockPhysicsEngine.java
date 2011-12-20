@@ -13,9 +13,9 @@ public class BlockPhysicsEngine {
 			BlockPhysicsHandler handler = BlockProperties.get(block.getTypeId()).getPhysics();
 			if (handler.doPhysics(block)) {
 				for (BlockFace face : BlockFace.values()) {
-			if (face != BlockFace.SELF) {
-				neighborPhysics(block.getRelative(face), face, original);
-			}
+					if (face != BlockFace.SELF) {
+						neighborPhysics(block.getRelative(face), face, original);
+					}
 				}
 			}
 		}

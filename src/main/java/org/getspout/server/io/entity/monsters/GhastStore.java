@@ -10,11 +10,12 @@ public class GhastStore extends FlyingStore<SpoutGhast> {
 		super(SpoutGhast.class, "Ghast");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public GhastStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutGhast load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutGhast entity = new SpoutGhast(server, world);

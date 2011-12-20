@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
+
 import org.getspout.server.SpoutServer;
 
 /**
@@ -34,8 +35,7 @@ public class TellCommand extends SpoutCommand {
 			sender.sendMessage("You must include a message.");
 			return false;
 		}
-		toTell.sendMessage(ChatColor.GRAY + (sender instanceof Player ? ((Player) sender).getDisplayName() : "Console")
-				+ " whispers: " + ChatColor.WHITE + msg.toString());
+		toTell.sendMessage(ChatColor.GRAY + (sender instanceof Player ? ((Player) sender).getDisplayName() : "Console") + " whispers: " + ChatColor.WHITE + msg.toString());
 		return true;
 	}
 

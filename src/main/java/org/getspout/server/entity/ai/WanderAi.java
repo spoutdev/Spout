@@ -16,7 +16,9 @@ public class WanderAi extends TimedAi<SpoutEntity> {
 
 	@Override
 	public void runAi() {
-		if (rand.nextDouble() > 0.7) return;
+		if (rand.nextDouble() > 0.7) {
+			return;
+		}
 		Location toLoc = entity.getLocation().clone();
 		toLoc.add(rand.nextDouble() * 4, rand.nextDouble() * 4, rand.nextDouble() * 4);
 		if (!entity.getWorld().getBlockAt(toLoc).isEmpty()) {

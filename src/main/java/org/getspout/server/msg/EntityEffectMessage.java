@@ -30,6 +30,6 @@ public class EntityEffectMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "EntityEffectMessage{id=" + id + ",effect=" + effect + ",amplifier=" + amplifier + ",duration=" + duration +"}";
+		return "EntityEffectMessage{id=" + id + ",effect=" + effect + ",amplifier=" + amplifier + ",duration=" + duration + "}";
 	}
 }

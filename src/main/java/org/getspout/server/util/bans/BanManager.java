@@ -12,7 +12,7 @@ public interface BanManager {
 	public void load();
 
 	/**
-	 * Check if a  name is banned
+	 * Check if a name is banned
 	 *
 	 * @param player
 	 * @return if the name is banned

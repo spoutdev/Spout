@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.getspout.server.block.SpoutBlockState;
-import org.getspout.server.util.nbt.*;
+import org.getspout.server.util.nbt.CompoundTag;
+import org.getspout.server.util.nbt.IntTag;
+import org.getspout.server.util.nbt.StringTag;
+import org.getspout.server.util.nbt.Tag;
 
 public abstract class BlockStateStore<T extends SpoutBlockState> {
 	private final String id;

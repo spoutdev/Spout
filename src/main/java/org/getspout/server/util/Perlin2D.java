@@ -19,9 +19,9 @@ public class Perlin2D {
 
 	private double findnoise(double x, double y) {
 		long n = (int) (Math.floor(x) + Math.floor(y) * primes[0]);
-		n = (n << 13) ^ n;
-		long n2 = (n * (n * n * primes[1] + primes[2]) + primes[3]) & 0x7fffffff;
-		return 1.0 - (n2 / 1073741824.0);
+		n = n << 13 ^ n;
+		long n2 = n * (n * n * primes[1] + primes[2]) + primes[3] & 0x7fffffff;
+		return 1.0 - n2 / 1073741824.0;
 	}
 
 	private double interpolate(double a, double b, double x) {

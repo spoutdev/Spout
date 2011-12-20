@@ -2,6 +2,7 @@ package org.getspout.server.util.nbt;
 
 /**
  * The {@code TAG_End} tag.
+ *
  * @author Graham Edgecombe
  */
 public final class EndTag extends Tag {

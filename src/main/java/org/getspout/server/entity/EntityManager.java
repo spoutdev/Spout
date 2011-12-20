@@ -1,7 +1,6 @@
 package org.getspout.server.entity;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A class which manages all of the entities within a world.
+ *
  * @author Graham Edgecombe
  */
 public final class EntityManager implements Iterable<SpoutEntity> {
@@ -30,6 +30,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities with the specified type.
+	 *
 	 * @param type The {@link Class} for the type.
 	 * @param <T> The type of entity.
 	 * @return A collection of entities with the specified type.
@@ -46,6 +47,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities.
+	 *
 	 * @return A collection of entities.
 	 */
 	public Collection<SpoutEntity> getAll() {
@@ -54,6 +56,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets an entity by its id.
+	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
@@ -63,6 +66,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Allocates the id for an entity.
+	 *
 	 * @param entity The entity.
 	 * @return The id.
 	 */
@@ -92,6 +96,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Deallocates the id for an entity.
+	 *
 	 * @param entity The entity.
 	 */
 	void deallocate(SpoutEntity entity) {

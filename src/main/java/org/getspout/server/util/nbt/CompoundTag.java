@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * The {@code TAG_Compound} tag.
+ *
  * @author Graham Edgecombe
  */
 public final class CompoundTag extends Tag {
@@ -15,6 +16,7 @@ public final class CompoundTag extends Tag {
 
 	/**
 	 * Creates the tag.
+	 *
 	 * @param name The name.
 	 * @param value The value.
 	 */
@@ -33,7 +35,7 @@ public final class CompoundTag extends Tag {
 		String name = getName();
 		String append = "";
 		if (name != null && !name.equals("")) {
-			append = "(\"" + this.getName() + "\")";
+			append = "(\"" + getName() + "\")";
 		}
 
 		StringBuilder bldr = new StringBuilder();

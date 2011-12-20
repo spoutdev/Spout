@@ -1,11 +1,11 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.GameMode;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 
 import org.getspout.server.EventFactory;
@@ -25,25 +25,24 @@ import org.getspout.server.net.Session;
 public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlacementMessage> {
 	@Override
 	public void handle(Session session, SpoutPlayer player, BlockPlacementMessage message) {
-		if (player == null)
+		if (player == null) {
 			return;
+		}
 
 		/**
-		 * The notch client's packet sending is weird. Here's how it works:
-		 * If the client is clicking a block not in range, sends a packet with x=-1,y=255,z=-1
-		 * If the client is clicking a block in range with an item in hand (id > 255)
-		 * Sends both the normal block placement packet and a (-1,255,-1) one
-		 * If the client is placing a block in range with a block in hand, only one normal packet is sent
-		 * That is how it usually happens. Sometimes it doesn't happen like that.
-		 * Therefore, a hacky workaround.
+		 * The notch client's packet sending is weird. Here's how it works: If
+		 * the client is clicking a block not in range, sends a packet with
+		 * x=-1,y=255,z=-1 If the client is clicking a block in range with an
+		 * item in hand (id > 255) Sends both the normal block placement packet
+		 * and a (-1,255,-1) one If the client is placing a block in range with
+		 * a block in hand, only one normal packet is sent That is how it
+		 * usually happens. Sometimes it doesn't happen like that. Therefore, a
+		 * hacky workaround.
 		 */
 		if (message.getDirection() == 255) {
 			// Right-clicked air. Note that the client doesn't send this if they are holding nothing.
 			BlockPlacementMessage previous = session.getPreviousPlacement();
-			if (previous == null
-					|| previous.getCount() != message.getCount()
-					&& previous.getId() != message.getId()
-					&& previous.getDamage() != message.getDamage()) {
+			if (previous == null || previous.getCount() != message.getCount() && previous.getId() != message.getId() && previous.getDamage() != message.getDamage()) {
 				EventFactory.onPlayerInteract(player, Action.RIGHT_CLICK_AIR);
 			}
 			session.setPreviousPlacement(null);
@@ -53,8 +52,9 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
 
 		SpoutBlock against = player.getWorld().getBlockAt(message.getX(), message.getY(), message.getZ());
 		BlockFace face = MessageHandlerUtils.messageToBlockFace(message.getDirection());
-		if (face == BlockFace.SELF) return;
-
+		if (face == BlockFace.SELF) {
+			return;
+		}
 
 		SpoutBlock target = against.getRelative(face);
 		SpoutItemStack holding = player.getItemInHand();
@@ -75,9 +75,12 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
 				}
 			}
 			MaterialData placedId = new MaterialData(holding.getTypeId(), (byte) holding.getDurability());
-			if (placedId.getItemTypeId() > 255)
+			if (placedId.getItemTypeId() > 255) {
 				placedId = ItemProperties.get(placedId.getItemTypeId()).getPhysics().getPlacedBlock(face, holding.getDurability());
-			if (placedId.getItemTypeId() == -1) sendRevert = true;
+			}
+			if (placedId.getItemTypeId() == -1) {
+				sendRevert = true;
+			}
 			if (!sendRevert && placedId.getItemTypeId() < 256) {
 				if (target.isEmpty() || target.isLiquid()) {
 					if (EventFactory.onBlockCanBuild(target, placedId.getItemTypeId(), face).isBuildable()) {

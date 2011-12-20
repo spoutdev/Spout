@@ -7,10 +7,16 @@ import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
 import org.getspout.server.block.BlockID;
-import org.getspout.server.item.physics.*;
+import org.getspout.server.item.physics.DefaultItemPhysics;
+import org.getspout.server.item.physics.EmptyBucketPhysics;
+import org.getspout.server.item.physics.FilledBucketPhysics;
+import org.getspout.server.item.physics.GlassBottlePhysics;
+import org.getspout.server.item.physics.ItemPhysics;
+import org.getspout.server.item.physics.SignItemPhysics;
 
 /**
- * An enum containing an entry for every block describing that block's physical properties.
+ * An enum containing an entry for every block describing that block's physical
+ * properties.
  */
 public enum ItemProperties {
 	IRON_SPADE(ItemID.IRON_SPADE, nbtData()),
@@ -188,7 +194,7 @@ public enum ItemProperties {
 
 	private ItemProperties(int id, Property... props) {
 		this.id = id;
-		this.physics = new DefaultItemPhysics(id);
+		physics = new DefaultItemPhysics(id);
 
 		for (Property p : props) {
 			p.apply(this);
@@ -218,20 +224,29 @@ public enum ItemProperties {
 	}
 
 	private static Property nbtData() {
-		return new Property() { public void apply(ItemProperties p) {
-			p.nbtData = true;
-		}};
+		return new Property() {
+			@Override
+			public void apply(ItemProperties p) {
+				p.nbtData = true;
+			}
+		};
 	}
 
 	private static Property physics(final ItemPhysics physics) {
-		return new Property() { public void apply(ItemProperties p) {
+		return new Property() {
+			@Override
+			public void apply(ItemProperties p) {
 				p.physics = physics;
-		}};
+			}
+		};
 	}
 
 	private static Property placedBlock(final MaterialData placedBlock) {
-		return new Property() { public void apply(ItemProperties p) {
-			p.placedBlock = placedBlock;
-		}};
+		return new Property() {
+			@Override
+			public void apply(ItemProperties p) {
+				p.placedBlock = placedBlock;
+			}
+		};
 	}
 }

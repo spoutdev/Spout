@@ -12,17 +12,17 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 import org.bukkit.inventory.ItemStack;
 
+import org.getspout.api.math.Vector2;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.util.Color;
 import org.getspout.server.util.nbt.CompoundTag;
 import org.getspout.server.util.nbt.NBTInputStream;
 import org.getspout.server.util.nbt.NBTOutputStream;
 import org.getspout.server.util.nbt.Tag;
 
-import org.getspout.api.math.Vector2;
-import org.getspout.api.math.Vector3;
-import org.getspout.api.util.Color;
-
 /**
  * Contains several {@link ChannelBuffer}-related utility methods.
+ *
  * @author Graham Edgecombe
  */
 public final class ChannelBufferUtils {
@@ -33,39 +33,40 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a list of parameters (e.g. mob metadata) to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param parameters The parameters.
 	 */
 	@SuppressWarnings("unchecked")
 	public static void writeParameters(ChannelBuffer buf, List<Parameter<?>> parameters) {
 		for (Parameter<?> parameter : parameters) {
-			int type  = parameter.getType();
+			int type = parameter.getType();
 			int index = parameter.getIndex();
 
-			buf.writeByte((type << 5) | index);
+			buf.writeByte(type << 5 | index);
 
 			switch (type) {
-			case Parameter.TYPE_BYTE:
-				buf.writeByte(((Parameter<Byte>) parameter).getValue());
-				break;
-			case Parameter.TYPE_SHORT:
-				buf.writeShort(((Parameter<Short>) parameter).getValue());
-				break;
-			case Parameter.TYPE_INT:
-				buf.writeInt(((Parameter<Integer>) parameter).getValue());
-				break;
-			case Parameter.TYPE_FLOAT:
-				buf.writeFloat(((Parameter<Float>) parameter).getValue());
-				break;
-			case Parameter.TYPE_STRING:
-				writeString(buf, ((Parameter<String>) parameter).getValue());
-				break;
-			case Parameter.TYPE_ITEM:
-				ItemStack item = ((Parameter<ItemStack>) parameter).getValue();
-				buf.writeShort(item.getTypeId());
-				buf.writeByte(item.getAmount());
-				buf.writeShort(item.getDurability());
-				break;
+				case Parameter.TYPE_BYTE:
+					buf.writeByte(((Parameter<Byte>) parameter).getValue());
+					break;
+				case Parameter.TYPE_SHORT:
+					buf.writeShort(((Parameter<Short>) parameter).getValue());
+					break;
+				case Parameter.TYPE_INT:
+					buf.writeInt(((Parameter<Integer>) parameter).getValue());
+					break;
+				case Parameter.TYPE_FLOAT:
+					buf.writeFloat(((Parameter<Float>) parameter).getValue());
+					break;
+				case Parameter.TYPE_STRING:
+					writeString(buf, ((Parameter<String>) parameter).getValue());
+					break;
+				case Parameter.TYPE_ITEM:
+					ItemStack item = ((Parameter<ItemStack>) parameter).getValue();
+					buf.writeShort(item.getTypeId());
+					buf.writeByte(item.getAmount());
+					buf.writeShort(item.getDurability());
+					break;
 			}
 		}
 
@@ -74,39 +75,40 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a list of parameters from the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @return The parameters.
 	 */
 	public static List<Parameter<?>> readParameters(ChannelBuffer buf) {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 
-		for (int b = buf.readUnsignedByte(); b != 127; ) {
-			int type  = (b & 0x0E) >> 5;
+		for (int b = buf.readUnsignedByte(); b != 127;) {
+			int type = (b & 0x0E) >> 5;
 			int index = b & 0x1F;
 
 			switch (type) {
-			case Parameter.TYPE_BYTE:
-				parameters.add(new Parameter<Byte>(type, index, buf.readByte()));
-				break;
-			case Parameter.TYPE_SHORT:
-				parameters.add(new Parameter<Short>(type, index, buf.readShort()));
-				break;
-			case Parameter.TYPE_INT:
-				parameters.add(new Parameter<Integer>(type, index, buf.readInt()));
-				break;
-			case Parameter.TYPE_FLOAT:
-				parameters.add(new Parameter<Float>(type, index, buf.readFloat()));
-				break;
-			case Parameter.TYPE_STRING:
-				parameters.add(new Parameter<String>(type, index, readString(buf)));
-				break;
-			case Parameter.TYPE_ITEM:
-				int id = buf.readShort();
-				int count = buf.readByte();
-				short damage = buf.readShort();
-				ItemStack item = new ItemStack(id, count, damage);
-				parameters.add(new Parameter<ItemStack>(type, index, item));
-				break;
+				case Parameter.TYPE_BYTE:
+					parameters.add(new Parameter<Byte>(type, index, buf.readByte()));
+					break;
+				case Parameter.TYPE_SHORT:
+					parameters.add(new Parameter<Short>(type, index, buf.readShort()));
+					break;
+				case Parameter.TYPE_INT:
+					parameters.add(new Parameter<Integer>(type, index, buf.readInt()));
+					break;
+				case Parameter.TYPE_FLOAT:
+					parameters.add(new Parameter<Float>(type, index, buf.readFloat()));
+					break;
+				case Parameter.TYPE_STRING:
+					parameters.add(new Parameter<String>(type, index, readString(buf)));
+					break;
+				case Parameter.TYPE_ITEM:
+					int id = buf.readShort();
+					int count = buf.readByte();
+					short damage = buf.readShort();
+					ItemStack item = new ItemStack(id, count, damage);
+					parameters.add(new Parameter<ItemStack>(type, index, item));
+					break;
 			}
 		}
 
@@ -115,10 +117,11 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a string to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param str The string.
-	 * @throws IllegalArgumentException if the string is too long
-	 * <em>after</em> it is encoded.
+	 * @throws IllegalArgumentException if the string is too long <em>after</em>
+	 *             it is encoded.
 	 */
 	public static void writeString(ChannelBuffer buf, String str) {
 		int len = str.length();
@@ -134,10 +137,11 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a UTF-8 string to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param str The string.
-	 * @throws IllegalArgumentException if the string is too long
-	 * <em>after</em> it is encoded.
+	 * @throws IllegalArgumentException if the string is too long <em>after</em>
+	 *             it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
 		byte[] bytes = str.getBytes(CHARSET_UTF8);
@@ -151,6 +155,7 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a string from the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @return The string.
 	 */
@@ -165,9 +170,9 @@ public final class ChannelBufferUtils {
 		return new String(characters);
 	}
 
-
 	/**
 	 * Reads a UTF-8 encoded string from the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @return The string.
 	 */
@@ -197,7 +202,8 @@ public final class ChannelBufferUtils {
 				if (str != null) {
 					try {
 						str.close();
-					} catch (IOException e) {}
+					} catch (IOException e) {
+					}
 				}
 			}
 		}
@@ -223,7 +229,8 @@ public final class ChannelBufferUtils {
 			if (str != null) {
 				try {
 					str.close();
-				} catch (IOException e) {}
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
@@ -270,7 +277,7 @@ public final class ChannelBufferUtils {
 		buf.writeDouble(vec.getX());
 		buf.writeDouble(vec.getY());
 	}
-	
+
 	public static Color readColor(ChannelBuffer buf) {
 		int red = buf.readInt();
 		int green = buf.readInt();

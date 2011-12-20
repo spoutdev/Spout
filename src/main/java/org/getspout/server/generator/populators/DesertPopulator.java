@@ -46,11 +46,7 @@ public class DesertPopulator extends BlockPopulator {
 					if (random.nextInt(100) == 0) {
 						// Make sure it's surrounded by air
 						Block base = block.getRelative(BlockFace.UP);
-						if (base.getTypeId() == 0
-								&& base.getRelative(BlockFace.NORTH).getTypeId() == 0
-								&& base.getRelative(BlockFace.EAST).getTypeId() == 0
-								&& base.getRelative(BlockFace.SOUTH).getTypeId() == 0
-								&& base.getRelative(BlockFace.WEST).getTypeId() == 0) {
+						if (base.getTypeId() == 0 && base.getRelative(BlockFace.NORTH).getTypeId() == 0 && base.getRelative(BlockFace.EAST).getTypeId() == 0 && base.getRelative(BlockFace.SOUTH).getTypeId() == 0 && base.getRelative(BlockFace.WEST).getTypeId() == 0) {
 							generateCactus(base, random.nextInt(4));
 						}
 					}

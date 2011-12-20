@@ -3,7 +3,26 @@ package org.getspout.server.msg.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.getspout.server.msg.*;
+import org.getspout.server.msg.ActivateItemMessage;
+import org.getspout.server.msg.AnimateEntityMessage;
+import org.getspout.server.msg.BlockPlacementMessage;
+import org.getspout.server.msg.ChatMessage;
+import org.getspout.server.msg.CloseWindowMessage;
+import org.getspout.server.msg.DiggingMessage;
+import org.getspout.server.msg.EntityActionMessage;
+import org.getspout.server.msg.GroundMessage;
+import org.getspout.server.msg.HandshakeMessage;
+import org.getspout.server.msg.IdentificationMessage;
+import org.getspout.server.msg.KickMessage;
+import org.getspout.server.msg.Message;
+import org.getspout.server.msg.PingMessage;
+import org.getspout.server.msg.PositionMessage;
+import org.getspout.server.msg.PositionRotationMessage;
+import org.getspout.server.msg.QuickBarMessage;
+import org.getspout.server.msg.RespawnMessage;
+import org.getspout.server.msg.RotationMessage;
+import org.getspout.server.msg.ServerListPingMessage;
+import org.getspout.server.msg.WindowClickMessage;
 
 public final class HandlerLookupService {
 	private static final Map<Class<? extends Message>, MessageHandler<?>> handlers = new HashMap<Class<? extends Message>, MessageHandler<?>>();

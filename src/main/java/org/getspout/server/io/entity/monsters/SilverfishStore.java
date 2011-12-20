@@ -10,11 +10,12 @@ public class SilverfishStore extends MonsterStore<SpoutSilverfish> {
 		super(SpoutSilverfish.class, "Silverfish");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public SilverfishStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutSilverfish load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutSilverfish entity = new SpoutSilverfish(server, world);

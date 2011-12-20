@@ -13,7 +13,6 @@ public abstract class BlockData {
 		this.requirement = requirement;
 	}
 
-
 	public int getId() {
 		return id;
 	}

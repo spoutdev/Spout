@@ -7,11 +7,18 @@ import org.bukkit.inventory.ItemStack;
 
 import org.getspout.server.block.data.Stairs;
 import org.getspout.server.block.data.Trapdoor;
-import org.getspout.server.block.physics.*;
+import org.getspout.server.block.physics.AttachablePhysics;
+import org.getspout.server.block.physics.BlockPhysicsHandler;
+import org.getspout.server.block.physics.DefaultBlockPhysics;
+import org.getspout.server.block.physics.DoubleStepPhysics;
+import org.getspout.server.block.physics.FluidPhysics;
+import org.getspout.server.block.physics.SpecialPlaceBelowPhysics;
+import org.getspout.server.block.physics.ToggleableAttachablePhysics;
 import org.getspout.server.item.ItemID;
 
 /**
- * An enum containing an entry for every block describing that block's physical properties.
+ * An enum containing an entry for every block describing that block's physical
+ * properties.
  */
 public enum BlockProperties {
 	AIR(BlockID.AIR, passthru()),
@@ -23,9 +30,9 @@ public enum BlockProperties {
 	SAPLING(BlockID.SAPLING, passthru()),
 	BEDROCK(BlockID.BEDROCK),
 	WATER(BlockID.WATER, passthru(), physics(new FluidPhysics(BlockID.WATER, BlockID.STATIONARY_WATER, 10)), opaque(2)),
-	STATIONARY_WATER(BlockID.STATIONARY_WATER, passthru(), /*physics(),*/ opaque(2)),
+	STATIONARY_WATER(BlockID.STATIONARY_WATER, passthru(), /*physics(),*/opaque(2)),
 	LAVA(BlockID.LAVA, passthru(), physics(new FluidPhysics(BlockID.LAVA, BlockID.STATIONARY_LAVA, 3)), emitsLight(15)),
-	STATIONARY_LAVA(BlockID.STATIONARY_LAVA, passthru(), /*physics(),*/ emitsLight(15)),
+	STATIONARY_LAVA(BlockID.STATIONARY_LAVA, passthru(), /*physics(),*/emitsLight(15)),
 	SAND(BlockID.SAND /* , physics(new FallingBlockPhysics(BlockID.SAND))*/),
 	GRAVEL(BlockID.GRAVEL/*, physics(new FallingBlockPhysics(BlockID.GRAVEL))*/),
 	GOLD_ORE(BlockID.GOLD_ORE),
@@ -35,12 +42,12 @@ public enum BlockProperties {
 	LEAVES(BlockID.LEAVES/*, physics()*/), // TODO: 'Ticking' block physics
 	SPONGE(BlockID.SPONGE),
 	GLASS(BlockID.GLASS, drops()),
-	LAPIS_ORE(BlockID.LAPIS_ORE, drops(ItemID.INK_SACK, 11)),	// todo: data drops
+	LAPIS_ORE(BlockID.LAPIS_ORE, drops(ItemID.INK_SACK, 11)), // todo: data drops
 	LAPIS_BLOCK(BlockID.LAPIS_BLOCK),
 	DISPENSER(BlockID.DISPENSER, interact(), place(), redstone()),
 	SANDSTONE(BlockID.SANDSTONE),
 	NOTE_BLOCK(BlockID.NOTE_BLOCK, interact(), redstone(), entity(SpoutNoteBlock.class)),
-	BED_BLOCK(BlockID.BED_BLOCK, interact()),				  // todo: height
+	BED_BLOCK(BlockID.BED_BLOCK, interact()), // todo: height
 	POWERED_RAIL(BlockID.POWERED_RAIL, place(), redstone()),
 	DETECTOR_RAIL(BlockID.DETECTOR_RAIL, place(), redstone()),
 	PISTON_STICKY_BASE(BlockID.PISTON_STICKY_BASE, place(), redstone()),
@@ -180,7 +187,7 @@ public enum BlockProperties {
 
 	private BlockProperties(int id, Property... props) {
 		this.id = id;
-		drops = new ItemStack[] { new ItemStack(id, 1) };
+		drops = new ItemStack[] {new ItemStack(id, 1)};
 
 		for (Property p : props) {
 			p.apply(this);
@@ -244,69 +251,102 @@ public enum BlockProperties {
 	}
 
 	private static Property drops(final ItemStack... mats) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.drops = mats;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.drops = mats;
+			}
+		};
 	}
 
 	private static Property drops(final int mat) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.drops = new ItemStack[] { new ItemStack(mat, 1) };
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.drops = new ItemStack[] {new ItemStack(mat, 1)};
+			}
+		};
 	}
 
 	private static Property drops(final int mat, final int damage) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.drops = new ItemStack[] { new ItemStack(mat, 1, (short)damage) };
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.drops = new ItemStack[] {new ItemStack(mat, 1, (short) damage)};
+			}
+		};
 	}
 
 	private static Property passthru() {
-		return new Property() { public void apply(BlockProperties p) {
-			p.solid = false;
-			p.blocksLight = 0;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.solid = false;
+				p.blocksLight = 0;
+			}
+		};
 	}
 
 	private static Property opaque(final int level) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.blocksLight = level;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.blocksLight = level;
+			}
+		};
 	}
 
 	private static Property emitsLight(final int level) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.emitsLight = level;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.emitsLight = level;
+			}
+		};
 	}
 
 	private static Property physics(final BlockPhysicsHandler physics) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.physics = physics;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.physics = physics;
+			}
+		};
 	}
 
 	private static Property redstone() {
-		return new Property() { public void apply(BlockProperties p) {
-			p.redstone = true;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.redstone = true;
+			}
+		};
 	}
 
 	private static Property interact() {
-		return new Property() { public void apply(BlockProperties p) {
-			p.interact = true;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.interact = true;
+			}
+		};
 	}
 
 	private static Property place() {
-		return new Property() { public void apply(BlockProperties p) {
-			p.place = true;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.place = true;
+			}
+		};
 	}
 
 	private static Property entity(final Class<? extends SpoutBlockState> clazz) {
-		return new Property() { public void apply(BlockProperties p) {
-			p.entity = clazz;
-		}};
+		return new Property() {
+			@Override
+			public void apply(BlockProperties p) {
+				p.entity = clazz;
+			}
+		};
 	}
 }

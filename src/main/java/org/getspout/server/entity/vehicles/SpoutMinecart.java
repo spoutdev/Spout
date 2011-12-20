@@ -38,34 +38,42 @@ public class SpoutMinecart extends SpoutVehicle implements Minecart {
 		super(server, world, id);
 	}
 
+	@Override
 	public void setDamage(int damage) {
 		this.damage = damage;
 	}
 
+	@Override
 	public int getDamage() {
 		return damage;
 	}
 
+	@Override
 	public boolean isSlowWhenEmpty() {
 		return slowWhenEmpty;
 	}
 
+	@Override
 	public void setSlowWhenEmpty(boolean slow) {
 		slowWhenEmpty = slow;
 	}
 
+	@Override
 	public Vector getFlyingVelocityMod() {
 		throw new UnsupportedOperationException("Not supported yet!");
 	}
 
+	@Override
 	public void setFlyingVelocityMod(Vector flying) {
 		throw new UnsupportedOperationException("Not supported yet!");
 	}
 
+	@Override
 	public Vector getDerailedVelocityMod() {
 		throw new UnsupportedOperationException("Not supported yet!");
 	}
 
+	@Override
 	public void setDerailedVelocityMod(Vector derailed) {
 		throw new UnsupportedOperationException("Not supported yet!");
 	}

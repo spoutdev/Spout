@@ -38,8 +38,6 @@ public final class RelativeEntityPositionRotationMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "RelativeEntityPositionRotationMessage{id=" + id + ",deltaX=" +
-				deltaX + ",deltaY=" + deltaY + ",deltaZ=" + deltaZ + "rotation=" +
-				rotation + ",pitch=" + pitch + "}";
+		return "RelativeEntityPositionRotationMessage{id=" + id + ",deltaX=" + deltaX + ",deltaY=" + deltaY + ",deltaZ=" + deltaZ + "rotation=" + rotation + ",pitch=" + pitch + "}";
 	}
 }

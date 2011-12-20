@@ -10,18 +10,22 @@ public class SpoutCreatureSpawner extends SpoutBlockState implements CreatureSpa
 		super(block);
 	}
 
+	@Override
 	public CreatureType getCreatureType() {
 		return wrapper.type;
 	}
 
+	@Override
 	public void setCreatureType(CreatureType creatureType) {
 		wrapper.type = creatureType;
 	}
 
+	@Override
 	public String getCreatureTypeId() {
 		return wrapper.type.getName();
 	}
 
+	@Override
 	public void setCreatureTypeId(String s) {
 		CreatureType type = CreatureType.fromName(s);
 		if (type != null) {
@@ -29,12 +33,16 @@ public class SpoutCreatureSpawner extends SpoutBlockState implements CreatureSpa
 		}
 	}
 
+	@Override
 	public int getDelay() {
 		return wrapper.delay;
 	}
 
+	@Override
 	public void setDelay(int i) {
-		if (i < 0) i = 0;
+		if (i < 0) {
+			i = 0;
+		}
 		wrapper.delay = i;
 	}
 
@@ -54,6 +62,7 @@ public class SpoutCreatureSpawner extends SpoutBlockState implements CreatureSpa
 	private static class MobSpawnerWrapper {
 		public int delay;
 		public CreatureType type;
+
 		public MobSpawnerWrapper(CreatureType type, int delay) {
 			this.type = type;
 			this.delay = delay;

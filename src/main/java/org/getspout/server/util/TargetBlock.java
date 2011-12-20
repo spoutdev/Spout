@@ -32,12 +32,12 @@ import org.getspout.server.block.BlockID;
 import org.getspout.server.entity.SpoutLivingEntity;
 
 /**
- * This class uses an inefficient method to figure out what block a player
- * is looking towards.
+ * This class uses an inefficient method to figure out what block a player is
+ * looking towards.
  *
  * Originally written by toi. It was ported to WorldEdit and trimmed down by
- * sk89q. Thanks to Raphfrk for optimization of toi's original class.
- * Ported to Spout by zml2008. This classs has come a long way. Treat it nicely.
+ * sk89q. Thanks to Raphfrk for optimization of toi's original class. Ported to
+ * Spout by zml2008. This classs has come a long way. Treat it nicely.
  *
  * @author toi
  */
@@ -57,8 +57,8 @@ public class TargetBlock {
 	 * @param player player to work with
 	 */
 	public TargetBlock(SpoutLivingEntity player, TIntHashSet transparent) {
-		this.world = player.getWorld();
-		this.setValues(player.getLocation(), 300, player.getEyeHeight(), 0.2, transparent);
+		world = player.getWorld();
+		setValues(player.getLocation(), 300, player.getEyeHeight(), 0.2, transparent);
 	}
 
 	/**
@@ -66,12 +66,12 @@ public class TargetBlock {
 	 *
 	 * @param player LocalPlayer to work with
 	 * @param maxDistance how far it checks for blocks
-	 * @param checkDistance how often to check for blocks, the smaller the more precise
+	 * @param checkDistance how often to check for blocks, the smaller the more
+	 *            precise
 	 */
 	public TargetBlock(SpoutLivingEntity player, int maxDistance, double checkDistance, TIntHashSet transparent) {
-		this.world = player.getWorld();
-		this.setValues(player.getLocation(),
-				maxDistance, player.getEyeHeight(), checkDistance, transparent);
+		world = player.getWorld();
+		setValues(player.getLocation(), maxDistance, player.getEyeHeight(), checkDistance, transparent);
 	}
 
 	/**
@@ -80,26 +80,24 @@ public class TargetBlock {
 	 * @param loc location of the view
 	 * @param maxDistance how far it checks for blocks
 	 * @param viewHeight where the view is positioned in y-axis
-	 * @param checkDistance how often to check for blocks, the smaller the more precise
+	 * @param checkDistance how often to check for blocks, the smaller the more
+	 *            precise
 	 */
-	private void setValues(Location loc,
-			int maxDistance, double viewHeight, double checkDistance, TIntHashSet transparent) {
+	private void setValues(Location loc, int maxDistance, double viewHeight, double checkDistance, TIntHashSet transparent) {
 		this.maxDistance = maxDistance;
 		this.checkDistance = checkDistance;
-		this.curDistance = 0;
-		int xRotation = (int)(loc.getYaw() + 90) % 360;
-		int yRotation = (int)loc.getPitch() * -1;
+		curDistance = 0;
+		int xRotation = (int) (loc.getYaw() + 90) % 360;
+		int yRotation = (int) loc.getPitch() * -1;
 
-		double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
+		double h = checkDistance * Math.cos(Math.toRadians(yRotation));
 
-		offset = new Vector((h * Math.cos(Math.toRadians(xRotation))),
-							(checkDistance * Math.sin(Math.toRadians(yRotation))),
-							(h * Math.sin(Math.toRadians(xRotation))));
+		offset = new Vector((h * Math.cos(Math.toRadians(xRotation))), (checkDistance * Math.sin(Math.toRadians(yRotation))), (h * Math.sin(Math.toRadians(xRotation))));
 
 		targetPosDouble = loc.add(0, viewHeight, 0).toVector();
 		targetPos = targetPosDouble.toBlockVector();
 		prevPos = targetPos;
-		this.transparentBlocks = transparent;
+		transparentBlocks = transparent;
 		if (transparentBlocks == null) {
 			transparentBlocks = new TIntHashSet(new int[] {0});
 		}
@@ -107,7 +105,8 @@ public class TargetBlock {
 
 	/**
 	 * Returns any block at the sight. Returns null if out of range or if no
-	 * viable target was found. Will try to return the last valid air block it finds.
+	 * viable target was found. Will try to return the last valid air block it
+	 * finds.
 	 *
 	 * @return Block
 	 */
@@ -116,7 +115,7 @@ public class TargetBlock {
 		Location lastBlock = null;
 		while (getNextBlock()) {
 			if (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR) {
-				if(searchForLastBlock) {
+				if (searchForLastBlock) {
 					lastBlock = getCurrentBlock();
 					if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxHeight() - 1) {
 						searchForLastBlock = false;
@@ -127,7 +126,7 @@ public class TargetBlock {
 			}
 		}
 		Location currentBlock = getCurrentBlock();
-		return (currentBlock != null ? currentBlock : lastBlock);
+		return currentBlock != null ? currentBlock : lastBlock;
 	}
 
 	/**
@@ -137,8 +136,9 @@ public class TargetBlock {
 	 * @return Block
 	 */
 	public Location getTargetBlock() {
-		while (getNextBlock()
-				&& (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR));
+		while (getNextBlock() && world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR) {
+			;
+		}
 		return getCurrentBlock();
 	}
 
@@ -149,8 +149,9 @@ public class TargetBlock {
 	 * @return Block
 	 */
 	public Location getSolidTargetBlock() {
-		while (getNextBlock()
-				&& transparentBlocks.contains(world.getBlockTypeIdAt(getCurrentBlock())));
+		while (getNextBlock() && transparentBlocks.contains(world.getBlockTypeIdAt(getCurrentBlock()))) {
+			;
+		}
 		return getCurrentBlock();
 	}
 
@@ -166,10 +167,7 @@ public class TargetBlock {
 
 			targetPosDouble.add(offset);
 			targetPos = targetPosDouble.toBlockVector();
-		} while (curDistance <= maxDistance
-				&& targetPos.getBlockX() == prevPos.getBlockX()
-				&& targetPos.getBlockY() == prevPos.getBlockY()
-				&& targetPos.getBlockZ() == prevPos.getBlockZ());
+		} while (curDistance <= maxDistance && targetPos.getBlockX() == prevPos.getBlockX() && targetPos.getBlockY() == prevPos.getBlockY() && targetPos.getBlockZ() == prevPos.getBlockZ());
 
 		if (curDistance > maxDistance) {
 			return false;

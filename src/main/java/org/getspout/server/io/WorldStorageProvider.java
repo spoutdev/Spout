@@ -11,7 +11,9 @@ public interface WorldStorageProvider {
 
 	public void setWorld(SpoutWorld world);
 
-	/** Get the folder holding the world data.
+	/**
+	 * Get the folder holding the world data.
+	 *
 	 * @return world folder
 	 */
 	public File getFolder();

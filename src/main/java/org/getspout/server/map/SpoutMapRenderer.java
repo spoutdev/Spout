@@ -9,11 +9,8 @@ import org.bukkit.map.MapView;
  * Spout's built-in map renderer.
  */
 public final class SpoutMapRenderer extends MapRenderer {
-	private final SpoutMapView map;
-
 	public SpoutMapRenderer(SpoutMapView map) {
 		super(false);
-		this.map = map;
 	}
 
 	@Override

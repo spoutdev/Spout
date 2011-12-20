@@ -28,9 +28,10 @@ public class SpoutLightningStrike extends SpoutWeather implements LightningStrik
 	public SpoutLightningStrike(SpoutServer server, SpoutWorld world, boolean effect) {
 		super(server, world);
 		this.effect = effect;
-		this.ticksToLive = 30;
+		ticksToLive = 30;
 	}
 
+	@Override
 	public boolean isEffect() {
 		return effect;
 	}

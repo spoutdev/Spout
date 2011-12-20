@@ -4,28 +4,33 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-import org.bukkit.entity.Entity;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
-import org.getspout.server.msg.*;
+import org.getspout.server.msg.EntityRotationMessage;
+import org.getspout.server.msg.EntityTeleportMessage;
+import org.getspout.server.msg.Message;
+import org.getspout.server.msg.RelativeEntityPositionMessage;
+import org.getspout.server.msg.RelativeEntityPositionRotationMessage;
 import org.getspout.server.util.Position;
 
 /**
  * Represents some entity in the world such as an item on the floor or a player.
+ *
  * @author Graham Edgecombe
  */
 public abstract class SpoutEntity implements Entity, Damager {
 	/**
-	 * Indicates how often, in ticks, to send position refresh packets to the client
+	 * Indicates how often, in ticks, to send position refresh packets to the
+	 * client
 	 */
 	private static final int POSITION_REFRESH_RATE = 20;
 
@@ -85,6 +90,7 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	/**
 	 * Creates an entity and adds it to the specified world.
+	 *
 	 * @param server The server.
 	 * @param world The world.
 	 */
@@ -97,33 +103,37 @@ public abstract class SpoutEntity implements Entity, Damager {
 	/**
 	 * Checks if this entity is within the {@link SpoutChunk#VISIBLE_RADIUS} of
 	 * another.
+	 *
 	 * @param other The other entity.
 	 * @return {@code true} if the entities can see each other, {@code false} if
-	 * not.
+	 *         not.
 	 */
 	public boolean isWithinDistance(SpoutEntity other) {
 		double dx = Math.abs(location.getX() - other.location.getX());
 		double dz = Math.abs(location.getZ() - other.location.getZ());
-		return other.getWorld() == getWorld() && dx <= (server.getViewDistance() * SpoutChunk.WIDTH) && dz <= (server.getViewDistance() * SpoutChunk.DEPTH);
+		return other.getWorld() == getWorld() && dx <= server.getViewDistance() * SpoutChunk.WIDTH && dz <= server.getViewDistance() * SpoutChunk.DEPTH;
 	}
 
 	/**
 	 * Checks if this entity is within the {@link SpoutChunk#VISIBLE_RADIUS} of
 	 * a location.
+	 *
 	 * @param loc The location.
 	 * @return {@code true} if the entities can see each other, {@code false} if
-	 * not.
+	 *         not.
 	 */
 	public boolean isWithinDistance(Location loc) {
 		double dx = Math.abs(location.getX() - loc.getX());
 		double dz = Math.abs(location.getZ() - loc.getZ());
-		return loc.getWorld() == getWorld() && dx <= (SpoutChunk.VISIBLE_RADIUS * SpoutChunk.WIDTH) && dz <= (SpoutChunk.VISIBLE_RADIUS * SpoutChunk.DEPTH);
+		return loc.getWorld() == getWorld() && dx <= SpoutChunk.VISIBLE_RADIUS * SpoutChunk.WIDTH && dz <= SpoutChunk.VISIBLE_RADIUS * SpoutChunk.DEPTH;
 	}
 
 	/**
 	 * Gets the world this entity is in.
+	 *
 	 * @return The world this entity is in.
 	 */
+	@Override
 	public SpoutWorld getWorld() {
 		return world;
 	}
@@ -133,6 +143,7 @@ public abstract class SpoutEntity implements Entity, Damager {
 	 *
 	 * @return Server instance running this Entity
 	 */
+	@Override
 	public SpoutServer getServer() {
 		return server;
 	}
@@ -141,6 +152,7 @@ public abstract class SpoutEntity implements Entity, Damager {
 	 * Destroys this entity by removing it from the world and marking it as not
 	 * being active.
 	 */
+	@Override
 	public void remove() {
 		active = false;
 		world.getEntityManager().deallocate(this);
@@ -148,16 +160,20 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	/**
 	 * Checks if this entity is inactive.
+	 *
 	 * @return {@code true} if so, {@code false} if not.
 	 */
+	@Override
 	public boolean isDead() {
 		return !active;
 	}
 
 	/**
 	 * Gets the id of this entity.
+	 *
 	 * @return The id.
 	 */
+	@Override
 	public int getEntityId() {
 		return id;
 	}
@@ -180,14 +196,17 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	/**
 	 * Gets this entity's position.
+	 *
 	 * @return The position of this entity.
 	 */
+	@Override
 	public Location getLocation() {
 		return location.clone();
 	}
 
 	/**
 	 * Gets the entity's previous position.
+	 *
 	 * @return The previous position of this entity.
 	 */
 	public Location getPreviousLocation() {
@@ -196,6 +215,7 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	/**
 	 * Sets this entity's location.
+	 *
 	 * @param location The new location.
 	 */
 	public void setRawLocation(Location location) {
@@ -212,21 +232,26 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		SpoutEntity other = (SpoutEntity) obj;
-		if (id != other.id)
+		if (id != other.id) {
 			return false;
+		}
 		return true;
 	}
 
 	/**
 	 * Creates a {@link Message} which can be sent to a client to spawn this
 	 * entity.
+	 *
 	 * @return A message which can spawn this entity.
 	 */
 	public abstract Message createSpawnMessage();
@@ -234,6 +259,7 @@ public abstract class SpoutEntity implements Entity, Damager {
 	/**
 	 * Creates a {@link Message} which can be sent to a client to update this
 	 * entity.
+	 *
 	 * @return A message which can update this entity.
 	 */
 	public Message createUpdateMessage() {
@@ -253,9 +279,9 @@ public abstract class SpoutEntity implements Entity, Damager {
 		int yaw = Position.getIntYaw(previousLocation);
 		int pitch = Position.getIntPitch(previousLocation);
 
-		boolean refreshPosition = (ticksLived - lastRefresh) > POSITION_REFRESH_RATE;
+		boolean refreshPosition = ticksLived - lastRefresh > POSITION_REFRESH_RATE;
 
-		if (refreshPosition || (moved && teleport)) {
+		if (refreshPosition || moved && teleport) {
 			lastRefresh = ticksLived;
 			return new EntityTeleportMessage(id, x, y, z, yaw, pitch);
 		} else if (moved && rotated) {
@@ -271,6 +297,7 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	/**
 	 * Checks if this entity has moved this cycle.
+	 *
 	 * @return {@code true} if so, {@code false} if not.
 	 */
 	public boolean hasMoved() {
@@ -279,21 +306,24 @@ public abstract class SpoutEntity implements Entity, Damager {
 
 	/**
 	 * Checks if this entity has rotated this cycle.
+	 *
 	 * @return {@code true} if so, {@code false} if not.
 	 */
 	public boolean hasRotated() {
 		return Position.hasRotated(location, previousLocation);
 	}
 
-
+	@Override
 	public void setVelocity(Vector velocity) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Vector getVelocity() {
 		return location.toVector().subtract(previousLocation.toVector());
 	}
 
+	@Override
 	public boolean teleport(Location location) {
 		if (location.getWorld() != world) {
 			world.getEntityManager().deallocate(this);
@@ -305,30 +335,37 @@ public abstract class SpoutEntity implements Entity, Damager {
 		return true;
 	}
 
+	@Override
 	public boolean teleport(Entity destination) {
 		return teleport(destination.getLocation());
 	}
 
+	@Override
 	public boolean teleport(Location location, TeleportCause cause) {
 		return teleport(location);
 	}
 
+	@Override
 	public boolean teleport(Entity destination, TeleportCause cause) {
 		return teleport(destination.getLocation());
 	}
 
+	@Override
 	public List<Entity> getNearbyEntities(double x, double y, double z) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public int getFireTicks() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public int getMaxFireTicks() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setFireTicks(int ticks) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -349,48 +386,59 @@ public abstract class SpoutEntity implements Entity, Damager {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Entity getPassenger() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean setPassenger(Entity passenger) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean isEmpty() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean eject() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public float getFallDistance() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setFallDistance(float distance) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setLastDamageCause(EntityDamageEvent event) {
 		lastDamageCause = event;
 	}
 
+	@Override
 	public EntityDamageEvent getLastDamageCause() {
 		return lastDamageCause;
 	}
 
+	@Override
 	public UUID getUniqueId() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public int getTicksLived() {
 		return ticksLived;
 	}
 
+	@Override
 	public void setTicksLived(int value) {
-		this.ticksLived = value;
+		ticksLived = value;
 	}
 
 	public boolean isOnGround() {

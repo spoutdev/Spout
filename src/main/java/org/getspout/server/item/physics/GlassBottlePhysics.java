@@ -16,9 +16,11 @@ public class GlassBottlePhysics extends DefaultItemPhysics {
 
 	@Override
 	public boolean interact(SpoutPlayer player, SpoutBlock block, SpoutItemStack heldItem, Action action, BlockFace against) {
-		if (action != Action.RIGHT_CLICK_BLOCK) return true;
+		if (action != Action.RIGHT_CLICK_BLOCK) {
+			return true;
+		}
 		if (block.getTypeId() == BlockID.CAULDRON && block.getData() > 0) {
-			block.setData((byte)(block.getData()-1));
+			block.setData((byte) (block.getData() - 1));
 			heldItem.setTypeId(ItemID.POTION);
 			return false;
 		}

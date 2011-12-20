@@ -5,7 +5,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 import org.getspout.server.SpoutServer;
-import org.getspout.server.entity.SpoutPlayer;
 
 /**
  * Represents the portion of a player's inventory which handles crafting.
@@ -29,8 +28,8 @@ public class CraftingInventory extends SpoutInventory {
 	}
 
 	/**
-	 * Stores the ItemStack at the given index.
-	 * Notifies all attached InventoryViewers of the change.
+	 * Stores the ItemStack at the given index. Notifies all attached
+	 * InventoryViewers of the change.
 	 *
 	 * @param index The index where to put the ItemStack
 	 * @param item The ItemStack to set
@@ -55,7 +54,8 @@ public class CraftingInventory extends SpoutInventory {
 	}
 
 	/**
-	 * Remove a layer of items from the inventory according to the current recipe.
+	 * Remove a layer of items from the inventory according to the current
+	 * recipe.
 	 */
 	public void craft() {
 		ItemStack[] items = new ItemStack[4];
@@ -73,30 +73,36 @@ public class CraftingInventory extends SpoutInventory {
 
 	// Slot conversion
 
-	private final static int slotConversion[] = {
-			1, 2, 3, 4, 0
-	};
+	private final static int slotConversion[] = {1, 2, 3, 4, 0};
 
 	/**
 	 * Get the network index from a slot index.
+	 *
 	 * @param itemSlot The index for use with getItem/setItem.
-	 * @return The index modified for transfer over the network, or -1 if there is no equivalent.
+	 * @return The index modified for transfer over the network, or -1 if there
+	 *         is no equivalent.
 	 */
 	@Override
 	public int getNetworkSlot(int itemSlot) {
-		if (itemSlot > slotConversion.length) return -1;
+		if (itemSlot > slotConversion.length) {
+			return -1;
+		}
 		return slotConversion[itemSlot];
 	}
 
 	/**
 	 * Get the slot index from a network index.
+	 *
 	 * @param networkSlot The index received over the network.
-	 * @return The index modified for use with getItem/setItem, or -1 if there is no equivalent.
+	 * @return The index modified for use with getItem/setItem, or -1 if there
+	 *         is no equivalent.
 	 */
 	@Override
 	public int getItemSlot(int networkSlot) {
 		for (int i = 0; i < slotConversion.length; ++i) {
-			if (slotConversion[i] == networkSlot) return i;
+			if (slotConversion[i] == networkSlot) {
+				return i;
+			}
 		}
 		return -1;
 	}

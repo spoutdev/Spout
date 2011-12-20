@@ -2,7 +2,6 @@ package org.getspout.server.entity;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.bukkit.GameMode;
@@ -74,6 +73,7 @@ public abstract class SpoutHumanEntity extends SpoutLivingEntity implements Huma
 
 	/**
 	 * Creates a human within the specified world and with the specified name.
+	 *
 	 * @param world The world.
 	 * @param name The human's name.
 	 */
@@ -94,39 +94,47 @@ public abstract class SpoutHumanEntity extends SpoutLivingEntity implements Huma
 		return new SpawnPlayerMessage(id, name, x, y, z, yaw, pitch, 0);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public SpoutPlayerInventory getInventory() {
 		return inventory;
 	}
 
+	@Override
 	public SpoutItemStack getItemInHand() {
 		return getInventory().getItemInHand();
 	}
 
+	@Override
 	public void setItemInHand(ItemStack item) {
 		getInventory().setItemInHand(item);
 	}
 
+	@Override
 	public boolean isSleeping() {
 		return sleeping;
 	}
 
+	@Override
 	public int getSleepTicks() {
 		return sleepingTicks;
 	}
 
+	@Override
 	public GameMode getGameMode() {
 		return gameMode;
 	}
 
+	@Override
 	public void setGameMode(GameMode mode) {
 		gameMode = mode;
 	}
 
-	protected void setSleepTicks (int ticks) {
+	protected void setSleepTicks(int ticks) {
 		sleepingTicks = ticks;
 	}
 
@@ -139,60 +147,75 @@ public abstract class SpoutHumanEntity extends SpoutLivingEntity implements Huma
 			sleepingTicks = 0;
 		}
 		for (ActiveEntityEffect effect : activeEffects) {
-			if (!effect.pulse()) removeEntityEffect(effect);
+			if (!effect.pulse()) {
+				removeEntityEffect(effect);
+			}
 		}
 	}
 
 	// ---- Permissions stuff
 
+	@Override
 	public boolean isPermissionSet(String name) {
 		return permissions.isPermissionSet(name);
 	}
 
+	@Override
 	public boolean isPermissionSet(Permission perm) {
 		return permissions.isPermissionSet(perm);
 	}
 
+	@Override
 	public boolean hasPermission(String name) {
 		return permissions.hasPermission(name);
 	}
 
+	@Override
 	public boolean hasPermission(Permission perm) {
 		return permissions.hasPermission(perm);
 	}
 
+	@Override
 	public PermissionAttachment addAttachment(Plugin plugin) {
 		return permissions.addAttachment(plugin);
 	}
 
+	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
 		return permissions.addAttachment(plugin, ticks);
 	}
 
+	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {
 		return permissions.addAttachment(plugin, name, value);
 	}
 
+	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) {
 		return permissions.addAttachment(plugin, name, value, ticks);
 	}
 
+	@Override
 	public void removeAttachment(PermissionAttachment attachment) {
 		permissions.removeAttachment(attachment);
 	}
 
+	@Override
 	public void recalculatePermissions() {
 		permissions.recalculatePermissions();
 	}
 
+	@Override
 	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
 		return permissions.getEffectivePermissions();
 	}
 
+	@Override
 	public boolean isOp() {
 		return isOp;
 	}
 
+	@Override
 	public void setOp(boolean value) {
 		isOp = value;
 		recalculatePermissions();

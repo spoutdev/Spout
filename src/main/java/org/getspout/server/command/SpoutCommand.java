@@ -1,6 +1,8 @@
 package org.getspout.server.command;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -26,7 +28,9 @@ public abstract class SpoutCommand extends Command {
 
 	@Override
 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-		if (!testPermission(sender)) return false;
+		if (!testPermission(sender)) {
+			return false;
+		}
 		run(sender, commandLabel, args);
 		return true;
 	}

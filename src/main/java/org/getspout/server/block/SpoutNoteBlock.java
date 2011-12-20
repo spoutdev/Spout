@@ -22,26 +22,32 @@ public class SpoutNoteBlock extends SpoutBlockState implements NoteBlock {
 		}
 	}
 
+	@Override
 	public Note getNote() {
 		return wrapper.note;
 	}
 
+	@Override
 	public byte getRawNote() {
 		return wrapper.note.getId();
 	}
 
+	@Override
 	public void setNote(Note note) {
-		this.wrapper.note = note;
+		wrapper.note = note;
 	}
 
+	@Override
 	public void setRawNote(byte note) {
-		this.wrapper.note = new Note(note);
+		wrapper.note = new Note(note);
 	}
 
+	@Override
 	public boolean play() {
 		return play(instrumentOf(getBlock().getRelative(BlockFace.DOWN).getTypeId()), wrapper.note);
 	}
 
+	@Override
 	public boolean play(byte instrument, byte note) {
 		if (getBlock().getTypeId() != BlockID.NOTE_BLOCK) {
 			return false;
@@ -50,13 +56,15 @@ public class SpoutNoteBlock extends SpoutBlockState implements NoteBlock {
 		Location location = getBlock().getLocation();
 
 		for (SpoutPlayer player : getWorld().getRawPlayers()) {
-			if (player.canSee(new SpoutChunk.Key(getX() >> 4, getZ() >> 4)))
+			if (player.canSee(new SpoutChunk.Key(getX() >> 4, getZ() >> 4))) {
 				player.playNote(location, instrument, note);
+			}
 		}
 
 		return true;
 	}
 
+	@Override
 	public boolean play(Instrument instrument, Note note) {
 		return play(instrument.getType(), note.getId());
 	}
@@ -91,6 +99,7 @@ public class SpoutNoteBlock extends SpoutBlockState implements NoteBlock {
 
 	private class NoteWrapper {
 		public Note note;
+
 		public NoteWrapper(Note note) {
 			this.note = note;
 		}

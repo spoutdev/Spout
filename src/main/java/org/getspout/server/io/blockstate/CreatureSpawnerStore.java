@@ -13,7 +13,6 @@ public class CreatureSpawnerStore extends BlockStateStore<SpoutCreatureSpawner> 
 		super(SpoutCreatureSpawner.class, "MobSpawner");
 	}
 
-
 	@Override
 	public void load(SpoutCreatureSpawner spawner, CompoundTag compound) {
 		super.load(spawner, compound);

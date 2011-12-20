@@ -1,5 +1,8 @@
 package org.getspout.server.command;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -8,9 +11,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import org.getspout.server.SpoutServer;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A built-in command to change the time on the server
@@ -22,7 +22,9 @@ public class TimeCommand extends SpoutCommand {
 
 	@Override
 	public boolean run(CommandSender sender, String commandLabel, String[] args) {
-		if (!checkArgs(sender, args, 2, 3)) return false;
+		if (!checkArgs(sender, args, 2, 3)) {
+			return false;
+		}
 		World world;
 		if (args.length == 3) {
 			world = server.getWorld(args[2]);
@@ -44,10 +46,14 @@ public class TimeCommand extends SpoutCommand {
 			return false;
 		}
 		if (action.equals("add")) {
-			if (!checkPermission(sender, "add")) return false;
+			if (!checkPermission(sender, "add")) {
+				return false;
+			}
 			world.setTime((world.getTime() + amount) % 24000);
 		} else if (action.equals("set")) {
-			if (!checkPermission(sender, "set")) return false;
+			if (!checkPermission(sender, "set")) {
+				return false;
+			}
 			world.setTime(amount);
 		} else {
 			sender.sendMessage(ChatColor.GRAY + action + " is not a valid action for the time command.");
