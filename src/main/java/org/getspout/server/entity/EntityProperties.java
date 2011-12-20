@@ -71,21 +71,25 @@ import org.getspout.server.entity.water.SpoutSquid;
 public enum EntityProperties {
 	// -- Animals
 	CHICKEN(SpoutChicken.class, new EntityFactory<SpoutChicken>() {
+		@Override
 		public SpoutChicken createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutChicken(server, world);
 		}
 	}, bukkit(CreatureType.CHICKEN, Chicken.class)),
 	COW(SpoutCow.class, new EntityFactory<SpoutCow>() {
+		@Override
 		public SpoutCow createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutCow(server, world);
 		}
 	}, bukkit(CreatureType.COW, Cow.class)),
 	PIG(SpoutPig.class, new EntityFactory<SpoutPig>() {
+		@Override
 		public SpoutPig createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutPig(server, world);
 		}
 	}, bukkit(CreatureType.PIG, Pig.class)),
 	SHEEP(SpoutSheep.class, new EntityFactory<SpoutSheep>() {
+		@Override
 		public SpoutSheep createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSheep(server, world);
 		}
@@ -94,46 +98,55 @@ public enum EntityProperties {
 	// -- Monsters
 
 	CAVE_SPIDER(SpoutCaveSpider.class, new EntityFactory<SpoutCaveSpider>() {
+		@Override
 		public SpoutCaveSpider createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutCaveSpider(server, world);
 		}
 	}, bukkit(CreatureType.CAVE_SPIDER, CaveSpider.class)),
 	CREEPER(SpoutCreeper.class, new EntityFactory<SpoutCreeper>() {
+		@Override
 		public SpoutCreeper createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutCreeper(server, world);
 		}
 	}, bukkit(CreatureType.CREEPER, Creeper.class)),
 	GHAST(SpoutGhast.class, new EntityFactory<SpoutGhast>() {
+		@Override
 		public SpoutGhast createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutGhast(server, world);
 		}
 	}, bukkit(CreatureType.GHAST, Ghast.class)),
 	GIANT(SpoutGiant.class, new EntityFactory<SpoutGiant>() {
+		@Override
 		public SpoutGiant createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutGiant(server, world);
 		}
 	}, bukkit(CreatureType.GIANT, Giant.class)),
 	SILVERFISH(SpoutSilverfish.class, new EntityFactory<SpoutSilverfish>() {
+		@Override
 		public SpoutSilverfish createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSilverfish(server, world);
 		}
 	}, bukkit(CreatureType.SILVERFISH, Silverfish.class)),
 	SKELETON(SpoutSkeleton.class, new EntityFactory<SpoutSkeleton>() {
+		@Override
 		public SpoutSkeleton createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSkeleton(server, world);
 		}
 	}, bukkit(CreatureType.SKELETON, Skeleton.class)),
 	SLIME(SpoutSlime.class, new EntityFactory<SpoutSlime>() {
+		@Override
 		public SpoutSlime createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSlime(server, world);
 		}
 	}, bukkit(CreatureType.SLIME, Slime.class)),
 	SPIDER(SpoutSpider.class, new EntityFactory<SpoutSpider>() {
+		@Override
 		public SpoutSpider createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSpider(server, world);
 		}
 	}, bukkit(CreatureType.SPIDER, Spider.class)),
 	ZOMBIE(SpoutZombie.class, new EntityFactory<SpoutZombie>() {
+		@Override
 		public SpoutZombie createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutZombie(server, world);
 		}
@@ -141,17 +154,20 @@ public enum EntityProperties {
 
 	// -- Neutrals
 	ENDERMAN(SpoutEnderman.class, new EntityFactory<SpoutEnderman>() {
+		@Override
 		public SpoutEnderman createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutEnderman(server, world);
 		}
 	}, bukkit(CreatureType.ENDERMAN, Enderman.class)),
 
 	PIG_ZOMBIE(SpoutPigZombie.class, new EntityFactory<SpoutPigZombie>() {
+		@Override
 		public SpoutPigZombie createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutPigZombie(server, world);
 		}
 	}, bukkit(CreatureType.PIG_ZOMBIE, PigZombie.class)),
 	WOLF(SpoutWolf.class, new EntityFactory<SpoutWolf>() {
+		@Override
 		public SpoutWolf createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutWolf(server, world);
 		}
@@ -160,6 +176,7 @@ public enum EntityProperties {
 	// -- Water mobs
 
 	SQUID(SpoutSquid.class, new EntityFactory<SpoutSquid>() {
+		@Override
 		public SpoutSquid createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSquid(server, world);
 		}
@@ -168,21 +185,25 @@ public enum EntityProperties {
 	// -- Projectiles
 
 	ARROW(SpoutArrow.class, new EntityFactory<SpoutArrow>() {
+		@Override
 		public SpoutArrow createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutArrow(server, world);
 		}
 	}, bukkit(null, Arrow.class)),
 	EGG(SpoutEgg.class, new EntityFactory<SpoutEgg>() {
+		@Override
 		public SpoutEgg createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutEgg(server, world);
 		}
 	}, bukkit(null, Egg.class)),
 	FIREBALL(SpoutFireball.class, new EntityFactory<SpoutFireball>() {
+		@Override
 		public SpoutFireball createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutFireball(server, world, new Vector(0, 0, 0));
 		}
 	}, bukkit(null, Fireball.class)),
 	SNOWBALL(SpoutSnowball.class, new EntityFactory<SpoutSnowball>() {
+		@Override
 		public SpoutSnowball createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutSnowball(server, world);
 		}
@@ -191,21 +212,25 @@ public enum EntityProperties {
 	// -- Vehicles
 
 	BOAT(SpoutBoat.class, new EntityFactory<SpoutBoat>() {
+		@Override
 		public SpoutBoat createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutBoat(server, world);
 		}
 	}, bukkit(null, Boat.class)),
 	MINECART(SpoutMinecart.class, new EntityFactory<SpoutMinecart>() {
+		@Override
 		public SpoutMinecart createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutMinecart(server, world);
 		}
 	}, bukkit(null, Minecart.class)),
 	POWERED_MINECART(SpoutPoweredMinecart.class, new EntityFactory<SpoutPoweredMinecart>() {
+		@Override
 		public SpoutPoweredMinecart createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutPoweredMinecart(server, world);
 		}
 	}, bukkit(null, PoweredMinecart.class)),
 	STORAGE_MINECART(SpoutStorageMinecart.class, new EntityFactory<SpoutStorageMinecart>() {
+		@Override
 		public SpoutStorageMinecart createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutStorageMinecart(server, world);
 		}
@@ -214,34 +239,36 @@ public enum EntityProperties {
 	// -- Objects
 
 	FALLING_BLOCK(SpoutFallingBlock.class, new EntityFactory<SpoutFallingBlock>() {
+		@Override
 		public SpoutFallingBlock createEntity(SpoutServer server, SpoutWorld world) {
 			return null;
 		}
 	}, bukkit(null, FallingSand.class)),
 	ITEM(SpoutItem.class, new EntityFactory<SpoutItem>() {
+		@Override
 		public SpoutItem createEntity(SpoutServer server, SpoutWorld world) {
 			return null;
 		}
 	}, bukkit(null, Item.class)),
 	PRIMED_TNT(SpoutPrimedTNT.class, new EntityFactory<SpoutPrimedTNT>() {
+		@Override
 		public SpoutPrimedTNT createEntity(SpoutServer server, SpoutWorld world) {
 			return new SpoutPrimedTNT(server, world);
 		}
 	});
 
-
 	private static final Map<CreatureType, EntityProperties> creatureTypeLookup = new EnumMap<CreatureType, EntityProperties>(CreatureType.class);
 	private static final Map<Class<? extends Entity>, EntityProperties> bukkitClassLookup = new HashMap<Class<? extends Entity>, EntityProperties>();
-	private static final Map<Class <? extends SpoutEntity>, EntityProperties> spoutClassLookup = new HashMap<Class<? extends SpoutEntity>, EntityProperties>();
+	private static final Map<Class<? extends SpoutEntity>, EntityProperties> spoutClassLookup = new HashMap<Class<? extends SpoutEntity>, EntityProperties>();
 
 	static {
 		for (EntityProperties prop : EntityProperties.values()) {
 			if (prop.creatureType != null && !creatureTypeLookup.containsKey(prop.creatureType)) {
-					creatureTypeLookup.put(prop.creatureType, prop);
-				}
-				if (prop.bukkitClass != null && !bukkitClassLookup.containsKey(prop.bukkitClass)) {
-					bukkitClassLookup.put(prop.bukkitClass, prop);
-				}
+				creatureTypeLookup.put(prop.creatureType, prop);
+			}
+			if (prop.bukkitClass != null && !bukkitClassLookup.containsKey(prop.bukkitClass)) {
+				bukkitClassLookup.put(prop.bukkitClass, prop);
+			}
 			spoutClassLookup.put(prop.entityClass, prop);
 		}
 	}
@@ -264,12 +291,12 @@ public enum EntityProperties {
 	private Class<? extends Entity> bukkitClass;
 	private EntityFactory factory;
 
-
 	private <T extends SpoutEntity> EntityProperties(Class<T> entity, EntityFactory<T> factory, Property... props) {
 		entityClass = entity;
 		this.factory = factory;
-		for (Property p : props)
+		for (Property p : props) {
 			p.apply(this);
+		}
 	}
 
 	public CreatureType getCreatureType() {
@@ -300,17 +327,10 @@ public enum EntityProperties {
 
 	private static Property bukkit(@Nullable final CreatureType creature, final Class<? extends Entity> bukkitEntity) {
 		return new Property() {
+			@Override
 			public void apply(EntityProperties s) {
 				s.creatureType = creature;
 				s.bukkitClass = bukkitEntity;
-			}
-		};
-	}
-
-	private static Property maxHealth(final int health) {
-		return new Property() {
-			public void apply(EntityProperties set) {
-				set.maxHealth = health;
 			}
 		};
 	}

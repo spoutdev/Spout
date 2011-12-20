@@ -6,11 +6,11 @@ import org.getspout.server.util.thread.ManagementTask;
 public class StartTickTask implements ManagementTask {
 
 	private long t;
-	
+
 	public StartTickTask() {
 		t = 0;
 	}
-	
+
 	public StartTickTask(long ticks) {
 		t = ticks;
 	}
@@ -20,6 +20,7 @@ public class StartTickTask implements ManagementTask {
 		return this;
 	}
 
+	@Override
 	public void run(AsyncExecutor executor) throws InterruptedException {
 		executor.startTickRun(t);
 	}

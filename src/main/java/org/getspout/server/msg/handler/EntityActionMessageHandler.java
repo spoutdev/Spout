@@ -11,15 +11,15 @@ public final class EntityActionMessageHandler extends MessageHandler<EntityActio
 	@Override
 	public void handle(Session session, SpoutPlayer player, EntityActionMessage message) {
 		switch (message.getAction()) {
-		case EntityActionMessage.ACTION_SNEAKING:
-			player.setSneaking(true);
-			break;
-		case EntityActionMessage.ACTION_STOP_SNEAKING:
-			player.setSneaking(false);
-			break;
-		default:
-			// TODO: bed support
-			return;
+			case EntityActionMessage.ACTION_SNEAKING:
+				player.setSneaking(true);
+				break;
+			case EntityActionMessage.ACTION_STOP_SNEAKING:
+				player.setSneaking(false);
+				break;
+			default:
+				// TODO: bed support
+				return;
 		}
 	}
 }

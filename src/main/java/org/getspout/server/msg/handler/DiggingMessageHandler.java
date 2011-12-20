@@ -2,14 +2,12 @@ package org.getspout.server.msg.handler;
 
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutWorld;
@@ -19,7 +17,6 @@ import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.inventory.SpoutItemStack;
 import org.getspout.server.item.ItemProperties;
-import org.getspout.server.msg.BlockPlacementMessage;
 import org.getspout.server.msg.DiggingMessage;
 import org.getspout.server.net.Session;
 
@@ -29,8 +26,9 @@ import org.getspout.server.net.Session;
 public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> {
 	@Override
 	public void handle(Session session, SpoutPlayer player, DiggingMessage message) {
-		if (player == null)
+		if (player == null) {
 			return;
+		}
 
 		boolean blockBroken = false;
 
@@ -50,18 +48,24 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
 			}
 			BlockFace face = MessageHandlerUtils.messageToBlockFace(message.getFace());
 			PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, act, block, face);
-			if (interactEvent.isCancelled()) return;
+			if (interactEvent.isCancelled()) {
+				return;
+			}
 			if (interactEvent.useItemInHand() != Event.Result.DENY) {
 				SpoutItemStack heldItem = player.getItemInHand();
 				if (heldItem != null && heldItem.getTypeId() > 255) {
 					ItemProperties props = ItemProperties.get(heldItem.getTypeId());
 					if (props != null) {
-						if (!props.getPhysics().interact(player, block, heldItem, Action.LEFT_CLICK_BLOCK, face)) return;
+						if (!props.getPhysics().interact(player, block, heldItem, Action.LEFT_CLICK_BLOCK, face)) {
+							return;
+						}
 					}
 				}
 			}
 			if (interactEvent.useInteractedBlock() != Event.Result.DENY) {
-				if (!BlockProperties.get(block.getTypeId()).getPhysics().interact(player, block, false, face)) return;
+				if (!BlockProperties.get(block.getTypeId()).getPhysics().interact(player, block, false, face)) {
+					return;
+				}
 			}
 			BlockDamageEvent event = EventFactory.onBlockDamage(player, block);
 			if (!event.isCancelled()) {
@@ -76,7 +80,7 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
 
 		if (blockBroken) {
 			if (!block.isEmpty() && !block.isLiquid()) {
-				if ((!player.getInventory().contains(block.getTypeId()) || player.getGameMode() != GameMode.CREATIVE)) {
+				if (!player.getInventory().contains(block.getTypeId()) || player.getGameMode() != GameMode.CREATIVE) {
 					player.getInventory().addItem(BlockProperties.get(block.getTypeId()).getDrops(block.getData()));
 				}
 			}

@@ -10,11 +10,12 @@ public class SlimeStore extends MonsterStore<SpoutSlime> {
 		super(SpoutSlime.class, "Slime");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public SlimeStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutSlime load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutSlime entity = new SpoutSlime(server, world);

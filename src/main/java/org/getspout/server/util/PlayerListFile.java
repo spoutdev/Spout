@@ -29,6 +29,7 @@ public final class PlayerListFile {
 
 	/**
 	 * Initialize the player list from the given file.
+	 *
 	 * @param path The file to use for this list.
 	 */
 	public PlayerListFile(String path) {
@@ -37,6 +38,7 @@ public final class PlayerListFile {
 
 	/**
 	 * Initialize the player list from the given file.
+	 *
 	 * @param file The file to use for this list.
 	 */
 	public PlayerListFile(File file) {
@@ -69,6 +71,7 @@ public final class PlayerListFile {
 				return "playerlistfile-load";
 			}
 
+			@Override
 			public void run() {
 				synchronized (list) {
 					list.clear();
@@ -77,8 +80,9 @@ public final class PlayerListFile {
 						while (input.hasNextLine()) {
 							String line = input.nextLine().trim().toLowerCase();
 							if (line.length() > 0) {
-								if (!list.contains(line))
+								if (!list.contains(line)) {
 									list.add(line);
+								}
 							}
 						}
 						Collections.sort(list);
@@ -116,6 +120,7 @@ public final class PlayerListFile {
 				return "playerlistfile-save";
 			}
 
+			@Override
 			public void run() {
 				try {
 					PrintWriter out = new PrintWriter(new FileWriter(file));
@@ -135,7 +140,9 @@ public final class PlayerListFile {
 	 * Add a player to the list.
 	 */
 	public void add(String player) {
-		if (!contains(player)) list.add(player.trim().toLowerCase());
+		if (!contains(player)) {
+			list.add(player.trim().toLowerCase());
+		}
 		Collections.sort(list);
 		save();
 	}
@@ -153,8 +160,9 @@ public final class PlayerListFile {
 	 */
 	public boolean contains(String player) {
 		for (String str : list) {
-			if (str.equalsIgnoreCase(player.trim()))
+			if (str.equalsIgnoreCase(player.trim())) {
 				return true;
+			}
 		}
 		return false;
 	}

@@ -1,17 +1,13 @@
 package org.getspout.server.msg.handler;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.bukkit.GameMode;
-import org.bukkit.inventory.ItemStack;
 
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.inventory.CraftingInventory;
 import org.getspout.server.inventory.SpoutInventory;
 import org.getspout.server.inventory.SpoutItemStack;
-import org.getspout.server.inventory.SpoutPlayerInventory;
-import org.getspout.server.msg.CloseWindowMessage;
 import org.getspout.server.msg.TransactionMessage;
 import org.getspout.server.msg.WindowClickMessage;
 import org.getspout.server.net.Session;
@@ -20,8 +16,9 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 
 	@Override
 	public void handle(Session session, SpoutPlayer player, WindowClickMessage message) {
-		if (player == null)
+		if (player == null) {
 			return;
+		}
 
 		SpoutInventory inv = player.getInventory();
 		int slot = inv.getItemSlot(message.getSlot());
@@ -37,7 +34,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 		}
 		if (slot < 0) {
 			response(session, message, false);
-			player.getServer().getLogger().log(Level.WARNING, "Got invalid inventory slot {0} from {1}", new Object[]{message.getSlot(), player.getName()});
+			player.getServer().getLogger().log(Level.WARNING, "Got invalid inventory slot {0} from {1}", new Object[] {message.getSlot(), player.getName()});
 			return;
 		}
 
@@ -46,7 +43,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 		if (player.getGameMode() == GameMode.CREATIVE && message.getId() == inv.getId()) {
 			response(session, message, false);
 			player.onSlotSet(inv, slot, currentItem);
-			player.getServer().getLogger().log(Level.WARNING, "{0} tried to do an invalid inventory action in Creative mode!", new Object[]{player.getName()});
+			player.getServer().getLogger().log(Level.WARNING, "{0} tried to do an invalid inventory action in Creative mode!", new Object[] {player.getName()});
 			return;
 		}
 		if (currentItem == null) {
@@ -55,9 +52,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 				response(session, message, false);
 				return;
 			}
-		} else if (message.getItem() != currentItem.getTypeId() ||
-				message.getCount() != currentItem.getAmount() ||
-				message.getDamage() != currentItem.getDurability()) {
+		} else if (message.getItem() != currentItem.getTypeId() || message.getCount() != currentItem.getAmount() || message.getDamage() != currentItem.getDurability()) {
 			player.onSlotSet(inv, slot, currentItem);
 			response(session, message, false);
 			return;

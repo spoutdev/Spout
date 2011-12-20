@@ -46,8 +46,7 @@ public class LakePopulator extends BlockPopulator {
 		if (random.nextInt(96) < ry && world.getEnvironment() != Environment.NETHER) {
 			liquidMaterial = BlockID.WATER;
 			solidMaterial = BlockID.WATER;
-		} else if (world.getBlockAt(rx, ry, rz).getBiome() == Biome.FOREST
-				|| world.getBlockAt(rx, ry, rz).getBiome() == Biome.SEASONAL_FOREST) {
+		} else if (world.getBlockAt(rx, ry, rz).getBiome() == Biome.FOREST || world.getBlockAt(rx, ry, rz).getBiome() == Biome.SEASONAL_FOREST) {
 			return;
 		}
 

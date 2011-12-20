@@ -26,10 +26,14 @@ public class SpoutSkeleton extends SpoutMonster implements Skeleton {
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 
-		int count = this.random.nextInt(3);
-		if (count > 0) loot.add(new ItemStack(ItemID.ARROW, count));
-		count = this.random.nextInt(3);
-		if (count > 0) loot.add(new ItemStack(ItemID.BONE, count));
+		int count = random.nextInt(3);
+		if (count > 0) {
+			loot.add(new ItemStack(ItemID.ARROW, count));
+		}
+		count = random.nextInt(3);
+		if (count > 0) {
+			loot.add(new ItemStack(ItemID.BONE, count));
+		}
 		return loot;
 	}
 }

@@ -1,6 +1,7 @@
 package org.getspout.server.block;
 
 import org.bukkit.block.ContainerBlock;
+
 import org.getspout.server.inventory.SpoutInventory;
 
 public abstract class SpoutContainerBlock extends SpoutBlockState implements ContainerBlock {

@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * The {@code TAG_List} tag.
+ *
  * @author Graham Edgecombe
  */
 public final class ListTag<T extends Tag> extends Tag {
@@ -20,6 +21,7 @@ public final class ListTag<T extends Tag> extends Tag {
 
 	/**
 	 * Creates the tag.
+	 *
 	 * @param name The name.
 	 * @param type The type of item in the list.
 	 * @param value The value.
@@ -32,6 +34,7 @@ public final class ListTag<T extends Tag> extends Tag {
 
 	/**
 	 * Gets the type of item in this list.
+	 *
 	 * @return The type of item in this list.
 	 */
 	public Class<T> getType() {
@@ -48,7 +51,7 @@ public final class ListTag<T extends Tag> extends Tag {
 		String name = getName();
 		String append = "";
 		if (name != null && !name.equals("")) {
-			append = "(\"" + this.getName() + "\")";
+			append = "(\"" + getName() + "\")";
 		}
 
 		StringBuilder bldr = new StringBuilder();

@@ -10,11 +10,12 @@ public class CreeperStore extends MonsterStore<SpoutCreeper> {
 		super(SpoutCreeper.class, "Creeper");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public CreeperStore(Class clazz, String id) {
 		super(clazz, id);
 	}
 
+	@Override
 	public SpoutCreeper load(SpoutServer server, SpoutWorld world, CompoundTag compound) {
 
 		SpoutCreeper entity = new SpoutCreeper(server, world);

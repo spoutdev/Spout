@@ -32,20 +32,24 @@ public class SpoutSlime extends SpoutMonster implements Slime {
 		super(server, world, id);
 	}
 
+	@Override
 	public int getSize() {
 		return size;
 	}
 
+	@Override
 	public void setSize(int sz) {
 		size = sz;
-		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte)size));
+		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte) size));
 	}
 
 	@Override
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
-		if (amount > 0 && getSize() == 1) loot.add(new ItemStack(ItemID.SLIME_BALL, amount));
+		if (amount > 0 && getSize() == 1) {
+			loot.add(new ItemStack(ItemID.SLIME_BALL, amount));
+		}
 		return loot;
 	}
 }

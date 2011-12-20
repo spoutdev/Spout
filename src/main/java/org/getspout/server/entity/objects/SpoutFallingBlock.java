@@ -21,8 +21,9 @@ public class SpoutFallingBlock extends SpoutEntity implements FallingSand {
 	 * Creates an entity and adds it to the specified world.
 	 *
 	 * @param server The server.
-	 * @param world  The world.
-	 * @param blockId The id of the block used for this entity. Can be sand or gravel.
+	 * @param world The world.
+	 * @param blockId The id of the block used for this entity. Can be sand or
+	 *            gravel.
 	 */
 	public SpoutFallingBlock(SpoutServer server, SpoutWorld world, int blockId) {
 		super(server, world);

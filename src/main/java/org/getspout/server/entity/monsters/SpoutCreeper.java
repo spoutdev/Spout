@@ -34,21 +34,25 @@ public class SpoutCreeper extends SpoutMonster implements Creeper {
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
-		if (amount > 0) loot.add(new ItemStack(ItemID.SULPHUR, amount));
+		if (amount > 0) {
+			loot.add(new ItemStack(ItemID.SULPHUR, amount));
+		}
 		if (damager != null && damager instanceof Arrow) {
-			if (((Arrow)damager).getShooter() instanceof Skeleton) {
+			if (((Arrow) damager).getShooter() instanceof Skeleton) {
 				loot.add(new ItemStack(ItemID.DISC_13 + random.nextInt(2), 1));
 			}
 		}
 		return loot;
 	}
 
+	@Override
 	public boolean isPowered() {
 		return powered;
 	}
 
+	@Override
 	public void setPowered(boolean value) {
-		this.powered = value;
-		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte)(powered ? 1 : 0)));
+		powered = value;
+		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte) (powered ? 1 : 0)));
 	}
 }

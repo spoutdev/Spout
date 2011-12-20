@@ -58,9 +58,17 @@ package org.getspout.server.io.mcregion.region;
 
  */
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.zip.*;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 public class RegionFile {
 	private static final int VERSION_GZIP = 1;
@@ -196,7 +204,9 @@ public class RegionFile {
 	}
 
 	public DataOutputStream getChunkDataOutputStream(int x, int z) {
-		if (outOfBounds(x, z)) return null;
+		if (outOfBounds(x, z)) {
+			return null;
+		}
 
 		return new DataOutputStream(new DeflaterOutputStream(new ChunkBuffer(x, z)));
 	}
@@ -253,8 +263,11 @@ public class RegionFile {
 			if (runStart != -1) {
 				for (int i = runStart; i < sectorFree.size(); ++i) {
 					if (runLength != 0) {
-						if (sectorFree.get(i)) runLength++;
-						else runLength = 0;
+						if (sectorFree.get(i)) {
+							runLength++;
+						} else {
+							runLength = 0;
+						}
 					} else if (sectorFree.get(i)) {
 						runStart = i;
 						runLength = 1;
@@ -268,7 +281,7 @@ public class RegionFile {
 			if (runLength >= sectorsNeeded) {
 				/* we found a free space large enough */
 				sectorNumber = runStart;
-				setOffset(x, z, (sectorNumber << 8) | sectorsNeeded);
+				setOffset(x, z, sectorNumber << 8 | sectorsNeeded);
 				for (int i = 0; i < sectorsNeeded; ++i) {
 					sectorFree.set(sectorNumber + i, false);
 				}
@@ -287,7 +300,7 @@ public class RegionFile {
 				sizeDelta += SECTOR_BYTES * sectorsNeeded;
 
 				write(sectorNumber, data, length);
-				setOffset(x, z, (sectorNumber << 8) | sectorsNeeded);
+				setOffset(x, z, sectorNumber << 8 | sectorsNeeded);
 			}
 		}
 		setTimestamp(x, z, (int) (System.currentTimeMillis() / 1000L));

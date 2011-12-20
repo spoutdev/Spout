@@ -24,7 +24,9 @@ public class ActiveEntityEffect {
 	}
 
 	public boolean pulse() {
-		if (duration < 1) return false;
+		if (duration < 1) {
+			return false;
+		}
 		--duration;
 		return true;
 	}

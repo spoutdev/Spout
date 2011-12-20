@@ -27,24 +27,28 @@ public final class SpoutMapView implements MapView {
 	protected SpoutMapView(SpoutWorld world, short id) {
 		this.world = world;
 		this.id = id;
-		this.x = world.getSpawnLocation().getBlockX();
-		this.z = world.getSpawnLocation().getBlockZ();
-		this.scale = Scale.FAR;
+		x = world.getSpawnLocation().getBlockX();
+		z = world.getSpawnLocation().getBlockZ();
+		scale = Scale.FAR;
 		addRenderer(new SpoutMapRenderer(this));
 	}
 
+	@Override
 	public short getId() {
 		return id;
 	}
 
+	@Override
 	public boolean isVirtual() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Scale getScale() {
 		return scale;
 	}
 
+	@Override
 	public void setScale(Scale scale) {
 		if (scale == null) {
 			throw new NullPointerException();
@@ -52,34 +56,42 @@ public final class SpoutMapView implements MapView {
 		this.scale = scale;
 	}
 
+	@Override
 	public int getCenterX() {
 		return x;
 	}
 
+	@Override
 	public int getCenterZ() {
 		return z;
 	}
 
+	@Override
 	public void setCenterX(int x) {
 		this.x = x;
 	}
 
+	@Override
 	public void setCenterZ(int z) {
 		this.z = z;
 	}
 
+	@Override
 	public SpoutWorld getWorld() {
 		return world;
 	}
 
+	@Override
 	public void setWorld(World world) {
 		this.world = (SpoutWorld) world;
 	}
 
+	@Override
 	public List<MapRenderer> getRenderers() {
 		return renderers;
 	}
 
+	@Override
 	public void addRenderer(MapRenderer renderer) {
 		if (!renderers.contains(renderer)) {
 			renderers.add(renderer);
@@ -88,6 +100,7 @@ public final class SpoutMapView implements MapView {
 		}
 	}
 
+	@Override
 	public boolean removeRenderer(MapRenderer renderer) {
 		if (renderers.contains(renderer)) {
 			renderers.remove(renderer);

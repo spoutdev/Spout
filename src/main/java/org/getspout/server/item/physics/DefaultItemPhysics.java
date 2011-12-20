@@ -13,15 +13,19 @@ public class DefaultItemPhysics implements ItemPhysics {
 	private final int id;
 
 	public DefaultItemPhysics(int itemId) {
-		this.id = itemId;
+		id = itemId;
 	}
 
+	@Override
 	public MaterialData getPlacedBlock(BlockFace against, int data) {
 		MaterialData type = ItemProperties.get(id).getPlacedBlock();
-		if (type == null) type = NO_PLACE;
+		if (type == null) {
+			type = NO_PLACE;
+		}
 		return type;
 	}
 
+	@Override
 	public boolean interact(SpoutPlayer interactingPlayer, SpoutBlock clicked, SpoutItemStack heldItem, Action type, BlockFace against) {
 		return true;
 	}

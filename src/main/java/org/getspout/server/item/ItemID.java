@@ -94,7 +94,7 @@ public class ItemID {
 	public static final int POWERED_MINECART = 343;
 	public static final int EGG = 344;
 	public static final int COMPASS = 345;
-	public static final int FISHING_ROD =346;
+	public static final int FISHING_ROD = 346;
 	public static final int WATCH = 347;
 	public static final int GLOWSTONE_DUST = 348;
 	public static final int RAW_FISH = 349;
@@ -140,6 +140,6 @@ public class ItemID {
 	public static final int DISC_MELLOHI = 2262;
 	public static final int DISC_STAL = 2263;
 	public static final int DISC_STRAD = 2264;
-	public static final int DISC_WARD =  2265;
+	public static final int DISC_WARD = 2265;
 	public static final int DISC_11 = 2266;
 }

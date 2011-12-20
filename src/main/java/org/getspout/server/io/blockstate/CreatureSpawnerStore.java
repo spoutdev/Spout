@@ -13,7 +13,6 @@ public class CreatureSpawnerStore extends BlockStateStore<SpoutCreatureSpawner> 
 		super(SpoutCreatureSpawner.class, "MobSpawner");
 	}
 
-
 	@Override
 	public void load(SpoutCreatureSpawner spawner, CompoundTag compound) {
 		super.load(spawner, compound);
@@ -27,7 +26,7 @@ public class CreatureSpawnerStore extends BlockStateStore<SpoutCreatureSpawner> 
 	public Map<String, Tag> save(SpoutCreatureSpawner spawner) {
 		Map<String, Tag> ret = super.save(spawner);
 		ret.put("EntityId", new StringTag("EntityId", spawner.getCreatureTypeId()));
-		ret.put("Delay", new ShortTag("Delay", (short)spawner.getDelay()));
+		ret.put("Delay", new ShortTag("Delay", (short) spawner.getDelay()));
 		return ret;
 	}
 }

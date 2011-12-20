@@ -1,13 +1,13 @@
 package org.getspout.server.inventory;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-
-import org.getspout.server.inventory.CraftingManager;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author zml2008
@@ -34,7 +34,7 @@ public class CraftingManagerTest {
 		Recipe recipe = craftManager.getCraftingRecipe(input);
 		if (recipe == null) {
 			assertNotNull("Want " + want + " got null for " + name + " recipe", want);
-		}  else {
+		} else {
 			assertEquals("Want " + want + " got " + recipe.getResult().toString() + "for " + name + " recipe", want, recipe.getResult());
 		}
 	}

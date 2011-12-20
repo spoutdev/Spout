@@ -20,17 +20,17 @@ import org.getspout.server.util.nbt.Tag;
 
 public class NbtSerialization {
 	public static ItemStack[] tagToInventory(ListTag<CompoundTag> tagList, int size) {
-	   ItemStack[] items = new ItemStack[size];
-		for (CompoundTag tag: tagList.getValue()) {
+		ItemStack[] items = new ItemStack[size];
+		for (CompoundTag tag : tagList.getValue()) {
 			Map<String, Tag> tagItems = tag.getValue();
 			Tag idTag = tagItems.get("id");
 			Tag damageTag = tagItems.get("Damage");
 			Tag countTag = tagItems.get("Count");
 			Tag slotTag = tagItems.get("Slot");
-			short id = (idTag == null) ? 0 : ((ShortTag)idTag).getValue();
-			short damage = (damageTag == null) ? 0 : ((ShortTag)damageTag).getValue();
-			byte count = (countTag == null) ? 0 : ((ByteTag)countTag).getValue();
-			byte slot = (slotTag == null) ? -1 : ((ByteTag)slotTag).getValue();
+			short id = idTag == null ? 0 : ((ShortTag) idTag).getValue();
+			short damage = damageTag == null ? 0 : ((ShortTag) damageTag).getValue();
+			byte count = countTag == null ? 0 : ((ByteTag) countTag).getValue();
+			byte slot = slotTag == null ? -1 : ((ByteTag) slotTag).getValue();
 			if (id != 0 && slot >= 0 && count != 0) {
 				if (items.length > slot) {
 					items[slot] = new ItemStack(id, count, damage);
@@ -46,10 +46,10 @@ public class NbtSerialization {
 			ItemStack stack = items[i];
 			if (stack != null) {
 				Map<String, Tag> nbtItem = new HashMap<String, Tag>();
-				nbtItem.put("id", new ShortTag("id", (short)stack.getTypeId()));
+				nbtItem.put("id", new ShortTag("id", (short) stack.getTypeId()));
 				nbtItem.put("Damage", new ShortTag("Damage", stack.getDurability()));
-				nbtItem.put("Count", new ByteTag("Count", (byte)stack.getAmount()));
-				nbtItem.put("Slot", new ByteTag("Slot", (byte)i));
+				nbtItem.put("Count", new ByteTag("Count", (byte) stack.getAmount()));
+				nbtItem.put("Slot", new ByteTag("Slot", (byte) i));
 				out.add(new CompoundTag("", nbtItem));
 			}
 		}
@@ -86,6 +86,7 @@ public class NbtSerialization {
 		}
 		return new Vector(0, 0, 0);
 	}
+
 	public static ListTag<DoubleTag> vectorToListTag(Vector vec) {
 		List<DoubleTag> ret = new ArrayList<DoubleTag>();
 		ret.add(new DoubleTag("", vec.getX()));

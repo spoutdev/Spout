@@ -39,11 +39,13 @@ public class QuickBarCodec extends MessageCodec<QuickBarMessage> {
 			Map<String, Tag> nbtData = null;
 			if (id > 255) {
 				ItemProperties props = ItemProperties.get(id);
-				if (props != null && props.hasNbtData()) ChannelBufferUtils.readCompound(buffer);
+				if (props != null && props.hasNbtData()) {
+					ChannelBufferUtils.readCompound(buffer);
+				}
 			}
 			return new QuickBarMessage(slot, id, amount, damage, nbtData);
 		} else {
-			return new QuickBarMessage(slot, id, (short)0, (short)0, null);
+			return new QuickBarMessage(slot, id, (short) 0, (short) 0, null);
 		}
 	}
 }

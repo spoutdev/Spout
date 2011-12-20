@@ -22,22 +22,27 @@ public class McRegionWorldStorageProvider implements WorldStorageProvider {
 		this.dir = dir;
 	}
 
+	@Override
 	public void setWorld(SpoutWorld world) {
-		if (this.world != null)
+		if (this.world != null) {
 			throw new IllegalArgumentException("World is already set");
+		}
 		this.world = world;
 		service = new McRegionChunkIoService(dir);
 		meta = new NbtWorldMetadataService(world, dir);
 	}
 
+	@Override
 	public ChunkIoService getChunkIoService() {
 		return service;
 	}
 
+	@Override
 	public WorldMetadataService getMetadataService() {
 		return meta;
 	}
 
+	@Override
 	public File getFolder() {
 		return dir;
 	}

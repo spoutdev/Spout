@@ -1,6 +1,5 @@
 package org.getspout.server.entity.objects;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
@@ -26,11 +25,11 @@ public abstract class SpoutProjectile extends SpoutEntity implements Projectile 
 	 * Creates an entity and adds it to the specified world.
 	 *
 	 * @param server The server.
-	 * @param world  The world.
+	 * @param world The world.
 	 */
 	public SpoutProjectile(SpoutServer server, SpoutWorld world, int id) {
 		super(server, world);
-		this.type = id;
+		type = id;
 	}
 
 	@Override
@@ -46,19 +45,23 @@ public abstract class SpoutProjectile extends SpoutEntity implements Projectile 
 		return null;
 	}
 
+	@Override
 	public LivingEntity getShooter() {
 		return shooter;
 	}
 
+	@Override
 	public void setShooter(LivingEntity shooter) {
 		this.shooter = shooter;
 	}
 
+	@Override
 	public boolean doesBounce() {
 		return bounces;
 	}
 
+	@Override
 	public void setBounce(boolean doesBounce) {
-		this.bounces = doesBounce;
+		bounces = doesBounce;
 	}
 }

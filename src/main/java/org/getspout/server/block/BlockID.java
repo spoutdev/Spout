@@ -45,7 +45,7 @@ public class BlockID {
 	public static final int RED_ROSE = 38;
 	public static final int BROWN_MUSHROOM = 39;
 	public static final int RED_MUSHROOM = 40;
-	public static final int GOLD_BLOCK  =41;
+	public static final int GOLD_BLOCK = 41;
 	public static final int IRON_BLOCK = 42;
 	public static final int DOUBLE_STEP = 43;
 	public static final int STEP = 44;
