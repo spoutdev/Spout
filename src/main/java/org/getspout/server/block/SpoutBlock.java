@@ -21,18 +21,12 @@ public class SpoutBlock implements Block {
 	private final int x;
 	private final int y;
 	private final int z;
-	private boolean canInteract;
 
 	public SpoutBlock(SpoutChunk chunk, int x, int y, int z) {
-		this(chunk, x, y, z, true);
-	}
-
-	public SpoutBlock(SpoutChunk chunk, int x, int y, int z, boolean canInteract) {
 		this.chunk = chunk;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.canInteract = canInteract;
 	}
 
 	// Basic getters
@@ -182,11 +176,6 @@ public class SpoutBlock implements Block {
 		return (byte) Math.max(chunk.getSkyLight(x & 0xf, y, z & 0xf), chunk.getBlockLight(x & 0xf, y, z & 0xf));
 	}
 
-	public boolean isInteractable()
-	{
-		return this.canInteract;
-	}
-
 	// redstone-related shenanigans
 	// currently not implemented
 
@@ -221,10 +210,5 @@ public class SpoutBlock implements Block {
 	@Override
 	public String toString() {
 		return "SpoutBlock{loc=" + getLocation().toString() + ",type=" + getTypeId() + ",data=" + getData() + "}";
-	}
-
-	public boolean interacted(SpoutPlayer player, boolean rightClick, BlockFace against)
-	{
-		return true;
 	}
 }
