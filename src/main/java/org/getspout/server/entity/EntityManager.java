@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A class which manages all of the entities within a world.
@@ -15,12 +16,12 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	/**
 	 * A map of all the entity ids to the corresponding entities.
 	 */
-	private final Map<Integer, SpoutEntity> entities = new HashMap<Integer, SpoutEntity>();
+	private final Map<Integer, SpoutEntity> entities = new ConcurrentHashMap<Integer, SpoutEntity>();
 
 	/**
 	 * A map of entity types to a set containing all entities of that type.
 	 */
-	private final Map<Class<? extends SpoutEntity>, Set<? extends SpoutEntity>> groupedEntities = new HashMap<Class<? extends SpoutEntity>, Set<? extends SpoutEntity>>();
+	private final Map<Class<? extends SpoutEntity>, Set<? extends SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends SpoutEntity>, Set<? extends SpoutEntity>>();
 
 	/**
 	 * The next id to check.
