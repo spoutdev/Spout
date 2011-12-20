@@ -30,11 +30,11 @@ public class Quaternion {
 	}
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an arbatrary axis
-	 * @param angle
+	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */
 	public Quaternion(double angle, Vector3 axis){
-		this(axis.getX() * MathHelper.sin(angle/2), axis.getY() * MathHelper.sin(angle/2), axis.getZ() * MathHelper.sin(angle/2), MathHelper.cos(angle/2));
+		this(axis.getX() * MathHelper.sin(Math.toRadians(angle/2)), axis.getY() * MathHelper.sin(Math.toRadians(angle/2)), axis.getZ() * MathHelper.sin(Math.toRadians(angle/2)), MathHelper.cos(Math.toRadians(angle/2)));
 	}
 	/**
 	 * Returns the X component of the quaternion
