@@ -5,6 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.getspout.server.SpoutServer;
 
+/**
+ * A built-in command to kill players
+ */
 public class KillCommand extends SpoutCommand {
 
 	public KillCommand(SpoutServer server) {
