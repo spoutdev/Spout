@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,8 +19,8 @@ package org.getspout.api.util;
 // TODO I (raphfrk) think I wrote this, need to check - anyway can be redone
 //No worries, I wrote it based on your work - Afforess
 
-import org.getspout.api.geo.World;
 import org.getspout.api.block.Block;
+import org.getspout.api.geo.World;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.math.Vector3m;
 
@@ -37,23 +37,27 @@ public class FastLocation extends Location {
 
 	}
 
+	@Override
 	public double getYaw() {
 		return yaw;
 	}
 
+	@Override
 	public double getPitch() {
 		return pitch;
 	}
 
+	@Override
 	public World getWorld() {
 		return world;
 	}
 
+	@Override
 	public Vector3 getDirection() {
-		Vector3m vector = new Vector3m(0,0,0);
+		Vector3m vector = new Vector3m(0, 0, 0);
 
-		double rotX = this.getYaw();
-		double rotY = this.getPitch();
+		double rotX = getYaw();
+		double rotY = getPitch();
 
 		vector.setY(-Math.sin(Math.toRadians(rotY)));
 
@@ -64,11 +68,13 @@ public class FastLocation extends Location {
 
 		return vector;
 	}
-	
+
+	@Override
 	public Vector3 toVector() {
 		return new Vector3m(x, y, z);
 	}
-	
+
+	@Override
 	public Block getBlock() {
 		return null; // world.getBlockAt(this);
 	}

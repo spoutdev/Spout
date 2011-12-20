@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,11 +37,10 @@ import org.getspout.api.material.CustomItemMaterial;
 import org.getspout.api.material.Material;
 import org.getspout.api.material.MaterialData;
 
-
 /**
  * Represents a stack of items
  */
-public class ItemStack implements Cloneable{
+public class ItemStack implements Cloneable {
 	private int type;
 	private int amount = 0;
 	private short durability = 0;
@@ -73,34 +72,35 @@ public class ItemStack implements Cloneable{
 	public ItemStack(final int type, final int amount, final short damage, final Byte data) {
 		this.type = type;
 		this.amount = amount;
-		this.durability = damage;
+		durability = damage;
 		if (data != null) {
-			this.durability = data;
+			durability = data;
 		}
 	}
 
 	public ItemStack(final Material type, final int amount, final short damage, final Byte data) {
 		this(type.getRawId(), amount, damage, data);
 	}
-	
+
 	public ItemStack(CustomItemMaterial item) {
-		this(item.getRawId(), 1, (short)item.getRawData());
+		this(item.getRawId(), 1, (short) item.getRawData());
 	}
-	
+
 	public ItemStack(CustomItemMaterial item, int amount) {
-		this(item.getRawId(), amount, (short)item.getRawData());
+		this(item.getRawId(), amount, (short) item.getRawData());
 	}
-	
+
 	public ItemStack(CustomBlockMaterial block) {
 		this(block.getBlockItem());
 	}
-	
+
 	public ItemStack(CustomBlockMaterial block, int amount) {
 		this(block.getBlockItem(), amount);
 	}
 
 	/**
 	 * Is true if the item is a custom item, not in the vanilla game
+	 *
 	 * @return true if custom item
 	 */
 	public boolean isCustomItem() {
@@ -194,8 +194,8 @@ public class ItemStack implements Cloneable{
 	}
 
 	/**
-	 * Get the maximum stacksize for the material hold in this ItemStack
-	 * Returns -1 if it has no idea.
+	 * Get the maximum stacksize for the material hold in this ItemStack Returns
+	 * -1 if it has no idea.
 	 *
 	 * @return The maximum you can stack this material to.
 	 */

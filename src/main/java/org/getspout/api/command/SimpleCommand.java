@@ -1,12 +1,5 @@
 package org.getspout.api.command;
 
-import gnu.trove.procedure.TCharProcedure;
-import gnu.trove.set.TCharSet;
-import gnu.trove.set.hash.TCharHashSet;
-import org.bukkit.util.Java15Compat;
-import org.getspout.api.util.Named;
-import org.getspout.api.util.StringUtil;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +8,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import gnu.trove.procedure.TCharProcedure;
+import gnu.trove.set.TCharSet;
+import gnu.trove.set.hash.TCharHashSet;
+
+import org.bukkit.util.Java15Compat;
+
+import org.getspout.api.util.Named;
+import org.getspout.api.util.StringUtil;
 
 public class SimpleCommand implements Command {
 
@@ -28,14 +30,16 @@ public class SimpleCommand implements Command {
 	protected String usage;
 	protected final TCharSet valueFlags = new TCharHashSet();
 	protected final TCharSet flags = new TCharHashSet();
-	
+
 	public SimpleCommand(Named owner, String... names) {
 		aliases.addAll(Arrays.asList(names));
 		this.owner = owner;
 	}
 
 	public Command addSubCommand(Named owner, String primaryName) {
-		if (isLocked()) return this;
+		if (isLocked()) {
+			return this;
+		}
 		SimpleCommand sub = new SimpleCommand(owner, primaryName);
 		while (children.containsKey(primaryName)) {
 			primaryName = owner.getName() + ":" + primaryName;
@@ -44,9 +48,11 @@ public class SimpleCommand implements Command {
 		sub.parent = this;
 		return sub;
 	}
-	
+
 	public Command registerAsSub(Named owner, Command command) {
-		if (isLocked()) return this;
+		if (isLocked()) {
+			return this;
+		}
 		String primaryName = command.getPreferredName();
 		while (children.containsKey(primaryName)) {
 			primaryName = owner.getName() + ":" + primaryName;
@@ -88,7 +94,9 @@ public class SimpleCommand implements Command {
 						changed = true;
 					}
 				}
-				if (changed) parent.updateAliases(this);
+				if (changed) {
+					parent.updateAliases(this);
+				}
 			} else {
 				aliases.addAll(Arrays.asList(names));
 			}
@@ -154,19 +162,26 @@ public class SimpleCommand implements Command {
 	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		if (args.length > 1 && children.size() > 0) {
 			Command sub = getChild(args[0], fuzzyLookup);
-			if (sub == null) return false;
+			if (sub == null) {
+				return false;
+			}
 			return sub.execute(source, args, ++baseIndex, fuzzyLookup);
 		}
 
-		if (executor == null || baseIndex >= args.length) return false;
+		if (executor == null || baseIndex >= args.length) {
+			return false;
+		}
 		args = Java15Compat.Arrays_copyOfRange(args, baseIndex, args.length);
 
 		CommandContext context = new CommandContext(args, valueFlags);
-			if (!context.getFlags().forEach(new TCharProcedure() {
+		if (!context.getFlags().forEach(new TCharProcedure() {
+
 			public boolean execute(char c) {
 				return flags.contains(c);
 			}
-		})) return false;
+		})) {
+			return false;
+		}
 
 		try {
 			executor.processCommand(source, this, context);
@@ -183,7 +198,7 @@ public class SimpleCommand implements Command {
 	}
 
 	public Set<Command> getChildCommands() {
-		return new HashSet<Command> (children.values());
+		return new HashSet<Command>(children.values());
 	}
 
 	public Set<String> getChildNames() {
@@ -219,9 +234,11 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command removeChild(Command cmd) {
-		if (isLocked()) return this;
+		if (isLocked()) {
+			return this;
+		}
 		Map<String, Command> removeAliases = new HashMap<String, Command>();
-		for (Iterator<Command> i = children.values().iterator(); i.hasNext(); ) {
+		for (Iterator<Command> i = children.values().iterator(); i.hasNext();) {
 			Command registered = i.next();
 			if (registered.equals(cmd)) {
 				i.remove();
@@ -240,11 +257,15 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command removeChild(String name) {
-		if (isLocked()) return this;
+		if (isLocked()) {
+			return this;
+		}
 		Command command = getChild(name, false);
-		if (command == null) return this;
+		if (command == null) {
+			return this;
+		}
 		Map<String, Command> removeAliases = new HashMap<String, Command>();
-		for (Iterator<Command> i = children.values().iterator(); i.hasNext(); ) {
+		for (Iterator<Command> i = children.values().iterator(); i.hasNext();) {
 			Command cmd = i.next();
 			if (command.equals(cmd)) {
 				i.remove();
@@ -262,9 +283,10 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	
 	public Command removeAlias(String name) {
-		if (isLocked()) return this;
+		if (isLocked()) {
+			return this;
+		}
 		aliases.remove(name);
 		if (parent != null) {
 			parent.updateAliases(this);
@@ -272,7 +294,6 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	
 	public boolean lock(Named owner) {
 		if (owner == this.owner) {
 			locked = true;
@@ -281,7 +302,6 @@ public class SimpleCommand implements Command {
 		return false;
 	}
 
-	
 	public boolean unlock(Named owner) {
 		if (owner == this.owner) {
 			locked = false;
@@ -289,7 +309,7 @@ public class SimpleCommand implements Command {
 		}
 		return false;
 	}
-	
+
 	public boolean isLocked() {
 		return locked;
 	}
@@ -298,9 +318,11 @@ public class SimpleCommand implements Command {
 		boolean changed = false;
 		List<String> names = child.getNames();
 		synchronized (children) {
-			for (Iterator<Map.Entry<String, Command>> i = children.entrySet().iterator(); i.hasNext(); ) {
+			for (Iterator<Map.Entry<String, Command>> i = children.entrySet().iterator(); i.hasNext();) {
 				Map.Entry<String, Command> entry = i.next();
-				if (entry.getValue() != child) continue;
+				if (entry.getValue() != child) {
+					continue;
+				}
 				if (!names.contains(entry.getKey())) {
 					i.remove();
 					changed = true;
@@ -318,7 +340,7 @@ public class SimpleCommand implements Command {
 	public boolean hasChild(String name) {
 		return children.containsKey(name);
 	}
-	
+
 	public Command setParent(Command parent) {
 		if (this.parent == null) {
 			this.parent = parent;

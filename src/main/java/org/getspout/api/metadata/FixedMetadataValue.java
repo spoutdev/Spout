@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,13 +21,15 @@ import java.util.concurrent.Callable;
 import org.getspout.api.plugin.Plugin;
 
 /**
- * A FixedMetadataValue is a special case metadata item that contains the same value forever after initialization.
- * Invalidating a FixedMetadataValue has no affect.
+ * A FixedMetadataValue is a special case metadata item that contains the same
+ * value forever after initialization. Invalidating a FixedMetadataValue has no
+ * affect.
  */
 public class FixedMetadataValue extends LazyMetadataValue {
 
 	/**
 	 * Initializes a FixedMetadataValue as an int
+	 *
 	 * @param owningPlugin
 	 * @param value
 	 */
@@ -43,6 +45,7 @@ public class FixedMetadataValue extends LazyMetadataValue {
 
 	/**
 	 * Initializes a FixedMetadataValue as a boolean
+	 *
 	 * @param owningPlugin
 	 * @param value
 	 */
@@ -58,6 +61,7 @@ public class FixedMetadataValue extends LazyMetadataValue {
 
 	/**
 	 * Initializes a FixedMetadataValue as a double
+	 *
 	 * @param owningPlugin
 	 * @param value
 	 */
@@ -73,6 +77,7 @@ public class FixedMetadataValue extends LazyMetadataValue {
 
 	/**
 	 * Initializes a FixedMetadataValue as a string
+	 *
 	 * @param owningPlugin
 	 * @param value
 	 */

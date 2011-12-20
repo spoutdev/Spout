@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,8 +32,8 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the location in which spawning will take place.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Location getLocation() {
 		return location;
@@ -45,8 +45,8 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the reason in which spawning occurred.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public SpawnReason getReason() {
 		return reason;

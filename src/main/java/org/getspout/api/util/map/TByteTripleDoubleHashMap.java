@@ -1,40 +1,43 @@
 package org.getspout.api.util.map;
+
 import gnu.trove.TDoubleCollection;
 import gnu.trove.iterator.TIntDoubleIterator;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports a 3 bytes for keys, using a trove int double hashmap in the backend.
+ * A simplistic map that supports a 3 bytes for keys, using a trove int double
+ * hashmap in the backend.
+ *
  * @author Afforess
  *
  */
-public class TByteTripleDoubleHashMap{
+public class TByteTripleDoubleHashMap {
 	private TIntDoubleHashMap map;
-	
+
 	public TByteTripleDoubleHashMap() {
 		map = new TIntDoubleHashMap(100);
 	}
-	
-	public TByteTripleDoubleHashMap(int capacity){
+
+	public TByteTripleDoubleHashMap(int capacity) {
 		map = new TIntDoubleHashMap(capacity);
 	}
-	
+
 	public double put(byte key1, byte key2, byte key3, double value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
-	
+
 	public double get(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
-	
+
 	public boolean containsKey(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.containsKey(key);
 	}
-	
+
 	public void clear() {
 		map.clear();
 	}
@@ -80,8 +83,8 @@ public class TByteTripleDoubleHashMap{
 	public double[] values() {
 		return map.values();
 	}
-	
+
 	private static final int key(int x, int y, int z) {
-		return (x & 0xF) << 11 | (z & 0xF) << 7 | (y & 0x7F);
+		return (x & 0xF) << 11 | (z & 0xF) << 7 | y & 0x7F;
 	}
 }

@@ -38,17 +38,17 @@ public class GenericItemMaterial implements ItemMaterial {
 	}
 
 	public String getName() {
-		if(customName != null) {
+		if (customName != null) {
 			return customName;
 		}
 		return name;
 	}
-	
+
 	public String getNotchianName() {
 		return name;
 	}
 
 	public void setName(String name) {
-		this.customName = name;
+		customName = name;
 	}
 }

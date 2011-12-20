@@ -1,40 +1,43 @@
 package org.getspout.api.util.map;
+
 import gnu.trove.TDoubleCollection;
 import gnu.trove.iterator.TIntDoubleIterator;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports (byte, short, byte) keys, using a trove int double hashmap in the backend.
+ * A simplistic map that supports (byte, short, byte) keys, using a trove int
+ * double hashmap in the backend.
+ *
  * @author Afforess
  *
  */
 public class TByteShortByteKeyedDoubleHashMap extends TByteShortByteKeyedMap {
 	private TIntDoubleHashMap map;
-	
+
 	public TByteShortByteKeyedDoubleHashMap() {
 		map = new TIntDoubleHashMap(100);
 	}
-	
-	public TByteShortByteKeyedDoubleHashMap(int capacity){
+
+	public TByteShortByteKeyedDoubleHashMap(int capacity) {
 		map = new TIntDoubleHashMap(capacity);
 	}
-	
+
 	public double put(int key1, int key2, int key3, double value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
-	
+
 	public double get(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
-	
+
 	public boolean containsKey(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.containsKey(key);
 	}
-	
+
 	public void clear() {
 		map.clear();
 	}
@@ -80,5 +83,5 @@ public class TByteShortByteKeyedDoubleHashMap extends TByteShortByteKeyedMap {
 	public double[] values() {
 		return map.values();
 	}
-	
+
 }

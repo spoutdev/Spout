@@ -23,7 +23,7 @@ public class PlayerUseItemEvent extends PlayerInteractEvent {
 	 * @return ItemStack the item used
 	 */
 	public ItemStack getItem() {
-		return this.item;
+		return item;
 	}
 
 	public void setItem(ItemStack item) {

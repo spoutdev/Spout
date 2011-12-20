@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +22,8 @@ public interface TravelAgent {
 	/**
 	 * Set the Block radius to search in for available portals.
 	 *
-	 * @param radius The radius in which to search for a portal from the location.
+	 * @param radius The radius in which to search for a portal from the
+	 *            location.
 	 * @return This travel agent.
 	 */
 	public TravelAgent setSearchRadius(int radius);
@@ -50,24 +51,30 @@ public interface TravelAgent {
 	public int getCreationRadius();
 
 	/**
-	 * Returns whether the TravelAgent will attempt to create a destination portal or not.
+	 * Returns whether the TravelAgent will attempt to create a destination
+	 * portal or not.
 	 *
-	 * @return Return whether the TravelAgent should create a destination portal or not.
+	 * @return Return whether the TravelAgent should create a destination portal
+	 *         or not.
 	 */
 	public boolean getCanCreatePortal();
 
 	/**
-	 * Sets whether the TravelAgent should attempt to create a destination portal or not.
+	 * Sets whether the TravelAgent should attempt to create a destination
+	 * portal or not.
 	 *
-	 * @param create Sets whether the TravelAgent should create a destination portal or not.
+	 * @param create Sets whether the TravelAgent should create a destination
+	 *            portal or not.
 	 */
 	public void setCanCreatePortal(boolean create);
 
 	/**
-	 * Attempt to find a portal near the given location, if a portal is not found it will attempt to create one.
+	 * Attempt to find a portal near the given location, if a portal is not
+	 * found it will attempt to create one.
 	 *
 	 * @param location The location where the search for a portal should begin.
-	 * @return Returns the location of a portal which has been found or returns the location passed to the method if unsuccessful.
+	 * @return Returns the location of a portal which has been found or returns
+	 *         the location passed to the method if unsuccessful.
 	 */
 	public Location findOrCreate(Location location);
 
@@ -81,7 +88,7 @@ public interface TravelAgent {
 
 	/**
 	 * Attempt to create a portal near the given location.
-	 * 
+	 *
 	 * @param location The desired location of the portal.
 	 * @return True if a nether portal was successfully created.
 	 */

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.getspout.api.Game;
 import org.getspout.api.UnsafeMethod;
 import org.getspout.api.plugin.Plugin;
@@ -37,17 +38,16 @@ public abstract class JavaAddon implements Plugin {
 	private boolean enabled = false;
 	private PluginDescriptionFile description = null;
 	private boolean naggable = false;
-	
+
 	@UnsafeMethod
-	public JavaAddon(){
-		
+	public JavaAddon() {
+
 	}
 
 	public final PluginDescriptionFile getDescription() {
 		return description;
 	}
 
-	
 	public final void initialize(JavaAddonLoader loader, Game game, PluginDescriptionFile description, File dataFolder, File file, AddonClassLoader classLoader) {
 		if (!initialized) {
 			this.loader = loader;
@@ -56,7 +56,7 @@ public abstract class JavaAddon implements Plugin {
 			this.description = description;
 			this.dataFolder = dataFolder;
 			this.classLoader = classLoader;
-			this.initialized = true;
+			initialized = true;
 		}
 	}
 
@@ -85,23 +85,23 @@ public abstract class JavaAddon implements Plugin {
 	public final boolean isEnabled() {
 		return enabled;
 	}
-	
-	public final Logger getLogger(){
+
+	public final Logger getLogger() {
 		return game.getLogger();
 	}
-	
+
 	@UnsafeMethod
 	public void onLoad() {
 	}
 
 	@UnsafeMethod
 	public void setEnabled(boolean arg) {
-		if (this.enabled != arg) {
-			this.enabled = arg;
-			if (this.enabled) {
-				this.onEnable();
+		if (enabled != arg) {
+			enabled = arg;
+			if (enabled) {
+				onEnable();
 			} else {
-				this.onDisable();
+				onDisable();
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public abstract class JavaAddon implements Plugin {
 
 	@Override
 	public final int hashCode() {
-		return (new HashCodeBuilder().append(file).append(dataFolder).append(description!=null?description.getName():"").toHashCode());
+		return new HashCodeBuilder().append(file).append(dataFolder).append(description != null ? description.getName() : "").toHashCode();
 	}
 
 }

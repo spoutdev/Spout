@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,19 +19,22 @@ package org.getspout.api.metadata;
 import org.getspout.api.OfflinePlayer;
 
 /**
- * A PlayerMetadataStore stores metadata for {@link org.bukkit.entity.Player} and {@link OfflinePlayer} objects.
+ * A PlayerMetadataStore stores metadata for {@link org.bukkit.entity.Player}
+ * and {@link OfflinePlayer} objects.
  */
 public class PlayerMetadataStore extends MetadataStoreBase<OfflinePlayer> implements MetadataStore<OfflinePlayer> {
-    /**
-     * Generates a unique metadata key for {@link org.bukkit.entity.Player} and {@link OfflinePlayer} using the player
-     * name.
-     * @see MetadataStoreBase#Disambiguate(Object, String)
-     * @param player
-     * @param metadataKey The name identifying the metadata value
-     * @return
-     */
-    @Override
-    protected String disambiguate(OfflinePlayer player, String metadataKey) {
-        return player.getName().toLowerCase() + ":" + metadataKey;
-    }
+	/**
+	 * Generates a unique metadata key for {@link org.bukkit.entity.Player} and
+	 * {@link OfflinePlayer} using the player name.
+	 *
+	 * @see MetadataStoreBase#Disambiguate(Object, String)
+	 * @param player
+	 * @param metadataKey The name identifying the metadata value
+	 * @return
+	 */
+
+	@Override
+	protected String disambiguate(OfflinePlayer player, String metadataKey) {
+		return player.getName().toLowerCase() + ":" + metadataKey;
+	}
 }

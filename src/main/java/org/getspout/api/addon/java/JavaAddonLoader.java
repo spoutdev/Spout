@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,10 +31,10 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.yaml.snakeyaml.error.YAMLException;
+
 import org.getspout.api.Game;
 import org.getspout.api.UnsafeMethod;
-import org.getspout.api.addon.java.AddonClassLoader;
-import org.getspout.api.addon.java.JavaAddon;
 import org.getspout.api.plugin.InvalidDescriptionException;
 import org.getspout.api.plugin.InvalidPluginException;
 import org.getspout.api.plugin.Plugin;
@@ -43,11 +43,10 @@ import org.getspout.api.plugin.PluginLoader;
 import org.getspout.api.plugin.SimpleSecurityManager;
 import org.getspout.api.plugin.UnknownDependencyException;
 import org.getspout.api.plugin.UnknownSoftDependencyException;
-import org.yaml.snakeyaml.error.YAMLException;
 
 public final class JavaAddonLoader implements PluginLoader {
 	private final Game game;
-	private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
+	private final Pattern[] fileFilters = new Pattern[] {Pattern.compile("\\.jar$"),};
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final Map<String, AddonClassLoader> loaders = new HashMap<String, AddonClassLoader>();
 	private final SimpleSecurityManager manager;
@@ -63,7 +62,7 @@ public final class JavaAddonLoader implements PluginLoader {
 		return loadAddon(file, false);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Plugin loadAddon(File file, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		JavaAddon result = null;
 		PluginDescriptionFile description = null;
@@ -177,9 +176,9 @@ public final class JavaAddonLoader implements PluginLoader {
 			throw new InvalidPluginException(ex);
 		}
 
-		loaders.put(description.getName(), (AddonClassLoader) loader);
+		loaders.put(description.getName(), loader);
 
-		return (Plugin) result;
+		return result;
 	}
 
 	private File getDataFolder(File file) {
@@ -245,7 +244,7 @@ public final class JavaAddonLoader implements PluginLoader {
 			String addonName = jAddon.getDescription().getName();
 
 			if (!loaders.containsKey(addonName)) {
-				loaders.put(addonName, (AddonClassLoader) jAddon.getClassLoader());
+				loaders.put(addonName, jAddon.getClassLoader());
 			}
 
 			try {

@@ -6,15 +6,10 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.getspout.api.block.Block;
-import org.getspout.api.block.design.BlockDesign;
-import org.getspout.api.block.design.Quad;
-import org.getspout.api.block.design.Texture;
-import org.getspout.api.block.design.Vertex;
 import org.getspout.api.entity.Item;
 import org.getspout.api.math.Vector3m;
 import org.getspout.api.packet.PacketUtil;
 import org.getspout.api.plugin.Plugin;
-
 
 public class GenericBlockDesign implements BlockDesign {
 
@@ -29,7 +24,7 @@ public class GenericBlockDesign implements BlockDesign {
 
 	protected String textureURL;
 	protected String texturePlugin;
-	
+
 	protected Texture texture;
 
 	protected float[][] xPos;
@@ -69,59 +64,59 @@ public class GenericBlockDesign implements BlockDesign {
 		this.textYPos = textYPos;
 		this.renderPass = renderPass;
 	}
-	
+
 	public float[][] getX() {
 		return xPos;
 	}
-	
+
 	public float[][] getY() {
 		return yPos;
 	}
-	
+
 	public float[][] getZ() {
 		return zPos;
 	}
-	
+
 	public float[][] getTextureXPos() {
 		return textXPos;
 	}
-	
+
 	public float[][] getTextureYPos() {
 		return textYPos;
 	}
-	
+
 	public float getBrightness() {
 		return brightness;
 	}
-	
+
 	public float getMaxBrightness() {
 		return maxBrightness;
 	}
-	
+
 	public float getMinBrightness() {
 		return minBrightness;
 	}
-	
+
 	public float getLowXBound() {
 		return lowXBound;
 	}
-	
+
 	public float getLowYBound() {
 		return lowYBound;
 	}
-	
+
 	public float getLowZBound() {
 		return lowZBound;
 	}
-	
+
 	public float getHighXBound() {
 		return highXBound;
 	}
-	
+
 	public float getHighYBound() {
 		return highYBound;
 	}
-	
+
 	public float getHighZBound() {
 		return highZBound;
 	}
@@ -222,18 +217,18 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public BlockDesign setTexture(Plugin plugin, String textureURL) {
-		this.texturePlugin = plugin.getDescription().getName();
+		texturePlugin = plugin.getDescription().getName();
 		this.textureURL = textureURL;
 		return this;
 	}
 
 	public BlockDesign setBoundingBox(float lowX, float lowY, float lowZ, float highX, float highY, float highZ) {
-		this.lowXBound = lowX;
-		this.lowYBound = lowY;
-		this.lowZBound = lowZ;
-		this.highXBound = highX;
-		this.highYBound = highY;
-		this.highZBound = highZ;
+		lowXBound = lowX;
+		lowYBound = lowY;
+		lowZBound = lowZ;
+		highXBound = highX;
+		highYBound = highY;
+		highZBound = highZ;
 		return this;
 	}
 
@@ -307,7 +302,7 @@ public class GenericBlockDesign implements BlockDesign {
 		this.texture = texture;
 		return setTexture(plugin, texture.getTexture());
 	}
-	
+
 	public Texture getTexture() {
 		return texture;
 	}

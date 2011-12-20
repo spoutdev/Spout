@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +31,9 @@ public abstract class BlockChangeEvent extends BlockEvent {
 	private BlockState newState;
 
 	/**
-	 * Gets the final block state that the block will change to after this event executes.
+	 * Gets the final block state that the block will change to after this event
+	 * executes.
+	 *
 	 * @return final block state
 	 */
 	public BlockState getNewState() {
@@ -40,10 +42,11 @@ public abstract class BlockChangeEvent extends BlockEvent {
 
 	/**
 	 * Sets the final block state.
+	 *
 	 * @param state to set
 	 */
 	public void setNewState(BlockState state) {
-		this.newState = state;
+		newState = state;
 	}
 
 	@Override

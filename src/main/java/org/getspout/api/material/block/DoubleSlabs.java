@@ -1,7 +1,6 @@
 package org.getspout.api.material.block;
 
 import org.getspout.api.material.SolidBlock;
-import org.getspout.api.material.block.GenericBlockMaterial;
 
 public class DoubleSlabs extends GenericBlockMaterial implements SolidBlock {
 

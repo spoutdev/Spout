@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@ package org.getspout.api.plugin;
 public class InvalidDescriptionException extends Exception {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5428943040337929212L;
 	private final Throwable cause;
@@ -34,7 +34,7 @@ public class InvalidDescriptionException extends Exception {
 	}
 
 	public InvalidDescriptionException(Throwable throwable, String message) {
-		this.cause = null;
+		cause = null;
 		this.message = message;
 	}
 
@@ -42,12 +42,14 @@ public class InvalidDescriptionException extends Exception {
 		this(null, "Invalid addon.yml");
 	}
 
+	@Override
 	public Throwable getCause() {
-		return this.cause;
+		return cause;
 	}
 
+	@Override
 	public String getMessage() {
-		return this.message;
+		return message;
 	}
 
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,39 +23,36 @@ import java.security.Permission;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.getspout.api.plugin.PluginSecureThread;
-import org.getspout.api.plugin.SimpleSecurityManager;
-
 public final class SimpleSecurityManager extends SecurityManager {
 	private final double key;
 	private volatile boolean locked = false;
 	private final Thread mainThread;
 	private final ThreadGroup securityThreadGroup;
 	private final static HashSet<String> allowedPermissions;
-	private final static HashMap<String,HashSet<String>> systemMethodWhiteList;
-	
+	private final static HashMap<String, HashSet<String>> systemMethodWhiteList;
+
 	static {
-		
+
 		// This defines permissions that are not protected
-		
+
 		allowedPermissions = new HashSet<String>();
-		
-		allowedPermissions.add("accessDeclaredMembers");  // Ok?
-		
+
+		allowedPermissions.add("accessDeclaredMembers"); // Ok?
+
 		// This defines the white list for class/methods pairs that can be used when sandboxed
 		//
 		// This is the last java.x.y class the is detected in the stack trace, before normal classes are detected.
 		// This means that the only system level classes are called between the security manager check and the calling method
-		// 
+		//
 		// This allows whitelisting of system methods that are safe, even if they use protected functionality
 		//
-		
-		systemMethodWhiteList = new HashMap<String,HashSet<String>>();
-		
+
+		systemMethodWhiteList = new HashMap<String, HashSet<String>>();
+
 		addMethodToWhiteList("java.lang.Enum", "valueOf");
-		
+
 	}
-	
+
 	private static void addMethodToWhiteList(String className, String methodName) {
 		HashSet<String> enumMethods = systemMethodWhiteList.get(className);
 		if (enumMethods == null) {
@@ -77,7 +74,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 	public boolean lock(double key) {
 		return lock(true, key);
 	}
-	
+
 	public boolean lock(boolean enabled, double key) {
 		boolean oldLock = isLocked();
 		if (Thread.currentThread() != mainThread) {
@@ -105,8 +102,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 	}
 
 	public boolean isLocked() {
-		return (locked && Thread.currentThread() == mainThread) || 
-				Thread.currentThread().getThreadGroup().equals(securityThreadGroup);
+		return locked && Thread.currentThread() == mainThread || Thread.currentThread().getThreadGroup().equals(securityThreadGroup);
 	}
 
 	public ThreadGroup getSecurityThreadGroup() {
@@ -120,6 +116,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 		}
 	}
 
+	@Override
 	public void checkAccept(String host, int port) {
 		checkAccess();
 	}
@@ -163,7 +160,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkDelete(String file) {
-	 	if (isLocked()) {
+		if (isLocked()) {
 			if (!hasFileAccess(file)) {
 				throw new SecurityException("Access is restricted! Addon tried to delete " + file);
 			}
@@ -196,7 +193,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 			throw new NullPointerException("class can't be null");
 		}
 		if (which != Member.PUBLIC && isLocked()) {
-			Class<?> stack[] = getClassContext();		
+			Class<?> stack[] = getClassContext();
 			/*
 			* stack depth of 4 should be the caller of one of the
 			* methods in java.lang.Class that invoke checkMember
@@ -208,7 +205,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 			* SecurityManager.checkMemberAccess [0]
 			*
 			*/
-			if ((stack.length<4) || (!(PluginSecureThread.class.isAssignableFrom(clazz)) && stack[3].getClassLoader() != clazz.getClassLoader())) {
+			if (stack.length < 4 || !PluginSecureThread.class.isAssignableFrom(clazz) && stack[3].getClassLoader() != clazz.getClassLoader()) {
 				checkAccess();
 			}
 		}
@@ -240,9 +237,9 @@ public final class SimpleSecurityManager extends SecurityManager {
 			Class<?> stack[] = getClassContext();
 
 			int nonSystemIndex = getFirstNonSystem(stack, trace, 1);
-			StackTraceElement systemClass = getIndexedStackTraceElement(trace, nonSystemIndex - 1);	
+			StackTraceElement systemClass = getIndexedStackTraceElement(trace, nonSystemIndex - 1);
 			//StackTraceElement callerClass = getIndexedStackTraceElement(trace, nonSystemIndex);
-			
+
 			if (systemClass != null) {
 				String systemClassName = systemClass.getClassName();
 				HashSet<String> systemAllowedMethods = systemMethodWhiteList.get(systemClassName);
@@ -255,7 +252,7 @@ public final class SimpleSecurityManager extends SecurityManager {
 			checkAccess(); //TODO handle on case by case basis
 		}
 	}
-	
+
 	private int getFirstNonSystem(Class<?> stack[], StackTraceElement trace[], int start) {
 
 		int stackPos = start;
@@ -264,18 +261,18 @@ public final class SimpleSecurityManager extends SecurityManager {
 		while (stackPos < stack.length && stack[stackPos].getClassLoader() == null) {
 			stackPos++;
 		}
-		
+
 		if (stackPos >= stack.length) {
 			return trace.length;
 		}
-		
+
 		while (tracePos < trace.length && !trace[tracePos].getClassName().equals(stack[stackPos].getName())) {
-			tracePos ++;
+			tracePos++;
 		}
-		
+
 		return tracePos;
 	}
-	
+
 	private StackTraceElement getIndexedStackTraceElement(StackTraceElement trace[], int index) {
 		if (index < 0 || index >= trace.length) {
 			return null;
@@ -356,27 +353,27 @@ public final class SimpleSecurityManager extends SecurityManager {
 			}
 		}
 	}
-	
+
 	//TODO fix
 	public static boolean hasFileAccess(String file) {
-/*		if (file.startsWith(Spoutcraft.getAddonFolder().getPath())) {
-			return true; //allow access
-		}
-		if (file.startsWith(Spoutcraft.getAudioCache().getPath())) {
-			return true; //allow access
-		}
-		if (file.startsWith(Spoutcraft.getTemporaryCache().getPath())) {
-			return true; //allow access
-		}
-		if (file.startsWith(Spoutcraft.getTextureCache().getPath())) {
-			return true; //allow access
-		}
-		if (file.startsWith(Spoutcraft.getTexturePackFolder().getPath())) {
-			return true; //allow access
-		}
-		if (file.startsWith(Spoutcraft.getStatsFolder().getPath())) {
-			return true; //allow access
-		}*/
+		/*		if (file.startsWith(Spoutcraft.getAddonFolder().getPath())) {
+					return true; //allow access
+				}
+				if (file.startsWith(Spoutcraft.getAudioCache().getPath())) {
+					return true; //allow access
+				}
+				if (file.startsWith(Spoutcraft.getTemporaryCache().getPath())) {
+					return true; //allow access
+				}
+				if (file.startsWith(Spoutcraft.getTextureCache().getPath())) {
+					return true; //allow access
+				}
+				if (file.startsWith(Spoutcraft.getTexturePackFolder().getPath())) {
+					return true; //allow access
+				}
+				if (file.startsWith(Spoutcraft.getStatsFolder().getPath())) {
+					return true; //allow access
+				}*/
 		return false;
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +55,7 @@ public interface BlockState extends Metadatable {
 
 	/**
 	 * Gets the location represented by this blockstate
-	 * 
+	 *
 	 * @return location that this block state represents
 	 */
 	Location getLocation();
@@ -113,9 +113,9 @@ public interface BlockState extends Metadatable {
 	 * Attempts to update the block represented by this state, setting it to the
 	 * new values as defined by this state. <br />
 	 * <br />
-	 * This has the same effect as calling update(false). That is to say,
-	 * this will not modify the state of a block if it is no longer the same
-	 * type as it was when this state was taken. It will return false in this
+	 * This has the same effect as calling update(false). That is to say, this
+	 * will not modify the state of a block if it is no longer the same type as
+	 * it was when this state was taken. It will return false in this
 	 * eventuality.
 	 *
 	 * @return true if the update was successful, otherwise false
@@ -128,11 +128,11 @@ public interface BlockState extends Metadatable {
 	 * new values as defined by this state. <br />
 	 * <br />
 	 * Unless force is true, this will not modify the state of a block if it is
-	 * no longer the same type as it was when this state was taken. It will return
-	 * false in this eventuality.<br />
+	 * no longer the same type as it was when this state was taken. It will
+	 * return false in this eventuality.<br />
 	 * <br />
-	 * If force is true, it will set the type of the block to match the new state,
-	 * set the state data and then return true.
+	 * If force is true, it will set the type of the block to match the new
+	 * state, set the state data and then return true.
 	 *
 	 * @param force true to forcefully set the state
 	 * @return true if the update was successful, otherwise false

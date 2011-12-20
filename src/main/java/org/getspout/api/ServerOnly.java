@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,12 +26,14 @@ import java.lang.annotation.Target;
  * @author Afforess
  */
 @Documented
-@Target(value=ElementType.METHOD)
-@Retention(value=RetentionPolicy.SOURCE)
+@Target(value = ElementType.METHOD)
+@Retention(value = RetentionPolicy.SOURCE)
 public @interface ServerOnly {
-	
+
 	public String author() default "Afforess";
+
 	public String version() default "1.1";
+
 	public String shortDescription() default "Indicates that the function requires the use of the Spout server plugin to have any effect";
 
 }

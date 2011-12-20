@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,15 +16,15 @@
  */
 package org.getspout.api.event.entity;
 
-import org.getspout.api.geo.World;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.geo.World;
 
 /**
  * Called when an entity changes its world.
  */
 public class EntityChangedWorldEvent extends EntityEvent {
 	private static HandlerList handlers = new HandlerList();
- 
+
 	private World from;
 
 	public World getFrom() {

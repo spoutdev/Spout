@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,8 +31,8 @@ public class SlimeSplitEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the amount of slimes to spawn.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public int getAmount() {
 		return amount;
@@ -44,8 +44,8 @@ public class SlimeSplitEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the size of slimes to spawn.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public int getSize() {
 		return size;

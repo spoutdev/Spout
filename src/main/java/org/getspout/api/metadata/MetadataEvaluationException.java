@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,13 @@
 package org.getspout.api.metadata;
 
 /**
- * A MetadataEvaluationException is thrown any time a {@link LazyMetadataValue} fails to evaluate its value due to
- * an exception. The originating exception will be included as this exception's cause.
+ * A MetadataEvaluationException is thrown any time a {@link LazyMetadataValue}
+ * fails to evaluate its value due to an exception. The originating exception
+ * will be included as this exception's cause.
  */
 @SuppressWarnings("serial")
 public class MetadataEvaluationException extends RuntimeException {
-    MetadataEvaluationException(Throwable cause) {
-        super(cause);
-    }
+	MetadataEvaluationException(Throwable cause) {
+		super(cause);
+	}
 }

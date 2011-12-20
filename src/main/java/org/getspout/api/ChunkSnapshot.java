@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,8 +35,9 @@ package org.getspout.api;
 import org.getspout.api.block.Biome;
 
 /**
- * Represents a static, thread-safe snapshot of chunk of blocks
- * Purpose is to allow clean, efficient copy of a chunk data to be made, and then handed off for processing in another thread (e.g. map rendering)
+ * Represents a static, thread-safe snapshot of chunk of blocks Purpose is to
+ * allow clean, efficient copy of a chunk data to be made, and then handed off
+ * for processing in another thread (e.g. map rendering)
  */
 public interface ChunkSnapshot {
 
@@ -139,6 +140,7 @@ public interface ChunkSnapshot {
 
 	/**
 	 * Get world full time when chunk snapshot was captured
+	 *
 	 * @return time in ticks
 	 */
 	long getCaptureFullTime();

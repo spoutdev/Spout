@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -147,13 +147,14 @@ public enum Keyboard {
 	KEY_APPS(221),
 	KEY_POWER(222),
 	KEY_SLEEP(223),
-	KEYBOARD_SIZE(256),	
+	KEYBOARD_SIZE(256),
 	KEY_UNKNOWN(-1);
 
 	private final int keyCode;
 	private static final Map<Integer, Keyboard> lookupKeyCode = new HashMap<Integer, Keyboard>();
+
 	Keyboard(final int i) {
-		this.keyCode = i;
+		keyCode = i;
 	}
 
 	public int getKeyCode() {
@@ -165,8 +166,8 @@ public enum Keyboard {
 			return lookupKeyCode.get(key);
 		}
 		//Some computers report signed/unsigned values incorrectly
-		if (lookupKeyCode.containsKey(256+key)) {
-			return lookupKeyCode.get(256+key);
+		if (lookupKeyCode.containsKey(256 + key)) {
+			return lookupKeyCode.get(256 + key);
 		}
 		return KEY_UNKNOWN;
 	}

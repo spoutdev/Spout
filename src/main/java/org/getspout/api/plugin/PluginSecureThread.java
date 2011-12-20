@@ -1,9 +1,9 @@
 package org.getspout.api.plugin;
 
 public class PluginSecureThread extends Thread {
-	
+
 	public PluginSecureThread() {
-		
+
 	}
 
 	public PluginSecureThread(Runnable target) {
@@ -33,7 +33,5 @@ public class PluginSecureThread extends Thread {
 	public PluginSecureThread(ThreadGroup group, String name) {
 		super(group, name);
 	}
-
-
 
 }

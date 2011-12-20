@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +17,8 @@
 package org.getspout.api.event.player;
 
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.inventory.InventorySlotType;
 import org.getspout.api.inventory.CraftingInventory;
+import org.getspout.api.inventory.InventorySlotType;
 import org.getspout.api.inventory.ItemStack;
 
 /**
@@ -45,15 +45,18 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the inventory where the crafting is taking place
+	 *
 	 * @return inventory
 	 */
+
 	@Override
 	public CraftingInventory getInventory() {
-		return (CraftingInventory) this.inventory;
+		return (CraftingInventory) inventory;
 	}
 
 	/**
 	 * Gets the width of the inventory crafting area
+	 *
 	 * @return width
 	 */
 	public int getWidth() {
@@ -66,6 +69,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the height of the inventory crafting area
+	 *
 	 * @return height
 	 */
 	public int getHeight() {
@@ -78,6 +82,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the recipe at the inventory crafting area
+	 *
 	 * @return recipe
 	 */
 	public ItemStack[][] getRecipe() {
@@ -90,6 +95,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the itemstack at the cursor
+	 *
 	 * @return cursor
 	 */
 	public ItemStack getCursor() {
@@ -98,6 +104,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Sets the itemstack at the cursor
+	 *
 	 * @param cursor to set
 	 */
 	public void setCursor(ItemStack cursor) {
@@ -106,6 +113,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the current (new) item at the slot
+	 *
 	 * @return current item
 	 */
 	public ItemStack getResult() {
@@ -114,6 +122,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Sets the current item at the slot
+	 *
 	 * @param result to set
 	 */
 	public void setResult(ItemStack result) {
@@ -122,6 +131,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the slot index being interacted with
+	 *
 	 * @return slot index
 	 */
 	public int getSlot() {
@@ -134,6 +144,7 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the slot type being interacted with
+	 *
 	 * @return slot type
 	 */
 	public InventorySlotType getSlotType() {
@@ -145,7 +156,9 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 	}
 
 	/**
-	 * Returns true if the click on the inventory crafting slot was a left click. If false, it was a right click.
+	 * Returns true if the click on the inventory crafting slot was a left
+	 * click. If false, it was a right click.
+	 *
 	 * @return true if left click
 	 */
 	public boolean isLeftClick() {
@@ -157,7 +170,9 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 	}
 
 	/**
-	 * Returns true if the click on the inventory crafting slot was a shift click. 
+	 * Returns true if the click on the inventory crafting slot was a shift
+	 * click.
+	 *
 	 * @return true if shift click
 	 */
 	public boolean isShiftClick() {

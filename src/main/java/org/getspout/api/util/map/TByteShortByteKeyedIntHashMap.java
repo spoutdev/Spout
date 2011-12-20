@@ -1,40 +1,43 @@
 package org.getspout.api.util.map;
+
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports (byte, short, byte) keys, using a trove int int hashmap in the backend.
+ * A simplistic map that supports (byte, short, byte) keys, using a trove int
+ * int hashmap in the backend.
+ *
  * @author Afforess
  *
  */
-public class TByteShortByteKeyedIntHashMap extends TByteShortByteKeyedMap{
+public class TByteShortByteKeyedIntHashMap extends TByteShortByteKeyedMap {
 	private TIntIntHashMap map;
-	
+
 	public TByteShortByteKeyedIntHashMap() {
 		map = new TIntIntHashMap(100);
 	}
-	
-	public TByteShortByteKeyedIntHashMap(int capacity){
+
+	public TByteShortByteKeyedIntHashMap(int capacity) {
 		map = new TIntIntHashMap(capacity);
 	}
-	
+
 	public int put(int key1, int key2, int key3, int value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
-	
+
 	public int get(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
-	
+
 	public boolean containsKey(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.containsKey(key);
 	}
-	
+
 	public void clear() {
 		map.clear();
 	}
@@ -80,5 +83,5 @@ public class TByteShortByteKeyedIntHashMap extends TByteShortByteKeyedMap{
 	public int[] values() {
 		return map.values();
 	}
-	
+
 }

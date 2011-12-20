@@ -9,8 +9,8 @@ import org.getspout.api.plugin.Plugin;
 public interface Scheduler {
 
 	/**
-	 * Schedules a once off task to occur after a delay
-	 * This task will be executed by the main server thread
+	 * Schedules a once off task to occur after a delay This task will be
+	 * executed by the main server thread
 	 *
 	 * @param plugin Plugin that owns the task
 	 * @param task Task to be executed
@@ -20,8 +20,8 @@ public interface Scheduler {
 	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay);
 
 	/**
-	 * Schedules a once off task to occur as soon as possible
-	 * This task will be executed by the main server thread
+	 * Schedules a once off task to occur as soon as possible This task will be
+	 * executed by the main server thread
 	 *
 	 * @param plugin Plugin that owns the task
 	 * @param task Task to be executed
@@ -30,8 +30,8 @@ public interface Scheduler {
 	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task);
 
 	/**
-	 * Schedules a repeating task
-	 * This task will be executed by the main server thread
+	 * Schedules a repeating task This task will be executed by the main server
+	 * thread
 	 *
 	 * @param plugin Plugin that owns the task
 	 * @param task Task to be executed
@@ -42,8 +42,8 @@ public interface Scheduler {
 	public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period);
 
 	/**
-	 * Schedules a once off task to occur after a delay
-	 * This task will be executed by a thread managed by the scheduler
+	 * Schedules a once off task to occur after a delay This task will be
+	 * executed by a thread managed by the scheduler
 	 *
 	 * @param plugin Plugin that owns the task
 	 * @param task Task to be executed
@@ -53,8 +53,8 @@ public interface Scheduler {
 	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay);
 
 	/**
-	 * Schedules a once off task to occur as soon as possible
-	 * This task will be executed by a thread managed by the scheduler
+	 * Schedules a once off task to occur as soon as possible This task will be
+	 * executed by a thread managed by the scheduler
 	 *
 	 * @param plugin Plugin that owns the task
 	 * @param task Task to be executed
@@ -63,8 +63,8 @@ public interface Scheduler {
 	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task);
 
 	/**
-	 * Schedules a repeating task
-	 * This task will be executed by a thread managed by the scheduler
+	 * Schedules a repeating task This task will be executed by a thread managed
+	 * by the scheduler
 	 *
 	 * @param plugin Plugin that owns the task
 	 * @param task Task to be executed
@@ -75,11 +75,13 @@ public interface Scheduler {
 	public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period);
 
 	/**
-	 * Calls a method on the main thread and returns a Future object
-	 * This task will be executed by the main server thread
-	 * <br/><br/>
-	 * <b>Note:</b>  The Future.get() methods must NOT be called from the main thread<br/>
-	 * <b>Note 2:</b> There is at least an average of 10ms latency until the isDone() method returns true<br/>
+	 * Calls a method on the main thread and returns a Future object This task
+	 * will be executed by the main server thread <br/>
+	 * <br/>
+	 * <b>Note:</b> The Future.get() methods must NOT be called from the main
+	 * thread<br/>
+	 * <b>Note 2:</b> There is at least an average of 10ms latency until the
+	 * isDone() method returns true<br/>
 	 *
 	 * @param <T> The callable's return type
 	 * @param plugin Plugin that owns the task
@@ -110,10 +112,12 @@ public interface Scheduler {
 	/**
 	 * Check if the task currently running.
 	 *
-	 * A repeating task might not be running currently, but will be running in the future.
-	 * A task that has finished, and does not repeat, will not be running ever again.
+	 * A repeating task might not be running currently, but will be running in
+	 * the future. A task that has finished, and does not repeat, will not be
+	 * running ever again.
 	 *
-	 * Explicitly, a task is running if there exists a thread for it, and that thread is alive.
+	 * Explicitly, a task is running if there exists a thread for it, and that
+	 * thread is alive.
 	 *
 	 * @param taskId The task to check.
 	 *
@@ -122,10 +126,12 @@ public interface Scheduler {
 	public boolean isCurrentlyRunning(int taskId);
 
 	/**
-	 * Tests whether the given task is queued for execution in the future.
-	 * <br/><br/>
-	 * <b>Note:</b> Repeating tasks may return anomalous results if they are currently executing.
-	 *<br/><br/>
+	 * Tests whether the given task is queued for execution in the future. <br/>
+	 * <br/>
+	 * <b>Note:</b> Repeating tasks may return anomalous results if they are
+	 * currently executing. <br/>
+	 * <br/>
+	 *
 	 * @param id The task to check.
 	 *
 	 * @return If the task is queued to be run.
@@ -135,14 +141,16 @@ public interface Scheduler {
 	/**
 	 * Returns a list of all active workers.
 	 *
-	 * This list contains asynch tasks that are being executed by separate threads.
+	 * This list contains asynch tasks that are being executed by separate
+	 * threads.
 	 *
 	 * @return Active workers
 	 */
 	public List<Worker> getActiveWorkers();
 
 	/**
-	 * Returns a list of all pending tasks.  The ordering of the tasks is not related to their order of execution.
+	 * Returns a list of all pending tasks. The ordering of the tasks is not
+	 * related to their order of execution.
 	 *
 	 * @return Active workers
 	 */

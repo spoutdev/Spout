@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +33,7 @@ public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancel
 
 	/**
 	 * Gets the inventory involved in this event.
-	 * 
+	 *
 	 * @return The inventory.
 	 */
 	public Inventory getInventory() {
@@ -45,8 +45,9 @@ public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancel
 	}
 
 	/**
-	 * Gets the location of the inventory, if there is one. Returns null if no location could be found.
-	 * 
+	 * Gets the location of the inventory, if there is one. Returns null if no
+	 * location could be found.
+	 *
 	 * @return location of the inventory
 	 */
 	public Location getLocation() {

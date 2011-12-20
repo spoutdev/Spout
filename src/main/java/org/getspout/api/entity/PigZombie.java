@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -47,7 +47,8 @@ public interface PigZombie extends Zombie {
 	/**
 	 * Set the pig zombie's current anger level.
 	 *
-	 * @param level The anger level. Higher levels of anger take longer to wear off.
+	 * @param level The anger level. Higher levels of anger take longer to wear
+	 *            off.
 	 */
 	void setAnger(int level);
 

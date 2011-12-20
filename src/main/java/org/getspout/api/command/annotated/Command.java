@@ -12,14 +12,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
 	public String[] aliases();
-	
+
 	public String usage() default "";
-	
+
 	public String desc();
-	
+
 	public String flags();
-	
+
 	public int min() default 0;
-	
+
 	public int max() default -1;
 }

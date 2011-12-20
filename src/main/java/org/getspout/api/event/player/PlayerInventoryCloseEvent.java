@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,19 +29,23 @@ public class PlayerInventoryCloseEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Get's the top (or main) inventory that was closed
+	 *
 	 * @return inventory closed
 	 */
+
 	@Override
 	public Inventory getInventory() {
-		return this.inventory;
+		return inventory;
 	}
 
 	/**
-	 * Get's the second, bottom inventory that was closed. 
-	 * @return bottom inventory closed or null if there was no second inventory closed
+	 * Get's the second, bottom inventory that was closed.
+	 *
+	 * @return bottom inventory closed or null if there was no second inventory
+	 *         closed
 	 */
 	public Inventory getBottomInventory() {
-		return this.other;
+		return other;
 	}
 
 	@Override

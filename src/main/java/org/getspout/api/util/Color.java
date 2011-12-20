@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -86,21 +86,21 @@ public final class Color {
 	public short getAlphaB() {
 		return alpha;
 	}
-	
+
 	public int getRedI() {
-		return (int)red;
+		return red;
 	}
-	
+
 	public int getGreenI() {
-		return (int)green;
+		return green;
 	}
-	
+
 	public int getBlueI() {
-		return (int)blue;
+		return blue;
 	}
-	
+
 	public int getAlphaI() {
-		return (int)alpha;
+		return alpha;
 	}
 
 	public Color setRed(float r) {
@@ -123,12 +123,14 @@ public final class Color {
 		return this;
 	}
 
+	@Override
 	public Color clone() {
 		return new Color(red, green, blue, alpha);
 	}
-	
+
+	@Override
 	public String toString() {
-		return "r: "+red+" g: "+green+" b: "+blue+" a: "+alpha;
+		return "r: " + red + " g: " + green + " b: " + blue + " a: " + alpha;
 	}
 
 	public boolean isInvalid() {
@@ -148,6 +150,6 @@ public final class Color {
 	}
 
 	public int toInt() {
-		return (getAlphaI() & 0xFF) << 24 | (getRedI() & 0xFF) << 16 | (getGreenI() & 0xFF) << 8 | (getBlueI() & 0xFF);
+		return (getAlphaI() & 0xFF) << 24 | (getRedI() & 0xFF) << 16 | (getGreenI() & 0xFF) << 8 | getBlueI() & 0xFF;
 	}
 }

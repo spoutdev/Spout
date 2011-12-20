@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,19 +29,23 @@ public class PlayerInventoryOpenEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the top (or main) inventory that was opened
+	 *
 	 * @return inventory opened
 	 */
+
 	@Override
 	public Inventory getInventory() {
-		return this.inventory;
+		return inventory;
 	}
 
 	/**
-	 * Gets the second, bottom inventory that was opened. 
-	 * @return bottom inventory opened or null if there was no second inventory opened
+	 * Gets the second, bottom inventory that was opened.
+	 *
+	 * @return bottom inventory opened or null if there was no second inventory
+	 *         opened
 	 */
 	public Inventory getBottomInventory() {
-		return this.other;
+		return other;
 	}
 
 	public void setBottomInventory(Inventory other) {

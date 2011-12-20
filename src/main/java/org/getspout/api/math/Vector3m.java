@@ -24,62 +24,77 @@ public class Vector3m extends Vector3 {
 
 	/**
 	 * Adds two vectors
+	 *
 	 * @param that
 	 * @return
 	 */
+
+	@Override
 	public Vector3 add(Vector3 that) {
-		this.x += that.x;
-		this.y += that.y;
-		this.z += that.z;
+		x += that.x;
+		y += that.y;
+		z += that.z;
 		return this;
 	}
 
 	/**
 	 * Subtracts two vectors
+	 *
 	 * @param that
 	 * @return
 	 */
+
+	@Override
 	public Vector3 subtract(Vector3 that) {
-		this.x -= that.x;
-		this.y -= that.y;
-		this.z -= that.z;
+		x -= that.x;
+		y -= that.y;
+		z -= that.z;
 		return this;
 	}
 
 	/**
 	 * Scales by the scalar value
+	 *
 	 * @param scale
 	 * @return
 	 */
+
+	@Override
 	public Vector3 scale(double scale) {
-		this.x *= scale;
-		this.y *= scale;
-		this.z *= scale;
+		x *= scale;
+		y *= scale;
+		z *= scale;
 		return this;
 	}
 
 	/**
 	 * Takes the cross product of two vectors
+	 *
 	 * @param that
 	 * @return
 	 */
+
+	@Override
 	public Vector3 cross(Vector3 that) {
-		this.x = this.getY() * that.getZ() - this.getZ() * that.getY();
-		this.y = this.getZ() * that.getX() - this.getX() * that.getZ();
-		this.z = this.getX() * that.getY() - this.getY() * that.getX();
+		x = getY() * that.getZ() - getZ() * that.getY();
+		y = getZ() * that.getX() - getX() * that.getZ();
+		z = getX() * that.getY() - getY() * that.getX();
 
 		return this;
 	}
 
 	/**
 	 * returns the vector with a length of 1
+	 *
 	 * @return
 	 */
+
+	@Override
 	public Vector3 normalize() {
 		double length = this.length();
-		this.x *= 1 / length;
-		this.y *= 1 / length;
-		this.z *= 1 / length;
+		x *= 1 / length;
+		y *= 1 / length;
+		z *= 1 / length;
 		return this;
 	}
 }

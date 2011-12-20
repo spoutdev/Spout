@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -42,7 +42,7 @@ public class PlayerPreLoginEvent extends Event {
 
 	/**
 	 * Sets the player's name.
-	 * 
+	 *
 	 * @param name The name to set
 	 */
 	public void setName(String name) {
@@ -60,11 +60,11 @@ public class PlayerPreLoginEvent extends Event {
 
 	/**
 	 * Sets the player IP address.
-	 * 
+	 *
 	 * @param ipAddress The IP Address to set.
 	 */
 	public void setAddress(InetAddress ipAddress) {
-		this.address = ipAddress;
+		address = ipAddress;
 	}
 
 	@Override

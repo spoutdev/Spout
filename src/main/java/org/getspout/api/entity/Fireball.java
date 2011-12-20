@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,7 +35,6 @@ package org.getspout.api.entity;
 
 import org.getspout.api.math.Vector3;
 
-
 /**
  * Represents a Fireball.
  */
@@ -43,8 +42,7 @@ public interface Fireball extends Projectile, Explosive {
 	/**
 	 * Fireballs fly straight and do not take setVelocity(...) well.
 	 *
-	 * @param direction
-	 *			the direction this fireball is flying toward
+	 * @param direction the direction this fireball is flying toward
 	 */
 	public void setDirection(Vector3 direction);
 

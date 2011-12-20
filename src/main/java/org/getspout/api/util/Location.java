@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,23 +21,25 @@ package org.getspout.api.util;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.getspout.api.geo.World;
-import org.getspout.api.block.Block;
-import org.getspout.api.math.*;
 
-public class Location extends Vector3m  {
+import org.getspout.api.block.Block;
+import org.getspout.api.geo.World;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
+
+public class Location extends Vector3m {
 	private double pitch;
 	private double yaw;
 	private World world;
 
 	public Location() {
-		this(null, 0,0,0, 0,0);
-	
+		this(null, 0, 0, 0, 0, 0);
+
 	}
 
 	/**
 	 * Constructs a new Location with the given coordinates
-	 * 
+	 *
 	 * @param world The world in which this location resides
 	 * @param x The x-coordinate of this new location
 	 * @param y The y-coordinate of this new location
@@ -49,7 +51,7 @@ public class Location extends Vector3m  {
 
 	/**
 	 * Constructs a new Location with the given coordinates and direction
-	 * 
+	 *
 	 * @param world The world in which this location resides
 	 * @param x The x-coordinate of this new location
 	 * @param y The y-coordinate of this new location
@@ -58,7 +60,7 @@ public class Location extends Vector3m  {
 	 * @param pitch The absolute rotation on the y-plane, in degrees
 	 */
 	public Location(final World world, final double x, final double y, final double z, final double yaw, final double pitch) {
-		super(x,y,z);
+		super(x, y, z);
 		this.world = world;
 		this.pitch = pitch;
 		this.yaw = yaw;
@@ -92,10 +94,10 @@ public class Location extends Vector3m  {
 	}
 
 	public Vector3 getDirection() {
-		Vector3m vector = new Vector3m(0,0,0);
+		Vector3m vector = new Vector3m(0, 0, 0);
 
-		double rotX = this.getYaw();
-		double rotY = this.getPitch();
+		double rotX = getYaw();
+		double rotY = getPitch();
 
 		vector.setY(-Math.sin(Math.toRadians(rotY)));
 
@@ -106,7 +108,7 @@ public class Location extends Vector3m  {
 
 		return vector;
 	}
-	
+
 	public Block getBlock() {
 		return null; // world.getBlockAt(this);
 	}
@@ -115,14 +117,14 @@ public class Location extends Vector3m  {
 	public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location other = (Location) obj;
-			return (new EqualsBuilder()).append(getX(), other.getX()).append(getY(), other.getY()).append(getZ(), other.getZ()).append(getYaw(), other.getYaw()).append(getPitch(), other.getPitch()).append(getWorld(), other.getWorld()).isEquals();
+			return new EqualsBuilder().append(getX(), other.getX()).append(getY(), other.getY()).append(getZ(), other.getZ()).append(getYaw(), other.getYaw()).append(getPitch(), other.getPitch()).append(getWorld(), other.getWorld()).isEquals();
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return (new HashCodeBuilder()).append(getX()).append(getY()).append(getZ()).append(getYaw()).append(getPitch()).append(getWorld()).toHashCode();
+		return new HashCodeBuilder().append(getX()).append(getY()).append(getZ()).append(getYaw()).append(getPitch()).append(getWorld()).toHashCode();
 	}
 
 	public Vector3 toVector() {

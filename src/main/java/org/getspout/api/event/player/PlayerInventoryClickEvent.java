@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +17,8 @@
 package org.getspout.api.event.player;
 
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.inventory.InventorySlotType;
 import org.getspout.api.event.Result;
+import org.getspout.api.inventory.InventorySlotType;
 import org.getspout.api.inventory.ItemStack;
 import org.getspout.api.inventory.PlayerInventory;
 
@@ -44,27 +44,28 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	@Override
 	public void setCancelled(boolean cancel) {
 		if (cancel) {
-			this.result = Result.DENY;
+			result = Result.DENY;
 		}
 		super.setCancelled(cancel);
 	}
 
 	/**
-	 * Gets the result of this event.
-	 * Default: Allow for Minecraft to handle the inventory click normally
-	 * Allow: Allow the inventory click to continue, regardless of the consequences
-	 * Deny: Block the inventory click from occuring, reset the inventory state to the pre-click state
+	 * Gets the result of this event. Default: Allow for Minecraft to handle the
+	 * inventory click normally Allow: Allow the inventory click to continue,
+	 * regardless of the consequences Deny: Block the inventory click from
+	 * occuring, reset the inventory state to the pre-click state
+	 *
 	 * @return result
 	 */
 	public Result getResult() {
-		return this.result;
+		return result;
 	}
 
 	/**
-	 * Sets the result of this event.
-	 * Default: Allow for Minecraft to handle the inventory click normally
-	 * Allow: Allow the inventory click to continue, regardless of the consequences
-	 * Deny: Block the inventory click from occuring, reset the inventory state to the pre-click state
+	 * Sets the result of this event. Default: Allow for Minecraft to handle the
+	 * inventory click normally Allow: Allow the inventory click to continue,
+	 * regardless of the consequences Deny: Block the inventory click from
+	 * occuring, reset the inventory state to the pre-click state
 	 */
 	public void setResult(Result result) {
 		this.result = result;
@@ -75,10 +76,11 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the type of slot that is being interacted with
+	 *
 	 * @return slot type
 	 */
 	public InventorySlotType getSlotType() {
-		return this.type;
+		return type;
 	}
 
 	public void setSlotType(InventorySlotType type) {
@@ -87,19 +89,22 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the item at the slow being interacted with, or null if empty
+	 *
 	 * @return item
 	 */
 	public ItemStack getItem() {
-		return this.item;
+		return item;
 	}
 
 	/**
-	 * Sets the slot being interacted with. Use null for an empty slot.
-	 * Note: The inventory slot can not be changed unless the result has been set to Allow.
+	 * Sets the slot being interacted with. Use null for an empty slot. Note:
+	 * The inventory slot can not be changed unless the result has been set to
+	 * Allow.
+	 *
 	 * @param item to set
 	 */
 	public void setItem(ItemStack item) {
-		if (this.result != Result.ALLOW) {
+		if (result != Result.ALLOW) {
 			throw new UnsupportedOperationException("Can not alter stack contents without allowing any result");
 		}
 		this.item = item;
@@ -107,44 +112,48 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 
 	/**
 	 * Gets the cursor being interacted with, or null if empty.
+	 *
 	 * @return cursor
 	 */
 	public ItemStack getCursor() {
-		return this.cursor;
+		return cursor;
 	}
 
 	/**
-	 * Sets the cursor being interacted with. Use null for an empty slot.
-	 * Note: The cursor can not be changed unless the result has been set to Allow.
+	 * Sets the cursor being interacted with. Use null for an empty slot. Note:
+	 * The cursor can not be changed unless the result has been set to Allow.
+	 *
 	 * @param cursor to set
 	 */
 	public void setCursor(ItemStack cursor) {
-		if (this.result != Result.ALLOW) {
+		if (result != Result.ALLOW) {
 			throw new UnsupportedOperationException("Can not alter cursor stack contents without allowing any result");
 		}
 		this.cursor = cursor;
 	}
 
 	/**
-	 * Gets the slot index being interacted with
-	 * If the slot is -999, the clicked region is outside of the inventory
+	 * Gets the slot index being interacted with If the slot is -999, the
+	 * clicked region is outside of the inventory
+	 *
 	 * @return slot index
 	 */
 	public int getSlot() {
-		return this.convertedSlot;
+		return convertedSlot;
 	}
 
 	public void setSlot(int slot) {
-		this.convertedSlot = slot;
+		convertedSlot = slot;
 	}
 
 	/**
-	 * Gets the raw slot index that the packet sent
-	 * If the slot is -999, the clicked region is outside of the inventory
+	 * Gets the raw slot index that the packet sent If the slot is -999, the
+	 * clicked region is outside of the inventory
+	 *
 	 * @return raw slot
 	 */
 	public int getRawSlot() {
-		return this.slot;
+		return slot;
 	}
 
 	public void setRawSlot(int slot) {
@@ -152,7 +161,9 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	}
 
 	/**
-	 * Returns true if the click on the inventory window was a left click. If false, it was a right click.
+	 * Returns true if the click on the inventory window was a left click. If
+	 * false, it was a right click.
+	 *
 	 * @return true if left click
 	 */
 	public boolean isLeftClick() {
@@ -164,7 +175,9 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	}
 
 	/**
-	 * Returns true if the click on the inventory crafting slow was a shift click. 
+	 * Returns true if the click on the inventory crafting slow was a shift
+	 * click.
+	 *
 	 * @return true if shift click
 	 */
 	public boolean isShiftClick() {

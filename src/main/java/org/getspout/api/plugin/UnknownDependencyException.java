@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,7 @@ public class UnknownDependencyException extends Exception {
 	}
 
 	public UnknownDependencyException(Throwable throwable, String message) {
-		this.cause = null;
+		cause = null;
 		this.message = message;
 	}
 
@@ -38,11 +38,13 @@ public class UnknownDependencyException extends Exception {
 		this(null, "Unknown dependency");
 	}
 
+	@Override
 	public Throwable getCause() {
-		return this.cause;
+		return cause;
 	}
 
+	@Override
 	public String getMessage() {
-		return this.message;
+		return message;
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,8 +30,8 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	/**
 	 * Gets the message to be sent to all players when leaving.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String getMessage() {
 		return message;
@@ -39,8 +39,8 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	/**
 	 * Sets the message to be sent to all players when leaving.
-	 * 
-	 * @param message 
+	 *
+	 * @param message
 	 */
 	public void setMessage(String message) {
 		this.message = message;
@@ -48,7 +48,7 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	/**
 	 * Gets if this event was a quit.
-	 * 
+	 *
 	 * @return True if the player quit.
 	 */
 	public boolean isQuit() {
@@ -57,7 +57,7 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	/**
 	 * Gets if the player was kicked.
-	 * 
+	 *
 	 * @return True if the player was kicked.
 	 */
 	public boolean isKick() {

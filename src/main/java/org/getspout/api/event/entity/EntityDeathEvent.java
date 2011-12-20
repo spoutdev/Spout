@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@
 package org.getspout.api.event.entity;
 
 import java.util.List;
+
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.inventory.ItemStack;
 
@@ -32,7 +33,7 @@ public class EntityDeathEvent extends EntityEvent {
 
 	/**
 	 * Gets the amount of experience to drop.
-	 * 
+	 *
 	 * @return The amount of experience to drop.
 	 */
 	public int getDropExp() {
@@ -41,7 +42,7 @@ public class EntityDeathEvent extends EntityEvent {
 
 	/**
 	 * Sets the amount of experience to drop.
-	 * 
+	 *
 	 * @param dropExp The experience to set.
 	 */
 	public void setDropExp(int dropExp) {
@@ -50,7 +51,7 @@ public class EntityDeathEvent extends EntityEvent {
 
 	/**
 	 * The drops to drop.
-	 * 
+	 *
 	 * @return The drops to drop.
 	 */
 	public List<ItemStack> getDrops() {
@@ -59,7 +60,7 @@ public class EntityDeathEvent extends EntityEvent {
 
 	/**
 	 * Sets the drops to drop.
-	 * 
+	 *
 	 * @param drops The drops to set.
 	 */
 	public void setDrops(List<ItemStack> drops) {

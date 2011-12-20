@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,8 +19,8 @@ package org.getspout.api.entity;
 import java.util.Set;
 import java.util.UUID;
 
-import org.getspout.api.geo.World;
 import org.getspout.api.event.EventSource;
+import org.getspout.api.geo.World;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.util.Location;
@@ -32,18 +32,21 @@ public interface Entity extends Metadatable, EventSource {
 
 	/**
 	 * Gets the current location of the entity
+	 *
 	 * @return location
 	 */
 	public Location getLocation();
 
 	/**
 	 * Sets the velocity of the entity
+	 *
 	 * @param velocity to set
 	 */
 	public void setVelocity(Vector3 velocity);
 
 	/**
 	 * Gets the current velocity of the entity
+	 *
 	 * @return velocity
 	 */
 	public Vector3 getVelocity();
@@ -55,6 +58,7 @@ public interface Entity extends Metadatable, EventSource {
 
 	/**
 	 * Teleports the entity to the given location
+	 *
 	 * @param location to teleport to
 	 * @return true if successful
 	 */
@@ -62,13 +66,15 @@ public interface Entity extends Metadatable, EventSource {
 
 	/**
 	 * Teleports the entity to the given entity
+	 *
 	 * @param entity to teleport to
 	 * @return true if successful
 	 */
 	public boolean teleport(Entity destination);
 
 	/**
-	 * Returns a set of entities within a bounding box defined by x,y,z centered around player
+	 * Returns a set of entities within a bounding box defined by x,y,z centered
+	 * around player
 	 *
 	 * @param x Size of the box along x axis
 	 * @param y Size of the box along y axis
@@ -85,7 +91,8 @@ public interface Entity extends Metadatable, EventSource {
 	public int getEntityId();
 
 	/**
-	 * Returns the entity's current fire ticks (ticks before the entity stops being on fire).
+	 * Returns the entity's current fire ticks (ticks before the entity stops
+	 * being on fire).
 	 *
 	 * @return int fireTicks
 	 */
@@ -99,7 +106,8 @@ public interface Entity extends Metadatable, EventSource {
 	public int getMaxFireTicks();
 
 	/**
-	 * Sets the entity's current fire ticks (ticks before the entity stops being on fire).
+	 * Sets the entity's current fire ticks (ticks before the entity stops being
+	 * on fire).
 	 *
 	 * @param ticks Current ticks remaining
 	 */
@@ -112,6 +120,7 @@ public interface Entity extends Metadatable, EventSource {
 
 	/**
 	 * Returns true if this entity has been marked for removal.
+	 *
 	 * @return True if it is dead.
 	 */
 	public boolean isDead();
@@ -148,18 +157,21 @@ public interface Entity extends Metadatable, EventSource {
 
 	/**
 	 * Returns the distance this entity has fallen
+	 *
 	 * @return The distance.
 	 */
 	public float getFallDistance();
 
 	/**
 	 * Sets the fall distance for this entity
+	 *
 	 * @param distance The new distance.
 	 */
 	public void setFallDistance(float distance);
 
 	/**
 	 * Returns a unique and persistent id for this entity
+	 *
 	 * @return unique id
 	 */
 	public UUID getUniqueId();
@@ -168,7 +180,7 @@ public interface Entity extends Metadatable, EventSource {
 	 * Gets the amount of ticks this entity has lived for.
 	 * <p>
 	 * This is the equivalent to "age" in entities.
-	 * 
+	 *
 	 * @return Age of entity
 	 */
 	public int getTicksLived();
@@ -176,16 +188,16 @@ public interface Entity extends Metadatable, EventSource {
 	/**
 	 * Sets the amount of ticks this entity has lived for.
 	 * <p>
-	 * This is the equivalent to "age" in entities. May not be
-	 * less than one tick.
-	 * 
+	 * This is the equivalent to "age" in entities. May not be less than one
+	 * tick.
+	 *
 	 * @param value Age of entity
 	 */
 	public void setTicksLived(int value);
 
 	/**
 	 * Sets the skin of this entity to the skin URI
-	 * 
+	 *
 	 * @param skinURI
 	 * @param type
 	 */

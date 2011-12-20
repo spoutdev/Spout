@@ -2,7 +2,6 @@ package org.getspout.api.material.item;
 
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.Tool;
-import org.getspout.api.material.item.GenericItemMaterial;
 
 public class GenericTool extends GenericItemMaterial implements Tool {
 
@@ -24,7 +23,7 @@ public class GenericTool extends GenericItemMaterial implements Tool {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-		
+
 	public Tool setStrengthModifier(BlockMaterial block, float modifier) {
 		// TODO Auto-generated method stub
 		return this;

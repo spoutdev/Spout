@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,8 +32,6 @@ import java.util.regex.Pattern;
 
 import org.getspout.api.Game;
 import org.getspout.api.addon.java.JavaAddonLoader;
-import org.getspout.api.command.AddonCommandYamlParser;
-import org.getspout.api.command.Command;
 import org.getspout.api.event.Event;
 
 public class SimplePluginManager implements PluginManager {
@@ -48,19 +46,20 @@ public class SimplePluginManager implements PluginManager {
 
 	public SimplePluginManager(Game instance, SimpleSecurityManager manager, double key) {
 		client = instance;
-		
+
 		this.key = key;
 		securityManager = manager;
 	}
 
 	/**
 	 * Registers the specified addon loader
-	 * 
+	 *
 	 * @param loader Class name of the AddonLoader to register
-	 * @throws IllegalArgumentException Thrown when the given Class is not a valid AddonLoader
+	 * @throws IllegalArgumentException Thrown when the given Class is not a
+	 *             valid AddonLoader
 	 */
 	public void registerInterface(Class<? extends PluginLoader> loader) throws IllegalArgumentException {
-		if (!loader.equals(JavaAddonLoader.class)){
+		if (!loader.equals(JavaAddonLoader.class)) {
 			throw new UnsupportedOperationException("Spoutcraft does not currently support non-standard addon loaders. :(");
 		}
 		PluginLoader instance;
@@ -90,13 +89,14 @@ public class SimplePluginManager implements PluginManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Loads the addons contained within the specified directory
-	 * 
+	 *
 	 * @param directory Directory to check for addons
 	 * @return A list of all addons loaded
 	 */
+
 	public Plugin[] loadAddons(File directory) {
 		List<Plugin> result = new ArrayList<Plugin>();
 		File[] files = directory.listFiles();
@@ -155,34 +155,38 @@ public class SimplePluginManager implements PluginManager {
 
 	/**
 	 * Loads the addon in the specified file
-	 * 
+	 *
 	 * File must be valid according to the current enabled Addon interfaces
-	 * 
+	 *
 	 * @param file File containing the addon to load
 	 * @return The Addon loaded, or null if it was invalid
-	 * @throws InvalidPluginException Thrown when the specified file is not a valid addon
-	 * @throws InvalidDescriptionException Thrown when the specified file contains an invalid description
+	 * @throws InvalidPluginException Thrown when the specified file is not a
+	 *             valid addon
+	 * @throws InvalidDescriptionException Thrown when the specified file
+	 *             contains an invalid description
 	 */
+
 	public synchronized Plugin loadAddon(File file) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		return loadAddon(file, true);
 	}
 
 	/**
 	 * Loads the addon in the specified file
-	 * 
+	 *
 	 * File must be valid according to the current enabled Addon interfaces
-	 * 
+	 *
 	 * @param file File containing the addon to load
-	 * @param ignoreSoftDependencies Loader will ignore soft dependencies if this flag is set to true
+	 * @param ignoreSoftDependencies Loader will ignore soft dependencies if
+	 *            this flag is set to true
 	 * @return The Addon loaded, or null if it was invalid
-	 * @throws InvalidPluginException Thrown when the specified file is not a valid addon
-	 * @throws InvalidDescriptionException Thrown when the specified file contains an invalid description
+	 * @throws InvalidPluginException Thrown when the specified file is not a
+	 *             valid addon
+	 * @throws InvalidDescriptionException Thrown when the specified file
+	 *             contains an invalid description
 	 */
 	public synchronized Plugin loadAddon(File file, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
 		securityManager.lock(key);
-		File updateFile = null;
-
-		if (updateDirectory != null && updateDirectory.isDirectory() && (updateFile = new File(updateDirectory, file.getName())).isFile()) {
+		if (updateDirectory != null && updateDirectory.isDirectory() && new File(updateDirectory, file.getName()).isFile()) {
 			//TODO fix
 			//if (FileUtil.copy(updateFile, file)) {
 			//	updateFile.delete();
@@ -213,18 +217,19 @@ public class SimplePluginManager implements PluginManager {
 
 	/**
 	 * Checks if the given addon is loaded and returns it when applicable
-	 * 
+	 *
 	 * Please note that the name of the addon is case-sensitive
-	 * 
+	 *
 	 * @param name Name of the addon to check
 	 * @return Addon if it exists, otherwise null
 	 */
+
 	public synchronized Plugin getAddon(String name) {
 		return lookupNames.get(name);
 	}
-	
+
 	public synchronized Plugin getOrCreateAddon(String name) {
-		if(!lookupNames.containsKey(name)) {
+		if (!lookupNames.containsKey(name)) {
 			addFakeAddon(new ServerPlugin(name, null, null));
 		}
 		return lookupNames.get(name);
@@ -236,12 +241,13 @@ public class SimplePluginManager implements PluginManager {
 
 	/**
 	 * Checks if the given addon is enabled or not
-	 * 
+	 *
 	 * Please note that the name of the addon is case-sensitive.
-	 * 
+	 *
 	 * @param name Name of the addon to check
 	 * @return true if the addon is enabled, otherwise false
 	 */
+
 	public boolean isAddonEnabled(String name) {
 		Plugin addon = getAddon(name);
 
@@ -250,12 +256,13 @@ public class SimplePluginManager implements PluginManager {
 
 	/**
 	 * Checks if the given addon is enabled or not
-	 * 
+	 *
 	 * @param addon Addon to check
 	 * @return true if the addon is enabled, otherwise false
 	 */
+
 	public boolean isAddonEnabled(Plugin addon) {
-		if ((addon != null) && (addons.contains(addon))) {
+		if (addon != null && addons.contains(addon)) {
 			return addon.isEnabled();
 		} else {
 			return false;
@@ -317,51 +324,52 @@ public class SimplePluginManager implements PluginManager {
 
 	/**
 	 * Call an event.
-	 * 
+	 *
 	 * @param <TEvent> Event subclass
 	 * @param event Event to handle
 	 * @author lahwran
 	 */
+
 	public <TEvent extends Event> TEvent callEvent(TEvent event) {
-/*		TODO: fix
-		HandlerList<TEvent> handlerlist = event.getHandlers();
-		handlerlist.bake();
+		/*		TODO: fix
+				HandlerList<TEvent> handlerlist = event.getHandlers();
+				handlerlist.bake();
 
-		Listener<TEvent>[][] handlers = handlerlist.handlers;
-		int[] handlerids = handlerlist.handlerids;
-		
-		//We wouldn't want to open the lock prematurely if it was locked by the caller, would we now? :)
-		boolean wasLocked = securityManager.isLocked();
-		if (!wasLocked) {
-			securityManager.lock(key);
-		}
+				Listener<TEvent>[][] handlers = handlerlist.handlers;
+				int[] handlerids = handlerlist.handlerids;
 
-		for (int arrayidx = 0; arrayidx < handlers.length; arrayidx++) {
-
-			// if the order slot is even and the event has stopped propogating
-			if (event.isCancelled() && (handlerids[arrayidx] & 1) == 0)
-				continue; // then don't call this order slot
-
-			for (int handler = 0; handler < handlers[arrayidx].length; handler++) {
-				try {
-					
-					handlers[arrayidx][handler].onEvent(event);
-
-				} catch (Throwable t) {
-					System.err.println("Error while passing event " + event);
-					t.printStackTrace();
+				//We wouldn't want to open the lock prematurely if it was locked by the caller, would we now? :)
+				boolean wasLocked = securityManager.isLocked();
+				if (!wasLocked) {
+					securityManager.lock(key);
 				}
-			}
-		}
-		if (!wasLocked) {
-			securityManager.unlock(key);
-		}*/
+
+				for (int arrayidx = 0; arrayidx < handlers.length; arrayidx++) {
+
+					// if the order slot is even and the event has stopped propogating
+					if (event.isCancelled() && (handlerids[arrayidx] & 1) == 0)
+						continue; // then don't call this order slot
+
+					for (int handler = 0; handler < handlers[arrayidx].length; handler++) {
+						try {
+
+							handlers[arrayidx][handler].onEvent(event);
+
+						} catch (Throwable t) {
+							System.err.println("Error while passing event " + event);
+							t.printStackTrace();
+						}
+					}
+				}
+				if (!wasLocked) {
+					securityManager.unlock(key);
+				}*/
 		return event;
 	}
-	
+
 	private void safelyLog(Level level, String message, Throwable ex) {
 		boolean relock = false;
-		if (securityManager.isLocked()){
+		if (securityManager.isLocked()) {
 			relock = true;
 			securityManager.unlock(key);
 		}
@@ -370,13 +378,13 @@ public class SimplePluginManager implements PluginManager {
 			securityManager.lock(key);
 		}
 	}
-	
+
 	public void addFakeAddon(ServerPlugin addon) {
 		addons.add(addon);
 		addon.setEnabled(true);
 		lookupNames.put(addon.getDescription().getName(), addon);
 	}
-	
+
 	public ThreadGroup getSecurityThreadGroup() {
 		return securityManager.getSecurityThreadGroup();
 	}

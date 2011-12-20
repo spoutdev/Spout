@@ -10,7 +10,7 @@ public class Voxelm extends Voxel implements MovableCuboid {
 	public Voxelm(World world, double x, double y, double z) {
 		super(world, x, y, z);
 	}
-	
+
 	public void setX(int x) {
 		base.setX(x * size.getX());
 	}

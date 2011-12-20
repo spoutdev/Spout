@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,8 +46,8 @@ public interface Wolf extends Animals, Tameable {
 	public boolean isAngry();
 
 	/**
-	 * Sets the anger of this wolf
-	 * An angry wolf can not be fed or tamed, and will actively look for targets to attack.
+	 * Sets the anger of this wolf An angry wolf can not be fed or tamed, and
+	 * will actively look for targets to attack.
 	 *
 	 * @param angry true if angry
 	 */
@@ -61,8 +61,8 @@ public interface Wolf extends Animals, Tameable {
 	public boolean isSitting();
 
 	/**
-	 * Sets if this wolf is sitting
-	 * Will remove any path that the wolf was following beforehand.
+	 * Sets if this wolf is sitting Will remove any path that the wolf was
+	 * following beforehand.
 	 *
 	 * @param sitting true if sitting
 	 */

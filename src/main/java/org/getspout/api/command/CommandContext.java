@@ -1,5 +1,10 @@
 package org.getspout.api.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TCharObjectMap;
@@ -7,17 +12,9 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import gnu.trove.set.TCharSet;
 import gnu.trove.set.hash.TCharHashSet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
 /**
- * This class serves as a wrapper for command arguments. It also provides boolean and value flag parsing and several command helper methods.
+ * This class serves as a wrapper for command arguments. It also provides
+ * boolean and value flag parsing and several command helper methods.
  */
 public class CommandContext {
 
@@ -33,8 +30,10 @@ public class CommandContext {
 	}
 
 	/**
-	 * @param args An array with arguments. Empty strings outside quotes will be removed.
-	 * @param valueFlags A set containing all value flags. Pass null to disable value flag parsing.
+	 * @param args An array with arguments. Empty strings outside quotes will be
+	 *            removed.
+	 * @param valueFlags A set containing all value flags. Pass null to disable
+	 *            value flag parsing.
 	 * @throws CommandException This is thrown if flag fails for some reason.
 	 */
 	public CommandContext(String[] args, TCharSet valueFlags) throws CommandException {
@@ -66,7 +65,9 @@ public class CommandContext {
 					for (endIndex = i; endIndex < args.length; ++endIndex) {
 						final String arg2 = args[endIndex];
 						if (arg2.charAt(arg2.length() - 1) == quotedChar) {
-							if (endIndex != i) build.append(' ');
+							if (endIndex != i) {
+								build.append(' ');
+							}
 							build.append(arg2.substring(endIndex == i ? 1 : 0, arg2.length() - 1));
 							break;
 						} else if (endIndex == i) {
@@ -87,10 +88,10 @@ public class CommandContext {
 
 		// Then flags
 
-		this.originalArgIndices = new TIntArrayList(argIndexList.size());
-		this.parsedArgs = new ArrayList<String>(argList.size());
+		originalArgIndices = new TIntArrayList(argIndexList.size());
+		parsedArgs = new ArrayList<String>(argList.size());
 
-		for (int nextArg = 0; nextArg < argList.size(); ) {
+		for (int nextArg = 0; nextArg < argList.size();) {
 			// Fetch argument
 			String arg = argList.get(nextArg++);
 
@@ -135,7 +136,7 @@ public class CommandContext {
 	public int length() {
 		return parsedArgs.size();
 	}
-	
+
 	public String getCommand() {
 		return command;
 	}
@@ -214,7 +215,7 @@ public class CommandContext {
 
 		return Double.parseDouble(value);
 	}
-	
+
 	public String getJoinedString(int initialIndex) {
 		initialIndex = originalArgIndices.get(initialIndex);
 		StringBuilder buffer = new StringBuilder(originalArgs[initialIndex]);
@@ -223,7 +224,7 @@ public class CommandContext {
 		}
 		return buffer.toString();
 	}
-	
+
 	public String[] getRawArgs() {
 		return originalArgs;
 	}

@@ -1,10 +1,10 @@
 package org.getspout.api.command.annotated;
 
-import org.getspout.api.command.*;
-
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+
+import org.getspout.api.command.CommandSource;
 
 public class SimpleAnnotatedCommandExecutorFactory implements AnnotatedCommandExecutorFactory {
 

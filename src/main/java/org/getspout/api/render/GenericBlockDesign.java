@@ -24,7 +24,7 @@ public class GenericBlockDesign implements BlockDesign {
 
 	protected String textureURL;
 	protected String texturePlugin;
-	
+
 	protected Texture texture;
 
 	protected float[][] xPos;
@@ -56,7 +56,7 @@ public class GenericBlockDesign implements BlockDesign {
 		this.highYBound = highYBound;
 		this.highZBound = highZBound;
 		this.textureURL = textureURL;
-		this.texturePlugin = textureAddon.getDescription().getName();
+		texturePlugin = textureAddon.getDescription().getName();
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.zPos = zPos;
@@ -161,18 +161,18 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public BlockDesign setTexture(Plugin addon, String textureURL) {
-		this.texturePlugin = addon.getDescription().getName();
+		texturePlugin = addon.getDescription().getName();
 		this.textureURL = textureURL;
 		return this;
 	}
 
 	public BlockDesign setBoundingBox(float lowX, float lowY, float lowZ, float highX, float highY, float highZ) {
-		this.lowXBound = lowX;
-		this.lowYBound = lowY;
-		this.lowZBound = lowZ;
-		this.highXBound = highX;
-		this.highYBound = highY;
-		this.highZBound = highZ;
+		lowXBound = lowX;
+		lowYBound = lowY;
+		lowZBound = lowZ;
+		highXBound = highX;
+		highYBound = highY;
+		highZBound = highZ;
 		return this;
 	}
 
@@ -246,7 +246,7 @@ public class GenericBlockDesign implements BlockDesign {
 		this.texture = texture;
 		return setTexture(addon, texture.getTexture());
 	}
-	
+
 	public Texture getTexture() {
 		return texture;
 	}

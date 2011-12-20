@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +24,7 @@ import org.getspout.api.event.Event;
  */
 public abstract class PlayerEvent extends Event {
 	private Player player;
-	
+
 	public Player getPlayer() {
 		return player;
 	}
@@ -32,5 +32,5 @@ public abstract class PlayerEvent extends Event {
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
-	
+
 }

@@ -1,9 +1,5 @@
 package org.getspout.api.block.design;
 
-import org.getspout.api.block.design.Quad;
-import org.getspout.api.block.design.SubTexture;
-import org.getspout.api.block.design.Vertex;
-
 public class Quad {
 
 	private int index;
@@ -12,7 +8,7 @@ public class Quad {
 
 	/**
 	 * Creates a new quad with the following vertexes at the specified index
-	 * 
+	 *
 	 * @param index of the quad
 	 * @param texture Subtexture to use
 	 * @param v1 first vertex
@@ -30,7 +26,7 @@ public class Quad {
 
 	/**
 	 * Creates an empty quad at index based on the SubTexture
-	 * 
+	 *
 	 * @param index of the quad
 	 * @param texture
 	 */
@@ -41,7 +37,7 @@ public class Quad {
 
 	/**
 	 * Adds a vertex to the quad with the SubTexture properties of this quad
-	 * 
+	 *
 	 * @param index of the vertex
 	 * @param x value of the vertex
 	 * @param y value of the vertex
@@ -58,7 +54,7 @@ public class Quad {
 
 	/**
 	 * Adds a vertex to the quad
-	 * 
+	 *
 	 * @param vertex to add
 	 * @return this
 	 */
@@ -67,10 +63,10 @@ public class Quad {
 
 		return this;
 	}
-	
+
 	/**
 	 * Gets the vertex of the specified index
-	 * 
+	 *
 	 * @param index of the vertex
 	 * @return the vertex
 	 */
@@ -78,10 +74,10 @@ public class Quad {
 		if (index < 0 || index > 3) {
 			throw new IllegalArgumentException("Invalid vertex index: " + index);
 		}
-		
+
 		return vertexes[index];
 	}
-	
+
 	public int getIndex() {
 		return index;
 	}
