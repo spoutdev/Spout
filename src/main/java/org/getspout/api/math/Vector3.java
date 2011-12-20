@@ -196,7 +196,9 @@ public class Vector3 implements Comparable<Vector3> {
 	public Vector3 transform(Matrix transformation) {
 		return Vector3.transform(this, transformation);
 	}
-
+	public Vector3 transform(Quaternion transformation){
+		return Vector3.transform(this, transformation);
+	}
 	/**
 	 * Compares two Vector3s
 	 */
