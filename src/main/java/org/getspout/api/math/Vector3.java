@@ -209,9 +209,16 @@ public class Vector3 implements Comparable<Vector3> {
 	 * Checks if two Vector3s are equal
 	 */
 
-	@Override
+	
 	public boolean equals(Object o) {
 		return Vector3.equals(this, o);
+	}
+	
+	/**
+	 * toString Override
+	 */
+	public String toString(){
+		return String.format("{ %f, %f, %f",x,y,z);
 	}
 
 	/**
@@ -222,7 +229,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static double length(Vector3 a) {
-		return MathHelper.sqrt(lengthSquared(a));
+		return Math.sqrt(lengthSquared(a));
 	}
 
 	/**
@@ -286,7 +293,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static double dot(Vector3 a, Vector3 b) {
-		return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() + b.getZ();
+		return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
 	}
 
 	/**
