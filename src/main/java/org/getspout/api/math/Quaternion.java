@@ -34,7 +34,7 @@ public class Quaternion {
 	 * @param axis
 	 */
 	public Quaternion(double angle, Vector3 axis){
-		this(axis.getX() * MathHelper.sin(angle), axis.getY() * MathHelper.sin(angle), axis.getZ() * MathHelper.sin(angle), MathHelper.cos(angle/2));
+		this(axis.getX() * MathHelper.sin(angle/2), axis.getY() * MathHelper.sin(angle/2), axis.getZ() * MathHelper.sin(angle/2), MathHelper.cos(angle/2));
 	}
 	/**
 	 * Returns the X component of the quaternion
