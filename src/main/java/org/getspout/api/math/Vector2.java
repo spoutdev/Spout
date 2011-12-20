@@ -232,7 +232,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 scale(Vector2 a, double b) {
-		return new Vector2(a.getX() * b, a.getY());
+		return new Vector2(a.getX() * b, a.getY() * b);
 	}
 
 	/**
