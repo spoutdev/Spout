@@ -140,6 +140,19 @@ public class Matrix {
 	private static int index(int x, int y, int dim) {
 		return y * dim + x;
 	}
+	
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[ ");
+		for(int y = 0; y < this.dimension; y++){
+			for(int x = 0; x < this.dimension; x++){
+				sb.append(this.get(y,x));
+				sb.append(" , ");
+			}
+			sb.append(" ]\n");
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * Creates and returns a 4x4 identity matrix
@@ -267,4 +280,6 @@ public class Matrix {
 		
 		return res;
 	}
+	
+	
 }
