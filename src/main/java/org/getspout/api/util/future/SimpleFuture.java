@@ -8,33 +8,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
-<<<<<<< HEAD
  * Implementation of a Future object that can store one result.
  * 
  * This Future is intended for transferring of a result from a source thread to a receiver thread.
  * 
  * It should only be reused by the calling thread.
-=======
- * Implementation of a Future object that can pass one It is used when the
- * result is known at creation time.
->>>>>>> 07c684674f76bea766a443ed11a0a3b2e6eeb6ca
  */
 
 public class SimpleFuture<T> implements Future<T> {
 
-<<<<<<< HEAD
 	private final AtomicBoolean done = new AtomicBoolean(false);
 	private final AtomicReference<T> result = new AtomicReference<T>();
 	private final AtomicInteger waiting = new AtomicInteger(0);
 	
 	public SimpleFuture(T result) {
 		set(result);
-=======
-	private final ArrayBlockingQueue<T> result = new ArrayBlockingQueue<T>(1);
-	private final AtomicInteger done = new AtomicInteger(0);
-
-	public SimpleFuture() {
->>>>>>> 07c684674f76bea766a443ed11a0a3b2e6eeb6ca
 	}
 
 	/**
@@ -51,17 +39,12 @@ public class SimpleFuture<T> implements Future<T> {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Sets the result.  
 	 * 
 	 * This method should only be called by the thread responsible for answering the future.
 	 * 
 	 * Calling this method from more than 1 thread is not threadsafe.
 	 * 
-=======
-	 * Sets the result
-	 *
->>>>>>> 07c684674f76bea766a443ed11a0a3b2e6eeb6ca
 	 * @param the result for the Future
 	 */
 	public void set(T result) {
@@ -79,15 +62,11 @@ public class SimpleFuture<T> implements Future<T> {
 
 	/**
 	 * Gets the result and waits if required.
-<<<<<<< HEAD
 	 * 
 	 * The get methods for this class should only be called by a dedicated read thread
 	 * 
 	 * Calling this method from multiple threads is not threadsafe
 	 * 
-=======
-	 *
->>>>>>> 07c684674f76bea766a443ed11a0a3b2e6eeb6ca
 	 * @return returns the result
 	 */
 
@@ -112,15 +91,11 @@ public class SimpleFuture<T> implements Future<T> {
 
 	/**
 	 * Gets the result and waits, up to the timeout, if required.
-<<<<<<< HEAD
 	 * 
 	 * The get methods for this class should only be called from a single read thread.  
 	 * 
 	 * Calling this method from multiple threads is not threadsafe
 	 * 
-=======
-	 *
->>>>>>> 07c684674f76bea766a443ed11a0a3b2e6eeb6ca
 	 * @return returns the result
 	 */
 
