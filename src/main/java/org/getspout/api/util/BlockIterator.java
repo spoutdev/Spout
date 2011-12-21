@@ -42,6 +42,7 @@ import org.getspout.api.block.BlockFace;
 import org.getspout.api.entity.LivingEntity;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.discrete.Ray;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.math.Vector3m;
 
@@ -258,8 +259,8 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 
-	public BlockIterator(Location loc, double yOffset, int maxDistance) {
-		this(loc.getWorld(), loc.toVector(), loc.getDirection(), yOffset, maxDistance);
+	public BlockIterator(Ray loc, double yOffset, int maxDistance) {
+		this(loc.getWorld(), loc, loc.getDirection(), yOffset, maxDistance);
 	}
 
 	/**
@@ -271,8 +272,8 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 
-	public BlockIterator(Location loc, double yOffset) {
-		this(loc.getWorld(), loc.toVector(), loc.getDirection(), yOffset, 0);
+	public BlockIterator(Ray loc, double yOffset) {
+		this(loc.getWorld(), loc, loc.getDirection(), yOffset, 0);
 	}
 
 	/**
@@ -282,7 +283,7 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 
-	public BlockIterator(Location loc) {
+	public BlockIterator(Ray loc) {
 		this(loc, 0D);
 	}
 
@@ -297,7 +298,7 @@ public class BlockIterator implements Iterator<Block> {
 	 */
 
 	public BlockIterator(LivingEntity entity, int maxDistance) {
-		this(entity.getLocation(), entity.getEyeHeight(), maxDistance);
+		this(entity.getOrientation(), entity.getEyeHeight(), maxDistance);
 	}
 
 	/**

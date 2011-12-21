@@ -16,7 +16,7 @@
  */
 package org.getspout.api.event.entity;
 
-import org.getspout.api.entity.Projectile;
+import org.getspout.api.entity.object.Projectile;
 
 /**
  * Called when an entity is damaged by a projectile.

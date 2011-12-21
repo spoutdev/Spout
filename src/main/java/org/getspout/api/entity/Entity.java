@@ -21,6 +21,8 @@ import java.util.UUID;
 
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.World;
+import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.geo.discrete.Ray;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.util.Location;
@@ -29,13 +31,19 @@ import org.getspout.api.util.Location;
  * Represents a base entity in the world
  */
 public interface Entity extends Metadatable, EventSource {
-
 	/**
-	 * Gets the current location of the entity
+	 * Gets the current position of the entity
 	 *
-	 * @return location
+	 * @return position as a Point
 	 */
-	public Location getLocation();
+	public Point getPosition();
+	
+	/**
+	 * Gets the current orientation of the entity
+	 * 
+	 * @return orientation as a Ray
+	 */
+	public Ray getOrientation();
 
 	/**
 	 * Sets the velocity of the entity
@@ -57,12 +65,12 @@ public interface Entity extends Metadatable, EventSource {
 	public World getWorld();
 
 	/**
-	 * Teleports the entity to the given location
+	 * Teleports the entity to the given position
 	 *
-	 * @param location to teleport to
+	 * @param position to teleport to
 	 * @return true if successful
 	 */
-	public boolean teleport(Location location);
+	public boolean teleport(Point positon);
 
 	/**
 	 * Teleports the entity to the given entity

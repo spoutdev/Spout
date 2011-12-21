@@ -33,6 +33,8 @@
 
 package org.getspout.api.entity;
 
+import org.getspout.api.entity.object.Projectile;
+
 /**
  * Represents a Fish.
  */
