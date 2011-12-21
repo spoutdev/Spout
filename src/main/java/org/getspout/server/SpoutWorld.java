@@ -540,8 +540,12 @@ public final class SpoutWorld implements World {
 
 	@Override
 	public int getHighestBlockYAt(int x, int z) {
+		SpoutChunk chunk = getChunkAt(x >> 4, z >> 4);
+		int coordX = x & 0xF;
+		int coordZ = z & 0xF;
+		
 		for (int y = getMaxHeight() - 1; y >= 0; --y) {
-			if (getBlockTypeIdAt(x, y, z) != 0) {
+			if (chunk.getType(coordX, y, coordZ) != 0) {
 				return y + 1;
 			}
 		}
