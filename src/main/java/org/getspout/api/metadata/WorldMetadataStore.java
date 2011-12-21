@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,12 +24,15 @@ import org.getspout.api.geo.World;
 public class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
 
 	/**
-	 * Generates a unique metadata key for a {@link World} object based on the world UID.
+	 * Generates a unique metadata key for a {@link World} object based on the
+	 * world UID.
+	 *
 	 * @see WorldMetadataStore#Disambiguate(Object, String)
 	 * @param world
 	 * @param metadataKey
 	 * @return
 	 */
+
 	@Override
 	protected String disambiguate(World world, String metadataKey) {
 		return world.getUID().toString() + ":" + metadataKey;

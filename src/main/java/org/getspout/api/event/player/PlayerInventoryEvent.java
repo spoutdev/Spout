@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,8 +18,8 @@ package org.getspout.api.event.player;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.inventory.Inventory;
-import org.getspout.api.util.Location;
 
 /**
  * Represents an inventory-related event.
@@ -27,13 +27,13 @@ import org.getspout.api.util.Location;
 public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	protected Location location = null;
+	protected Point point = null;
 
 	protected Inventory inventory;
 
 	/**
 	 * Gets the inventory involved in this event.
-	 * 
+	 *
 	 * @return The inventory.
 	 */
 	public Inventory getInventory() {
@@ -45,16 +45,17 @@ public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancel
 	}
 
 	/**
-	 * Gets the location of the inventory, if there is one. Returns null if no location could be found.
-	 * 
+	 * Gets the location of the inventory, if there is one. Returns null if no
+	 * location could be found.
+	 *
 	 * @return location of the inventory
 	 */
-	public Location getLocation() {
-		return location;
+	public Point getPoint() {
+		return point;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setPosition(Point point) {
+		this.point = point;
 	}
 
 	@Override

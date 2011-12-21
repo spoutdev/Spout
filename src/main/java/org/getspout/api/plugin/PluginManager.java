@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,10 +19,6 @@ package org.getspout.api.plugin;
 import java.io.File;
 
 import org.getspout.api.event.Event;
-import org.getspout.api.plugin.InvalidDescriptionException;
-import org.getspout.api.plugin.InvalidPluginException;
-import org.getspout.api.plugin.Plugin;
-import org.getspout.api.plugin.UnknownDependencyException;
 
 public abstract interface PluginManager {
 
@@ -49,7 +45,7 @@ public abstract interface PluginManager {
 	public abstract void disableAddon(Plugin paramAddon);
 
 	public abstract Plugin getOrCreateAddon(String readString);
-	
+
 	public abstract ThreadGroup getSecurityThreadGroup();
 
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@ package org.getspout.api;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public enum ChatColor {
 	BLACK(0),
 
@@ -61,15 +61,16 @@ public enum ChatColor {
 	}
 
 	public int getCode() {
-		return this.code;
+		return code;
 	}
 
+	@Override
 	public String toString() {
-		return String.format("\u00A7%x", new Object[] { Integer.valueOf(this.code) });
+		return String.format("\u00A7%x", new Object[] {Integer.valueOf(code)});
 	}
 
 	public static ChatColor getByCode(int code) {
-		return (ChatColor) colors.get(Integer.valueOf(code));
+		return colors.get(Integer.valueOf(code));
 	}
 
 	public static String stripColor(String input) {
@@ -83,7 +84,8 @@ public enum ChatColor {
 	static {
 		colors = new HashMap();
 
-		for (ChatColor color : values())
+		for (ChatColor color : values()) {
 			colors.put(Integer.valueOf(color.getCode()), color);
+		}
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,11 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.getspout.api.plugin.InvalidDescriptionException;
-import org.getspout.api.plugin.PluginLoadOrder;
-import org.getspout.api.plugin.Plugin.Mode;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+
+import org.getspout.api.plugin.Plugin.Mode;
 
 public class PluginDescriptionFile {
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
@@ -43,20 +42,20 @@ public class PluginDescriptionFile {
 	private ArrayList<String> authors = new ArrayList<String>();
 	private String website = null;
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public PluginDescriptionFile(InputStream stream) throws InvalidDescriptionException {
 		loadMap((Map<String, Object>) yaml.load(stream));
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public PluginDescriptionFile(Reader reader) throws InvalidDescriptionException {
 		loadMap((Map<String, Object>) yaml.load(reader));
 	}
 
 	public PluginDescriptionFile(String addonName, String addonVersion, String mainClass) {
-		this.name = addonName;
-		this.version = addonVersion;
-		this.main = mainClass;
+		name = addonName;
+		version = addonVersion;
+		main = mainClass;
 	}
 
 	public void save(Writer writer) {
@@ -64,56 +63,57 @@ public class PluginDescriptionFile {
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public String getVersion() {
-		return this.version;
+		return version;
 	}
 
 	public String getFullName() {
-		return this.name + " v" + this.version;
+		return name + " v" + version;
 	}
 
 	public String getMain() {
-		return this.main;
+		return main;
 	}
-	
+
 	public PluginLoadOrder getLoad() {
-		return this.load;
+		return load;
 	}
 
 	public Object getCommands() {
-		return this.commands;
+		return commands;
 	}
 
 	public Object getDepend() {
-		return this.depend;
+		return depend;
 	}
 
 	public Object getSoftDepend() {
-		return this.softDepend;
+		return softDepend;
 	}
 
 	public String getDescription() {
-		return this.description;
+		return description;
 	}
 
 	public ArrayList<String> getAuthors() {
-		return this.authors;
+		return authors;
 	}
 
 	public String getWebsite() {
-		return this.website;
+		return website;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void loadMap(Map<String, Object> map) throws InvalidDescriptionException {
 		try {
-			this.name = map.get("name").toString();
+			name = map.get("name").toString();
 
-			if (!this.name.matches("^[A-Za-z0-9 _.-]+$"))
-				throw new InvalidDescriptionException("name '" + this.name + "' contains invalid characters.");
+			if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
+				throw new InvalidDescriptionException("name '" + name + "' contains invalid characters.");
+			}
 		} catch (NullPointerException ex) {
 			throw new InvalidDescriptionException(ex, "name is not defined");
 		} catch (ClassCastException ex) {
@@ -121,7 +121,7 @@ public class PluginDescriptionFile {
 		}
 
 		try {
-			this.version = map.get("version").toString();
+			version = map.get("version").toString();
 		} catch (NullPointerException ex) {
 			throw new InvalidDescriptionException(ex, "version is not defined");
 		} catch (ClassCastException ex) {
@@ -129,17 +129,22 @@ public class PluginDescriptionFile {
 		}
 
 		try {
-			this.main = map.get("main").toString();
-			if (this.main.startsWith("org.bukkit."))
+			main = map.get("main").toString();
+			if (main.startsWith("org.bukkit.")) {
 				throw new InvalidDescriptionException("main may not be within the org.bukkit namespace");
-			if (this.main.startsWith("org.getspout."))
+			}
+			if (main.startsWith("org.getspout.")) {
 				throw new InvalidDescriptionException("main may not be within the org.getspout namespace");
-			if (this.main.startsWith("org.spoutcraft."))
+			}
+			if (main.startsWith("org.spoutcraft.")) {
 				throw new InvalidDescriptionException("main may not be within the org.spoutcraft namespace");
-			if (this.main.startsWith("in.spout."))
+			}
+			if (main.startsWith("in.spout.")) {
 				throw new InvalidDescriptionException("main may not be within the in.spout namespace");
-			if (this.main.startsWith("net.minecraft."))
+			}
+			if (main.startsWith("net.minecraft.")) {
 				throw new InvalidDescriptionException("main may not be within the net.minecraft namespace");
+			}
 		} catch (NullPointerException ex) {
 			throw new InvalidDescriptionException(ex, "main is not defined");
 		} catch (ClassCastException ex) {
@@ -164,10 +169,10 @@ public class PluginDescriptionFile {
 		} catch (ClassCastException ex) {
 			throw new InvalidDescriptionException(ex, "mode is of wrong type");
 		}
-		
+
 		if (map.containsKey("load")) {
 			try {
-				this.commands = map.get("load");
+				commands = map.get("load");
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "load is of wrong type");
 			}
@@ -175,7 +180,7 @@ public class PluginDescriptionFile {
 
 		if (map.containsKey("commands")) {
 			try {
-				this.commands = map.get("commands");
+				commands = map.get("commands");
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "commands are of wrong type");
 			}
@@ -183,7 +188,7 @@ public class PluginDescriptionFile {
 
 		if (map.containsKey("depend")) {
 			try {
-				this.depend = ((ArrayList<String>) map.get("depend"));
+				depend = (ArrayList<String>) map.get("depend");
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "depend is of wrong type");
 			}
@@ -191,7 +196,7 @@ public class PluginDescriptionFile {
 
 		if (map.containsKey("softdepend")) {
 			try {
-				this.softDepend = ((ArrayList<String>) map.get("softdepend"));
+				softDepend = (ArrayList<String>) map.get("softdepend");
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "softdepend is of wrong type");
 			}
@@ -199,7 +204,7 @@ public class PluginDescriptionFile {
 
 		if (map.containsKey("website")) {
 			try {
-				this.website = ((String) map.get("website"));
+				website = (String) map.get("website");
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "website is of wrong type");
 			}
@@ -207,7 +212,7 @@ public class PluginDescriptionFile {
 
 		if (map.containsKey("description")) {
 			try {
-				this.description = ((String) map.get("description"));
+				description = (String) map.get("description");
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "description is of wrong type");
 			}
@@ -217,7 +222,7 @@ public class PluginDescriptionFile {
 			try {
 				String extra = (String) map.get("author");
 
-				this.authors.add(extra);
+				authors.add(extra);
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "author is of wrong type");
 			}
@@ -227,39 +232,39 @@ public class PluginDescriptionFile {
 			try {
 				ArrayList<String> extra = (ArrayList<String>) map.get("authors");
 
-				this.authors.addAll(extra);
+				authors.addAll(extra);
 			} catch (ClassCastException ex) {
 				throw new InvalidDescriptionException(ex, "authors are of wrong type");
 			}
 		}
 	}
-	
+
 	private Map<String, Object> saveMap() {
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		map.put("name", this.name);
-		map.put("main", this.main);
-		map.put("version", this.version);
+		map.put("name", name);
+		map.put("main", main);
+		map.put("version", version);
 
-		if (this.commands != null) {
-			map.put("command", this.commands);
+		if (commands != null) {
+			map.put("command", commands);
 		}
-		if (this.depend != null) {
-			map.put("depend", this.depend);
+		if (depend != null) {
+			map.put("depend", depend);
 		}
-		if (this.softDepend != null) {
-			map.put("softdepend", this.softDepend);
+		if (softDepend != null) {
+			map.put("softdepend", softDepend);
 		}
-		if (this.website != null) {
-			map.put("website", this.website);
+		if (website != null) {
+			map.put("website", website);
 		}
-		if (this.description != null) {
-			map.put("description", this.description);
+		if (description != null) {
+			map.put("description", description);
 		}
-		if (this.authors.size() == 1)
-			map.put("author", this.authors.get(0));
-		else if (this.authors.size() > 1) {
-			map.put("authors", this.authors);
+		if (authors.size() == 1) {
+			map.put("author", authors.get(0));
+		} else if (authors.size() > 1) {
+			map.put("authors", authors);
 		}
 		return map;
 	}

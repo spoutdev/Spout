@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,38 +25,37 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.getspout.api.io.store.FlatFileStore;
 
-
 public class CRCStore {
 
 	private static FlatFileStore<String> urlCRCStore;
 	private final static Object urlCRCStoreSync = new Object();
-	private final static ConcurrentHashMap<String,Long> lastCheck = new ConcurrentHashMap<String,Long>();
+	private final static ConcurrentHashMap<String, Long> lastCheck = new ConcurrentHashMap<String, Long>();
 
 	public static void setConfigFile(FlatFileStore<String> config) {
-		synchronized(urlCRCStoreSync) {
+		synchronized (urlCRCStoreSync) {
 			urlCRCStore = config;
 			urlCRCStore.load();
 		}
 	}
-	
+
 	public static long getCRC(String urlString, byte[] buffer) {
 		if (urlString == null) {
 			return 0;
 		}
-		
+
 		URL url;
 		try {
 			url = new URL(urlString);
 		} catch (MalformedURLException mue) {
 			return 0;
 		}
-		
+
 		String key = url.toString();
 		String info;
 		long modified = 0;
 		long crc = 0;
 
-		synchronized(urlCRCStoreSync) {
+		synchronized (urlCRCStoreSync) {
 			info = urlCRCStore.get(key);
 			if (info != null) {
 
@@ -78,34 +77,34 @@ public class CRCStore {
 		} catch (IOException ioe) {
 			return 0;
 		}
-		
+
 		try {
 			in = urlConn.getInputStream();
 
 			long currentTime = System.currentTimeMillis();
-			
+
 			Long previous = lastCheck.get(urlString);
 			previous = previous == null ? 0 : previous;
-			
-			boolean timeExpired = currentTime -  previous > 600000; // recheck every 10 mins
+
+			boolean timeExpired = currentTime - previous > 600000; // recheck every 10 mins
 
 			long urlLastModified = 0;
-			
+
 			if (timeExpired) {
 				urlLastModified = urlConn.getLastModified();
 				lastCheck.put(urlString, currentTime);
 			}
-			
+
 			boolean cacheHit = crc != 0;
 			boolean notUpdated = urlLastModified == modified && modified != 0;
-			
+
 			if (cacheHit && (!timeExpired || notUpdated)) {
 				//System.out.println("Cached");
 				return crc;
 			} else {
 				crc = FileUtil.getCRC(in, buffer);
 				info = urlLastModified + ":" + crc;
-				synchronized(urlCRCStoreSync) {
+				synchronized (urlCRCStoreSync) {
 					urlCRCStore.set(key, info);
 					urlCRCStore.save();
 				}
@@ -113,7 +112,7 @@ public class CRCStore {
 			}
 		} catch (IOException ioe) {
 			crc = FileUtil.getCRC(in, buffer);
-			synchronized(urlCRCStoreSync) {
+			synchronized (urlCRCStoreSync) {
 				urlCRCStore.remove(key);
 				urlCRCStore.save();
 			}
@@ -128,25 +127,26 @@ public class CRCStore {
 		}
 
 	}
-	
-	private static ConcurrentHashMap<String,Thread> CRCDownloads = new ConcurrentHashMap<String,Thread>();
-	
+
+	private static ConcurrentHashMap<String, Thread> CRCDownloads = new ConcurrentHashMap<String, Thread>();
+
 	public static class URLCheck extends Thread {
-		
+
 		final String url;
 		final CRCStoreRunnable runnable;
 		final byte[] buffer;
-		
+
 		public URLCheck(String url, byte[] buffer, CRCStoreRunnable runnable) {
 			this.url = url;
 			this.runnable = runnable;
 			this.buffer = buffer;
 		}
 
+		@Override
 		public void run() {
-			
+
 			Thread downloadThread = CRCDownloads.get(url);
-			
+
 			if (downloadThread == null) {
 				Thread old = CRCDownloads.putIfAbsent(url, this);
 				if (old != null) {
@@ -155,30 +155,29 @@ public class CRCStore {
 					downloadThread = this;
 				}
 			}
-			
+
 			if (downloadThread != this) {
 				try {
 					downloadThread.join();
 				} catch (InterruptedException e) {
 				}
 			}
-			
+
 			Long crc = null;
 			crc = CRCStore.getCRC(url, buffer);
 
 			if (crc == null) {
 				crc = 0L;
 			}
-			
+
 			CRCDownloads.remove(url, this);
-			
+
 			if (runnable != null) {
 				runnable.setCRC(crc);
 				runnable.run();
 			}
 		}
-		
+
 	}
 
-	
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +22,7 @@ public interface MetadataValue {
 
 	/**
 	 * Attempts to convert this metadata value to an int and return it.
+	 *
 	 * @return
 	 * @throws MetadataConversionException
 	 */
@@ -29,6 +30,7 @@ public interface MetadataValue {
 
 	/**
 	 * Attempts to convert this metadata value to a double and return it.
+	 *
 	 * @return
 	 * @throws MetadataConversionException
 	 */
@@ -36,6 +38,7 @@ public interface MetadataValue {
 
 	/**
 	 * Attempts to convert this metadata value to a boolean and return it.
+	 *
 	 * @return
 	 * @throws MetadataConversionException
 	 */
@@ -43,18 +46,21 @@ public interface MetadataValue {
 
 	/**
 	 * Returns the String representation of this metadata item.
+	 *
 	 * @return
 	 */
 	public String asString();
 
 	/**
 	 * Returns the {@link Plugin} that created this metadata item.
+	 *
 	 * @return
 	 */
 	public Plugin getOwningPlugin();
 
 	/**
-	 * Invalidates this metadata item, forcing it to recompute when next accessed.
+	 * Invalidates this metadata item, forcing it to recompute when next
+	 * accessed.
 	 */
 	public void invalidate();
 

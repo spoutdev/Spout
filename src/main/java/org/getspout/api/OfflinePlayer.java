@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,10 +22,10 @@ package org.getspout.api;
 public interface OfflinePlayer {
 
 	/**
-	 * Returns true if this player is online.
-	 * <br/><br/>
+	 * Returns true if this player is online. <br/>
+	 * <br/>
 	 * If the player is online, this can be safely cast to {@link Player}.
-	 * 
+	 *
 	 * @return true if online
 	 */
 	public boolean isOnline();

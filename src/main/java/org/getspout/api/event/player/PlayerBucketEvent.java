@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -82,7 +82,7 @@ public class PlayerBucketEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Returns true if the bucket was filled.
-	 * 
+	 *
 	 * @return True if the bucket was filled.
 	 */
 	public boolean isFilled() {
@@ -91,7 +91,7 @@ public class PlayerBucketEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Returns true if the bucket was emptied.
-	 * 
+	 *
 	 * @return True if the bucket was emptied.
 	 */
 	public boolean isEmptied() {

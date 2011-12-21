@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,35 +21,35 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.getspout.api.material.Food;
-import org.getspout.api.material.item.GenericCustomItemMaterial;
 import org.getspout.api.plugin.Plugin;
 
-public class GenericCustomFood extends GenericCustomItemMaterial implements Food{
+public class GenericCustomFood extends GenericCustomItemMaterial implements Food {
 	private int hunger;
+
 	public GenericCustomFood(Plugin addon, String name, String texture, int hungerRestored) {
 		super(addon, name, texture);
 		hunger = hungerRestored;
 	}
-	
+
 	public GenericCustomFood() {
-		
+
 	}
 
 	public int getHungerRestored() {
 		return hunger;
 	}
-	
+
 	@Override
 	public int getNumBytes() {
 		return super.getNumBytes() + 1;
 	}
-	
+
 	@Override
 	public void readData(DataInputStream input) throws IOException {
 		super.readData(input);
 		hunger = input.readByte();
 	}
-	
+
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
 		super.writeData(output);

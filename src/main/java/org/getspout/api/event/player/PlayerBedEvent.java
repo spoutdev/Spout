@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -45,7 +45,7 @@ public class PlayerBedEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Gets if the player entered the bed.
-	 * 
+	 *
 	 * @return True if the bed was entered.
 	 */
 	public boolean isEntered() {
@@ -54,7 +54,7 @@ public class PlayerBedEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Gets if the player left the bed.
-	 * 
+	 *
 	 * @return False if the bed was left.
 	 */
 	public boolean isLeft() {

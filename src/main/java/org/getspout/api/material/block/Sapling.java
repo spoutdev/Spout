@@ -1,9 +1,8 @@
 package org.getspout.api.material.block;
 
 import org.getspout.api.material.Plant;
-import org.getspout.api.material.block.GenericBlockMaterial;
 
-public class Sapling extends GenericBlockMaterial implements Plant{
+public class Sapling extends GenericBlockMaterial implements Plant {
 
 	public Sapling(String name, int data) {
 		super(name, 6, data);

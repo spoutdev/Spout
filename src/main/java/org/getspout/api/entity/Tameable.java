@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,16 +38,19 @@ public interface Tameable {
 	/**
 	 * Check if this is tamed
 	 *
-	 * If something is tamed then a player can not tame it through normal methods, even if it does not belong to anyone in particular.
+	 * If something is tamed then a player can not tame it through normal
+	 * methods, even if it does not belong to anyone in particular.
 	 *
 	 * @return true if this has been tamed
 	 */
 	public boolean isTamed();
 
 	/**
-	 * Sets if this has been tamed. Not necessary if the method setOwner has been used, as it tames automatically.
+	 * Sets if this has been tamed. Not necessary if the method setOwner has
+	 * been used, as it tames automatically.
 	 *
-	 * If something is tamed then a player can not tame it through normal methods, even if it does not belong to anyone in particular.
+	 * If something is tamed then a player can not tame it through normal
+	 * methods, even if it does not belong to anyone in particular.
 	 *
 	 * @param tame true if tame
 	 */
@@ -61,9 +64,10 @@ public interface Tameable {
 	public AnimalTamer getOwner();
 
 	/**
-	 * Set this to be owned by given AnimalTamer.
-	 * If the owner is not null, this will be tamed and will have any current path it is following removed.
-	 * If the owner is set to null, this will be untamed, and the current owner removed.
+	 * Set this to be owned by given AnimalTamer. If the owner is not null, this
+	 * will be tamed and will have any current path it is following removed. If
+	 * the owner is set to null, this will be untamed, and the current owner
+	 * removed.
 	 *
 	 * @param tamer the AnimalTamer who should own this
 	 */

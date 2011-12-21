@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -48,8 +48,8 @@ public class EntityTargetEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Returns true if the entity has targeted.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isTarget() {
 		return reason.isTarget();
@@ -57,8 +57,8 @@ public class EntityTargetEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Returns true if the entity has untargeted.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isUntarget() {
 		return !reason.isTarget();

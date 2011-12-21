@@ -3,14 +3,10 @@ package org.getspout.api.command.annotated;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- *
- * @author zml2008
- */
 public class SimpleInjector implements Injector {
 	private Object[] args;
 	private Class<?>[] argClasses;
-	
+
 	public SimpleInjector(Object... args) {
 		this.args = args;
 		argClasses = new Class[args.length];
@@ -18,7 +14,7 @@ public class SimpleInjector implements Injector {
 			argClasses[i] = args[i].getClass();
 		}
 	}
-	@Override
+
 	public Object newInstance(Class<?> clazz) {
 		try {
 			Constructor<?> ctr = clazz.getConstructor(argClasses);

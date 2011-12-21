@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,29 +19,37 @@ package org.getspout.api.event;
 /**
  * Order of event listener calls.
  * <p/>
- * Odd-numbered slots are called even when events are marked "not propogating". If an event stops propogating partway through an even slot, that slot will not cease execution, but future even slots will not be called.
+ * Odd-numbered slots are called even when events are marked "not propogating".
+ * If an event stops propogating partway through an even slot, that slot will
+ * not cease execution, but future even slots will not be called.
  *
  * @author lahwran
  */
 public enum Order {
 
 	/**
-	 * Called before all other handlers. Should be used for high-priority event canceling.
+	 * Called before all other handlers. Should be used for high-priority event
+	 * canceling.
 	 */
 	EARLIEST(0, false),
 
 	/**
-	 * Called after "Earliest" handlers and before "Early" handlers. Is called even when event has been canceled. Should generally be used to uncancel events canceled in Earliest.
+	 * Called after "Earliest" handlers and before "Early" handlers. Is called
+	 * even when event has been canceled. Should generally be used to uncancel
+	 * events canceled in Earliest.
 	 */
 	EARLY_IGNORE_CANCELLED(1, true),
 
 	/**
-	 * Called after "Earliest" handlers. Should generally be used for low priority event canceling.
+	 * Called after "Earliest" handlers. Should generally be used for low
+	 * priority event canceling.
 	 */
 	EARLY(2, false),
 
 	/**
-	 * Called after "Early" handlers and before "Default" handlers. Is called even when event has been canceled. This is for general-purpose always-run events.
+	 * Called after "Early" handlers and before "Default" handlers. Is called
+	 * even when event has been canceled. This is for general-purpose always-run
+	 * events.
 	 */
 	DEFAULT_IGNORE_CANCELLED(3, true),
 	/**
@@ -50,7 +58,8 @@ public enum Order {
 	DEFAULT(4, false),
 
 	/**
-	 * Called after "Default" handlers and before "Late" handlers. Is called even when event has been canceled.
+	 * Called after "Default" handlers and before "Late" handlers. Is called
+	 * even when event has been canceled.
 	 */
 	LATE_IGNORE_CANCELLED(5, true),
 
@@ -60,7 +69,8 @@ public enum Order {
 	LATE(6, false),
 
 	/**
-	 * Called after "Late" handlers and before "Latest" handlers. Is called even when event has been canceled.
+	 * Called after "Late" handlers and before "Latest" handlers. Is called even
+	 * when event has been canceled.
 	 */
 	LATEST_IGNORE_CANCELLED(7, true),
 
@@ -70,7 +80,9 @@ public enum Order {
 	LATEST(8, false),
 
 	/**
-	 * Called after "Latest" handlers. No changes to the event should be made in this order slot (though it is not enforced). Is called even when event has been cancelled.
+	 * Called after "Latest" handlers. No changes to the event should be made in
+	 * this order slot (though it is not enforced). Is called even when event
+	 * has been cancelled.
 	 */
 	MONITOR(9, true);
 

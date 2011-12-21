@@ -1,15 +1,14 @@
 package org.getspout.api.event;
 
-import java.util.logging.Logger;
-import org.getspout.api.Spout;
-import org.getspout.api.plugin.IllegalPluginAccessException;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+
+import org.getspout.api.Spout;
+import org.getspout.api.plugin.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {
 
@@ -19,14 +18,14 @@ public class SimpleEventManager implements EventManager {
 		ListenerRegistration[][] listeners = handlers.getRegisteredListeners();
 
 		if (listeners != null) {
-			for (int i = 0; i < listeners.length; i++) {
-				for (ListenerRegistration registration : listeners[i]) {
+			for (ListenerRegistration[] listener : listeners) {
+				for (ListenerRegistration registration : listener) {
 					try {
 						if (!event.isCancelled() || registration.getOrder().ignoresCancelled()) {
 							registration.getExecutor().execute(event);
 						}
 					} catch (Throwable ex) {
-                        Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + registration.getOwner().getClass().getName(), ex);
+						Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + registration.getOwner().getClass().getName(), ex);
 					}
 				}
 			}
@@ -70,15 +69,14 @@ public class SimpleEventManager implements EventManager {
 			clazz.getDeclaredMethod("getHandlerList");
 			return clazz;
 		} catch (NoSuchMethodException e) {
-			if (clazz.getSuperclass() != null
-					&& !clazz.getSuperclass().equals(Event.class)
-					&& clazz.getSuperclass().isAssignableFrom(Event.class)) {
+			if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && clazz.getSuperclass().isAssignableFrom(Event.class)) {
 				return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
 			} else {
 				throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName());
 			}
 		}
 	}
+
 	public Map<Class<? extends Event>, Set<ListenerRegistration>> createRegisteredListeners(final Listener listener, Object plugin) {
 		Map<Class<? extends Event>, Set<ListenerRegistration>> ret = new HashMap<Class<? extends Event>, Set<ListenerRegistration>>();
 		Method[] methods;
@@ -88,8 +86,7 @@ public class SimpleEventManager implements EventManager {
 			Spout.getGame().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listener.getClass());
 			return ret;
 		}
-		for (int i = 0; i < methods.length; i++) {
-			final Method method = methods[i];
+		for (final Method method : methods) {
 			final EventHandler eh = method.getAnnotation(EventHandler.class);
 			if (eh == null) {
 				continue;
@@ -106,6 +103,7 @@ public class SimpleEventManager implements EventManager {
 				ret.put(eh.event(), eventSet);
 			}
 			eventSet.add(new ListenerRegistration(new EventExecutor() {
+
 				public void execute(Event event) throws EventException {
 					try {
 						if (!checkClass.isAssignableFrom(event.getClass())) {

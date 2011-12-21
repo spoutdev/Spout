@@ -5,25 +5,23 @@ import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.math.Vector3;
 
 /**
- * This class implements a Cuboid common methods for a one dimensional array Cuboid Buffer
- * 
- * Elements are stored in column order and each column is +1 on the Z dimension relative to the previous one.  
- * 
- * Each YZ plane is followed by the plane corresponding to +1 on the X dimension.
- * 
- * It is assumed that the Cuboid has dimensions (SX, SY, SZ) and the base is set at the origin.
- * 
- * buffer[0]           = data(0,    0,    0   )
- * buffer[1]           = data(0,    1,    0   )
- * .....
- * buffer[SY-1]        = data(0,    SY-1, 0   )
- * buffer[SY]          = data(0,    0     1   )
- * ....
- * buffer[SZ*SY - 1]   = data(0,    SY-1, SZ-1)
- * buffer[SZ*SY]       = data(1,    0,    0   )
- * ....
- * buffer[SZ*SY*SX -1] = data(SX-1, SY-1, SZ-1)
- * 
+ * This class implements a Cuboid common methods for a one dimensional array
+ * Cuboid Buffer
+ *
+ * Elements are stored in column order and each column is +1 on the Z dimension
+ * relative to the previous one.
+ *
+ * Each YZ plane is followed by the plane corresponding to +1 on the X
+ * dimension.
+ *
+ * It is assumed that the Cuboid has dimensions (SX, SY, SZ) and the base is set
+ * at the origin.
+ *
+ * buffer[0] = data(0, 0, 0 ) buffer[1] = data(0, 1, 0 ) ..... buffer[SY-1] =
+ * data(0, SY-1, 0 ) buffer[SY] = data(0, 0 1 ) .... buffer[SZ*SY - 1] = data(0,
+ * SY-1, SZ-1) buffer[SZ*SY] = data(1, 0, 0 ) .... buffer[SZ*SY*SX -1] =
+ * data(SX-1, SY-1, SZ-1)
+ *
  * TODO is this the best package to put this?
  */
 public abstract class CuboidBuffer {
@@ -53,30 +51,17 @@ public abstract class CuboidBuffer {
 		this.baseY = baseY;
 		this.baseZ = baseZ;
 
-		this.Xinc = sizeY * sizeZ;
-		this.Yinc = 1;
-		this.Zinc = sizeY;
+		Xinc = sizeY * sizeZ;
+		Yinc = 1;
+		Zinc = sizeY;
 	}
 
 	protected CuboidBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		this(    world,
-				(int)baseX,
-				(int)baseY,
-				(int)baseZ,
-				(int)sizeX,
-				(int)sizeY,
-				(int)sizeZ);
+		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ);
 	}
 
-
 	protected CuboidBuffer(Point base, Vector3 size) {
-		this(base.getWorld(),
-				base.getX(),
-				base.getY(),
-				base.getZ(),
-				size.getX(),
-				size.getY(),
-				size.getZ());
+		this(base.getWorld(), base.getX(), base.getY(), base.getZ(), size.getX(), size.getY(), size.getZ());
 	}
 
 	/**
@@ -99,23 +84,24 @@ public abstract class CuboidBuffer {
 	public Vector3 getSize() {
 		return new Vector3(sizeX, sizeY, sizeZ);
 	}
-	
+
 	/**
-	 * Copies the data contained within the given CuboidShortBuffer to this one. Any non-overlapping locations are ignored
-	 * 
+	 * Copies the data contained within the given CuboidShortBuffer to this one.
+	 * Any non-overlapping locations are ignored
+	 *
 	 * @param the source CuboidShortBuffer
 	 */
 	public void write(CuboidBuffer source) {
 		CuboidBufferCopyRun run = new CuboidBufferCopyRun(source, this);
-		
+
 		int sourceIndex = run.getBaseSource();
 		int thisIndex = run.getBaseTarget();
 		int runLength = run.getLength();
 		int innerRepeats = run.getInnerRepeats();
 		int outerRepeats = run.getOuterRepeats();
-		
+
 		setSource(source);
-		
+
 		if (sourceIndex == -1 || thisIndex == -1) {
 			return;
 		} else {
@@ -124,7 +110,7 @@ public abstract class CuboidBuffer {
 				int outerThisIndex = thisIndex;
 				for (int z = 0; z < innerRepeats; z++) {
 					copyElement(outerThisIndex, outerSourceIndex, runLength);
-					
+
 					outerSourceIndex += source.Zinc;
 					outerThisIndex += Zinc;
 				}
@@ -137,9 +123,9 @@ public abstract class CuboidBuffer {
 	protected CuboidBufferCopyRun getCopyRun(CuboidBuffer other) {
 		return new CuboidBufferCopyRun(this, other);
 	}
-	
+
 	public abstract void copyElement(int thisIndex, int sourceIndex, int runLength);
-	
+
 	public abstract void setSource(CuboidBuffer source);
 
 	protected static class CuboidBufferCopyRun {
@@ -170,11 +156,11 @@ public abstract class CuboidBuffer {
 				return;
 			}
 
-			sourceIndex =  (overlapBaseX - source.baseX) * source.Xinc;
+			sourceIndex = (overlapBaseX - source.baseX) * source.Xinc;
 			sourceIndex += (overlapBaseY - source.baseY) * source.Yinc;
 			sourceIndex += (overlapBaseZ - source.baseZ) * source.Zinc;
 
-			targetIndex =  (overlapBaseX - target.baseX) * target.Xinc;
+			targetIndex = (overlapBaseX - target.baseX) * target.Xinc;
 			targetIndex += (overlapBaseY - target.baseY) * target.Yinc;
 			targetIndex += (overlapBaseZ - target.baseZ) * target.Zinc;
 		}

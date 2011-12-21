@@ -1,37 +1,30 @@
 package org.getspout.api.command;
 
-import org.getspout.api.util.Named;
-
 import java.util.List;
 import java.util.Set;
 
+import org.getspout.api.util.Named;
+
 /**
- * Provides support for setting up commands for Plugins 
- * 
+ * Provides support for setting up commands for Plugins
+ *
  * This uses chaining to allow concise setup of commands
- * 
+ *
  * Commands could be registered using the following structure.
+ *
  * <pre>
- * Game.getCommandRoot()
- *     .sub("preferredname")
- *         .alias("alias1").alias("alias2")
- *         .help("This is the main command for MyPlugin")
- *         .executor(myExecutor)
- *         .sub("subcommand")
- *             .help("This is a sub command of main command")
- *             .executor(myExecutor)
- *         .closeSub()
- *     .closeSub();
+ * Game.getCommandRoot().sub(&quot;preferredname&quot;).alias(&quot;alias1&quot;, &quot;alias2&quot;).help(&quot;This is the main command for MyPlugin&quot;).executor(myExecutor).sub(&quot;subcommand&quot;).help(&quot;This is a sub command of main command&quot;).executor(myExecutor).closeSub().closeSub();
  * </pre>
  */
 
 public interface Command {
 
 	/**
-	 * Creates a command and adds it as a sub-command to the active Command.  
-	 * 
-	 * The sub-command is linked to the given String, made the active command and added to the top of the Command stack
-	 * 
+	 * Creates a command and adds it as a sub-command to the active Command.
+	 *
+	 * The sub-command is linked to the given String, made the active command
+	 * and added to the top of the Command stack
+	 *
 	 * @param primaryName the name to link sub-command to
 	 * @return the new sub-command
 	 */
@@ -47,19 +40,25 @@ public interface Command {
 
 	/**
 	 * Registers sub commands created by a {@link CommandRegistrationsFactory}
+	 *
 	 * @param owner The owner of these commands
-	 * @param object The {@link T} used by the CommandRegistrationFactory to register commands.
-	 * @param factory The {@link CommandRegistrationsFactory} used to convert {@code object} into a {@link java.util.List} of {@link Command}s
+	 * @param object The {@link T} used by the CommandRegistrationFactory to
+	 *            register commands.
+	 * @param factory The {@link CommandRegistrationsFactory} used to convert
+	 *            {@code object} into a {@link java.util.List} of
+	 *            {@link Command}s
 	 * @param <T> The type that {@code factory} accepts
 	 * @return
 	 */
 	public <T> Command addSubCommands(Named owner, T object, CommandRegistrationsFactory<T> factory);
-	
+
 	/**
-	 * Completes creation of a sub-command.  There should be a matching call of this method for every call to addSubCommand.
-	 * 
-	 * The topmost Command on the stack is removed and the next highest becomes the active command.
-	 * 
+	 * Completes creation of a sub-command. There should be a matching call of
+	 * this method for every call to addSubCommand.
+	 *
+	 * The topmost Command on the stack is removed and the next highest becomes
+	 * the active command.
+	 *
 	 * @return the new active command or null if the stack was empty
 	 */
 	public Command closeSubCommand();
@@ -73,37 +72,39 @@ public interface Command {
 
 	/**
 	 * Adds an alias to the active Command.
-	 * 
-	 * The first free name will be used for the command name.  If no alias is free, then the command will not be registered.  
-	 * 
+	 *
+	 * The first free name will be used for the command name. If no alias is
+	 * free, then the command will not be registered.
+	 *
 	 * Commands can always be accessed using the "plugin-name:primary-name".
-	 * 
-	 * @param name the name or alias
+	 *
+	 * @param names the aliases
 	 * @return the active Command
 	 */
-	public Command addAlias(String name);
+	public Command addAlias(String... names);
 
 	/**
 	 * Alias for addAlias
 	 *
-	 * @param name the name or alias
+	 * @param names the aliases to add
 	 * @return the active Command
 	 */
-	public Command alias(String name);
+	public Command alias(String... names);
 
 	/**
-	 * Sets the help string for the active Command.  
-	 * 
-	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
-	 * 
+	 * Sets the help string for the active Command.
+	 *
+	 * If this is called more than once for a Command, subsequent calls will
+	 * overwrite previous calls.
+	 *
 	 * @param help the help string
 	 * @return the active Command
 	 */
 	public Command setHelp(String help);
-	
+
 	/**
 	 * Alias for setHelpString
-	 * 
+	 *
 	 * @param help the help string
 	 * @return the active Command
 	 */
@@ -112,7 +113,8 @@ public interface Command {
 	/**
 	 * Sets the usage string for the active Command.
 	 *
-	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
+	 * If this is called more than once for a Command, subsequent calls will
+	 * overwrite previous calls.
 	 *
 	 * @param usage the usage string
 	 * @return the active Command
@@ -125,27 +127,30 @@ public interface Command {
 	 * @see #setUsage(String)
 	 */
 	public Command usage(String usage);
-	
+
 	/**
-	 * Sets the Executor for the active Command.  
-	 * 
-	 * If this is called more than once for a Command, subsequent calls will overwrite previous calls.
-	 * 
+	 * Sets the Executor for the active Command.
+	 *
+	 * If this is called more than once for a Command, subsequent calls will
+	 * overwrite previous calls.
+	 *
 	 * @param executor the help string
 	 * @return the active Command
 	 */
 	public Command setExecutor(CommandExecutor executor);
-	
+
 	/**
 	 * Alias for setExecutor
-	 * 
+	 *
 	 * @see #setExecutor(CommandExecutor)
 	 */
 	public Command executor(CommandExecutor executor);
 
 	/**
-	 * Adds flags to this Command's list of allowed flags.
-	 * Flags are given in the format of a String containing the allowed flag characters, where value flag characters are followed by a :.
+	 * Adds flags to this Command's list of allowed flags. Flags are given in
+	 * the format of a String containing the allowed flag characters, where
+	 * value flag characters are followed by a :.
+	 *
 	 * @param flags The flags to add to this command's list of allowed flags.
 	 * @return The active command
 	 */
@@ -158,20 +163,22 @@ public interface Command {
 	 * @return The active command
 	 */
 	public Command flags(String flags);
-	
+
 	/**
-	 * Executes a command based on the provided arguments.  
-	 * 
-	 * The base index is equal to the number of arguments that have already been processed by super commands.
+	 * Executes a command based on the provided arguments.
+	 *
+	 * The base index is equal to the number of arguments that have already been
+	 * processed by super commands.
 	 *
 	 * @param source the {@link CommandSource} that sent this command.
 	 * @param args the command arguments
 	 * @param baseIndex the arguments that have already been processed by
-	 * @param fuzzyLookup Whether to use levenschtein distance while looking up commands.
+	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
+	 *            commands.
 	 * @return true on success
 	 */
-	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup);
-	
+	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
+
 	/**
 	 * Gets the usage message for the command.
 	 *
@@ -179,10 +186,10 @@ public interface Command {
 	 * @return the command's usage message
 	 */
 	public String getUsage(String[] input);
-	
+
 	/**
 	 * Gets the command's preferred name
-	 * 
+	 *
 	 * @return the preferred name
 	 */
 	public String getPreferredName();
@@ -200,14 +207,16 @@ public interface Command {
 	public Set<String> getChildNames();
 
 	/**
-	 * Returns the registered names for this command.
-	 * This includes the primary name and aliases.
+	 * Returns the registered names for this command. This includes the primary
+	 * name and aliases.
+	 *
 	 * @return the registered names for this command.
 	 */
 	public List<String> getNames();
 
 	/**
 	 * Removes this command from the list of children.
+	 *
 	 * @param cmd The command to remove
 	 * @return The active Command
 	 */
@@ -215,6 +224,7 @@ public interface Command {
 
 	/**
 	 * Removes a child command named {@code name} from this command
+	 *
 	 * @param name The name to remove
 	 * @return The active command
 	 */
@@ -222,6 +232,7 @@ public interface Command {
 
 	/**
 	 * Removes an alias
+	 *
 	 * @param name The name of the alias to remove.
 	 * @return the active Command
 	 */
@@ -229,6 +240,7 @@ public interface Command {
 
 	/**
 	 * Locks the command to prevent it from being modified by other owners.
+	 *
 	 * @param owner The owner of this command.
 	 * @return Whether this operation was successful
 	 */
@@ -236,6 +248,7 @@ public interface Command {
 
 	/**
 	 * Unlocks this command so that it can be modified again.
+	 *
 	 * @param owner The owner of this command to attempt to unlock it.
 	 * @return Whether this operation was successful
 	 */
@@ -245,4 +258,27 @@ public interface Command {
 	 * @return whether this command is locked.
 	 */
 	public boolean isLocked();
+
+	/**
+	 * Updates the aliases list for this child command
+	 *
+	 * @param child The child command to update.
+	 * @return Whether any aliases were changed.
+	 */
+	public boolean updateAliases(Command child);
+
+	/**
+	 * @param name The name to check
+	 * @return whether this Command has a child named {@code name}
+	 */
+	public boolean hasChild(String name);
+
+	/**
+	 * Sets {@code parent} as this Command's parent if this command does not
+	 * already have a parent
+	 *
+	 * @param parent The command to set as this command's parent command.
+	 * @return The active command.
+	 */
+	public Command setParent(Command parent);
 }

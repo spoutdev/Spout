@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,15 +30,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.getspout.api.entity;
 
 /**
- * Represents a Creature. Creatures are non-intelligent monsters or animals which
- * have very simple abilities.
+ * Represents a Creature. Creatures are non-intelligent monsters or animals
+ * which have very simple abilities.
  */
 public interface Creature extends LivingEntity {
-
 	/**
 	 * Instructs this Creature to set the specified LivingEntity as its target.
 	 * Hostile creatures may attack their target, and friendly creatures may
@@ -54,4 +52,5 @@ public interface Creature extends LivingEntity {
 	 * @return Current target of this creature, or null if none exists
 	 */
 	public LivingEntity getTarget();
+
 }

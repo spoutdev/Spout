@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,7 +39,7 @@ public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellabl
 	 * @return entity right clicked by player
 	 */
 	public Entity getRightClicked() {
-		return this.rightClicked;
+		return rightClicked;
 	}
 
 	public void setRightClicked(Entity rightClicked) {

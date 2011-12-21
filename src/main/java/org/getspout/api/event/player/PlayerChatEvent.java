@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Gets the message that the player sent.
-	 * 
+	 *
 	 * @return The message of the player.
 	 */
 	public String getMessage() {
@@ -38,7 +38,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Overrides the sent message.
-	 * 
+	 *
 	 * @param message The message to set
 	 */
 	public void setMessage(String message) {

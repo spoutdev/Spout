@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,14 +28,18 @@ public abstract class MetadataStoreBase<TSubject> {
 	private Map<String, List<MetadataValue>> metadataMap = new HashMap<String, List<MetadataValue>>();
 
 	/**
-	 * Adds a metadata value to an object. Each metadata value is owned by a specific{@link Plugin}.
-	 * If a plugin has already added a metadata value to an object, that value
-	 * will be replaced with the value of {@code newMetadataValue}. Multiple plugins can set independent values for
+	 * Adds a metadata value to an object. Each metadata value is owned by a
+	 * specific{@link Plugin}. If a plugin has already added a metadata value to
+	 * an object, that value will be replaced with the value of
+	 * {@code newMetadataValue}. Multiple plugins can set independent values for
 	 * the same {@code metadataKey} without conflict.
 	 *
-	 * Implementation note: I considered using a {@link java.util.concurrent.locks.ReadWriteLock} for controlling
-	 * access to {@code metadataMap}, but decided that the added overhead wasn't worth the finer grained access control.
-	 * Bukkit is almost entirely single threaded so locking overhead shouldn't pose a problem.
+	 * Implementation note: I considered using a
+	 * {@link java.util.concurrent.locks.ReadWriteLock} for controlling access
+	 * to {@code metadataMap}, but decided that the added overhead wasn't worth
+	 * the finer grained access control. Bukkit is almost entirely single
+	 * threaded so locking overhead shouldn't pose a problem.
+	 *
 	 * @param subject The object receiving the metadata.
 	 * @param metadataKey A unique key to identify this metadata.
 	 * @param newMetadataValue
@@ -59,8 +63,9 @@ public abstract class MetadataStoreBase<TSubject> {
 	}
 
 	/**
-	 * Returns all metadata values attached to an object. If multiple plugins have attached metadata, each will value
-	 * will be included.
+	 * Returns all metadata values attached to an object. If multiple plugins
+	 * have attached metadata, each will value will be included.
+	 *
 	 * @param subject
 	 * @param metadataKey
 	 * @return
@@ -76,6 +81,7 @@ public abstract class MetadataStoreBase<TSubject> {
 
 	/**
 	 * Tests to see if a metadata attribute has been set on an object.
+	 *
 	 * @param subject
 	 * @param metadataKey
 	 * @return
@@ -87,6 +93,7 @@ public abstract class MetadataStoreBase<TSubject> {
 
 	/**
 	 * Removes a metadata item owned by a plugin from a subject.
+	 *
 	 * @param subject
 	 * @param metadataKey
 	 * @param owningPlugin
@@ -102,8 +109,10 @@ public abstract class MetadataStoreBase<TSubject> {
 	}
 
 	/**
-	 * Invalidates all metadata in the metadata store that originates from the given plugin. Doing this will force
-	 * each invalidated metadata item to be recalculated the next time it is accessed.
+	 * Invalidates all metadata in the metadata store that originates from the
+	 * given plugin. Doing this will force each invalidated metadata item to be
+	 * recalculated the next time it is accessed.
+	 *
 	 * @param owningPlugin
 	 */
 	public synchronized void invalidateAll(Plugin owningPlugin) {
@@ -117,10 +126,13 @@ public abstract class MetadataStoreBase<TSubject> {
 	}
 
 	/**
-	 * Creates a unique name for the object receiving metadata by combining unique data from the subject with a metadataKey.
-	 * The name created must be globally unique for the given object and any two equivalent objects must generate the
-	 * same unique name. For example, two Player objects must generate the same string if they represent the same player,
-	 * even if the objects would fail a reference equality test.
+	 * Creates a unique name for the object receiving metadata by combining
+	 * unique data from the subject with a metadataKey. The name created must be
+	 * globally unique for the given object and any two equivalent objects must
+	 * generate the same unique name. For example, two Player objects must
+	 * generate the same string if they represent the same player, even if the
+	 * objects would fail a reference equality test.
+	 *
 	 * @param subject The object for which this key is being generated
 	 * @param metadataKey The name identifying the metadata value
 	 * @return

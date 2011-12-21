@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -75,37 +75,37 @@ public interface PlayerInventory extends Inventory {
 	/**
 	 * Put the given ItemStacks into the armor slots
 	 *
-	 *  @param items The ItemStacks to use as armour
+	 * @param items The ItemStacks to use as armour
 	 */
 	public void setArmorContents(ItemStack[] items);
 
 	/**
-	 * Put the given ItemStack into the helmet slot
-	 * This does not check if the ItemStack is a helmet
+	 * Put the given ItemStack into the helmet slot This does not check if the
+	 * ItemStack is a helmet
 	 *
 	 * @param helmet The ItemStack to use as helmet
 	 */
 	public void setHelmet(ItemStack helmet);
 
 	/**
-	 * Put the given ItemStack into the chestplate slot
-	 * This does not check if the ItemStack is a chestplate
+	 * Put the given ItemStack into the chestplate slot This does not check if
+	 * the ItemStack is a chestplate
 	 *
 	 * @param chestplate The ItemStack to use as chestplate
 	 */
 	public void setChestplate(ItemStack chestplate);
 
 	/**
-	 * Put the given ItemStack into the leg slot
-	 * This does not check if the ItemStack is a pair of leggings
+	 * Put the given ItemStack into the leg slot This does not check if the
+	 * ItemStack is a pair of leggings
 	 *
 	 * @param leggings The ItemStack to use as leggings
 	 */
 	public void setLeggings(ItemStack leggings);
 
 	/**
-	 * Put the given ItemStack into the boots slot
-	 * This does not check if the ItemStack is a boots
+	 * Put the given ItemStack into the boots slot This does not check if the
+	 * ItemStack is a boots
 	 *
 	 * @param boots The ItemStack to use as boots
 	 */

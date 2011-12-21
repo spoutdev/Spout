@@ -38,6 +38,7 @@ public class EntityGainHealthEvent extends EntityEvent implements Cancellable {
 		this.cancelled = cancelled;
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

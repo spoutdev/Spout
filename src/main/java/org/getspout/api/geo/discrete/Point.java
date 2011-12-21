@@ -10,24 +10,24 @@ import org.getspout.api.math.Vector3;
 public class Point extends Vector3 {
 
 	protected World world;
-	
+
 	public Point(Point point) {
-		super(point.getX(), point.getY(), point.getZ());
+		super(point);
 		world = point.getWorld();
 	}
-	
+
 	public Point(World world, double x, double y, double z) {
 		super(x, y, z);
 		this.world = world;
 	}
-	
+
 	/**
 	 * Gets the world this point is locate in
-	 * 
+	 *
 	 * @return the world
 	 */
 	public World getWorld() {
 		return world;
 	}
-	
+
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -76,10 +76,11 @@ public abstract class PacketUtil {
 		try {
 			byte flags = 0x0;
 
-			if (color.getRedF() == -1F)
+			if (color.getRedF() == -1F) {
 				flags |= FLAG_COLORINVALID;
-			else if (color.getRedF() == -2F)
+			} else if (color.getRedF() == -2F) {
 				flags |= FLAG_COLOROVERRIDE;
+			}
 
 			output.writeByte(flags);
 			output.writeInt(color.toInt());
@@ -93,10 +94,12 @@ public abstract class PacketUtil {
 			byte flags = input.readByte();
 			int argb = input.readInt();
 
-			if ((flags & FLAG_COLORINVALID) > 0)
+			if ((flags & FLAG_COLORINVALID) > 0) {
 				return Color.invalid();
-			if ((flags & FLAG_COLOROVERRIDE) > 0)
+			}
+			if ((flags & FLAG_COLOROVERRIDE) > 0) {
 				return Color.override();
+			}
 
 			return new Color(argb);
 		} catch (IOException e) {
@@ -104,7 +107,7 @@ public abstract class PacketUtil {
 		}
 		return null;
 	}
-	
+
 	public static int[] readIntArray(DataInputStream input) throws IOException {
 		int length = input.readInt();
 		if (length > 256) {
@@ -140,14 +143,14 @@ public abstract class PacketUtil {
 		}
 		return newDoubleArray;
 	}
-	
+
 	public static void writeIntArray(DataOutputStream output, int[] ints) throws IOException {
 		if (ints.length > 256) {
 			throw new IllegalArgumentException("Array containing " + ints.length + " ints passed to writeQuadFloat");
 		}
 		output.writeInt(ints.length);
-		for (int i = 0; i < ints.length; i++) {
-			output.writeInt(ints[i]);
+		for (int j : ints) {
+			output.writeInt(j);
 		}
 	}
 
@@ -166,24 +169,27 @@ public abstract class PacketUtil {
 		}
 
 		output.writeShort(floats.length);
-		for (int i = 0; i < floats.length; i++) {
-			writeQuadFloat(output, floats[i]);
+		for (float[] f : floats) {
+			writeQuadFloat(output, f);
 		}
 	}
-	public static void writeVector3(DataOutputStream output, Vector3 vector) throws IOException{
+
+	public static void writeVector3(DataOutputStream output, Vector3 vector) throws IOException {
 		output.writeDouble(vector.getX());
 		output.writeDouble(vector.getY());
 		output.writeDouble(vector.getZ());
 	}
-	public static Vector3 readVector3(DataInputStream input) throws IOException{
+
+	public static Vector3 readVector3(DataInputStream input) throws IOException {
 		return new Vector3(input.readDouble(), input.readDouble(), input.readDouble());
 	}
-	
-	public static void writeVector2(DataOutputStream output, Vector2 vector) throws IOException{
+
+	public static void writeVector2(DataOutputStream output, Vector2 vector) throws IOException {
 		output.writeDouble(vector.getX());
 		output.writeDouble(vector.getY());
 	}
-	public static Vector2 readVector2(DataInputStream input) throws IOException{
+
+	public static Vector2 readVector2(DataInputStream input) throws IOException {
 		return new Vector2(input.readDouble(), input.readDouble());
 	}
 

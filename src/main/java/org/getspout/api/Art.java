@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,9 +16,9 @@
  */
 package org.getspout.api;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.util.HashMap;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 /**
  * Represents the painting on a {@link Painting}.
@@ -47,9 +47,8 @@ public enum Art {
 	SKELETON(20, 4, 3),
 	DONKEYKONG(21, 4, 3),
 	POINTER(22, 4, 4),
-	PIGSCENE(23,4, 4),
-	BURNINGSKULL(24, 4, 4),
-	;
+	PIGSCENE(23, 4, 4),
+	BURNINGSKULL(24, 4, 4), ;
 	private final int id;
 	private final int width;
 	private final int height;
@@ -94,7 +93,7 @@ public enum Art {
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String toString() {
 		String name = name();

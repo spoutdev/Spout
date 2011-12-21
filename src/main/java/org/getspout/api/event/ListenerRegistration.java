@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,9 +25,9 @@ public class ListenerRegistration {
 	private final Object owner;
 
 	/**
-	 * @param executor  Listener this registration represents
+	 * @param executor Listener this registration represents
 	 * @param orderSlot Order position this registration is in
-	 * @param owner	 object that created this registration
+	 * @param owner object that created this registration
 	 */
 	public ListenerRegistration(final EventExecutor executor, final Order orderSlot, final Object owner) {
 		this.executor = executor;

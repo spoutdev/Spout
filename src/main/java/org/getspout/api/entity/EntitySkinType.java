@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,18 +24,18 @@ public enum EntitySkinType {
 	WOLF_TAMED(4),
 	PIG_SADDLE(5),
 	GHAST_MOUTH(6),
-	ENDERMAN_EYES(7),
-	;
-	
+	ENDERMAN_EYES(7), ;
+
 	private final byte id;
-	private EntitySkinType(int id){
-		this.id = (byte)id;
+
+	private EntitySkinType(int id) {
+		this.id = (byte) id;
 	}
-	
-	public byte getId(){
+
+	public byte getId() {
 		return id;
 	}
-	
+
 	public static EntitySkinType getType(byte id) {
 		for (EntitySkinType type : values()) {
 			if (type.id == id) {
@@ -44,5 +44,5 @@ public enum EntitySkinType {
 		}
 		return null;
 	}
-	
+
 }

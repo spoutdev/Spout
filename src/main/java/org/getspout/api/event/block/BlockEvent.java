@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,25 +26,29 @@ import org.getspout.api.event.EventSource;
 public abstract class BlockEvent extends Event {
 	private Block block;
 	private EventSource source;
+
 	public BlockEvent(Block block, EventSource source) {
 		this.block = block;
 		this.source = source;
 	}
-	
+
 	/**
-	 * Gets the source of this event. It may be a player, an entity, the world, a plugin, etc.
+	 * Gets the source of this event. It may be a player, an entity, the world,
+	 * a plugin, etc.
+	 *
 	 * @return event source
 	 */
 	public final EventSource getSource() {
 		return source;
 	}
-	
+
 	protected void setSource(EventSource source) {
 		this.source = source;
 	}
 
 	/**
 	 * Gets the block involved in this event.
+	 *
 	 * @return
 	 */
 	public final Block getBlock() {

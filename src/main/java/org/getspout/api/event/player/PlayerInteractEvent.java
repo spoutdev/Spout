@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -54,16 +54,8 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 
 	@Override
 	public void setCancelled(boolean cancelled) {
-		setUseInteractedBlock(cancelled
-				? Result.DENY
-				: useInteractedBlock().equals(Result.DENY)
-				? Result.DEFAULT
-				: useInteractedBlock());
-		setUseItemInHand(cancelled
-				? Result.DENY
-				: useItemInHand().equals(Result.DENY)
-				? Result.DEFAULT
-				: useItemInHand());
+		setUseInteractedBlock(cancelled ? Result.DENY : useInteractedBlock().equals(Result.DENY) ? Result.DEFAULT : useInteractedBlock());
+		setUseItemInHand(cancelled ? Result.DENY : useItemInHand().equals(Result.DENY) ? Result.DEFAULT : useItemInHand());
 		super.setCancelled(cancelled);
 	}
 
@@ -73,7 +65,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	 * @return boolean true if it did
 	 */
 	public boolean hasBlock() {
-		return this.blockClicked != null;
+		return blockClicked != null;
 	}
 
 	/**
@@ -86,7 +78,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	}
 
 	public void setClickedBlock(Block block) {
-		this.blockClicked = block;
+		blockClicked = block;
 	}
 
 	/**
@@ -103,8 +95,10 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * This controls the action to take with the block (if any) that was clicked on
-	 * This event gets processed for all blocks, but most don't have a default action
+	 * This controls the action to take with the block (if any) that was clicked
+	 * on This event gets processed for all blocks, but most don't have a
+	 * default action
+	 *
 	 * @return the action to take with the interacted block
 	 */
 	public Result useInteractedBlock() {
@@ -119,9 +113,11 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * This controls the action to take with the item the player is holding
-	 * This includes both blocks and items (such as flint and steel or records)
-	 * When this is set to default, it will be allowed if no action is taken on the interacted block
+	 * This controls the action to take with the item the player is holding This
+	 * includes both blocks and items (such as flint and steel or records) When
+	 * this is set to default, it will be allowed if no action is taken on the
+	 * interacted block
+	 *
 	 * @return the action to take with the item in hand
 	 */
 	public Result useItemInHand() {

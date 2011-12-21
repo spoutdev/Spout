@@ -6,7 +6,7 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 
 	/**
 	 * Creates a basic cube custom block model
-	 * 
+	 *
 	 * @param addon making this block
 	 * @param texture to use
 	 * @param textureId[6] Array of faces, give Id's for SubTexture locations
@@ -70,7 +70,7 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 
 	/**
 	 * Creates a basic cube custom block model with only one texture
-	 * 
+	 *
 	 * @param addon making this block
 	 * @param texture to use
 	 * @param textureId to get the SubTexture to use
@@ -78,10 +78,10 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 	public GenericCubeBlockDesign(Plugin addon, Texture texture, int textureId) {
 		this(addon, texture, getIdMap(textureId));
 	}
-	
+
 	/**
 	 * Creates a basic cube custom block model with only one texture
-	 * 
+	 *
 	 * @param addon making this block
 	 * @param texture url to use - must be square
 	 * @param textureSize size of the width/height of the texture in pixels

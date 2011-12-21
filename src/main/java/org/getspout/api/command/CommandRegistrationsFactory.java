@@ -1,13 +1,14 @@
 package org.getspout.api.command;
 
-import org.getspout.api.util.Named;
-
 import java.util.Set;
+
+import org.getspout.api.util.Named;
 
 public interface CommandRegistrationsFactory<T> {
 
 	/**
-	 * Creates a command structure from the given {@link T} for usage when registering commands with a CommandsManager
+	 * Creates a command structure from the given {@link T} for usage when
+	 * registering commands with a CommandsManager
 	 *
 	 * @param commands The commands objest that commands are created from.
 	 * @param parent

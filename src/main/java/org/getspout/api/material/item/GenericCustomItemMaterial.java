@@ -19,20 +19,21 @@ public class GenericCustomItemMaterial implements CustomItemMaterial {
 	private Plugin plugin;
 	private int customId;
 	public String texture;
-	
+
 	/**
-	 * Creates a GenericCustomItem with no values, used for serialization purposes only.
+	 * Creates a GenericCustomItem with no values, used for serialization
+	 * purposes only.
 	 */
 	public GenericCustomItemMaterial() {
-		
+
 	}
 
 	public GenericCustomItemMaterial(Plugin plugin, String name, int customId) {
 		this.name = name;
-		this.fullName = plugin.getDescription().getName() + name;
+		fullName = plugin.getDescription().getName() + name;
 		this.customId = customId;
 		this.plugin = plugin;
-		this.setName(name);
+		setName(name);
 		MaterialData.addCustomItem(this);
 	}
 
@@ -42,9 +43,9 @@ public class GenericCustomItemMaterial implements CustomItemMaterial {
 
 	public GenericCustomItemMaterial(Plugin plugin, String name, String texture) {
 		this(plugin, name);
-		this.setTexture(texture);
+		setTexture(texture);
 	}
-	
+
 	public int getRawId() {
 		return 318; //flint
 	}
@@ -56,14 +57,14 @@ public class GenericCustomItemMaterial implements CustomItemMaterial {
 	public boolean hasSubtypes() {
 		return true;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-		this.fullName = plugin.getDescription().getName() + name;
+		fullName = plugin.getDescription().getName() + name;
 	}
 
 	public int getCustomId() {
@@ -73,7 +74,7 @@ public class GenericCustomItemMaterial implements CustomItemMaterial {
 	public String getFullName() {
 		return fullName;
 	}
-	
+
 	public String getNotchianName() {
 		return getName();
 	}
@@ -102,7 +103,7 @@ public class GenericCustomItemMaterial implements CustomItemMaterial {
 	public void readData(DataInputStream input) throws IOException {
 		customId = input.readInt();
 		name = PacketUtil.readString(input);
-//		plugin = Spoutcraft.getPluginManager().getOrCreatePlugin(PacketUtil.readString(input));
+		//		plugin = Spoutcraft.getPluginManager().getOrCreatePlugin(PacketUtil.readString(input));
 		texture = PacketUtil.readString(input);
 		setName(name);
 		MaterialData.addCustomItem(this);

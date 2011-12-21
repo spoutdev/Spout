@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,11 +22,11 @@ import java.lang.reflect.Array;
 public class Java15Compat {
 	@SuppressWarnings("unchecked")
 	public static <T> T[] Arrays_copyOfRange(T[] original, int start, int end) {
-		if ((original.length >= start) && (0 <= start)) {
+		if (original.length >= start && 0 <= start) {
 			if (start <= end) {
 				int length = end - start;
 				int copyLength = Math.min(length, original.length - start);
-				Object[] copy = (Object[]) (Object[]) Array.newInstance(original.getClass().getComponentType(), length);
+				Object[] copy = (Object[]) Array.newInstance(original.getClass().getComponentType(), length);
 
 				System.arraycopy(original, start, copy, 0, copyLength);
 				return (T[]) copy;

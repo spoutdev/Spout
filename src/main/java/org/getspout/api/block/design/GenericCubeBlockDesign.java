@@ -1,15 +1,12 @@
 package org.getspout.api.block.design;
 
-import org.getspout.api.block.design.GenericBlockDesign;
-import org.getspout.api.block.design.Quad;
-import org.getspout.api.block.design.Texture;
 import org.getspout.api.plugin.Plugin;
 
 public class GenericCubeBlockDesign extends GenericBlockDesign {
 
 	/**
 	 * Creates a basic cube custom block model
-	 * 
+	 *
 	 * @param plugin making this block
 	 * @param texture to use
 	 * @param textureId[6] Array of faces, give Id's for SubTexture locations
@@ -73,7 +70,7 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 
 	/**
 	 * Creates a basic cube custom block model with only one texture
-	 * 
+	 *
 	 * @param plugin making this block
 	 * @param texture to use
 	 * @param textureId to get the SubTexture to use
@@ -81,10 +78,10 @@ public class GenericCubeBlockDesign extends GenericBlockDesign {
 	public GenericCubeBlockDesign(Plugin plugin, Texture texture, int textureId) {
 		this(plugin, texture, getIdMap(textureId));
 	}
-	
+
 	/**
 	 * Creates a basic cube custom block model with only one texture
-	 * 
+	 *
 	 * @param plugin making this block
 	 * @param texture url to use - must be square
 	 * @param textureSize size of the width/height of the texture in pixels

@@ -10,23 +10,67 @@ public class MathHelper {
 	public static final double TWO_PI = 2.0 * PI;
 	public static final double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
-
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 *
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static double lerp(double a, double b, double percent) {
-		return a + (b * percent);
+		return (1 - percent) * a + percent * b;
 	}
 
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 *
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static int lerp(int a, int b, double percent) {
-		return (int) (a + (b * percent));
+		return (int) ((1 - percent) * a + percent * b);
 	}
 
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 *
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static Vector3 lerp(Vector3 a, Vector3 b, double percent) {
-		return (a.add(b.scale(percent)));
+		return a.scale(1 - percent).add(b.scale(percent));
 	}
 
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 *
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static Vector2 lerp(Vector2 a, Vector2 b, double percent) {
-		return (a.add(b.scale(percent)));
+		return a.scale(1 - percent).add(b.scale(percent));
 	}
 
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 *
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static Color lerp(Color a, Color b, double percent) {
 		int red = lerp(a.getRedI(), b.getRedI(), percent);
 		int blue = lerp(a.getBlueI(), b.getBlueI(), percent);
@@ -35,23 +79,43 @@ public class MathHelper {
 		return new Color(red, blue, green, alpha);
 	}
 
-
 	public static double clamp(double value, double low, double high) {
-		if (value < low) return low;
-		if (value > high) return high;
+		if (value < low) {
+			return low;
+		}
+		if (value > high) {
+			return high;
+		}
 		return value;
 	}
 
 	public static int clamp(int value, int low, int high) {
-		if (value < low) return low;
-		if (value > high) return high;
+		if (value < low) {
+			return low;
+		}
+		if (value > high) {
+			return high;
+		}
 		return value;
 	}
+
+	/**
+	 * Returns the forward vector transformed by the provided pitch and yaw
+	 *
+	 * @param pitch
+	 * @param yaw
+	 * @return
+	 */
+	public static Vector3 getDirectionVector(double pitch, double yaw) {
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate((new Quaternion(pitch, Vector3.UNIT_Y)).multiply(new Quaternion(yaw, Vector3.UNIT_Z))));
+	}
+	
+	
 
 	//Fast Math Implementation
 
 	public final static double cos(final double x) {
-		return sin(x + ((x > HALF_PI) ? -THREE_PI_HALVES : HALF_PI));
+		return sin(x + (x > HALF_PI ? -THREE_PI_HALVES : HALF_PI));
 	}
 
 	public final static double sin(double x) {
@@ -72,7 +136,7 @@ public class MathHelper {
 	}
 
 	public final static double atan(final double x) {
-		return (Math.abs(x) < 1) ? x / (1 + atan_a * x * x) : Math.signum(x) * HALF_PI - x / (x * x + atan_a);
+		return Math.abs(x) < 1 ? x / (1 + atan_a * x * x) : Math.signum(x) * HALF_PI - x / (x * x + atan_a);
 	}
 
 	public final static double inverseSqrt(double x) {

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,7 +26,7 @@ public class EntityDamageByBlockEvent extends EntityDamageEvent {
 
 	/**
 	 * Gets the block that damaged the entity.
-	 * 
+	 *
 	 * @return The block that damaged the entity
 	 */
 	public Block getDamager() {
@@ -35,7 +35,7 @@ public class EntityDamageByBlockEvent extends EntityDamageEvent {
 
 	/**
 	 * Sets the block that damaged the entity.
-	 * 
+	 *
 	 * @param damager The block to set
 	 */
 	public void setDamager(Block damager) {

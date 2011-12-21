@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -85,8 +85,9 @@ public interface Inventory {
 	/**
 	 * Removes the given ItemStacks from the inventory.
 	 *
-	 * It will try to remove 'as much as possible' from the types and amounts you
-	 * give as arguments. It will return a HashMap of what it couldn't remove.
+	 * It will try to remove 'as much as possible' from the types and amounts
+	 * you give as arguments. It will return a HashMap of what it couldn't
+	 * remove.
 	 *
 	 * @param items The ItemStacks to remove
 	 * @return
@@ -124,8 +125,9 @@ public interface Inventory {
 	public boolean contains(Material material);
 
 	/**
-	 * Check if the inventory contains any ItemStacks matching the given ItemStack
-	 * This will only match if both the type and the amount of the stack match
+	 * Check if the inventory contains any ItemStacks matching the given
+	 * ItemStack This will only match if both the type and the amount of the
+	 * stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return If any matching ItemStacks were found
@@ -133,7 +135,8 @@ public interface Inventory {
 	public boolean contains(ItemStack item);
 
 	/**
-	 * Check if the inventory contains any ItemStacks with the given materialId and at least the minimum amount specified
+	 * Check if the inventory contains any ItemStacks with the given materialId
+	 * and at least the minimum amount specified
 	 *
 	 * @param materialId The materialId to check for
 	 * @param amount The minimum amount to look for
@@ -142,7 +145,8 @@ public interface Inventory {
 	public boolean contains(int materialId, int amount);
 
 	/**
-	 * Check if the inventory contains any ItemStacks with the given material and at least the minimum amount specified
+	 * Check if the inventory contains any ItemStacks with the given material
+	 * and at least the minimum amount specified
 	 *
 	 * @param material The material to check for
 	 * @return If any ItemStacks were found
@@ -150,8 +154,9 @@ public interface Inventory {
 	public boolean contains(Material material, int amount);
 
 	/**
-	 * Check if the inventory contains any ItemStacks matching the given ItemStack and at least the minimum amount specified
-	 * This will only match if both the type and the amount of the stack match
+	 * Check if the inventory contains any ItemStacks matching the given
+	 * ItemStack and at least the minimum amount specified This will only match
+	 * if both the type and the amount of the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return If any matching ItemStacks were found
@@ -159,7 +164,8 @@ public interface Inventory {
 	public boolean contains(ItemStack item, int amount);
 
 	/**
-	 * Find all slots in the inventory containing any ItemStacks with the given materialId
+	 * Find all slots in the inventory containing any ItemStacks with the given
+	 * materialId
 	 *
 	 * @param materialId The materialId to look for
 	 * @return The Slots found.
@@ -167,7 +173,8 @@ public interface Inventory {
 	public HashMap<Integer, ? extends ItemStack> all(int materialId);
 
 	/**
-	 * Find all slots in the inventory containing any ItemStacks with the given material
+	 * Find all slots in the inventory containing any ItemStacks with the given
+	 * material
 	 *
 	 * @param materialId The material to look for
 	 * @return The Slots found.
@@ -175,8 +182,9 @@ public interface Inventory {
 	public HashMap<Integer, ? extends ItemStack> all(Material material);
 
 	/**
-	 * Find all slots in the inventory containing any ItemStacks with the given ItemStack
-	 * This will only match slots if both the type and the amount of the stack match
+	 * Find all slots in the inventory containing any ItemStacks with the given
+	 * ItemStack This will only match slots if both the type and the amount of
+	 * the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return The Slots found.
@@ -184,7 +192,8 @@ public interface Inventory {
 	public HashMap<Integer, ? extends ItemStack> all(ItemStack item);
 
 	/**
-	 * Find the first slot in the inventory containing an ItemStack with the given materialId
+	 * Find the first slot in the inventory containing an ItemStack with the
+	 * given materialId
 	 *
 	 * @param materialId The materialId to look for
 	 * @return The Slot found.
@@ -192,7 +201,8 @@ public interface Inventory {
 	public int first(int materialId);
 
 	/**
-	 * Find the first slot in the inventory containing an ItemStack with the given material
+	 * Find the first slot in the inventory containing an ItemStack with the
+	 * given material
 	 *
 	 * @param materialId The material to look for
 	 * @return The Slot found.
@@ -200,8 +210,9 @@ public interface Inventory {
 	public int first(Material material);
 
 	/**
-	 * Find the first slot in the inventory containing an ItemStack with the given stack
-	 * This will only match a slot if both the type and the amount of the stack match
+	 * Find the first slot in the inventory containing an ItemStack with the
+	 * given stack This will only match a slot if both the type and the amount
+	 * of the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return The Slot found.
@@ -230,8 +241,8 @@ public interface Inventory {
 	public void remove(Material material);
 
 	/**
-	 * Remove all stacks in the inventory matching the given stack.
-	 * This will only match a slot if both the type and the amount of the stack match
+	 * Remove all stacks in the inventory matching the given stack. This will
+	 * only match a slot if both the type and the amount of the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 */

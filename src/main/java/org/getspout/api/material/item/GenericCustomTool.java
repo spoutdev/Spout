@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,23 +20,22 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import gnu.trove.map.hash.TObjectFloatHashMap;
+
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.CustomBlockMaterial;
 import org.getspout.api.material.MaterialData;
 import org.getspout.api.material.Tool;
-import org.getspout.api.material.item.GenericCustomItemMaterial;
 import org.getspout.api.plugin.Plugin;
 
-import gnu.trove.map.hash.TObjectFloatHashMap;
-
-public class GenericCustomTool extends GenericCustomItemMaterial implements Tool{
+public class GenericCustomTool extends GenericCustomItemMaterial implements Tool {
 	private short durability = 1;
 	private TObjectFloatHashMap<BlockMaterial> strengthMods = new TObjectFloatHashMap<BlockMaterial>();
-	
-	public GenericCustomTool(){
+
+	public GenericCustomTool() {
 		super();
 	}
-	
+
 	public GenericCustomTool(Plugin addon, String name, String texture) {
 		super(addon, name, texture);
 	}
@@ -65,12 +64,12 @@ public class GenericCustomTool extends GenericCustomItemMaterial implements Tool
 	public BlockMaterial[] getStrengthModifiedBlocks() {
 		return (BlockMaterial[]) strengthMods.keys();
 	}
-	
+
 	@Override
 	public int getNumBytes() {
 		return super.getNumBytes() + 2 + 2 + strengthMods.size() * 10;
 	}
-	
+
 	@Override
 	public void readData(DataInputStream input) throws IOException {
 		super.readData(input);
@@ -87,20 +86,18 @@ public class GenericCustomTool extends GenericCustomItemMaterial implements Tool
 			setStrengthModifier(block, mod);
 		}
 	}
-	
+
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
 		super.writeData(output);
 		output.writeShort(getDurability());
 		BlockMaterial[] mod = getStrengthModifiedBlocks();
 		output.writeShort(mod.length);
-		for (int i = 0; i < mod.length; i++) {
-			BlockMaterial block =  mod[i];
+		for (BlockMaterial block : mod) {
 			if (block instanceof CustomBlockMaterial) {
-				output.writeInt(((CustomBlockMaterial)block).getCustomId());
+				output.writeInt(((CustomBlockMaterial) block).getCustomId());
 				output.writeShort(-1);
-			}
-			else {
+			} else {
 				output.writeInt(block.getRawId());
 				output.writeShort(block.getRawData());
 			}
@@ -112,6 +109,5 @@ public class GenericCustomTool extends GenericCustomItemMaterial implements Tool
 	public int getVersion() {
 		return super.getVersion() + 0;
 	}
-	
 
 }

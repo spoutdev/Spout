@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,8 +16,8 @@
  */
 package org.getspout.api.block;
 
-import org.getspout.api.geo.World;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.geo.World;
 import org.getspout.api.material.CustomBlockMaterial;
 
 public interface Chunk {
@@ -67,11 +67,11 @@ public interface Chunk {
 	 */
 	public boolean load();
 
-
 	/**
 	 * Loads the chunk.
 	 *
-	 * @param generate Whether or not to generate a chunk if it doesn't already exist
+	 * @param generate Whether or not to generate a chunk if it doesn't already
+	 *            exist
 	 * @return true if the chunk has loaded successfully, otherwise false
 	 */
 	public boolean load(boolean generate);
@@ -80,7 +80,7 @@ public interface Chunk {
 	 * Unloads and optionally saves the Chunk
 	 *
 	 * @return true if the chunk has unloaded successfully, otherwise false
-	 */	 
+	 */
 	public boolean unload();
 
 	/**
@@ -102,47 +102,48 @@ public interface Chunk {
 
 	/**
 	 * Get a list of all entities in the chunk.
+	 *
 	 * @return The entities.
 	 */
 	public Entity[] getEntities();
-	
+
 	/**
 	 * Gets the custom block ids that are used for the chunk at (x, z).
-	 * 
+	 *
 	 * It may be null if there are no custom block ids.
-	 * 
+	 *
 	 * Modifying this array <b>will</b> change the contents of this chunk.
-	 * 
+	 *
 	 * @return custom block ids
 	 */
 	public short[] getCustomBlockIds();
 
 	/**
 	 * Sets the custom block ids that are used for the chunk at (x, z).
-	 * 
+	 *
 	 * This array should be 32768 in length.
-	 * 
+	 *
 	 * Modifying this array will <b>override</b> the contents of this chunk.
-	 * 
+	 *
 	 * @param ids the custom block ids
 	 */
 	public void setCustomBlockIds(short[] ids);
-	
+
 	/**
 	 * Gets the custom block id at this x, y, z location.
-	 * 
+	 *
 	 * If no custom block exists, it will return zero,
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @return custom block id
 	 */
 	public short getCustomBlockId(int x, int y, int z);
-	
+
 	/**
 	 * Sets the custom block id at this x, y, z location
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -150,15 +151,16 @@ public interface Chunk {
 	 * @return the previous id at the location
 	 */
 	public short setCustomBlockId(int x, int y, int z, short id);
-	
+
 	/**
 	 * Sets the custom block at this x, y, z location
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param custom block to set
-	 * @return the previous custom block at the location, or null if none existed.
+	 * @return the previous custom block at the location, or null if none
+	 *         existed.
 	 */
 	public CustomBlockMaterial setCustomBlockId(int x, int y, int z, CustomBlockMaterial block);
 

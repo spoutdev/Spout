@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,8 +33,8 @@ public class PlayerFishEvent extends PlayerEvent implements Cancellable {
 	/**
 	 * Gets the entity caught by the player
 	 *
-	 * @return Entity caught by the player, null if fishing, 
-	 *		bobber has gotten stuck in the ground or nothing has been caught
+	 * @return Entity caught by the player, null if fishing, bobber has gotten
+	 *         stuck in the ground or nothing has been caught
 	 */
 	public Entity getCaught() {
 		return caught;
@@ -92,7 +92,8 @@ public class PlayerFishEvent extends PlayerEvent implements Cancellable {
 		 */
 		IN_GROUND,
 		/**
-		 * When a player fails to catch anything while fishing usually due to poor aiming or timing
+		 * When a player fails to catch anything while fishing usually due to
+		 * poor aiming or timing
 		 */
 		FAILED_ATTEMPT,
 	}

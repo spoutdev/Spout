@@ -1,7 +1,6 @@
 package org.getspout.api.material.item;
 
 import org.getspout.api.material.Weapon;
-import org.getspout.api.material.item.GenericItemMaterial;
 
 public class GenericWeapon extends GenericItemMaterial implements Weapon {
 

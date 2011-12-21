@@ -61,6 +61,7 @@ public enum WidgetAnim {
 	public int getId() {
 		return id;
 	}
+
 	private static final HashMap<Integer, WidgetAnim> lookupId = new HashMap<Integer, WidgetAnim>();
 
 	static {
@@ -77,9 +78,9 @@ public enum WidgetAnim {
 		switch (this) {
 			case OFFSET_TOP:
 			case OFFSET_LEFT:
-//				if (widget instanceof Texture) {
-//					return true;
-//				}
+				//				if (widget instanceof Texture) {
+				//					return true;
+				//				}
 				return false;
 		}
 		return true;

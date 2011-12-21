@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,21 +32,23 @@
  */
 package org.getspout.api.block;
 
+import javax.swing.text.Position;
 import org.getspout.api.geo.World;
 import org.getspout.api.material.Material;
 import org.getspout.api.metadata.Metadatable;
-import org.getspout.api.util.Location;
 
 public interface Block extends Metadatable {
 
 	/**
 	 * Gets the hardness of this block
+	 *
 	 * @return hardnes
 	 */
 	public float getHardness();
 
 	/**
 	 * Sets the hardness of this block
+	 *
 	 * @param hardness to set to
 	 */
 	public void setHardness(float hardness);
@@ -103,8 +105,9 @@ public interface Block extends Metadatable {
 	 * <br />
 	 * For example, the following method places water at 100,102,100; two blocks
 	 * above 100,100,100.
+	 *
 	 * <pre>
-	 * Block block = world.getBlockAt(100,100,100);
+	 * Block block = world.getBlockAt(100, 100, 100);
 	 * Block shower = block.getFace(BlockFace.UP, 2);
 	 * shower.setType(Material.WATER);
 	 * </pre>
@@ -145,7 +148,7 @@ public interface Block extends Metadatable {
 
 	/**
 	 * Gets the material that this block represents
-	 * 
+	 *
 	 * @return material
 	 */
 	public org.getspout.api.material.BlockMaterial getType();
@@ -155,7 +158,7 @@ public interface Block extends Metadatable {
 	 *
 	 * @return Location of block
 	 */
-	public Location getLocation();
+	public Position getPosition();
 
 	/**
 	 * Gets the chunk which contains this block
@@ -175,7 +178,8 @@ public interface Block extends Metadatable {
 	 * Sets the metadata for this block
 	 *
 	 * @param data New block specific metadata
-	 * @param whether or not to update neighbor blocks after setting the metadata
+	 * @param whether or not to update neighbor blocks after setting the
+	 *            metadata
 	 */
 	public void setData(byte data, boolean applyPhyiscs);
 
@@ -210,12 +214,14 @@ public interface Block extends Metadatable {
 	 * Gets the face relation of this block compared to the given block<br />
 	 * <br />
 	 * For example:
+	 *
 	 * <pre>
 	 * Block current = world.getBlockAt(100, 100, 100);
 	 * Block target = world.getBlockAt(100, 101, 100);
 	 *
 	 * current.getFace(target) == BlockFace.Up;
 	 * </pre>
+	 *
 	 * <br />
 	 * If the given block is not connected to this block, null may be returned
 	 *
@@ -228,8 +234,8 @@ public interface Block extends Metadatable {
 	 * Captures the current state of this block. You may then cast that state
 	 * into any accepted type, such as Furnace or Sign.
 	 *
-	 * The returned object will never be updated, and you are not guaranteed that
-	 * (for example) a sign is still a sign after you capture its state.
+	 * The returned object will never be updated, and you are not guaranteed
+	 * that (for example) a sign is still a sign after you capture its state.
 	 *
 	 * @return BlockState with the current state of this block.
 	 */
@@ -273,7 +279,8 @@ public interface Block extends Metadatable {
 	/**
 	 * Returns the redstone power being provided to this block face
 	 *
-	 * @param face the face of the block to query or BlockFace.SELF for the block itself
+	 * @param face the face of the block to query or BlockFace.SELF for the
+	 *            block itself
 	 * @return power level
 	 */
 	public int getBlockPower(BlockFace face);
@@ -288,7 +295,8 @@ public interface Block extends Metadatable {
 	/**
 	 * Checks if this block is empty.
 	 *
-	 * A block is considered empty when {@link #getType()} returns {@link Material#AIR}.
+	 * A block is considered empty when {@link #getType()} returns
+	 * {@link Material#AIR}.
 	 *
 	 * @return true if this block is empty
 	 */
@@ -297,7 +305,9 @@ public interface Block extends Metadatable {
 	/**
 	 * Checks if this block is liquid.
 	 *
-	 * A block is considered liquid when {@link #getType()} returns {@link Material#WATER}, {@link Material#STATIONARY_WATER}, {@link Material#LAVA} or {@link Material#STATIONARY_LAVA}.
+	 * A block is considered liquid when {@link #getType()} returns
+	 * {@link Material#WATER}, {@link Material#STATIONARY_WATER},
+	 * {@link Material#LAVA} or {@link Material#STATIONARY_LAVA}.
 	 *
 	 * @return true if this block is liquid
 	 */

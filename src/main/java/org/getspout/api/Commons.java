@@ -19,8 +19,8 @@ package org.getspout.api;
 /**
  * Use this class within SpoutCommons to make use of the JIT optimisations by
  * accessing the static final vars. There are mirrored methods and vars to allow
- * either programming style, however only the vars are currently known to
- * reduce code that can never be used.
+ * either programming style, however only the vars are currently known to reduce
+ * code that can never be used.
  */
 final public class Commons {
 
@@ -48,9 +48,10 @@ final public class Commons {
 	}
 
 	/**
-	 * Is this running on Spoutcraft (client)?
-	 * NOTE: You should use the variable of the same name instead!!!
-	 * This is currently marked as deprecated, but will never be removed.
+	 * Is this running on Spoutcraft (client)? NOTE: You should use the variable
+	 * of the same name instead!!! This is currently marked as deprecated, but
+	 * will never be removed.
+	 *
 	 * @return if it is client side
 	 */
 	@Deprecated
@@ -59,9 +60,10 @@ final public class Commons {
 	}
 
 	/**
-	 * Is this running on Spout (server)?
-	 * NOTE: You should use the variable of the same name instead!!!
-	 * This is currently marked as deprecated, but will never be removed.
+	 * Is this running on Spout (server)? NOTE: You should use the variable of
+	 * the same name instead!!! This is currently marked as deprecated, but will
+	 * never be removed.
+	 *
 	 * @return if it is server side
 	 */
 	@Deprecated

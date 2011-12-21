@@ -1,40 +1,43 @@
 package org.getspout.api.util.map;
+
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TLongIntIterator;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.set.TLongSet;
 
 /**
- * A simplistic map that supports a pair of integers for keys, using a trove long int hashmap in the backend.
+ * A simplistic map that supports a pair of integers for keys, using a trove
+ * long int hashmap in the backend.
+ *
  * @author Afforess
  *
  */
-public class TIntPairIntHashMap{
+public class TIntPairIntHashMap {
 	private TLongIntHashMap map;
-	
+
 	public TIntPairIntHashMap() {
 		map = new TLongIntHashMap(100);
 	}
-	
-	public TIntPairIntHashMap(int capacity){
+
+	public TIntPairIntHashMap(int capacity) {
 		map = new TLongIntHashMap(capacity);
 	}
-	
+
 	public int put(int key1, int key2, int value) {
-		long key = (((long)key1)<<32) | (((long)key2) & 0xFFFFFFFFL);
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.put(key, value);
 	}
-	
+
 	public int get(int key1, int key2) {
-		long key = (((long)key1)<<32) | (((long)key2) & 0xFFFFFFFFL);
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.get(key);
 	}
-	
+
 	public boolean containsKey(int key1, int key2) {
-		long key = (((long)key1)<<32) | (((long)key2) & 0xFFFFFFFFL);
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.containsKey(key);
 	}
-	
+
 	public void clear() {
 		map.clear();
 	}
@@ -44,7 +47,7 @@ public class TIntPairIntHashMap{
 	}
 
 	public boolean increment(int key1, int key2) {
-		long key = (((long)key1)<<32) | (((long)key2) & 0xFFFFFFFFL);
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.increment(key);
 	}
 
@@ -65,7 +68,7 @@ public class TIntPairIntHashMap{
 	}
 
 	public int remove(int key1, int key2) {
-		long key = (((long)key1)<<32) | (((long)key2) & 0xFFFFFFFFL);
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.remove(key);
 	}
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@ package org.getspout.api.event.entity;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.util.Location;
+import org.getspout.api.geo.discrete.Point;
 
 /**
  * Called when an entity spawns into the world.
@@ -26,27 +26,27 @@ import org.getspout.api.util.Location;
 public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private Location location;
+	private Point point;
 
 	private SpawnReason reason;
 
 	/**
 	 * Gets the location in which spawning will take place.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
-	public Location getLocation() {
-		return location;
+	public Point getPoint() {
+		return point;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setPoint(Point point) {
+		this.point = point;
 	}
 
 	/**
 	 * Gets the reason in which spawning occurred.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public SpawnReason getReason() {
 		return reason;

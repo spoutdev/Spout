@@ -1,11 +1,10 @@
 package org.getspout.api.material.block;
 
 import org.getspout.api.material.Plant;
-import org.getspout.api.material.block.GenericBlockMaterial;
 
-public class Grass extends GenericBlockMaterial implements Plant{
-	
-	public Grass(String name){
+public class Grass extends GenericBlockMaterial implements Plant {
+
+	public Grass(String name) {
 		super(name, 2);
 	}
 

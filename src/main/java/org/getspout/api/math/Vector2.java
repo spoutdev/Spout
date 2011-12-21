@@ -3,9 +3,10 @@ package org.getspout.api.math;
 /**
  * A 2-dimensional vector represented by double-precision x,y coordinates
  *
- * Note, this is the Immutable form of Vector2.  All operations will construct a new Vector2.
+ * Note, this is the Immutable form of Vector2. All operations will construct a
+ * new Vector2.
  */
-public class Vector2 {
+public class Vector2 implements Comparable<Vector2> {
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
@@ -30,8 +31,9 @@ public class Vector2 {
 
 	/**
 	 * Construct and Initialized a Vector2 from the given x, y
-	 * @param x  the x coordinate
-	 * @param y  the y coordinate
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
 	 */
 	public Vector2(double x, double y) {
 		this.x = x;
@@ -47,6 +49,7 @@ public class Vector2 {
 
 	/**
 	 * Gets the X coordiante
+	 *
 	 * @return The X coordinate
 	 */
 	public double getX() {
@@ -55,6 +58,7 @@ public class Vector2 {
 
 	/**
 	 * Gets the Y coordiante
+	 *
 	 * @return The Y coordinate
 	 */
 	public double getY() {
@@ -63,6 +67,7 @@ public class Vector2 {
 
 	/**
 	 * Adds this Vector2 to the value of the Vector2 argument
+	 *
 	 * @param that The Vector2 to add
 	 * @return the new Vector2
 	 */
@@ -72,6 +77,7 @@ public class Vector2 {
 
 	/**
 	 * Subtracts this Vector2 to the value of the Vector2 argument
+	 *
 	 * @param that The Vector2 to subtract
 	 * @return the new Vector2
 	 */
@@ -81,6 +87,7 @@ public class Vector2 {
 
 	/**
 	 * Scales this Vector2 by the value of the argument
+	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector2 scaled by the amount.
 	 */
@@ -89,8 +96,9 @@ public class Vector2 {
 	}
 
 	/**
-	 * Returns this Vector2 dot the Vector2 argument.
-	 * Dot Product is defined as a.x*b.x + a.y*b.y
+	 * Returns this Vector2 dot the Vector2 argument. Dot Product is defined as
+	 * a.x*b.x + a.y*b.y
+	 *
 	 * @param that The Vector2 to dot with this.
 	 * @return The dot product
 	 */
@@ -99,8 +107,9 @@ public class Vector2 {
 	}
 
 	/**
-	 * Returns the Cross Product of this Vector2
-	 * Note: Cross Product is undefined in 2d space.  This returns the orthogonal vector to this vector
+	 * Returns the Cross Product of this Vector2 Note: Cross Product is
+	 * undefined in 2d space. This returns the orthogonal vector to this vector
+	 *
 	 * @return The orthogonal vector to this vector.
 	 */
 	public Vector2 cross() {
@@ -109,6 +118,7 @@ public class Vector2 {
 
 	/**
 	 * Calculates the length of this Vector2 squared.
+	 *
 	 * @return the squared length
 	 */
 	public double lengthSquared() {
@@ -116,8 +126,9 @@ public class Vector2 {
 	}
 
 	/**
-	 * Calculates the length of this Vector2
-	 * Note: This makes use of the sqrt function, and is not cached.  That could affect performance
+	 * Calculates the length of this Vector2 Note: This makes use of the sqrt
+	 * function, and is not cached. That could affect performance
+	 *
 	 * @return the length of this vector2
 	 */
 	public double length() {
@@ -126,6 +137,7 @@ public class Vector2 {
 
 	/**
 	 * Returns this Vector2 where the length is equal to 1
+	 *
 	 * @return This Vector2 with length 1
 	 */
 	public Vector2 normalize() {
@@ -133,19 +145,36 @@ public class Vector2 {
 	}
 
 	/**
-	 * Returns this Vector2 in an array.
-	 * Element 0 contains x
-	 * Element 1 contains y
+	 * Returns this Vector2 in an array. Element 0 contains x Element 1 contains
+	 * y
+	 *
 	 * @return The array containing this Vector2
 	 */
 	public double[] toArray() {
 		return Vector2.toArray(this);
 	}
 
+	/**
+	 * Compares two Vector3s
+	 */
+
+	public int compareTo(Vector2 o) {
+		return Vector2.compareTo(this, o);
+	}
 
 	/**
-	 * Returns the length of the provided Vector2
-	 * Note: This makes use of the sqrt function, and is not cached.  This could affect performance.
+	 * Checks if two Vector2s are equal
+	 */
+
+	@Override
+	public boolean equals(Object o) {
+		return Vector2.equals(this, o);
+	}
+
+	/**
+	 * Returns the length of the provided Vector2 Note: This makes use of the
+	 * sqrt function, and is not cached. This could affect performance.
+	 *
 	 * @param a The Vector2 to calculate the length of
 	 * @return The length of the Vector2
 	 */
@@ -155,6 +184,7 @@ public class Vector2 {
 
 	/**
 	 * Returns the length squared of the provided Vector2
+	 *
 	 * @param a the Vector2 to calculate the length squared
 	 * @return the length squared of the Vector2
 	 */
@@ -164,6 +194,7 @@ public class Vector2 {
 
 	/**
 	 * Returns a Vector2 that is the unit form of the provided Vector2
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -173,6 +204,7 @@ public class Vector2 {
 
 	/**
 	 * Subtracts one Vector2 from the other Vector2
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -183,6 +215,7 @@ public class Vector2 {
 
 	/**
 	 * Adds one Vector2 to the other Vector2
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -193,32 +226,55 @@ public class Vector2 {
 
 	/**
 	 * Scales the Vector2 by the ammount
+	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector2 scale(Vector2 a, double b) {
-		return new Vector2(a.getX() * b, a.getY());
+		return new Vector2(a.getX() * b, a.getY() * b);
 	}
 
 	/**
-	 * Calculates the Dot Product of two Vector2s
-	 * Dot Product is defined as a.x*b.x + a.y*b.y
+	 * Calculates the Dot Product of two Vector2s Dot Product is defined as
+	 * a.x*b.x + a.y*b.y
+	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static double dot(Vector2 a, Vector2 b) {
-		return (a.getX() * b.getX() + a.getY() * b.getY());
+		return a.getX() * b.getX() + a.getY() * b.getY();
 	}
 
 	/**
-	 * Returns the provided Vector2 in an array.
-	 * Element 0 contains x
-	 * Element 1 contains y
+	 * Returns the provided Vector2 in an array. Element 0 contains x Element 1
+	 * contains y
+	 *
 	 * @return The array containing the Vector2
 	 */
 	public static double[] toArray(Vector2 a) {
-		return new double[]{a.getX(), a.getY()};
+		return new double[] {a.getX(), a.getY()};
 	}
+
+	/**
+	 * Compares two Vector3s
+	 */
+	public static int compareTo(Vector2 a, Vector2 b) {
+		return (int) a.lengthSquared() - (int) b.lengthSquared();
+	}
+
+	/**
+	 * Checks if two Vector2s are equal
+	 */
+	public static boolean equals(Object a, Object b) {
+		if (!(a instanceof Vector2) || !(b instanceof Vector2)) {
+			return false;
+		}
+		if (a == b) {
+			return true;
+		}
+		return compareTo((Vector2) a, (Vector2) b) == 0;
+	}
+
 }

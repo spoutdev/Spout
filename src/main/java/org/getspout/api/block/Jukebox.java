@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,24 +40,28 @@ import org.getspout.api.material.ItemMaterial;
 public interface Jukebox extends BlockState {
 	/**
 	 * Get the record currently playing
+	 *
 	 * @return The record Material, or AIR if none is playing
 	 */
 	public ItemMaterial getPlaying();
-	
+
 	/**
 	 * Set the record currently playing
+	 *
 	 * @param record The record Material, or null/AIR to stop playing
 	 */
 	public void setPlaying(ItemMaterial record);
-	
+
 	/**
 	 * Check if the jukebox is currently playing a record
+	 *
 	 * @return True if there is a record playing
 	 */
 	public boolean isPlaying();
-	
+
 	/**
 	 * Stop the jukebox playing and eject the current record
+	 *
 	 * @return True if a record was ejected; false if there was none playing
 	 */
 	public boolean eject();

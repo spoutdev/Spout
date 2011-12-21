@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,12 @@
 package org.getspout.api.metadata;
 
 /**
- * A MetadataConversionException is thrown any time a {@link LazyMetadataValue} attempts to convert a metadata value
- * to an inappropriate data type.
+ * A MetadataConversionException is thrown any time a {@link LazyMetadataValue}
+ * attempts to convert a metadata value to an inappropriate data type.
  */
 @SuppressWarnings("serial")
 public class MetadataConversionException extends RuntimeException {
-    MetadataConversionException(String message) {
-        super(message);
-    }
+	MetadataConversionException(String message) {
+		super(message);
+	}
 }

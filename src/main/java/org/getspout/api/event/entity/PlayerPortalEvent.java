@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,11 +29,11 @@ public class PlayerPortalEvent extends EntityTeleportEvent {
 	protected TravelAgent travelAgent;
 
 	public Player getPlayer() {
-		return (Player) this.getEntity();
+		return (Player) getEntity();
 	}
 
 	public TravelAgent getTravelAgent() {
-		return this.travelAgent;
+		return travelAgent;
 	}
 
 	public void setTravelAgent(TravelAgent travelAgent) {

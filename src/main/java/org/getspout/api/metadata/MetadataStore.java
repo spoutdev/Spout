@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,6 +27,7 @@ public interface MetadataStore<TSubject> {
 
 	/**
 	 * Adds a metadata value to an object.
+	 *
 	 * @param subject The object receiving the metadata.
 	 * @param metadataKey A unique key to identify this metadata.
 	 * @param newMetadataValue
@@ -34,8 +35,9 @@ public interface MetadataStore<TSubject> {
 	public void setMetadata(TSubject subject, String metadataKey, MetadataValue newMetadataValue);
 
 	/**
-	 * Returns all metadata values attached to an object. If multiple plugins have attached metadata, each will value
-	 * will be included.
+	 * Returns all metadata values attached to an object. If multiple plugins
+	 * have attached metadata, each will value will be included.
+	 *
 	 * @param subject
 	 * @param metadataKey
 	 * @return
@@ -44,6 +46,7 @@ public interface MetadataStore<TSubject> {
 
 	/**
 	 * Tests to see if a metadata attribute has been set on an object.
+	 *
 	 * @param subject
 	 * @param metadataKey
 	 * @return
@@ -52,6 +55,7 @@ public interface MetadataStore<TSubject> {
 
 	/**
 	 * Removes a metadata item owned by a plugin from a subject.
+	 *
 	 * @param subject
 	 * @param metadataKey
 	 * @param owningPlugin
@@ -59,8 +63,10 @@ public interface MetadataStore<TSubject> {
 	public void removeMetadata(TSubject subject, String metadataKey, Plugin owningPlugin);
 
 	/**
-	 * Invalidates all metadata in the metadata store that originates from the given plugin. Doing this will force
-	 * each invalidated metadata item to be recalculated the next time it is accessed.
+	 * Invalidates all metadata in the metadata store that originates from the
+	 * given plugin. Doing this will force each invalidated metadata item to be
+	 * recalculated the next time it is accessed.
+	 *
 	 * @param owningPlugin
 	 */
 	public void invalidateAll(Plugin owningPlugin);

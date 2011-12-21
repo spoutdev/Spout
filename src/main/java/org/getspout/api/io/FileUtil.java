@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,7 +39,7 @@ public class FileUtil {
 
 	/**
 	 * Computes a long CRC of a File
-	 * 
+	 *
 	 * @param file the file to process
 	 * @param a buffer for temporary data
 	 * @return the CRC or 0 on failure
@@ -65,7 +65,7 @@ public class FileUtil {
 
 	/**
 	 * Computes a long CRC of the file stored at a URL
-	 * 
+	 *
 	 * @param url the URL that the file is stored at
 	 * @param a buffer for temporary data
 	 * @return the CRC or 0 on failure
@@ -94,7 +94,7 @@ public class FileUtil {
 
 	/**
 	 * Computes a long CRC of the data in an InputStream until the stream ends.
-	 * 
+	 *
 	 * @param in the InputStream to process
 	 * @param a buffer for temporary data
 	 * @return the CRC or 0 on failure
@@ -111,8 +111,8 @@ public class FileUtil {
 		while (read >= 0) {
 			try {
 				read = in.read(buffer);
-				for (i=0; i < read; i++) {
-					hash += (hash << 5) + (long)buffer[i];
+				for (i = 0; i < read; i++) {
+					hash += (hash << 5) + buffer[i];
 				}
 			} catch (IOException ioe) {
 				return 0;
@@ -123,10 +123,10 @@ public class FileUtil {
 
 	}
 
-
 	/**
-	 * Converts the String representation of a URL into its corresponding filename.
-	 * 
+	 * Converts the String representation of a URL into its corresponding
+	 * filename.
+	 *
 	 * @param the url to process
 	 * @return true the coresponding filename
 	 */
@@ -146,10 +146,11 @@ public class FileUtil {
 	}
 
 	/**
-	 * Writes a Collection of Strings to a File, overwriting any previous file contents.
-	 * 
+	 * Writes a Collection of Strings to a File, overwriting any previous file
+	 * contents.
+	 *
 	 * Each String is converted into a line in the File.
-	 * 
+	 *
 	 * @param strings the Collection of Strings
 	 * @param file the file to write
 	 * @return true on success
@@ -159,14 +160,14 @@ public class FileUtil {
 
 		try {
 			bw = new BufferedWriter(new FileWriter(file));
-		} catch (FileNotFoundException fnfe ) {
+		} catch (FileNotFoundException fnfe) {
 			return false;
 		} catch (IOException ioe) {
 			return false;
 		}
 
 		try {
-			for( String line : strings ) {
+			for (String line : strings) {
 				bw.write(line);
 				bw.newLine();
 			}
@@ -176,17 +177,19 @@ public class FileUtil {
 		} finally {
 			try {
 				bw.close();
-			} catch (IOException ioe2) {}
+			} catch (IOException ioe2) {
+			}
 		}
 
 	}
 
 	/**
-	 * Reads a File and places the contents into a collection of Strings.  
-	 * 
+	 * Reads a File and places the contents into a collection of Strings.
+	 *
 	 * Each line in the File is converted into a String.
-	 * 
-	 * Iterators on the List will iterate through the Strings in the order the lines appear in the file
+	 *
+	 * Iterators on the List will iterate through the Strings in the order the
+	 * lines appear in the file
 	 *
 	 * @param the file to read
 	 * @return the Collection of Strings or null on failure
@@ -197,15 +200,15 @@ public class FileUtil {
 
 		try {
 			br = new BufferedReader(new FileReader(file));
-		} catch (FileNotFoundException fnfe ) {
+		} catch (FileNotFoundException fnfe) {
 			return null;
-		} 
+		}
 
 		String line;
 
 		try {
 			Collection<String> strings = new LinkedList<String>();
-			while( (line=br.readLine()) != null ) {
+			while ((line = br.readLine()) != null) {
 				strings.add(line);
 			}
 			return strings;
@@ -216,7 +219,8 @@ public class FileUtil {
 		} finally {
 			try {
 				br.close();
-			} catch (IOException ioe) {}
+			} catch (IOException ioe) {
+			}
 		}
 	}
 
@@ -270,7 +274,7 @@ public class FileUtil {
 			long size = in.size();
 
 			while (pos < size) {
-				pos += in.transferTo(pos, 10*1024*1024, out);
+				pos += in.transferTo(pos, 10 * 1024 * 1024, out);
 			}
 		} catch (IOException ioe) {
 			return false;
@@ -285,7 +289,7 @@ public class FileUtil {
 			} catch (IOException ioe) {
 				return false;
 			}
-		} 
+		}
 
 		return true;
 

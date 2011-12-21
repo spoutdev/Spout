@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,9 +50,9 @@ public enum Achievement {
 
 	/**
 	 * Gets the ID for this achievement.
-	 * 
+	 *
 	 * Note that this is offset using {@link #STATISTIC_OFFSET}
-	 * 
+	 *
 	 * @return ID of this achievement
 	 */
 	public int getId() {
@@ -61,9 +61,9 @@ public enum Achievement {
 
 	/**
 	 * Gets the achievement associated with the given ID.
-	 * 
+	 *
 	 * Note that the ID must already be offset using {@link #STATISTIC_OFFSET}
-	 * 
+	 *
 	 * @param id ID of the achievement to return
 	 * @return Achievement with the given ID
 	 */

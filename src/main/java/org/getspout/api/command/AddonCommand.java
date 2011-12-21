@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,24 +23,24 @@ public final class AddonCommand implements CommandExecutor {
 	private CommandExecutor executor;
 
 	protected AddonCommand(String name, Plugin owner) {
-		this.executor = owner;
-		this.owningAddon = owner;
+		executor = owner;
+		owningAddon = owner;
 	}
 
-	public boolean processCommand(CommandSource source, Command command, CommandContext args) {
-		
+	public boolean processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+
 		boolean success = false;
 
-		if (!this.owningAddon.isEnabled()) {
+		if (!owningAddon.isEnabled()) {
 			return false;
 		}
 		try {
-			success = this.executor.processCommand(source, command, args);
+			success = executor.processCommand(source, command, args);
 		} catch (Throwable ex) {
-			throw new CommandException("Unhandled exception executing command '" + command.getPreferredName() + "' in plugin " + this.owningAddon.getDescription().getFullName(), ex);
+			throw new CommandException("Unhandled exception executing command '" + command.getPreferredName() + "' in plugin " + owningAddon.getDescription().getFullName(), ex);
 		}
 
-		if ((!success) && (command.getUsage(args.getRawArgs()) != null)) {
+		if (!success && command.getUsage(args.getRawArgs()) != null) {
 			source.sendMessage(command.getUsage(args.getRawArgs()));
 		}
 
@@ -48,7 +48,7 @@ public final class AddonCommand implements CommandExecutor {
 	}
 
 	public Plugin getAddon() {
-		return this.owningAddon;
+		return owningAddon;
 	}
 
 }

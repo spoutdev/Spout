@@ -4,13 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.api.geo.World;
 import org.getspout.api.block.BlockFace;
 import org.getspout.api.block.design.BlockDesign;
 import org.getspout.api.block.design.GenericBlockDesign;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.entity.LivingEntity;
 import org.getspout.api.entity.Player;
+import org.getspout.api.geo.World;
 import org.getspout.api.inventory.ItemStack;
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.CustomBlockMaterial;
@@ -33,17 +33,18 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	private float hardness = 1.5F;
 	private float friction = 0.6F;
 	private int lightLevel = 0;
-	
+
 	/**
-	 * Creates a GenericCustomBlock with no values, used for serialization purposes only.
+	 * Creates a GenericCustomBlock with no values, used for serialization
+	 * purposes only.
 	 */
 	public GenericCustomBlockMaterial() {
-		
+
 	}
 
 	/**
 	 * Creates a GenericCustomBlock with no model yet.
-	 * 
+	 *
 	 * @param addon creating the block
 	 * @param name of the block
 	 * @param isOpaque true if you want the block solid
@@ -51,10 +52,10 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque) {
 		this(addon, name, isOpaque, new GenericCustomItemMaterial(addon, name));
 	}
-	
+
 	/**
 	 * Creates a GenericCustomBlock with a specified Design and metadata
-	 * 
+	 *
 	 * @param addon creating the block
 	 * @param name of the block
 	 * @param isOpaque true if you want the block solid
@@ -62,19 +63,19 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	 */
 	public GenericCustomBlockMaterial(Plugin addon, String name, boolean isOpaque, CustomItemMaterial item) {
 		opaque = isOpaque;
-		this.blockId = isOpaque ? 1 :20;
+		blockId = isOpaque ? 1 : 20;
 		this.addon = addon;
 		this.item = item;
 		this.name = item.getName();
-		this.fullName = item.getFullName();
-		this.customId = item.getCustomId();
+		fullName = item.getFullName();
+		customId = item.getCustomId();
 		MaterialData.addCustomBlock(this);
-		this.setItemDrop(new ItemStack(this, 1));
+		setItemDrop(new ItemStack(this, 1));
 	}
 
 	/**
 	 * Creates a GenericCustomBlock with a specified Design and metadata
-	 * 
+	 *
 	 * @param addon creating the block
 	 * @param name of the block
 	 * @param isOpaque true if you want the block solid
@@ -84,21 +85,21 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		this(addon, name, isOpaque);
 		setBlockDesign(design);
 	}
-	
+
 	/**
 	 * Creates a basic GenericCustomblock with no design that is opaque/solid.
-	 * 
+	 *
 	 * @param plugin creating the block
 	 * @param name of the block
 	 */
 	public GenericCustomBlockMaterial(Plugin addon, String name) {
 		this(addon, name, true);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 		if (item != null) {
@@ -114,11 +115,11 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		this.design = design;
 		return this;
 	}
-	
+
 	public boolean isOpaque() {
 		return opaque;
 	}
-	
+
 	public BlockMaterial setOpaque(boolean opaque) {
 		this.opaque = opaque;
 		return this;
@@ -135,7 +136,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public String getFullName() {
 		return fullName;
 	}
-	
+
 	public String getNotchianName() {
 		return getName();
 	}
@@ -147,50 +148,50 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public CustomItemMaterial getBlockItem() {
 		return item;
 	}
-	
+
 	public int getRawId() {
-		return this.item.getRawId();
+		return item.getRawId();
 	}
-	
+
 	public int getRawData() {
-		return this.item.getCustomId();
+		return item.getCustomId();
 	}
-	
+
 	public int getBlockId() {
-		return this.blockId;
+		return blockId;
 	}
-	
+
 	public ItemStack getItemDrop() {
 		return drop.clone();
 	}
-	
+
 	public CustomBlockMaterial setItemDrop(ItemStack item) {
 		drop = item != null ? item.clone() : null;
 		return this;
 	}
-	
+
 	public float getHardness() {
 		return hardness;
 	}
-	
+
 	public CustomBlockMaterial setHardness(float hardness) {
 		this.hardness = hardness;
 		return this;
 	}
-	
+
 	public float getFriction() {
 		return friction;
 	}
-	
+
 	public CustomBlockMaterial setFriction(float friction) {
 		this.friction = friction;
 		return this;
 	}
-	
+
 	public int getLightLevel() {
 		return lightLevel;
 	}
-	
+
 	public CustomBlockMaterial setLightLevel(int level) {
 		lightLevel = level;
 		return this;
@@ -218,10 +219,10 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public void onEntityMoveAt(World world, int x, int y, int z, Entity entity) {
 	}
 
-	public void onBlockClicked(World world, int x, int y, int z, Player player) {		
+	public void onBlockClicked(World world, int x, int y, int z, Player player) {
 	}
 
-	public boolean isProvidingPowerTo(World world, int x, int y, int z,	BlockFace face) {
+	public boolean isProvidingPowerTo(World world, int x, int y, int z, BlockFace face) {
 		return false;
 	}
 
@@ -237,7 +238,7 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		customId = input.readInt();
 		System.out.println("Reading Block: " + customId);
 		setName(PacketUtil.readString(input));
-		String addonName = PacketUtil.readString(input);
+		PacketUtil.readString(input);
 		//System.out.println("Block: " + getName()  + " Id: " + customId + " Addon: " + addonName);
 		//addon = Spoutcraft.getAddonManager().getOrCreateAddon(addonName);
 		fullName = addon.getDescription().getFullName() + "." + getName();
@@ -247,8 +248,8 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 		setLightLevel(input.readInt());
 		item = new GenericCustomItemMaterial(addon, name, customId);
 		MaterialData.addCustomBlock(this);
-		this.setItemDrop(new ItemStack(this, 1));
-		this.blockId = isOpaque() ? 1 :20;
+		setItemDrop(new ItemStack(this, 1));
+		blockId = isOpaque() ? 1 : 20;
 	}
 
 	public void writeData(DataOutputStream output) throws IOException {

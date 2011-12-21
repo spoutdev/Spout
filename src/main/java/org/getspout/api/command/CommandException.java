@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,9 +16,9 @@
  */
 package org.getspout.api.command;
 
-import org.getspout.api.SpoutRuntimeException;
+import org.getspout.api.SpoutException;
 
-public class CommandException extends SpoutRuntimeException {
+public class CommandException extends SpoutException {
 
 	private static final long serialVersionUID = 7936404856385100186L;
 
@@ -29,7 +29,7 @@ public class CommandException extends SpoutRuntimeException {
 	public CommandException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
-	
+
 	public CommandException(Throwable cause) {
 		super(cause);
 	}

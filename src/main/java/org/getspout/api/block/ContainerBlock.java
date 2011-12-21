@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@ package org.getspout.api.block;
 
 import org.getspout.api.inventory.Inventory;
 
-public interface ContainerBlock extends BlockState{
+public interface ContainerBlock extends BlockState {
 
 	/**
 	 * Get the block's inventory.

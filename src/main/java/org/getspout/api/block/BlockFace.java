@@ -1,6 +1,6 @@
 /*
  * This file is part of Bukkit (http://bukkit.org/).
- * 
+ *
  * Bukkit is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -51,14 +51,14 @@ public enum BlockFace {
 	}
 
 	private BlockFace(final BlockFace face1, final BlockFace face2) {
-		this.modX = face1.getModX() + face2.getModX();
-		this.modY = face1.getModY() + face2.getModY();
-		this.modZ = face1.getModZ() + face2.getModZ();
+		modX = face1.getModX() + face2.getModX();
+		modY = face1.getModY() + face2.getModY();
+		modZ = face1.getModZ() + face2.getModZ();
 	}
 
 	/**
 	 * Get the amount of X-coordinates to modify to get the represented block
-	 * 
+	 *
 	 * @return Amount of X-coordinates to modify
 	 */
 	public int getModX() {
@@ -67,7 +67,7 @@ public enum BlockFace {
 
 	/**
 	 * Get the amount of Y-coordinates to modify to get the represented block
-	 * 
+	 *
 	 * @return Amount of Y-coordinates to modify
 	 */
 	public int getModY() {
@@ -76,7 +76,7 @@ public enum BlockFace {
 
 	/**
 	 * Get the amount of Z-coordinates to modify to get the represented block
-	 * 
+	 *
 	 * @return Amount of Z-coordinates to modify
 	 */
 	public int getModZ() {

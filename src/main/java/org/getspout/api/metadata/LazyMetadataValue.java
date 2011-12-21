@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,11 +21,13 @@ import java.util.concurrent.Callable;
 import org.getspout.api.plugin.Plugin;
 
 /**
- * The LazyMetadataValue class implements a type of metadata that is not computed until another plugin asks for it.
- * By making metadata values lazy, no computation is done by the providing plugin until absolutely necessary (if ever).
- * Additionally, LazyMetadataValue objects cache their values internally unless overridden by a {@link CacheStrategy}
- * or invalidated at the individual or plugin level. Once invalidated, the LazyMetadataValue will recompute its value
- * when asked.
+ * The LazyMetadataValue class implements a type of metadata that is not
+ * computed until another plugin asks for it. By making metadata values lazy, no
+ * computation is done by the providing plugin until absolutely necessary (if
+ * ever). Additionally, LazyMetadataValue objects cache their values internally
+ * unless overridden by a {@link CacheStrategy} or invalidated at the individual
+ * or plugin level. Once invalidated, the LazyMetadataValue will recompute its
+ * value when asked.
  */
 public class LazyMetadataValue implements MetadataValue {
 
@@ -40,7 +42,9 @@ public class LazyMetadataValue implements MetadataValue {
 	private Plugin owningPlugin;
 
 	/**
-	 * Initialized a LazyMetadataValue object with the default CACHE_AFTER_FIRST_EVAL cache strategy.
+	 * Initialized a LazyMetadataValue object with the default
+	 * CACHE_AFTER_FIRST_EVAL cache strategy.
+	 *
 	 * @param owningPlugin
 	 * @param lazyValue
 	 */
@@ -50,6 +54,7 @@ public class LazyMetadataValue implements MetadataValue {
 
 	/**
 	 * Initializes a LazyMetadataValue object with a specific cache strategy.
+	 *
 	 * @param owningPlugin
 	 * @param cacheStrategy
 	 * @param lazyValue
@@ -63,9 +68,12 @@ public class LazyMetadataValue implements MetadataValue {
 
 	/**
 	 * Converts the metadata value into an int and returns it.
+	 *
 	 * @return
-	 * @throws MetadataConversionException Thrown if the value cannot be converted to an int. Ex: String => int
+	 * @throws MetadataConversionException Thrown if the value cannot be
+	 *             converted to an int. Ex: String => int
 	 */
+
 	public int asInt() throws MetadataConversionException {
 		try {
 			eval();
@@ -77,9 +85,12 @@ public class LazyMetadataValue implements MetadataValue {
 
 	/**
 	 * Converts the metadata value into a double and returns it.
+	 *
 	 * @return
-	 * @throws MetadataConversionException Thrown if the value cannot be converted to a double. Ex: String => double
+	 * @throws MetadataConversionException Thrown if the value cannot be
+	 *             converted to a double. Ex: String => double
 	 */
+
 	public double asDouble() throws MetadataConversionException {
 		try {
 			eval();
@@ -91,9 +102,12 @@ public class LazyMetadataValue implements MetadataValue {
 
 	/**
 	 * Converts the metadata value into a boolean and returns it.
+	 *
 	 * @return
-	 * @throws MetadataConversionException Thrown if the value cannot be converted to a double. Ex: String => double
+	 * @throws MetadataConversionException Thrown if the value cannot be
+	 *             converted to a double. Ex: String => double
 	 */
+
 	public boolean asBoolean() throws MetadataConversionException {
 		try {
 			eval();
@@ -105,8 +119,10 @@ public class LazyMetadataValue implements MetadataValue {
 
 	/**
 	 * Returns the metadata value as a string. This method will always succeed.
+	 *
 	 * @return
 	 */
+
 	public String asString() {
 		eval();
 		return internalValue;
@@ -114,14 +130,17 @@ public class LazyMetadataValue implements MetadataValue {
 
 	/**
 	 * Returns the {@link Plugin} that created this metadata item.
+	 *
 	 * @return
 	 */
+
 	public Plugin getOwningPlugin() {
 		return owningPlugin;
 	}
 
 	/**
 	 * Lazially evaluates the value of this metadata item.
+	 *
 	 * @throws MetadataEvaluationException
 	 */
 	private synchronized void eval() throws MetadataEvaluationException {
@@ -136,8 +155,10 @@ public class LazyMetadataValue implements MetadataValue {
 	}
 
 	/**
-	 * Invalidates this metadata item's value. The next time the value is requested it will be recomputed.
+	 * Invalidates this metadata item's value. The next time the value is
+	 * requested it will be recomputed.
 	 */
+
 	public synchronized void invalidate() {
 		if (cacheStrategy != CacheStrategy.CACHE_ETERNALLY) {
 			internalValueEvaluated = false;
@@ -150,7 +171,8 @@ public class LazyMetadataValue implements MetadataValue {
 	public enum CacheStrategy {
 
 		/**
-		 * Once the metadata value has been evaluated, do not re-evaluate the value until it is manually invalidated.
+		 * Once the metadata value has been evaluated, do not re-evaluate the
+		 * value until it is manually invalidated.
 		 */
 		CACHE_AFTER_FIRST_EVAL,
 		/**
@@ -158,7 +180,8 @@ public class LazyMetadataValue implements MetadataValue {
 		 */
 		NEVER_CACHE,
 		/**
-		 * Once the metadata value has been evaluated, do not re-evaluate the value in spite of manual invalidation.
+		 * Once the metadata value has been evaluated, do not re-evaluate the
+		 * value in spite of manual invalidation.
 		 */
 		CACHE_ETERNALLY
 

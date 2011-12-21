@@ -16,14 +16,15 @@ public class CuboidShortBuffer extends CuboidBuffer {
 
 	protected CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
 		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		buffer = new short[(int)(sizeX * sizeY * sizeZ)];
+		buffer = new short[(int) (sizeX * sizeY * sizeZ)];
 	}
 
 	protected CuboidShortBuffer(Point base, Vector3 size) {
 		super(base, size);
-		buffer = new short[(int)(size.getX() * size.getY() * size.getZ())];
+		buffer = new short[(int) (size.getX() * size.getY() * size.getZ())];
 	}
 
+	@Override
 	public void copyElement(int thisIndex, int sourceIndex, int runLength) {
 		int end = thisIndex + runLength;
 		for (; thisIndex < end; thisIndex++) {
@@ -31,12 +32,13 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		}
 	}
 
+	@Override
 	public void setSource(CuboidBuffer source) {
 		if (source instanceof CuboidShortBuffer) {
-			this.source = (CuboidShortBuffer)source;
+			this.source = (CuboidShortBuffer) source;
 		} else {
 			throw new IllegalArgumentException("Only CuboidShortBuffers may be used as the data source when copying to a CuboidShortBuffer");
 		}
 	}
-	
+
 }
