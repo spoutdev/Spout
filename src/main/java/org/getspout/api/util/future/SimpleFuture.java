@@ -1,22 +1,28 @@
 package org.getspout.api.util.future;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Implementation of a Future object that can pass one 
- * It is used when the result is known at creation time.
+ * Implementation of a Future object that can store one result.
+ * 
+ * This Future is intended for transferring of a result from a source thread to a receiver thread.
+ * 
+ * It should only be reused by the calling thread.
  */
 
 public class SimpleFuture<T> implements Future<T> {
+
+	private final AtomicBoolean done = new AtomicBoolean(false);
+	private final AtomicReference<T> result = new AtomicReference<T>();
+	private final AtomicInteger waiting = new AtomicInteger(0);
 	
-	private final ArrayBlockingQueue<T> result = new ArrayBlockingQueue<T>(1);
-	private final AtomicInteger done = new AtomicInteger(0);
-	
-	public SimpleFuture() {
+	public SimpleFuture(T result) {
+		set(result);
 	}
 
 	/**
@@ -32,34 +38,97 @@ public class SimpleFuture<T> implements Future<T> {
 	}
 	
 	/**
-	 * Sets the result
+	 * Sets the result.  
+	 * 
+	 * This method should only be called by the thread responsible for answering the future.
+	 * 
+	 * Calling this method from more than 1 thread is not threadsafe.
 	 * 
 	 * @param the result for the Future
 	 */
 	public void set(T result) {
-		if (done.getAndIncrement() != 0) {
-			throw new IllegalStateException("Attempting to set a SimpleFuture more than once");
-		} else {
-			this.result.add(result);
+		this.result.set(result);
+		if (!done.compareAndSet(false, true)) {
+			throw new IllegalStateException("A SimpleFuture can not store more than 1 element");
 		}
+		if (waiting.get() > 0) {
+			synchronized(waiting) {
+				waiting.notifyAll();
+			}
+		}
+		
 	}
 
 	/**
 	 * Gets the result and waits if required.
 	 * 
+	 * The get methods for this class should only be called by a dedicated read thread
+	 * 
+	 * Calling this method from multiple threads is not threadsafe
+	 * 
 	 * @return returns the result
 	 */
 	public T get() throws InterruptedException {
-		return result.take();
+		T result = null;
+		while (true) {
+			if (!done.getAndSet(false)) { 
+				synchronized(waiting) {
+					waiting.incrementAndGet();
+					try {
+						waiting.wait();
+					} finally {
+						waiting.decrementAndGet();
+					}
+				}
+			} else {
+				result = this.result.getAndSet(null);
+				return result;
+			}
+		}
 	}
 
 	/**
 	 * Gets the result and waits, up to the timeout, if required.
 	 * 
+	 * The get methods for this class should only be called from a single read thread.  
+	 * 
+	 * Calling this method from multiple threads is not threadsafe
+	 * 
 	 * @return returns the result
 	 */
 	public T get(long timeout, TimeUnit units) throws InterruptedException, TimeoutException {
-		return result.poll(timeout, units);
+		if (timeout == 0) {
+			return get();
+		} else {
+			long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, units);
+			
+			if (timeoutMillis == 0) {
+				timeoutMillis = 1;
+			}
+
+			long currentTime = System.currentTimeMillis();
+			long endTime = currentTime + timeoutMillis;
+			
+			T result = null;
+			
+			while (endTime > currentTime) {
+				if (!done.getAndSet(false)) { 
+					synchronized(waiting) {
+						waiting.incrementAndGet();
+						try {
+							waiting.wait();
+						} finally {
+							waiting.decrementAndGet();
+						}
+					}
+				} else {
+					result = this.result.getAndSet(null);
+					return result;
+				}
+				currentTime = System.currentTimeMillis();
+			}
+			throw new TimeoutException("SimpleFuture timed out");
+		}
 	}
 
 	/**
@@ -79,7 +148,7 @@ public class SimpleFuture<T> implements Future<T> {
 	 * @return true if the task is completed
 	 */
 	public boolean isDone() {
-		return done.get() != 0;
+		return done.get();
 	}
 
 }
