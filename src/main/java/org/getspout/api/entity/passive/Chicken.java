@@ -31,12 +31,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
-
-import org.getspout.api.entity.object.Projectile;
+package org.getspout.api.entity.passive;
 
 /**
- * Represents a Fish.
+ * Represents a Chicken.
  */
-public interface Fish extends Projectile {
+public interface Chicken extends Animal {
 }

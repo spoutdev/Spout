@@ -31,12 +31,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.object;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.math.Vector3;
 
 /**
- * Represents a Fish.
+ * Represents a Fireball.
  */
-public interface Fish extends Projectile {
+public interface Fireball extends Projectile, Explosive {
+	/**
+	 * Fireballs fly straight and do not take setVelocity(...) well.
+	 *
+	 * @param direction the direction this fireball is flying toward
+	 */
+	public void setDirection(Vector3 direction);
+
+	/**
+	 * Retrieve the direction this fireball is heading toward
+	 *
+	 * @return the direction
+	 */
+	public Vector3 getDirection();
+
 }

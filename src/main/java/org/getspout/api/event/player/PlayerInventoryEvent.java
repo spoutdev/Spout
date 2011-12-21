@@ -18,8 +18,8 @@ package org.getspout.api.event.player;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.inventory.Inventory;
-import org.getspout.api.util.Location;
 
 /**
  * Represents an inventory-related event.
@@ -27,7 +27,7 @@ import org.getspout.api.util.Location;
 public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	protected Location location = null;
+	protected Point point = null;
 
 	protected Inventory inventory;
 
@@ -50,12 +50,12 @@ public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancel
 	 *
 	 * @return location of the inventory
 	 */
-	public Location getLocation() {
-		return location;
+	public Point getPoint() {
+		return point;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setPosition(Point point) {
+		this.point = point;
 	}
 
 	@Override

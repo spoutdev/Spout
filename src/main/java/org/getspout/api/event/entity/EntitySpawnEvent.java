@@ -18,7 +18,7 @@ package org.getspout.api.event.entity;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.util.Location;
+import org.getspout.api.geo.discrete.Point;
 
 /**
  * Called when an entity spawns into the world.
@@ -26,7 +26,7 @@ import org.getspout.api.util.Location;
 public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private Location location;
+	private Point point;
 
 	private SpawnReason reason;
 
@@ -35,12 +35,12 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	 *
 	 * @return
 	 */
-	public Location getLocation() {
-		return location;
+	public Point getPoint() {
+		return point;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setPoint(Point point) {
+		this.point = point;
 	}
 
 	/**

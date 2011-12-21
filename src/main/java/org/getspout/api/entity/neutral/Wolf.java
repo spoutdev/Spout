@@ -31,12 +31,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.neutral;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.Tameable;
+import org.getspout.api.entity.passive.Animal;
 
 /**
- * Represents a Fish.
+ * Represents a Wolf
  */
-public interface Fish extends Projectile {
+public interface Wolf extends Animal, Tameable {
+
+	/**
+	 * Checks if this wolf is angry
+	 *
+	 * @return Anger true if angry
+	 */
+	public boolean isAngry();
+
+	/**
+	 * Sets the anger of this wolf An angry wolf can not be fed or tamed, and
+	 * will actively look for targets to attack.
+	 *
+	 * @param angry true if angry
+	 */
+	public void setAngry(boolean angry);
+
+	/**
+	 * Checks if this wolf is sitting
+	 *
+	 * @return true if sitting
+	 */
+	public boolean isSitting();
+
+	/**
+	 * Sets if this wolf is sitting Will remove any path that the wolf was
+	 * following beforehand.
+	 *
+	 * @param sitting true if sitting
+	 */
+	public void setSitting(boolean sitting);
+
 }

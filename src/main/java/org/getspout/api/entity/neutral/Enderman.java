@@ -31,12 +31,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.neutral;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.aggressive.Monster;
+import org.getspout.api.material.Material;
 
 /**
- * Represents a Fish.
+ * Represents an Enderman.
  */
-public interface Fish extends Projectile {
+public interface Enderman extends Monster {
+
+	/**
+	 * Get the id and data of the block that the Enderman is carrying.
+	 *
+	 * @return MaterialData containing the id and data of the block
+	 */
+	public Material getCarriedMaterial();
+
+	/**
+	 * Set the id and data of the block that the Enderman is carring.
+	 *
+	 * @param material data to set the carried block to
+	 */
+	public void setCarriedMaterial(Material material);
 }

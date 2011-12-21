@@ -31,12 +31,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
-
-import org.getspout.api.entity.object.Projectile;
+package org.getspout.api.entity.object;
 
 /**
- * Represents a Fish.
+ * Represents a Primed TNT.
  */
-public interface Fish extends Projectile {
+public interface TNTPrimed extends Explosive {
+	/**
+	 * Set the number of ticks until the TNT blows up after being primed.
+	 *
+	 * @param fuseTicks The fuse ticks
+	 */
+	public void setFuseTicks(int fuseTicks);
+
+	/**
+	 * Retrieve the number of ticks until the explosion of this TNTPrimed entity
+	 *
+	 * @return the number of ticks until this TNTPrimed explodes
+	 */
+	public int getFuseTicks();
 }

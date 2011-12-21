@@ -14,23 +14,31 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event.entity;
+package org.getspout.api.entity.vehicle;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.Entity;
+import org.getspout.api.math.Vector3;
 
 /**
- * Called when an entity is damaged by a projectile.
+ * Represents a vehicle entity.
+ *
+ * @author sk89q
  */
-public class EntityDamageByProjectileEvent extends EntityDamageByEntityEvent {
+public interface Vehicle extends Entity {
+
 	/**
-	 * Gets the projectile that damaged the entity.
+	 * Gets the vehicle's velocity.
 	 *
-	 * @return The projectile that damaged the entity.
+	 * @return velocity vector
 	 */
 
-	@Override
-	public Projectile getDamager() {
-		return (Projectile) super.getDamager();
-	}
+	public Vector3 getVelocity();
 
+	/**
+	 * Sets the vehicle's velocity.
+	 *
+	 * @param vel velocity vector
+	 */
+
+	public void setVelocity(Vector3 vel);
 }

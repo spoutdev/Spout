@@ -26,6 +26,15 @@ public class Ray extends Point {
 	public Ray(Point position, double pitch, double yaw) {
 		this(position, MathHelper.getDirectionVector(pitch, yaw));
 	}
+	
+	/**
+	 * Gets the direction of the ray as a vector
+	 * 
+	 * @return the direction as a vector
+	 */
+	public Vector3 getDirection() {
+		return direction;
+	}
 
 	/**
 	 * Gets the X directional coordinate

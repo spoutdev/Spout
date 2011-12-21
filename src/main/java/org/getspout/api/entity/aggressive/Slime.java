@@ -31,12 +31,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.aggressive;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.LivingEntity;
 
 /**
- * Represents a Fish.
+ * Represents a Slime.
  */
-public interface Fish extends Projectile {
+public interface Slime extends LivingEntity {
+
+	/**
+	 * @author Celtic Minstrel
+	 * @return The size of the slime
+	 */
+	public int getSize();
+
+	/**
+	 * @author Celtic Minstrel
+	 * @param sz The new size of the slime.
+	 */
+	public void setSize(int sz);
 }

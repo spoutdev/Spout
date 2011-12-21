@@ -20,10 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.getspout.api.block.Block;
+import org.getspout.api.geo.discrete.RayScale;
 import org.getspout.api.util.Location;
 
 public interface LivingEntity extends Entity {
-
 	/**
 	 * Gets the title that appears over top of this entity in game
 	 *

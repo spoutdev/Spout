@@ -31,12 +31,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.aggressive;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.Creature;
 
 /**
- * Represents a Fish.
+ * Represents a Monster.
  */
-public interface Fish extends Projectile {
+public interface Monster extends Creature {
 }

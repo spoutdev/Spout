@@ -31,12 +31,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.passive;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.vehicle.Vehicle;
 
 /**
- * Represents a Fish.
+ * Represents a Pig.
  */
-public interface Fish extends Projectile {
+public interface Pig extends Animal, Vehicle {
+
+	/**
+	 * Check if the pig has a saddle.
+	 *
+	 * @return if the pig has been saddled.
+	 */
+	public boolean hasSaddle();
+
+	/**
+	 * Sets if the pig has a saddle or not
+	 *
+	 * @param saddled set if the pig has a saddle or not.
+	 */
+	public void setSaddle(boolean saddled);
 }

@@ -2,6 +2,7 @@ package org.getspout.api.geo;
 
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.api.util.thread.Threadsafe;
@@ -73,6 +74,15 @@ public interface World extends EventSource {
 	 */
 	@Threadsafe
 	public Block getBlock(int x, int y, int z);
+	
+	/**
+	 * Gets a Block representing a particular point in the world
+	 * 
+	 * @param point The point
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(Point point);
 
 	/**
 	 * Gets the UID representing the world. With extremely high probability the

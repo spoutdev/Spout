@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.getspout.api.block.Block;
-import org.getspout.api.entity.Item;
+import org.getspout.api.entity.object.Item;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.plugin.Plugin;
 

@@ -16,7 +16,7 @@
  */
 package org.getspout.api.event.entity;
 
-import org.getspout.api.entity.Item;
+import org.getspout.api.entity.object.Item;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
 

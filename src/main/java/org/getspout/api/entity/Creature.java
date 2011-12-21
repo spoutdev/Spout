@@ -30,7 +30,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.getspout.api.entity;
 
 /**
@@ -38,7 +37,6 @@ package org.getspout.api.entity;
  * which have very simple abilities.
  */
 public interface Creature extends LivingEntity {
-
 	/**
 	 * Instructs this Creature to set the specified LivingEntity as its target.
 	 * Hostile creatures may attack their target, and friendly creatures may
@@ -54,4 +52,5 @@ public interface Creature extends LivingEntity {
 	 * @return Current target of this creature, or null if none exists
 	 */
 	public LivingEntity getTarget();
+
 }

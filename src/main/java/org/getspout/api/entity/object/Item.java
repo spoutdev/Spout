@@ -30,13 +30,38 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.getspout.api.entity.object;
 
-package org.getspout.api.entity;
+import org.getspout.api.entity.Entity;
+import org.getspout.api.inventory.ItemStack;
 
-import org.getspout.api.entity.object.Projectile;
+public interface Item extends Entity {
 
-/**
- * Represents a Fish.
- */
-public interface Fish extends Projectile {
+	/**
+	 * Gets the item stack associated with this item drop.
+	 *
+	 * @return An item stack.
+	 */
+	public ItemStack getItemStack();
+
+	/**
+	 * Sets the item stack associated with this item drop.
+	 *
+	 * @param stack An item stack.
+	 */
+	public void setItemStack(ItemStack stack);
+
+	/**
+	 * Gets the delay before this Item is available to be picked up by players
+	 *
+	 * @return Remaining delay
+	 */
+	public int getPickupDelay();
+
+	/**
+	 * Sets the delay before this Item is available to be picked up by players
+	 *
+	 * @param delay New delay
+	 */
+	public void setPickupDelay(int delay);
 }

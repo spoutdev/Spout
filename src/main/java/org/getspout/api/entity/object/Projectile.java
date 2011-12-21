@@ -14,23 +14,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.event.entity;
+package org.getspout.api.entity.object;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.Entity;
+import org.getspout.api.entity.LivingEntity;
 
-/**
- * Called when an entity is damaged by a projectile.
- */
-public class EntityDamageByProjectileEvent extends EntityDamageByEntityEvent {
-	/**
-	 * Gets the projectile that damaged the entity.
-	 *
-	 * @return The projectile that damaged the entity.
-	 */
+public interface Projectile extends Entity {
 
-	@Override
-	public Projectile getDamager() {
-		return (Projectile) super.getDamager();
-	}
+	public LivingEntity getShooter();
 
+	public void setShooter(LivingEntity shooter);
+
+	public boolean doesBounce();
+
+	public void setBounce(boolean doesBounce);
 }

@@ -31,12 +31,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
-
-import org.getspout.api.entity.object.Projectile;
+package org.getspout.api.entity.passive;
 
 /**
- * Represents a Fish.
+ * Represents a Sheep.
  */
-public interface Fish extends Projectile {
+public interface Sheep extends Animal {
+
+	/**
+	 * @author Celtic Minstrel
+	 * @return Whether the sheep is sheared.
+	 */
+	public boolean isSheared();
+
+	/**
+	 * @author Celtic Minstrel
+	 * @param flag Whether to shear the sheep
+	 */
+	public void setSheared(boolean flag);
 }

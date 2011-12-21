@@ -31,12 +31,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.aggressive;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.entity.LivingEntity;
 
 /**
- * Represents a Fish.
+ * Represents a Flying Entity.
  */
-public interface Fish extends Projectile {
+public interface Flying extends LivingEntity {
 }

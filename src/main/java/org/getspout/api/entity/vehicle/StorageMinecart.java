@@ -31,12 +31,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.entity;
+package org.getspout.api.entity.vehicle;
 
-import org.getspout.api.entity.object.Projectile;
+import org.getspout.api.inventory.Inventory;
 
 /**
- * Represents a Fish.
+ * Represents a storage minecart.
  */
-public interface Fish extends Projectile {
+public interface StorageMinecart extends Minecart {
+
+	/**
+	 * Return the inventory object for this StorageMinecart.
+	 *
+	 * @return The inventory for this Minecart
+	 */
+	public Inventory getInventory();
 }
