@@ -68,5 +68,11 @@ public class CollisionHelper {
 	public static boolean checkCollision(CollisionRay a, BoundingBox b) {
 		return false; //TODO Implement this
 	}
-
+	public static boolean checkCollision(Plane a, CollisionRay b){
+		//TODO Make this work on finite line segments
+		return (b.startpoint.subtract(b.endpoint).dot(a.normal) != 0);
+	}
+	public static boolean checkCollision(BoundingSphere a, Plane b){
+		return false;
+	}
 }
