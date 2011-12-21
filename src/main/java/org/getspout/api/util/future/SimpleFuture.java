@@ -21,6 +21,9 @@ public class SimpleFuture<T> implements Future<T> {
 	private final AtomicReference<T> result = new AtomicReference<T>();
 	private final AtomicInteger waiting = new AtomicInteger(0);
 	
+	public SimpleFuture() {
+	}
+	
 	public SimpleFuture(T result) {
 		set(result);
 	}
