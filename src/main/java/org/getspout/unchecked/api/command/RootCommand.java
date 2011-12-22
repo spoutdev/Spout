@@ -1,7 +1,7 @@
 package org.getspout.unchecked.api.command;
 
 import org.bukkit.ChatColor;
-import org.getspout.unchecked.api.Game;
+import org.getspout.api.Game;
 import org.getspout.unchecked.api.SpoutRuntimeException;
 
 public class RootCommand extends SimpleCommand {

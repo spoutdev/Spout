@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
-import org.getspout.unchecked.api.Game;
+import org.getspout.api.Game;
 import org.getspout.unchecked.api.UnsafeMethod;
 import org.getspout.unchecked.api.plugin.InvalidDescriptionException;
 import org.getspout.unchecked.api.plugin.InvalidPluginException;

@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getspout.unchecked.api.Game;
+import org.getspout.api.Game;
 import org.getspout.unchecked.api.addon.java.JavaAddonLoader;
 import org.getspout.unchecked.api.event.Event;
 

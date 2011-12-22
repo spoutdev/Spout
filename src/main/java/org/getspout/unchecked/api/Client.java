@@ -2,6 +2,7 @@ package org.getspout.unchecked.api;
 
 import java.io.File;
 
+import org.getspout.api.Game;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.entity.Player;

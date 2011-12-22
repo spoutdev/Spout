@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api;
+package org.getspout.api;
 
 import java.io.File;
 import java.util.Collection;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.getspout.api.GameMode;
 import org.getspout.api.geo.World;
 import org.getspout.unchecked.api.command.AddonCommand;
 import org.getspout.unchecked.api.command.Command;
