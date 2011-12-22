@@ -35,6 +35,7 @@ public class ItemEntityStore extends EntityStore<SpoutItem> {
 
 	@Override
 	public void load(SpoutItem entity, CompoundTag compound) {
+		super.load(entity, compound);
 		if (compound.getValue().containsKey("Item")) {
 			ItemStack stack = readItemStack((CompoundTag) compound.getValue().get("Item"));
 			entity.setItemStack(stack);

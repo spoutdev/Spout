@@ -2,6 +2,7 @@ package org.getspout.server;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -241,26 +242,30 @@ public final class SpoutChunk implements Chunk {
 	 *
 	 * @param types The array of types.
 	 */
-	public void initializeTypes(byte[] types) {
+	public void initializeTypes(final byte[] types, final byte[] metaData, final byte[] skyLight, final byte[] blockLight) {
 		if (isLoaded()) {
 			SpoutServer.logger.log(Level.SEVERE, "Tried to initialize already loaded chunk ({0},{1})", new Object[] {x, z});
 			return;
 		}
 
-		this.types = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		metaData = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		skyLight = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		blockLight = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		for (int i = 0; i < WIDTH * DEPTH * world.getMaxHeight(); ++i) {
-			skyLight[i] = 15;
-		}
-
+		final int arrSize = WIDTH * DEPTH * world.getMaxHeight();
+		this.types = new byte[arrSize];
+		this.metaData = new byte[arrSize];
+		this.skyLight = new byte[arrSize];
+		this.blockLight = new byte[arrSize];
+		Arrays.fill(this.skyLight, (byte) 15);
 		//System.out.println("Init'd types, isLoaded = " + isLoaded());
-
-		if (types.length != WIDTH * DEPTH * world.getMaxHeight()) {
+		
+		if (types.length != arrSize
+				|| metaData.length != arrSize
+				|| skyLight.length != arrSize
+				|| blockLight.length != arrSize) {
 			throw new IllegalArgumentException();
 		}
 		System.arraycopy(types, 0, this.types, 0, types.length);
+		System.arraycopy(metaData, 0, this.metaData, 0, metaData.length);
+		System.arraycopy(skyLight, 0, this.skyLight, 0, skyLight.length);
+		System.arraycopy(blockLight, 0, this.blockLight, 0, blockLight.length);
 
 		for (int cx = 0; cx < WIDTH; ++cx) {
 			for (int cy = 0; cy < world.getMaxHeight(); ++cy) {

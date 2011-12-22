@@ -449,7 +449,7 @@ public final class SpoutWorld implements World {
 
 	@Override
 	public void save() {
-		save(false);
+		save(true);
 	}
 
 	public void save(boolean async) {

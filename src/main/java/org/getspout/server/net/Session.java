@@ -178,7 +178,8 @@ public final class Session {
 		player.saveData();
 
 		player.getWorld().getRawPlayers().add(player);
-
+		player.teleport(player.getLocation().add(0, 0.5, 0));
+		
 		Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short) timeoutCounter);
 		for (Player sendPlayer : server.getOnlinePlayers()) {
 			((SpoutPlayer) sendPlayer).getSession().send(userListMessage);

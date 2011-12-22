@@ -2,6 +2,7 @@ package org.getspout.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -103,7 +104,10 @@ public final class ChunkManager {
 
 			SpoutChunk chunk = getChunk(x, z);
 			try {
-				chunk.initializeTypes(generator.generate(world, chunkRandom, x, z));
+				final byte[] dummyArray = new byte[SpoutChunk.WIDTH * SpoutChunk.DEPTH * world.getMaxHeight()];
+				final byte[] skyLight = dummyArray.clone();
+				Arrays.fill(skyLight, (byte)15);
+				chunk.initializeTypes(generator.generate(world, chunkRandom, x, z), dummyArray, skyLight, dummyArray);
 			} catch (Exception ex) {
 				SpoutServer.logger.log(Level.SEVERE, "Error while generating chunk ({0},{1})", new Object[] {x, z});
 				ex.printStackTrace();
@@ -172,7 +176,10 @@ public final class ChunkManager {
 		}
 
 		chunkRandom.setSeed(x * 341873128712L + z * 132897987541L);
-		chunk.initializeTypes(generator.generate(world, chunkRandom, x, z));
+		final byte[] dummyArray = new byte[SpoutChunk.WIDTH * SpoutChunk.DEPTH * world.getMaxHeight()];
+		final byte[] skyLight = dummyArray.clone();
+		Arrays.fill(skyLight, (byte)15);
+		chunk.initializeTypes(generator.generate(world, chunkRandom, x, z), dummyArray, skyLight, dummyArray);
 
 		if (canPopulate(x, z)) {
 			chunk.setPopulated(true);
