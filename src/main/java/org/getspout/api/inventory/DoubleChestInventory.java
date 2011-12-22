@@ -16,8 +16,8 @@
  */
 package org.getspout.api.inventory;
 
-import org.getspout.api.block.Block;
-import org.getspout.api.block.BlockFace;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 public interface DoubleChestInventory extends Inventory {
 	/**

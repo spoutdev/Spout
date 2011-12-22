@@ -30,9 +30,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api;
+package org.bukkit;
 
-import org.getspout.api.block.Biome;
+import org.bukkit.block.Biome;
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks Purpose is to

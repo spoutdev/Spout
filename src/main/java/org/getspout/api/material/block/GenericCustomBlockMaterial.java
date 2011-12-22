@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.api.block.BlockFace;
+import org.bukkit.block.BlockFace;
 import org.getspout.api.block.design.BlockDesign;
 import org.getspout.api.block.design.GenericBlockDesign;
 import org.getspout.api.entity.Entity;

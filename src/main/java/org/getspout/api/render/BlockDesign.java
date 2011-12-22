@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.getspout.api.block.Block;
+import org.bukkit.block.Block;
 import org.getspout.api.material.ItemMaterial;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.plugin.Plugin;

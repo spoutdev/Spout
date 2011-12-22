@@ -16,8 +16,8 @@
  */
 package org.getspout.api.event.entity;
 
-import org.getspout.api.block.Block;
-import org.getspout.api.block.BlockFace;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 /**
  * Called when a projectile hits a block.

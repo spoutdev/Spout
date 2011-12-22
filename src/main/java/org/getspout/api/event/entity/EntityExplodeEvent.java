@@ -18,7 +18,7 @@ package org.getspout.api.event.entity;
 
 import java.util.List;
 
-import org.getspout.api.block.Block;
+import org.bukkit.block.Block;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.util.Location;

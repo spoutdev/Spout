@@ -30,7 +30,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.block;
+package org.bukkit.block;
 
 import javax.swing.text.Position;
 import org.getspout.api.geo.World;

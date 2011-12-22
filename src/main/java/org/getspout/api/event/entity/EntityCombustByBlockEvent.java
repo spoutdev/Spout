@@ -16,7 +16,7 @@
  */
 package org.getspout.api.event.entity;
 
-import org.getspout.api.block.Block;
+import org.bukkit.block.Block;
 
 /**
  * Called when an entity combusts from a block.

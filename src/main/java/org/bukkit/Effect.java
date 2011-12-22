@@ -30,17 +30,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api;
+package org.bukkit;
 
 /**
- * Tree type.
- *
- * @author sk89q
+ * A list of effects that the server is able to send to players.
  */
-public enum TreeType {
-	TREE,
-	BIG_TREE,
-	REDWOOD,
-	TALL_REDWOOD,
-	BIRCH
+public enum Effect {
+	BOW_FIRE(1002),
+	CLICK1(1001),
+	CLICK2(1000),
+	DOOR_TOGGLE(1003),
+	EXTINGUISH(1004),
+	RECORD_PLAY(1005),
+	SMOKE(2000),
+	STEP_SOUND(2001);
+
+	private final int id;
+
+	Effect(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
 }

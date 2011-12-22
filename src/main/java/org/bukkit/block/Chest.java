@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.block;
+package org.bukkit.block;
 
 import org.getspout.api.inventory.DoubleChestInventory;
 import org.getspout.api.inventory.Inventory;

@@ -4,8 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.api.block.Block;
-import org.getspout.api.block.BlockFace;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.getspout.api.entity.Player;
 import org.getspout.api.inventory.ItemMap;
 import org.getspout.api.material.CustomItemMaterial;

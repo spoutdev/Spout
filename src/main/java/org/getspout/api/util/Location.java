@@ -21,8 +21,8 @@ package org.getspout.api.util;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bukkit.block.Block;
 
-import org.getspout.api.block.Block;
 import org.getspout.api.geo.World;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.math.Vector3m;

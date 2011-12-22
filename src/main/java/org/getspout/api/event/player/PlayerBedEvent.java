@@ -16,7 +16,7 @@
  */
 package org.getspout.api.event.player;
 
-import org.getspout.api.block.Block;
+import org.bukkit.block.Block;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
 

@@ -19,7 +19,7 @@ package org.getspout.api.entity;
 import java.util.HashSet;
 import java.util.List;
 
-import org.getspout.api.block.Block;
+import org.bukkit.block.Block;
 import org.getspout.api.geo.discrete.RayScale;
 import org.getspout.api.util.Location;
 

@@ -30,54 +30,37 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api;
+package org.bukkit;
 
-/**
- * A delegate for handling block changes. This serves as a direct interface
- * between generation algorithms in the client implementation and utilizing
- * code.
- *
- * @author sk89q
- */
-public interface BlockChangeDelegate {
+import java.util.HashMap;
+import java.util.Map;
 
-	/**
-	 * Set a block type at the specified coordinates.
-	 *
-	 * @param x X coordinate
-	 * @param y Y coordinate
-	 * @param z Z coordinate
-	 * @param typeId New block ID
-	 * @return true if the block was set successfully
-	 */
-	public boolean setRawTypeId(int x, int y, int z, int typeId);
+public enum Instrument {
 
-	/**
-	 * Set a block type and data at the specified coordinates.
-	 *
-	 * @param x X coordinate
-	 * @param y Y coordinate
-	 * @param z Z coordinate
-	 * @param typeId New block ID
-	 * @param data Block data
-	 * @return true if the block was set successfully
-	 */
-	public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data);
+	PIANO((byte) 0x0), // All other
+	BASS_DRUM((byte) 0x1), // Stone
+	SNARE_DRUM((byte) 0x2), // Sand
+	STICKS((byte) 0x3), // Glass
+	BASS_GUITAR((byte) 0x4); // Wood
 
-	/**
-	 * Get the block type at the location.
-	 *
-	 * @param x X coordinate
-	 * @param y Y coordinate
-	 * @param z Z coordinate
-	 * @return The block ID
-	 */
-	public int getTypeId(int x, int y, int z);
+	private final byte type;
+	private final static Map<Byte, Instrument> types = new HashMap<Byte, Instrument>();
 
-	/**
-	 * Gets the height of the world.
-	 *
-	 * @return Height of the world
-	 */
-	public int getHeight();
+	private Instrument(byte type) {
+		this.type = type;
+	}
+
+	public byte getType() {
+		return type;
+	}
+
+	public static Instrument getByType(final byte type) {
+		return types.get(type);
+	}
+
+	static {
+		for (Instrument instrument : Instrument.values()) {
+			types.put(instrument.getType(), instrument);
+		}
+	}
 }

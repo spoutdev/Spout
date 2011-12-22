@@ -16,7 +16,7 @@
  */
 package org.getspout.api.event.block;
 
-import org.getspout.api.block.Block;
+import org.bukkit.block.Block;
 import org.getspout.api.event.Event;
 import org.getspout.api.event.EventSource;
 

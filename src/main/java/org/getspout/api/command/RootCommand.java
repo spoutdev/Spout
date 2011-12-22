@@ -1,6 +1,6 @@
 package org.getspout.api.command;
 
-import org.getspout.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.getspout.api.Game;
 import org.getspout.api.SpoutRuntimeException;
 

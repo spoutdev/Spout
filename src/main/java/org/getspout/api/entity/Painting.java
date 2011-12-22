@@ -33,8 +33,8 @@
 
 package org.getspout.api.entity;
 
+import org.bukkit.block.BlockFace;
 import org.getspout.api.Art;
-import org.getspout.api.block.BlockFace;
 
 /**
  * Represents a Painting.

@@ -30,39 +30,54 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api.block;
-
-import org.getspout.api.material.ItemMaterial;
+package org.bukkit.block;
 
 /**
- * Represents a Jukebox
+ * A delegate for handling block changes. This serves as a direct interface
+ * between generation algorithms in the client implementation and utilizing
+ * code.
+ *
+ * @author sk89q
  */
-public interface Jukebox extends BlockState {
-	/**
-	 * Get the record currently playing
-	 *
-	 * @return The record Material, or AIR if none is playing
-	 */
-	public ItemMaterial getPlaying();
+public interface BlockChangeDelegate {
 
 	/**
-	 * Set the record currently playing
+	 * Set a block type at the specified coordinates.
 	 *
-	 * @param record The record Material, or null/AIR to stop playing
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @param z Z coordinate
+	 * @param typeId New block ID
+	 * @return true if the block was set successfully
 	 */
-	public void setPlaying(ItemMaterial record);
+	public boolean setRawTypeId(int x, int y, int z, int typeId);
 
 	/**
-	 * Check if the jukebox is currently playing a record
+	 * Set a block type and data at the specified coordinates.
 	 *
-	 * @return True if there is a record playing
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @param z Z coordinate
+	 * @param typeId New block ID
+	 * @param data Block data
+	 * @return true if the block was set successfully
 	 */
-	public boolean isPlaying();
+	public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data);
 
 	/**
-	 * Stop the jukebox playing and eject the current record
+	 * Get the block type at the location.
 	 *
-	 * @return True if a record was ejected; false if there was none playing
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @param z Z coordinate
+	 * @return The block ID
 	 */
-	public boolean eject();
+	public int getTypeId(int x, int y, int z);
+
+	/**
+	 * Gets the height of the world.
+	 *
+	 * @return Height of the world
+	 */
+	public int getHeight();
 }

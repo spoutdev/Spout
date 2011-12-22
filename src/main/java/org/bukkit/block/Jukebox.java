@@ -30,28 +30,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.api;
+package org.bukkit.block;
+
+import org.getspout.api.material.ItemMaterial;
 
 /**
- * A list of effects that the server is able to send to players.
+ * Represents a Jukebox
  */
-public enum Effect {
-	BOW_FIRE(1002),
-	CLICK1(1001),
-	CLICK2(1000),
-	DOOR_TOGGLE(1003),
-	EXTINGUISH(1004),
-	RECORD_PLAY(1005),
-	SMOKE(2000),
-	STEP_SOUND(2001);
+public interface Jukebox extends BlockState {
+	/**
+	 * Get the record currently playing
+	 *
+	 * @return The record Material, or AIR if none is playing
+	 */
+	public ItemMaterial getPlaying();
 
-	private final int id;
+	/**
+	 * Set the record currently playing
+	 *
+	 * @param record The record Material, or null/AIR to stop playing
+	 */
+	public void setPlaying(ItemMaterial record);
 
-	Effect(int id) {
-		this.id = id;
-	}
+	/**
+	 * Check if the jukebox is currently playing a record
+	 *
+	 * @return True if there is a record playing
+	 */
+	public boolean isPlaying();
 
-	public int getId() {
-		return id;
-	}
+	/**
+	 * Stop the jukebox playing and eject the current record
+	 *
+	 * @return True if a record was ejected; false if there was none playing
+	 */
+	public boolean eject();
 }
