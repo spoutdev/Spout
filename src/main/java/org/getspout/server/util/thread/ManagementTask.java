@@ -11,22 +11,26 @@ import org.getspout.server.util.thread.future.ManagedFuture;
  * 
  * Its return value must also support serialization
  */
-public interface ManagementTask extends Serializable {
+public abstract class ManagementTask implements Serializable {
 	
-	public Serializable call(AsyncExecutor executor) throws InterruptedException;
+	private static final long serialVersionUID = 1L;
+	
+	protected static int taskId = -1;
+
+	public abstract Serializable call(AsyncExecutor executor) throws InterruptedException;
 	
 	/**
 	 * Gets the Future associated with this task
 	 * 
 	 * @return the Future associated with this task
 	 */
-	public ManagedFuture<Serializable> getFuture();
+	public abstract ManagedFuture<Serializable> getFuture();
 	
 	/**
 	 * Sets the Future associated with this task
 	 * 
 	 * @param future the future
 	 */
-	public void setFuture(ManagedFuture<Serializable> future);
+	public abstract void setFuture(ManagedFuture<Serializable> future);
 
 }

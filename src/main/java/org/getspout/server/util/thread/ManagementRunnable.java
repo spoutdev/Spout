@@ -9,7 +9,7 @@ import org.getspout.server.util.thread.future.ManagedFuture;
  * 
  * This task does not have a return a value
  */
-public abstract class ManagementRunnable implements ManagementTask {
+public abstract class ManagementRunnable extends ManagementTask {
 
 	private static final long serialVersionUID = 1L;
 

@@ -10,6 +10,8 @@ import java.io.Serializable;
  * Its return value must also support serialization
  */
 
-public abstract class ManagementCallable<T extends Serializable> implements ManagementTask {
+public abstract class ManagementCallable<T extends Serializable> extends ManagementTask {
+
+	private static final long serialVersionUID = 1L;
 	
 }
