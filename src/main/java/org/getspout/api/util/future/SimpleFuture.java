@@ -27,6 +27,33 @@ public class SimpleFuture<T> implements Future<T> {
 	public SimpleFuture(T result) {
 		set(result);
 	}
+	
+	/**
+	 * Gets the waiting monitor for this Future.
+	 * 
+	 * The monitor is notified when the future is set.
+	 * 
+	 * @returns the monitor
+	 */
+	public Object getMonitor() {
+		return waiting;
+	}
+	
+	/**
+	 * Waits until the future's monitor is notified.
+	 * 
+	 * The monitor is notified when the future is set.
+	 */
+	public void waitForMonitor() throws InterruptedException {
+		synchronized(waiting) {
+			waiting.incrementAndGet();
+			try {
+				waiting.wait();
+			} finally {
+				waiting.decrementAndGet();
+			}
+		}
+	}
 
 	/**
 	 * Attempt to cancel the task.
@@ -60,7 +87,6 @@ public class SimpleFuture<T> implements Future<T> {
 				waiting.notifyAll();
 			}
 		}
-		
 	}
 
 	/**
@@ -77,14 +103,7 @@ public class SimpleFuture<T> implements Future<T> {
 		T result = null;
 		while (true) {
 			if (!done.getAndSet(false)) { 
-				synchronized(waiting) {
-					waiting.incrementAndGet();
-					try {
-						waiting.wait();
-					} finally {
-						waiting.decrementAndGet();
-					}
-				}
+				waitForMonitor();
 			} else {
 				result = this.result.getAndSet(null);
 				return result;
