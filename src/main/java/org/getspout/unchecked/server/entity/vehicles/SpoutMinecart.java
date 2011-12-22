@@ -1,0 +1,79 @@
+package org.getspout.unchecked.server.entity.vehicles;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.entity.Minecart;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+import org.getspout.unchecked.server.SpoutServer;
+import org.getspout.unchecked.server.SpoutWorld;
+import org.getspout.unchecked.server.entity.Damager;
+import org.getspout.unchecked.server.item.ItemID;
+
+public class SpoutMinecart extends SpoutVehicle implements Minecart {
+	private int damage = 0;
+
+	protected boolean slowWhenEmpty;
+
+	/**
+	 * Creates an entity and adds it to the specified world.
+	 *
+	 * @param server The server.
+	 * @param world The world.
+	 */
+	public SpoutMinecart(SpoutServer server, SpoutWorld world) {
+		super(server, world, 10);
+	}
+
+	@Override
+	public List<ItemStack> getLoot(Damager damager) {
+		List<ItemStack> items = new ArrayList<ItemStack>();
+		items.add(new ItemStack(ItemID.MINECART));
+		return items;
+	}
+
+	protected SpoutMinecart(SpoutServer server, SpoutWorld world, int id) {
+		super(server, world, id);
+	}
+
+	@Override
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
+
+	@Override
+	public int getDamage() {
+		return damage;
+	}
+
+	@Override
+	public boolean isSlowWhenEmpty() {
+		return slowWhenEmpty;
+	}
+
+	@Override
+	public void setSlowWhenEmpty(boolean slow) {
+		slowWhenEmpty = slow;
+	}
+
+	@Override
+	public Vector getFlyingVelocityMod() {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
+
+	@Override
+	public void setFlyingVelocityMod(Vector flying) {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
+
+	@Override
+	public Vector getDerailedVelocityMod() {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
+
+	@Override
+	public void setDerailedVelocityMod(Vector derailed) {
+		throw new UnsupportedOperationException("Not supported yet!");
+	}
+}

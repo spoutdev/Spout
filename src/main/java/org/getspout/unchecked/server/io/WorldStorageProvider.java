@@ -1,0 +1,20 @@
+package org.getspout.unchecked.server.io;
+
+import java.io.File;
+
+import org.getspout.unchecked.server.SpoutWorld;
+
+public interface WorldStorageProvider {
+	public ChunkIoService getChunkIoService();
+
+	public WorldMetadataService getMetadataService();
+
+	public void setWorld(SpoutWorld world);
+
+	/**
+	 * Get the folder holding the world data.
+	 *
+	 * @return world folder
+	 */
+	public File getFolder();
+}
