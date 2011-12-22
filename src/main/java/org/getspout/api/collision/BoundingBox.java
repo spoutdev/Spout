@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.collision;
+package org.getspout.api.collision;
 
 import org.getspout.api.math.Vector3;
 

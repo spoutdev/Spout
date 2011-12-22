@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.collision;
+package org.getspout.api.collision;
 
 public class CollisionHelper {
 	/**
