@@ -8,9 +8,9 @@ import org.getspout.api.geo.discrete.Point;
  */
 public abstract class Voxel extends Cube {
 
-	protected final static double EDGE = 1 / 16.0;
+	protected final static float EDGE = 1.f / 16.0f;
 
-	public Voxel(World world, double x, double y, double z) {
+	public Voxel(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
 }

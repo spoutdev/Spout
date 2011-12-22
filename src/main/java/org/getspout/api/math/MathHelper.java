@@ -32,6 +32,19 @@ public class MathHelper {
 	 * @param percent
 	 * @return
 	 */
+	public static float lerp(float a, float b, float percent) {
+		return (1 - percent) * a + percent * b;
+	}
+
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 *
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return
+	 */
 	public static int lerp(int a, int b, double percent) {
 		return (int) ((1 - percent) * a + percent * b);
 	}
@@ -45,7 +58,7 @@ public class MathHelper {
 	 * @param percent
 	 * @return
 	 */
-	public static Vector3 lerp(Vector3 a, Vector3 b, double percent) {
+	public static Vector3 lerp(Vector3 a, Vector3 b, float percent) {
 		return a.scale(1 - percent).add(b.scale(percent));
 	}
 
@@ -58,7 +71,7 @@ public class MathHelper {
 	 * @param percent
 	 * @return
 	 */
-	public static Vector2 lerp(Vector2 a, Vector2 b, double percent) {
+	public static Vector2 lerp(Vector2 a, Vector2 b, float percent) {
 		return a.scale(1 - percent).add(b.scale(percent));
 	}
 
@@ -109,6 +122,17 @@ public class MathHelper {
 	public static Vector3 getDirectionVector(double pitch, double yaw) {
 		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate((new Quaternion(pitch, Vector3.UNIT_Y)).multiply(new Quaternion(yaw, Vector3.UNIT_Z))));
 	}
+	/**
+	 * Returns the forward vector transformed by the provided quaternion
+	 *
+	 * @param pitch
+	 * @param yaw
+	 * @return
+	 */
+	public static Vector3 getDirectionVector(Quaternion rot) {
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(rot));
+	}
+	
 	
 	
 

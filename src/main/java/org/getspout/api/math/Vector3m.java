@@ -2,7 +2,7 @@ package org.getspout.api.math;
 
 public class Vector3m extends Vector3 {
 
-	public Vector3m(double x, double y, double z) {
+	public Vector3m(float x, float y, float z) {
 		super(x, y, z);
 	}
 
@@ -10,15 +10,15 @@ public class Vector3m extends Vector3 {
 		super(vector.getX(), vector.getY(), vector.getZ());
 	}
 
-	public void setZ(double z) {
+	public void setZ(float z) {
 		this.z = z;
 	}
 
-	public void setY(double y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 
-	public void setX(double x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 
@@ -29,7 +29,6 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
-	@Override
 	public Vector3 add(Vector3 that) {
 		x += that.x;
 		y += that.y;
@@ -44,7 +43,6 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
-	@Override
 	public Vector3 subtract(Vector3 that) {
 		x -= that.x;
 		y -= that.y;
@@ -59,8 +57,7 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
-	@Override
-	public Vector3 scale(double scale) {
+	public Vector3 scale(float scale) {
 		x *= scale;
 		y *= scale;
 		z *= scale;
@@ -74,7 +71,6 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
-	@Override
 	public Vector3 cross(Vector3 that) {
 		x = getY() * that.getZ() - getZ() * that.getY();
 		y = getZ() * that.getX() - getX() * that.getZ();
@@ -89,9 +85,8 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
-	@Override
 	public Vector3 normalize() {
-		double length = this.length();
+		float length = this.length();
 		x *= 1 / length;
 		y *= 1 / length;
 		z *= 1 / length;

@@ -7,7 +7,7 @@ import org.getspout.api.geo.discrete.Point;
  */
 public class Cubem extends Cube implements MovableCuboid {
 
-	public Cubem(Point base, double size) {
+	public Cubem(Point base, float size) {
 		super(base, size);
 	}
 

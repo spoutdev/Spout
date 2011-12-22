@@ -16,7 +16,7 @@ public class Point extends Vector3 {
 		world = point.getWorld();
 	}
 
-	public Point(World world, double x, double y, double z) {
+	public Point(World world, float x, float y, float z) {
 		super(x, y, z);
 		this.world = world;
 	}

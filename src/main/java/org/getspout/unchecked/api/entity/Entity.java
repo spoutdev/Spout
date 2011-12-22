@@ -21,11 +21,10 @@ import java.util.UUID;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
-import org.getspout.api.geo.discrete.Eyeline;
+import org.getspout.api.math.Quaternion;
 import org.getspout.api.math.Vector3;
 import org.getspout.unchecked.api.event.EventSource;
 import org.getspout.unchecked.api.metadata.Metadatable;
-import org.getspout.unchecked.api.util.Location;
 
 /**
  * Represents a base entity in the world
@@ -43,7 +42,7 @@ public interface Entity extends Metadatable, EventSource {
 	 * 
 	 * @return orientation as a Ray
 	 */
-	public Eyeline getOrientation();
+	public Quaternion getOrientation();
 
 	/**
 	 * Sets the velocity of the entity

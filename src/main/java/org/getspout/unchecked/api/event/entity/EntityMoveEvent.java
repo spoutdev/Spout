@@ -16,9 +16,10 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.event.Cancellable;
 import org.getspout.unchecked.api.event.HandlerList;
-import org.getspout.unchecked.api.util.Location;
+
 
 /**
  * Holds information for entity movement events
@@ -26,43 +27,43 @@ import org.getspout.unchecked.api.util.Location;
 public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private Location from;
+	private Point from;
 
-	private Location to;
+	private Point to;
 
 	/**
-	 * Gets the location this entity moved from
+	 * Gets the Point this entity moved from
 	 *
-	 * @return Location the entity moved from
+	 * @return Point the entity moved from
 	 */
-	public Location getFrom() {
+	public Point getFrom() {
 		return from;
 	}
 
 	/**
-	 * Sets the location to mark as where the entity moved from
+	 * Sets the Point to mark as where the entity moved from
 	 *
-	 * @param from New location to mark as the entitys previous location
+	 * @param from New Point to mark as the entitys previous Point
 	 */
-	public void setFrom(Location from) {
+	public void setFrom(Point from) {
 		this.from = from;
 	}
 
 	/**
-	 * Gets the location this entity moved to
+	 * Gets the Point this entity moved to
 	 *
-	 * @return Location the entity moved to
+	 * @return Point the entity moved to
 	 */
-	public Location getTo() {
+	public Point getTo() {
 		return to;
 	}
 
 	/**
-	 * Sets the location that this entity will move to
+	 * Sets the Point that this entity will move to
 	 *
-	 * @param to New Location this entity will move to
+	 * @param to New Point this entity will move to
 	 */
-	public void setTo(Location to) {
+	public void setTo(Point to) {
 		this.to = to;
 	}
 

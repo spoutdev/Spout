@@ -1,7 +1,7 @@
 package org.getspout.api.math;
 
 /**
- * A 2-dimensional vector represented by double-precision x,y coordinates
+ * A 2-dimensional vector represented by float-precision x,y coordinates
  *
  * Note, this is the Immutable form of Vector2. All operations will construct a
  * new Vector2.
@@ -27,7 +27,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 */
 	public static Vector2 ONE = new Vector2(1, 1);
 
-	protected double x, y;
+	protected float x, y;
 
 	/**
 	 * Construct and Initialized a Vector2 from the given x, y
@@ -35,7 +35,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
-	public Vector2(double x, double y) {
+	public Vector2(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -52,7 +52,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 *
 	 * @return The X coordinate
 	 */
-	public double getX() {
+	public float getX() {
 		return x;
 	}
 
@@ -61,7 +61,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 *
 	 * @return The Y coordinate
 	 */
-	public double getY() {
+	public float getY() {
 		return y;
 	}
 
@@ -91,7 +91,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param scale The amount to scale by
 	 * @return A new Vector2 scaled by the amount.
 	 */
-	public Vector2 scale(double scale) {
+	public Vector2 scale(float scale) {
 		return Vector2.scale(this, scale);
 	}
 
@@ -102,7 +102,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param that The Vector2 to dot with this.
 	 * @return The dot product
 	 */
-	public double dot(Vector2 that) {
+	public float dot(Vector2 that) {
 		return Vector2.dot(this, that);
 	}
 
@@ -121,7 +121,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 *
 	 * @return the squared length
 	 */
-	public double lengthSquared() {
+	public float lengthSquared() {
 		return Vector2.lengthSquared(this);
 	}
 
@@ -131,7 +131,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 *
 	 * @return the length of this vector2
 	 */
-	public double length() {
+	public float length() {
 		return Vector2.length(this);
 	}
 
@@ -150,7 +150,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 *
 	 * @return The array containing this Vector2
 	 */
-	public double[] toArray() {
+	public float[] toArray() {
 		return Vector2.toArray(this);
 	}
 
@@ -178,8 +178,8 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param a The Vector2 to calculate the length of
 	 * @return The length of the Vector2
 	 */
-	public static double length(Vector2 a) {
-		return MathHelper.sqrt(lengthSquared(a));
+	public static float length(Vector2 a) {
+		return (float)MathHelper.sqrt(lengthSquared(a));
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param a the Vector2 to calculate the length squared
 	 * @return the length squared of the Vector2
 	 */
-	public static double lengthSquared(Vector2 a) {
+	public static float lengthSquared(Vector2 a) {
 		return Vector2.dot(a, a);
 	}
 
@@ -231,7 +231,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param b
 	 * @return
 	 */
-	public static Vector2 scale(Vector2 a, double b) {
+	public static Vector2 scale(Vector2 a, float b) {
 		return new Vector2(a.getX() * b, a.getY() * b);
 	}
 
@@ -243,7 +243,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param b
 	 * @return
 	 */
-	public static double dot(Vector2 a, Vector2 b) {
+	public static float dot(Vector2 a, Vector2 b) {
 		return a.getX() * b.getX() + a.getY() * b.getY();
 	}
 
@@ -253,8 +253,8 @@ public class Vector2 implements Comparable<Vector2> {
 	 *
 	 * @return The array containing the Vector2
 	 */
-	public static double[] toArray(Vector2 a) {
-		return new double[] {a.getX(), a.getY()};
+	public static float[] toArray(Vector2 a) {
+		return new float[] {a.getX(), a.getY()};
 	}
 
 	/**

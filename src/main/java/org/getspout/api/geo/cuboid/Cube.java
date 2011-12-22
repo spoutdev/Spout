@@ -8,7 +8,7 @@ import org.getspout.api.math.Vector3;
  */
 public class Cube extends Cuboid {
 
-	public Cube(Point base, double size) {
+	public Cube(Point base, float size) {
 		super(base, new Vector3(size, size, size));
 	}
 }

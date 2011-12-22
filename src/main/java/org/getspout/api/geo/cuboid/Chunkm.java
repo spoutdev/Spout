@@ -7,7 +7,7 @@ import org.getspout.api.geo.World;
  */
 public abstract class Chunkm extends Chunk implements MovableCuboid {
 
-	public Chunkm(World world, double x, double y, double z) {
+	public Chunkm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
 

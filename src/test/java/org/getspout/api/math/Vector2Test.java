@@ -105,7 +105,7 @@ public class Vector2Test {
 	@Test
 	public void testToArray() {
 		Vector2 x = new Vector2(5,3);
-		double[] r = x.toArray();
+		float[] r = x.toArray();
 		if(r[0] != 5) fail("Expected 5 got " + r[0]);
 		if(r[1] != 3) fail("Expected 3 got " + r[1]);
 		

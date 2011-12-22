@@ -7,7 +7,7 @@ import org.getspout.api.geo.World;
  */
 public abstract class Voxelm extends Voxel implements MovableCuboid {
 
-	public Voxelm(World world, double x, double y, double z) {
+	public Voxelm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
 

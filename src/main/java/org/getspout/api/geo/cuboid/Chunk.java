@@ -12,9 +12,9 @@ import org.getspout.api.util.thread.SnapshotRead;
  */
 public abstract class Chunk extends Cube {
 
-	private final static double EDGE = 16.0;
+	private final static float EDGE = 16.0f;
 
-	public Chunk(World world, double x, double y, double z) {
+	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
 	

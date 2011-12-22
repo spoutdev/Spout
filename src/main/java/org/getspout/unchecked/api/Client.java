@@ -3,9 +3,9 @@ package org.getspout.unchecked.api;
 import java.io.File;
 
 import org.getspout.api.geo.World;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.plugin.PluginStore;
-import org.getspout.unchecked.api.util.Location;
 
 /**
  * Represents the client-specific implementation of Minecraft.
@@ -93,7 +93,7 @@ public interface Client extends Game {
 	 *
 	 * @return the location and view of the camera
 	 */
-	public Location getCamera();
+	public Point getCamera();
 
 	/**
 	 * The camera property holds the position and view of the camera. You can
@@ -104,7 +104,7 @@ public interface Client extends Game {
 	 * @see detachCamera(boolean)
 	 * @param loc the location and view of the camera
 	 */
-	public void setCamera(Location loc);
+	public void setCamera(Point loc);
 
 	/**
 	 * The detach property decides if player movements will influence the camera

@@ -4,8 +4,10 @@ import java.util.Iterator;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
-import org.getspout.api.geo.discrete.Eyeline;
+import org.getspout.api.geo.discrete.EntityTransform;
 import org.getspout.api.geo.discrete.Pointm;
+import org.getspout.api.math.MathHelper;
+import org.getspout.api.math.Quaternion;
 import org.getspout.api.math.Vector3m;
 
 /**
@@ -31,11 +33,11 @@ public class BlockIterator implements Iterator<Block> {
      * @param maxDistance This is the maximum distance in blocks for the trace.  Setting this value above 140 may lead to problems with unloaded chunks.  A value of 0 indicates no limit
      *
      */
-    public BlockIterator(World world, Eyeline eye, int maxDistance) {
-    	position = new Pointm(eye);
-    	direction = new Vector3m(eye.getDirection());
+    public BlockIterator(World world, EntityTransform pos, int maxDistance) {
+    	position = new Pointm(pos.getPosition());
+    	direction = new Vector3m(MathHelper.getDirectionVector(pos.getRotation()));
     	
-    	double max = Math.abs(direction.getX());
+    	float max = Math.abs(direction.getX());
     	max = (Math.abs(direction.getY()) > max) ? Math.abs(direction.getY()) : max;
     	max = (Math.abs(direction.getZ()) > max) ? Math.abs(direction.getY()) : max;
     	

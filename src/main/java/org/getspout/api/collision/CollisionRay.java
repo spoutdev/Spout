@@ -19,11 +19,11 @@ public class CollisionRay {
 		endpoint = end;
 	}
 
-	public CollisionRay(Vector3 start, Vector3 direction, double distance) {
+	public CollisionRay(Vector3 start, Vector3 direction, float distance) {
 		this(start, start.add(direction.scale(distance)));
 	}
 
-	public CollisionRay(Vector3 start, double pitch, double yaw, double distance) {
+	public CollisionRay(Vector3 start, float pitch, float yaw, float distance) {
 		this(start, MathHelper.getDirectionVector(pitch, yaw), distance);
 	}
 

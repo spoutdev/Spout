@@ -12,7 +12,7 @@ public class Vector3Test {
 	public static double eps = 0.00001;
 	@Test
 	public void testVector3DoubleDoubleDouble() {
-		Vector3 v = new Vector3(2.0, 4.0, -1.0);
+		Vector3 v = new Vector3(2.0f, 4.0f, -1.0f);
 		if(v.getX() != 2.0) fail("X does not equal 2");
 		if(v.getY() != 4.0) fail("Y does not equal 4");
 		if(v.getZ() != -1.0) fail("Z does not equal -1");
@@ -29,7 +29,7 @@ public class Vector3Test {
 
 	@Test
 	public void testVector3Vector3() {
-		Vector3 v = new Vector3(new Vector3(-1.0, 3.0, 2.0));
+		Vector3 v = new Vector3(new Vector3(-1.0f, 3.0f, 2.0f));
 		if(v.getX() != -1.0) fail("X does not equal -1.0");
 		if(v.getY() != 3.0) fail("Y does not equal 3.0");
 		if(v.getZ() != 2.0) fail("Z does not equal 2.0");
@@ -37,7 +37,7 @@ public class Vector3Test {
 
 	@Test
 	public void testVector3Vector2Double() {
-		Vector3 v = new Vector3(new Vector2(-1.0, 3.0), 1.0);
+		Vector3 v = new Vector3(new Vector2(-1.0f, 3.0f), 1.0f);
 		if(v.getX() != -1.0) fail("X does not equal -1.0");
 		if(v.getY() != 3.0) fail("Y does not equal 3.0");
 		if(v.getZ() != 1.0) fail("Z does not equal 2.0");
@@ -45,7 +45,7 @@ public class Vector3Test {
 
 	@Test
 	public void testVector3Vector2() {
-		Vector3 v = new Vector3(new Vector2(-1.0, 3.0));
+		Vector3 v = new Vector3(new Vector2(-1.0f, 3.0f));
 		if(v.getX() != -1.0) fail("X does not equal -1.0");
 		if(v.getY() != 3.0) fail("Y does not equal 3.0");
 		if(v.getZ() != 0.0) fail("Z does not equal 2.0");
@@ -156,7 +156,7 @@ public class Vector3Test {
 	@Test
 	public void testToArrayVector3() {
 		Vector3 x = new Vector3(1,0,0);
-		double[] y = x.toArray();
+		float[] y = x.toArray();
 		if(y[0] != 1.0) fail("z.X does not equal 1, it's " + y[0]);
 		if(y[1] != 0.0) fail("z.Y does not equal 0, it's " + y[1]);
 		if(y[2] != 0.0) fail("z.Z does not equal 0, it's " + y[2]);
@@ -171,7 +171,7 @@ public class Vector3Test {
 		
 		Vector3 y = new Vector3(2,4,5);
 		Vector3 v = y.transform(Matrix.rotateX(30));
-		Vector3 res = new Vector3(2,.964,6.33);
+		Vector3 res = new Vector3(2,.964f,6.33f);
 		if(! v.equals(res)) fail("{2,4,5} rotated about X, expected" + res + " Got "+ v );
 		
 	}
@@ -184,7 +184,7 @@ public class Vector3Test {
 		
 		Vector3 y = new Vector3(2,4,5);
 		Vector3 v = y.transform(new Quaternion(30, new Vector3(1,0,0)));
-		Vector3 res = new Vector3(2,.964,6.33);
+		Vector3 res = new Vector3(2,.964f,6.33f);
 		if(! v.equals(res)) fail("{2,4,5} rotated about X, expected" + res + " Got "+ v );
 		
 	}

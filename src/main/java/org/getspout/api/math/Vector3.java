@@ -37,7 +37,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public static Vector3 ONE = new Vector3(1, 1, 1);
 
-	protected double x, y, z;
+	protected float x, y, z;
 
 	/**
 	 * Constructs a new Vector3 with the given x, y, z
@@ -46,7 +46,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param y
 	 * @param z
 	 */
-	public Vector3(double x, double y, double z) {
+	public Vector3(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -74,7 +74,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param vector
 	 * @param z
 	 */
-	public Vector3(Vector2 vector, double z) {
+	public Vector3(Vector2 vector, float z) {
 		this(vector.getX(), vector.getY(), z);
 	}
 
@@ -87,15 +87,15 @@ public class Vector3 implements Comparable<Vector3> {
 		this(vector, 0);
 	}
 
-	public double getX() {
+	public float getX() {
 		return x;
 	}
 
-	public double getY() {
+	public float getY() {
 		return y;
 	}
 
-	public double getZ() {
+	public float getZ() {
 		return z;
 	}
 
@@ -125,7 +125,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param scale
 	 * @return
 	 */
-	public Vector3 scale(double scale) {
+	public Vector3 scale(float scale) {
 		return Vector3.scale(this, scale);
 	}
 
@@ -135,7 +135,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param that
 	 * @return
 	 */
-	public double dot(Vector3 that) {
+	public float dot(Vector3 that) {
 		return Vector3.dot(this, that);
 	}
 
@@ -154,7 +154,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 *
 	 * @return
 	 */
-	public double lengthSquared() {
+	public float lengthSquared() {
 		return Vector3.lengthSquared(this);
 	}
 
@@ -164,7 +164,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 *
 	 * @return
 	 */
-	public double length() {
+	public float length() {
 		return Vector3.length(this);
 	}
 
@@ -182,7 +182,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 *
 	 * @return
 	 */
-	public double[] toArray() {
+	public float[] toArray() {
 		return Vector3.toArray(this);
 	}
 
@@ -230,8 +230,8 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param a
 	 * @return
 	 */
-	public static double length(Vector3 a) {
-		return Math.sqrt(lengthSquared(a));
+	public static float length(Vector3 a) {
+		return (float)Math.sqrt(lengthSquared(a));
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param a
 	 * @return
 	 */
-	public static double lengthSquared(Vector3 a) {
+	public static float lengthSquared(Vector3 a) {
 		return Vector3.dot(a, a);
 	}
 
@@ -283,7 +283,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param b
 	 * @return
 	 */
-	public static Vector3 scale(Vector3 a, double b) {
+	public static Vector3 scale(Vector3 a, float b) {
 		return new Vector3(a.getX() * b, a.getY() * b, a.getZ() * b);
 	}
 
@@ -294,7 +294,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param b
 	 * @return
 	 */
-	public static double dot(Vector3 a, Vector3 b) {
+	public static float dot(Vector3 a, Vector3 b) {
 		return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
 	}
 
@@ -311,13 +311,13 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Returns a new double array that is {x, y, z}
+	 * Returns a new float array that is {x, y, z}
 	 *
 	 * @param a
 	 * @return
 	 */
-	public static double[] toArray(Vector3 a) {
-		return new double[] {a.getX(), a.getY(), a.getZ()};
+	public static float[] toArray(Vector3 a) {
+		return new float[] {a.getX(), a.getY(), a.getZ()};
 	}
 
 	/**
@@ -329,13 +329,9 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 transform(Vector3 vector, Matrix transformation) {
-		Matrix v3 = Matrix.createIdentity();
-		v3.set(0, 0, vector.getX());
-		v3.set(0, 1, vector.getY());
-		v3.set(0, 2, vector.getZ());
-
-		Matrix t = Matrix.multiply(transformation, v3);
-		return new Vector3(t.get(0, 0), t.get(0, 1), t.get(0, 2));
+		//TODO rewrite this
+		
+		return new Vector3(0,0, 0);
 	}
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion

@@ -12,9 +12,9 @@ import org.getspout.api.util.thread.SnapshotRead;
  */
 public abstract class Block extends Cube {
 
-	private final static double EDGE = 1.0;
+	private final static float EDGE = 1.0f;
 
-	public Block(World world, double x, double y, double z) {
+	public Block(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
 	

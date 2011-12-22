@@ -7,7 +7,7 @@ import org.getspout.api.geo.World;
  */
 public abstract class Regionm extends Region implements MovableCuboid {
 
-	public Regionm(World world, double x, double y, double z) {
+	public Regionm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
 

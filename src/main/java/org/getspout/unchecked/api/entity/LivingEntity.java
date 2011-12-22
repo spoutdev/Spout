@@ -20,8 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.block.Block;
-import org.getspout.api.geo.discrete.Transform;
-import org.getspout.unchecked.api.util.Location;
+import org.getspout.api.geo.discrete.Point;
 
 public interface LivingEntity extends Entity {
 	/**
@@ -78,7 +77,7 @@ public interface LivingEntity extends Entity {
 	 *
 	 * @return a Location at the eyes of the LivingEntity.
 	 */
-	public Location getEyeLocation();
+	public Point getEyeLocation();
 
 	/**
 	 * Gets all blocks along the player's line of sight List iterates from

@@ -2,7 +2,7 @@ package org.getspout.api.math;
 
 public class Vector2m extends Vector2 {
 
-	public Vector2m(double x, double y) {
+	public Vector2m(float x, float y) {
 		super(x, y);
 	}
 
@@ -11,7 +11,7 @@ public class Vector2m extends Vector2 {
 	 *
 	 * @param x The x coordinate
 	 */
-	public void setX(double x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 
@@ -20,7 +20,7 @@ public class Vector2m extends Vector2 {
 	 *
 	 * @param y The Y coordinate
 	 */
-	public void setY(double y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 
@@ -39,14 +39,14 @@ public class Vector2m extends Vector2 {
 	}
 
 	@Override
-	public Vector2 scale(double scale) {
+	public Vector2 scale(float scale) {
 		x *= scale;
 		y *= scale;
 		return this;
 	}
 
 	public Vector2 cross(Vector2 that) {
-		double tmp = y;
+		float tmp = y;
 		y = -x;
 		x = tmp;
 		return this;
@@ -54,7 +54,7 @@ public class Vector2m extends Vector2 {
 
 	@Override
 	public Vector2 normalize() {
-		double length = this.length();
+		float length = this.length();
 		x *= 1 / length;
 		y *= 1 / length;
 		return this;

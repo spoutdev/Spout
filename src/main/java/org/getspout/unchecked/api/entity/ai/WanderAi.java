@@ -18,7 +18,7 @@ public class WanderAi extends TimedAi<Entity> {
 	public void runAi() {
 		if (rand.nextDouble() > 0.7) return;
 		Pointm toLoc = new Pointm(entity.getPosition());
-		toLoc.add(new Vector3(rand.nextDouble() * 4, rand.nextDouble() * 4, rand.nextDouble() * 4));
+		toLoc.add(new Vector3(rand.nextFloat() * 4, rand.nextFloat() * 4, rand.nextFloat() * 4));
 		if (entity.getWorld().getBlock(toLoc) != null) {
 			toLoc.add(new Vector3(0, 1, 0));
 		}

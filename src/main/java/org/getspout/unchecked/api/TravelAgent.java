@@ -16,7 +16,8 @@
  */
 package org.getspout.unchecked.api;
 
-import org.getspout.unchecked.api.util.Location;
+import org.getspout.api.geo.discrete.Point;
+
 
 public interface TravelAgent {
 	/**
@@ -76,7 +77,7 @@ public interface TravelAgent {
 	 * @return Returns the location of a portal which has been found or returns
 	 *         the location passed to the method if unsuccessful.
 	 */
-	public Location findOrCreate(Location location);
+	public Point findOrCreate(Point location);
 
 	/**
 	 * Attempt to find a portal near the given location.
@@ -84,7 +85,7 @@ public interface TravelAgent {
 	 * @param location The desired location of the portal.
 	 * @return Returns the location of the nearest portal to the location.
 	 */
-	public Location findPortal(Location location);
+	public Point findPortal(Point location);
 
 	/**
 	 * Attempt to create a portal near the given location.
@@ -92,6 +93,6 @@ public interface TravelAgent {
 	 * @param location The desired location of the portal.
 	 * @return True if a nether portal was successfully created.
 	 */
-	public boolean createPortal(Location location);
+	public boolean createPortal(Point location);
 
 }

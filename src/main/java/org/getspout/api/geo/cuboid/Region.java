@@ -9,9 +9,9 @@ import org.getspout.api.util.thread.SnapshotRead;
  */
 public abstract class Region extends Cube {
 
-	private final static double EDGE = 256.0;
+	private final static float EDGE = 256.0f;
 
-	public Region(World world, double x, double y, double z) {
+	public Region(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
 	

@@ -8,7 +8,7 @@ import org.getspout.api.geo.World;
 
 public class Pointm extends Point {
 
-	public Pointm(World world, double x, double y, double z) {
+	public Pointm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
 
@@ -26,21 +26,21 @@ public class Pointm extends Point {
 	/**
 	 * Sets the x coordinate of this point
 	 */
-	public void setX(double x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 
 	/**
 	 * Sets the y coordinate of this point
 	 */
-	public void setY(double y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 
 	/**
 	 * Sets the z coordinate of this point
 	 */
-	public void setZ(double z) {
+	public void setZ(float z) {
 		this.z = z;
 	}
 	

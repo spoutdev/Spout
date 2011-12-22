@@ -19,9 +19,9 @@ package org.getspout.unchecked.api.event.entity;
 import java.util.List;
 
 import org.bukkit.block.Block;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.event.Cancellable;
 import org.getspout.unchecked.api.event.HandlerList;
-import org.getspout.unchecked.api.util.Location;
 
 /**
  * Called when an entity explodes.
@@ -31,7 +31,7 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 
 	private List<Block> blocks;
 
-	private Location epicenter;
+	private Point epicenter;
 
 	private float yield;
 
@@ -45,11 +45,11 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 		this.blocks = blocks;
 	}
 
-	public Location getEpicenter() {
+	public Point getEpicenter() {
 		return epicenter;
 	}
 
-	public void setEpicenter(Location epicenter) {
+	public void setEpicenter(Point epicenter) {
 		this.epicenter = epicenter;
 	}
 

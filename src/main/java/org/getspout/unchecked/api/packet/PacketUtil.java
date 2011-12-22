@@ -175,22 +175,22 @@ public abstract class PacketUtil {
 	}
 
 	public static void writeVector3(DataOutputStream output, Vector3 vector) throws IOException {
-		output.writeDouble(vector.getX());
-		output.writeDouble(vector.getY());
-		output.writeDouble(vector.getZ());
+		output.writeFloat(vector.getX());
+		output.writeFloat(vector.getY());
+		output.writeFloat(vector.getZ());
 	}
 
 	public static Vector3 readVector3(DataInputStream input) throws IOException {
-		return new Vector3(input.readDouble(), input.readDouble(), input.readDouble());
+		return new Vector3(input.readFloat(), input.readFloat(), input.readFloat());
 	}
 
 	public static void writeVector2(DataOutputStream output, Vector2 vector) throws IOException {
-		output.writeDouble(vector.getX());
-		output.writeDouble(vector.getY());
+		output.writeFloat(vector.getX());
+		output.writeFloat(vector.getY());
 	}
 
 	public static Vector2 readVector2(DataInputStream input) throws IOException {
-		return new Vector2(input.readDouble(), input.readDouble());
+		return new Vector2(input.readFloat(), input.readFloat());
 	}
 
 }

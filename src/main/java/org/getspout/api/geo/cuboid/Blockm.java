@@ -7,7 +7,7 @@ import org.getspout.api.geo.World;
  */
 public abstract class Blockm extends Block implements MovableCuboid {
 
-	public Blockm(World world, double x, double y, double z) {
+	public Blockm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
 
