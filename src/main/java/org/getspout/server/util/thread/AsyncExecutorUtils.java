@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util.thread;
+package org.getspout.server.util.thread;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;

@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util.thread;
+package org.getspout.server.util.thread;
 
 /**
  * An Exception thrown when pulsable thread timing assumption are violated

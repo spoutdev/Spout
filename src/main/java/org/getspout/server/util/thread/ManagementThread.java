@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util.thread;
+package org.getspout.server.util.thread;
 
 import java.io.Serializable;
 import java.util.WeakHashMap;
@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.util.future.SimpleFuture;
-import org.getspout.unchecked.server.util.thread.coretasks.CopySnapshotTask;
-import org.getspout.unchecked.server.util.thread.coretasks.StartTickTask;
+import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
+import org.getspout.server.util.thread.coretasks.StartTickTask;
 
 /**
  * This is a thread that is responsible for managing various objects.

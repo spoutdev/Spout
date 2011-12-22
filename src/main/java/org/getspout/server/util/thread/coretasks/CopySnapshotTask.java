@@ -1,9 +1,9 @@
-package org.getspout.unchecked.server.util.thread.coretasks;
+package org.getspout.server.util.thread.coretasks;
 
 import java.io.Serializable;
 
-import org.getspout.unchecked.server.util.thread.ManagementAsyncExecutor;
-import org.getspout.unchecked.server.util.thread.ManagementRunnable;
+import org.getspout.server.util.thread.ManagementAsyncExecutor;
+import org.getspout.server.util.thread.ManagementRunnable;
 
 public class CopySnapshotTask extends ManagementRunnable {
 	

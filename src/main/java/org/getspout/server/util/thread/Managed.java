@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util.thread;
+package org.getspout.server.util.thread;
 
 public abstract class Managed {
 	private final ManagementThread manager;

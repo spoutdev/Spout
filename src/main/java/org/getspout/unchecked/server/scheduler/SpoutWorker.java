@@ -60,7 +60,6 @@ public class SpoutWorker implements BukkitWorker, Runnable {
 
 	@Override
 	public void run() {
-
 		shouldContinue = task.pulse();
 	}
 }
