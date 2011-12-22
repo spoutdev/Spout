@@ -62,6 +62,7 @@ import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
 import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.StopCommand;
+import org.getspout.server.command.TeleportCommand;
 import org.getspout.server.command.TellCommand;
 import org.getspout.server.command.TimeCommand;
 import org.getspout.server.command.ToggleStormCommand;
@@ -475,6 +476,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new ToggleStormCommand(this));
 		commandMap.register(new TellCommand(this));
 		commandMap.register(new ExperienceCommand(this));
+		commandMap.register(new TeleportCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 
@@ -495,9 +497,11 @@ public final class SpoutServer implements Server {
 	}
 
 	/**
-	 * Stops this server.
+	 * Stops this server with a given kick message.
+	 * 
+	 * @param message The message to display as kick message.
 	 */
-	public void shutdown() {
+	public void shutdown(String message) {
 		// This is so we don't run this twice (/stop and actual shutdown)
 		if (isShuttingDown) {
 			return;
@@ -513,7 +517,7 @@ public final class SpoutServer implements Server {
 
 		// Kick (and save) all players
 		for (Player player : getOnlinePlayers()) {
-			player.kickPlayer("Server shutting down.");
+			player.kickPlayer(message);
 		}
 
 		// Save worlds
@@ -529,6 +533,13 @@ public final class SpoutServer implements Server {
 		// And finally kill the console
 		consoleManager.stop();
 
+	}
+	
+	/**
+	 * Stops this server with the default kick message.
+	 */
+	public void shutdown() {
+		shutdown("Server shutting down.");
 	}
 
 	/**
