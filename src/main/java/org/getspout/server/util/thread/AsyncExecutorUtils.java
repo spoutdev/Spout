@@ -12,7 +12,7 @@ public class AsyncExecutorUtils {
 	 * @param timeout how long to wait
 	 *
 	 */
-	public static void pulseJoinAll(List<ManagementAsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
+	public static void pulseJoinAll(List<AsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
 		ThreadsafetyManager.checkMainThread();
 
 		long currentTime = System.currentTimeMillis();
@@ -28,7 +28,7 @@ public class AsyncExecutorUtils {
 			done = false;
 			while (!done && (endTime > currentTime || waitForever)) {
 				done = true;
-				for (ManagementAsyncExecutor e : executors) {
+				for (AsyncExecutor e : executors) {
 					currentTime = System.currentTimeMillis();
 					if (endTime <= currentTime && !waitForever) {
 						break;
@@ -40,18 +40,18 @@ public class AsyncExecutorUtils {
 				}
 			}
 			try {
-				for (ManagementAsyncExecutor e : executors) {
+				for (AsyncExecutor e : executors) {
 					e.disableWake();
 				}
 				done = true;
-				for (ManagementAsyncExecutor e : executors) {
+				for (AsyncExecutor e : executors) {
 					if (!e.isPulseFinished()) {
 						done = false;
 						break;
 					}
 				}
 			} finally {
-				for (ManagementAsyncExecutor e : executors) {
+				for (AsyncExecutor e : executors) {
 					e.enableWake();
 				}
 			}

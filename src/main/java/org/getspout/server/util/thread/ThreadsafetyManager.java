@@ -23,7 +23,7 @@ public class ThreadsafetyManager {
 		}
 	}
 
-	public static void checkManagerThread(ManagementThread thread) {
+	public static void checkCurrentThread(Thread thread) {
 		if (Thread.currentThread() != thread) {
 			throw new ThreadTimingException("An attempt was made to run a manager only thread only method from outside the main thread");
 		}

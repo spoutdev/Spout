@@ -1,20 +1,11 @@
 package org.getspout.server.util.thread;
 
 public abstract class Managed {
-	private final ManagementThread manager;
+	private final AsyncManager manager;
 
-	public Managed(ManagementThread manager) {
+	public Managed(AsyncManager manager) {
 		manager.addManaged(this);
 		this.manager = manager;
-	}
-
-	/**
-	 * Checks if the current thread is managing this object
-	 *
-	 * @return true if the object is managed by the current thread
-	 */
-	public boolean isModifiable() {
-		return Thread.currentThread() == manager;
 	}
 
 	/**
@@ -22,7 +13,7 @@ public abstract class Managed {
 	 *
 	 * @return the management thread
 	 */
-	public ManagementThread getManagementThread() {
+	public AsyncManager getManager() {
 		return manager;
 	}
 }

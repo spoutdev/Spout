@@ -1,23 +1,46 @@
 package org.getspout.server.util.thread;
 
+import java.io.Serializable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
-public interface ManagementAsyncExecutor {
+import org.getspout.server.util.thread.future.ManagedFuture;
+
+public interface AsyncExecutor {
 	
 	/**
-	 * Sets this executor as manager for a given object
-	 *
-	 * @param managed the object to give responsibility for
+	 * Sets the AsyncManager for this executor.
+	 * 
+	 * This method may only be called once
+	 * 
+	 * @param manager the manager
 	 */
-	public void addManaged(Managed managed);
-
+	public void setManager(AsyncManager manager);
+	
+	/**
+	 * Gets the AsyncManager for this executor.
+	 * 
+	 * @return the manager
+	 */
+	public AsyncManager getManager();
+	
 	/**
 	 * Adds a task to this executor's queue
 	 *
 	 * @param task the runnable to execute
 	 */
 	public Future<?> addToQueue(ManagementTask task) throws InterruptedException;
+	
+	/**
+	 * Waits until a future is done.
+	 * 
+     * This method should be called instead of waiting on the future directly.
+     * 
+     * It will wait execute other tasks on the queue while waiting.
+	 * 
+	 * @param future the future
+	 */
+	public void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException;
 	
 	/**
 	 * Instructs the executor to copy all updated data to its snapshot
@@ -42,17 +65,15 @@ public interface ManagementAsyncExecutor {
 	public boolean isPulseFinished();
 
 	/**
-	 * Puts the current executor to sleep until the current pulse operation has
+	 * Puts the current thread to sleep until the current pulse operation has
 	 * completed
 	 */
 	public void pulseJoin() throws InterruptedException;
 
 	/**
-	 * Puts the current executor to sleep until the current pulse operation has
-	 * completed
+	 * Puts the current thread to sleep until the current pulse operation has completed
 	 *
-	 * @param millis the time in milliseconds to wait before throwing a
-	 *            TimeoutException
+	 * @param millis the time in milliseconds to wait before throwing a TimeoutException
 	 */
 
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException;
@@ -72,21 +93,5 @@ public interface ManagementAsyncExecutor {
 	 * enableWake must be matched by a call to disableWake.
 	 */
 	public void enableWake();
-
-	/**
-	 * This method is called once at the end of every tick
-	 *
-	 * This method should be overridden.
-	 */
-	public void copySnapshotRun() throws InterruptedException;
-
-	/**
-	 * This method is called once at the start of every tick
-	 *
-	 * This method should be overridden.
-	 *
-	 * @param tick the number of ticks since server start
-	 */
-	public void startTickRun(long tick) throws InterruptedException;
 
 }

@@ -10,6 +10,6 @@ import java.io.Serializable;
  * Its return value must also support serialization
  */
 
-public interface ManagementCallable<T extends Serializable> extends ManagementTask {
+public abstract class ManagementCallable<T extends Serializable> implements ManagementTask {
 	
 }

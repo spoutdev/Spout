@@ -2,7 +2,7 @@ package org.getspout.server.util.thread.coretasks;
 
 import java.io.Serializable;
 
-import org.getspout.server.util.thread.ManagementAsyncExecutor;
+import org.getspout.server.util.thread.AsyncExecutor;
 import org.getspout.server.util.thread.ManagementRunnable;
 
 public class StartTickTask extends ManagementRunnable {
@@ -24,8 +24,8 @@ public class StartTickTask extends ManagementRunnable {
 		return this;
 	}
 
-	public Serializable call(ManagementAsyncExecutor executor) throws InterruptedException {
-		executor.startTickRun(t);
+	public Serializable call(AsyncExecutor executor) throws InterruptedException {
+		executor.getManager().startTickRun(t);
 		return null;
 	}
 
