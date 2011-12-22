@@ -16,7 +16,7 @@
  */
 package org.bukkit.block;
 
-import org.getspout.api.entity.CreatureType;
+import org.getspout.unchecked.api.entity.CreatureType;
 
 public interface CreatureSpawner extends BlockState {
 

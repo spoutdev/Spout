@@ -1,0 +1,26 @@
+package org.getspout.unchecked.api.command.annotated;
+
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+
+import org.getspout.unchecked.api.command.CommandSource;
+
+public class SimpleAnnotatedCommandExecutorFactory implements AnnotatedCommandExecutorFactory {
+
+	public AnnotatedCommandExecutor getAnnotatedCommandExecutor(Object instance, Method method) {
+		return new SimpleAnnotatedCommandExecutor(instance, method);
+	}
+
+	public static class SimpleAnnotatedCommandExecutor extends AnnotatedCommandExecutor {
+
+		public SimpleAnnotatedCommandExecutor(Object instance, Method method) {
+			super(instance, method);
+		}
+
+		@Override
+		public List<Object> getAdditionalArgs(CommandSource source, org.getspout.unchecked.api.command.Command command) {
+			return Collections.emptyList();
+		}
+	}
+}

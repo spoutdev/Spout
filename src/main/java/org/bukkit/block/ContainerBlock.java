@@ -16,7 +16,7 @@
  */
 package org.bukkit.block;
 
-import org.getspout.api.inventory.Inventory;
+import org.getspout.unchecked.api.inventory.Inventory;
 
 public interface ContainerBlock extends BlockState {
 

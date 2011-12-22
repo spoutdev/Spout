@@ -16,8 +16,8 @@
  */
 package org.bukkit.block;
 
-import org.getspout.api.inventory.DoubleChestInventory;
-import org.getspout.api.inventory.Inventory;
+import org.getspout.unchecked.api.inventory.DoubleChestInventory;
+import org.getspout.unchecked.api.inventory.Inventory;
 
 public interface Chest extends BlockState, ContainerBlock {
 	/**
