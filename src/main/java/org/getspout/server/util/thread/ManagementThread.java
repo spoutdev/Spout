@@ -30,7 +30,6 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 	 *
 	 * @param managed the object to give responsibility for
 	 */
-	@Override
 	public final void addManaged(Managed managed) {
 		ThreadsafetyManager.checkManagerThread(this);
 		managedSet.put(managed, Boolean.TRUE);
@@ -92,7 +91,6 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 		ManagementTask task;
 		while ((task = taskQueue.poll()) != null) {
 			executeTask(task);
-			
 		}
 	}
 	
@@ -169,6 +167,7 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 		}
 	}
 	
+	@Override
 	public boolean pulse() {
 		Object monitor = waitingMonitor.get();
 		if (monitor != null) {

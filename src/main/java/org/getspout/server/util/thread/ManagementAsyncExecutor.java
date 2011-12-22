@@ -20,21 +20,21 @@ public interface ManagementAsyncExecutor {
 	public Future<?> addToQueue(ManagementTask task) throws InterruptedException;
 	
 	/**
-	 * Instructs the thread to copy all updated data to its snapshot
+	 * Instructs the executor to copy all updated data to its snapshot
 	 *
-	 * @return false if the thread was already pulsing
+	 * @return false if the executor was active
 	 */
 	public boolean copySnapshot();
 
 	/**
-	 * Instructs the thread to start a new tick
+	 * Instructs the executor to start a new tick
 	 *
-	 * @return false if the thread was already pulsing
+	 * @return false if the executor was active
 	 */
 	public boolean startTick(long ticks);
 
 	/**
-	 * Returns if this thread has completed its pulse and all submitted tasks
+	 * Returns if this executor has completed its pulse and all submitted tasks
 	 * associated with it
 	 *
 	 * @return true if the pulse was completed
@@ -42,13 +42,13 @@ public interface ManagementAsyncExecutor {
 	public boolean isPulseFinished();
 
 	/**
-	 * Puts the current thread to sleep until the current pulse operation has
+	 * Puts the current executor to sleep until the current pulse operation has
 	 * completed
 	 */
 	public void pulseJoin() throws InterruptedException;
 
 	/**
-	 * Puts the current thread to sleep until the current pulse operation has
+	 * Puts the current executor to sleep until the current pulse operation has
 	 * completed
 	 *
 	 * @param millis the time in milliseconds to wait before throwing a
@@ -58,7 +58,7 @@ public interface ManagementAsyncExecutor {
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException;
 
 	/**
-	 * Prevents this thread from being woken up.
+	 * Prevents this executor from being woken up.
 	 *
 	 * This functionality is implemented using a counter, so every call to
 	 * disableWake must be matched by a call to enableWake.
@@ -66,7 +66,7 @@ public interface ManagementAsyncExecutor {
 	public void disableWake();
 
 	/**
-	 * Allows this thread to be woken up.
+	 * Allows this executor to be woken up.
 	 *
 	 * This functionality is implemented using a counter, so every call to
 	 * enableWake must be matched by a call to disableWake.
