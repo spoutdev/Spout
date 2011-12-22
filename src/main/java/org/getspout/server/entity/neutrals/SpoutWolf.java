@@ -17,6 +17,12 @@ public class SpoutWolf extends SpoutAnimals implements Wolf, Angerable {
 	private boolean angry, sitting, tamed;
 	private String owner;
 
+	/**
+	 * Creates a new wolf.
+	 *
+	 * @param server This server this wolf is on.
+	 * @param world The world this wolf is in.
+	 */
 	public SpoutWolf(SpoutServer server, SpoutWorld world) {
 		super(server, world, 95);
 	}
@@ -26,42 +32,50 @@ public class SpoutWolf extends SpoutAnimals implements Wolf, Angerable {
 		return null;
 	}
 
+	@Override
 	public boolean isAngry() {
 		return angry;
 	}
 
+	@Override
 	public void setAngry(boolean angry) {
 		this.angry = angry;
 		setMetadataFlag(16, 0x02, angry);
 	}
 
+	@Override
 	public boolean isSitting() {
 		return sitting;
 	}
 
+	@Override
 	public void setSitting(boolean sitting) {
 		this.sitting = sitting;
 		setMetadataFlag(16, 0x01, sitting);
 	}
 
+	@Override
 	public boolean isTamed() {
 		return tamed;
 	}
 
+	@Override
 	public void setTamed(boolean tame) {
-		this.tamed = tame;
+		tamed = tame;
 		setMetadataFlag(16, 0x04, tame);
 	}
 
+	@Override
 	public AnimalTamer getOwner() {
 		return server.getOfflinePlayer(owner);
 	}
 
+	@Override
 	public void setOwner(AnimalTamer tamer) {
 		if (tamer == null) {
-			this.owner = "";
+			owner = "";
 		} else if (tamer instanceof OfflinePlayer) {
-			this.owner = ((OfflinePlayer)tamer).getName();
+			owner = ((OfflinePlayer) tamer).getName();
 		} else {
 			throw new IllegalArgumentException("Unknown AnimalTamer type!");
 		}

@@ -30,7 +30,7 @@ public enum EntityEffect {
 
 	static {
 		for (EntityEffect effect : EntityEffect.values()) {
-			lookup.put((int)effect.getId(), effect);
+			lookup.put((int) effect.getId(), effect);
 		}
 	}
 

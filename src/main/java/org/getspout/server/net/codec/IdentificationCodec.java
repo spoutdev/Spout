@@ -32,7 +32,7 @@ public final class IdentificationCodec extends MessageCodec<IdentificationMessag
 		buffer.writeInt(message.getGameMode());
 		buffer.writeByte(message.getDimension());
 		buffer.writeByte(message.getDifficulty());
-		buffer.writeByte(ChannelBufferUtils.getShifts(message.getWorldHeight()));
+		buffer.writeByte(ChannelBufferUtils.getShifts(message.getWorldHeight()) - 1);
 		buffer.writeByte(message.getMaxPlayers());
 		return buffer;
 	}

@@ -20,7 +20,9 @@ public class FilledBucketPhysics extends DefaultItemPhysics {
 
 	@Override
 	public boolean interact(SpoutPlayer player, SpoutBlock block, SpoutItemStack heldItem, Action action, BlockFace against) {
-		if (action != Action.RIGHT_CLICK_BLOCK) return true;
+		if (action != Action.RIGHT_CLICK_BLOCK) {
+			return true;
+		}
 		SpoutBlock target = block.getRelative(against);
 		if (fillCauldron && block.getTypeId() == BlockID.CAULDRON) {
 			if (block.getData() < 3) {

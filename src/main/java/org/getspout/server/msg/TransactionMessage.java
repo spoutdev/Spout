@@ -24,6 +24,6 @@ public final class TransactionMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "TransactionMessage{id=" + id + ",transaction=" + transaction +",isAccepted=" + accepted + "}";
+		return "TransactionMessage{id=" + id + ",transaction=" + transaction + ",isAccepted=" + accepted + "}";
 	}
 }

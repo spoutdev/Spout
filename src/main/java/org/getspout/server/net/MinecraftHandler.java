@@ -10,9 +10,14 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+
+import org.getspout.server.SpoutServer;
+import org.getspout.server.msg.Message;
+
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network
  * events.
+ *
  * @author Graham Edgecombe.
  */
 public class MinecraftHandler extends SimpleChannelUpstreamHandler {
@@ -23,6 +28,7 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 
 	/**
 	 * Creates a new network event handler.
+	 *
 	 * @param server The server.
 	 */
 	public MinecraftHandler(SpoutServer server) {

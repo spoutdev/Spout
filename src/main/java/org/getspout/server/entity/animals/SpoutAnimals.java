@@ -7,10 +7,11 @@ import org.getspout.server.entity.SpoutCreature;
 
 public abstract class SpoutAnimals extends SpoutCreature implements Animals {
 	/**
-	 * Creates a new monster.
+	 * Represents an animal.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param world The world this animal is in.
+	 * @param world The world this animal is in.
+	 * @param type The type of animal.
 	 */
 	public SpoutAnimals(SpoutServer server, SpoutWorld world, int type) {
 		super(server, world, type);

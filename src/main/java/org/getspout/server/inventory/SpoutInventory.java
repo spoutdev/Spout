@@ -28,6 +28,7 @@ public class SpoutInventory implements Inventory {
 
 	/**
 	 * Initialize the inventory
+	 *
 	 * @param size
 	 */
 	protected SpoutInventory(byte id, int size) {
@@ -37,6 +38,7 @@ public class SpoutInventory implements Inventory {
 
 	/**
 	 * Add a viewer to the inventory.
+	 *
 	 * @param viewer The InventoryViewer to add.
 	 */
 	public void addViewer(InventoryViewer viewer) {
@@ -47,6 +49,7 @@ public class SpoutInventory implements Inventory {
 
 	/**
 	 * Remove a viewer from the inventory.
+	 *
 	 * @param viewer The InventoryViewer to remove.
 	 */
 	public void removeViewer(InventoryViewer viewer) {
@@ -57,8 +60,10 @@ public class SpoutInventory implements Inventory {
 
 	/**
 	 * Get the network index from a slot index.
+	 *
 	 * @param itemSlot The index for use with getItem/setItem.
-	 * @return The index modified for transfer over the network, or -1 if there is no equivalent.
+	 * @return The index modified for transfer over the network, or -1 if there
+	 *         is no equivalent.
 	 */
 	public int getNetworkSlot(int itemSlot) {
 		return itemSlot;
@@ -66,8 +71,10 @@ public class SpoutInventory implements Inventory {
 
 	/**
 	 * Get the slot index from a network index.
+	 *
 	 * @param networkSlot The index received over the network.
-	 * @return The index modified for use with getItem/setItem, or -1 if there is no equivalent.
+	 * @return The index modified for use with getItem/setItem, or -1 if there
+	 *         is no equivalent.
 	 */
 	public int getItemSlot(int networkSlot) {
 		return networkSlot;
@@ -77,6 +84,7 @@ public class SpoutInventory implements Inventory {
 
 	/**
 	 * Gets the inventory ID.
+	 *
 	 * @return The inventory id for wire purposes.
 	 */
 	public int getId() {
@@ -88,6 +96,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @return The inventory size
 	 */
+	@Override
 	public int getSize() {
 		return slots.length;
 	}
@@ -97,12 +106,14 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @return The inventory name
 	 */
+	@Override
 	public String getName() {
 		return "Generic Inventory";
 	}
 
 	/**
 	 * Updates all attached inventory viewers about a change to index.
+	 *
 	 * @param index The index to update.
 	 */
 	protected void sendUpdate(int index) {
@@ -119,13 +130,14 @@ public class SpoutInventory implements Inventory {
 	 * @param index The index of the Slot's ItemStack to return
 	 * @return The ItemStack in the slot
 	 */
+	@Override
 	public SpoutItemStack getItem(int index) {
 		return slots[index];
 	}
 
 	/**
-	 * Stores the ItemStack at the given index.
-	 * Notifies all attached InventoryViewers of the change.
+	 * Stores the ItemStack at the given index. Notifies all attached
+	 * InventoryViewers of the change.
 	 *
 	 * @param index The index where to put the ItemStack
 	 * @param item The ItemStack to set
@@ -135,6 +147,7 @@ public class SpoutInventory implements Inventory {
 		sendUpdate(index);
 	}
 
+	@Override
 	public void setItem(int index, ItemStack item) {
 		setItem(index, getSpoutItemStack(item));
 	}
@@ -148,6 +161,7 @@ public class SpoutInventory implements Inventory {
 	 * @param items The ItemStacks to add
 	 * @return
 	 */
+	@Override
 	public HashMap<Integer, ItemStack> addItem(ItemStack... items) {
 		HashMap<Integer, ItemStack> result = new HashMap<Integer, ItemStack>();
 
@@ -161,8 +175,12 @@ public class SpoutInventory implements Inventory {
 				// Look for existing stacks to add to
 				if (slots[j] != null && slots[j].getTypeId() == mat && slots[j].getDurability() == damage) {
 					int space = maxStackSize - slots[j].getAmount();
-					if (space < 0) continue;
-					if (space > toAdd) space = toAdd;
+					if (space < 0) {
+						continue;
+					}
+					if (space > toAdd) {
+						space = toAdd;
+					}
 
 					slots[j].setAmount(slots[j].getAmount() + space);
 					toAdd -= space;
@@ -194,12 +212,14 @@ public class SpoutInventory implements Inventory {
 	/**
 	 * Removes the given ItemStacks from the inventory.
 	 *
-	 * It will try to remove 'as much as possible' from the types and amounts you
-	 * give as arguments. It will return a HashMap of what it couldn't remove.
+	 * It will try to remove 'as much as possible' from the types and amounts
+	 * you give as arguments. It will return a HashMap of what it couldn't
+	 * remove.
 	 *
 	 * @param items The ItemStacks to remove
 	 * @return
 	 */
+	@Override
 	public HashMap<Integer, ItemStack> removeItem(ItemStack... items) {
 		HashMap<Integer, ItemStack> result = new HashMap<Integer, ItemStack>();
 
@@ -235,6 +255,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @return All the ItemStacks from all slots
 	 */
+	@Override
 	public SpoutItemStack[] getContents() {
 		return slots;
 	}
@@ -244,6 +265,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @return All the ItemStacks from all slots
 	 */
+	@Override
 	public void setContents(ItemStack[] items) {
 		if (items.length != slots.length) {
 			throw new IllegalArgumentException("Length of items must be " + slots.length);
@@ -261,6 +283,7 @@ public class SpoutInventory implements Inventory {
 	 * @param materialId The materialId to check for
 	 * @return If any ItemStacks were found
 	 */
+	@Override
 	public boolean contains(int materialId) {
 		return first(materialId) >= 0;
 	}
@@ -271,28 +294,33 @@ public class SpoutInventory implements Inventory {
 	 * @param material The material to check for
 	 * @return If any ItemStacks were found
 	 */
+	@Override
 	public boolean contains(Material material) {
 		return first(material) >= 0;
 	}
 
 	/**
-	 * Check if the inventory contains any ItemStacks matching the given ItemStack
-	 * This will only match if both the type and the amount of the stack match
+	 * Check if the inventory contains any ItemStacks matching the given
+	 * ItemStack This will only match if both the type and the amount of the
+	 * stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return If any matching ItemStacks were found
 	 */
+	@Override
 	public boolean contains(ItemStack item) {
 		return first(item) >= 0;
 	}
 
 	/**
-	 * Check if the inventory contains any ItemStacks with the given materialId and at least the minimum amount specified
+	 * Check if the inventory contains any ItemStacks with the given materialId
+	 * and at least the minimum amount specified
 	 *
 	 * @param materialId The materialId to check for
 	 * @param amount The minimum amount to look for
 	 * @return If any ItemStacks were found
 	 */
+	@Override
 	public boolean contains(int materialId, int amount) {
 		HashMap<Integer, ? extends ItemStack> found = all(materialId);
 		int total = 0;
@@ -303,22 +331,26 @@ public class SpoutInventory implements Inventory {
 	}
 
 	/**
-	 * Check if the inventory contains any ItemStacks with the given material and at least the minimum amount specified
+	 * Check if the inventory contains any ItemStacks with the given material
+	 * and at least the minimum amount specified
 	 *
 	 * @param material The material to check for
 	 * @return If any ItemStacks were found
 	 */
+	@Override
 	public boolean contains(Material material, int amount) {
 		return contains(material.getId(), amount);
 	}
 
 	/**
-	 * Check if the inventory contains any ItemStacks matching the given ItemStack and at least the minimum amount specified
-	 * This will only match if both the type and the amount of the stack match
+	 * Check if the inventory contains any ItemStacks matching the given
+	 * ItemStack and at least the minimum amount specified This will only match
+	 * if both the type and the amount of the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return If any matching ItemStacks were found
 	 */
+	@Override
 	public boolean contains(ItemStack item, int amount) {
 		return contains(item.getTypeId(), amount);
 	}
@@ -326,11 +358,13 @@ public class SpoutInventory implements Inventory {
 	// All Family ////////////////
 
 	/**
-	 * Find all slots in the inventory containing any ItemStacks with the given materialId
+	 * Find all slots in the inventory containing any ItemStacks with the given
+	 * materialId
 	 *
 	 * @param materialId The materialId to look for
 	 * @return The Slots found.
 	 */
+	@Override
 	public HashMap<Integer, SpoutItemStack> all(int materialId) {
 		HashMap<Integer, SpoutItemStack> result = new HashMap<Integer, SpoutItemStack>();
 		for (int i = 0; i < slots.length; ++i) {
@@ -342,22 +376,26 @@ public class SpoutInventory implements Inventory {
 	}
 
 	/**
-	 * Find all slots in the inventory containing any ItemStacks with the given material
+	 * Find all slots in the inventory containing any ItemStacks with the given
+	 * material
 	 *
 	 * @param materialId The material to look for
 	 * @return The Slots found.
 	 */
+	@Override
 	public HashMap<Integer, SpoutItemStack> all(Material material) {
 		return all(material.getId());
 	}
 
 	/**
-	 * Find all slots in the inventory containing any ItemStacks with the given ItemStack
-	 * This will only match slots if both the type and the amount of the stack match
+	 * Find all slots in the inventory containing any ItemStacks with the given
+	 * ItemStack This will only match slots if both the type and the amount of
+	 * the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return The Slots found.
 	 */
+	@Override
 	public HashMap<Integer, SpoutItemStack> all(ItemStack item) {
 		HashMap<Integer, SpoutItemStack> result = new HashMap<Integer, SpoutItemStack>();
 		for (int i = 0; i < slots.length; ++i) {
@@ -371,38 +409,48 @@ public class SpoutInventory implements Inventory {
 	// First Family //////////////
 
 	/**
-	 * Find the first slot in the inventory containing an ItemStack with the given materialId
+	 * Find the first slot in the inventory containing an ItemStack with the
+	 * given materialId
 	 *
 	 * @param materialId The materialId to look for
 	 * @return The Slot found.
 	 */
+	@Override
 	public int first(int materialId) {
 		for (int i = 0; i < slots.length; ++i) {
-			if (slots[i] != null && slots[i].getTypeId() == materialId) return i;
+			if (slots[i] != null && slots[i].getTypeId() == materialId) {
+				return i;
+			}
 		}
 		return -1;
 	}
 
 	/**
-	 * Find the first slot in the inventory containing an ItemStack with the given material
+	 * Find the first slot in the inventory containing an ItemStack with the
+	 * given material
 	 *
 	 * @param materialId The material to look for
 	 * @return The Slot found.
 	 */
+	@Override
 	public int first(Material material) {
 		return first(material.getId());
 	}
 
 	/**
-	 * Find the first slot in the inventory containing an ItemStack with the given stack
-	 * This will only match a slot if both the type and the amount of the stack match
+	 * Find the first slot in the inventory containing an ItemStack with the
+	 * given stack This will only match a slot if both the type and the amount
+	 * of the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 * @return The Slot found.
 	 */
+	@Override
 	public int first(ItemStack item) {
 		for (int i = 0; i < slots.length; ++i) {
-			if (slots[i] != null && slots[i].equals(item)) return i;
+			if (slots[i] != null && slots[i].equals(item)) {
+				return i;
+			}
 		}
 		return -1;
 	}
@@ -412,9 +460,12 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @return The first empty Slot found.
 	 */
+	@Override
 	public int firstEmpty() {
 		for (int i = 0; i < slots.length; ++i) {
-			if (slots[i] == null) return i;
+			if (slots[i] == null) {
+				return i;
+			}
 		}
 		return -1;
 	}
@@ -426,6 +477,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @param materialId The material to remove
 	 */
+	@Override
 	public void remove(int materialId) {
 		HashMap<Integer, ? extends ItemStack> stacks = all(materialId);
 		for (Integer slot : stacks.keySet()) {
@@ -438,6 +490,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @param material The material to remove
 	 */
+	@Override
 	public void remove(Material material) {
 		HashMap<Integer, ? extends ItemStack> stacks = all(material);
 		for (Integer slot : stacks.keySet()) {
@@ -446,11 +499,12 @@ public class SpoutInventory implements Inventory {
 	}
 
 	/**
-	 * Remove all stacks in the inventory matching the given stack.
-	 * This will only match a slot if both the type and the amount of the stack match
+	 * Remove all stacks in the inventory matching the given stack. This will
+	 * only match a slot if both the type and the amount of the stack match
 	 *
 	 * @param item The ItemStack to match against
 	 */
+	@Override
 	public void remove(ItemStack item) {
 		HashMap<Integer, ? extends ItemStack> stacks = all(item);
 		for (Integer slot : stacks.keySet()) {
@@ -465,6 +519,7 @@ public class SpoutInventory implements Inventory {
 	 *
 	 * @param index The index to empty.
 	 */
+	@Override
 	public void clear(int index) {
 		setItem(index, null);
 	}
@@ -472,6 +527,7 @@ public class SpoutInventory implements Inventory {
 	/**
 	 * Clear out the whole index
 	 */
+	@Override
 	public void clear() {
 		for (int i = 0; i < slots.length; ++i) {
 			clear(i);

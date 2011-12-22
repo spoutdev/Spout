@@ -31,7 +31,9 @@ public final class SetWindowSlotsCodec extends MessageCodec<SetWindowSlotsMessag
 				Map<String, Tag> nbtData = null;
 				if (item > 255) {
 					ItemProperties props = ItemProperties.get(item);
-					if (props != null && props.hasNbtData()) ChannelBufferUtils.readCompound(buffer);
+					if (props != null && props.hasNbtData()) {
+						ChannelBufferUtils.readCompound(buffer);
+					}
 				}
 				items[slot] = new SpoutItemStack(item, itemCount, (short) damage, nbtData);
 			}
@@ -46,8 +48,7 @@ public final class SetWindowSlotsCodec extends MessageCodec<SetWindowSlotsMessag
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		buffer.writeByte(message.getId());
 		buffer.writeShort(items.length);
-		for (int slot = 0; slot < items.length; slot++) {
-			SpoutItemStack item = items[slot];
+		for (SpoutItemStack item : items) {
 			if (item == null) {
 				buffer.writeShort(-1);
 			} else {
@@ -56,7 +57,9 @@ public final class SetWindowSlotsCodec extends MessageCodec<SetWindowSlotsMessag
 				buffer.writeByte(item.getDurability());
 				if (item.getTypeId() > 255) {
 					ItemProperties props = ItemProperties.get(item.getTypeId());
-					if (props != null && props.hasNbtData()) ChannelBufferUtils.writeCompound(buffer, item.getNbtData());
+					if (props != null && props.hasNbtData()) {
+						ChannelBufferUtils.writeCompound(buffer, item.getNbtData());
+					}
 				}
 			}
 		}

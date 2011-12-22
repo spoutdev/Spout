@@ -31,7 +31,7 @@ public class DefaultBlockPhysics implements BlockPhysicsHandler {
 	@Override
 	public SpoutBlockState placeAgainst(SpoutPlayer player, SpoutBlockState block, MaterialData data, BlockFace against) {
 		block.setTypeId(data.getItemTypeId());
-		data.setData((byte)getPlacedMetadata(player, data.getData(), against));
+		data.setData((byte) getPlacedMetadata(player, data.getData(), against));
 		block.setData(data);
 		return block;
 	}

@@ -25,27 +25,43 @@ public class WhitelistCommand extends SpoutCommand {
 		} else {
 			String command = args[0].trim();
 			if (command.equalsIgnoreCase("on")) {
-				if (!checkPermission(sender, "enable")) return false;
+				if (!checkPermission(sender, "enable")) {
+					return false;
+				}
 				// Enable whitelist
-				if (!checkArgs(sender, args, 1)) return false;
+				if (!checkArgs(sender, args, 1)) {
+					return false;
+				}
 				server.setWhitelist(true);
 				return tellOps(sender, "Enabling whitelist");
 			} else if (command.equalsIgnoreCase("off")) {
-				if (!checkPermission(sender, "disable")) return false;
+				if (!checkPermission(sender, "disable")) {
+					return false;
+				}
 				// Disable whitelist
-				if (!checkArgs(sender, args, 1)) return false;
+				if (!checkArgs(sender, args, 1)) {
+					return false;
+				}
 				server.setWhitelist(false);
 				return tellOps(sender, "Disabling whitelist");
 			} else if (command.equalsIgnoreCase("")) {
-				if (!checkPermission(sender, "add")) return false;
+				if (!checkPermission(sender, "add")) {
+					return false;
+				}
 				// Add player to list
-				if (!checkArgs(sender, args, 2)) return false;
+				if (!checkArgs(sender, args, 2)) {
+					return false;
+				}
 				server.getWhitelist().add(args[1]);
 				return tellOps(sender, "Adding " + args[1] + " to whitelist");
 			} else if (command.equalsIgnoreCase("remove")) {
-				if (!checkPermission(sender, "remove")) return false;
+				if (!checkPermission(sender, "remove")) {
+					return false;
+				}
 				// Remove player from list
-				if (!checkArgs(sender, args, 2)) return false;
+				if (!checkArgs(sender, args, 2)) {
+					return false;
+				}
 				server.getWhitelist().add(args[1]);
 				return tellOps(sender, "Removing " + args[1] + " from whitelist");
 			} else {

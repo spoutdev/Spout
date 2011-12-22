@@ -41,12 +41,8 @@ public class UndergroundGenerator extends SpoutChunkGenerator {
 
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
-				int min = (int) (Math.abs(noiseFloor.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 3)
-						+ 5 + noiseJitter1.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 2
-						+ convertPointyThings(noiseStalagmite, x + chunkX, z + chunkZ, height));
-				int max = (int) (height - Math.abs(noiseCeiling.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 3)
-						- 5 + noiseJitter2.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 2 - random.nextInt(5)
-						- convertPointyThings(noiseStalactite, x + chunkX, z + chunkZ, height));
+				int min = (int) (Math.abs(noiseFloor.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 3) + 5 + noiseJitter1.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 2 + convertPointyThings(noiseStalagmite, x + chunkX, z + chunkZ, height));
+				int max = (int) (height - Math.abs(noiseCeiling.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 3) - 5 + noiseJitter2.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 2 - random.nextInt(5) - convertPointyThings(noiseStalactite, x + chunkX, z + chunkZ, height));
 
 				if (min > 20) {
 					min -= random.nextInt(5);
@@ -67,7 +63,7 @@ public class UndergroundGenerator extends SpoutChunkGenerator {
 					platform -= random.nextInt(3);
 				}
 				while (platform-- > 0) {
-					set(buf,world, x, height / 2 - platform - 1, z, stone);
+					set(buf, world, x, height / 2 - platform - 1, z, stone);
 				}
 
 				platform = (int) (noisePlatform2.noise(x + chunkX, z + chunkZ, 0.5, 0.5, true) * 30 - 6);

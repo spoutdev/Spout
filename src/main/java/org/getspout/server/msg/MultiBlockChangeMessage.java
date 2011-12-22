@@ -45,9 +45,6 @@ public final class MultiBlockChangeMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "MultiBlockChangeMessage{chunkX=" + chunkX + ",chunkZ=" + chunkZ +
-				",coordinates=" + Arrays.toString(coordinates) +
-				",types=" + Arrays.toString(types) +
-				",metadata=" + Arrays.toString(metadata) + "}";
+		return "MultiBlockChangeMessage{chunkX=" + chunkX + ",chunkZ=" + chunkZ + ",coordinates=" + Arrays.toString(coordinates) + ",types=" + Arrays.toString(types) + ",metadata=" + Arrays.toString(metadata) + "}";
 	}
 }

@@ -22,19 +22,15 @@ import org.getspout.server.generator.populators.TreePopulator;
  */
 public class SurfaceGenerator extends SpoutChunkGenerator {
 	public SurfaceGenerator() {
-		super(  // In-ground
-				new LakePopulator(),
-				// On-ground
-				// Desert is before tree and mushroom but snow is after so trees have snow on top
-				new DesertPopulator(),
-				new TreePopulator(),
-				new MushroomPopulator(),
-				new SnowPopulator(),
-				new FlowerPopulator(),
-				// Below-ground
-				new DungeonPopulator(),
-				//new CavePopulator(),
-				new OrePopulator());
+		super( // In-ground
+		new LakePopulator(),
+		// On-ground
+		// Desert is before tree and mushroom but snow is after so trees have snow on top
+		new DesertPopulator(), new TreePopulator(), new MushroomPopulator(), new SnowPopulator(), new FlowerPopulator(),
+		// Below-ground
+		new DungeonPopulator(),
+		//new CavePopulator(),
+		new OrePopulator());
 	}
 
 	@Override
@@ -65,11 +61,7 @@ public class SurfaceGenerator extends SpoutChunkGenerator {
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				int deep = 0;
-				for (int y = (int) Math.min(baseHeight
-						+ noiseHeight.noise(x + chunkX, z + chunkZ, 0.7, 0.6, true)
-						* terrainHeight
-						+ noiseJitter.noise(x + chunkX, z + chunkZ, 0.5, 0.5)
-						* 1.5, world.getMaxHeight() - 1); y > 0; y--) {
+				for (int y = (int) Math.min(baseHeight + noiseHeight.noise(x + chunkX, z + chunkZ, 0.7, 0.6, true) * terrainHeight + noiseJitter.noise(x + chunkX, z + chunkZ, 0.5, 0.5) * 1.5, world.getMaxHeight() - 1); y > 0; y--) {
 					double terrainType = noiseType.noise(x + chunkX, y, z + chunkZ, 0.5, 0.5);
 					int ground = matTop;
 					if (Math.abs(terrainType) < random.nextDouble() / 3 && !noDirt) {

@@ -10,6 +10,7 @@ import org.getspout.server.util.Position;
 
 /**
  * Represents a monster such as a creeper.
+ *
  * @author Graham Edgecombe
  */
 public abstract class SpoutCreature extends SpoutLivingEntity implements Creature {
@@ -25,6 +26,7 @@ public abstract class SpoutCreature extends SpoutLivingEntity implements Creatur
 
 	/**
 	 * Creates a new monster.
+	 *
 	 * @param world The world this monster is in.
 	 * @param type The type of monster.
 	 */
@@ -35,6 +37,7 @@ public abstract class SpoutCreature extends SpoutLivingEntity implements Creatur
 
 	/**
 	 * Gets the type of monster.
+	 *
 	 * @return The type of monster.
 	 */
 	public int getType() {
@@ -51,20 +54,24 @@ public abstract class SpoutCreature extends SpoutLivingEntity implements Creatur
 		return new SpawnMobMessage(id, type, x, y, z, yaw, pitch, metadata);
 	}
 
+	@Override
 	public void setTarget(LivingEntity target) {
 		this.target = target;
 	}
 
+	@Override
 	public LivingEntity getTarget() {
 		return target;
 	}
 
+	@Override
 	public int getMaxHealth() {
 		throw new UnsupportedOperationException("Not supported yet!");
 	}
 
 	/**
 	 * Gets the creature's age
+	 *
 	 * @return the creature's age
 	 */
 	public int getAge() {
@@ -73,6 +80,7 @@ public abstract class SpoutCreature extends SpoutLivingEntity implements Creatur
 
 	/**
 	 * Sets the creature's age
+	 *
 	 * @param age the creature's new age
 	 */
 	public void setAge(int age) {

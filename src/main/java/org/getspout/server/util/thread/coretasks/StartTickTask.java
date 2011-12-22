@@ -10,11 +10,11 @@ public class StartTickTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
 
 	private long t;
-	
+
 	public StartTickTask() {
 		t = 0;
 	}
-	
+
 	public StartTickTask(long ticks) {
 		t = ticks;
 	}

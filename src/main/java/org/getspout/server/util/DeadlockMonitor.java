@@ -5,10 +5,11 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
 public class DeadlockMonitor extends Thread {
+	@Override
 	public void run() {
 
 		boolean dead = false;
-		while(!dead && !interrupted()) {
+		while (!dead && !interrupted()) {
 			try {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {

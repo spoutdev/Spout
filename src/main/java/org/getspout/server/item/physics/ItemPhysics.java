@@ -12,6 +12,7 @@ public interface ItemPhysics {
 
 	/**
 	 * Returns the block ID that should be placed for this block
+	 *
 	 * @param data The data of the item being placed
 	 * @return -1 to not place anything
 	 */
@@ -19,6 +20,7 @@ public interface ItemPhysics {
 
 	/**
 	 * Perform an action when interacting while having an item in hand.
+	 *
 	 * @param interactingPlayer The player interacting with this item
 	 * @param clicked The block being clicked in this action. May be null.
 	 * @param type The type of this interaction

@@ -5,7 +5,7 @@ import org.bukkit.inventory.Inventory;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 
-public class SpoutStorageMinecart extends SpoutMinecart implements StorageMinecart{
+public class SpoutStorageMinecart extends SpoutMinecart implements StorageMinecart {
 	/**
 	 * Creates an entity and adds it to the specified world.
 	 *
@@ -15,6 +15,7 @@ public class SpoutStorageMinecart extends SpoutMinecart implements StorageMineca
 		super(server, world, 11);
 	}
 
+	@Override
 	public Inventory getInventory() {
 		throw new UnsupportedOperationException("Not supported yet!");
 	}

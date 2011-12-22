@@ -9,10 +9,12 @@ import java.util.logging.Level;
 
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
+
 import org.getspout.server.io.ChunkIoService;
 
 /**
  * A class which manages the {@link SpoutChunk}s currently loaded in memory.
+ *
  * @author Graham Edgecombe
  */
 public final class ChunkManager {
@@ -50,6 +52,7 @@ public final class ChunkManager {
 	/**
 	 * Creates a new chunk manager with the specified I/O service and world
 	 * generator.
+	 *
 	 * @param service The I/O service.
 	 * @param generator The world generator.
 	 */
@@ -62,6 +65,7 @@ public final class ChunkManager {
 	/**
 	 * Gets the chunk at the specified X and Z coordinates, loading it from the
 	 * disk or generating it if necessary.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @return The chunk.
@@ -78,6 +82,7 @@ public final class ChunkManager {
 
 	/**
 	 * Call the ChunkIoService to load a chunk, optionally generating the chunk.
+	 *
 	 * @param x The X coordinate of the chunk to load.
 	 * @param z The Y coordinate of the chunk to load.
 	 * @param generate Whether to generate the chunk if needed.
@@ -88,20 +93,19 @@ public final class ChunkManager {
 		try {
 			success = service.read(getChunk(x, z), x, z);
 		} catch (Exception e) {
-			SpoutServer.logger.log(Level.SEVERE, "Error while loading chunk ({0},{1})", new Object[]{x, z});
+			SpoutServer.logger.log(Level.SEVERE, "Error while loading chunk ({0},{1})", new Object[] {x, z});
 			e.printStackTrace();
 			success = false;
 		}
 		EventFactory.onChunkLoad(getChunk(x, z), !success);
 		if (!success && generate) {
-			chunkRandom.setSeed((long) x * 341873128712L + (long) z * 132897987541L);
+			chunkRandom.setSeed(x * 341873128712L + z * 132897987541L);
 
 			SpoutChunk chunk = getChunk(x, z);
 			try {
 				chunk.initializeTypes(generator.generate(world, chunkRandom, x, z));
-			}
-			catch (Exception ex) {
-				SpoutServer.logger.log(Level.SEVERE, "Error while generating chunk ({0},{1})", new Object[]{x, z});
+			} catch (Exception ex) {
+				SpoutServer.logger.log(Level.SEVERE, "Error while generating chunk ({0},{1})", new Object[] {x, z});
 				ex.printStackTrace();
 				return false;
 			}
@@ -115,7 +119,7 @@ public final class ChunkManager {
 						popRandom.setSeed(world.getSeed());
 						long xRand = popRandom.nextLong() / 2 * 2 + 1;
 						long zRand = popRandom.nextLong() / 2 * 2 + 1;
-						popRandom.setSeed((long) x * xRand + (long) z * zRand ^ world.getSeed());
+						popRandom.setSeed(x * xRand + z * zRand ^ world.getSeed());
 
 						for (BlockPopulator p : world.getPopulators()) {
 							p.populate(world, popRandom, chunk2);
@@ -132,11 +136,14 @@ public final class ChunkManager {
 
 	/**
 	 * Checks whether the given chunk can be populated by map features.
+	 *
 	 * @return Whether population is needed and safe.
 	 */
 	private boolean canPopulate(int x, int z) {
 		if (isLoaded(x, z)) {
-			if (getChunk(x, z).getPopulated()) return false;
+			if (getChunk(x, z).getPopulated()) {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -152,6 +159,7 @@ public final class ChunkManager {
 
 	/**
 	 * Forces generation of the given chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @return Whether the chunk was successfully regenerated.
@@ -164,7 +172,7 @@ public final class ChunkManager {
 			return false;
 		}
 
-		chunkRandom.setSeed((long) x * 341873128712L + (long) z * 132897987541L);
+		chunkRandom.setSeed(x * 341873128712L + z * 132897987541L);
 		chunk.initializeTypes(generator.generate(world, chunkRandom, x, z));
 
 		if (canPopulate(x, z)) {
@@ -180,6 +188,7 @@ public final class ChunkManager {
 
 	/**
 	 * Checks whether the given Chunk is loaded.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @return Whether the chunk was loaded.
@@ -191,6 +200,7 @@ public final class ChunkManager {
 
 	/**
 	 * Gets a list of loaded chunks.
+	 *
 	 * @return The currently loaded chunks.
 	 */
 	public SpoutChunk[] getLoadedChunks() {
@@ -205,6 +215,7 @@ public final class ChunkManager {
 
 	/**
 	 * Force-saves the given chunk.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 */

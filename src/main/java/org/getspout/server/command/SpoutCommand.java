@@ -27,7 +27,9 @@ public abstract class SpoutCommand extends Command {
 
 	@Override
 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-		if (!testPermission(sender)) return false;
+		if (!testPermission(sender)) {
+			return false;
+		}
 		run(sender, commandLabel, args);
 		return true;
 	}

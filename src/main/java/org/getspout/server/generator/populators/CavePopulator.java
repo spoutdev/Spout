@@ -7,37 +7,12 @@ import java.util.Set;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
-import org.getspout.server.block.BlockID;
 
 /**
  * BlockPopulator for snake-based caves.
  */
 public class CavePopulator extends BlockPopulator {
-	private static class FinishSnakeTask implements Runnable {
-
-		private final Location[] snake;
-
-		public FinishSnakeTask(Set<Location> snake) {
-			this.snake = snake.toArray(new Location[snake.size()]);
-		}
-
-		@Override
-		public void run() {
-			for (Location loc : snake) {
-				Block block = loc.getBlock();
-				if (!block.isEmpty() && !block.isLiquid() && block.getTypeId() != BlockID.BEDROCK) {
-					block.setTypeId(BlockID.AIR);
-				}
-			}
-
-			for (Location loc : snake) {
-				loc.getWorld().unloadChunkRequest(loc.getBlockX() / 16, loc.getBlockZ() / 16);
-			}
-		}
-	}
-
 	@Override
 	public void populate(final World world, final Random random, Chunk source) {
 		if (random.nextInt(100) < 10) {
@@ -53,16 +28,13 @@ public class CavePopulator extends BlockPopulator {
 
 				@Override
 				public void run() {
-					Set<Location> snake = startSnake(world, random, x, y, z);
-					// Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(GenPlugin.instance, new FinishSnake(world, snake));
+					startSnake(world, random, x, y, z);
 
 					if (random.nextInt(16) > 5) {
 						if (y > 36) {
-							snake = startSnake(world, random, x, y / 2, z);
-							// Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(GenPlugin.instance, new FinishSnake(world, snake));
+							startSnake(world, random, x, y / 2, z);
 						} else if (y < 24) {
-							snake = startSnake(world, random, x, y * 2, z);
-							// Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(GenPlugin.instance, new FinishSnake(world, snake));
+							startSnake(world, random, x, y * 2, z);
 						}
 					}
 				}

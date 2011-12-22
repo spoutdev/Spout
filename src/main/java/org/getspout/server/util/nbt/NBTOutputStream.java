@@ -11,9 +11,10 @@ import java.util.zip.GZIPOutputStream;
  * This class writes NBT, or Named Binary Tag, {@link Tag} objects to an
  * underlying {@link OutputStream}.
  * <p />
- * The NBT format was created by Markus Persson, and the specification may
- * be found at <a href="http://www.minecraft.net/docs/NBT.txt">
+ * The NBT format was created by Markus Persson, and the specification may be
+ * found at <a href="http://www.minecraft.net/docs/NBT.txt">
  * http://www.minecraft.net/docs/NBT.txt</a>.
+ *
  * @author Graham Edgecombe
  */
 public final class NBTOutputStream implements Closeable {
@@ -24,8 +25,9 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Creates a new {@link NBTOutputStream}, which will write data to the
-	 * specified underlying output stream. This assumes the output stream
-	 * should be compressed with GZIP.
+	 * specified underlying output stream. This assumes the output stream should
+	 * be compressed with GZIP.
+	 *
 	 * @param os The output stream.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -35,8 +37,9 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Creates a new {@link NBTOutputStream}, which will write data to the
-	 * specified underlying output stream. A flag indicates if the output
-	 * should be compressed with GZIP or not.
+	 * specified underlying output stream. A flag indicates if the output should
+	 * be compressed with GZIP or not.
+	 *
 	 * @param os The output stream.
 	 * @param boolean A flag that indicates if the output should be compressed.
 	 * @throws IOException if an I/O error occurs.
@@ -47,6 +50,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a tag.
+	 *
 	 * @param tag The tag to write.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -68,63 +72,65 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes tag payload.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeTagPayload(Tag tag) throws IOException {
 		int type = NBTUtils.getTypeCode(tag.getClass());
 		switch (type) {
-		case NBTConstants.TYPE_END:
-			writeEndTagPayload((EndTag) tag);
-			break;
+			case NBTConstants.TYPE_END:
+				writeEndTagPayload((EndTag) tag);
+				break;
 
-		case NBTConstants.TYPE_BYTE:
-			writeByteTagPayload((ByteTag) tag);
-			break;
+			case NBTConstants.TYPE_BYTE:
+				writeByteTagPayload((ByteTag) tag);
+				break;
 
-		case NBTConstants.TYPE_SHORT:
-			writeShortTagPayload((ShortTag) tag);
-			break;
+			case NBTConstants.TYPE_SHORT:
+				writeShortTagPayload((ShortTag) tag);
+				break;
 
-		case NBTConstants.TYPE_INT:
-			writeIntTagPayload((IntTag) tag);
-			break;
+			case NBTConstants.TYPE_INT:
+				writeIntTagPayload((IntTag) tag);
+				break;
 
-		case NBTConstants.TYPE_LONG:
-			writeLongTagPayload((LongTag) tag);
-			break;
+			case NBTConstants.TYPE_LONG:
+				writeLongTagPayload((LongTag) tag);
+				break;
 
-		case NBTConstants.TYPE_FLOAT:
-			writeFloatTagPayload((FloatTag) tag);
-			break;
+			case NBTConstants.TYPE_FLOAT:
+				writeFloatTagPayload((FloatTag) tag);
+				break;
 
-		case NBTConstants.TYPE_DOUBLE:
-			writeDoubleTagPayload((DoubleTag) tag);
-			break;
+			case NBTConstants.TYPE_DOUBLE:
+				writeDoubleTagPayload((DoubleTag) tag);
+				break;
 
-		case NBTConstants.TYPE_BYTE_ARRAY:
-			writeByteArrayTagPayload((ByteArrayTag) tag);
-			break;
+			case NBTConstants.TYPE_BYTE_ARRAY:
+				writeByteArrayTagPayload((ByteArrayTag) tag);
+				break;
 
-		case NBTConstants.TYPE_STRING:
-			writeStringTagPayload((StringTag) tag);
-			break;
+			case NBTConstants.TYPE_STRING:
+				writeStringTagPayload((StringTag) tag);
+				break;
 
-		case NBTConstants.TYPE_LIST:
-			writeListTagPayload((ListTag<?>) tag);
-			break;
+			case NBTConstants.TYPE_LIST:
+				writeListTagPayload((ListTag<?>) tag);
+				break;
 
-		case NBTConstants.TYPE_COMPOUND:
-			writeCompoundTagPayload((CompoundTag) tag);
-			break;
+			case NBTConstants.TYPE_COMPOUND:
+				writeCompoundTagPayload((CompoundTag) tag);
+				break;
 
-		default:
-			throw new IOException("Invalid tag type: " + type + ".");
+			default:
+				throw new IOException("Invalid tag type: " + type + ".");
 		}
 	}
 
 	/**
 	 * Writes a {@code TAG_Byte} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -134,6 +140,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Byte_Array} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -145,6 +152,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Compound} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -157,6 +165,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_List} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -175,6 +184,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_String} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -186,6 +196,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Double} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -195,6 +206,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Float} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -204,6 +216,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Long} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -213,6 +226,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Int} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -222,6 +236,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Short} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */
@@ -231,6 +246,7 @@ public final class NBTOutputStream implements Closeable {
 
 	/**
 	 * Writes a {@code TAG_Empty} tag.
+	 *
 	 * @param tag The tag.
 	 * @throws IOException if an I/O error occurs.
 	 */

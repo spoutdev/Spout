@@ -21,18 +21,18 @@ public class Door extends ToggleableAttachable {
 	public BlockFace getAttachedFace(int existing) {
 		int data = existing & 0x3;
 		switch (data) {
-		case 0:
-		default:
-			return BlockFace.NORTH;
+			case 0:
+			default:
+				return BlockFace.NORTH;
 
-		case 1:
-			return BlockFace.EAST;
+			case 1:
+				return BlockFace.EAST;
 
-		case 2:
-			return BlockFace.SOUTH;
+			case 2:
+				return BlockFace.SOUTH;
 
-		case 3:
-			return BlockFace.WEST;
+			case 3:
+				return BlockFace.WEST;
 		}
 	}
 
@@ -40,17 +40,17 @@ public class Door extends ToggleableAttachable {
 	public int setAttachedFace(int existing, BlockFace target) {
 		int data = existing & 0x12;
 		switch (target) {
-		case EAST:
-			data |= 0x1;
-			break;
+			case EAST:
+				data |= 0x1;
+				break;
 
-		case SOUTH:
-			data |= 0x2;
-			break;
+			case SOUTH:
+				data |= 0x2;
+				break;
 
-		case WEST:
-			data |= 0x3;
-			break;
+			case WEST:
+				data |= 0x3;
+				break;
 		}
 		return data;
 	}

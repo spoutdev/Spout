@@ -12,10 +12,10 @@ import org.getspout.server.item.ItemID;
 
 public class SpoutSquid extends SpoutWaterMob implements Squid {
 	/**
-	 * Creates a new monster.
+	 * Creates a new squid.
 	 *
-	 * @param world The world this monster is in.
-	 * @param server The server this entity is part of
+	 * @param server This server this squid is on.
+	 * @param world The world this squid is in.
 	 */
 	public SpoutSquid(SpoutServer server, SpoutWorld world) {
 		super(server, world, 94);

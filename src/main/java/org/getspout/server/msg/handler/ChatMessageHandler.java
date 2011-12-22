@@ -7,8 +7,9 @@ import org.getspout.server.net.Session;
 public final class ChatMessageHandler extends MessageHandler<ChatMessage> {
 	@Override
 	public void handle(Session session, SpoutPlayer player, ChatMessage message) {
-		if (player == null)
+		if (player == null) {
 			return;
+		}
 
 		String text = message.getMessage();
 		text = text.trim();

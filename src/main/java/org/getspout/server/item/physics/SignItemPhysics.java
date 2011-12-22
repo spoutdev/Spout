@@ -10,8 +10,9 @@ public class SignItemPhysics extends DefaultItemPhysics {
 		super(ItemID.SIGN);
 	}
 
+	@Override
 	public MaterialData getPlacedBlock(BlockFace against, int data) {
-		if (against == BlockFace.UP)  {
+		if (against == BlockFace.UP) {
 			return new MaterialData(BlockID.SIGN_POST);
 		} else {
 			return new MaterialData(BlockID.WALL_SIGN);

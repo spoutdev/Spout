@@ -8,8 +8,9 @@ import org.getspout.server.net.Session;
 public final class RotationMessageHandler extends MessageHandler<RotationMessage> {
 	@Override
 	public void handle(Session session, SpoutPlayer player, RotationMessage message) {
-		if (player == null)
+		if (player == null) {
 			return;
+		}
 
 		Location loc = player.getLocation();
 		loc.setYaw(message.getRotation());

@@ -15,7 +15,7 @@ public class SpoutPrimedTNT extends SpoutExplosive implements TNTPrimed {
 	 * Creates an entity and adds it to the specified world.
 	 *
 	 * @param server The server.
-	 * @param world  The world.
+	 * @param world The world.
 	 */
 	public SpoutPrimedTNT(SpoutServer server, SpoutWorld world) {
 		super(server, world, 50);
@@ -26,10 +26,12 @@ public class SpoutPrimedTNT extends SpoutExplosive implements TNTPrimed {
 		return null;
 	}
 
+	@Override
 	public void setFuseTicks(int fuseTicks) {
 		this.fuseTicks = fuseTicks;
 	}
 
+	@Override
 	public int getFuseTicks() {
 		return fuseTicks;
 	}

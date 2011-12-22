@@ -68,6 +68,7 @@ import org.getspout.server.util.TextWrapper;
 
 /**
  * Represents an in-game player.
+ *
  * @author Graham Edgecombe
  */
 @DelegateDeserialization(SpoutOfflinePlayer.class)
@@ -153,15 +154,9 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	private boolean dispNameAsEntityName = false;
 
 	/**
-	 * The bed spawn location of a player
-	 */
-	private Location bedSpawn;
-
-	/**
 	 * The name a player has in the player list
 	 */
 	private String playerListName;
-
 
 	/**
 	 * Whether the player is sprinting
@@ -176,6 +171,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Creates a new player and adds it to the world.
+	 *
 	 * @param session The player's session.
 	 * @param name The player's name.
 	 */
@@ -188,7 +184,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 		streamBlocks(); // stream the initial set of blocks
 		setCompassTarget(world.getSpawnLocation()); // set our compass target
-		session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2), (byte)0)); // send the world's weather
+		session.send(new StateChangeMessage((byte) (getWorld().hasStorm() ? 1 : 2), (byte) 0)); // send the world's weather
 
 		getInventory().addViewer(this);
 		getInventory().getCraftingInventory().addViewer(this);
@@ -214,14 +210,15 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 		streamBlocks();
 
-		for (Iterator<SpoutEntity> it = knownEntities.iterator(); it.hasNext(); ) {
+		for (Iterator<SpoutEntity> it = knownEntities.iterator(); it.hasNext();) {
 			SpoutEntity entity = it.next();
 			boolean withinDistance = !entity.isDead() && isWithinDistance(entity);
 
 			if (withinDistance) {
 				Message msg = entity.createUpdateMessage();
-				if (msg != null)
+				if (msg != null) {
 					session.send(msg);
+				}
 			} else {
 				session.send(new DestroyEntityMessage(entity.getEntityId()));
 				it.remove();
@@ -229,8 +226,9 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 
 		for (SpoutEntity entity : world.getEntityManager()) {
-			if (entity == this)
+			if (entity == this) {
 				continue;
+			}
 			boolean withinDistance = !entity.isDead() && isWithinDistance(entity);
 
 			if (withinDistance && !knownEntities.contains(entity)) {
@@ -247,12 +245,12 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		Set<SpoutChunk.Key> previousChunks = new HashSet<SpoutChunk.Key>(knownChunks);
 		ArrayList<SpoutChunk.Key> newChunks = new ArrayList<SpoutChunk.Key>();
 
-		int centralX = ((int) location.getX()) >> 4;
-		int centralZ = ((int) location.getZ()) >> 4;
+		int centralX = (int) location.getX() >> 4;
+		int centralZ = (int) location.getZ() >> 4;
 
 		int radius = server.getViewDistance();
-		for (int x = (centralX - radius); x <= (centralX + radius); x++) {
-			for (int z = (centralZ - radius); z <= (centralZ + radius); z++) {
+		for (int x = centralX - radius; x <= centralX + radius; x++) {
+			for (int z = centralZ - radius; z <= centralZ + radius; z++) {
 				SpoutChunk.Key key = new SpoutChunk.Key(x, z);
 				if (!knownChunks.contains(key)) {
 					knownChunks.add(key);
@@ -263,6 +261,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 
 		Collections.sort(newChunks, new Comparator<SpoutChunk.Key>() {
+			@Override
 			public int compare(SpoutChunk.Key a, SpoutChunk.Key b) {
 				double dx = 16 * a.getX() + 8 - location.getX();
 				double dz = 16 * a.getZ() + 8 - location.getZ();
@@ -292,6 +291,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Checks whether the player can see the given chunk.
+	 *
 	 * @return If the chunk is known to the player's client.
 	 */
 	public boolean canSee(SpoutChunk.Key chunk) {
@@ -300,6 +300,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Checks whether the player can see the given entity.
+	 *
 	 * @return If the entity is known to the player's client.
 	 */
 	public boolean canSee(SpoutEntity entity) {
@@ -310,40 +311,49 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Gets the session.
+	 *
 	 * @return The session.
 	 */
 	public Session getSession() {
 		return session;
 	}
 
+	@Override
 	public boolean isOnline() {
 		return true;
 	}
 
+	@Override
 	public boolean isBanned() {
 		return server.getBanManager().isBanned(getName());
 	}
 
+	@Override
 	public void setBanned(boolean banned) {
 		server.getBanManager().setBanned(getName(), banned);
 	}
 
+	@Override
 	public boolean isWhitelisted() {
 		return !server.hasWhitelist() || server.getWhitelist().contains(getName());
 	}
 
+	@Override
 	public boolean hasPlayedBefore() {
 		return getWorld().getMetadataService().hasDataFor(this);
 	}
 
+	@Override
 	public long getLastPlayed() {
 		throw new UnsupportedOperationException("not suppored yet");
 	}
 
+	@Override
 	public long getFirstPlayed() {
 		throw new UnsupportedOperationException("not suppored yet");
 	}
 
+	@Override
 	public void setWhitelisted(boolean value) {
 		if (value) {
 			server.getWhitelist().add(getName());
@@ -352,10 +362,12 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 	}
 
+	@Override
 	public Player getPlayer() {
 		return this;
 	}
 
+	@Override
 	public InetSocketAddress getAddress() {
 		return session.getAddress();
 	}
@@ -377,51 +389,63 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	// -- Malleable properties
 
+	@Override
 	public String getDisplayName() {
 		return displayName == null ? getName() : displayName;
 	}
 
+	@Override
 	public void setDisplayName(String name) {
 		displayName = name;
 	}
 
+	@Override
 	public String getPlayerListName() {
 		return playerListName == null || "".equals(playerListName) ? getName() : playerListName;
 	}
 
+	@Override
 	public void setPlayerListName(String name) {
-		if (name.length() > 15) throw new IllegalArgumentException("The given name was " + name.length() + " chars long, longer than the maximum of 16");
-		for (Player player : server.getOnlinePlayers()) {
-			if (player.getPlayerListName().equals(getPlayerListName())) throw new IllegalArgumentException("The name given, " + name + ", is already used by " + player.getName() + ".");
+		if (name.length() > 15) {
+			throw new IllegalArgumentException("The given name was " + name.length() + " chars long, longer than the maximum of 16");
 		}
-		Message removeMessage = new UserListItemMessage(getPlayerListName(), false, (short)0);
+		for (Player player : server.getOnlinePlayers()) {
+			if (player.getPlayerListName().equals(getPlayerListName())) {
+				throw new IllegalArgumentException("The name given, " + name + ", is already used by " + player.getName() + ".");
+			}
+		}
+		Message removeMessage = new UserListItemMessage(getPlayerListName(), false, (short) 0);
 		playerListName = name;
-		Message reAddMessage = new UserListItemMessage(getPlayerListName(), true, (short)0);
+		Message reAddMessage = new UserListItemMessage(getPlayerListName(), true, (short) 0);
 		for (Player player : server.getOnlinePlayers()) {
 			((SpoutPlayer) player).getSession().send(removeMessage);
 			((SpoutPlayer) player).getSession().send(reAddMessage);
 		}
 	}
 
+	@Override
 	public Location getCompassTarget() {
 		return compassTarget;
 	}
 
+	@Override
 	public void setCompassTarget(Location loc) {
 		compassTarget = loc;
 		session.send(new SpawnPositionMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
 	}
 
+	@Override
 	public boolean isSneaking() {
 		return sneaking;
 	}
 
+	@Override
 	public void setSneaking(boolean sneak) {
 		if (EventFactory.onPlayerToggleSneak(this, sneak).isCancelled()) {
 			return;
 		}
-		this.sneaking = sneak;
-		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 0, (byte) (this.sneaking ? 0x02: 0)));
+		sneaking = sneak;
+		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 0, (byte) (sneaking ? 0x02 : 0)));
 		// FIXME: other bits in the bitmask would be wiped out
 		EntityMetadataMessage message = new EntityMetadataMessage(id, metadata);
 		for (Player player : world.getPlayers()) {
@@ -431,19 +455,23 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 	}
 
+	@Override
 	public boolean isSprinting() {
 		return isSprinting;
 	}
 
+	@Override
 	public void setSprinting(boolean sprinting) {
-		this.isSprinting = sprinting;
+		isSprinting = sprinting;
 		setMetadataFlag(0, 0x03, sprinting);
 	}
 
+	@Override
 	public boolean isSleepingIgnored() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setSleepingIgnored(boolean isSleeping) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -452,21 +480,27 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	public void setGameMode(GameMode mode) {
 		boolean changed = getGameMode() != mode;
 		super.setGameMode(mode);
-		if (changed) session.send(new StateChangeMessage((byte) 3, (byte) mode.getValue())); // The gamemode changed message is clientside (NOTCH!!!!!!!), so don't annoy users unnecessarily.
+		if (changed) {
+			session.send(new StateChangeMessage((byte) 3, (byte) mode.getValue())); // The gamemode changed message is clientside (NOTCH!!!!!!!), so don't annoy users unnecessarily.
+		}
 	}
 
+	@Override
 	public int getExperience() {
 		return experience % ((getLevel() + 1) * 7);
 	}
 
+	@Override
 	public void setExperience(int exp) {
 		setTotalExperience(experience - getExperience() + exp);
 	}
 
+	@Override
 	public int getLevel() {
 		return level;
 	}
 
+	@Override
 	public void setLevel(int level) {
 		int calcExperience = getExperience();
 		this.level = level;
@@ -477,25 +511,31 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		session.send(createExperienceMessage());
 	}
 
+	@Override
 	public int getTotalExperience() {
 		return experience;
 	}
 
+	@Override
 	public void setTotalExperience(int exp) {
 		int calcExperience = exp;
-		this.experience = exp;
+		experience = exp;
 		level = 0;
-		while ((calcExperience -= (getLevel() + 1) * 7) > 0) ++level;
+		while ((calcExperience -= (getLevel() + 1) * 7) > 0) {
+			++level;
+		}
 		session.send(createExperienceMessage());
 	}
 
 	/**
 	 * Add xp to Player.
+	 *
 	 * @param xp to add
 	 */
+	@Override
 	public void giveExp(int xp) {
 		experience += xp;
-		while (experience > (getLevel() + 1) * 7){
+		while (experience > (getLevel() + 1) * 7) {
 			experience -= (getLevel() + 1) * 7;
 			++level;
 		}
@@ -504,37 +544,44 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Get the percent to level for player.
+	 *
 	 * @return value between 0 and 1: percent to next level.
 	 */
+	@Override
 	public float getExp() {
 		float xpToLevel = (getLevel() + 1) * 7;
-		return (float)experience/xpToLevel;
+		return experience / xpToLevel;
 	}
 
 	/**
-	 * Set the experience progress to next level.
-	 * 0 sets to current level, 1 is next level
-	 * Values greater than 1 or less that 0 are undefined.
-	 * TODO Test boundary conditions.
+	 * Set the experience progress to next level. 0 sets to current level, 1 is
+	 * next level Values greater than 1 or less that 0 are undefined. TODO Test
+	 * boundary conditions.
+	 *
 	 * @param percentToLevel
 	 */
+	@Override
 	public void setExp(float percentToLevel) {
 		float xpToLevel = (getLevel() + 1) * 7;
-		experience = (int)(percentToLevel * xpToLevel);
+		experience = (int) (percentToLevel * xpToLevel);
 	}
 
+	@Override
 	public float getExhaustion() {
 		return exhaustion;
 	}
 
+	@Override
 	public void setExhaustion(float value) {
 		exhaustion = value;
 	}
 
+	@Override
 	public float getSaturation() {
 		return saturation;
 	}
 
+	@Override
 	public void setSaturation(float value) {
 		saturation = value;
 		session.send(createHealthMessage());
@@ -544,6 +591,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Teleport the player.
+	 *
 	 * @param location The destination to teleport to.
 	 * @return Whether the teleport was a success.
 	 */
@@ -556,7 +604,9 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	public boolean teleport(Location location, TeleportCause cause) {
 		if (this.location != null && this.location.getWorld() != null) {
 			PlayerTeleportEvent event = EventFactory.onPlayerTeleport(this, getLocation(), location, cause);
-			if (event.isCancelled()) return false;
+			if (event.isCancelled()) {
+				return false;
+			}
 			location = event.getTo();
 		}
 		if (location.getWorld() != world) {
@@ -571,17 +621,17 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 			}
 			knownChunks.clear();
 
-			session.send(new RespawnMessage((byte) world.getEnvironment().getId(), (byte)1, (byte) getGameMode().getValue(), world.getMaxHeight(), world.getSeed()));
+			session.send(new RespawnMessage((byte) world.getEnvironment().getId(), (byte) 1, (byte) getGameMode().getValue(), world.getMaxHeight(), world.getSeed()));
 			streamBlocks(); // stream blocks
 
 			setCompassTarget(world.getSpawnLocation()); // set our compass target
-			this.session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), location.getYaw(), location.getPitch(), true));
+			session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), location.getYaw(), location.getPitch(), true));
 			this.location = location; // take us to spawn position
-			session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2), (byte)0)); // send the world's weather
+			session.send(new StateChangeMessage((byte) (getWorld().hasStorm() ? 1 : 2), (byte) 0)); // send the world's weather
 			reset();
 			EventFactory.onPlayerChangedWorld(this, oldWorld);
 		} else {
-			this.session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), location.getYaw(), location.getPitch(), true));
+			session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), location.getYaw(), location.getPitch(), true));
 			this.location = location;
 			reset();
 		}
@@ -594,20 +644,24 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		return new ArrayList<ItemStack>(Arrays.asList(getInventory().getContents()));
 	}
 
+	@Override
 	public void sendMessage(String message) {
 		for (String line : TextWrapper.wrapText(message)) {
 			sendRawMessage(line);
 		}
 	}
 
+	@Override
 	public void sendRawMessage(String message) {
 		session.send(new ChatMessage(message.length() <= 119 ? message : message.substring(0, 119)));
 	}
 
+	@Override
 	public void kickPlayer(String message) {
 		session.disconnect(message == null ? "" : message);
 	}
 
+	@Override
 	public boolean performCommand(String command) {
 		return getServer().dispatchCommand(this, command);
 	}
@@ -617,6 +671,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 *
 	 * @param text message to print
 	 */
+	@Override
 	public void chat(String text) {
 		if (text.startsWith("/")) {
 			try {
@@ -651,6 +706,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 	}
 
+	@Override
 	public void saveData() {
 		saveData(true);
 	}
@@ -680,6 +736,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 					return "player-data-save";
 				}
 
+				@Override
 				public void run() {
 					dataWorld.getMetadataService().writePlayerData(player);
 				}
@@ -689,56 +746,68 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		}
 	}
 
+	@Override
 	public void loadData() {
 
-		SpoutWorld dataWorld = (SpoutWorld)server.getWorlds().get(0);
+		SpoutWorld dataWorld = (SpoutWorld) server.getWorlds().get(0);
 		dataWorld.getMetadataService().readPlayerData(this);
 	}
 
 	// -- Data transmission
 
+	@Override
 	public void playNote(Location loc, Instrument instrument, Note note) {
 		playNote(loc, instrument.getType(), note.getId());
 	}
 
+	@Override
 	public void playNote(Location loc, byte instrument, byte note) {
 		session.send(new PlayNoteMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), instrument, note));
 	}
 
+	@Override
 	public void playEffect(Location loc, Effect effect, int data) {
 		session.send(new PlayEffectMessage(effect.getId(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), data));
 	}
 
+	@Override
 	public void sendBlockChange(Location loc, Material material, byte data) {
 		sendBlockChange(loc, material.getId(), data);
 	}
 
+	@Override
 	public void sendBlockChange(Location loc, int material, byte data) {
 		session.send(new BlockChangeMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), material, data));
 	}
 
+	@Override
 	public boolean sendChunkChange(Location loc, int sx, int sy, int sz, byte[] data) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// -- Achievements & Statistics [mostly borrowed from CraftBukkit]
 
+	@Override
 	public void awardAchievement(Achievement achievement) {
 		sendStatistic(achievement.getId(), 1);
 	}
 
+	@Override
 	public void incrementStatistic(Statistic statistic) {
 		incrementStatistic(statistic, 1);
 	}
 
+	@Override
 	public void incrementStatistic(Statistic statistic, int amount) {
 		sendStatistic(statistic.getId(), amount);
 	}
 
+	@Override
 	public void incrementStatistic(Statistic statistic, Material material) {
 		incrementStatistic(statistic, material, 1);
 	}
 
+	@Override
 	public void incrementStatistic(Statistic statistic, Material material, int amount) {
 		if (!statistic.isSubstatistic()) {
 			throw new IllegalArgumentException("Given statistic is not a substatistic");
@@ -769,12 +838,15 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	// -- Inventory
 
+	@Override
 	public void updateInventory() {
 		getInventory().setContents(getInventory().getContents());
 	}
 
 	/**
-	 * Get the current item on the player's cursor, for inventory screen purposes.
+	 * Get the current item on the player's cursor, for inventory screen
+	 * purposes.
+	 *
 	 * @return The ItemStack the player is holding.
 	 */
 	public ItemStack getItemOnCursor() {
@@ -797,10 +869,12 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Inform the client that an item has changed.
+	 *
 	 * @param inventory The SpoutInventory in which a slot has changed.
 	 * @param slot The slot number which has changed.
 	 * @param item The ItemStack which the slot has changed to.
 	 */
+	@Override
 	public void onSlotSet(SpoutInventory inventory, int slot, SpoutItemStack item) {
 		if (inventory == getInventory()) {
 			int type = item == null ? -1 : item.getTypeId();
@@ -839,20 +913,27 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	// -- Goofy relative time stuff --
 
 	/**
-	 * Sets the current time on the player's client. When relative is true the player's time
-	 * will be kept synchronized to its world time with the specified offset.
+	 * Sets the current time on the player's client. When relative is true the
+	 * player's time will be kept synchronized to its world time with the
+	 * specified offset.
 	 *
-	 * When using non relative time the player's time will stay fixed at the specified time parameter. It's up to
-	 * the caller to continue updating the player's time. To restore player time to normal use resetPlayerTime().
+	 * When using non relative time the player's time will stay fixed at the
+	 * specified time parameter. It's up to the caller to continue updating the
+	 * player's time. To restore player time to normal use resetPlayerTime().
 	 *
-	 * @param time The current player's perceived time or the player's time offset from the server time.
-	 * @param relative When true the player time is kept relative to its world time.
+	 * @param time The current player's perceived time or the player's time
+	 *            offset from the server time.
+	 * @param relative When true the player time is kept relative to its world
+	 *            time.
 	 */
+	@Override
 	public void setPlayerTime(long time, boolean relative) {
 		timeOffset = time % 24000;
 		timeRelative = relative;
 
-		if (timeOffset < 0) timeOffset += 24000;
+		if (timeOffset < 0) {
+			timeOffset += 24000;
+		}
 	}
 
 	/**
@@ -860,6 +941,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 *
 	 * @return
 	 */
+	@Override
 	public long getPlayerTime() {
 		if (timeRelative) {
 			// add timeOffset ticks to current time
@@ -871,29 +953,33 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	}
 
 	/**
-	 * Returns the player's current time offset relative to server time, or the current player's fixed time
-	 * if the player's time is absolute.
+	 * Returns the player's current time offset relative to server time, or the
+	 * current player's fixed time if the player's time is absolute.
 	 *
 	 * @return
 	 */
+	@Override
 	public long getPlayerTimeOffset() {
 		return timeOffset;
 	}
 
 	/**
-	 * Returns true if the player's time is relative to the server time, otherwise the player's time is absolute and
-	 * will not change its current time unless done so with setPlayerTime().
+	 * Returns true if the player's time is relative to the server time,
+	 * otherwise the player's time is absolute and will not change its current
+	 * time unless done so with setPlayerTime().
 	 *
 	 * @return true if the player's time is relative to the server time.
 	 */
+	@Override
 	public boolean isPlayerTimeRelative() {
 		return timeRelative;
 	}
 
 	/**
-	 * Restores the normal condition where the player's time is synchronized with the server time.
-	 * Equivalent to calling setPlayerTime(0, true).
+	 * Restores the normal condition where the player's time is synchronized
+	 * with the server time. Equivalent to calling setPlayerTime(0, true).
 	 */
+	@Override
 	public void resetPlayerTime() {
 		setPlayerTime(0, true);
 	}
@@ -904,6 +990,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 *
 	 * @param map The map to be sent
 	 */
+	@Override
 	public void sendMap(MapView map) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -914,6 +1001,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		session.send(createHealthMessage());
 	}
 
+	@Override
 	public int getMaxHealth() {
 		return 20;
 	}
@@ -946,10 +1034,12 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		return new SpawnPlayerMessage(id, dispNameAsEntityName ? displayName : getName(), x, y, z, yaw, pitch, 0);
 	}
 
+	@Override
 	public int getFoodLevel() {
 		return food;
 	}
 
+	@Override
 	public void setFoodLevel(int food) {
 		this.food = Math.min(food, 20);
 		session.send(createHealthMessage());
@@ -960,11 +1050,12 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	}
 
 	public Message createExperienceMessage() {
-		return new ExperienceMessage((byte)getExperience(), (byte)getLevel(), (short)getTotalExperience());
+		return new ExperienceMessage((byte) getExperience(), (byte) getLevel(), (short) getTotalExperience());
 	}
 
 	/**
 	 * Should check whether a window is open with hasWindowOpen first
+	 *
 	 * @return null if no inventory is open
 	 */
 	public SpoutInventory getOpenInventory() {
@@ -972,7 +1063,8 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	}
 
 	/**
-	 * Keep in mind - own inventory does not count as a window on Notchian client!
+	 * Keep in mind - own inventory does not count as a window on Notchian
+	 * client!
 	 */
 	public boolean hasWindowOpen() {
 		return openInventory != null;
@@ -987,19 +1079,21 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 
 	/**
 	 * Tries to open a window of the given type (WindowID.<type>)
+	 *
 	 * @param inv The inventory to open
 	 * @return false if the window could not be opened (one was already open)
 	 *         True otherwise
 	 */
 	public boolean openWindow(SpoutInventory inv) {
-		if (!this.hasWindowOpen()) {
+		if (!hasWindowOpen()) {
 			inv.addViewer(this);
-			this.openInventory = inv;
+			openInventory = inv;
 			return true;
 		}
 		return false;
 	}
 
+	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put("name", getName());

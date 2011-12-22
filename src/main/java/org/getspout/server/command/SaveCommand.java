@@ -21,7 +21,9 @@ public class SaveCommand extends SpoutCommand {
 
 	@Override
 	public boolean run(CommandSender sender, String commandLabel, String[] args) {
-		if (!checkArgs(sender, args, 1, 2)) return false;
+		if (!checkArgs(sender, args, 1, 2)) {
+			return false;
+		}
 		World world;
 		if (args.length == 2) {
 			world = server.getWorld(args[1]);
@@ -36,15 +38,21 @@ public class SaveCommand extends SpoutCommand {
 		}
 		String action = args[0];
 		if (action.equals("on")) {
-			if (!checkPermission(sender, "on")) return false;
+			if (!checkPermission(sender, "on")) {
+				return false;
+			}
 			world.setAutoSave(true);
 			tellOps(sender, "Enabling autosave for world " + world.getName());
 		} else if (action.equals("off")) {
-			if (!checkPermission(sender, "off")) return false;
+			if (!checkPermission(sender, "off")) {
+				return false;
+			}
 			world.setAutoSave(false);
 			tellOps(sender, "Disabling autosave for world " + world.getName());
-		} else if (action.equals("do")){
-			if (!checkPermission(sender, "do")) return false;
+		} else if (action.equals("do")) {
+			if (!checkPermission(sender, "do")) {
+				return false;
+			}
 			world.save();
 			tellOps(sender, "Saving data of world " + world.getName());
 		} else {
@@ -59,6 +67,7 @@ public class SaveCommand extends SpoutCommand {
 		return PermissionDefault.OP;
 	}
 
+	@Override
 	public Set<Permission> registerPermissions(String prefix) {
 		Set<Permission> perms = new HashSet<Permission>();
 		perms.add(new Permission(prefix + ".do", "Perform a world save"));

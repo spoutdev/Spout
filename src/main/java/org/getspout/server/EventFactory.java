@@ -71,10 +71,12 @@ import org.getspout.server.util.bans.BanManager;
 public final class EventFactory {
 
 	// Private to prevent creation
-	private EventFactory() {}
+	private EventFactory() {
+	}
 
 	/**
 	 * Calls an event through the plugin manager.
+	 *
 	 * @param event The event to throw.
 	 * @return the called event
 	 */
@@ -132,8 +134,7 @@ public final class EventFactory {
 		} else if (player.getServer().hasWhitelist() && player.getServer().getWhitelist().contains(player.getName())) {
 			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "You are not whitelisted on this server");
 		} else if (player.getServer().getOnlinePlayers().length >= player.getServer().getMaxPlayers()) {
-			event.disallow(PlayerLoginEvent.Result.KICK_FULL,
-					"The server is full (" + player.getServer().getMaxPlayers() + " players).");
+			event.disallow(PlayerLoginEvent.Result.KICK_FULL, "The server is full (" + player.getServer().getMaxPlayers() + " players).");
 		}
 		return callEvent(event);
 	}

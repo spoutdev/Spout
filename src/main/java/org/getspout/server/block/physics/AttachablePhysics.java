@@ -17,7 +17,9 @@ public class AttachablePhysics extends DefaultBlockPhysics {
 	public boolean canPlaceAt(SpoutBlock block, BlockFace against) {
 		switch (data.getPlaceRequirement()) {
 			case ATTACHED_BLOCK_SIDE:
-				if (against == BlockFace.SELF || against == BlockFace.DOWN || against == BlockFace.UP) return false;
+				if (against == BlockFace.SELF || against == BlockFace.DOWN || against == BlockFace.UP) {
+					return false;
+				}
 				return block.getRelative(against.getOppositeFace()).getTypeId() != BlockID.AIR;
 			case BLOCK_BELOW:
 				return block.getWorld().getBlockTypeIdAt(block.getX(), block.getY(), block.getZ()) != 0;

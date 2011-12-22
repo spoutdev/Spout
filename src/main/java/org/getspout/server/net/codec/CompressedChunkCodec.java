@@ -30,7 +30,7 @@ public final class CompressedChunkCodec extends MessageCodec<CompressedChunkMess
 		byte[] compressedData = new byte[compressedSize];
 		buffer.readBytes(compressedData);
 
-		byte[] data = new byte[(width * depth * height * 5) / 2];
+		byte[] data = new byte[width * depth * height * 5 / 2];
 
 		Inflater inflater = new Inflater();
 		inflater.setInput(compressedData);
@@ -62,7 +62,7 @@ public final class CompressedChunkCodec extends MessageCodec<CompressedChunkMess
 		buffer.writeByte(message.getHeight() - 1);
 
 		byte[] data = message.getData();
-		byte[] compressedData = new byte[(message.getWidth() * message.getDepth() * message.getHeight() * 5) / 2];
+		byte[] compressedData = new byte[message.getWidth() * message.getDepth() * message.getHeight() * 5 / 2];
 
 		Deflater deflater = new Deflater(COMPRESSION_LEVEL);
 		deflater.setInput(data);

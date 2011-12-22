@@ -19,7 +19,9 @@ public class SayCommand extends SpoutCommand {
 		}
 		StringBuilder build = new StringBuilder();
 		for (int i = 0; i < args.length; i++) {
-			if (i > 0) build.append(" ");
+			if (i > 0) {
+				build.append(" ");
+			}
 			build.append(args[i]);
 		}
 		String name = sender instanceof ConsoleCommandSender ? "Console" : sender.getName();

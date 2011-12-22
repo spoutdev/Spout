@@ -8,7 +8,6 @@ import org.getspout.server.io.WorldMetadataService;
 import org.getspout.server.io.WorldStorageProvider;
 
 public class NbtWorldStorageProvider implements WorldStorageProvider {
-	private SpoutWorld world;
 	private final File dir;
 	private NbtChunkIoService service;
 	private NbtWorldMetadataService meta;
@@ -22,10 +21,11 @@ public class NbtWorldStorageProvider implements WorldStorageProvider {
 
 	}
 
+	@Override
 	public void setWorld(SpoutWorld world) {
-		if (world != null)
+		if (world != null) {
 			throw new IllegalArgumentException("World is already set");
-		this.world = world;
+		}
 		service = new NbtChunkIoService();
 		meta = new NbtWorldMetadataService(world, dir);
 	}
@@ -40,6 +40,7 @@ public class NbtWorldStorageProvider implements WorldStorageProvider {
 		return meta;
 	}
 
+	@Override
 	public File getFolder() {
 		return dir;
 	}

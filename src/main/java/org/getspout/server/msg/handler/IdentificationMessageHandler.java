@@ -40,7 +40,7 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
 					allow = result.equals("YES"); // Get minecraft.net's result. If the result is YES, allow login to continue
 				} catch (IOException ex) {
 					// Something went wrong, disconnect the player
-					session.getServer().getLogger().log(Level.WARNING, "Failed to authenticate {0} with minecraft.net: {1}", new Object[]{message.getName(), ex.getMessage()});
+					session.getServer().getLogger().log(Level.WARNING, "Failed to authenticate {0} with minecraft.net: {1}", new Object[] {message.getName(), ex.getMessage()});
 					session.disconnect("Player identification failed [" + ex.getMessage() + "]");
 				}
 			}

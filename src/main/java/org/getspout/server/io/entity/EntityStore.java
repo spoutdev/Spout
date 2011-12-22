@@ -45,11 +45,12 @@ public abstract class EntityStore<T extends SpoutEntity> {
 		if (world == null && compound.getValue().containsKey("World")) {
 			world = entity.getServer().getWorld(((StringTag) compound.getValue().get("World")).getValue());
 		}
-		if (world == null  && compound.getValue().containsKey("Dimension")) {
+		if (world == null && compound.getValue().containsKey("Dimension")) {
 			int dim = ((IntTag) compound.getValue().get("Dimension")).getValue();
 			for (World sWorld : entity.getServer().getWorlds()) {
-				if (sWorld.getEnvironment().getId() == dim)
+				if (sWorld.getEnvironment().getId() == dim) {
 					world = sWorld;
+				}
 			}
 		}
 		if (world == null) {

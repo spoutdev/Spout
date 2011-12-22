@@ -18,10 +18,10 @@ public class SpoutPig extends SpoutAnimals implements Pig {
 	private boolean saddled;
 
 	/**
-	 * Creates a new monster.
+	 * Creates a new pig.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param server This server this pig is on.
+	 * @param world The world this pig is in.
 	 */
 	public SpoutPig(SpoutServer server, SpoutWorld world) {
 		super(server, world, 90);
@@ -37,12 +37,14 @@ public class SpoutPig extends SpoutAnimals implements Pig {
 		return loot;
 	}
 
+	@Override
 	public boolean hasSaddle() {
 		return saddled;
 	}
 
+	@Override
 	public void setSaddle(boolean saddled) {
 		this.saddled = saddled;
-		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte)(this.saddled ? 1 : 0)));
+		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte) (this.saddled ? 1 : 0)));
 	}
 }

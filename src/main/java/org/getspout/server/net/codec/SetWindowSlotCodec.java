@@ -28,7 +28,9 @@ public final class SetWindowSlotCodec extends MessageCodec<SetWindowSlotMessage>
 			Map<String, Tag> nbtData = null;
 			if (item > 255) {
 				ItemProperties props = ItemProperties.get(item);
-				if (props != null && props.hasNbtData()) ChannelBufferUtils.readCompound(buffer);
+				if (props != null && props.hasNbtData()) {
+					ChannelBufferUtils.readCompound(buffer);
+				}
 			}
 			return new SetWindowSlotMessage(id, slot, item, count, damage, nbtData);
 		}
@@ -45,7 +47,9 @@ public final class SetWindowSlotCodec extends MessageCodec<SetWindowSlotMessage>
 			buffer.writeShort(message.getDamage());
 			if (message.getItem() > 255) {
 				ItemProperties props = ItemProperties.get(message.getItem());
-				if (props != null && props.hasNbtData())ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
+				if (props != null && props.hasNbtData()) {
+					ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
+				}
 			}
 		}
 		return buffer;

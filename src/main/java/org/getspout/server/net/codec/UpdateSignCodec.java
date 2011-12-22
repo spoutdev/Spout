@@ -32,8 +32,8 @@ public final class UpdateSignCodec extends MessageCodec<UpdateSignMessage> {
 		buffer.writeInt(message.getX());
 		buffer.writeShort(message.getY());
 		buffer.writeInt(message.getZ());
-		for (int i = 0; i < lines.length; i++) {
-			ChannelBufferUtils.writeString(buffer, lines[i]);
+		for (String line : lines) {
+			ChannelBufferUtils.writeString(buffer, line);
 		}
 		return buffer;
 	}

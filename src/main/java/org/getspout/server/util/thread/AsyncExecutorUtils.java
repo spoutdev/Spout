@@ -14,7 +14,7 @@ public class AsyncExecutorUtils {
 	 */
 	public static void pulseJoinAll(List<ManagementAsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
 		ThreadsafetyManager.checkMainThread();
-		
+
 		long currentTime = System.currentTimeMillis();
 		long endTime = currentTime + timeout;
 		boolean waitForever = timeout == 0;
@@ -62,5 +62,5 @@ public class AsyncExecutorUtils {
 		}
 
 	}
-	
+
 }

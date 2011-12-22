@@ -8,6 +8,9 @@ import org.bukkit.generator.BlockPopulator;
 import org.getspout.server.generator.populators.trees.GenericTreeGenerator;
 import org.getspout.server.generator.populators.trees.NormalTree;
 
+import org.getspout.server.generator.populators.trees.GenericTreeGenerator;
+import org.getspout.server.generator.populators.trees.NormalTree;
+
 /**
  * BlockPopulator that adds trees based on the biome.
  */

@@ -2,6 +2,7 @@ package org.getspout.server.util.nbt;
 
 /**
  * Represents a single NBT tag.
+ *
  * @author Graham Edgecombe
  */
 public abstract class Tag {
@@ -19,6 +20,7 @@ public abstract class Tag {
 
 	/**
 	 * Creates the tag with the specified name.
+	 *
 	 * @param name The name.
 	 */
 	public Tag(String name) {
@@ -27,6 +29,7 @@ public abstract class Tag {
 
 	/**
 	 * Gets the name of this tag.
+	 *
 	 * @return The name of this tag.
 	 */
 	public final String getName() {
@@ -35,6 +38,7 @@ public abstract class Tag {
 
 	/**
 	 * Gets the value of this tag.
+	 *
 	 * @return The value of this tag.
 	 */
 	public abstract Object getValue();

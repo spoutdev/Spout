@@ -2,6 +2,7 @@ package org.getspout.server.util;
 
 /**
  * Represents a single parameter - this is used for things like mob metadata.
+ *
  * @author Graham Edgecombe
  * @param <T> The type of value this parameter contains.
  */
@@ -53,6 +54,7 @@ public class Parameter<T> {
 
 	/**
 	 * Creates a new parameter.
+	 *
 	 * @param type The type of parameter.
 	 * @param index The index.
 	 * @param value The value.
@@ -65,6 +67,7 @@ public class Parameter<T> {
 
 	/**
 	 * Gets the type of the parameter.
+	 *
 	 * @return The type of the parameter.
 	 */
 	public int getType() {
@@ -73,6 +76,7 @@ public class Parameter<T> {
 
 	/**
 	 * Gets the index of this parameter.
+	 *
 	 * @return The index.
 	 */
 	public int getIndex() {
@@ -81,6 +85,7 @@ public class Parameter<T> {
 
 	/**
 	 * Gets the value of this parameter.
+	 *
 	 * @return The value.
 	 */
 	public T getValue() {

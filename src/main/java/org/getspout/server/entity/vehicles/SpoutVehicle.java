@@ -1,6 +1,7 @@
 package org.getspout.server.entity.vehicles;
 
 import org.bukkit.entity.Vehicle;
+
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutEntity;

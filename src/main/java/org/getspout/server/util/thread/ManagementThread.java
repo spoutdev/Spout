@@ -30,6 +30,7 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 	 *
 	 * @param managed the object to give responsibility for
 	 */
+	@Override
 	public final void addManaged(Managed managed) {
 		ThreadsafetyManager.checkManagerThread(this);
 		managedSet.put(managed, Boolean.TRUE);
@@ -79,11 +80,12 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 		
 		waitingMonitor.set(null);
 	}
-	
+
 	/**
-	 * Executes any tasks on the queue.  
-	 * 
-	 * Other tasks can be processed while event processing steps that require waiting for other threads are waiting. 
+	 * Executes any tasks on the queue.
+	 *
+	 * Other tasks can be processed while event processing steps that require
+	 * waiting for other threads are waiting.
 	 */
 	protected final void executeAllTasks() throws InterruptedException {
 		ThreadsafetyManager.checkManagerThread(this);
@@ -101,38 +103,42 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 			future.set(returnValue);
 		}
 	}
-	
+
 	/**
 	 * Instructs the thread to copy all updated data to its snapshot
 	 *
 	 * @return false if the thread was already pulsing
 	 */
+	@Override
 	public final boolean copySnapshot() {
 		ThreadsafetyManager.checkMainThread();
 		taskQueue.add(copySnapshotTask);
 		return pulse();
 	}
-	
+
 	/**
 	 * Instructs the thread to start a new tick
 	 *
 	 * @return false if the thread was already pulsing
 	 */
+	@Override
 	public final boolean startTick(long ticks) {
 		ThreadsafetyManager.checkMainThread();
 		taskQueue.add(startTickTask.setTicks(ticks));
 		return pulse();
 	}
-	
+
 	/**
-	 * Returns if this thread has completed its pulse and all submitted tasks associated with it
+	 * Returns if this thread has completed its pulse and all submitted tasks
+	 * associated with it
 	 *
 	 * @return true if the pulse was completed
 	 */
+	@Override
 	public final boolean isPulseFinished() {
 		try {
 			disableWake();
-			return (!isPulsing()) && taskQueue.isEmpty();
+			return !isPulsing() && taskQueue.isEmpty();
 		} finally {
 			enableWake();
 		}
@@ -141,8 +147,10 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 	/**
 	 * Prevents this thread from being woken up.
 	 *
-	 * This functionality is implemented using a counter, so every call to disableWake must be matched by a call to enableWake.
+	 * This functionality is implemented using a counter, so every call to
+	 * disableWake must be matched by a call to enableWake.
 	 */
+	@Override
 	public final void disableWake() {
 		wakeCounter.incrementAndGet();
 	}
@@ -150,8 +158,10 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 	/**
 	 * Allows this thread to be woken up.
 	 *
-	 * This functionality is implemented using a counter, so every call to enableWake must be matched by a call to disableWake.
+	 * This functionality is implemented using a counter, so every call to
+	 * enableWake must be matched by a call to disableWake.
 	 */
+	@Override
 	public final void enableWake() {
 		int localCounter = wakeCounter.decrementAndGet();
 		if (localCounter == 0 && wakePending.compareAndSet(true, false)) {
@@ -172,13 +182,14 @@ public abstract class ManagementThread extends PulsableThread implements Managem
 	/**
 	 * All tasks on the queue are executed whenever the thread is pulsed
 	 */
+	@Override
 	protected final void pulsedRun() throws InterruptedException {
 		ThreadsafetyManager.checkManagerThread(this);
 		executeAllTasks();
 	}
-	
+
 	public abstract void copySnapshotRun() throws InterruptedException;
 
 	public abstract void startTickRun(long tick) throws InterruptedException;
-	
+
 }

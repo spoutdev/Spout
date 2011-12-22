@@ -1,17 +1,18 @@
 package org.getspout.server.item;
 
 import static org.junit.Assert.fail;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Material;
 import org.junit.Before;
 import org.junit.Test;
+
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+
+import org.bukkit.Material;
 
 public class ItemPropertiesTest {
 	private final TIntList itemIdKnown = new TIntArrayList();
@@ -19,15 +20,20 @@ public class ItemPropertiesTest {
 	@Before
 	public void setUp() throws IllegalAccessException {
 		for (Field field : ItemID.class.getFields()) {
-			if (!Modifier.isStatic(field.getModifiers())) continue;
+			if (!Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
 			itemIdKnown.add(field.getInt(null));
 		}
 	}
+
 	@Test
 	public void testIdInclusion() throws IllegalAccessException {
 		List<String> nonIncludedFields = new ArrayList<String>();
 		for (Field field : ItemID.class.getFields()) {
-			if (!Modifier.isStatic(field.getModifiers())) continue;
+			if (!Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
 			int val = field.getInt(null);
 			if (ItemProperties.get(val) == null) {
 				nonIncludedFields.add(field.getName() + ":" + val);
@@ -46,7 +52,9 @@ public class ItemPropertiesTest {
 	public void testMaterialInclusion() throws IllegalAccessException {
 		List<String> nonIncludedFields = new ArrayList<String>();
 		for (Material material : Material.values()) {
-			if (material.isBlock()) continue;
+			if (material.isBlock()) {
+				continue;
+			}
 			if (ItemProperties.get(material) == null) {
 				nonIncludedFields.add(material.name() + ":" + material.getId());
 			}

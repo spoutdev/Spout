@@ -16,14 +16,17 @@ public class SpoutSign extends SpoutBlockState implements Sign {
 		lines = new String[4];
 	}
 
+	@Override
 	public String[] getLines() {
 		return lines.clone();
 	}
 
+	@Override
 	public String getLine(int index) throws IndexOutOfBoundsException {
 		return lines[index];
 	}
 
+	@Override
 	public void setLine(int index, String line) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= lines.length) {
 			throw new IndexOutOfBoundsException();

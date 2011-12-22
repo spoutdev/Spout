@@ -23,13 +23,11 @@ public class MushroomPopulator extends BlockPopulator {
 
 		int rx = 2 + random.nextInt(12);
 		int rz = 2 + random.nextInt(12);
-		Block block = source.getBlock(rx, world.getHighestBlockYAt((source.getX() << 4)
-				+ rx, (source.getZ() << 4) + rz), rz);
+		Block block = source.getBlock(rx, world.getHighestBlockYAt((source.getX() << 4) + rx, (source.getZ() << 4) + rz), rz);
 		if (block.getBiome() != Biome.TAIGA && block.getBiome() != Biome.TUNDRA) {
 			return;
 		}
-		if (block.getRelative(BlockFace.DOWN).getTypeId() != BlockID.GRASS
-				&& block.getRelative(BlockFace.DOWN).getTypeId() != BlockID.DIRT) {
+		if (block.getRelative(BlockFace.DOWN).getTypeId() != BlockID.GRASS && block.getRelative(BlockFace.DOWN).getTypeId() != BlockID.DIRT) {
 			return;
 		}
 
@@ -43,9 +41,7 @@ public class MushroomPopulator extends BlockPopulator {
 				int diffNext = i - size + 1;
 				for (int x = -size + diff; x <= size - diff; x++) {
 					for (int z = -size + diff; z <= size - diff; z++) {
-						if (x * x + z * z < (size - diff) * (size - diff)
-								&& (i > size || x * x + z * z + 1 > (size - diffNext)
-								* (size - diffNext))) {
+						if (x * x + z * z < (size - diff) * (size - diff) && (i > size || x * x + z * z + 1 > (size - diffNext) * (size - diffNext))) {
 							mushroom.getRelative(x, 0, z).setTypeId(BlockID.STONE);
 						}
 					}

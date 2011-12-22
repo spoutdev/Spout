@@ -20,6 +20,12 @@ public class SpoutEnderman extends SpoutMonster implements Enderman {
 	 */
 	private MaterialData carriedMaterial;
 
+	/**
+	 * Creates a new enderman.
+	 *
+	 * @param server This server this enderman is on.
+	 * @param world The world this enderman is in.
+	 */
 	public SpoutEnderman(SpoutServer server, SpoutWorld world) {
 		super(server, world, 58);
 	}
@@ -28,20 +34,24 @@ public class SpoutEnderman extends SpoutMonster implements Enderman {
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
-		if (amount > 0) loot.add(new ItemStack(ItemID.ENDER_PEARL, amount));
+		if (amount > 0) {
+			loot.add(new ItemStack(ItemID.ENDER_PEARL, amount));
+		}
 		return loot;
 	}
 
+	@Override
 	public MaterialData getCarriedMaterial() {
 		return carriedMaterial;
 	}
 
+	@Override
 	public void setCarriedMaterial(MaterialData material) {
-		this.carriedMaterial = material;
+		carriedMaterial = material;
 		if (carriedMaterial == null) {
 			carriedMaterial = new MaterialData(BlockID.AIR);
 		}
-		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte)carriedMaterial.getItemTypeId()));
+		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 16, (byte) carriedMaterial.getItemTypeId()));
 		setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, 17, carriedMaterial.getData()));
 	}
 }

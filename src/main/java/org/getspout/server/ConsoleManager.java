@@ -34,10 +34,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 
 import jline.ArgumentCompletor;
 import jline.Completor;
+import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
 import jline.SimpleCompletor;
@@ -58,13 +60,13 @@ import com.grahamedgecombe.jterminal.JTerminal;
  * Portions are heavily based on CraftBukkit.
  */
 public final class ConsoleManager {
-	private SpoutServer server;
+	private final SpoutServer server;
 
 	private ConsoleReader reader;
 	private ConsoleCommandSender sender;
 	private ConsoleCommandThread thread;
-	private FancyConsoleHandler consoleHandler;
-	private RotatingFileHandler fileHandler;
+	private final FancyConsoleHandler consoleHandler;
+	private final RotatingFileHandler fileHandler;
 
 	private JFrame jFrame = null;
 	private JTerminal jTerminal = null;
@@ -82,7 +84,14 @@ public final class ConsoleManager {
 			jFrame = new JFrame("Spout");
 			jTerminal = new JTerminal();
 			jInput = new JTextField(80) {
-				@Override public void setBorder(Border border) {}
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 620432435961476505L;
+
+				@Override
+				public void setBorder(Border border) {
+				}
 			};
 			jInput.paint(null);
 			jInput.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -106,7 +115,7 @@ public final class ConsoleManager {
 			jFrame.getContentPane().add(jTerminal, BorderLayout.NORTH);
 			jFrame.getContentPane().add(ipanel, BorderLayout.SOUTH);
 			jFrame.addWindowListener(listener);
-			jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			jFrame.setLocationRelativeTo(null);
 			jFrame.pack();
 			jFrame.setVisible(true);
@@ -141,7 +150,6 @@ public final class ConsoleManager {
 
 		Runtime.getRuntime().addShutdownHook(new ServerShutdownThread());
 
-
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 	}
@@ -175,7 +183,7 @@ public final class ConsoleManager {
 			reader.removeCompletor((Completor) c);
 		}
 
-		Completor[] list = new Completor[] { new SimpleCompletor(server.getAllCommands()), new NullCompletor() };
+		Completor[] list = new Completor[] {new SimpleCompletor(server.getAllCommands()), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
 		sender.recalculatePermissions();
 	}
@@ -186,23 +194,7 @@ public final class ConsoleManager {
 		} else if ((!jLine || !reader.getTerminal().isANSISupported()) && jTerminal == null) {
 			return ChatColor.stripColor(string);
 		} else {
-			return string.replace(ChatColor.RED.toString(), "\033[1;31m")
-				.replace(ChatColor.YELLOW.toString(), "\033[1;33m")
-				.replace(ChatColor.GREEN.toString(), "\033[1;32m")
-				.replace(ChatColor.AQUA.toString(), "\033[1;36m")
-				.replace(ChatColor.BLUE.toString(), "\033[1;34m")
-				.replace(ChatColor.LIGHT_PURPLE.toString(), "\033[1;35m")
-				.replace(ChatColor.BLACK.toString(), "\033[0;0m")
-				.replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m")
-				.replace(ChatColor.DARK_RED.toString(), "\033[0;31m")
-				.replace(ChatColor.GOLD.toString(), "\033[0;33m")
-				.replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m")
-				.replace(ChatColor.DARK_AQUA.toString(), "\033[0;36m")
-				.replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m")
-				.replace(ChatColor.DARK_PURPLE.toString(), "\033[0;35m")
-				.replace(ChatColor.GRAY.toString(), "\033[0;37m")
-				.replace(ChatColor.WHITE.toString(), "\033[1;37m") +
-				"\033[0m";
+			return string.replace(ChatColor.RED.toString(), "\033[1;31m").replace(ChatColor.YELLOW.toString(), "\033[1;33m").replace(ChatColor.GREEN.toString(), "\033[1;32m").replace(ChatColor.AQUA.toString(), "\033[1;36m").replace(ChatColor.BLUE.toString(), "\033[1;34m").replace(ChatColor.LIGHT_PURPLE.toString(), "\033[1;35m").replace(ChatColor.BLACK.toString(), "\033[0;0m").replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m").replace(ChatColor.DARK_RED.toString(), "\033[0;31m").replace(ChatColor.GOLD.toString(), "\033[0;33m").replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m").replace(ChatColor.DARK_AQUA.toString(), "\033[0;36m").replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m").replace(ChatColor.DARK_PURPLE.toString(), "\033[0;35m").replace(ChatColor.GRAY.toString(), "\033[0;37m").replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
 		}
 	}
 
@@ -218,16 +210,15 @@ public final class ConsoleManager {
 						command = reader.readLine();
 					}
 
-					if (command == null || command.trim().length() == 0)
+					if (command == null || command.trim().length() == 0) {
 						continue;
+					}
 
 					server.getScheduler().scheduleSyncDelayedTask(null, new CommandTask(command.trim()));
-				}
-				catch (CommandException ex) {
+				} catch (CommandException ex) {
 					System.out.println("Exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
@@ -248,6 +239,7 @@ public final class ConsoleManager {
 			this.command = command;
 		}
 
+		@Override
 		public void run() {
 			command = EventFactory.onServerCommand(sender, command).getCommand();
 
@@ -265,70 +257,82 @@ public final class ConsoleManager {
 	private class ColoredCommandSender implements ConsoleCommandSender {
 		private final PermissibleBase perm = new PermissibleBase(this);
 
+		@Override
 		public String getName() {
 			return "CONSOLE";
 		}
 
+		@Override
 		public void sendMessage(String text) {
 			server.getLogger().info(text);
 		}
 
+		@Override
 		public boolean isOp() {
 			return true;
 		}
 
+		@Override
 		public void setOp(boolean value) {
 			throw new UnsupportedOperationException("Cannot change operator status of server console");
 		}
 
-		public boolean isPlayer() {
-			return false;
-		}
-
+		@Override
 		public SpoutServer getServer() {
 			return server;
 		}
 
+		@Override
 		public boolean isPermissionSet(String name) {
 			return perm.isPermissionSet(name);
 		}
 
+		@Override
 		public boolean isPermissionSet(Permission perm) {
 			return this.perm.isPermissionSet(perm);
 		}
 
+		@Override
 		public boolean hasPermission(String name) {
 			return perm.hasPermission(name);
 		}
 
+		@Override
 		public boolean hasPermission(Permission perm) {
 			return this.perm.hasPermission(perm);
 		}
 
+		@Override
 		public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {
 			return perm.addAttachment(plugin, name, value);
 		}
 
+		@Override
 		public PermissionAttachment addAttachment(Plugin plugin) {
 			return perm.addAttachment(plugin);
 		}
 
+		@Override
 		public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) {
 			return perm.addAttachment(plugin, name, value, ticks);
 		}
 
+		@Override
 		public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
 			return perm.addAttachment(plugin, ticks);
 		}
 
+		@Override
 		public void removeAttachment(PermissionAttachment attachment) {
 			perm.removeAttachment(attachment);
 		}
 
+		@Override
 		public void recalculatePermissions() {
 			perm.recalculatePermissions();
 		}
 
+		@Override
 		public Set<PermissionAttachmentInfo> getEffectivePermissions() {
 			return perm.getEffectivePermissions();
 		}
@@ -366,7 +370,7 @@ public final class ConsoleManager {
 		public synchronized void flush() {
 			try {
 				if (jLine && jTerminal == null) {
-					reader.printString(ConsoleReader.RESET_LINE + "");
+					reader.printString(ConsoleOperations.RESET_LINE + "");
 					reader.flushConsole();
 					super.flush();
 					try {
@@ -386,8 +390,8 @@ public final class ConsoleManager {
 	}
 
 	private class RotatingFileHandler extends StreamHandler {
-		private SimpleDateFormat date;
-		private String logFile;
+		private final SimpleDateFormat date;
+		private final String logFile;
 		private String filename;
 
 		public RotatingFileHandler(String logFile) {
@@ -397,7 +401,7 @@ public final class ConsoleManager {
 			try {
 				setOutputStream(new FileOutputStream(filename, true));
 			} catch (FileNotFoundException ex) {
-				server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
+				server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[] {filename, ex.getMessage()});
 				ex.printStackTrace();
 			}
 		}
@@ -410,7 +414,7 @@ public final class ConsoleManager {
 				try {
 					setOutputStream(new FileOutputStream(filename, true));
 				} catch (FileNotFoundException ex) {
-					server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
+					server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[] {filename, ex.getMessage()});
 					ex.printStackTrace();
 				}
 			}
@@ -451,19 +455,44 @@ public final class ConsoleManager {
 	}
 
 	private class JTerminalListener implements WindowListener, KeyListener {
-		public void windowOpened(WindowEvent e) {}
-		public void windowIconified(WindowEvent e) {}
-		public void windowDeiconified(WindowEvent e) {}
-		public void windowActivated(WindowEvent e) {}
-		public void windowDeactivated(WindowEvent e) {}
-		public void windowClosed(WindowEvent e) {}
-		public void keyPressed(KeyEvent e) {}
-		public void keyReleased(KeyEvent e) {}
+		@Override
+		public void windowOpened(WindowEvent e) {
+		}
 
+		@Override
+		public void windowIconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
+
+		@Override
 		public void windowClosing(WindowEvent e) {
 			server.shutdown();
 		}
 
+		@Override
 		public void keyTyped(KeyEvent e) {
 			if (e.getKeyChar() == '\n') {
 				String command = jInput.getText().trim();

@@ -13,13 +13,13 @@ import org.getspout.server.generator.populators.SnowPopulator;
  */
 public class CakeTownGenerator extends SpoutChunkGenerator {
 	public CakeTownGenerator() {
-		super(  // In-ground
+		super( // In-ground
 				//new LakePopulator(),
 				// On-ground
 				//new DesertPopulator(), new TreePopulator(), new MushroomPopulator(),
-				new SnowPopulator(), new FlowerPopulator() // Belowground
-				//new CavePopulator()
-				);
+		new SnowPopulator(), new FlowerPopulator() // Belowground
+		//new CavePopulator()
+		);
 	}
 
 	@Override
@@ -41,13 +41,13 @@ public class CakeTownGenerator extends SpoutChunkGenerator {
 						if (y <= base + 1 && y >= base) {
 							set(buf, world, x, y, z, BlockID.BEDROCK);
 						} else if (y == top) {
-							set(buf, world,x, y, z, BlockID.GRASS);
+							set(buf, world, x, y, z, BlockID.GRASS);
 						} else {
 							set(buf, world, x, y, z, BlockID.STONE);
 						}
 					} else if (dist < 102) {
 						if (y <= base + 1 && y >= base) {
-							set(buf,world, x, y, z, BlockID.BEDROCK);
+							set(buf, world, x, y, z, BlockID.BEDROCK);
 						} else {
 							set(buf, world, x, y, z, BlockID.GRASS);
 						}

@@ -29,10 +29,10 @@ public class PlayerStore extends HumanEntityStore<SpoutPlayer> {
 			this.foodTickTimer = nbttagcompound.e("foodTickTimer");
 		}*/
 		if (compound.getValue().containsKey("XpTotal")) {
-			entity.setTotalExperience(((IntTag)compound.getValue().get("XpTotal")).getValue());
+			entity.setTotalExperience(((IntTag) compound.getValue().get("XpTotal")).getValue());
 		}
 		if (compound.getValue().containsKey("foodLevel")) {
-			entity.setFoodLevel(((IntTag)compound.getValue().get("foodLevel")).getValue());
+			entity.setFoodLevel(((IntTag) compound.getValue().get("foodLevel")).getValue());
 		}
 		if (compound.getValue().containsKey("foodTickTimer")) {
 			// entity.set(((IntTag)compound.getValue().get("foodTickTimer")).getValue());
@@ -44,8 +44,10 @@ public class PlayerStore extends HumanEntityStore<SpoutPlayer> {
 			entity.setExhaustion(((FloatTag) compound.getValue().get("foodExhaustionLevel")).getValue());
 		}
 		if (compound.getValue().containsKey("playerGameType")) {
-			GameMode mode = GameMode.getByValue(((IntTag)compound.getValue().get("playerGameType")).getValue());
-			if (mode != null) entity.setGameMode(mode);
+			GameMode mode = GameMode.getByValue(((IntTag) compound.getValue().get("playerGameType")).getValue());
+			if (mode != null) {
+				entity.setGameMode(mode);
+			}
 		}
 	}
 

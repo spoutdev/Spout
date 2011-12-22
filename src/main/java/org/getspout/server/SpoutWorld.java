@@ -49,6 +49,7 @@ import org.getspout.server.msg.TimeMessage;
 
 /**
  * A class which represents the in-game world.
+ *
  * @author Graham Edgecombe
  */
 public final class SpoutWorld implements World {
@@ -103,7 +104,8 @@ public final class SpoutWorld implements World {
 	private Location spawnLocation;
 
 	/**
-	 * Whether to keep the spawn chunks in memory (prevent them from being unloaded)
+	 * Whether to keep the spawn chunks in memory (prevent them from being
+	 * unloaded)
 	 */
 	private boolean keepSpawnLoaded = true;
 
@@ -170,6 +172,7 @@ public final class SpoutWorld implements World {
 	/**
 	 * Creates a new world with the specified chunk I/O service, environment,
 	 * and world generator.
+	 *
 	 * @param name The name of the world.
 	 * @param provider The world storage provider
 	 * @param environment The environment.
@@ -196,16 +199,18 @@ public final class SpoutWorld implements World {
 			} else {
 				this.seed = values.getSeed();
 			}
-			this.uid = values.getUuid();
+			uid = values.getUuid();
 		} else {
 			this.seed = seed;
-			this.uid = UUID.randomUUID();
+			uid = UUID.randomUUID();
 		}
 		populators = generator.getDefaultPopulators(this);
-		if (spawnLocation == null) spawnLocation = generator.getFixedSpawnLocation(this, random);
+		if (spawnLocation == null) {
+			spawnLocation = generator.getFixedSpawnLocation(this, random);
+		}
 
-		int centerX = (spawnLocation == null) ? 0 : spawnLocation.getBlockX() >> 4;
-		int centerZ = (spawnLocation == null) ? 0 : spawnLocation.getBlockZ() >> 4;
+		int centerX = spawnLocation == null ? 0 : spawnLocation.getBlockX() >> 4;
+		int centerZ = spawnLocation == null ? 0 : spawnLocation.getBlockZ() >> 4;
 
 		server.getLogger().log(Level.INFO, "Preparing spawn for {0}", name);
 		long loadTime = System.currentTimeMillis();
@@ -220,7 +225,7 @@ public final class SpoutWorld implements World {
 
 				if (System.currentTimeMillis() >= loadTime + 1000) {
 					int progress = 100 * current / total;
-					SpoutServer.logger.log(Level.INFO, "Preparing spawn for {0}: {1}%", new Object[]{name, progress});
+					SpoutServer.logger.log(Level.INFO, "Preparing spawn for {0}: {1}%", new Object[] {name, progress});
 					loadTime = System.currentTimeMillis();
 				}
 			}
@@ -252,6 +257,7 @@ public final class SpoutWorld implements World {
 
 	/**
 	 * Get the world chunk manager.
+	 *
 	 * @return The ChunkManager for the world.
 	 */
 	protected ChunkManager getChunkManager() {
@@ -264,11 +270,13 @@ public final class SpoutWorld implements World {
 	public void pulse() {
 		ArrayList<SpoutEntity> temp = new ArrayList<SpoutEntity>(entities.getAll());
 
-		for (SpoutEntity entity : temp)
+		for (SpoutEntity entity : temp) {
 			entity.pulse();
+		}
 
-		for (SpoutEntity entity : temp)
+		for (SpoutEntity entity : temp) {
 			entity.reset();
+		}
 
 		// We currently tick at 1/4 the speed of regular MC
 		// Modulus by 12000 to force permanent day.
@@ -293,8 +301,8 @@ public final class SpoutWorld implements World {
 				SpoutChunk[] chunkList = chunks.getLoadedChunks();
 				SpoutChunk chunk = chunkList[random.nextInt(chunkList.length)];
 
-				int x = (chunk.getX() << 4) + (int)(random.nextDouble() * 16);
-				int z = (chunk.getZ() << 4) + (int)(random.nextDouble() * 16);
+				int x = (chunk.getX() << 4) + (int) (random.nextDouble() * 16);
+				int z = (chunk.getZ() << 4) + (int) (random.nextDouble() * 16);
 				int y = getHighestBlockYAt(x, z);
 
 				strikeLightning(new Location(this, x, y, z));
@@ -309,6 +317,7 @@ public final class SpoutWorld implements World {
 
 	/**
 	 * Gets the entity manager.
+	 *
 	 * @return The entity manager.
 	 */
 	public EntityManager getEntityManager() {
@@ -321,6 +330,7 @@ public final class SpoutWorld implements World {
 
 	// SpoutEntity lists
 
+	@Override
 	public List<Player> getPlayers() {
 		Collection<SpoutPlayer> players = entities.getAll(SpoutPlayer.class);
 		ArrayList<Player> result = new ArrayList<Player>();
@@ -330,6 +340,7 @@ public final class SpoutWorld implements World {
 		return result;
 	}
 
+	@Override
 	public List<Entity> getEntities() {
 		Collection<SpoutEntity> list = entities.getAll();
 		ArrayList<Entity> result = new ArrayList<Entity>();
@@ -339,21 +350,26 @@ public final class SpoutWorld implements World {
 		return result;
 	}
 
+	@Override
 	public List<LivingEntity> getLivingEntities() {
 		Collection<SpoutEntity> list = entities.getAll();
 		ArrayList<LivingEntity> result = new ArrayList<LivingEntity>();
 		for (Entity e : list) {
-			if (e instanceof SpoutLivingEntity) result.add((SpoutLivingEntity) e);
+			if (e instanceof SpoutLivingEntity) {
+				result.add((SpoutLivingEntity) e);
+			}
 		}
 		return result;
 	}
 
 	// Various malleable world properties
 
+	@Override
 	public Location getSpawnLocation() {
 		return spawnLocation;
 	}
 
+	@Override
 	public boolean setSpawnLocation(int x, int y, int z) {
 		return setSpawnLocation(new Location(this, x, y, z));
 	}
@@ -366,59 +382,72 @@ public final class SpoutWorld implements World {
 		return !loc.equals(oldSpawn);
 	}
 
+	@Override
 	public boolean getPVP() {
 		return pvpAllowed;
 	}
 
+	@Override
 	public void setPVP(boolean pvp) {
 		pvpAllowed = pvp;
 	}
 
+	@Override
 	public void setSpawnFlags(boolean allowMonsters, boolean allowAnimals) {
 		spawnMonsters = allowMonsters;
 		spawnAnimals = allowAnimals;
 	}
 
+	@Override
 	public boolean getAllowAnimals() {
 		return spawnAnimals;
 	}
 
+	@Override
 	public boolean getAllowMonsters() {
 		return spawnMonsters;
 	}
 
 	// various fixed world properties
 
+	@Override
 	public Environment getEnvironment() {
 		return environment;
 	}
 
+	@Override
 	public long getSeed() {
 		return seed;
 	}
 
+	@Override
 	public UUID getUID() {
 		return uid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public long getId() {
 		return (getSeed() + "_" + getName()).hashCode();
 	}
 
+	@Override
 	public int getMaxHeight() {
 		return SpoutChunk.HEIGHT;
 	}
 
+	@Override
 	public int getSeaLevel() {
 		return getMaxHeight() / 2;
 	}
 
 	// force-save
 
+	@Override
 	public void save() {
 		save(false);
 	}
@@ -447,6 +476,7 @@ public final class SpoutWorld implements World {
 					return false;
 				}
 
+				@Override
 				public void run() {
 					for (SpoutChunk chunk : chunks.getLoadedChunks()) {
 						chunks.forceSave(chunk.getX(), chunk.getZ());
@@ -468,24 +498,29 @@ public final class SpoutWorld implements World {
 
 	// map generation
 
+	@Override
 	public ChunkGenerator getGenerator() {
 		return chunks.getGenerator();
 	}
 
+	@Override
 	public List<BlockPopulator> getPopulators() {
 		return populators;
 	}
 
+	@Override
 	public boolean generateTree(Location location, TreeType type) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// get block, chunk, id, highest methods with coords
 
+	@Override
 	public synchronized SpoutBlock getBlockAt(int x, int y, int z) {
 		Location blockLoc = new Location(this, x, y, z);
 		if (blockCache.containsKey(blockLoc)) {
@@ -497,10 +532,12 @@ public final class SpoutWorld implements World {
 		}
 	}
 
+	@Override
 	public int getBlockTypeIdAt(int x, int y, int z) {
 		return getChunkAt(x >> 4, z >> 4).getType(x & 0xF, y, z & 0xF);
 	}
 
+	@Override
 	public int getHighestBlockYAt(int x, int z) {
 		for (int y = getMaxHeight() - 1; y >= 0; --y) {
 			if (getBlockTypeIdAt(x, y, z) != 0) {
@@ -510,62 +547,76 @@ public final class SpoutWorld implements World {
 		return 0;
 	}
 
+	@Override
 	public synchronized SpoutChunk getChunkAt(int x, int z) {
 		return chunks.getChunk(x, z);
 	}
 
 	// get block, chunk, id, highest with locations
 
+	@Override
 	public SpoutBlock getBlockAt(Location location) {
 		return getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 	}
 
+	@Override
 	public int getBlockTypeIdAt(Location location) {
 		return getBlockTypeIdAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 	}
 
+	@Override
 	public int getHighestBlockYAt(Location location) {
 		return getHighestBlockYAt(location.getBlockX(), location.getBlockZ());
 	}
 
+	@Override
 	public Block getHighestBlockAt(int x, int z) {
 		return getBlockAt(x, getHighestBlockYAt(x, z), z);
 	}
 
+	@Override
 	public Block getHighestBlockAt(Location location) {
 		return getBlockAt(location.getBlockX(), getHighestBlockYAt(location), location.getBlockZ());
 	}
 
+	@Override
 	public Chunk getChunkAt(Location location) {
 		return getChunkAt(location.getBlockX(), location.getBlockZ());
 	}
 
+	@Override
 	public Chunk getChunkAt(Block block) {
 		return getChunkAt(block.getX(), block.getZ());
 	}
 
 	// Chunk loading and unloading
 
+	@Override
 	public boolean isChunkLoaded(Chunk chunk) {
 		return chunk.isLoaded();
 	}
 
+	@Override
 	public boolean isChunkLoaded(int x, int z) {
 		return getChunkAt(x, z).isLoaded();
 	}
 
+	@Override
 	public Chunk[] getLoadedChunks() {
 		return chunks.getLoadedChunks();
 	}
 
+	@Override
 	public void loadChunk(Chunk chunk) {
 		chunk.load();
 	}
 
+	@Override
 	public void loadChunk(int x, int z) {
 		getChunkAt(x, z).load();
 	}
 
+	@Override
 	public boolean loadChunk(int x, int z, boolean generate) {
 		if (generate) {
 			throw new UnsupportedOperationException("Not supported yet.");
@@ -575,18 +626,22 @@ public final class SpoutWorld implements World {
 		}
 	}
 
+	@Override
 	public boolean unloadChunk(Chunk chunk) {
 		return unloadChunk(chunk.getX(), chunk.getZ(), true);
 	}
 
+	@Override
 	public boolean unloadChunk(int x, int z) {
 		return unloadChunk(x, z, true);
 	}
 
+	@Override
 	public boolean unloadChunk(int x, int z, boolean save) {
 		return unloadChunk(x, z, save, true);
 	}
 
+	@Override
 	public boolean unloadChunk(int x, int z, boolean save, boolean safe) {
 		if (!safe) {
 			throw new UnsupportedOperationException("unloadChunk does not yet support unsafe unloading.");
@@ -597,20 +652,26 @@ public final class SpoutWorld implements World {
 		return unloadChunkRequest(x, z, safe);
 	}
 
+	@Override
 	public boolean unloadChunkRequest(int x, int z) {
 		return unloadChunkRequest(x, z, true);
 	}
 
+	@Override
 	public boolean unloadChunkRequest(int x, int z, boolean safe) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean regenerateChunk(int x, int z) {
-		if (!chunks.forceRegeneration(x, z)) return false;
+		if (!chunks.forceRegeneration(x, z)) {
+			return false;
+		}
 		refreshChunk(x, z);
 		return true;
 	}
 
+	@Override
 	public boolean refreshChunk(int x, int z) {
 		if (!isChunkLoaded(x, z)) {
 			return false;
@@ -634,6 +695,7 @@ public final class SpoutWorld implements World {
 
 	// biomes
 
+	@Override
 	public Biome getBiome(int x, int z) {
 		if (environment == Environment.THE_END) {
 			return Biome.SKY;
@@ -644,20 +706,23 @@ public final class SpoutWorld implements World {
 		return Biome.FOREST;
 	}
 
+	@Override
 	public double getTemperature(int x, int z) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public double getHumidity(int x, int z) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// entity spawning
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
 		if (clazz.isInstance(SpoutEntity.class)) {
-			return (T)spawnSpoutEntity(location, (Class<? extends SpoutEntity>)clazz);
+			return (T) spawnSpoutEntity(location, (Class<? extends SpoutEntity>) clazz);
 		} else {
 			return spawnBukkitEntity(location, clazz);
 		}
@@ -669,7 +734,7 @@ public final class SpoutWorld implements World {
 			throw new IllegalArgumentException("This entity type is unknown to Spout!");
 		}
 
-		T entity = (T)properties.getFactory().createEntity(server, this);
+		T entity = (T) properties.getFactory().createEntity(server, this);
 		entity.teleport(location);
 		return entity;
 	}
@@ -680,17 +745,19 @@ public final class SpoutWorld implements World {
 			throw new IllegalArgumentException("This entity type is unknown to Spout!");
 		}
 
-		T entity = (T)properties.getFactory().createEntity(server, this);
+		T entity = (T) properties.getFactory().createEntity(server, this);
 		entity.teleport(location);
 		return entity;
 	}
 
+	@Override
 	public Item dropItem(Location location, ItemStack item) {
 		Item itemEntity = new SpoutItem(server, this, item);
 		itemEntity.teleport(location);
 		return itemEntity;
 	}
 
+	@Override
 	public Item dropItemNaturally(Location location, ItemStack item) {
 		double xs = random.nextFloat() * 0.7F + (1.0F - 0.7F) * 0.5D;
 		double ys = random.nextFloat() * 0.7F + (1.0F - 0.7F) * 0.5D;
@@ -705,12 +772,13 @@ public final class SpoutWorld implements World {
 		}
 	}
 
+	@Override
 	public Arrow spawnArrow(Location location, Vector velocity, float speed, float spread) {
 		Arrow arrow = spawn(location, Arrow.class);
 
 		// Transformative magic
 		Vector randVec = new Vector(random.nextGaussian(), random.nextGaussian(), random.nextGaussian());
-		randVec.multiply(0.007499999832361937D * (double) spread);
+		randVec.multiply(0.007499999832361937D * spread);
 
 		velocity.normalize();
 		velocity.add(randVec);
@@ -723,20 +791,23 @@ public final class SpoutWorld implements World {
 		return arrow;
 	}
 
+	@Override
 	public LivingEntity spawnCreature(Location loc, CreatureType type) {
 		EntityProperties properties = EntityProperties.getByCreatureType(type);
 		if (properties == null) {
 			throw new IllegalArgumentException("This CreatureType is unknown to Spout!");
 		}
-		LivingEntity entity = (LivingEntity)properties.getFactory().createEntity(server, this);
+		LivingEntity entity = (LivingEntity) properties.getFactory().createEntity(server, this);
 		entity.teleport(loc);
 		return entity;
 	}
 
+	@Override
 	public SpoutLightningStrike strikeLightning(Location loc) {
 		return strikeLightning(loc, false);
 	}
 
+	@Override
 	public SpoutLightningStrike strikeLightningEffect(Location loc) {
 		return strikeLightning(loc, true);
 	}
@@ -753,30 +824,40 @@ public final class SpoutWorld implements World {
 
 	// Time related methods
 
+	@Override
 	public long getTime() {
 		return time;
 	}
 
+	@Override
 	public void setTime(long time) {
-		if (time < 0) time = (time % 24000) + 24000;
-		if (time > 24000) time %= 24000;
+		if (time < 0) {
+			time = time % 24000 + 24000;
+		}
+		if (time > 24000) {
+			time %= 24000;
+		}
 		this.time = time;
 	}
 
+	@Override
 	public long getFullTime() {
 		return getTime();
 	}
 
+	@Override
 	public void setFullTime(long time) {
 		setTime(time);
 	}
 
 	// Weather related methods
 
+	@Override
 	public boolean hasStorm() {
 		return currentlyRaining;
 	}
 
+	@Override
 	public void setStorm(boolean hasStorm) {
 		if (!EventFactory.onWeatherChange(this, hasStorm).isCancelled()) {
 			currentlyRaining = hasStorm;
@@ -790,22 +871,26 @@ public final class SpoutWorld implements World {
 		}
 
 		for (SpoutPlayer player : getRawPlayers()) {
-			player.getSession().send(new StateChangeMessage((byte)(currentlyRaining ? 1 : 2), (byte)0));
+			player.getSession().send(new StateChangeMessage((byte) (currentlyRaining ? 1 : 2), (byte) 0));
 		}
 	}
 
+	@Override
 	public int getWeatherDuration() {
 		return rainingTicks;
 	}
 
+	@Override
 	public void setWeatherDuration(int duration) {
 		rainingTicks = duration;
 	}
 
+	@Override
 	public boolean isThundering() {
 		return currentlyThundering;
 	}
 
+	@Override
 	public void setThundering(boolean thundering) {
 		if (!EventFactory.onThunderChange(this, thundering).isCancelled()) {
 			currentlyThundering = thundering;
@@ -819,38 +904,46 @@ public final class SpoutWorld implements World {
 		}
 	}
 
+	@Override
 	public int getThunderDuration() {
 		return thunderingTicks;
 	}
 
+	@Override
 	public void setThunderDuration(int duration) {
 		thunderingTicks = duration;
 	}
 
 	// explosions
 
+	@Override
 	public boolean createExplosion(Location loc, float power, boolean setFire) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean createExplosion(Location loc, float power) {
 		return createExplosion(loc, power, false);
 	}
 
+	@Override
 	public boolean createExplosion(double x, double y, double z, float power, boolean setFire) {
 		return createExplosion(new Location(this, x, y, z), power, setFire);
 	}
 
+	@Override
 	public boolean createExplosion(double x, double y, double z, float power) {
 		return createExplosion(new Location(this, x, y, z), power, false);
 	}
 
 	// effects
 
+	@Override
 	public void playEffect(Location location, Effect effect, int data) {
 		playEffect(location, effect, data, 64);
 	}
 
+	@Override
 	public void playEffect(Location location, Effect effect, int data, int radius) {
 		for (Player player : getPlayers()) {
 			if (player.getLocation().distance(location) <= radius) {
@@ -869,30 +962,37 @@ public final class SpoutWorld implements World {
 
 	// misc
 
+	@Override
 	public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {
 		return new SpoutChunkSnapshot.EmptySnapshot(x, z, this, includeBiome, includeBiomeTempRain);
 	}
 
+	@Override
 	public boolean getKeepSpawnInMemory() {
 		return keepSpawnLoaded;
 	}
 
+	@Override
 	public void setKeepSpawnInMemory(boolean keepLoaded) {
 		keepSpawnLoaded = keepLoaded;
 	}
 
+	@Override
 	public boolean isAutoSave() {
 		return autosave;
 	}
 
+	@Override
 	public void setAutoSave(boolean value) {
 		autosave = value;
 	}
 
+	@Override
 	public void setDifficulty(Difficulty difficulty) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Difficulty getDifficulty() {
 		return Difficulty.PEACEFUL;
 	}
@@ -901,36 +1001,37 @@ public final class SpoutWorld implements World {
 
 	void writeWorldData(boolean async) {
 		if (async) {
-		server.getStorageQueue().queue(new StorageOperation() {
-			@Override
-			public boolean isParallel() {
-				return true;
-			}
-
-			@Override
-			public String getGroup() {
-				return getName();
-			}
-
-			@Override
-			public boolean queueMultiple() {
-				return false;
-			}
-
-			@Override
-			public String getOperation() {
-				return "world-metadata-save";
-			}
-
-			public void run() {
-				try {
-					storageProvider.getMetadataService().writeWorldData();
-				} catch (IOException e) {
-					server.getLogger().severe("Could not save world metadata file for world" + getName());
-					e.printStackTrace();
+			server.getStorageQueue().queue(new StorageOperation() {
+				@Override
+				public boolean isParallel() {
+					return true;
 				}
-			}
-		});
+
+				@Override
+				public String getGroup() {
+					return getName();
+				}
+
+				@Override
+				public boolean queueMultiple() {
+					return false;
+				}
+
+				@Override
+				public String getOperation() {
+					return "world-metadata-save";
+				}
+
+				@Override
+				public void run() {
+					try {
+						storageProvider.getMetadataService().writeWorldData();
+					} catch (IOException e) {
+						server.getLogger().severe("Could not save world metadata file for world" + getName());
+						e.printStackTrace();
+					}
+				}
+			});
 		} else {
 			try {
 				storageProvider.getMetadataService().writeWorldData();
@@ -959,9 +1060,12 @@ public final class SpoutWorld implements World {
 		return true;
 	}
 
-	/** Get the world folder.
+	/**
+	 * Get the world folder.
+	 *
 	 * @return world folder
 	 */
+	@Override
 	public File getWorldFolder() {
 		return storageProvider.getFolder();
 	}

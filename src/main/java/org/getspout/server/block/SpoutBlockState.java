@@ -34,72 +34,88 @@ public class SpoutBlockState implements BlockState {
 
 	// Basic getters
 
+	@Override
 	public SpoutWorld getWorld() {
 		return world;
 	}
 
+	@Override
 	public SpoutChunk getChunk() {
 		return chunk;
 	}
 
+	@Override
 	public SpoutBlock getBlock() {
 		return world.getBlockAt(x, y, z);
 	}
 
+	@Override
 	public int getX() {
 		return x;
 	}
 
+	@Override
 	public int getY() {
 		return y;
 	}
 
+	@Override
 	public int getZ() {
 		return z;
 	}
 
 	// Type and data
 
+	@Override
 	public MaterialData getData() {
 		return data;
 	}
 
+	@Override
 	public void setData(MaterialData data) {
 		this.data = data;
 	}
 
+	@Override
 	final public Material getType() {
 		return Material.getMaterial(type);
 	}
 
+	@Override
 	final public int getTypeId() {
 		return type;
 	}
 
+	@Override
 	final public void setType(Material type) {
 		setTypeId(type.getId());
 	}
 
+	@Override
 	final public boolean setTypeId(int type) {
 		this.type = type;
 		makeData((byte) 0);
 		return true;
 	}
 
+	@Override
 	final public byte getLightLevel() {
 		return light;
 	}
 
+	@Override
 	final public byte getRawData() {
 		return getData().getData();
 	}
 
 	// Update
 
+	@Override
 	public boolean update() {
 		return update(false);
 	}
 
+	@Override
 	public boolean update(boolean force) {
 		Block block = getBlock();
 
@@ -115,7 +131,8 @@ public class SpoutBlockState implements BlockState {
 		return true;
 	}
 
-	public void update(SpoutPlayer player) {}
+	public void update(SpoutPlayer player) {
+	}
 
 	// Internal mechanisms
 

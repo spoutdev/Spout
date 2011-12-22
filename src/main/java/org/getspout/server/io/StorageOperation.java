@@ -16,24 +16,24 @@ public abstract class StorageOperation implements Runnable {
 
 	/**
 	 * Whether multiple of this operation can be in the storage queue at once
+	 *
 	 * @return
 	 */
 	public abstract boolean queueMultiple();
 
 	/**
 	 * The name of the operation being performed.
+	 *
 	 * @return
 	 */
 	public abstract String getOperation();
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof StorageOperation))
+		if (!(other instanceof StorageOperation)) {
 			return false;
+		}
 		StorageOperation op = (StorageOperation) other;
-		return getGroup().equals(op.getGroup())
-				&& getOperation().equals(op.getOperation())
-				&& isParallel() == op.isParallel()
-				&& queueMultiple() == op.queueMultiple();
+		return getGroup().equals(op.getGroup()) && getOperation().equals(op.getOperation()) && isParallel() == op.isParallel() && queueMultiple() == op.queueMultiple();
 	}
 }

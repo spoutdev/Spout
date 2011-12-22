@@ -13,6 +13,7 @@ public class Trapdoor extends ToggleableAttachable {
 		return existing ^ 4;
 	}
 
+	@Override
 	public int setOpen(int existing, boolean open) {
 		return open ? existing | 0x04 : existing & ~0x04;
 	}
@@ -26,10 +27,15 @@ public class Trapdoor extends ToggleableAttachable {
 	public BlockFace getAttachedFace(int existing) {
 		byte data = (byte) (existing & 0x3);
 		switch (data) {
-			case 0x1: return BlockFace.EAST;
-			case 0x2: return BlockFace.NORTH;
-			case 0x3: return BlockFace.SOUTH;
-			default: case 0x0: return BlockFace.WEST;
+			case 0x1:
+				return BlockFace.EAST;
+			case 0x2:
+				return BlockFace.NORTH;
+			case 0x3:
+				return BlockFace.SOUTH;
+			default:
+			case 0x0:
+				return BlockFace.WEST;
 		}
 	}
 

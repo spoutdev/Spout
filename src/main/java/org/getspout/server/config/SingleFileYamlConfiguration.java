@@ -26,7 +26,7 @@ public class SingleFileYamlConfiguration extends YamlConfiguration {
 		} catch (InvalidConfigurationException ex) {
 			if (ex.getCause() instanceof YAMLException) {
 				SpoutServer.logger.severe("Config file " + configFile + " isn't valid! " + ex.getCause());
-			} else if ((ex.getCause() == null) || (ex.getCause() instanceof ClassCastException)) {
+			} else if (ex.getCause() == null || ex.getCause() instanceof ClassCastException) {
 				SpoutServer.logger.severe("Config file " + configFile + " isn't valid!");
 			} else {
 				SpoutServer.logger.log(Level.SEVERE, "Cannot load " + configFile + ": " + ex.getCause().getClass(), ex);

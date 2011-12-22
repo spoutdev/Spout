@@ -11,6 +11,12 @@ import org.getspout.server.entity.Damager;
 import org.getspout.server.item.ItemID;
 
 public class SpoutSpider extends SpoutMonster implements Spider {
+	/**
+	 * Creates a new spider.
+	 *
+	 * @param server This server this spider is on.
+	 * @param world The world this spider is in.
+	 */
 	public SpoutSpider(SpoutServer server, SpoutWorld world) {
 		super(server, world, 52);
 	}
@@ -23,7 +29,13 @@ public class SpoutSpider extends SpoutMonster implements Spider {
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int count = random.nextInt(3);
-		if (count > 0) loot.add(new ItemStack(ItemID.STRING, count));
+		if (count > 0) {
+			loot.add(new ItemStack(ItemID.STRING, count));
+		}
+		count = random.nextInt(2);
+		if (count > 0) {
+			loot.add(new ItemStack(ItemID.SPIDER_EYE, count));
+		}
 		return loot;
 	}
 }

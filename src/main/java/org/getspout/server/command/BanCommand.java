@@ -17,42 +17,60 @@ public class BanCommand extends SpoutCommand {
 	public BanCommand(SpoutServer server) {
 		super(server, "ban", "Manage player and ip bans", "[-ip] add|remove|check name|ip");
 	}
+
 	@Override
 	public boolean run(CommandSender sender, String commandLabel, String[] args) {
 		int mod = 0;
 		boolean ip = false;
-		if (!checkArgs(sender, args, 2, 3)) return false;
+		if (!checkArgs(sender, args, 2, 3)) {
+			return false;
+		}
 		if (args[0].equalsIgnoreCase("-ip")) {
-			ip = true; mod = 1;
+			ip = true;
+			mod = 1;
 		}
 		String option = args[mod];
 		String target = args[1 + mod];
 		Player player = server.getPlayer(target);
-		String senderName = (sender instanceof Player? ((Player) sender).getDisplayName(): "Console");
+		String senderName = sender instanceof Player ? ((Player) sender).getDisplayName() : "Console";
 		if (option.equalsIgnoreCase("add")) {
 			if (ip) {
-				if (!checkPermission(sender, "addip")) return false;
+				if (!checkPermission(sender, "addip")) {
+					return false;
+				}
 				String newTarget = target;
-				if (player != null) newTarget = player.getAddress().getAddress().getHostAddress();
+				if (player != null) {
+					newTarget = player.getAddress().getAddress().getHostAddress();
+				}
 				server.getBanManager().setIpBanned(newTarget, true);
 			} else {
-				if (!checkPermission(sender, "add")) return false;
+				if (!checkPermission(sender, "add")) {
+					return false;
+				}
 				server.getBanManager().setBanned(target, true);
 			}
-			if (player != null) player.kickPlayer("You have been " + (ip ? "ip banned" : "banned") + " by " + senderName);
+			if (player != null) {
+				player.kickPlayer("You have been " + (ip ? "ip banned" : "banned") + " by " + senderName);
+			}
 			server.broadcastMessage(ChatColor.RED + target + " has been banned by " + senderName);
 		} else if (option.equalsIgnoreCase("remove")) {
-		   if (ip) {
-			   if (!checkPermission(sender, "removeip")) return false;
+			if (ip) {
+				if (!checkPermission(sender, "removeip")) {
+					return false;
+				}
 				server.getBanManager().setIpBanned(target, false);
 			} else {
-			   if (!checkPermission(sender, "remove")) return false;
+				if (!checkPermission(sender, "remove")) {
+					return false;
+				}
 				server.getBanManager().setBanned(target, false);
 			}
 			sender.sendMessage(ChatColor.RED + target + " was unbanned.");
 		} else if (option.equalsIgnoreCase("check")) {
 			boolean banned;
-			if (!checkPermission(sender, "check")) return false;
+			if (!checkPermission(sender, "check")) {
+				return false;
+			}
 			if (ip) {
 				banned = server.getBanManager().isIpBanned(target);
 			} else {

@@ -7,6 +7,6 @@ public class DoorPhysics extends ToggleableAttachablePhysics {
 
 	public DoorPhysics(int id) {
 		super(new Door(id));
-		this.data = (Door)super.data;
+		data = (Door) super.data;
 	}
 }

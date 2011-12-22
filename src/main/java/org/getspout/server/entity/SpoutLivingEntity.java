@@ -23,7 +23,9 @@ import org.getspout.server.util.Parameter;
 import org.getspout.server.util.TargetBlock;
 
 /**
- * A SpoutLivingEntity is a {@link org.bukkit.entity.Player} or {@link org.bukkit.entity.Monster}.
+ * A SpoutLivingEntity is a {@link org.bukkit.entity.Player} or
+ * {@link org.bukkit.entity.Monster}.
+ *
  * @author Graham Edgecombe.
  */
 public abstract class SpoutLivingEntity extends SpoutEntity implements LivingEntity {
@@ -39,40 +41,51 @@ public abstract class SpoutLivingEntity extends SpoutEntity implements LivingEnt
 
 	/**
 	 * Creates a mob within the specified world.
+	 *
 	 * @param world The world.
 	 */
 	public SpoutLivingEntity(SpoutServer server, SpoutWorld world) {
 		super(server, world);
 	}
 
+	@Override
 	public int getHealth() {
 		return health;
 	}
 
+	@Override
 	public void setHealth(int health) {
-		if (health < 0) health = 0;
-		if (health > 200) health = 200;
+		if (health < 0) {
+			health = 0;
+		}
+		if (health > 200) {
+			health = 200;
+		}
 		this.health = health;
 	}
 
+	@Override
 	public double getEyeHeight() {
-	   return getEyeHeight(false);
+		return getEyeHeight(false);
 	}
 
+	@Override
 	public double getEyeHeight(boolean ignoreSneaking) {
-		if (false /* TODO: sneaking */ || !ignoreSneaking) {
+		if (false /* TODO: sneaking */|| !ignoreSneaking) {
 			return 1.6;
 		} else {
 			return 1.4;
 		}
 	}
 
+	@Override
 	public Location getEyeLocation() {
 		Location loc = getLocation();
 		loc.setY(loc.getY() + getEyeHeight());
 		return loc;
 	}
 
+	@Override
 	public List<Block> getLineOfSight(HashSet<Byte> transparent, int maxDistance) {
 		TIntHashSet transparentBlocks = new TIntHashSet();
 		if (transparent != null) {
@@ -93,6 +106,7 @@ public abstract class SpoutLivingEntity extends SpoutEntity implements LivingEnt
 		return ret;
 	}
 
+	@Override
 	public Block getTargetBlock(HashSet<Byte> transparent, int maxDistance) {
 		TIntHashSet transparentBlocks = new TIntHashSet();
 		if (transparent != null) {
@@ -106,6 +120,7 @@ public abstract class SpoutLivingEntity extends SpoutEntity implements LivingEnt
 		return loc == null ? null : loc.getBlock();
 	}
 
+	@Override
 	public List<Block> getLastTwoTargetBlocks(HashSet<Byte> transparent, int maxDistance) {
 		TIntHashSet transparentBlocks = new TIntHashSet();
 		if (transparent != null) {
@@ -123,89 +138,108 @@ public abstract class SpoutLivingEntity extends SpoutEntity implements LivingEnt
 		return new ArrayList<Block>(Arrays.asList(target.getPreviousBlock().getBlock(), last.getBlock()));
 	}
 
+	@Override
 	public Egg throwEgg() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Snowball throwSnowball() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Arrow shootArrow() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean isInsideVehicle() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public boolean leaveVehicle() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Vehicle getVehicle() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void damage(int amount) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void damage(int amount, Entity source) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public int getMaximumNoDamageTicks() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setMaximumNoDamageTicks(int ticks) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public int getLastDamage() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setLastDamage(int damage) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public int getNoDamageTicks() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void setNoDamageTicks(int ticks) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public Player getKiller() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	protected Parameter<?> getMetadata(int index) {
-		if (metadata.size() <= index) return null;
+		if (metadata.size() <= index) {
+			return null;
+		}
 		return metadata.get(index);
 	}
 
 	protected void setMetadata(Parameter<?> data) {
-		if(data.getIndex() < metadata.size()) {
+		if (data.getIndex() < metadata.size()) {
 			metadata.set(data.getIndex(), data);
 		} else {
 			metadata.add(data);
 		}
 		EntityMetadataMessage msg = new EntityMetadataMessage(id, metadata);
 		for (SpoutPlayer player : world.getRawPlayers()) {
-			if (player != this && player.canSee(this)) player.getSession().send(msg);
+			if (player != this && player.canSee(this)) {
+				player.getSession().send(msg);
+			}
 		}
 	}
 
 	protected void setMetadataFlag(int index, int flag, boolean value) {
-		byte existingMeta = getMetadata(index) == null ? 0 : (Byte)getMetadata(index).getValue();
+		byte existingMeta = getMetadata(index) == null ? 0 : (Byte) getMetadata(index).getValue();
 		if (value) {
-			setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, index, (byte)(existingMeta | flag)));
+			setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, index, (byte) (existingMeta | flag)));
 		} else {
-			setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, index, (byte)(existingMeta & -(flag + 1))));
+			setMetadata(new Parameter<Byte>(Parameter.TYPE_BYTE, index, (byte) (existingMeta & -(flag + 1))));
 		}
 	}
 }

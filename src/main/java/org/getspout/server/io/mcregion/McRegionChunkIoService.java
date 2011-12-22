@@ -33,12 +33,13 @@ import org.getspout.server.util.nbt.StringTag;
 import org.getspout.server.util.nbt.Tag;
 
 /**
- * An implementation of the {@link org.getspout.server.io.ChunkIoService} which reads and writes
- * McRegion maps.
+ * An implementation of the {@link org.getspout.server.io.ChunkIoService} which
+ * reads and writes McRegion maps.
  * <p />
- * Information on the McRegion file format can be found on the
- * <a href="http://mojang.com/2011/02/16/minecraft-save-file-format-in-beta-1-3">Mojang</a>
- * blog.
+ * Information on the McRegion file format can be found on the <a
+ * href="http://mojang.com/2011/02/16/minecraft-save-file-format-in-beta-1-3"
+ * >Mojang</a> blog.
+ *
  * @author Graham Edgecombe
  */
 public final class McRegionChunkIoService implements ChunkIoService {
@@ -67,11 +68,12 @@ public final class McRegionChunkIoService implements ChunkIoService {
 		this.dir = dir;
 	}
 
+	@Override
 	public boolean read(SpoutChunk chunk, int x, int z) throws IOException {
 		RegionFile region = cache.getRegionFile(dir, x, z);
-		int regionX = x & (REGION_SIZE - 1);
-		int regionZ = z & (REGION_SIZE - 1);
-		if (!region.hasChunk(regionX, regionZ)){
+		int regionX = x & REGION_SIZE - 1;
+		int regionZ = z & REGION_SIZE - 1;
+		if (!region.hasChunk(regionX, regionZ)) {
 			return false;
 		}
 
@@ -116,12 +118,11 @@ public final class McRegionChunkIoService implements ChunkIoService {
 				}
 			}
 		}
-		List<CompoundTag> storedTileEntities = ((ListTag<CompoundTag>)levelTags.get("TileEntities")).getValue();
+		List<CompoundTag> storedTileEntities = ((ListTag<CompoundTag>) levelTags.get("TileEntities")).getValue();
 		for (CompoundTag tileEntityTag : storedTileEntities) {
-			SpoutBlockState state = chunk.getBlock(((IntTag)tileEntityTag.getValue().get("x")).getValue(),
-					((IntTag)tileEntityTag.getValue().get("y")).getValue(), ((IntTag)tileEntityTag.getValue().get("z")).getValue()).getState();
+			SpoutBlockState state = chunk.getBlock(((IntTag) tileEntityTag.getValue().get("x")).getValue(), ((IntTag) tileEntityTag.getValue().get("y")).getValue(), ((IntTag) tileEntityTag.getValue().get("z")).getValue()).getState();
 			if (state.getClass() != SpoutBlockState.class) {
-				BlockStateStore store = BlockStateStoreLookupService.find(((StringTag)tileEntityTag.getValue().get("id")).getValue());
+				BlockStateStore store = BlockStateStoreLookupService.find(((StringTag) tileEntityTag.getValue().get("id")).getValue());
 				if (store != null) {
 					store.load(state, tileEntityTag);
 				} else {
@@ -130,9 +131,9 @@ public final class McRegionChunkIoService implements ChunkIoService {
 			}
 		}
 
-		List<CompoundTag> storedEntities = ((ListTag<CompoundTag>)levelTags.get("Entities")).getValue();
+		List<CompoundTag> storedEntities = ((ListTag<CompoundTag>) levelTags.get("Entities")).getValue();
 		for (CompoundTag entityTag : storedEntities) {
-			String id = ((StringTag)entityTag.getValue().get("id")).getValue();
+			String id = ((StringTag) entityTag.getValue().get("id")).getValue();
 			EntityStore<?> store = EntityStoreLookupService.find(id);
 
 			if (store != null) {
@@ -147,15 +148,17 @@ public final class McRegionChunkIoService implements ChunkIoService {
 
 	/**
 	 * Writes a chunk. Currently not compatible with the vanilla server.
+	 *
 	 * @param x The X coordinate.
 	 * @param z The Z coordinate.
 	 * @param chunk The {@link SpoutChunk}.
 	 * @throws IOException
 	 */
+	@Override
 	public void write(int x, int z, SpoutChunk chunk) throws IOException {
 		RegionFile region = cache.getRegionFile(dir, x, z);
-		int regionX = x & (REGION_SIZE - 1);
-		int regionZ = z & (REGION_SIZE - 1);
+		int regionX = x & REGION_SIZE - 1;
+		int regionZ = z & REGION_SIZE - 1;
 
 		DataOutputStream out = region.getChunkDataOutputStream(regionX, regionZ);
 		NBTOutputStream nbt = new NBTOutputStream(out, false);
@@ -168,12 +171,12 @@ public final class McRegionChunkIoService implements ChunkIoService {
 
 		for (int cx = 0; cx < SpoutChunk.WIDTH; cx++) {
 			for (int cz = 0; cz < SpoutChunk.DEPTH; cz++) {
-				heightMap[(cx * SpoutChunk.DEPTH + cz) / 2] = (byte)chunk.getWorld().getHighestBlockYAt(x > 0 ? x * cx : cx, z > 0 ? z * cz : cz);
-				for (int cy = 0; cy < chunk.getWorld().getMaxHeight(); cy+=2) {
-					int offset = ((cx * SpoutChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) /2;
-					skyLightData[offset] = (byte) ((chunk.getSkyLight(cx, cy + 1, cz) << 4) | chunk.getSkyLight(cx, cy, cz));
-					blockLightData[offset] = (byte) ((chunk.getBlockLight(cx, cy + 1, cz) << 4) | chunk.getBlockLight(cx, cy, cz));
-					metaData[offset] = (byte) ((chunk.getMetaData(cx, cy + 1, cz) << 4) | chunk.getMetaData(cx, cy, cz));
+				heightMap[(cx * SpoutChunk.DEPTH + cz) / 2] = (byte) chunk.getWorld().getHighestBlockYAt(x > 0 ? x * cx : cx, z > 0 ? z * cz : cz);
+				for (int cy = 0; cy < chunk.getWorld().getMaxHeight(); cy += 2) {
+					int offset = ((cx * SpoutChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) / 2;
+					skyLightData[offset] = (byte) (chunk.getSkyLight(cx, cy + 1, cz) << 4 | chunk.getSkyLight(cx, cy, cz));
+					blockLightData[offset] = (byte) (chunk.getBlockLight(cx, cy + 1, cz) << 4 | chunk.getBlockLight(cx, cy, cz));
+					metaData[offset] = (byte) (chunk.getMetaData(cx, cy + 1, cz) << 4 | chunk.getMetaData(cx, cy, cz));
 				}
 			}
 		}
@@ -186,7 +189,7 @@ public final class McRegionChunkIoService implements ChunkIoService {
 
 		levelTags.put("xPos", new IntTag("xPos", chunk.getX()));
 		levelTags.put("zPos", new IntTag("zPos", chunk.getZ()));
-		levelTags.put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte)(chunk.getPopulated() ? 1 : 0)));
+		levelTags.put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte) (chunk.getPopulated() ? 1 : 0)));
 
 		List<CompoundTag> entities = new ArrayList<CompoundTag>();
 
@@ -219,6 +222,7 @@ public final class McRegionChunkIoService implements ChunkIoService {
 
 	}
 
+	@Override
 	public void unload() throws IOException {
 		cache.clear();
 	}

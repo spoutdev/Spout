@@ -20,8 +20,8 @@ public class SpoutChunkSnapshot implements ChunkSnapshot {
 		this.x = x;
 		this.z = z;
 		this.world = world.getName();
-		this.time = world.getFullTime();
-		this.worldHeight = world.getMaxHeight();
+		time = world.getFullTime();
+		worldHeight = world.getMaxHeight();
 		this.types = types;
 		this.metaData = metaData;
 		this.skyLight = skyLight;
@@ -63,64 +63,78 @@ public class SpoutChunkSnapshot implements ChunkSnapshot {
 		}
 	}
 
+	@Override
 	public int getX() {
 		return x;
 	}
 
+	@Override
 	public int getZ() {
 		return z;
 	}
 
+	@Override
 	public String getWorldName() {
 		return world;
 	}
 
+	@Override
 	public long getCaptureFullTime() {
 		return time;
 	}
 
+	@Override
 	public int getBlockTypeId(int x, int y, int z) {
 		return types[coordToIndex(x, y, z)];
 	}
 
+	@Override
 	public int getBlockData(int x, int y, int z) {
 		return metaData[coordToIndex(x, y, z)];
 	}
 
+	@Override
 	public int getBlockSkyLight(int x, int y, int z) {
 		return skyLight[coordToIndex(x, y, z)];
 	}
 
+	@Override
 	public int getBlockEmittedLight(int x, int y, int z) {
 		return blockLight[coordToIndex(x, y, z)];
 	}
 
+	@Override
 	public int getHighestBlockYAt(int x, int z) {
 		return height[coordToIndex(x, z)];
 	}
 
+	@Override
 	public Biome getBiome(int x, int z) {
 		return biomes[coordToIndex(x, z)];
 	}
 
+	@Override
 	public double getRawBiomeTemperature(int x, int z) {
 		return temp[coordToIndex(x, z)];
 	}
 
+	@Override
 	public double getRawBiomeRainfall(int x, int z) {
 		return humid[coordToIndex(x, z)];
 	}
 
 	private int coordToIndex(int x, int y, int z) {
-		if (x < 0 || z < 0 || y < 0 || x >= SpoutChunk.WIDTH || z >= SpoutChunk.DEPTH || y >= worldHeight)
+		if (x < 0 || z < 0 || y < 0 || x >= SpoutChunk.WIDTH || z >= SpoutChunk.DEPTH || y >= worldHeight) {
 			throw new IndexOutOfBoundsException();
+		}
 
 		return (x * SpoutChunk.DEPTH + z) * worldHeight + y;
 	}
 
 	private int coordToIndex(int x, int z) {
-		if (x < 0 || z < 0 || x >= SpoutChunk.WIDTH || z >= SpoutChunk.DEPTH)
+		if (x < 0 || z < 0 || x >= SpoutChunk.WIDTH || z >= SpoutChunk.DEPTH) {
 			throw new IndexOutOfBoundsException();
+		}
 
 		return x * SpoutChunk.DEPTH + z;
 	}

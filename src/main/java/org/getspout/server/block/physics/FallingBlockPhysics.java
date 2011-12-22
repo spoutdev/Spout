@@ -6,9 +6,7 @@ import org.getspout.server.block.BlockID;
 import org.getspout.server.block.SpoutBlock;
 
 public class FallingBlockPhysics extends DefaultBlockPhysics {
-	private final int id;
 	public FallingBlockPhysics(int id) {
-		this.id = id;
 	}
 
 	@Override
@@ -16,6 +14,7 @@ public class FallingBlockPhysics extends DefaultBlockPhysics {
 		return checkBelowFree(block);
 	}
 
+	@Override
 	public boolean postUpdateNeighbor(SpoutBlock block, BlockFace against) {
 		return checkBelowFree(block);
 	}

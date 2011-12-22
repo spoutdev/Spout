@@ -13,8 +13,9 @@ import org.getspout.server.util.nbt.NBTInputStream;
 import org.getspout.server.util.nbt.Tag;
 
 /**
- * An implementation of the {@link org.getspout.server.io.ChunkIoService} which reads and writes NBT
- * maps.
+ * An implementation of the {@link org.getspout.server.io.ChunkIoService} which
+ * reads and writes NBT maps.
+ *
  * @author Graham Edgecombe
  */
 public final class NbtChunkIoService implements ChunkIoService {
@@ -28,13 +29,12 @@ public final class NbtChunkIoService implements ChunkIoService {
 		this.dir = dir;
 	}
 
-
+	@Override
 	public boolean read(SpoutChunk chunk, int x, int z) {
 		int fileX = formatInt(x);
 		int fileZ = formatInt(z);
 
-		File chunkFile = new File(dir, Integer.toString(fileX & 63, 36) + File.separatorChar + Integer.toString(fileZ & 63, 36)
-				+ File.separatorChar + "c." + Integer.toString(fileX, 36) + "." + Integer.toString(fileZ, 36) + ".dat");
+		File chunkFile = new File(dir, Integer.toString(fileX & 63, 36) + File.separatorChar + Integer.toString(fileZ & 63, 36) + File.separatorChar + "c." + Integer.toString(fileX, 36) + "." + Integer.toString(fileZ, 36) + ".dat");
 
 		Map<String, Tag> levelTags;
 		try {
@@ -79,23 +79,27 @@ public final class NbtChunkIoService implements ChunkIoService {
 		return true;
 	}
 
+	@Override
 	public void write(int x, int z, SpoutChunk chunk) throws IOException {
 
 	}
 
+	@Override
 	public void unload() throws IOException {
 	}
 
 	private int formatInt(int i) {
-		if (i >= 0)
+		if (i >= 0) {
 			return i;
+		}
 		String bin = Integer.toBinaryString(i);
 		StringBuilder ret = new StringBuilder();
 		byte[] bytes = bin.getBytes();
 		for (int ii = 1; i < bytes.length; ii++) {
-			if (bytes[ii] == 1)
+			if (bytes[ii] == 1) {
 				break;
-			ret.append((ii == 0) ? 1 : ii);
+			}
+			ret.append(ii == 0 ? 1 : ii);
 		}
 		return Integer.parseInt(ret.toString());
 	}

@@ -36,5 +36,4 @@ public interface ManagementTask {
 	 */
 	public void setFuture(SimpleFuture<Serializable> future);
 
-
 }

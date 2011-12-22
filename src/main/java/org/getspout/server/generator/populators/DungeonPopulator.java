@@ -33,8 +33,7 @@ public class DungeonPopulator extends BlockPopulator {
 				int y = snapshot.getHighestBlockYAt(x, z);
 				Block block = source.getBlock(x, y - 1, z);
 
-				if (block.getTypeId() == BlockID.STONE
-						&& random.nextInt(1024) == 0) {
+				if (block.getTypeId() == BlockID.STONE && random.nextInt(1024) == 0) {
 					placeChest(random, block);
 				}
 			}
@@ -114,10 +113,7 @@ public class DungeonPopulator extends BlockPopulator {
 	}
 
 	private static void placeSpawner(Random random, Block block) {
-		CreatureType[] types = new CreatureType[]{
-			CreatureType.SKELETON, CreatureType.ZOMBIE,
-			CreatureType.CREEPER, CreatureType.SPIDER
-		};
+		CreatureType[] types = new CreatureType[] {CreatureType.SKELETON, CreatureType.ZOMBIE, CreatureType.CREEPER, CreatureType.SPIDER};
 
 		block.setTypeId(BlockID.MOB_SPAWNER);
 		BlockState state = block.getState();
@@ -206,7 +202,6 @@ public class DungeonPopulator extends BlockPopulator {
 
 	private static boolean canPlaceBlock(World world, int x, int y, int z) {
 		Block block = world.getBlockAt(x, y, z);
-		return !block.isLiquid() && block.getTypeId() != BlockID.MOB_SPAWNER
-				&& block.getTypeId() != BlockID.CHEST;
+		return !block.isLiquid() && block.getTypeId() != BlockID.MOB_SPAWNER && block.getTypeId() != BlockID.CHEST;
 	}
 }

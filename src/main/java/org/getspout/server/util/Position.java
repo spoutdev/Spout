@@ -4,10 +4,12 @@ import org.bukkit.Location;
 
 /**
  * A static class housing position-related utilities and constants.
+ *
  * @author Graham Edgecombe
  */
 public final class Position {
-	private Position() {}
+	private Position() {
+	}
 
 	/**
 	 * The number of integer values between each double value. For example, if
@@ -25,6 +27,7 @@ public final class Position {
 	/**
 	 * Gets the X coordinate multiplied the granularity and rounded to an
 	 * integer.
+	 *
 	 * @return An integer approximation of the X coordinate.
 	 */
 	public static int getIntX(Location loc) {
@@ -34,6 +37,7 @@ public final class Position {
 	/**
 	 * Gets the Y coordinate multiplied the granularity and rounded to an
 	 * integer.
+	 *
 	 * @return An integer approximation of the Y coordinate.
 	 */
 	public static int getIntY(Location loc) {
@@ -43,6 +47,7 @@ public final class Position {
 	/**
 	 * Gets the Z coordinate multiplied the granularity and rounded to an
 	 * integer.
+	 *
 	 * @return An integer approximation of the Z coordinate.
 	 */
 	public static int getIntZ(Location loc) {
@@ -51,22 +56,25 @@ public final class Position {
 
 	/**
 	 * Gets an integer approximation of the yaw between 0 and 255.
+	 *
 	 * @return An integer approximation of the yaw.
 	 */
 	public static int getIntYaw(Location loc) {
-		return (int) (((loc.getYaw() % 360) / 360) * 256);
+		return (int) (loc.getYaw() % 360 / 360 * 256);
 	}
 
 	/**
 	 * Gets an integer approximation of the pitch between 0 and 255.
+	 *
 	 * @return An integer approximation of the yaw.
 	 */
 	public static int getIntPitch(Location loc) {
-		return (int) (((loc.getPitch() % 360) / 360) * 256);
+		return (int) (loc.getPitch() % 360 / 360 * 256);
 	}
 
 	/**
 	 * Gets whether there has been a position change between the two Locations.
+	 *
 	 * @return A boolean.
 	 */
 	public static boolean hasMoved(Location first, Location second) {
@@ -75,6 +83,7 @@ public final class Position {
 
 	/**
 	 * Gets whether there has been a rotation change between the two Locations.
+	 *
 	 * @return A boolean.
 	 */
 	public static boolean hasRotated(Location first, Location second) {

@@ -10,6 +10,7 @@ public class ExperienceOrbCodec extends MessageCodec<ExperienceOrbMessage> {
 	public ExperienceOrbCodec() {
 		super(ExperienceOrbMessage.class, 0x1A);
 	}
+
 	@Override
 	public ChannelBuffer encode(ExperienceOrbMessage message) throws IOException {
 		ChannelBuffer buffer = ChannelBuffers.buffer(19);

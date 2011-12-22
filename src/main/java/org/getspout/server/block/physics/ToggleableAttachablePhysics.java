@@ -13,8 +13,9 @@ public class ToggleableAttachablePhysics extends AttachablePhysics {
 		this.data = data;
 	}
 
+	@Override
 	public boolean interact(SpoutPlayer player, SpoutBlock block, boolean rightClick, BlockFace against) {
-		block.setData((byte)data.toggleOpen(block.getData()));
+		block.setData((byte) data.toggleOpen(block.getData()));
 		return false;
 	}
 }

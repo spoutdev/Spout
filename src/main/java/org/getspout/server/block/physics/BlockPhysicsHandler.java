@@ -11,6 +11,7 @@ public interface BlockPhysicsHandler {
 
 	/**
 	 * Perform physics on a block from a direct update.
+	 *
 	 * @param block The block that changed.
 	 * @return Whether this physics update changed anything.
 	 */
@@ -18,6 +19,7 @@ public interface BlockPhysicsHandler {
 
 	/**
 	 * Perform physics on this block after a change from a neighboring block.
+	 *
 	 * @param block The block that changed
 	 * @param against The neighbor that triggered this update.
 	 * @return Whether this physics update changed anything.
@@ -28,7 +30,8 @@ public interface BlockPhysicsHandler {
 	 * Returns the metadata that should be returned
 	 *
 	 * @param placer The {@link SpoutPlayer} who is placing this block
-	 * @param current The metadata of the item stack that was used to place this or 0
+	 * @param current The metadata of the item stack that was used to place this
+	 *            or 0
 	 * @param against The block face this was placed against or SELF if
 	 * @return The metadata that should be placed.
 	 */
@@ -36,6 +39,7 @@ public interface BlockPhysicsHandler {
 
 	/**
 	 * Performs a special action when placing the block.
+	 *
 	 * @param block The block where a normal placement would occur.
 	 * @param data The type and data of the player's current item in hand.
 	 * @param against The blockface that this placement action occured against
@@ -45,6 +49,7 @@ public interface BlockPhysicsHandler {
 
 	/**
 	 * Performs an action on block interaction.
+	 *
 	 * @param player The player who interacted with the block.
 	 * @param block The block this player interacted with.
 	 * @param rightClick Whether this interaction was a right click.

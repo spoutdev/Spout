@@ -11,6 +11,7 @@ public abstract class TimedAi<T extends SpoutEntity> extends EntityAi<T> {
 		this.tickDelay = tickDelay;
 	}
 
+	@Override
 	public boolean shouldRun() {
 		if (++delayCounter % tickDelay == 0) {
 			delayCounter = 0;

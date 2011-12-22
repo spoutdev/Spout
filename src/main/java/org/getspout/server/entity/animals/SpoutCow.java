@@ -12,10 +12,10 @@ import org.getspout.server.item.ItemID;
 
 public class SpoutCow extends SpoutAnimals implements Cow {
 	/**
-	 * Creates a new monster.
+	 * Creates a new cow.
 	 *
-	 * @param world The world this monster is in.
-	 * @param type  The type of monster.
+	 * @param server This server this cow is on.
+	 * @param world The world this cow is in.
 	 */
 	public SpoutCow(SpoutServer server, SpoutWorld world) {
 		super(server, world, 5);
@@ -25,9 +25,13 @@ public class SpoutCow extends SpoutAnimals implements Cow {
 	public List<ItemStack> getLoot(Damager damager) {
 		List<ItemStack> loot = new ArrayList<ItemStack>();
 		int amount = random.nextInt(3);
-		if (amount > 0) loot.add(new ItemStack(ItemID.LEATHER, amount));
+		if (amount > 0) {
+			loot.add(new ItemStack(ItemID.LEATHER, amount));
+		}
 		amount = random.nextInt(3) + 1;
-		if (amount > 0) loot.add(new ItemStack(getFireTicks() > 0 ? ItemID.COOKED_BEEF : ItemID.RAW_BEEF, amount));
+		if (amount > 0) {
+			loot.add(new ItemStack(getFireTicks() > 0 ? ItemID.COOKED_BEEF : ItemID.RAW_BEEF, amount));
+		}
 		return loot;
 	}
 }

@@ -25,7 +25,7 @@ public class KickCommand extends SpoutCommand {
 			return false;
 		}
 
-		String senderName = (sender instanceof Player ? ((Player) sender).getDisplayName() : "Console");
+		String senderName = sender instanceof Player ? ((Player) sender).getDisplayName() : "Console";
 		player.kickPlayer("Kicked by " + senderName);
 		server.broadcastMessage(ChatColor.YELLOW + args[0] + " has been kicked");
 		return true;
