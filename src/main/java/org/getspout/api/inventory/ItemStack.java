@@ -36,6 +36,9 @@ import org.getspout.api.material.CustomBlockMaterial;
 import org.getspout.api.material.CustomItemMaterial;
 import org.getspout.api.material.Material;
 import org.getspout.api.material.MaterialData;
+import org.getspout.api.util.nbt.Tag;
+
+import java.util.Map;
 
 /**
  * Represents a stack of items
@@ -44,6 +47,7 @@ public class ItemStack implements Cloneable {
 	private int type;
 	private int amount = 0;
 	private short durability = 0;
+	private Map<String, Tag> nbtData = null;
 
 	public ItemStack(final int type) {
 		this(type, 0);
@@ -58,7 +62,7 @@ public class ItemStack implements Cloneable {
 	}
 
 	public ItemStack(final Material type, final int amount) {
-		this(type.getRawId(), amount);
+		this(type.getRawId(), amount, (short)type.getRawData());
 	}
 
 	public ItemStack(final int type, final int amount, final short damage) {
@@ -70,12 +74,17 @@ public class ItemStack implements Cloneable {
 	}
 
 	public ItemStack(final int type, final int amount, final short damage, final Byte data) {
+		this(type, amount, damage, data, null);
+	}
+
+	public ItemStack(final int type, final int amount, final short damage, final Byte data, final Map<String, Tag> nbtData) {
 		this.type = type;
 		this.amount = amount;
 		durability = damage;
 		if (data != null) {
 			durability = data;
 		}
+		this.nbtData = nbtData;
 	}
 
 	public ItemStack(final Material type, final int amount, final short damage, final Byte data) {
@@ -168,7 +177,7 @@ public class ItemStack implements Cloneable {
 	/**
 	 * Sets the MaterialData for this stack of items
 	 *
-	 * @param amount New MaterialData for this item
+	 * @param data New MaterialData for this item
 	 */
 	public void setData(Material data) {
 		setTypeId(data.getRawId());
@@ -201,6 +210,14 @@ public class ItemStack implements Cloneable {
 	 */
 	public int getMaxStackSize() {
 		return -1;
+	}
+
+	public void setNbtData(Map<String, Tag> nbtData) {
+		this.nbtData = nbtData;
+	}
+
+	public Map<String, Tag> getNbtData() {
+		return nbtData;
 	}
 
 	@Override
