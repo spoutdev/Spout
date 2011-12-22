@@ -2,6 +2,7 @@ package org.getspout.api.geo.discrete;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
 /**
  * Represents a position in a world and and direction
@@ -76,5 +77,24 @@ public class Eyelinem extends Eyeline {
 	public void setDirZ(double z) {
 		direction.setZ(z);
 	}
-
+	
+	/**
+	 * Sets the position equal to a point
+	 */
+	public void setPoint(Point point) {
+		this.world = point.world;
+		this.x = point.getX();
+		this.y = point.getY();
+		this.z = point.getZ();
+	}
+	
+	/**
+	 * Sets this Eyeline equal to another Eyeline
+	 */
+	public void setEyeline(Eyeline eyeline) {
+		setPoint(eyeline);
+		direction.setX(eyeline.getDirX());
+		direction.setY(eyeline.getDirY());
+		direction.setZ(eyeline.getDirZ());
+	}
 }
