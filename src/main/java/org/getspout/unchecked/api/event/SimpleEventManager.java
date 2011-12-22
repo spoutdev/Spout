@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.getspout.unchecked.api.Spout;
+import org.getspout.api.Spout;
 import org.getspout.unchecked.api.plugin.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {

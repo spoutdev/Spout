@@ -1,6 +1,5 @@
-package org.getspout.unchecked.api;
+package org.getspout.api;
 
-import org.getspout.api.Game;
 
 /**
  * Represents the Spout core, to get singleton {@link Game} instance

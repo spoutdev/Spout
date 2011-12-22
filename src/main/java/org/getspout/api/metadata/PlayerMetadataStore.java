@@ -14,28 +14,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.metadata;
+package org.getspout.api.metadata;
 
-import org.getspout.unchecked.api.entity.Entity;
+import org.getspout.unchecked.api.OfflinePlayer;
 
 /**
- * An EntityMetadataStore stores metadata values for all {@link Entity} classes
- * an their descendants.
+ * A PlayerMetadataStore stores metadata for {@link org.bukkit.entity.Player}
+ * and {@link OfflinePlayer} objects.
  */
-public class EntityMetadataStore extends MetadataStoreBase<Entity> implements MetadataStore<Entity> {
-
+public class PlayerMetadataStore extends MetadataStoreBase<OfflinePlayer> implements MetadataStore<OfflinePlayer> {
 	/**
-	 * Generates a unique metadata key for an {@link Entity} entity ID.
+	 * Generates a unique metadata key for {@link org.bukkit.entity.Player} and
+	 * {@link OfflinePlayer} using the player name.
 	 *
 	 * @see MetadataStoreBase#Disambiguate(Object, String)
-	 * @param entity
-	 * @param metadataKey
+	 * @param player
+	 * @param metadataKey The name identifying the metadata value
 	 * @return
 	 */
 
 	@Override
-	protected String disambiguate(Entity entity, String metadataKey) {
-		return Integer.toString(entity.getEntityId()) + ":" + metadataKey;
+	protected String disambiguate(OfflinePlayer player, String metadataKey) {
+		return player.getName().toLowerCase() + ":" + metadataKey;
 	}
-
 }

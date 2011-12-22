@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api;
+package org.getspout.api;
 
 public class SpoutRuntimeException extends RuntimeException {
 

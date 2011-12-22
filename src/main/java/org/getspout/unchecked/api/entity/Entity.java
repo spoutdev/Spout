@@ -23,8 +23,8 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.math.Quaternion;
 import org.getspout.api.math.Vector3;
+import org.getspout.api.metadata.Metadatable;
 import org.getspout.unchecked.api.event.EventSource;
-import org.getspout.unchecked.api.metadata.Metadatable;
 
 /**
  * Represents a base entity in the world

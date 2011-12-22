@@ -37,7 +37,7 @@ import javax.swing.text.Position;
 import org.getspout.api.block.Biome;
 import org.getspout.api.geo.World;
 import org.getspout.api.material.Material;
-import org.getspout.unchecked.api.metadata.Metadatable;
+import org.getspout.api.metadata.Metadatable;
 
 public interface Block extends Metadatable {
 

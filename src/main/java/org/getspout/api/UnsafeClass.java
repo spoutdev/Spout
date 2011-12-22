@@ -14,24 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.command;
+package org.getspout.api;
 
-import org.getspout.api.SpoutException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public class CommandException extends SpoutException {
+@Documented
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface UnsafeClass {
+	public String author() default "SpoutDev";
 
-	private static final long serialVersionUID = 7936404856385100186L;
+	public String version() default "1.0";
 
-	public CommandException(String msg) {
-		super(msg);
-	}
-
-	public CommandException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-
-	public CommandException(Throwable cause) {
-		super(cause);
-	}
+	public String shortDescription() default "Indicates that the method executes potentionally unsafe addon code and should be sandboxed before calling";
 
 }

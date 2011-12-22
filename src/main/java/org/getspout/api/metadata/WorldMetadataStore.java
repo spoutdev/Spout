@@ -14,15 +14,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.metadata;
+package org.getspout.api.metadata;
+
+import org.getspout.api.geo.World;
 
 /**
- * A MetadataConversionException is thrown any time a {@link LazyMetadataValue}
- * attempts to convert a metadata value to an inappropriate data type.
+ * An WorldMetadataStore stores metadata values for {@link World} objects.
  */
-@SuppressWarnings("serial")
-public class MetadataConversionException extends RuntimeException {
-	MetadataConversionException(String message) {
-		super(message);
+public class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
+
+	/**
+	 * Generates a unique metadata key for a {@link World} object based on the
+	 * world UID.
+	 *
+	 * @see WorldMetadataStore#Disambiguate(Object, String)
+	 * @param world
+	 * @param metadataKey
+	 * @return
+	 */
+
+	@Override
+	protected String disambiguate(World world, String metadataKey) {
+		return world.getUID().toString() + ":" + metadataKey;
 	}
+
 }

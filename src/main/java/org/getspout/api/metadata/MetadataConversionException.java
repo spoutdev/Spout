@@ -14,19 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api;
+package org.getspout.api.metadata;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Documented
-@Retention(value = RetentionPolicy.RUNTIME)
-public @interface UnsafeClass {
-	public String author() default "SpoutDev";
-
-	public String version() default "1.0";
-
-	public String shortDescription() default "Indicates that the method executes potentionally unsafe addon code and should be sandboxed before calling";
-
+/**
+ * A MetadataConversionException is thrown any time a {@link LazyMetadataValue}
+ * attempts to convert a metadata value to an inappropriate data type.
+ */
+@SuppressWarnings("serial")
+public class MetadataConversionException extends RuntimeException {
+	MetadataConversionException(String message) {
+		super(message);
+	}
 }

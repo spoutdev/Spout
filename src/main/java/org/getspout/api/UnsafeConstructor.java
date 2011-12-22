@@ -14,28 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.metadata;
+package org.getspout.api;
 
-import org.getspout.api.geo.World;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-/**
- * An WorldMetadataStore stores metadata values for {@link World} objects.
- */
-public class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
+@Documented
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface UnsafeConstructor {
+	public String author() default "SpoutDev";
 
-	/**
-	 * Generates a unique metadata key for a {@link World} object based on the
-	 * world UID.
-	 *
-	 * @see WorldMetadataStore#Disambiguate(Object, String)
-	 * @param world
-	 * @param metadataKey
-	 * @return
-	 */
+	public String version() default "1.0";
 
-	@Override
-	protected String disambiguate(World world, String metadataKey) {
-		return world.getUID().toString() + ":" + metadataKey;
-	}
+	public String shortDescription() default "Indicates that the constructor executes potentionally unsafe addon code and should be sandboxed before calling";
 
 }

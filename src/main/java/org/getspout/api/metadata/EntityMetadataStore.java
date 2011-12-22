@@ -14,19 +14,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api;
+package org.getspout.api.metadata;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.getspout.unchecked.api.entity.Entity;
 
-@Documented
-@Retention(value = RetentionPolicy.RUNTIME)
-public @interface UnsafeConstructor {
-	public String author() default "SpoutDev";
+/**
+ * An EntityMetadataStore stores metadata values for all {@link Entity} classes
+ * an their descendants.
+ */
+public class EntityMetadataStore extends MetadataStoreBase<Entity> implements MetadataStore<Entity> {
 
-	public String version() default "1.0";
+	/**
+	 * Generates a unique metadata key for an {@link Entity} entity ID.
+	 *
+	 * @see MetadataStoreBase#Disambiguate(Object, String)
+	 * @param entity
+	 * @param metadataKey
+	 * @return
+	 */
 
-	public String shortDescription() default "Indicates that the constructor executes potentionally unsafe addon code and should be sandboxed before calling";
+	@Override
+	protected String disambiguate(Entity entity, String metadataKey) {
+		return Integer.toString(entity.getEntityId()) + ":" + metadataKey;
+	}
 
 }

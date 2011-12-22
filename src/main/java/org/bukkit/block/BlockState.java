@@ -35,7 +35,7 @@ package org.bukkit.block;
 import javax.swing.text.Position;
 
 import org.getspout.api.geo.World;
-import org.getspout.unchecked.api.metadata.Metadatable;
+import org.getspout.api.metadata.Metadatable;
 
 /**
  * Represents a captured state of a block, which will not change automatically.
