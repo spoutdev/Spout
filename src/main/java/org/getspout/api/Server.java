@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api;
+package org.getspout.api;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.getspout.api.Game;
 import org.getspout.api.geo.World;
+import org.getspout.unchecked.api.OfflinePlayer;
 
 /**
  * Represents the server-specific implementation of Minecraft.
