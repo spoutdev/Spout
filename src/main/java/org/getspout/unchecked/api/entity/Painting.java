@@ -34,7 +34,7 @@
 package org.getspout.unchecked.api.entity;
 
 import org.bukkit.block.BlockFace;
-import org.getspout.unchecked.api.Art;
+import org.getspout.api.Art;
 
 /**
  * Represents a Painting.

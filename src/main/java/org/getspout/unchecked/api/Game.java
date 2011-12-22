@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.getspout.api.GameMode;
 import org.getspout.api.geo.World;
 import org.getspout.unchecked.api.command.AddonCommand;
 import org.getspout.unchecked.api.command.Command;

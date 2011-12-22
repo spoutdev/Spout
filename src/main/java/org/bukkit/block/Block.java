@@ -34,6 +34,7 @@ package org.bukkit.block;
 
 import javax.swing.text.Position;
 
+import org.getspout.api.block.Biome;
 import org.getspout.api.geo.World;
 import org.getspout.api.material.Material;
 import org.getspout.unchecked.api.metadata.Metadatable;

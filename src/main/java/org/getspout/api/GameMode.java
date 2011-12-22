@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api;
+package org.getspout.api;
 
 /**
  * Is a representation of the different game modes that {@link Player}s may

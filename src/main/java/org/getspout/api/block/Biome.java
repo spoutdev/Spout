@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.bukkit.block;
+package org.getspout.api.block;
 
 public enum Biome {
 	FOREST,
