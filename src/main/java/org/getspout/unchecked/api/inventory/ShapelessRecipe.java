@@ -2,7 +2,7 @@ package org.getspout.unchecked.api.inventory;
 
 import java.util.ArrayList;
 
-import org.getspout.unchecked.api.material.Material;
+import org.getspout.api.material.Material;
 
 public class ShapelessRecipe implements Recipe {
 	private ItemStack output;

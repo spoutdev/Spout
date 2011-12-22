@@ -33,8 +33,8 @@
 
 package org.getspout.unchecked.api.entity.neutral;
 
+import org.getspout.api.material.Material;
 import org.getspout.unchecked.api.entity.aggressive.Monster;
-import org.getspout.unchecked.api.material.Material;
 
 /**
  * Represents an Enderman.

@@ -2,10 +2,10 @@ package org.getspout.api.geo.cuboid;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
-import org.getspout.unchecked.api.material.BlockMaterial;
 
 /**
  * Represents a cube containing 16x16x16 Blocks

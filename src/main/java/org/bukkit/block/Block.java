@@ -35,7 +35,7 @@ package org.bukkit.block;
 import javax.swing.text.Position;
 
 import org.getspout.api.geo.World;
-import org.getspout.unchecked.api.material.Material;
+import org.getspout.api.material.Material;
 import org.getspout.unchecked.api.metadata.Metadatable;
 
 public interface Block extends Metadatable {
@@ -152,7 +152,7 @@ public interface Block extends Metadatable {
 	 *
 	 * @return material
 	 */
-	public org.getspout.unchecked.api.material.BlockMaterial getType();
+	public org.getspout.api.material.BlockMaterial getType();
 
 	/**
 	 * Gets the Location of the block

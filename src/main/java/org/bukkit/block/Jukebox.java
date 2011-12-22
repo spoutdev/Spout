@@ -32,7 +32,7 @@
  */
 package org.bukkit.block;
 
-import org.getspout.unchecked.api.material.ItemMaterial;
+import org.getspout.api.material.ItemMaterial;
 
 /**
  * Represents a Jukebox

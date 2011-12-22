@@ -34,7 +34,7 @@ package org.getspout.unchecked.api.inventory;
 
 import java.util.HashMap;
 
-import org.getspout.unchecked.api.material.Material;
+import org.getspout.api.material.Material;
 
 /**
  * Interface to the various inventories

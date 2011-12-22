@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.bukkit.block.Block;
+import org.getspout.api.material.ItemMaterial;
 import org.getspout.api.math.Vector3;
-import org.getspout.unchecked.api.material.ItemMaterial;
 import org.getspout.unchecked.api.plugin.Plugin;
 
 public interface BlockDesign {
