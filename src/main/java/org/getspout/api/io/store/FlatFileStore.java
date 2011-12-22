@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.io.store;
+package org.getspout.api.io.store;
 
 import java.io.File;
 import java.util.ArrayList;

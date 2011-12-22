@@ -1,6 +1,6 @@
 package org.getspout.unchecked.api.inventory;
 
-import org.getspout.unchecked.api.io.store.SimpleStore;
+import org.getspout.api.io.store.SimpleStore;
 
 /**
  * This is a map which maps custom item ids to Strings and back.

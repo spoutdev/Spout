@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.io.store;
+package org.getspout.api.io.store;
 
 import java.util.Collection;
 import java.util.HashMap;
