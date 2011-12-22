@@ -13,11 +13,15 @@ public class TIntPairHashSet {
 	private TLongHashSet set;
 
 	public TIntPairHashSet() {
-		set = new TLongHashSet(100);
+		this(100);
 	}
 
 	public TIntPairHashSet(int capacity) {
 		set = new TLongHashSet(capacity);
+	}
+
+	public TIntPairHashSet(TIntPairHashSet other) {
+		set = new TLongHashSet(other.set);
 	}
 
 	public boolean add(int key1, int key2) {
@@ -41,6 +45,10 @@ public class TIntPairHashSet {
 	public TLongIterator iterator() {
 		return set.iterator();
 	}
+	
+	public void addAll(TIntPairHashSet other) {
+		set.addAll(other.set);
+	}
 
 	public boolean remove(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
@@ -57,5 +65,9 @@ public class TIntPairHashSet {
 
 	public static int longToKey2(long composite) {
 		return (int) (composite & 4294967295L);
+	}
+
+	public static long keysToLong(int key1, int key2) {
+		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 }
