@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.block.design;
+package org.getspout.api.block.design;
 
 public class Vertex {
 
