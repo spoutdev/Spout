@@ -1,7 +1,6 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.Location;
-
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.RotationMessage;
 import org.getspout.server.net.Session;

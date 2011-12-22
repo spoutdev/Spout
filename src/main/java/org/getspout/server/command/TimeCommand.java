@@ -1,16 +1,15 @@
 package org.getspout.server.command;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-
 import org.getspout.server.SpoutServer;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A built-in command to change the time on the server

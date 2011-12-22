@@ -1,11 +1,11 @@
 package org.getspout.server.map;
 
 import java.awt.Image;
-import java.util.Map;
 
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursorCollection;
 import org.bukkit.map.MapFont;
+import org.bukkit.map.MapRenderer;
 
 /**
  * Represents a canvas for drawing to a map. Each canvas is associated with a

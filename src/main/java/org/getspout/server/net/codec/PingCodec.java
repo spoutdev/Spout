@@ -1,9 +1,8 @@
 package org.getspout.server.net.codec;
 
+import org.getspout.server.msg.PingMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.PingMessage;
 
 public final class PingCodec extends MessageCodec<PingMessage> {
 	public PingCodec() {

@@ -3,13 +3,12 @@ package org.getspout.server.net.codec;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-
 import org.getspout.server.item.ItemProperties;
 import org.getspout.server.msg.QuickBarMessage;
 import org.getspout.server.util.ChannelBufferUtils;
 import org.getspout.server.util.nbt.Tag;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 
 public class QuickBarCodec extends MessageCodec<QuickBarMessage> {
 	public QuickBarCodec() {

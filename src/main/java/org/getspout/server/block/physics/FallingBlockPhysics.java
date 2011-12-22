@@ -2,7 +2,6 @@ package org.getspout.server.block.physics;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.FallingSand;
-
 import org.getspout.server.block.BlockID;
 import org.getspout.server.block.SpoutBlock;
 

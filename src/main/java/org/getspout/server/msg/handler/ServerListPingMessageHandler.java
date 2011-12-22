@@ -1,7 +1,6 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.event.server.ServerListPingEvent;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.entity.SpoutPlayer;

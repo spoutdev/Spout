@@ -16,7 +16,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 

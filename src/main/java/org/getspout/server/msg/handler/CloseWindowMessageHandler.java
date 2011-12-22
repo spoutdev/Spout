@@ -1,7 +1,6 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.GameMode;
-
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.CloseWindowMessage;
 import org.getspout.server.net.Session;

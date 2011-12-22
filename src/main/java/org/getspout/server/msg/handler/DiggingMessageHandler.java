@@ -2,15 +2,12 @@ package org.getspout.server.msg.handler;
 
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.BlockID;
@@ -19,7 +16,6 @@ import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.inventory.SpoutItemStack;
 import org.getspout.server.item.ItemProperties;
-import org.getspout.server.msg.BlockPlacementMessage;
 import org.getspout.server.msg.DiggingMessage;
 import org.getspout.server.net.Session;
 

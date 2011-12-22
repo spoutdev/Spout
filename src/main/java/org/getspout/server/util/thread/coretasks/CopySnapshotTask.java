@@ -1,14 +1,17 @@
 package org.getspout.server.util.thread.coretasks;
 
-import org.getspout.server.util.thread.AsyncExecutor;
-import org.getspout.server.util.thread.ManagementTask;
+import java.io.Serializable;
 
-public class CopySnapshotTask implements ManagementTask {
+import org.getspout.server.util.thread.ManagementAsyncExecutor;
+import org.getspout.server.util.thread.ManagementRunnable;
+
+public class CopySnapshotTask extends ManagementRunnable {
 	
 	private static final long serialVersionUID = 1L;
 
-	public void run(AsyncExecutor executor) throws InterruptedException {
+	public Serializable call(ManagementAsyncExecutor executor) throws InterruptedException {
 		executor.copySnapshot();
+		return null;
 	}
 
 }

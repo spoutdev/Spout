@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.Note;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.NoteBlock;
-
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.entity.SpoutPlayer;
 

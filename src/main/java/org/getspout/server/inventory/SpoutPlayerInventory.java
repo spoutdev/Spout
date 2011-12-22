@@ -1,6 +1,7 @@
 package org.getspout.server.inventory;
 
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 /**
  * An Inventory representing the items a player is holding.

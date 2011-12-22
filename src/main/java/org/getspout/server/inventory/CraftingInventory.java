@@ -3,7 +3,6 @@ package org.getspout.server.inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.entity.SpoutPlayer;
 

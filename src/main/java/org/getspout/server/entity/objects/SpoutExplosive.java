@@ -1,7 +1,6 @@
 package org.getspout.server.entity.objects;
 
 import org.bukkit.entity.Explosive;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutEntity;

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.entity.Boat;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.BlockID;

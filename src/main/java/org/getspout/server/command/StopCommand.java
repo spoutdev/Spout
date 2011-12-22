@@ -2,7 +2,6 @@ package org.getspout.server.command;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
-
 import org.getspout.server.SpoutServer;
 
 /**

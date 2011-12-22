@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.getspout.server.SpoutChunk;
-import org.getspout.server.SpoutWorld;
 import org.getspout.server.io.ChunkIoService;
 import org.getspout.server.util.nbt.ByteArrayTag;
 import org.getspout.server.util.nbt.CompoundTag;

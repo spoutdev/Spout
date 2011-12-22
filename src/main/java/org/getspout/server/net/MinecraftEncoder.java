@@ -2,14 +2,13 @@ package org.getspout.server.net;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.Message;
+import org.getspout.server.net.codec.MessageCodec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-
-import org.getspout.server.msg.Message;
-import org.getspout.server.net.codec.MessageCodec;
 
 /**
  * A {@link OneToOneEncoder} which encodes Minecraft {@link Message}s into

@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;

@@ -1,6 +1,14 @@
 package org.getspout.server.command;
 
-import java.util.*;
+import static org.bukkit.util.Java15Compat.Arrays_copyOfRange;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -10,8 +18,6 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
-import static org.bukkit.util.Java15Compat.Arrays_copyOfRange;
-
 import org.getspout.server.util.StringUtil;
 
 /**

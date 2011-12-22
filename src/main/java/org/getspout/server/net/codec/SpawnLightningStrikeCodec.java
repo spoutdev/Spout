@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.SpawnLightningStrikeMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.SpawnLightningStrikeMessage;
 
 public final class SpawnLightningStrikeCodec extends MessageCodec<SpawnLightningStrikeMessage> {
 	public SpawnLightningStrikeCodec() {

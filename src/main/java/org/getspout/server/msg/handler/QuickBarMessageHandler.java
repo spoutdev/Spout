@@ -1,9 +1,6 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.inventory.SpoutInventory;

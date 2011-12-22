@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.ServerListPingMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.ServerListPingMessage;
 
 public class ServerListPingCodec extends MessageCodec<ServerListPingMessage> {
 	private static final ServerListPingMessage LIST_PING_MESSAGE = new ServerListPingMessage();

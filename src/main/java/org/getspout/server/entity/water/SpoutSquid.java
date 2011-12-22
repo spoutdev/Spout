@@ -2,11 +2,9 @@ package org.getspout.server.entity.water;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.entity.Squid;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.Damager;

@@ -4,7 +4,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
-
 import org.getspout.server.block.BlockID;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.entity.SpoutPlayer;

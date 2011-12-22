@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.entity.Enderman;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.BlockID;

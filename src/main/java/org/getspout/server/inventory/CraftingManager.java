@@ -12,10 +12,8 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.block.BlockID;
-import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.item.ItemID;
 
 /**

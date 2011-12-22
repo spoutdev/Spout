@@ -1,21 +1,17 @@
 package org.getspout.server.block;
 
+import static org.junit.Assert.fail;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-
 import org.bukkit.Material;
-
-import org.getspout.server.block.BlockID;
-import org.getspout.server.block.BlockProperties;
-
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.* ;
 
 public class BlockPropertiesTest {
 	private final TIntList blockIdKnown = new TIntArrayList();

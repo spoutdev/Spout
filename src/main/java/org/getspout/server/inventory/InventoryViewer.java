@@ -1,6 +1,5 @@
 package org.getspout.server.inventory;
 
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Represents an entity which can view an inventory.

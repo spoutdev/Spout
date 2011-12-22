@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.RelativeEntityPositionMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.RelativeEntityPositionMessage;
 
 public final class RelativeEntityPositionCodec extends MessageCodec<RelativeEntityPositionMessage> {
 	public RelativeEntityPositionCodec() {

@@ -4,9 +4,9 @@ import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-
 import org.getspout.server.block.BlockID;
-import org.getspout.server.generator.populators.*;
+import org.getspout.server.generator.populators.FlowerPopulator;
+import org.getspout.server.generator.populators.SnowPopulator;
 
 /**
  * A 'cake town' generator as a temporary Skylands.

@@ -1,7 +1,6 @@
 package org.getspout.server.entity.monsters;
 
 import org.bukkit.entity.Monster;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutCreature;

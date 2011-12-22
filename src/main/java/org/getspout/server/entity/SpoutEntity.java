@@ -4,19 +4,21 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-import org.bukkit.entity.Entity;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
-import org.getspout.server.msg.*;
+import org.getspout.server.msg.EntityRotationMessage;
+import org.getspout.server.msg.EntityTeleportMessage;
+import org.getspout.server.msg.Message;
+import org.getspout.server.msg.RelativeEntityPositionMessage;
+import org.getspout.server.msg.RelativeEntityPositionRotationMessage;
 import org.getspout.server.util.Position;
 
 /**

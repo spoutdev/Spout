@@ -1,20 +1,16 @@
 package org.getspout.server.entity.neutrals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.Angerable;
 import org.getspout.server.entity.Damager;
-import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.entity.animals.SpoutAnimals;
-import org.getspout.server.msg.EntityMetadataMessage;
 import org.getspout.server.util.Parameter;
 
 public class SpoutWolf extends SpoutAnimals implements Wolf, Angerable {

@@ -2,7 +2,6 @@ package org.getspout.server.entity.objects;
 
 import org.bukkit.entity.Fireball;
 import org.bukkit.util.Vector;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 

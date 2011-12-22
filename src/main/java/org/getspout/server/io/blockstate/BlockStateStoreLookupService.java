@@ -3,12 +3,7 @@ package org.getspout.server.io.blockstate;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.SpoutBlockState;
-import org.getspout.server.entity.SpoutEntity;
-import org.getspout.server.util.nbt.CompoundTag;
-import org.getspout.server.util.nbt.IntTag;
-import org.getspout.server.util.nbt.StringTag;
 
 /**
  * A class used to lookup block sstate stores

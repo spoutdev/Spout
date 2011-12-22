@@ -3,7 +3,6 @@ package org.getspout.server.inventory;
 import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.util.nbt.Tag;
 
 public class SpoutItemStack extends ItemStack {

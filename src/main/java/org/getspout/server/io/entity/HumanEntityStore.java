@@ -1,10 +1,8 @@
 package org.getspout.server.io.entity;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Location;
-
 import org.getspout.server.entity.SpoutHumanEntity;
 import org.getspout.server.io.nbt.NbtSerialization;
 import org.getspout.server.util.nbt.CompoundTag;

@@ -2,7 +2,6 @@ package org.getspout.server.block.physics;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.SpoutBlockState;
 import org.getspout.server.entity.SpoutPlayer;

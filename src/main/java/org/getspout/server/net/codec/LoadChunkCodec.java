@@ -1,9 +1,8 @@
 package org.getspout.server.net.codec;
 
+import org.getspout.server.msg.LoadChunkMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.LoadChunkMessage;
 
 public final class LoadChunkCodec extends MessageCodec<LoadChunkMessage> {
 	public LoadChunkCodec() {

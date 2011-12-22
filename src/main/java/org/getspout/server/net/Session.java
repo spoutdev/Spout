@@ -2,22 +2,26 @@ package org.getspout.server.net;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.Random;
 import java.util.logging.Level;
-
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.entity.SpoutPlayer;
-import org.getspout.server.msg.*;
+import org.getspout.server.msg.BlockPlacementMessage;
+import org.getspout.server.msg.KickMessage;
+import org.getspout.server.msg.Message;
+import org.getspout.server.msg.PingMessage;
+import org.getspout.server.msg.UserListItemMessage;
 import org.getspout.server.msg.handler.HandlerLookupService;
 import org.getspout.server.msg.handler.MessageHandler;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 
 /**
  * A single connection to the server, which may or may not be associated with a

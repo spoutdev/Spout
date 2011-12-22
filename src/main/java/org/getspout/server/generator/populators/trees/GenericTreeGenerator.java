@@ -1,6 +1,7 @@
 package org.getspout.server.generator.populators.trees;
 
 import java.util.Random;
+
 import org.bukkit.World;
 
 public interface GenericTreeGenerator {

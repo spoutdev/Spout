@@ -1,7 +1,6 @@
 package org.getspout.server.block.data;
 
 import org.bukkit.block.BlockFace;
-
 import org.getspout.server.block.BlockID;
 
 public class Trapdoor extends ToggleableAttachable {

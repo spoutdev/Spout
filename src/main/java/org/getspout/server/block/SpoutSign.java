@@ -1,7 +1,6 @@
 package org.getspout.server.block;
 
 import org.bukkit.block.Sign;
-
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.UpdateSignMessage;

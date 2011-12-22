@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.yaml.snakeyaml.error.YAMLException;
-
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-
 import org.getspout.server.SpoutServer;
+import org.yaml.snakeyaml.error.YAMLException;
 
 public class SingleFileYamlConfiguration extends YamlConfiguration {
 	private final File configFile;

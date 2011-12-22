@@ -4,10 +4,15 @@ import java.util.Arrays;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.block.data.Stairs;
 import org.getspout.server.block.data.Trapdoor;
-import org.getspout.server.block.physics.*;
+import org.getspout.server.block.physics.AttachablePhysics;
+import org.getspout.server.block.physics.BlockPhysicsHandler;
+import org.getspout.server.block.physics.DefaultBlockPhysics;
+import org.getspout.server.block.physics.DoubleStepPhysics;
+import org.getspout.server.block.physics.FluidPhysics;
+import org.getspout.server.block.physics.SpecialPlaceBelowPhysics;
+import org.getspout.server.block.physics.ToggleableAttachablePhysics;
 import org.getspout.server.item.ItemID;
 
 /**

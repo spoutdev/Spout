@@ -9,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
 import org.getspout.server.util.nbt.ByteTag;
 import org.getspout.server.util.nbt.CompoundTag;
 import org.getspout.server.util.nbt.DoubleTag;

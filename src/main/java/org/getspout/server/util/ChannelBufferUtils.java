@@ -8,14 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.util.nbt.CompoundTag;
 import org.getspout.server.util.nbt.NBTInputStream;
 import org.getspout.server.util.nbt.NBTOutputStream;
 import org.getspout.server.util.nbt.Tag;
+import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
  * Contains several {@link ChannelBuffer}-related utility methods.

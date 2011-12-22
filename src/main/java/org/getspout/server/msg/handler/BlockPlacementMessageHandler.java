@@ -1,13 +1,12 @@
 package org.getspout.server.msg.handler;
 
 import org.bukkit.GameMode;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.block.SpoutBlock;

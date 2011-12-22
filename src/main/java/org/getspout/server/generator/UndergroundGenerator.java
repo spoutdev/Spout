@@ -1,6 +1,5 @@
 package org.getspout.server.generator;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -9,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.util.noise.OctaveGenerator;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
-
 import org.getspout.server.block.BlockID;
 
 /**

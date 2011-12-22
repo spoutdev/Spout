@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.objects.SpoutItem;
-import org.getspout.server.util.nbt.*;
+import org.getspout.server.util.nbt.ByteTag;
+import org.getspout.server.util.nbt.CompoundTag;
+import org.getspout.server.util.nbt.ShortTag;
+import org.getspout.server.util.nbt.Tag;
 
 public class ItemEntityStore extends EntityStore<SpoutItem> {
 	public ItemEntityStore() {

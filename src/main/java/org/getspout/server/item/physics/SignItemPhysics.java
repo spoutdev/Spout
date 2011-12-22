@@ -2,7 +2,6 @@ package org.getspout.server.item.physics;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.block.BlockID;
 import org.getspout.server.item.ItemID;
 

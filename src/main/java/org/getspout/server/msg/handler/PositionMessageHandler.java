@@ -2,7 +2,6 @@ package org.getspout.server.msg.handler;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.PositionMessage;

@@ -1,13 +1,12 @@
 package org.getspout.server.inventory;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-
-import org.getspout.server.inventory.CraftingManager;
-
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author zml2008

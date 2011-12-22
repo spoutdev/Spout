@@ -36,7 +36,6 @@ import org.bukkit.entity.StorageMinecart;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.util.Vector;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.animals.SpoutChicken;

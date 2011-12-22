@@ -10,11 +10,9 @@ import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.SpoutBlockState;
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.CompressedChunkMessage;
 import org.getspout.server.msg.Message;

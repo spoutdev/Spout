@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutEntity;

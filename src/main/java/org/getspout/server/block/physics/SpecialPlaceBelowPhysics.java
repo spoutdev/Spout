@@ -3,7 +3,6 @@ package org.getspout.server.block.physics;
 import gnu.trove.set.hash.TIntHashSet;
 
 import org.bukkit.block.BlockFace;
-
 import org.getspout.server.block.SpoutBlock;
 
 public class SpecialPlaceBelowPhysics extends DefaultBlockPhysics {

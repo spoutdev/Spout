@@ -2,12 +2,10 @@ package org.getspout.server.entity;
 
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.msg.Message;
 import org.getspout.server.msg.SpawnMobMessage;
-import org.getspout.server.util.Parameter;
 import org.getspout.server.util.Position;
 
 /**

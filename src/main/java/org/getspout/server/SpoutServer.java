@@ -20,13 +20,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -54,13 +47,11 @@ import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.SimpleServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.util.permissions.DefaultPermissions;
-
 import org.getspout.server.command.BanCommand;
 import org.getspout.server.command.ColorCommand;
 import org.getspout.server.command.DeopCommand;
 import org.getspout.server.command.ExperienceCommand;
 import org.getspout.server.command.GameModeCommand;
-import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.HelpCommand;
 import org.getspout.server.command.KickCommand;
 import org.getspout.server.command.ListCommand;
@@ -69,6 +60,7 @@ import org.getspout.server.command.OpCommand;
 import org.getspout.server.command.ReloadCommand;
 import org.getspout.server.command.SaveCommand;
 import org.getspout.server.command.SayCommand;
+import org.getspout.server.command.SpoutCommandMap;
 import org.getspout.server.command.StopCommand;
 import org.getspout.server.command.TellCommand;
 import org.getspout.server.command.TimeCommand;
@@ -87,6 +79,12 @@ import org.getspout.server.util.DeadlockMonitor;
 import org.getspout.server.util.PlayerListFile;
 import org.getspout.server.util.bans.BanManager;
 import org.getspout.server.util.bans.FlatFileBanManager;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 /**
  * The core class of the Spout server.

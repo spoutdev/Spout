@@ -2,11 +2,10 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-
 import org.getspout.server.msg.OpenWindowMessage;
 import org.getspout.server.util.ChannelBufferUtils;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 
 public final class OpenWindowCodec extends MessageCodec<OpenWindowMessage> {
 	public OpenWindowCodec() {

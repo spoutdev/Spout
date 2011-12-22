@@ -1,22 +1,17 @@
 package org.getspout.server.item;
 
+import static org.junit.Assert.fail;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-
 import org.bukkit.Material;
-
-import org.getspout.server.item.ItemID;
-import org.getspout.server.item.ItemProperties;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.fail;
 
 public class ItemPropertiesTest {
 	private final TIntList itemIdKnown = new TIntArrayList();

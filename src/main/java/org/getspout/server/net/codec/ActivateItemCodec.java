@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.ActivateItemMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.ActivateItemMessage;
 
 public final class ActivateItemCodec extends MessageCodec<ActivateItemMessage> {
 	public ActivateItemCodec() {

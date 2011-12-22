@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Sheep;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.block.BlockID;

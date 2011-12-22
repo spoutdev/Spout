@@ -2,13 +2,12 @@ package org.getspout.server.net;
 
 import java.io.IOException;
 
+import org.getspout.server.net.codec.MessageCodec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
-
-import org.getspout.server.net.codec.MessageCodec;
 
 /**
  * A {@link ReplayingDecoder} which decodes {@link ChannelBuffer}s into

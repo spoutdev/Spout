@@ -2,12 +2,10 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.bukkit.inventory.ItemStack;
+import org.getspout.server.msg.SpawnItemMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.bukkit.inventory.ItemStack;
-
-import org.getspout.server.msg.SpawnItemMessage;
 
 public final class SpawnItemCodec extends MessageCodec<SpawnItemMessage> {
 	public SpawnItemCodec() {

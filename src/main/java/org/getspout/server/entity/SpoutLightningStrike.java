@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bukkit.entity.LightningStrike;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.msg.Message;

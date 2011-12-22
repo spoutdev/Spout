@@ -1,11 +1,9 @@
 package org.getspout.server.entity.monsters;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Silverfish;
 import org.bukkit.inventory.ItemStack;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.Damager;

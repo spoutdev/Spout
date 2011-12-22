@@ -1,10 +1,5 @@
 package org.getspout.server.msg.handler;
 
-import java.util.logging.Level;
-
-import org.bukkit.ChatColor;
-
-import org.getspout.server.SpoutServer;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.ChatMessage;
 import org.getspout.server.net.Session;

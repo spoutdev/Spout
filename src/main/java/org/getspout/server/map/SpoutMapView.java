@@ -8,7 +8,6 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
-
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;
 

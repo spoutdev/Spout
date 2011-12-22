@@ -5,9 +5,13 @@ import java.util.Arrays;
 import org.bukkit.CropState;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.block.BlockID;
-import org.getspout.server.item.physics.*;
+import org.getspout.server.item.physics.DefaultItemPhysics;
+import org.getspout.server.item.physics.EmptyBucketPhysics;
+import org.getspout.server.item.physics.FilledBucketPhysics;
+import org.getspout.server.item.physics.GlassBottlePhysics;
+import org.getspout.server.item.physics.ItemPhysics;
+import org.getspout.server.item.physics.SignItemPhysics;
 
 /**
  * An enum containing an entry for every block describing that block's physical properties.

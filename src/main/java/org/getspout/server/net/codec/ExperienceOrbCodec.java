@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.ExperienceOrbMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.ExperienceOrbMessage;
 
 public class ExperienceOrbCodec extends MessageCodec<ExperienceOrbMessage> {
 	public ExperienceOrbCodec() {

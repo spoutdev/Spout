@@ -1,7 +1,6 @@
 package org.getspout.server.block.physics;
 
 import org.bukkit.block.BlockFace;
-
 import org.getspout.server.block.BlockID;
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.data.Attachable;

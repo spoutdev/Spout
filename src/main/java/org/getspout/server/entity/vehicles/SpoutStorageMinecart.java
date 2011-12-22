@@ -2,7 +2,6 @@ package org.getspout.server.entity.vehicles;
 
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.inventory.Inventory;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 

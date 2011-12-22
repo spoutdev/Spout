@@ -7,9 +7,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 
-import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.BlockPopulator;
-
+import org.bukkit.generator.ChunkGenerator;
 import org.getspout.server.io.ChunkIoService;
 
 /**

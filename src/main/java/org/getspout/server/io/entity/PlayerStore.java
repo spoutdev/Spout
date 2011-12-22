@@ -3,7 +3,6 @@ package org.getspout.server.io.entity;
 import java.util.Map;
 
 import org.bukkit.GameMode;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;

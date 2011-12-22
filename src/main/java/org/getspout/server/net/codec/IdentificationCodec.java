@@ -1,10 +1,9 @@
 package org.getspout.server.net.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-
 import org.getspout.server.msg.IdentificationMessage;
 import org.getspout.server.util.ChannelBufferUtils;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 
 public final class IdentificationCodec extends MessageCodec<IdentificationMessage> {
 	public IdentificationCodec() {

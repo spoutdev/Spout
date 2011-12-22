@@ -12,7 +12,6 @@ import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-
 import org.getspout.server.block.BlockID;
 
 /**

@@ -7,12 +7,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.logging.Level;
 
-import org.bukkit.GameMode;
 import org.bukkit.event.player.PlayerPreLoginEvent;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutServer;
-import org.getspout.server.SpoutWorld;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.msg.IdentificationMessage;
 import org.getspout.server.net.Session;

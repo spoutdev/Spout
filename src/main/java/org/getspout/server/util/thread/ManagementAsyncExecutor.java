@@ -1,29 +1,24 @@
 package org.getspout.server.util.thread;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 
-public interface AsyncExecutor {
+public interface ManagementAsyncExecutor {
 	
 	/**
-	 * Sets this thread as manager for a given object
+	 * Sets this executor as manager for a given object
 	 *
 	 * @param managed the object to give responsibility for
 	 */
 	public void addManaged(Managed managed);
-	/**
-	 * Adds a task to this thread's queue
-	 *
-	 * @param task the runnable to execute
-	 */
-	public void addToQueue(ManagementTask task);
 
 	/**
-	 * Adds a task to this thread's queue and wakes it if necessary
+	 * Adds a task to this executor's queue
 	 *
 	 * @param task the runnable to execute
 	 */
-	public void addToQueueAndWake(ManagementTask task);
+	public Future<?> addToQueue(ManagementTask task) throws InterruptedException;
 	
 	/**
 	 * Instructs the thread to copy all updated data to its snapshot

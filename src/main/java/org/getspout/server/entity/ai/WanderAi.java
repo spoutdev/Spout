@@ -3,7 +3,6 @@ package org.getspout.server.entity.ai;
 import java.util.Random;
 
 import org.bukkit.Location;
-
 import org.getspout.server.entity.SpoutEntity;
 
 public class WanderAi extends TimedAi<SpoutEntity> {

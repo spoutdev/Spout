@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.permissions.PermissionDefault;
-
 import org.getspout.server.SpoutServer;
 
 public class SayCommand extends SpoutCommand {

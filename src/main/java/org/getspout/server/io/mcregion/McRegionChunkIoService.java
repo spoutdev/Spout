@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Entity;
-
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;

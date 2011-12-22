@@ -1,7 +1,6 @@
 package org.getspout.server.io;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 
 import org.getspout.server.entity.SpoutPlayer;

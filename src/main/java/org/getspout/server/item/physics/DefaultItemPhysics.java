@@ -3,7 +3,6 @@ package org.getspout.server.item.physics;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
 import org.bukkit.material.MaterialData;
-
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.inventory.SpoutItemStack;

@@ -14,7 +14,6 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
-
 import org.getspout.server.block.BlockID;
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.item.ItemID;

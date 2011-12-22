@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.CreateEntityMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.CreateEntityMessage;
 
 public final class CreateEntityCodec extends MessageCodec<CreateEntityMessage> {
 	public CreateEntityCodec() {

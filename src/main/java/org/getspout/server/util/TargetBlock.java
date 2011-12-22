@@ -27,7 +27,6 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
-
 import org.getspout.server.block.BlockID;
 import org.getspout.server.entity.SpoutLivingEntity;
 

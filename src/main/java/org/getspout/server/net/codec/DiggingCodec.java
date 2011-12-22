@@ -2,10 +2,9 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.msg.DiggingMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.DiggingMessage;
 
 public final class DiggingCodec extends MessageCodec<DiggingMessage> {
 	public DiggingCodec() {

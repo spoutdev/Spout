@@ -1,7 +1,6 @@
 package org.getspout.server.block.physics;
 
 import org.bukkit.block.BlockFace;
-
 import org.getspout.server.EventFactory;
 import org.getspout.server.block.BlockProperties;
 import org.getspout.server.block.SpoutBlock;

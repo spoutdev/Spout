@@ -9,7 +9,6 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.generator.BlockPopulator;
-
 import org.getspout.server.block.BlockID;
 
 /**

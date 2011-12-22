@@ -1,6 +1,5 @@
 package org.getspout.server.generator;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -8,9 +7,15 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.util.noise.OctaveGenerator;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
-
 import org.getspout.server.block.BlockID;
-import org.getspout.server.generator.populators.*;
+import org.getspout.server.generator.populators.DesertPopulator;
+import org.getspout.server.generator.populators.DungeonPopulator;
+import org.getspout.server.generator.populators.FlowerPopulator;
+import org.getspout.server.generator.populators.LakePopulator;
+import org.getspout.server.generator.populators.MushroomPopulator;
+import org.getspout.server.generator.populators.OrePopulator;
+import org.getspout.server.generator.populators.SnowPopulator;
+import org.getspout.server.generator.populators.TreePopulator;
 
 /**
  * Basic generator with lots of hills.

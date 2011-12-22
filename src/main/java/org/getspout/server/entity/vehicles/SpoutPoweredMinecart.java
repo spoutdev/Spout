@@ -1,7 +1,6 @@
 package org.getspout.server.entity.vehicles;
 
 import org.bukkit.entity.PoweredMinecart;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 

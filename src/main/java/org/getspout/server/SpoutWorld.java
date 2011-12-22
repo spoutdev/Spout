@@ -2,7 +2,12 @@ package org.getspout.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -26,14 +31,18 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
 import org.getspout.server.block.SpoutBlock;
-import org.getspout.server.entity.*;
+import org.getspout.server.entity.EntityManager;
+import org.getspout.server.entity.EntityProperties;
+import org.getspout.server.entity.SpoutEntity;
+import org.getspout.server.entity.SpoutLightningStrike;
+import org.getspout.server.entity.SpoutLivingEntity;
+import org.getspout.server.entity.SpoutPlayer;
 import org.getspout.server.entity.objects.SpoutItem;
 import org.getspout.server.io.StorageOperation;
 import org.getspout.server.io.WorldMetadataService;
-import org.getspout.server.io.WorldStorageProvider;
 import org.getspout.server.io.WorldMetadataService.WorldFinalValues;
+import org.getspout.server.io.WorldStorageProvider;
 import org.getspout.server.msg.LoadChunkMessage;
 import org.getspout.server.msg.StateChangeMessage;
 import org.getspout.server.msg.TimeMessage;

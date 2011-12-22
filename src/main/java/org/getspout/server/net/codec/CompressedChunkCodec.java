@@ -5,10 +5,9 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import org.getspout.server.msg.CompressedChunkMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import org.getspout.server.msg.CompressedChunkMessage;
 
 public final class CompressedChunkCodec extends MessageCodec<CompressedChunkMessage> {
 	private static final int COMPRESSION_LEVEL = Deflater.BEST_SPEED;

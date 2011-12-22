@@ -1,7 +1,6 @@
 package org.getspout.server.block.physics;
 
 import org.bukkit.block.BlockFace;
-
 import org.getspout.server.block.SpoutBlock;
 import org.getspout.server.block.data.ToggleableAttachable;
 import org.getspout.server.entity.SpoutPlayer;

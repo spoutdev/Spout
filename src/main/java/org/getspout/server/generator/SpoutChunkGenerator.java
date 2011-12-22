@@ -13,7 +13,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.util.noise.OctaveGenerator;
-
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.block.BlockID;
 import org.getspout.server.block.BlockProperties;

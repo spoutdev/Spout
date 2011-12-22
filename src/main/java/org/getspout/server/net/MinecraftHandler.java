@@ -2,15 +2,14 @@ package org.getspout.server.net;
 
 import java.util.logging.Level;
 
+import org.getspout.server.SpoutServer;
+import org.getspout.server.msg.Message;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-
-import org.getspout.server.SpoutServer;
-import org.getspout.server.msg.Message;
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network
  * events.

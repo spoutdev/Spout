@@ -1,11 +1,11 @@
 package org.getspout.server.entity;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
-import gnu.trove.set.hash.TIntHashSet;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -16,7 +16,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Vehicle;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 import org.getspout.server.msg.EntityMetadataMessage;

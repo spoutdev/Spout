@@ -1,7 +1,6 @@
 package org.getspout.server.entity;
 
 import org.bukkit.entity.Weather;
-
 import org.getspout.server.SpoutServer;
 import org.getspout.server.SpoutWorld;
 

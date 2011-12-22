@@ -1,24 +1,29 @@
 package org.getspout.server.util.thread;
 
+import java.io.Serializable;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.getspout.api.util.future.SimpleFuture;
 import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
 import org.getspout.server.util.thread.coretasks.StartTickTask;
 
 /**
  * This is a thread that is responsible for managing various objects.
  */
-public abstract class ManagementThread extends PulsableThread implements AsyncExecutor {
+public abstract class ManagementThread extends PulsableThread implements ManagementAsyncExecutor {
 	private WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
 	private ConcurrentLinkedQueue<ManagementTask> taskQueue = new ConcurrentLinkedQueue<ManagementTask>();
 	private AtomicBoolean wakePending = new AtomicBoolean(false);
 	private AtomicInteger wakeCounter = new AtomicInteger(0);
+	private AtomicReference<Object> waitingMonitor = new AtomicReference<Object>();
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
-	private long tick;
+	protected SimpleFuture<Serializable> cachedFuture = null;
 
 	/**
 	 * Sets this thread as manager for a given object
@@ -31,22 +36,48 @@ public abstract class ManagementThread extends PulsableThread implements AsyncEx
 	}
 
 	/**
-	 * Adds a task to this thread's queue
-	 *
-	 * @param task the runnable to execute
+	 * Adds a task to the thread's queue
+	 * 
+	 * If this method is called by the thread itself, then the task will be immediately executed.
+	 * 
+	 * @param task
 	 */
-	public final void addToQueue(ManagementTask task) {
-		taskQueue.add(task);
+	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
+		if (Thread.currentThread() == this) {
+			executeTask(task);
+		} else {
+			taskQueue.add(task);
+			pulse();
+		}
+		return task.getFuture();
 	}
-
+	
 	/**
-	 * Adds a task to this thread's queue and wakes it if necessary
-	 *
-	 * @param task the runnable to execute
+	 * Waits until a future is done.
+	 * 
+	 * This method will execute any tasks added to the queue while waiting.
+	 * 
+	 * Other tasks can be processed while event processing steps that require waiting for other threads are waiting. 
+	 * 
+	 * @param future the future
 	 */
-	public final void addToQueueAndWake(ManagementTask task) {
-		taskQueue.add(task);
-		pulse();
+	protected final void waitForFuture(SimpleFuture<Serializable> future) throws InterruptedException {
+		ThreadsafetyManager.checkManagerThread(this);
+		
+		Object monitor = future.getMonitor();
+		waitingMonitor.set(monitor);
+		
+		while (!future.isDone()) {
+			executeAllTasks();
+			synchronized (monitor) {
+				if (!taskQueue.isEmpty()) {
+					continue;
+				}
+				future.waitForMonitor();
+			}
+		}
+		
+		waitingMonitor.set(null);
 	}
 	
 	/**
@@ -54,13 +85,21 @@ public abstract class ManagementThread extends PulsableThread implements AsyncEx
 	 * 
 	 * Other tasks can be processed while event processing steps that require waiting for other threads are waiting. 
 	 */
-	public final void executeOtherTasks() throws InterruptedException {
+	protected final void executeAllTasks() throws InterruptedException {
 		ThreadsafetyManager.checkManagerThread(this);
 		ManagementTask task;
 		while ((task = taskQueue.poll()) != null) {
-			task.run(this);
+			executeTask(task);
+			
 		}
-		// TODO - need a way to wait for return values from other threads, but still allow this one to be woken, when new tasks arrive.
+	}
+	
+	private final void executeTask(ManagementTask task) throws InterruptedException {
+		Serializable returnValue = task.call(this);
+		SimpleFuture<Serializable> future = task.getFuture();
+		if (future != null) {
+			future.set(returnValue);
+		}
 	}
 	
 	/**
@@ -120,30 +159,26 @@ public abstract class ManagementThread extends PulsableThread implements AsyncEx
 		}
 	}
 	
+	public boolean pulse() {
+		Object monitor = waitingMonitor.get();
+		if (monitor != null) {
+			synchronized(monitor) {
+				monitor.notifyAll();
+			}
+		}
+		return super.pulse();
+	}
+	
 	/**
 	 * All tasks on the queue are executed whenever the thread is pulsed
 	 */
 	protected final void pulsedRun() throws InterruptedException {
 		ThreadsafetyManager.checkManagerThread(this);
-		ManagementTask task;
-		while ((task = taskQueue.poll()) != null) {
-			task.run(this);
-		}
+		executeAllTasks();
 	}
 	
-	/**
-	 * This method is called once at the end of every tick
-	 * 
-	 * This method should be overridden.  
-	 */
 	public abstract void copySnapshotRun() throws InterruptedException;
 
-	/**
-	 * This method is called once at the start of every tick
-	 * 
-	 * This method should be overridden.  
-	 */
-	public abstract void startTickRun() throws InterruptedException;
+	public abstract void startTickRun(long tick) throws InterruptedException;
 	
-
 }

@@ -2,9 +2,8 @@ package org.getspout.server.net.codec;
 
 import java.io.IOException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 import org.getspout.server.msg.Message;
+import org.jboss.netty.buffer.ChannelBuffer;
 
 public abstract class MessageCodec<T extends Message> {
 	private final Class<T> clazz;
