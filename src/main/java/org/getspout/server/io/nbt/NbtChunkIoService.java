@@ -8,6 +8,7 @@ import java.util.Map;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.io.ChunkIoService;
 import org.getspout.server.util.nbt.ByteArrayTag;
+import org.getspout.server.util.nbt.ByteTag;
 import org.getspout.server.util.nbt.CompoundTag;
 import org.getspout.server.util.nbt.NBTInputStream;
 import org.getspout.server.util.nbt.Tag;
@@ -45,36 +46,37 @@ public final class NbtChunkIoService implements ChunkIoService {
 			return false;
 		}
 
-		byte[] tileData = ((ByteArrayTag) levelTags.get("Blocks")).getValue();
-		chunk.initializeTypes(tileData);
+		final byte[] tileData = ((ByteArrayTag) levelTags.get("Blocks")).getValue();
+		final byte[] skyLight = new byte[tileData.length];
+		final byte[] blockLight = new byte[tileData.length];
+		final byte[] meta = new byte[tileData.length];
 
-		byte[] skyLightData = ((ByteArrayTag) levelTags.get("SkyLight")).getValue();
-		byte[] blockLightData = ((ByteArrayTag) levelTags.get("BlockLight")).getValue();
-		byte[] metaData = ((ByteArrayTag) levelTags.get("Data")).getValue();
+		final byte[] skyLightData = ((ByteArrayTag) levelTags.get("SkyLight")).getValue();
+		final byte[] blockLightData = ((ByteArrayTag) levelTags.get("BlockLight")).getValue();
+		final byte[] metaData = ((ByteArrayTag) levelTags.get("Data")).getValue();
 
 		for (int cx = 0; cx < SpoutChunk.WIDTH; cx++) {
 			for (int cz = 0; cz < SpoutChunk.DEPTH; cz++) {
 				for (int cy = 0; cy < chunk.getWorld().getMaxHeight(); cy++) {
-					boolean mostSignificantNibble = ((cx * SpoutChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) % 2 == 1;
-					int offset = ((cx * SpoutChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy) / 2;
+					final int index = ((cx * SpoutChunk.DEPTH + cz) * chunk.getWorld().getMaxHeight() + cy);
+					final boolean mostSignificantNibble = index % 2 == 1;
+					final int offset = index / 2;
 
-					int skyLight, blockLight, meta;
 					if (mostSignificantNibble) {
-						skyLight = (skyLightData[offset] & 0xF0) >> 4;
-						blockLight = (blockLightData[offset] & 0xF0) >> 4;
-						meta = (metaData[offset] & 0xF0) >> 4;
+						skyLight[index] = (byte)((skyLightData[offset] & 0xF0) >> 4);
+						blockLight[index] = (byte)((blockLightData[offset] & 0xF0) >> 4);
+						meta[index] = (byte)((metaData[offset] & 0xF0) >> 4);
 					} else {
-						skyLight = skyLightData[offset] & 0x0F;
-						blockLight = blockLightData[offset] & 0x0F;
-						meta = metaData[offset] & 0x0F;
+						skyLight[index] = (byte)(skyLightData[offset] & 0x0F);
+						blockLight[index] = (byte)(blockLightData[offset] & 0x0F);
+						meta[index] = (byte)(metaData[offset] & 0x0F);
 					}
-
-					chunk.setSkyLight(cx, cy, cz, skyLight);
-					chunk.setBlockLight(cx, cy, cz, blockLight);
-					chunk.setMetaData(cx, cy, cz, meta);
 				}
 			}
 		}
+
+		chunk.initializeTypes(tileData, skyLight, blockLight, meta);
+		chunk.setPopulated(((ByteTag) levelTags.get("TerrainPopulated")).getValue() == 1);
 
 		return true;
 	}

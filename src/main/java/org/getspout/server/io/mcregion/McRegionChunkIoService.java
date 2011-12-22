@@ -5,10 +5,12 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutServer;
@@ -87,37 +89,39 @@ public final class McRegionChunkIoService implements ChunkIoService {
 		Map<String, Tag> levelTags = ((CompoundTag) tag.getValue().get("Level")).getValue();
 		nbt.close();
 
-		byte[] tileData = ((ByteArrayTag) levelTags.get("Blocks")).getValue();
-		chunk.initializeTypes(tileData);
-		chunk.setPopulated(((ByteTag) levelTags.get("TerrainPopulated")).getValue() == 1);
+		final byte[] tileData = ((ByteArrayTag) levelTags.get("Blocks")).getValue();
+		final byte[] skyLight = new byte[tileData.length];
+		final byte[] blockLight = new byte[tileData.length];
+		final byte[] meta = new byte[tileData.length];
+		Arrays.fill(skyLight, (byte) 15);
 
-		byte[] skyLightData = ((ByteArrayTag) levelTags.get("SkyLight")).getValue();
-		byte[] blockLightData = ((ByteArrayTag) levelTags.get("BlockLight")).getValue();
-		byte[] metaData = ((ByteArrayTag) levelTags.get("Data")).getValue();
+		final byte[] skyLightData = ((ByteArrayTag) levelTags.get("SkyLight")).getValue();
+		final byte[] blockLightData = ((ByteArrayTag) levelTags.get("BlockLight")).getValue();
+		final byte[] metaData = ((ByteArrayTag) levelTags.get("Data")).getValue();
 
 		for (int cx = 0; cx < SpoutChunk.WIDTH; cx++) {
 			for (int cz = 0; cz < SpoutChunk.DEPTH; cz++) {
 				for (int cy = 0; cy < world.getMaxHeight(); cy++) {
-					boolean mostSignificantNibble = ((cx * SpoutChunk.DEPTH + cz) * world.getMaxHeight() + cy) % 2 == 1;
-					int offset = ((cx * SpoutChunk.DEPTH + cz) * world.getMaxHeight() + cy) / 2;
+					final int index = ((cx * SpoutChunk.DEPTH + cz) * world.getMaxHeight() + cy);
+					final boolean mostSignificantNibble = index % 2 == 1;
+					final int offset = index / 2;
 
-					int skyLight, blockLight, meta;
 					if (mostSignificantNibble) {
-						skyLight = (skyLightData[offset] & 0xF0) >> 4;
-						blockLight = (blockLightData[offset] & 0xF0) >> 4;
-						meta = (metaData[offset] & 0xF0) >> 4;
+						skyLight[index] = (byte)((skyLightData[offset] & 0xF0) >> 4);
+						blockLight[index] = (byte)((blockLightData[offset] & 0xF0) >> 4);
+						meta[index] = (byte)((metaData[offset] & 0xF0) >> 4);
 					} else {
-						skyLight = skyLightData[offset] & 0x0F;
-						blockLight = blockLightData[offset] & 0x0F;
-						meta = metaData[offset] & 0x0F;
+						skyLight[index] = (byte)(skyLightData[offset] & 0x0F);
+						blockLight[index] = (byte)(blockLightData[offset] & 0x0F);
+						meta[index] = (byte)(metaData[offset] & 0x0F);
 					}
-
-					chunk.setSkyLight(cx, cy, cz, skyLight);
-					chunk.setBlockLight(cx, cy, cz, blockLight);
-					chunk.setMetaData(cx, cy, cz, meta);
 				}
 			}
 		}
+
+		chunk.initializeTypes(tileData, skyLight, blockLight, meta);
+		chunk.setPopulated(((ByteTag) levelTags.get("TerrainPopulated")).getValue() == 1);
+
 		List<CompoundTag> storedTileEntities = ((ListTag<CompoundTag>) levelTags.get("TileEntities")).getValue();
 		for (CompoundTag tileEntityTag : storedTileEntities) {
 			SpoutBlockState state = chunk.getBlock(((IntTag) tileEntityTag.getValue().get("x")).getValue(), ((IntTag) tileEntityTag.getValue().get("y")).getValue(), ((IntTag) tileEntityTag.getValue().get("z")).getValue()).getState();
@@ -133,7 +137,11 @@ public final class McRegionChunkIoService implements ChunkIoService {
 
 		List<CompoundTag> storedEntities = ((ListTag<CompoundTag>) levelTags.get("Entities")).getValue();
 		for (CompoundTag entityTag : storedEntities) {
-			String id = ((StringTag) entityTag.getValue().get("id")).getValue();
+			StringTag idTag = (StringTag)entityTag.getValue().get("id");
+			if (idTag == null) {
+				continue;
+			}
+			String id = idTag.getValue();
 			EntityStore<?> store = EntityStoreLookupService.find(id);
 
 			if (store != null) {
@@ -161,7 +169,7 @@ public final class McRegionChunkIoService implements ChunkIoService {
 		int regionZ = z & REGION_SIZE - 1;
 
 		DataOutputStream out = region.getChunkDataOutputStream(regionX, regionZ);
-		NBTOutputStream nbt = new NBTOutputStream(out, false);
+		final NBTOutputStream nbt = new NBTOutputStream(out, false);
 		Map<String, Tag> levelTags = new HashMap<String, Tag>();
 
 		byte[] skyLightData = new byte[chunk.getWorld().getMaxHeight() * SpoutChunk.WIDTH * SpoutChunk.DEPTH / 2];
@@ -215,10 +223,20 @@ public final class McRegionChunkIoService implements ChunkIoService {
 			}
 		}
 		levelTags.put("TileEntities", new ListTag<CompoundTag>("TileEntities", CompoundTag.class, tileEntities));
-		Map<String, Tag> levelOut = new HashMap<String, Tag>();
+		final Map<String, Tag> levelOut = new HashMap<String, Tag>();
 		levelOut.put("Level", new CompoundTag("Level", levelTags));
-		nbt.writeTag(new CompoundTag("", levelOut));
-		nbt.close();
+		
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
+			@Override
+			public void run() {
+				try {
+					nbt.writeTag(new CompoundTag("", levelOut));
+					nbt.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 
 	}
 

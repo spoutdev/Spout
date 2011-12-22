@@ -55,7 +55,7 @@ public class SpoutNoteBlock extends SpoutBlockState implements NoteBlock {
 		Location location = getBlock().getLocation();
 
 		for (SpoutPlayer player : getWorld().getRawPlayers()) {
-			if (player.canSee(new SpoutChunk.Key(getX() >> 4, getZ() >> 4))) {
+			if (player.canSee(getX() >> 4, getZ() >> 4)) {
 				player.playNote(location, instrument, note);
 			}
 		}

@@ -38,10 +38,9 @@ public class SpoutSign extends SpoutBlockState implements Sign {
 	public boolean update(boolean force) {
 		boolean result = super.update(force);
 		if (result) {
-			SpoutChunk.Key key = new SpoutChunk.Key(getChunk().getX(), getChunk().getZ());
 			UpdateSignMessage message = new UpdateSignMessage(getX(), getY(), getZ(), getLines());
 			for (SpoutPlayer player : getWorld().getRawPlayers()) {
-				if (player.canSee(key)) {
+				if (player.canSee(getChunk().getX(), getChunk().getZ())) {
 					player.getSession().send(message);
 				}
 			}

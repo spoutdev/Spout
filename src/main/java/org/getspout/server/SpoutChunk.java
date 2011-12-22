@@ -2,6 +2,7 @@ package org.getspout.server;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,83 +31,6 @@ public final class SpoutChunk implements Chunk {
 	public static final int VISIBLE_RADIUS = 8;
 
 	/**
-	 * A chunk key represents the X and Z coordinates of a chunk and implements
-	 * the {@link #hashCode()} and {@link #equals(Object)} methods making it
-	 * suitable for use as a key in a hash table or set.
-	 *
-	 * @author Graham Edgecombe
-	 */
-	public static final class Key {
-
-		/**
-		 * The coordinates.
-		 */
-		private final int x, z;
-
-		/**
-		 * Creates a new chunk key with the specified X and Z coordinates.
-		 *
-		 * @param x The X coordinate.
-		 * @param z The Z coordinate.
-		 */
-		public Key(int x, int z) {
-			this.x = x;
-			this.z = z;
-		}
-
-		/**
-		 * Gets the X coordinate.
-		 *
-		 * @return The X coordinate.
-		 */
-		public int getX() {
-			return x;
-		}
-
-		/**
-		 * Gets the Z coordinate.
-		 *
-		 * @return The Z coordinate.
-		 */
-		public int getZ() {
-			return z;
-		}
-
-		@Override
-		public int hashCode() {
-			//final int prime = 31;
-			int result = 1;
-			//result = prime * result + x;
-			//result = prime * result + z;
-			result = (result << 5) - result + x;
-			result = (result << 5) - result + z;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			Key other = (Key) obj;
-			if (x != other.x) {
-				return false;
-			}
-			if (z != other.z) {
-				return false;
-			}
-			return true;
-		}
-
-	}
-
-	/**
 	 * The dimensions of a chunk.
 	 */
 	public static final int WIDTH = 16, HEIGHT = 128, DEPTH = 16;
@@ -120,11 +44,6 @@ public final class SpoutChunk implements Chunk {
 	 * The coordinates of this chunk.
 	 */
 	private final int x, z;
-
-	/**
-	 * The chunk key
-	 */
-	private final Key key;
 
 	/**
 	 * The data in this chunk representing all of the blocks and their state.
@@ -152,7 +71,6 @@ public final class SpoutChunk implements Chunk {
 		this.world = world;
 		this.x = x;
 		this.z = z;
-		key = new Key(x, z);
 	}
 
 	// ======== Basic stuff ========
@@ -303,7 +221,7 @@ public final class SpoutChunk implements Chunk {
 	public boolean unload(boolean save, boolean safe) {
 		if (safe) {
 			for (Player player : getWorld().getPlayers()) {
-				if (((SpoutPlayer) player).canSee(key)) {
+				if (((SpoutPlayer)player).canSee(x, z)) {
 					return false;
 				}
 			}
@@ -324,26 +242,30 @@ public final class SpoutChunk implements Chunk {
 	 *
 	 * @param types The array of types.
 	 */
-	public void initializeTypes(byte[] types) {
+	public void initializeTypes(final byte[] types, final byte[] metaData, final byte[] skyLight, final byte[] blockLight) {
 		if (isLoaded()) {
 			SpoutServer.logger.log(Level.SEVERE, "Tried to initialize already loaded chunk ({0},{1})", new Object[] {x, z});
 			return;
 		}
 
-		this.types = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		metaData = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		skyLight = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		blockLight = new byte[WIDTH * DEPTH * world.getMaxHeight()];
-		for (int i = 0; i < WIDTH * DEPTH * world.getMaxHeight(); ++i) {
-			skyLight[i] = 15;
-		}
-
+		final int arrSize = WIDTH * DEPTH * world.getMaxHeight();
+		this.types = new byte[arrSize];
+		this.metaData = new byte[arrSize];
+		this.skyLight = new byte[arrSize];
+		this.blockLight = new byte[arrSize];
+		Arrays.fill(this.skyLight, (byte) 15);
 		//System.out.println("Init'd types, isLoaded = " + isLoaded());
-
-		if (types.length != WIDTH * DEPTH * world.getMaxHeight()) {
+		
+		if (types.length != arrSize
+				|| metaData.length != arrSize
+				|| skyLight.length != arrSize
+				|| blockLight.length != arrSize) {
 			throw new IllegalArgumentException();
 		}
 		System.arraycopy(types, 0, this.types, 0, types.length);
+		System.arraycopy(metaData, 0, this.metaData, 0, metaData.length);
+		System.arraycopy(skyLight, 0, this.skyLight, 0, skyLight.length);
+		System.arraycopy(blockLight, 0, this.blockLight, 0, blockLight.length);
 
 		for (int cx = 0; cx < WIDTH; ++cx) {
 			for (int cy = 0; cy < world.getMaxHeight(); ++cy) {
@@ -376,7 +298,7 @@ public final class SpoutChunk implements Chunk {
 	 * @return A SpoutBlockState if the entity exists, or null otherwise.
 	 */
 	public SpoutBlockState getEntity(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) {
+		if (y > world.getMaxHeight() - 1 || y < 0) {
 			return null;
 		}
 		load();
@@ -392,7 +314,7 @@ public final class SpoutChunk implements Chunk {
 	 * @return The type.
 	 */
 	public int getType(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) {
+		if (y >= world.getMaxHeight() || y < 0) {
 			return 0;
 		}
 		load();
@@ -413,9 +335,11 @@ public final class SpoutChunk implements Chunk {
 			throw new IllegalArgumentException();
 		}
 
-		if (tileEntities.containsKey(coordToIndex(x, y, z))) {
-			getEntity(x, y, z).destroy();
-			tileEntities.remove(coordToIndex(x, y, z));
+		synchronized (tileEntities) {
+			if (tileEntities.containsKey(coordToIndex(x, y, z))) {
+				getEntity(x, y, z).destroy();
+				tileEntities.remove(coordToIndex(x, y, z));
+			}
 		}
 
 		types[coordToIndex(x, y, z)] = (byte) type;
@@ -444,7 +368,7 @@ public final class SpoutChunk implements Chunk {
 	 * @return The metadata.
 	 */
 	public int getMetaData(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) {
+		if (y >= world.getMaxHeight() || y < 0) {
 			return 0;
 		}
 		load();
@@ -477,7 +401,7 @@ public final class SpoutChunk implements Chunk {
 	 * @return The sky light level.
 	 */
 	public int getSkyLight(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) {
+		if (y >= world.getMaxHeight() || y < 0) {
 			return 0;
 		}
 		load();
@@ -510,7 +434,7 @@ public final class SpoutChunk implements Chunk {
 	 * @return The block light level.
 	 */
 	public int getBlockLight(int x, int y, int z) {
-		if (y >= world.getMaxHeight() - 1 || y < 0) {
+		if (y >= world.getMaxHeight() || y < 0) {
 			return 0;
 		}
 		load();
