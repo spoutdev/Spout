@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
+import org.getspout.api.util.map.TIntPairObjectHashMap;
 import org.getspout.server.io.ChunkIoService;
 
 /**
@@ -37,7 +38,7 @@ public final class ChunkManager {
 	/**
 	 * A map of chunks currently loaded in memory.
 	 */
-	private final Map<SpoutChunk.Key, SpoutChunk> chunks = new HashMap<SpoutChunk.Key, SpoutChunk>();
+	private final TIntPairObjectHashMap<SpoutChunk> chunks = new TIntPairObjectHashMap<SpoutChunk>();
 
 	/**
 	 * A Random object to be used to generate chunks.
@@ -71,11 +72,10 @@ public final class ChunkManager {
 	 * @return The chunk.
 	 */
 	public SpoutChunk getChunk(int x, int z) {
-		SpoutChunk.Key key = new SpoutChunk.Key(x, z);
-		SpoutChunk chunk = chunks.get(key);
+		SpoutChunk chunk = chunks.get(x, z);
 		if (chunk == null) {
 			chunk = new SpoutChunk(world, x, z);
-			chunks.put(key, chunk);
+			chunks.put(x, z, chunk);
 		}
 		return chunk;
 	}
@@ -165,7 +165,6 @@ public final class ChunkManager {
 	 * @return Whether the chunk was successfully regenerated.
 	 */
 	public boolean forceRegeneration(int x, int z) {
-		SpoutChunk.Key key = new SpoutChunk.Key(x, z);
 		SpoutChunk chunk = new SpoutChunk(world, x, z);
 
 		if (chunk == null || !chunk.unload(false, false)) {
@@ -182,7 +181,7 @@ public final class ChunkManager {
 			}
 		}
 
-		chunks.put(key, chunk);
+		chunks.put(x, z, chunk);
 		return true;
 	}
 
@@ -194,8 +193,7 @@ public final class ChunkManager {
 	 * @return Whether the chunk was loaded.
 	 */
 	public boolean isLoaded(int x, int z) {
-		SpoutChunk.Key key = new SpoutChunk.Key(x, z);
-		return chunks.get(key) != null;
+		return chunks.get(x, z) != null;
 	}
 
 	/**
@@ -205,7 +203,7 @@ public final class ChunkManager {
 	 */
 	public SpoutChunk[] getLoadedChunks() {
 		ArrayList<SpoutChunk> result = new ArrayList<SpoutChunk>();
-		for (SpoutChunk chunk : chunks.values()) {
+		for (SpoutChunk chunk : chunks.valueCollection()) {
 			if (chunk.isLoaded()) {
 				result.add(chunk);
 			}
@@ -220,8 +218,7 @@ public final class ChunkManager {
 	 * @param z The Z coordinate.
 	 */
 	public boolean forceSave(int x, int z) {
-		SpoutChunk.Key key = new SpoutChunk.Key(x, z);
-		SpoutChunk chunk = chunks.get(key);
+		SpoutChunk chunk = chunks.get(x, z);
 		if (chunk != null) {
 			try {
 				service.write(x, z, chunk);

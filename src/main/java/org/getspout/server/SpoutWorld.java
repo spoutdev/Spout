@@ -677,12 +677,11 @@ public final class SpoutWorld implements World {
 			return false;
 		}
 
-		SpoutChunk.Key key = new SpoutChunk.Key(x, z);
 		boolean result = false;
 
 		for (Player p : getPlayers()) {
 			SpoutPlayer player = (SpoutPlayer) p;
-			if (player.canSee(key)) {
+			if (player.canSee(x, z)) {
 				player.getSession().send(new LoadChunkMessage(x, z, false));
 				player.getSession().send(new LoadChunkMessage(x, z, true));
 				player.getSession().send(getChunkAt(x, z).toMessage());

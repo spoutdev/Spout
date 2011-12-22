@@ -29,6 +29,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
+import org.getspout.api.util.map.TIntPairHashSet;
+import gnu.trove.iterator.TLongIterator;
 import org.getspout.server.EventFactory;
 import org.getspout.server.SpoutChunk;
 import org.getspout.server.SpoutOfflinePlayer;
@@ -65,6 +67,8 @@ import org.getspout.server.net.Session;
 import org.getspout.server.util.Parameter;
 import org.getspout.server.util.Position;
 import org.getspout.server.util.TextWrapper;
+
+import static org.getspout.api.util.map.TIntPairHashSet.*;
 
 /**
  * Represents an in-game player.
@@ -131,7 +135,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	/**
 	 * The chunks that the client knows about.
 	 */
-	private final Set<SpoutChunk.Key> knownChunks = new HashSet<SpoutChunk.Key>();
+	private final TIntPairHashSet knownChunks = new TIntPairHashSet();
 
 	/**
 	 * The item the player has on their cursor.
@@ -242,8 +246,8 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 * Streams chunks to the player's client.
 	 */
 	private void streamBlocks() {
-		Set<SpoutChunk.Key> previousChunks = new HashSet<SpoutChunk.Key>(knownChunks);
-		ArrayList<SpoutChunk.Key> newChunks = new ArrayList<SpoutChunk.Key>();
+		TIntPairHashSet previousChunks = new TIntPairHashSet(knownChunks);
+		ArrayList<Long> newChunks = new ArrayList<Long>();
 
 		int centralX = (int) location.getX() >> 4;
 		int centralZ = (int) location.getZ() >> 4;
@@ -251,39 +255,41 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 		int radius = server.getViewDistance();
 		for (int x = centralX - radius; x <= centralX + radius; x++) {
 			for (int z = centralZ - radius; z <= centralZ + radius; z++) {
-				SpoutChunk.Key key = new SpoutChunk.Key(x, z);
-				if (!knownChunks.contains(key)) {
-					knownChunks.add(key);
-					newChunks.add(key);
+				if (!knownChunks.contains(x, z)) {
+					knownChunks.add(x, z);
+					newChunks.add(keysToLong(x, z));
 				}
-				previousChunks.remove(key);
+				previousChunks.remove(x, z);
 			}
 		}
 
-		Collections.sort(newChunks, new Comparator<SpoutChunk.Key>() {
+		Collections.sort(newChunks, new Comparator<Long>() {
 			@Override
-			public int compare(SpoutChunk.Key a, SpoutChunk.Key b) {
-				double dx = 16 * a.getX() + 8 - location.getX();
-				double dz = 16 * a.getZ() + 8 - location.getZ();
+			public int compare(Long a, Long b) {
+				double dx = 16 * longToKey1(a) + 8 - location.getX();
+				double dz = 16 * longToKey2(a) + 8 - location.getZ();
 				double da = dx * dx + dz * dz;
-				dx = 16 * b.getX() + 8 - location.getX();
-				dz = 16 * b.getZ() + 8 - location.getZ();
+				dx = 16 * longToKey1(b) + 8 - location.getX();
+				dz = 16 * longToKey2(b) + 8 - location.getZ();
 				double db = dx * dx + dz * dz;
 				return Double.compare(da, db);
 			}
 		});
 
-		for (SpoutChunk.Key key : newChunks) {
-			session.send(new LoadChunkMessage(key.getX(), key.getZ(), true));
-			session.send(world.getChunkAt(key.getX(), key.getZ()).toMessage());
-			for (SpoutBlockState state : world.getChunkAt(key.getX(), key.getZ()).getTileEntities()) {
+		for (long key : newChunks) {
+			int x = TIntPairHashSet.longToKey1(key), z = TIntPairHashSet.longToKey2(key);
+			session.send(new LoadChunkMessage(x, z, true));
+			session.send(world.getChunkAt(x, z).toMessage());
+			for (SpoutBlockState state : world.getChunkAt(x, z).getTileEntities()) {
 				state.update(this);
 			}
 		}
 
-		for (SpoutChunk.Key key : previousChunks) {
-			session.send(new LoadChunkMessage(key.getX(), key.getZ(), false));
-			knownChunks.remove(key);
+		for (TLongIterator i = previousChunks.iterator(); i.hasNext();) {
+			long key = i.next();
+			int x = TIntPairHashSet.longToKey1(key), z = TIntPairHashSet.longToKey2(key);
+			session.send(new LoadChunkMessage(x, z, false));
+			knownChunks.remove(x, z);
 		}
 
 		previousChunks.clear();
@@ -294,8 +300,8 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 *
 	 * @return If the chunk is known to the player's client.
 	 */
-	public boolean canSee(SpoutChunk.Key chunk) {
-		return knownChunks.contains(chunk);
+	public boolean canSee(int x, int z) {
+		return knownChunks.contains(x, z);
 	}
 
 	/**
@@ -616,8 +622,10 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 			world = (SpoutWorld) location.getWorld();
 			world.getEntityManager().allocate(this);
 
-			for (SpoutChunk.Key key : knownChunks) {
-				session.send(new LoadChunkMessage(key.getX(), key.getZ(), false));
+			for (TLongIterator i = knownChunks.iterator(); i.hasNext();) {
+				long key = i.next();
+				int x = TIntPairHashSet.longToKey1(key), z = TIntPairHashSet.longToKey2(key);
+				session.send(new LoadChunkMessage(x, z, false));
 			}
 			knownChunks.clear();
 
