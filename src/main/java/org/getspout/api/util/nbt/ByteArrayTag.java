@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.nbt;
+package org.getspout.api.util.nbt;
 
 /**
  * The {@code TAG_Byte_Array} tag.

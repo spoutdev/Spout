@@ -32,11 +32,11 @@
  */
 package org.getspout.unchecked.api.inventory;
 
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.api.material.CustomBlockMaterial;
 import org.getspout.unchecked.api.material.CustomItemMaterial;
 import org.getspout.unchecked.api.material.Material;
 import org.getspout.unchecked.api.material.MaterialData;
-import org.getspout.unchecked.api.util.nbt.Tag;
 
 import java.util.Map;
 

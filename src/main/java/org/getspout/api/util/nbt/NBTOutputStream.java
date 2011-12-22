@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.nbt;
+package org.getspout.api.util.nbt;
 
 import java.io.Closeable;
 import java.io.DataOutputStream;

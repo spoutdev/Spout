@@ -1,27 +1,27 @@
-package org.getspout.unchecked.api.util.nbt;
+package org.getspout.api.util.nbt;
 
 /**
- * The {@code TAG_Float} tag.
+ * The {@code TAG_Int} tag.
  * @author Graham Edgecombe
  */
-public final class FloatTag extends Tag {
+public final class IntTag extends Tag {
 	/**
 	 * The value.
 	 */
-	private final float value;
+	private final int value;
 
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public FloatTag(String name, float value) {
+	public IntTag(String name, int value) {
 		super(name);
 		this.value = value;
 	}
 
 	@Override
-	public Float getValue() {
+	public Integer getValue() {
 		return value;
 	}
 
@@ -32,6 +32,6 @@ public final class FloatTag extends Tag {
 		if (name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Float" + append + ": " + value;
+		return "TAG_Int" + append + ": " + value;
 	}
 }
