@@ -69,6 +69,12 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		Channel c = e.getChannel();
 		if (c.isOpen()) {
+			server.getChannelGroup().remove(c);
+
+			Session session = (Session) ctx.getAttachment();
+			server.getSessionRegistry().remove(session);
+			session.dispose(true);
+
 			server.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();
 		}
