@@ -54,6 +54,7 @@ import org.getspout.server.command.ExperienceCommand;
 import org.getspout.server.command.GameModeCommand;
 import org.getspout.server.command.HelpCommand;
 import org.getspout.server.command.KickCommand;
+import org.getspout.server.command.KillCommand;
 import org.getspout.server.command.ListCommand;
 import org.getspout.server.command.MeCommand;
 import org.getspout.server.command.OpCommand;
@@ -475,6 +476,7 @@ public final class SpoutServer implements Server {
 		commandMap.register(new ToggleStormCommand(this));
 		commandMap.register(new TellCommand(this));
 		commandMap.register(new ExperienceCommand(this));
+		commandMap.register(new KillCommand(this));
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 

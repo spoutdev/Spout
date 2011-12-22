@@ -336,6 +336,11 @@ public final class CraftingManager {
 		makeShaped(BlockID.SMOOTH_BRICK, 4).shape("xx", "xx").setIngredient('x', Material.STONE);
 		makeShaped(BlockID.IRON_BARS, 16).shape("xxx", "xxx").setIngredient('x', Material.IRON_INGOT);
 		makeShaped(BlockID.GLASS_PANE, 16).shape("xxx", "xxx").setIngredient('x', Material.GLASS);
+		makeShaped(BlockID.CAULDRON).shape("x x", "x x", "xxx").setIngredient('x', Material.IRON_INGOT);
+		makeShaped(BlockID.BREWING_STAND).shape(" x ", "yyy").setIngredient('x', Material.BLAZE_ROD).setIngredient('y', Material.COBBLESTONE);
+		makeShaped(BlockID.ENCHANTMENT_TABLE).shape(" b ", "dod", "ooo").setIngredient('b', Material.BOOK).setIngredient('d', Material.DIAMOND).setIngredient('o', Material.OBSIDIAN);
+		makeShaped(BlockID.NETHER_BRICK_FENCE, 6).shape("xxx", "xxx").setIngredient('x', Material.NETHER_BRICK);
+		makeShaped(BlockID.NETHER_BRICK_STAIRS, 4).shape("x  ", "xx ", "xxx").setIngredient('x', Material.NETHER_BRICK);
 
 		// Tool Recipes
 		makeShaped(ItemID.FLINT_AND_STEEL).shape("i ", " f").setIngredient('i', Material.IRON_INGOT).setIngredient('f', Material.FLINT);
@@ -358,7 +363,6 @@ public final class CraftingManager {
 		makeShaped(ItemID.BOAT).shape("w w", "www").setIngredient('w', Material.WOOD);
 
 		// Mechanism Recipes
-
 		makeShaped(ItemID.WOOD_DOOR).shape("ww", "ww", "ww").setIngredient('w', Material.WOOD);
 		makeShaped(ItemID.IRON_DOOR).shape("ii", "ii", "ii").setIngredient('i', Material.IRON_INGOT);
 		makeShaped(BlockID.TRAP_DOOR, 2).shape("www", "www").setIngredient('w', Material.WOOD);
@@ -376,10 +380,8 @@ public final class CraftingManager {
 		makeShaped(BlockID.FENCE_GATE).shape("#W#", "#W#").setIngredient('#', Material.STICK).setIngredient('W', Material.WOOD);
 
 		// Food Recipes
-
 		makeShaped(ItemID.BOWL, 4).shape("w w", " w ").setIngredient('w', Material.WOOD);
-		makeShaped(ItemID.MUSHROOM_SOUP).shape("r", "b", "u").setIngredient('r', Material.RED_MUSHROOM).setIngredient('b', Material.BROWN_MUSHROOM).setIngredient('u', Material.BOWL);
-		makeShaped(ItemID.MUSHROOM_SOUP).shape("b", "r", "u").setIngredient('r', Material.RED_MUSHROOM).setIngredient('b', Material.BROWN_MUSHROOM).setIngredient('u', Material.BOWL);
+		makeShapeless(ItemID.MUSHROOM_SOUP).addIngredient(Material.BOWL).addIngredient(Material.RED_MUSHROOM).addIngredient(Material.BROWN_MUSHROOM);
 		makeShaped(ItemID.BREAD).shape("www").setIngredient('w', Material.WHEAT);
 		makeShaped(ItemID.SUGAR).shape("s").setIngredient('s', Material.SUGAR_CANE);
 		makeShaped(ItemID.CAKE).shape("mmm", "ses", "www").setIngredient('m', Material.MILK_BUCKET).setIngredient('s', Material.SUGAR).setIngredient('e', Material.EGG).setIngredient('w', Material.WHEAT);
@@ -387,8 +389,7 @@ public final class CraftingManager {
 		makeShaped(ItemID.GOLDEN_APPLE).shape("ggg", "gag", "ggg").setIngredient('g', Material.GOLD_BLOCK).setIngredient('a', Material.APPLE);
 		makeShaped(BlockID.MELON_BLOCK).shape("mmm", "mmm", "mmm").setIngredient('m', Material.MELON);
 		makeShaped(ItemID.MELON_SEEDS).shape("m").setIngredient('m', Material.MELON);
-
-		// Food Recipes
+		makeShaped(ItemID.PUMPKIN_SEEDS, 4).shape("p").setIngredient('p', Material.PUMPKIN);
 
 		// Miscellaneous Recipes
 		makeShaped(ItemID.PAINTING).shape("///", "/w/", "///").setIngredient('/', Material.STICK).setIngredient('w', Material.WOOL);
@@ -398,6 +399,13 @@ public final class CraftingManager {
 		makeShaped(ItemID.BOOK).shape("p", "p", "p").setIngredient('p', Material.PAPER);
 		makeShaped(BlockID.FENCE, 2).shape("///", "///").setIngredient('/', Material.STICK);
 		makeShaped(ItemID.BED).shape("ccc", "www").setIngredient('c', Material.WOOL).setIngredient('w', Material.WOOD);
+		makeShaped(ItemID.GLASS_BOTTLE, 3).shape(" x ", "x x").setIngredient('x', Material.GLASS);
+		makeShaped(ItemID.BLAZE_POWDER, 2).shape("x").setIngredient('x', Material.BLAZE_ROD);
+		makeShaped(ItemID.GOLD_NUGGET, 9).shape("x").setIngredient('x', Material.GOLD_INGOT);
+		makeShapeless(ItemID.GLISTERING_MELON).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET);
+		makeShapeless(ItemID.MAGMA_CREAM).addIngredient(Material.BLAZE_POWDER).addIngredient(Material.SLIME_BALL);
+		makeShapeless(ItemID.FERMENTED_SPIDER_EYE).addIngredient(Material.BROWN_MUSHROOM).addIngredient(Material.SPIDER_EYE).addIngredient(Material.SUGAR);
+		makeShapeless(ItemID.EYE_OF_ENDER).addIngredient(Material.ENDER_PEARL).addIngredient(Material.BLAZE_POWDER);
 
 		// Dye Recipes
 		makeShapeless(ItemID.INK_SACK, 2, 1).addIngredient(Material.RED_ROSE); // Rose Red
@@ -417,13 +425,12 @@ public final class CraftingManager {
 		makeShapeless(ItemID.INK_SACK, 2, 14).addIngredient(Material.INK_SACK, 1).addIngredient(Material.INK_SACK, 11); // Orange
 		makeShapeless(ItemID.INK_SACK, 3, 15).addIngredient(Material.BONE); // Bonemeal
 
-		// Wool Recipies
+		// Wool Recipes
 		for (int i = 0; i < 16; ++i) {
 			makeShapeless(BlockID.WOOL, 1, i).addIngredient(Material.WOOL).addIngredient(Material.INK_SACK, 15 - i);
 		}
 
 		// Smelting Recipes
-
 		addRecipe(new FurnaceRecipe(new ItemStack(ItemID.IRON_INGOT), Material.IRON_ORE));
 		addRecipe(new FurnaceRecipe(new ItemStack(ItemID.GOLD_INGOT), Material.GOLD_ORE));
 		addRecipe(new FurnaceRecipe(new ItemStack(BlockID.GLASS), Material.SAND));
@@ -470,13 +477,17 @@ public final class CraftingManager {
 		addRecipe(result);
 		return result;
 	}
+	
+	private ShapelessRecipe makeShapeless(int mat) {
+		return makeShapeless(mat, 1, 0);
+	}
 
 	private ShapelessRecipe makeShapeless(int mat, int amount, int data) {
 		ShapelessRecipe result = new ShapelessRecipe(new ItemStack(mat, amount, (byte) data));
 		addRecipe(result);
 		return result;
 	}
-
+	
 	private enum CraftingSet {
 		WOOD(Material.WOOD, tools(ItemID.WOOD_AXE, ItemID.WOOD_PICKAXE, ItemID.WOOD_SPADE, ItemID.WOOD_HOE, ItemID.WOOD_SWORD), stairs(2, BlockID.WOOD_STAIRS)),
 		COBBLESTONE(Material.COBBLESTONE, tools(ItemID.STONE_AXE, ItemID.STONE_PICKAXE, ItemID.STONE_SPADE, ItemID.STONE_HOE, ItemID.STONE_SWORD), stairs(3, BlockID.COBBLESTONE_STAIRS)),
