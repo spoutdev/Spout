@@ -49,12 +49,12 @@ public class BlockIterator implements Iterator<Block> {
     	this.maxDistance = maxDistance;
     }
 
-	@Override
+
 	public boolean hasNext() {
 		return !done && blocksRead < maxDistance;
 	}
 
-	@Override
+
 	public Block next() {
 		if (done) {
 			throw new IllegalStateException("Iterator has already completed");
@@ -70,7 +70,6 @@ public class BlockIterator implements Iterator<Block> {
 		return block;
 	}
 	
-	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("Block removal is not supported by this iterator");		
 	}
