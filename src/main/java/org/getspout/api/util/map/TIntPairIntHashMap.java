@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TLongIntIterator;

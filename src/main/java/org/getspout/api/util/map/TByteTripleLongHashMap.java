@@ -1,34 +1,34 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
-import gnu.trove.TIntCollection;
-import gnu.trove.iterator.TIntIntIterator;
-import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.TLongCollection;
+import gnu.trove.iterator.TIntLongIterator;
+import gnu.trove.map.hash.TIntLongHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports a 3 bytes for keys, using a trove int int
+ * A simplistic map that supports a 3 bytes for keys, using a trove int long
  * hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TByteTripleIntHashMap {
-	private TIntIntHashMap map;
+public class TByteTripleLongHashMap {
+	private TIntLongHashMap map;
 
-	public TByteTripleIntHashMap() {
-		map = new TIntIntHashMap(100);
+	public TByteTripleLongHashMap() {
+		map = new TIntLongHashMap(100);
 	}
 
-	public TByteTripleIntHashMap(int capacity) {
-		map = new TIntIntHashMap(capacity);
+	public TByteTripleLongHashMap(int capacity) {
+		map = new TIntLongHashMap(capacity);
 	}
 
-	public int put(byte key1, byte key2, byte key3, int value) {
+	public long put(byte key1, byte key2, byte key3, long value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
 
-	public int get(byte key1, byte key2, byte key3) {
+	public long get(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
@@ -42,7 +42,7 @@ public class TByteTripleIntHashMap {
 		map.clear();
 	}
 
-	public boolean containsValue(int val) {
+	public boolean containsValue(long val) {
 		return map.containsValue(val);
 	}
 
@@ -55,7 +55,7 @@ public class TByteTripleIntHashMap {
 		return map.isEmpty();
 	}
 
-	public TIntIntIterator iterator() {
+	public TIntLongIterator iterator() {
 		return map.iterator();
 	}
 
@@ -67,7 +67,7 @@ public class TByteTripleIntHashMap {
 		return map.keys();
 	}
 
-	public int remove(byte key1, byte key2, byte key3) {
+	public long remove(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.remove(key);
 	}
@@ -76,11 +76,11 @@ public class TByteTripleIntHashMap {
 		return map.size();
 	}
 
-	public TIntCollection valueCollection() {
+	public TLongCollection valueCollection() {
 		return map.valueCollection();
 	}
 
-	public int[] values() {
+	public long[] values() {
 		return map.values();
 	}
 

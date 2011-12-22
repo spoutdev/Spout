@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
 import java.util.Collection;
 
@@ -7,34 +7,34 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports a 3 bytes for keys, using a trove int Object
+ * A simplistic map that supports a 3 bytes for keys, using a trove int int
  * hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TByteTripleObjectHashMap<K> {
+public class TByteShortByteKeyedObjectHashMap<K> {
 	private TIntObjectHashMap<K> map;
 
-	public TByteTripleObjectHashMap() {
+	public TByteShortByteKeyedObjectHashMap() {
 		map = new TIntObjectHashMap<K>(100);
 	}
 
-	public TByteTripleObjectHashMap(int capacity) {
+	public TByteShortByteKeyedObjectHashMap(int capacity) {
 		map = new TIntObjectHashMap<K>(capacity);
 	}
 
-	public K put(byte key1, byte key2, byte key3, K value) {
+	public K put(int key1, int key2, int key3, K value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
 
-	public K get(byte key1, byte key2, byte key3) {
+	public K get(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
 
-	public boolean containsKey(byte key1, byte key2, byte key3) {
+	public boolean containsKey(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.containsKey(key);
 	}
@@ -43,7 +43,7 @@ public class TByteTripleObjectHashMap<K> {
 		map.clear();
 	}
 
-	public boolean containsValue(K val) {
+	public boolean containsValue(int val) {
 		return map.containsValue(val);
 	}
 
@@ -63,7 +63,7 @@ public class TByteTripleObjectHashMap<K> {
 		return map.keys();
 	}
 
-	public K remove(byte key1, byte key2, byte key3) {
+	public K remove(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.remove(key);
 	}

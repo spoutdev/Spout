@@ -1,34 +1,34 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
-import gnu.trove.TLongCollection;
-import gnu.trove.iterator.TIntLongIterator;
-import gnu.trove.map.hash.TIntLongHashMap;
+import gnu.trove.TIntCollection;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
  * A simplistic map that supports (byte, short, byte) keys, using a trove int
- * long hashmap in the backend.
+ * int hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TByteShortByteKeyedLongHashMap extends TByteShortByteKeyedMap {
-	private TIntLongHashMap map;
+public class TByteShortByteKeyedIntHashMap extends TByteShortByteKeyedMap {
+	private TIntIntHashMap map;
 
-	public TByteShortByteKeyedLongHashMap() {
-		map = new TIntLongHashMap(100);
+	public TByteShortByteKeyedIntHashMap() {
+		map = new TIntIntHashMap(100);
 	}
 
-	public TByteShortByteKeyedLongHashMap(int capacity) {
-		map = new TIntLongHashMap(capacity);
+	public TByteShortByteKeyedIntHashMap(int capacity) {
+		map = new TIntIntHashMap(capacity);
 	}
 
-	public long put(int key1, int key2, int key3, long value) {
+	public int put(int key1, int key2, int key3, int value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
 
-	public long get(int key1, int key2, int key3) {
+	public int get(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
@@ -42,7 +42,7 @@ public class TByteShortByteKeyedLongHashMap extends TByteShortByteKeyedMap {
 		map.clear();
 	}
 
-	public boolean containsValue(long val) {
+	public boolean containsValue(int val) {
 		return map.containsValue(val);
 	}
 
@@ -55,7 +55,7 @@ public class TByteShortByteKeyedLongHashMap extends TByteShortByteKeyedMap {
 		return map.isEmpty();
 	}
 
-	public TIntLongIterator iterator() {
+	public TIntIntIterator iterator() {
 		return map.iterator();
 	}
 
@@ -67,7 +67,7 @@ public class TByteShortByteKeyedLongHashMap extends TByteShortByteKeyedMap {
 		return map.keys();
 	}
 
-	public long remove(int key1, int key2, int key3) {
+	public int remove(int key1, int key2, int key3) {
 		int key = key(key1, key2, key3);
 		return map.remove(key);
 	}
@@ -76,11 +76,11 @@ public class TByteShortByteKeyedLongHashMap extends TByteShortByteKeyedMap {
 		return map.size();
 	}
 
-	public TLongCollection valueCollection() {
+	public TIntCollection valueCollection() {
 		return map.valueCollection();
 	}
 
-	public long[] values() {
+	public int[] values() {
 		return map.values();
 	}
 

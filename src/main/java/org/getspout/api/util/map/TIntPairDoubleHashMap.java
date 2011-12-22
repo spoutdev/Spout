@@ -1,35 +1,34 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
-import java.util.Collection;
-
-import gnu.trove.iterator.TLongObjectIterator;
-import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.TDoubleCollection;
+import gnu.trove.iterator.TLongDoubleIterator;
+import gnu.trove.map.hash.TLongDoubleHashMap;
 import gnu.trove.set.TLongSet;
 
 /**
  * A simplistic map that supports a pair of integers for keys, using a trove
- * long object hashmap in the backend.
+ * long double hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TIntPairObjectHashMap<K> {
-	private TLongObjectHashMap<K> map;
+public class TIntPairDoubleHashMap {
+	private TLongDoubleHashMap map;
 
-	public TIntPairObjectHashMap() {
-		map = new TLongObjectHashMap<K>(100);
+	public TIntPairDoubleHashMap() {
+		map = new TLongDoubleHashMap(100);
 	}
 
-	public TIntPairObjectHashMap(int capacity) {
-		map = new TLongObjectHashMap<K>(capacity);
+	public TIntPairDoubleHashMap(int capacity) {
+		map = new TLongDoubleHashMap(capacity);
 	}
 
-	public K put(int key1, int key2, K value) {
+	public double put(int key1, int key2, double value) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.put(key, value);
 	}
 
-	public K get(int key1, int key2) {
+	public double get(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.get(key);
 	}
@@ -43,15 +42,20 @@ public class TIntPairObjectHashMap<K> {
 		map.clear();
 	}
 
-	public boolean containsValue(K val) {
+	public boolean containsValue(double val) {
 		return map.containsValue(val);
+	}
+
+	public boolean increment(int key1, int key2) {
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		return map.increment(key);
 	}
 
 	public boolean isEmpty() {
 		return map.isEmpty();
 	}
 
-	public TLongObjectIterator<K> iterator() {
+	public TLongDoubleIterator iterator() {
 		return map.iterator();
 	}
 
@@ -63,7 +67,7 @@ public class TIntPairObjectHashMap<K> {
 		return map.keys();
 	}
 
-	public K remove(int key1, int key2) {
+	public double remove(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.remove(key);
 	}
@@ -72,11 +76,11 @@ public class TIntPairObjectHashMap<K> {
 		return map.size();
 	}
 
-	public Collection<K> valueCollection() {
+	public TDoubleCollection valueCollection() {
 		return map.valueCollection();
 	}
 
-	public K[] values() {
+	public double[] values() {
 		return map.values();
 	}
 }

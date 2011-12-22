@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.thread;
+package org.getspout.api.util.thread;
 
 public @interface Threadsafe {
 	public String author() default "SpoutDev";

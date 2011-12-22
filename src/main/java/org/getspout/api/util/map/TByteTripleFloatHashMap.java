@@ -1,34 +1,34 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
-import gnu.trove.TDoubleCollection;
-import gnu.trove.iterator.TIntDoubleIterator;
-import gnu.trove.map.hash.TIntDoubleHashMap;
+import gnu.trove.TFloatCollection;
+import gnu.trove.iterator.TIntFloatIterator;
+import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports a 3 bytes for keys, using a trove int double
+ * A simplistic map that supports a 3 bytes for keys, using a trove int float
  * hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TByteTripleDoubleHashMap {
-	private TIntDoubleHashMap map;
+public class TByteTripleFloatHashMap {
+	private TIntFloatHashMap map;
 
-	public TByteTripleDoubleHashMap() {
-		map = new TIntDoubleHashMap(100);
+	public TByteTripleFloatHashMap() {
+		map = new TIntFloatHashMap(100);
 	}
 
-	public TByteTripleDoubleHashMap(int capacity) {
-		map = new TIntDoubleHashMap(capacity);
+	public TByteTripleFloatHashMap(int capacity) {
+		map = new TIntFloatHashMap(capacity);
 	}
 
-	public double put(byte key1, byte key2, byte key3, double value) {
+	public float put(byte key1, byte key2, byte key3, float value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
 
-	public double get(byte key1, byte key2, byte key3) {
+	public float get(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
@@ -42,7 +42,7 @@ public class TByteTripleDoubleHashMap {
 		map.clear();
 	}
 
-	public boolean containsValue(double val) {
+	public boolean containsValue(float val) {
 		return map.containsValue(val);
 	}
 
@@ -55,7 +55,7 @@ public class TByteTripleDoubleHashMap {
 		return map.isEmpty();
 	}
 
-	public TIntDoubleIterator iterator() {
+	public TIntFloatIterator iterator() {
 		return map.iterator();
 	}
 
@@ -67,7 +67,7 @@ public class TByteTripleDoubleHashMap {
 		return map.keys();
 	}
 
-	public double remove(byte key1, byte key2, byte key3) {
+	public float remove(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.remove(key);
 	}
@@ -76,11 +76,11 @@ public class TByteTripleDoubleHashMap {
 		return map.size();
 	}
 
-	public TDoubleCollection valueCollection() {
+	public TFloatCollection valueCollection() {
 		return map.valueCollection();
 	}
 
-	public double[] values() {
+	public float[] values() {
 		return map.values();
 	}
 

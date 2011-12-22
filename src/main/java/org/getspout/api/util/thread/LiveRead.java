@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.thread;
+package org.getspout.api.util.thread;
 
 public @interface LiveRead {
 	public String author() default "SpoutDev";

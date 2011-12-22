@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
 /**
  * A simplistic map that supports (byte, short, byte) keys, using a trove int *

@@ -1,34 +1,34 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
-import gnu.trove.TDoubleCollection;
-import gnu.trove.iterator.TLongDoubleIterator;
-import gnu.trove.map.hash.TLongDoubleHashMap;
+import gnu.trove.TFloatCollection;
+import gnu.trove.iterator.TLongFloatIterator;
+import gnu.trove.map.hash.TLongFloatHashMap;
 import gnu.trove.set.TLongSet;
 
 /**
  * A simplistic map that supports a pair of integers for keys, using a trove
- * long double hashmap in the backend.
+ * long float hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TIntPairDoubleHashMap {
-	private TLongDoubleHashMap map;
+public class TIntPairFloatHashMap {
+	private TLongFloatHashMap map;
 
-	public TIntPairDoubleHashMap() {
-		map = new TLongDoubleHashMap(100);
+	public TIntPairFloatHashMap() {
+		map = new TLongFloatHashMap(100);
 	}
 
-	public TIntPairDoubleHashMap(int capacity) {
-		map = new TLongDoubleHashMap(capacity);
+	public TIntPairFloatHashMap(int capacity) {
+		map = new TLongFloatHashMap(capacity);
 	}
 
-	public double put(int key1, int key2, double value) {
+	public float put(int key1, int key2, float value) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.put(key, value);
 	}
 
-	public double get(int key1, int key2) {
+	public float get(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.get(key);
 	}
@@ -42,7 +42,7 @@ public class TIntPairDoubleHashMap {
 		map.clear();
 	}
 
-	public boolean containsValue(double val) {
+	public boolean containsValue(float val) {
 		return map.containsValue(val);
 	}
 
@@ -55,7 +55,7 @@ public class TIntPairDoubleHashMap {
 		return map.isEmpty();
 	}
 
-	public TLongDoubleIterator iterator() {
+	public TLongFloatIterator iterator() {
 		return map.iterator();
 	}
 
@@ -67,7 +67,7 @@ public class TIntPairDoubleHashMap {
 		return map.keys();
 	}
 
-	public double remove(int key1, int key2) {
+	public float remove(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 		return map.remove(key);
 	}
@@ -76,11 +76,11 @@ public class TIntPairDoubleHashMap {
 		return map.size();
 	}
 
-	public TDoubleCollection valueCollection() {
+	public TFloatCollection valueCollection() {
 		return map.valueCollection();
 	}
 
-	public double[] values() {
+	public float[] values() {
 		return map.values();
 	}
 }

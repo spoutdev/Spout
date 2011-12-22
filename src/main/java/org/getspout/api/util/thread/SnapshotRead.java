@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.util.thread;
+package org.getspout.api.util.thread;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

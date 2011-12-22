@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.hash.TLongHashSet;

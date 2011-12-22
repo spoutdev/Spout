@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.map;
+package org.getspout.api.util.map;
 
 import gnu.trove.TDoubleCollection;
 import gnu.trove.iterator.TIntDoubleIterator;
@@ -6,34 +6,34 @@ import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.set.TIntSet;
 
 /**
- * A simplistic map that supports (byte, short, byte) keys, using a trove int
- * double hashmap in the backend.
+ * A simplistic map that supports a 3 bytes for keys, using a trove int double
+ * hashmap in the backend.
  *
  * @author Afforess
  *
  */
-public class TByteShortByteKeyedDoubleHashMap extends TByteShortByteKeyedMap {
+public class TByteTripleDoubleHashMap {
 	private TIntDoubleHashMap map;
 
-	public TByteShortByteKeyedDoubleHashMap() {
+	public TByteTripleDoubleHashMap() {
 		map = new TIntDoubleHashMap(100);
 	}
 
-	public TByteShortByteKeyedDoubleHashMap(int capacity) {
+	public TByteTripleDoubleHashMap(int capacity) {
 		map = new TIntDoubleHashMap(capacity);
 	}
 
-	public double put(int key1, int key2, int key3, double value) {
+	public double put(byte key1, byte key2, byte key3, double value) {
 		int key = key(key1, key2, key3);
 		return map.put(key, value);
 	}
 
-	public double get(int key1, int key2, int key3) {
+	public double get(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.get(key);
 	}
 
-	public boolean containsKey(int key1, int key2, int key3) {
+	public boolean containsKey(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.containsKey(key);
 	}
@@ -46,7 +46,7 @@ public class TByteShortByteKeyedDoubleHashMap extends TByteShortByteKeyedMap {
 		return map.containsValue(val);
 	}
 
-	public boolean increment(int key1, int key2, int key3) {
+	public boolean increment(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.increment(key);
 	}
@@ -67,7 +67,7 @@ public class TByteShortByteKeyedDoubleHashMap extends TByteShortByteKeyedMap {
 		return map.keys();
 	}
 
-	public double remove(int key1, int key2, int key3) {
+	public double remove(byte key1, byte key2, byte key3) {
 		int key = key(key1, key2, key3);
 		return map.remove(key);
 	}
@@ -84,4 +84,7 @@ public class TByteShortByteKeyedDoubleHashMap extends TByteShortByteKeyedMap {
 		return map.values();
 	}
 
+	private static final int key(int x, int y, int z) {
+		return (x & 0xF) << 11 | (z & 0xF) << 7 | y & 0x7F;
+	}
 }

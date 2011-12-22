@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util.future;
+package org.getspout.api.util.future;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
