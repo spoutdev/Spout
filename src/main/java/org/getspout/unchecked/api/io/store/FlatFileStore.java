@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.getspout.unchecked.api.io.FileUtil;
+import org.getspout.api.io.FileUtil;
 
 /**
  * This implements a SimpleStore that is stored in memory. The save and load
