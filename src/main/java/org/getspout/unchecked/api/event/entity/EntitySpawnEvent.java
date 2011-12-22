@@ -16,9 +16,9 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.event.Cancellable;
 import org.getspout.unchecked.api.event.HandlerList;
-import org.getspout.unchecked.api.geo.discrete.Point;
 
 /**
  * Called when an entity spawns into the world.

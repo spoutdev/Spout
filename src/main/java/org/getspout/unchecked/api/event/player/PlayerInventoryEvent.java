@@ -16,9 +16,9 @@
  */
 package org.getspout.unchecked.api.event.player;
 
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.event.Cancellable;
 import org.getspout.unchecked.api.event.HandlerList;
-import org.getspout.unchecked.api.geo.discrete.Point;
 import org.getspout.unchecked.api.inventory.Inventory;
 
 /**

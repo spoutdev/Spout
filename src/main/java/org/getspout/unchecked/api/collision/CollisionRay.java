@@ -1,7 +1,7 @@
 package org.getspout.unchecked.api.collision;
 
-import org.getspout.unchecked.api.math.MathHelper;
-import org.getspout.unchecked.api.math.Vector3;
+import org.getspout.api.math.MathHelper;
+import org.getspout.api.math.Vector3;
 
 public class CollisionRay {
 	/**

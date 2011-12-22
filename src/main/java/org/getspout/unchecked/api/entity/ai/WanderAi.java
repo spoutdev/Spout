@@ -2,9 +2,9 @@ package org.getspout.unchecked.api.entity.ai;
 
 import java.util.Random;
 
+import org.getspout.api.geo.discrete.Pointm;
+import org.getspout.api.math.Vector3;
 import org.getspout.unchecked.api.entity.Entity;
-import org.getspout.unchecked.api.geo.discrete.Pointm;
-import org.getspout.unchecked.api.math.Vector3;
 
 public class WanderAi extends TimedAi<Entity> {
 	private static final int WANDER_FREQ = 5;

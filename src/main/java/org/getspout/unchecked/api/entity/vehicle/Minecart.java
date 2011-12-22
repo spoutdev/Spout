@@ -33,7 +33,7 @@
 
 package org.getspout.unchecked.api.entity.vehicle;
 
-import org.getspout.unchecked.api.math.Vector3;
+import org.getspout.api.math.Vector3;
 
 /**
  * Represents a minecart entity.

@@ -20,9 +20,9 @@ package org.getspout.unchecked.api.util;
 //No worries, I wrote it based on your work - Afforess
 
 import org.bukkit.block.Block;
-import org.getspout.unchecked.api.geo.World;
-import org.getspout.unchecked.api.math.Vector3;
-import org.getspout.unchecked.api.math.Vector3m;
+import org.getspout.api.geo.World;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
 public class FastLocation extends Location {
 	private final double yaw;

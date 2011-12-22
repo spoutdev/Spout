@@ -39,12 +39,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.bukkit.block.BlockFace;
+import org.getspout.api.geo.World;
+import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.discrete.Eyeline;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 import org.getspout.unchecked.api.entity.LivingEntity;
-import org.getspout.unchecked.api.geo.World;
-import org.getspout.unchecked.api.geo.cuboid.Block;
-import org.getspout.unchecked.api.geo.discrete.Ray;
-import org.getspout.unchecked.api.math.Vector3;
-import org.getspout.unchecked.api.math.Vector3m;
 
 /**
  * This class performs ray tracing and iterates along blocks on a line
@@ -259,7 +259,7 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 
-	public BlockIterator(Ray loc, double yOffset, int maxDistance) {
+	public BlockIterator(Eyeline loc, double yOffset, int maxDistance) {
 		this(loc.getWorld(), loc, loc.getDirection(), yOffset, maxDistance);
 	}
 
@@ -272,7 +272,7 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 
-	public BlockIterator(Ray loc, double yOffset) {
+	public BlockIterator(Eyeline loc, double yOffset) {
 		this(loc.getWorld(), loc, loc.getDirection(), yOffset, 0);
 	}
 
@@ -283,7 +283,7 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 
-	public BlockIterator(Ray loc) {
+	public BlockIterator(Eyeline loc) {
 		this(loc, 0D);
 	}
 

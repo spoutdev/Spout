@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.block.Block;
-import org.getspout.unchecked.api.geo.discrete.RayScale;
+import org.getspout.api.geo.discrete.Transform;
 import org.getspout.unchecked.api.util.Location;
 
 public interface LivingEntity extends Entity {

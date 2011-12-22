@@ -19,11 +19,11 @@ package org.getspout.unchecked.api.entity;
 import java.util.Set;
 import java.util.UUID;
 
+import org.getspout.api.geo.World;
+import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.geo.discrete.Eyeline;
+import org.getspout.api.math.Vector3;
 import org.getspout.unchecked.api.event.EventSource;
-import org.getspout.unchecked.api.geo.World;
-import org.getspout.unchecked.api.geo.discrete.Point;
-import org.getspout.unchecked.api.geo.discrete.Ray;
-import org.getspout.unchecked.api.math.Vector3;
 import org.getspout.unchecked.api.metadata.Metadatable;
 import org.getspout.unchecked.api.util.Location;
 
@@ -43,7 +43,7 @@ public interface Entity extends Metadatable, EventSource {
 	 * 
 	 * @return orientation as a Ray
 	 */
-	public Ray getOrientation();
+	public Eyeline getOrientation();
 
 	/**
 	 * Sets the velocity of the entity

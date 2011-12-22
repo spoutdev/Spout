@@ -23,9 +23,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bukkit.block.Block;
 
-import org.getspout.unchecked.api.geo.World;
-import org.getspout.unchecked.api.math.Vector3;
-import org.getspout.unchecked.api.math.Vector3m;
+import org.getspout.api.geo.World;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
 public class Location extends Vector3m {
 	private double pitch;

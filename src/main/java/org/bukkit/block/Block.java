@@ -34,7 +34,7 @@ package org.bukkit.block;
 
 import javax.swing.text.Position;
 
-import org.getspout.unchecked.api.geo.World;
+import org.getspout.api.geo.World;
 import org.getspout.unchecked.api.material.Material;
 import org.getspout.unchecked.api.metadata.Metadatable;
 

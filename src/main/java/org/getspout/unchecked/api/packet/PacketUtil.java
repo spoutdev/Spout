@@ -20,8 +20,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.getspout.unchecked.api.math.Vector2;
-import org.getspout.unchecked.api.math.Vector3;
+import org.getspout.api.math.Vector2;
+import org.getspout.api.math.Vector3;
 import org.getspout.unchecked.api.util.Color;
 
 public abstract class PacketUtil {

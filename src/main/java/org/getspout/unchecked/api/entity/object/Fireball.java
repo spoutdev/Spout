@@ -33,7 +33,7 @@
 
 package org.getspout.unchecked.api.entity.object;
 
-import org.getspout.unchecked.api.math.Vector3;
+import org.getspout.api.math.Vector3;
 
 /**
  * Represents a Fireball.
