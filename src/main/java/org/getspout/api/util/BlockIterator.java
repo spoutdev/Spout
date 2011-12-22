@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util;
+package org.getspout.api.util;
 
 import java.util.Iterator;
 

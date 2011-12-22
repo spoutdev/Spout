@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.render;
+package org.getspout.api.render;
 
 public class SubTexture {
 	Texture parent;

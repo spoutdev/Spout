@@ -15,8 +15,8 @@ import gnu.trove.set.hash.TCharHashSet;
 
 import org.bukkit.util.Java15Compat;
 
-import org.getspout.unchecked.api.util.Named;
-import org.getspout.unchecked.api.util.StringUtil;
+import org.getspout.api.util.Named;
+import org.getspout.api.util.StringUtil;
 
 public class SimpleCommand implements Command {
 

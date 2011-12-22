@@ -1,6 +1,6 @@
 package org.getspout.api.math;
 
-import org.getspout.unchecked.api.util.Color;
+import org.getspout.api.util.Color;
 
 public class MathHelper {
 	public static final double PI = Math.PI;

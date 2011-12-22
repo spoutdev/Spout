@@ -1,7 +1,7 @@
 package org.getspout.api.material.block;
 
 import org.getspout.api.material.BlockMaterial;
-import org.getspout.unchecked.api.render.BlockDesign;
+import org.getspout.api.render.BlockDesign;
 
 public class GenericBlockMaterial implements BlockMaterial {
 	private final int id;

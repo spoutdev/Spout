@@ -3,7 +3,7 @@ package org.getspout.api.protocol.notch.codec;
 import org.getspout.api.protocol.MessageCodec;
 import org.getspout.api.protocol.notch.ChannelBufferUtils;
 import org.getspout.api.protocol.notch.msg.SpawnMobMessage;
-import org.getspout.unchecked.api.util.Parameter;
+import org.getspout.api.util.Parameter;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 

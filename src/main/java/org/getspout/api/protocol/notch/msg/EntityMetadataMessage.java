@@ -1,7 +1,7 @@
 package org.getspout.api.protocol.notch.msg;
 
 import org.getspout.api.protocol.Message;
-import org.getspout.unchecked.api.util.Parameter;
+import org.getspout.api.util.Parameter;
 
 import java.util.List;
 

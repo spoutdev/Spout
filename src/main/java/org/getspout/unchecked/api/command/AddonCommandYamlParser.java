@@ -16,8 +16,8 @@
  */
 package org.getspout.unchecked.api.command;
 
+import org.getspout.api.util.Named;
 import org.getspout.unchecked.api.plugin.Plugin;
-import org.getspout.unchecked.api.util.Named;
 
 public class AddonCommandYamlParser implements CommandRegistrationsFactory<Plugin> {
 

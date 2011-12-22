@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util;
+package org.getspout.api.util;
 
 /**
  * Represents a single parameter - this is used for things like mob metadata.

@@ -3,8 +3,8 @@ package org.getspout.unchecked.api.command.annotated;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.getspout.api.util.Named;
 import org.getspout.unchecked.api.command.CommandRegistrationsFactory;
-import org.getspout.unchecked.api.util.Named;
 
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
 

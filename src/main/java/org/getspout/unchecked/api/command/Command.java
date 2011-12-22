@@ -3,7 +3,7 @@ package org.getspout.unchecked.api.command;
 import java.util.List;
 import java.util.Set;
 
-import org.getspout.unchecked.api.util.Named;
+import org.getspout.api.util.Named;
 
 /**
  * Provides support for setting up commands for Plugins

@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.util;
+package org.getspout.api.util;
 
 /**
  * Represents n object that has a name

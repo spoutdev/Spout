@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import org.getspout.api.math.Vector2;
 import org.getspout.api.math.Vector3;
-import org.getspout.unchecked.api.util.Color;
+import org.getspout.api.util.Color;
 
 public abstract class PacketUtil {
 	public static final int maxString = 32767;

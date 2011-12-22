@@ -2,7 +2,7 @@ package org.getspout.unchecked.api.command;
 
 import java.util.Set;
 
-import org.getspout.unchecked.api.util.Named;
+import org.getspout.api.util.Named;
 
 public interface CommandRegistrationsFactory<T> {
 
