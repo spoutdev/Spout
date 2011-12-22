@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import org.getspout.api.math.Vector2;
 import org.getspout.api.math.Vector3;
-import org.getspout.unchecked.api.util.Color;
+import org.getspout.api.util.Color;
 import org.getspout.unchecked.server.util.nbt.CompoundTag;
 import org.getspout.unchecked.server.util.nbt.NBTInputStream;
 import org.getspout.unchecked.server.util.nbt.NBTOutputStream;
@@ -254,27 +254,27 @@ public final class ChannelBufferUtils {
 	}
 
 	public static Vector3 readVector3(ChannelBuffer buf) {
-		double x = buf.readDouble();
-		double y = buf.readDouble();
-		double z = buf.readDouble();
+		float x = buf.readFloat();
+		float y = buf.readFloat();
+		float z = buf.readFloat();
 		return new Vector3(x, y, z);
 	}
 
 	public static void writeVector3(Vector3 vec, ChannelBuffer buf) {
-		buf.writeDouble(vec.getX());
-		buf.writeDouble(vec.getY());
-		buf.writeDouble(vec.getZ());
+		buf.writeFloat(vec.getX());
+		buf.writeFloat(vec.getY());
+		buf.writeFloat(vec.getZ());
 	}
 
 	public static Vector2 readVector2(ChannelBuffer buf) {
-		double x = buf.readDouble();
-		double z = buf.readDouble();
+		float x = buf.readFloat();
+		float z = buf.readFloat();
 		return new Vector2(x, z);
 	}
 
 	public static void writeVector2(Vector2 vec, ChannelBuffer buf) {
-		buf.writeDouble(vec.getX());
-		buf.writeDouble(vec.getY());
+		buf.writeFloat(vec.getX());
+		buf.writeFloat(vec.getY());
 	}
 
 	public static Color readColor(ChannelBuffer buf) {
