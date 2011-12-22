@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.scheduler;
+package org.getspout.api.scheduler;
 
 import org.getspout.unchecked.api.plugin.Plugin;
 
