@@ -10,8 +10,8 @@ import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
-import org.getspout.unchecked.api.math.Vector2;
-import org.getspout.unchecked.api.math.Vector3;
+import org.getspout.api.math.Vector2;
+import org.getspout.api.math.Vector3;
 import org.getspout.unchecked.api.util.Color;
 import org.getspout.unchecked.server.util.nbt.CompoundTag;
 import org.getspout.unchecked.server.util.nbt.NBTInputStream;

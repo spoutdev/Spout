@@ -6,6 +6,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.getspout.unchecked.server.item.ItemID;
+import org.getspout.unchecked.server.item.ItemProperties;
 import org.junit.Before;
 import org.junit.Test;
 

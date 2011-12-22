@@ -3,6 +3,7 @@ package org.getspout.server.inventory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.getspout.unchecked.server.inventory.CraftingManager;
 import org.junit.Test;
 
 import org.bukkit.Material;

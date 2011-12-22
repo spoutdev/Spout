@@ -7,6 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.getspout.unchecked.server.block.BlockID;
+import org.getspout.unchecked.server.block.BlockProperties;
 import org.junit.Before;
 import org.junit.Test;
 
