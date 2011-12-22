@@ -2,6 +2,7 @@ package org.getspout.api.geo;
 
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -92,5 +93,17 @@ public interface World extends EventSource {
 	 */
 	@SnapshotRead
 	public String getUID();
+	
+	/**
+	 * Gets the region at (x, y, z) to the given material type and returns the snapshot value
+	 * 
+	 * @param x the region x coordinate
+	 * @param y the region y coordinate
+	 * @param z the region z coordinate
+	 * @param material
+	 * @return the chunk
+	 */
+	@SnapshotRead
+	public abstract Chunk getRegion(int x, int y, int z);
 
 }

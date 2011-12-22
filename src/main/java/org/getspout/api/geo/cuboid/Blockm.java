@@ -5,7 +5,7 @@ import org.getspout.api.geo.World;
 /**
  * Represents a movable cube with an edge length of 1.
  */
-public class Blockm extends Block implements MovableCuboid {
+public abstract class Blockm extends Block implements MovableCuboid {
 
 	public Blockm(World world, double x, double y, double z) {
 		super(world, x, y, z);

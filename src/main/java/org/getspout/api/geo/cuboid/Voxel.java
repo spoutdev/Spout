@@ -6,7 +6,7 @@ import org.getspout.api.geo.discrete.Point;
 /**
  * Represents a cube with an edge length of 1/16 of the edge of a Block.
  */
-public class Voxel extends Cube {
+public abstract class Voxel extends Cube {
 
 	protected final static double EDGE = 1 / 16.0;
 
