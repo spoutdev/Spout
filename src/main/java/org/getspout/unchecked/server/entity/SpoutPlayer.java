@@ -31,7 +31,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
 
 import gnu.trove.iterator.TLongIterator;
-import org.getspout.unchecked.api.util.map.TIntPairHashSet;
+
+import org.getspout.api.util.map.TIntPairHashSet;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.SpoutChunk;
 import org.getspout.unchecked.server.SpoutOfflinePlayer;
@@ -69,7 +70,7 @@ import org.getspout.unchecked.server.util.Parameter;
 import org.getspout.unchecked.server.util.Position;
 import org.getspout.unchecked.server.util.TextWrapper;
 
-import static org.getspout.unchecked.api.util.map.TIntPairHashSet.*;
+import static org.getspout.api.util.map.TIntPairHashSet.*;
 
 /**
  * Represents an in-game player.

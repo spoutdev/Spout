@@ -2,7 +2,7 @@ package org.getspout.unchecked.server.util.thread;
 
 import java.io.Serializable;
 
-import org.getspout.unchecked.api.util.future.SimpleFuture;
+import org.getspout.api.util.future.SimpleFuture;
 
 /**
  * This task must support being serialized and then the deserialized object being run instead

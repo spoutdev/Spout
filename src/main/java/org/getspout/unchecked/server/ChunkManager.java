@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
-import org.getspout.unchecked.api.util.map.TIntPairObjectHashMap;
+import org.getspout.api.util.map.TIntPairObjectHashMap;
 import org.getspout.unchecked.server.io.ChunkIoService;
 
 /**
