@@ -1,4 +1,4 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
  * Represents a single NBT tag.

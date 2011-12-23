@@ -1,4 +1,4 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 import java.util.Collections;
 import java.util.Map;

@@ -1,27 +1,27 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
- * The {@code TAG_Long} tag.
+ * The {@code TAG_Float} tag.
  * @author Graham Edgecombe
  */
-public final class LongTag extends Tag {
+public final class FloatTag extends Tag {
 	/**
 	 * The value.
 	 */
-	private final long value;
+	private final float value;
 
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public LongTag(String name, long value) {
+	public FloatTag(String name, float value) {
 		super(name);
 		this.value = value;
 	}
 
 	@Override
-	public Long getValue() {
+	public Float getValue() {
 		return value;
 	}
 
@@ -32,6 +32,6 @@ public final class LongTag extends Tag {
 		if (name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Long" + append + ": " + value;
+		return "TAG_Float" + append + ": " + value;
 	}
 }

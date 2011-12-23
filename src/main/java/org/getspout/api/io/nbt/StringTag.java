@@ -1,27 +1,27 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
- * The {@code TAG_Short} tag.
+ * The {@code TAG_String} tag.
  * @author Graham Edgecombe
  */
-public final class ShortTag extends Tag {
+public final class StringTag extends Tag {
 	/**
 	 * The value.
 	 */
-	private final short value;
+	private final String value;
 
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public ShortTag(String name, short value) {
+	public StringTag(String name, String value) {
 		super(name);
 		this.value = value;
 	}
 
 	@Override
-	public Short getValue() {
+	public String getValue() {
 		return value;
 	}
 
@@ -32,6 +32,6 @@ public final class ShortTag extends Tag {
 		if (name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Short" + append + ": " + value;
+		return "TAG_String" + append + ": " + value;
 	}
 }

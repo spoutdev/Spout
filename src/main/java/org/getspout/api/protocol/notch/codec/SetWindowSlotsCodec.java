@@ -1,9 +1,9 @@
 package org.getspout.api.protocol.notch.codec;
 
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.api.protocol.MessageCodec;
 import org.getspout.api.protocol.notch.ChannelBufferUtils;
 import org.getspout.api.protocol.notch.msg.SetWindowSlotsMessage;
-import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.api.inventory.ItemStack;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
