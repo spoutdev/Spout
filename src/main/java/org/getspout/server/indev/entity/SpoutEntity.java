@@ -2,10 +2,10 @@ package org.getspout.server.indev.entity;
 
 import java.util.List;
 
+import org.getspout.api.entity.Controller;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.discrete.Transform;
-import org.getspout.api.indev.entity.Controller;
-import org.getspout.api.indev.entity.Entity;
-import org.getspout.api.indev.entity.EntityMetadataStore;
+import org.getspout.api.metadata.EntityMetadataStore;
 import org.getspout.api.metadata.MetadataValue;
 import org.getspout.api.plugin.Plugin;
 
