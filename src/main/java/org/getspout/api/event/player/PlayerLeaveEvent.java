@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.player;
+package org.getspout.api.event.player;
 
 import org.getspout.unchecked.api.event.HandlerList;
+import org.getspout.unchecked.api.event.player.PlayerEvent;
 
 /**
  * Called when a player leaves the server.

@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.block;
+package org.getspout.api.event.block;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.getspout.unchecked.api.event.EventSource;
+import org.getspout.unchecked.api.event.block.BlockEvent;
 
 /**
  * Called when a block changes its state.

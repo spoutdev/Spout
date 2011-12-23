@@ -16,6 +16,7 @@
  */
 package org.getspout.unchecked.api.event.player;
 
+import org.getspout.api.event.player.PlayerLeaveEvent;
 import org.getspout.unchecked.api.event.Cancellable;
 
 /**
