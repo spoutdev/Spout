@@ -3,7 +3,7 @@ package org.getspout.unchecked.server.inventory;
 import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.Tag;
 
 public class SpoutItemStack extends ItemStack {
 	private static final long serialVersionUID = 7920525754029137821L;

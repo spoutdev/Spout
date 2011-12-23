@@ -3,7 +3,7 @@ package org.getspout.unchecked.server.net.codec;
 import java.io.IOException;
 import java.util.Map;
 
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.unchecked.server.item.ItemProperties;
 import org.getspout.unchecked.server.msg.WindowClickMessage;
 import org.getspout.unchecked.server.util.ChannelBufferUtils;

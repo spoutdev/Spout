@@ -9,13 +9,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import org.getspout.api.util.nbt.ByteTag;
-import org.getspout.api.util.nbt.CompoundTag;
-import org.getspout.api.util.nbt.DoubleTag;
-import org.getspout.api.util.nbt.FloatTag;
-import org.getspout.api.util.nbt.ListTag;
-import org.getspout.api.util.nbt.ShortTag;
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.ByteTag;
+import org.getspout.api.io.nbt.CompoundTag;
+import org.getspout.api.io.nbt.DoubleTag;
+import org.getspout.api.io.nbt.FloatTag;
+import org.getspout.api.io.nbt.ListTag;
+import org.getspout.api.io.nbt.ShortTag;
+import org.getspout.api.io.nbt.Tag;
 
 public class NbtSerialization {
 	public static ItemStack[] tagToInventory(ListTag<CompoundTag> tagList, int size) {

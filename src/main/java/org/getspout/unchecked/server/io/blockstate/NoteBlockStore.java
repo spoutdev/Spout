@@ -2,9 +2,9 @@ package org.getspout.unchecked.server.io.blockstate;
 
 import java.util.Map;
 
-import org.getspout.api.util.nbt.ByteTag;
-import org.getspout.api.util.nbt.CompoundTag;
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.ByteTag;
+import org.getspout.api.io.nbt.CompoundTag;
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.unchecked.server.block.SpoutNoteBlock;
 
 public class NoteBlockStore extends BlockStateStore<SpoutNoteBlock> {

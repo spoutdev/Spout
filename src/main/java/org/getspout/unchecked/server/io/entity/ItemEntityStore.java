@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
-import org.getspout.api.util.nbt.ByteTag;
-import org.getspout.api.util.nbt.CompoundTag;
-import org.getspout.api.util.nbt.ShortTag;
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.ByteTag;
+import org.getspout.api.io.nbt.CompoundTag;
+import org.getspout.api.io.nbt.ShortTag;
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.objects.SpoutItem;

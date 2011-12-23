@@ -2,7 +2,7 @@ package org.getspout.unchecked.server.msg;
 
 import java.util.Map;
 
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.Tag;
 
 public class QuickBarMessage extends Message {
 	private final short slot, id, amount, damage;

@@ -3,10 +3,10 @@ package org.getspout.unchecked.server.io.entity;
 import java.util.Map;
 
 import org.bukkit.GameMode;
-import org.getspout.api.util.nbt.CompoundTag;
-import org.getspout.api.util.nbt.FloatTag;
-import org.getspout.api.util.nbt.IntTag;
-import org.getspout.api.util.nbt.Tag;
+import org.getspout.api.io.nbt.CompoundTag;
+import org.getspout.api.io.nbt.FloatTag;
+import org.getspout.api.io.nbt.IntTag;
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
