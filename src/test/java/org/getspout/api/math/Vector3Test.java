@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class Vector3Test {
-	public static double eps = 0.00001;
+	public static double eps = 0.01;
 	@Test
 	public void testVector3DoubleDoubleDouble() {
 		Vector3 v = new Vector3(2.0f, 4.0f, -1.0f);

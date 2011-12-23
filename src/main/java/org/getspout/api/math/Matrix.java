@@ -130,7 +130,9 @@ public class Matrix {
 			for (int j = 0; j < res.dimension; j++) {
 				res.data[index(i, j, res.dimension)] = 0;
 				for (int k = 0; k < res.dimension; k++) {
-					res.data[index(i, j, res.dimension)] += a.data[index(i, k, res.dimension)] * a.data[index(k, j, res.dimension)];
+					double r = a.data[index(i, k, res.dimension)] * b.data[index(k, j, res.dimension)];
+					res.data[index(i, j, res.dimension)] += r;
+					
 				}
 			}
 		}
@@ -143,11 +145,12 @@ public class Matrix {
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		sb.append("[ ");
+		
 		for(int y = 0; y < this.dimension; y++){
+			sb.append("[ ");
 			for(int x = 0; x < this.dimension; x++){
 				sb.append(this.get(y,x));
-				sb.append(" , ");
+				if(x != this.dimension -1)sb.append(" , ");
 			}
 			sb.append(" ]\n");
 		}
@@ -174,7 +177,7 @@ public class Matrix {
 		Matrix res = createIdentity();
 		res.set(0, 3, vector.getX());
 		res.set(1, 3, vector.getY());
-		res.set(2, 3, vector.getY());
+		res.set(2, 3, vector.getZ());
 		return res;
 	}
 
@@ -281,5 +284,18 @@ public class Matrix {
 		return res;
 	}
 	
-	
+	public static Vector3 transform(Vector3 v, Matrix m){
+		float[] vector = { v.getX(), v.getY(), v.getZ(), 1};
+		float[] vres = new float[4];
+		for (int i = 0; i < m.dimension; i++) {
+			vres[i] = 0;
+			for (int k = 0; k < m.dimension; k++) {
+				double n = m.get(i, k) * vector[k];
+				vres[i] += n;
+			
+			}
+		}
+		
+		return new Vector3(vres[0], vres[1], vres[2]);
+	}
 }

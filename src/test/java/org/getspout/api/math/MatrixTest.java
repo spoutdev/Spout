@@ -5,17 +5,28 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class MatrixTest {
+	private static final double eps = 0.0000001;
+	
+	private void compareMatrixToArray(Matrix m, double[][] array){
+		for(int y = 0; y < m.getDimension(); y++){
+			for(int x = 0; x < m.getDimension(); x++){
+				if(Math.abs(m.get(x, y) - array[x][y]) > eps) fail("Matrix at " + x + "," + y + " is "+ m.get(x, y) + " but it should be "+ array[y][x]);
+			}			
+		}
+		
+	}
 
 	@Test
 	public void testMatrix() {
 		Matrix m = new Matrix();
 		if(m.getDimension() != 4) fail("Default Constructor should make 4x4, got" + m.getDimension());
-		for(int x = 0; x < 4; x++){
-			for(int y = 0; y < 4; y++){
-				if(x == y && m.get(x, y) != 1) fail(x + "," + y + "Should be 1, got " + m.get(x,y));
-				if(x != y && m.get(x,y) != 0 ) fail(x + "," + y + "Should be 0, got " + m.get(x,y));
-			}
-		}
+		double[][] id = { { 1, 0, 0, 0},
+				{ 0, 1, 0, 0},
+				{ 0, 0, 1, 0},
+				{ 0, 0, 0, 1}
+		};
+		
+		compareMatrixToArray(m, id);
 		
 		
 	}
@@ -41,54 +52,147 @@ public class MatrixTest {
 		Matrix m = new Matrix();
 		m.set(0, 0, 12);
 		m.set(1, 3, 2);
-		if(m.get(0, 0) != 12) fail(0 + "," + 0 + "Should be 12, got " + m.get(0,0));
-		if(m.get(1, 3) != 2) fail(1 + "," + 3 + "Should be 12, got " + m.get(1,3));
+		double[][] id = { { 12, 0, 0, 0},
+				{ 0, 1, 0, 2},
+				{ 0, 0, 1, 0},
+				{ 0, 0, 0, 1}
+		};
+		compareMatrixToArray(m, id);
 		
 	}
 
 	@Test
 	public void testMultiplyMatrix() {
-		fail("Not yet implemented");
+		Matrix a = new Matrix();
+		Matrix b = new Matrix();
+		Matrix m = Matrix.multiply(a, b);
+		if(m.getDimension() != 4) fail("Default Constructor should make 4x4, got" + m.getDimension());
+		double[][] id = { { 1, 0, 0, 0},
+				{ 0, 1, 0, 0},
+				{ 0, 0, 1, 0},
+				{ 0, 0, 0, 1}
+		};
+		compareMatrixToArray(m, id);
+		
+		Matrix c = new Matrix();
+		c.set(1, 3, 4);
+		c.set(0, 1, 10);
+		Matrix d = new Matrix();
+		d.set(3, 2, 4);
+		d.set(0, 0, -1);
+		m = Matrix.multiply(c, d);
+		if(m.getDimension() != 4) fail("Default Constructor should make 4x4, got" + m.getDimension());
+		double[][] mul = { {-1, 10, 0, 0},
+				{ 0, 1, 16, 4},
+				{ 0, 0, 1, 0},
+				{ 0, 0, 4, 1}
+		};
+		
+		compareMatrixToArray(m, mul);
 	}
 
 	@Test
 	public void testAddMatrix() {
-		fail("Not yet implemented");
+		Matrix a = new Matrix();
+		Matrix b = new Matrix();
+		Matrix m = Matrix.add(a, b);
+		if(m.getDimension() != 4) fail("Default Constructor should make 4x4, got" + m.getDimension());
+		double[][] id = { { 2, 0, 0, 0},
+				{ 0, 2, 0, 0},
+				{ 0, 0, 2, 0},
+				{ 0, 0, 0, 2}
+		};
+		compareMatrixToArray(m, id);
+		
+		Matrix c = new Matrix();
+		c.set(1, 3, 4);
+		c.set(0, 1, 10);
+		Matrix d = new Matrix();
+		d.set(3, 2, 4);
+		d.set(0, 0, -1);
+		m = Matrix.add(c, d);
+		if(m.getDimension() != 4) fail("Default Constructor should make 4x4, got" + m.getDimension());
+		double[][] mul = { {0, 10, 0, 0},
+				{ 0, 2, 0, 4},
+				{ 0, 0, 2, 0},
+				{ 0, 0, 4, 2}
+		};
+		
+		compareMatrixToArray(m, mul);
+		
 	}
 
-	@Test
-	public void testCreateIdentity() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testTranslate() {
-		fail("Not yet implemented");
+		Vector3 a = new Vector3(-1,2,4);
+		double[][] id = { { 1, 0, 0, -1},
+				{ 0, 1, 0, 2},
+				{ 0, 0, 1, 4},
+				{ 0, 0, 0, 1}
+		};
+		Matrix m = Matrix.translate(a);
+		
+		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testScaleDouble() {
-		fail("Not yet implemented");
+		double[][] id = { { 5, 0, 0, 0},
+				{ 0, 5, 0, 0},
+				{ 0, 0, 5, 0},
+				{ 0, 0, 0, 1}
+		};
+		Matrix m = Matrix.scale(5.0);
+		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testScaleVector3() {
-		fail("Not yet implemented");
+		Vector3 s = new Vector3(-1, 5, 3);
+		double[][] id = { { -1, 0, 0, 0},
+				{ 0, 5, 0, 0},
+				{ 0, 0, 3, 0},
+				{ 0, 0, 0, 1}
+		};
+		Matrix m = Matrix.scale(s);
+		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testRotateX() {
-		fail("Not yet implemented");
+		double theta = 30;
+		double[][] id = { { 1, 0, 0, 0},
+				{ 0, MathHelper.cos(Math.toRadians(theta)), -MathHelper.sin(Math.toRadians(theta)), 0},
+				{ 0, MathHelper.sin(Math.toRadians(theta)), MathHelper.cos(Math.toRadians(theta)), 0},
+				{ 0, 0, 0, 1}
+		};
+		Matrix m = Matrix.rotateX(theta);
+		System.out.println(m);
+		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testRotateY() {
-		fail("Not yet implemented");
+		double theta = 10;
+		double[][] id = { { MathHelper.cos(Math.toRadians(theta)), 0, MathHelper.sin(Math.toRadians(theta)),0},
+				{ 0, 1, 0, 0},
+				{ -MathHelper.sin(Math.toRadians(theta)), 0, MathHelper.cos(Math.toRadians(theta)), 0},
+				{ 0, 0, 0, 1}
+		};
+		Matrix m = Matrix.rotateY(theta);
+		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testRotateZ() {
-		fail("Not yet implemented");
+		double theta = 40;
+		double[][] id = { { MathHelper.cos(Math.toRadians(theta)), -MathHelper.sin(Math.toRadians(theta)), 0, 0},
+				{ MathHelper.sin(Math.toRadians(theta)), MathHelper.cos(Math.toRadians(theta)), 0, 0},
+				{ 0, 0, 1, 0},
+				{ 0, 0, 0, 1}
+		};
+		compareMatrixToArray(Matrix.rotateZ(theta), id);
 	}
 
 	@Test

@@ -328,10 +328,9 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param transformation the transformation matrix
 	 * @return
 	 */
-	public static Vector3 transform(Vector3 vector, Matrix transformation) {
-		//TODO rewrite this
+	public static Vector3 transform(Vector3 vector, Matrix transformation) {		
 		
-		return new Vector3(0,0, 0);
+		return Matrix.transform(vector, transformation);
 	}
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
