@@ -1,6 +1,6 @@
 package org.getspout.api.scheduler;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 /**
  * Represents a task being executed by the scheduler

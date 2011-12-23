@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 import org.getspout.api.math.Vector3m;
 import org.getspout.api.packet.PacketUtil;
 import org.getspout.unchecked.api.entity.object.Item;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class GenericBlockDesign implements BlockDesign {
 

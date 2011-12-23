@@ -18,7 +18,7 @@ package org.getspout.api.metadata;
 
 import java.util.concurrent.Callable;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 /**
  * A FixedMetadataValue is a special case metadata item that contains the same

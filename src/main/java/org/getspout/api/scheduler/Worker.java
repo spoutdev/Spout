@@ -1,6 +1,6 @@
 package org.getspout.api.scheduler;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 /**
  * Represents a worker thread for the scheduler. This gives information about

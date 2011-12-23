@@ -1,6 +1,6 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
- *
+ * This file is part of SpoutAPI (http://getspout.org/).
+ * 
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,17 +14,31 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.plugin;
+package org.getspout.api.plugin.security;
 
-public class IllegalPluginAccessException extends RuntimeException {
+public interface Secure {
+	
+	/**
+	 * Returns true if it is locked
+	 * 
+	 * @return locked
+	 */
+	public boolean isLocked();
 
-	private static final long serialVersionUID = -2402883487053693113L;
+	/**
+	 * Locks when given the correct key.
+	 * Returns true if it was previously locked
+	 * 
+	 * @param key
+	 * @return true if it was locked
+	 */
+	public boolean lock(double key);
 
-	public IllegalPluginAccessException() {
-	}
-
-	public IllegalPluginAccessException(String msg) {
-		super(msg);
-	}
+	/**
+	 * Unlocks when given the correct key
+	 * 
+	 * @param key
+	 */
+	public void unlock(double key);
 
 }

@@ -1,6 +1,6 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
- *
+ * This file is part of SpoutAPI (http://getspout.org/).
+ * 
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,42 +14,36 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.plugin;
+package org.getspout.api.plugin.exceptions;
 
-public class InvalidDescriptionException extends Exception {
+public class InvalidDescriptionFileException extends Exception {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 5428943040337929212L;
+	private static final long serialVersionUID = 1424408665150176335L;
 	private final Throwable cause;
 	private final String message;
 
-	public InvalidDescriptionException(Throwable throwable) {
-		this(throwable, "Invalid addon.yml");
+	public InvalidDescriptionFileException(Throwable throwable) {
+		this(throwable, "Invalid plugin.yml");
 	}
 
-	public InvalidDescriptionException(String message) {
+	public InvalidDescriptionFileException(String message) {
 		this(null, message);
 	}
 
-	public InvalidDescriptionException(Throwable throwable, String message) {
-		cause = null;
+	public InvalidDescriptionFileException(Throwable throwable, String message) {
+		this.cause = null;
 		this.message = message;
 	}
 
-	public InvalidDescriptionException() {
-		this(null, "Invalid addon.yml");
+	public InvalidDescriptionFileException() {
+		this(null, "Invalid plugin.yml");
 	}
 
-	@Override
 	public Throwable getCause() {
-		return cause;
+		return this.cause;
 	}
 
-	@Override
 	public String getMessage() {
-		return message;
+		return this.message;
 	}
-
 }

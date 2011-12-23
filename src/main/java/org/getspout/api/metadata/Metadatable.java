@@ -18,7 +18,7 @@ package org.getspout.api.metadata;
 
 import java.util.List;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 /**
  * This interface is implemented by all objects that can provide metadata about

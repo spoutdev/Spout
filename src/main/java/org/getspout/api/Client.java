@@ -5,7 +5,7 @@ import java.io.File;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.unchecked.api.entity.Player;
-import org.getspout.unchecked.api.plugin.PluginStore;
+import org.getspout.api.plugin.PluginStore;
 
 /**
  * Represents the client-specific implementation of Minecraft.

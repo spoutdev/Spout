@@ -1,6 +1,6 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
- *
+ * This file is part of SpoutAPI (http://getspout.org/).
+ * 
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,38 +13,38 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package org.getspout.unchecked.api.plugin;
+ */
+package org.getspout.api.plugin.exceptions;
 
-public class UnknownDependencyException extends Exception {
+public class InvalidPluginException extends Exception {
 
-	private static final long serialVersionUID = 989022178855271278L;
+	private static final long serialVersionUID = 5907555277800661037L;
 	private final Throwable cause;
 	private final String message;
-
-	public UnknownDependencyException(Throwable throwable) {
-		this(throwable, "Unknown dependency");
-	}
-
-	public UnknownDependencyException(String message) {
-		this(null, message);
-	}
-
-	public UnknownDependencyException(Throwable throwable, String message) {
-		cause = null;
+	
+	public InvalidPluginException(String message, Throwable cause) {
+		this.cause = cause;
 		this.message = message;
 	}
 
-	public UnknownDependencyException() {
-		this(null, "Unknown dependency");
+	public InvalidPluginException(Throwable cause) {
+		this(null, cause);
+	}
+	
+	public InvalidPluginException(String message) {
+		this(message, null);
 	}
 
-	@Override
+	public InvalidPluginException() {
+		this(null, null);
+	}
+
 	public Throwable getCause() {
-		return cause;
+		return this.cause;
 	}
 
-	@Override
 	public String getMessage() {
 		return message;
 	}
+
 }

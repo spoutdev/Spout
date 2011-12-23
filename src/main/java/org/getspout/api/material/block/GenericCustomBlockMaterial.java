@@ -18,7 +18,7 @@ import org.getspout.unchecked.api.entity.Entity;
 import org.getspout.unchecked.api.entity.LivingEntity;
 import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.inventory.ItemStack;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public BlockDesign design = new GenericBlockDesign();

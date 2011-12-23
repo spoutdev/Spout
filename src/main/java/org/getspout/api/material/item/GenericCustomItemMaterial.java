@@ -11,7 +11,7 @@ import org.getspout.api.material.MaterialData;
 import org.getspout.api.packet.PacketUtil;
 import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.inventory.ItemMap;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class GenericCustomItemMaterial implements CustomItemMaterial {
 	private String name;

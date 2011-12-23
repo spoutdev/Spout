@@ -1,6 +1,6 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
- *
+ * This file is part of SpoutAPI (http://getspout.org/).
+ * 
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,23 +14,36 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.plugin;
+package org.getspout.api.plugin.exceptions;
 
-public class AuthorNagException extends RuntimeException {
-	private static final long serialVersionUID = 7865800524327635948L;
+public class UnknownDependencyException extends Exception {
+
+	private static final long serialVersionUID = -8878118844821666192L;
+	private final Throwable cause;
 	private final String message;
 
-	/**
-	 * Constructs a new AuthorNagException based on the given Exception
-	 *
-	 * @param message Brief message explaining the cause of the exception
-	 */
-	public AuthorNagException(final String message) {
+	public UnknownDependencyException(Throwable throwable) {
+		this(throwable, "Unknown Dependency");
+	}
+
+	public UnknownDependencyException(String message) {
+		this(null, message);
+	}
+
+	public UnknownDependencyException(Throwable throwable, String message) {
+		this.cause = null;
 		this.message = message;
 	}
 
-	@Override
+	public UnknownDependencyException() {
+		this(null, "Unknown Dependency");
+	}
+
+	public Throwable getCause() {
+		return this.cause;
+	}
+
 	public String getMessage() {
-		return message;
+		return this.message;
 	}
 }

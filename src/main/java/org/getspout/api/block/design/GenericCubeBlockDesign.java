@@ -1,6 +1,6 @@
 package org.getspout.api.block.design;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class GenericCubeBlockDesign extends GenericBlockDesign {
 

@@ -3,7 +3,7 @@ package org.getspout.api.block.design;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class Texture {
 

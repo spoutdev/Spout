@@ -1,6 +1,7 @@
-package org.getspout.unchecked.api.plugin;
+package org.getspout.api.plugin;
 
 public interface PluginStore {
+	
 	public void downloadAddon(int databaseId, DownloadEventDelegate delegate);
 
 	public void downloadAddon(String name, DownloadEventDelegate delegate);
@@ -14,8 +15,10 @@ public interface PluginStore {
 	public boolean isEnabled(Plugin addon);
 
 	public abstract class DownloadEventDelegate {
+		
 		public abstract void onDownloadFinished(Plugin addon);
 
 		public abstract void onDownloadFailure(Exception e, int databaseId, String name);
+		
 	}
 }

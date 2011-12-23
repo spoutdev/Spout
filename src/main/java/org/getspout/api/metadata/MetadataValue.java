@@ -16,7 +16,7 @@
  */
 package org.getspout.api.metadata;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public interface MetadataValue {
 

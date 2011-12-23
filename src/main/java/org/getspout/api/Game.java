@@ -23,15 +23,15 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.getspout.api.geo.World;
+import org.getspout.api.plugin.Platform;
+import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.util.Named;
-import org.getspout.unchecked.api.command.AddonCommand;
 import org.getspout.unchecked.api.command.Command;
 import org.getspout.unchecked.api.command.CommandSource;
 import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.event.EventManager;
 import org.getspout.unchecked.api.event.EventSource;
 import org.getspout.unchecked.api.inventory.Recipe;
-import org.getspout.unchecked.api.plugin.PluginManager;
 
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
@@ -124,8 +124,6 @@ public interface Game extends Named, EventSource {
 	 * @return logger
 	 */
 	public Logger getLogger();
-
-	public AddonCommand getAddonCommand(String name);
 
 	/**
 	 * Sends a command from the given command sender. The command will be
@@ -311,4 +309,11 @@ public interface Game extends Named, EventSource {
 	 * @return Our EventManager instance
 	 */
 	public EventManager getEventManager();
+	
+	/**
+	 * Returns the {@link Platform} that the game is currently running on.
+	 * 
+	 * @return current platform type
+	 */
+	public Platform getPlatform();
 }

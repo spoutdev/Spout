@@ -21,7 +21,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.getspout.api.material.Food;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class GenericCustomFood extends GenericCustomItemMaterial implements Food {
 	private int hunger;

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.bukkit.block.Block;
 import org.getspout.api.geo.World;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 /**
  * A BlockMetadataStore stores metadata values for {@link Block} objects.

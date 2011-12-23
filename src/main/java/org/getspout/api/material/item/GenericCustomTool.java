@@ -26,7 +26,7 @@ import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.CustomBlockMaterial;
 import org.getspout.api.material.MaterialData;
 import org.getspout.api.material.Tool;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public class GenericCustomTool extends GenericCustomItemMaterial implements Tool {
 	private short durability = 1;

@@ -1,6 +1,6 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
- *
+ * This file is part of SpoutAPI (http://getspout.org/).
+ * 
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,26 +14,31 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.plugin;
+package org.getspout.api.plugin.security;
 
-/**
- * Determines the load order for Addons
- *
- */
-public enum PluginLoadOrder {
+public class CommonSecurityManager extends SecurityManager implements Secure {
 
-	/**
-	 * Loaded before the World is loaded
-	 */
-	PREWORLD,
+	private final double key;
+	private boolean locked = false;
+	
+	public CommonSecurityManager(final double key) {
+		this.key = key;
+	}
+	
+	public boolean isLocked() {
+		return locked;
+	}
 
-	/**
-	 * Loaded after the World is loaded
-	 */
-	POSTWORLD,
+	public boolean lock(double key) {
+		boolean old = locked;
+		if (key == this.key)
+			locked = true;
+		return old;
+	}
 
-	/**
-	 * Loaded after the Game starts
-	 */
-	GAMESTART;
+	public void unlock(double key) {
+		if (key == this.key)
+			locked = false;
+	}
+
 }

@@ -1,6 +1,6 @@
 package org.getspout.api.material;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public interface CustomBlockMaterial extends BlockMaterial {
 

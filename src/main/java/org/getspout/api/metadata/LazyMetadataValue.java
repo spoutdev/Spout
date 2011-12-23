@@ -18,7 +18,7 @@ package org.getspout.api.metadata;
 
 import java.util.concurrent.Callable;
 
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 /**
  * The LazyMetadataValue class implements a type of metadata that is not

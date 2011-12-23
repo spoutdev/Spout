@@ -8,7 +8,7 @@ import java.util.Random;
 import org.bukkit.block.Block;
 import org.getspout.api.math.Vector3;
 import org.getspout.unchecked.api.entity.object.Item;
-import org.getspout.unchecked.api.plugin.Plugin;
+import org.getspout.api.plugin.Plugin;
 
 public interface BlockDesign {
 
