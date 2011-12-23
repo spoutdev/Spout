@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.getspout.unchecked.api.entity.AnimalTamer;
+import org.getspout.api.entity.Entity;
 import org.getspout.unchecked.api.event.Cancellable;
 import org.getspout.unchecked.api.event.HandlerList;
 
@@ -26,13 +26,13 @@ import org.getspout.unchecked.api.event.HandlerList;
 public class EntityTameEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private AnimalTamer owner;
+	private Entity owner;
 
-	public AnimalTamer getOwner() {
+	public Entity getOwner() {
 		return owner;
 	}
 
-	public void setOwner(AnimalTamer owner) {
+	public void setOwner(Entity owner) {
 		this.owner = owner;
 	}
 

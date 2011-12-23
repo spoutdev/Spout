@@ -16,8 +16,8 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
+import org.getspout.api.entity.Entity;
 import org.getspout.unchecked.api.TravelAgent;
-import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.event.HandlerList;
 
 /**
@@ -28,8 +28,8 @@ public class PlayerPortalEvent extends EntityTeleportEvent {
 
 	protected TravelAgent travelAgent;
 
-	public Player getPlayer() {
-		return (Player) getEntity();
+	public Entity getPlayer() {
+		return (Entity) getEntity();
 	}
 
 	public TravelAgent getTravelAgent() {

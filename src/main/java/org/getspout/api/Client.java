@@ -2,9 +2,9 @@ package org.getspout.api;
 
 import java.io.File;
 
+import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
-import org.getspout.unchecked.api.entity.Player;
 import org.getspout.api.plugin.PluginStore;
 
 /**
@@ -78,7 +78,7 @@ public interface Client extends Game {
 	 *
 	 * @return active player
 	 */
-	public Player getActivePlayer();
+	public Entity getActivePlayer();
 
 	/**
 	 * Gets the active world, if a world is loaded.

@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.material.CustomItemMaterial;
 import org.getspout.api.material.MaterialData;
 import org.getspout.api.packet.PacketUtil;
-import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.inventory.ItemMap;
 import org.getspout.api.plugin.Plugin;
 
@@ -92,7 +92,7 @@ public class GenericCustomItemMaterial implements CustomItemMaterial {
 		return texture;
 	}
 
-	public boolean onItemInteract(Player player, Block block, BlockFace face) {
+	public boolean onItemInteract(Entity player, Block block, BlockFace face) {
 		return true;
 	}
 

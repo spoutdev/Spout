@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.getspout.unchecked.api.entity.object.Projectile;
+import org.getspout.api.entity.Entity;
 
 /**
  * Called when an entity is damaged by a projectile.
@@ -29,8 +29,8 @@ public class EntityDamageByProjectileEvent extends EntityDamageByEntityEvent {
 	 */
 
 	@Override
-	public Projectile getDamager() {
-		return (Projectile) super.getDamager();
+	public Entity getDamager() {
+		return (Entity) super.getDamager();
 	}
 
 }

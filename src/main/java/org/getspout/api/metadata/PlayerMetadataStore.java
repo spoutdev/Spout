@@ -19,12 +19,12 @@ package org.getspout.api.metadata;
 import org.getspout.unchecked.api.OfflinePlayer;
 
 /**
- * A PlayerMetadataStore stores metadata for {@link org.bukkit.entity.Player}
+ * A PlayerMetadataStore stores metadata for {@link org.getspout.api.old.entity.entity.Player}
  * and {@link OfflinePlayer} objects.
  */
 public class PlayerMetadataStore extends MetadataStoreBase<OfflinePlayer> implements MetadataStore<OfflinePlayer> {
 	/**
-	 * Generates a unique metadata key for {@link org.bukkit.entity.Player} and
+	 * Generates a unique metadata key for {@link org.getspout.api.old.entity.entity.Player} and
 	 * {@link OfflinePlayer} using the player name.
 	 *
 	 * @see MetadataStoreBase#Disambiguate(Object, String)

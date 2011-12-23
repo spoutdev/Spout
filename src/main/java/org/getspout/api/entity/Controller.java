@@ -1,4 +1,4 @@
-package org.getspout.api.indev.entity;
+package org.getspout.api.entity;
 
 public abstract class Controller {
 	Entity parent;

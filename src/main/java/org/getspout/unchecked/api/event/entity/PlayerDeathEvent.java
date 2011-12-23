@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.getspout.unchecked.api.entity.Player;
+import org.getspout.api.entity.Entity;
 import org.getspout.unchecked.api.event.HandlerList;
 
 /**
@@ -25,8 +25,8 @@ import org.getspout.unchecked.api.event.HandlerList;
 public class PlayerDeathEvent extends EntityDeathEvent {
 	private static HandlerList handlers = new HandlerList();
 
-	public Player getPlayer() {
-		return (Player) getEntity();
+	public Entity getPlayer() {
+		return (Entity) getEntity();
 	}
 
 	@Override

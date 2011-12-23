@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.getspout.unchecked.api.entity.Entity;
+import org.getspout.api.entity.Entity;
 
 /**
  * Called when an entity causes another to combust.

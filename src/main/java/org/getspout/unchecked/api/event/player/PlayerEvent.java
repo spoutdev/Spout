@@ -16,20 +16,20 @@
  */
 package org.getspout.unchecked.api.event.player;
 
-import org.getspout.unchecked.api.entity.Player;
+import org.getspout.api.entity.Entity;
 import org.getspout.unchecked.api.event.Event;
 
 /**
  * Represents a player-related event.
  */
 public abstract class PlayerEvent extends Event {
-	private Player player;
+	private Entity player;
 
-	public Player getPlayer() {
+	public Entity getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(Player player) {
+	public void setPlayer(Entity player) {
 		this.player = player;
 	}
 

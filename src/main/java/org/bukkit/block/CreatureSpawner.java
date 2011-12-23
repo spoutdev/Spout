@@ -16,8 +16,8 @@
  */
 package org.bukkit.block;
 
-import org.getspout.unchecked.api.entity.CreatureType;
 
+//TODO This should go into MC Plugin
 public interface CreatureSpawner extends BlockState {
 
 	/**
@@ -25,14 +25,14 @@ public interface CreatureSpawner extends BlockState {
 	 *
 	 * @return
 	 */
-	public CreatureType getCreatureType();
+	//public CreatureType getCreatureType();
 
 	/**
 	 * Set the spawner creature type.
 	 *
 	 * @param mobType
 	 */
-	public void setCreatureType(CreatureType creatureType);
+	//public void setCreatureType(CreatureType creatureType);
 
 	/**
 	 * Get the spawner's creature type.

@@ -13,10 +13,8 @@ import org.getspout.api.material.CustomBlockMaterial;
 import org.getspout.api.material.CustomItemMaterial;
 import org.getspout.api.material.MaterialData;
 import org.getspout.api.material.item.GenericCustomItemMaterial;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.packet.PacketUtil;
-import org.getspout.unchecked.api.entity.Entity;
-import org.getspout.unchecked.api.entity.LivingEntity;
-import org.getspout.unchecked.api.entity.Player;
 import org.getspout.unchecked.api.inventory.ItemStack;
 import org.getspout.api.plugin.Plugin;
 
@@ -203,23 +201,23 @@ public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public void onBlockPlace(World world, int x, int y, int z) {
 	}
 
-	public void onBlockPlace(World world, int x, int y, int z, LivingEntity living) {
+	public void onBlockPlace(World world, int x, int y, int z, Entity living) {
 	}
 
 	public void onBlockDestroyed(World world, int x, int y, int z) {
 	}
 
-	public void onBlockDestroyed(World world, int x, int y, int z, LivingEntity living) {
+	public void onBlockDestroyed(World world, int x, int y, int z, Entity living) {
 	}
 
-	public boolean onBlockInteract(World world, int x, int y, int z, Player player) {
+	public boolean onBlockInteract(World world, int x, int y, int z, Entity player) {
 		return false;
 	}
 
 	public void onEntityMoveAt(World world, int x, int y, int z, Entity entity) {
 	}
 
-	public void onBlockClicked(World world, int x, int y, int z, Player player) {
+	public void onBlockClicked(World world, int x, int y, int z, Entity player) {
 	}
 
 	public boolean isProvidingPowerTo(World world, int x, int y, int z, BlockFace face) {

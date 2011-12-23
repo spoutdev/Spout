@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.getspout.unchecked.api.entity.Player;
+import org.getspout.api.entity.Entity;
 import org.getspout.unchecked.api.event.HandlerList;
 
 /**
@@ -27,8 +27,8 @@ public class PlayerRespawnEvent extends EntitySpawnEvent {
 
 	private boolean bedRespawn;
 
-	public Player getPlayer() {
-		return (Player) getEntity();
+	public Entity getPlayer() {
+		return getEntity();
 	}
 
 	/**

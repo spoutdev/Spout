@@ -1,4 +1,4 @@
-package org.getspout.api.indev.entity;
+package org.getspout.api.entity;
 
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.Metadatable;

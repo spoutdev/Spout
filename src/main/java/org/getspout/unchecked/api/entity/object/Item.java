@@ -32,7 +32,7 @@
  */
 package org.getspout.unchecked.api.entity.object;
 
-import org.getspout.unchecked.api.entity.Entity;
+
 import org.getspout.unchecked.api.inventory.ItemStack;
 
 public interface Item extends Entity {
