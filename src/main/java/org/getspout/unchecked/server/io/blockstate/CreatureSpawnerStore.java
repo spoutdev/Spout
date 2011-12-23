@@ -2,11 +2,11 @@ package org.getspout.unchecked.server.io.blockstate;
 
 import java.util.Map;
 
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.ShortTag;
+import org.getspout.api.util.nbt.StringTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.block.SpoutCreatureSpawner;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.ShortTag;
-import org.getspout.unchecked.server.util.nbt.StringTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public class CreatureSpawnerStore extends BlockStateStore<SpoutCreatureSpawner> {
 	public CreatureSpawnerStore() {

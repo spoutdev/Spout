@@ -6,17 +6,17 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.getspout.api.util.nbt.ByteTag;
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.IntTag;
+import org.getspout.api.util.nbt.ListTag;
+import org.getspout.api.util.nbt.LongTag;
+import org.getspout.api.util.nbt.StringTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.SpoutEntity;
 import org.getspout.unchecked.server.io.nbt.NbtSerialization;
-import org.getspout.unchecked.server.util.nbt.ByteTag;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.IntTag;
-import org.getspout.unchecked.server.util.nbt.ListTag;
-import org.getspout.unchecked.server.util.nbt.LongTag;
-import org.getspout.unchecked.server.util.nbt.StringTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public abstract class EntityStore<T extends SpoutEntity> {
 	private final String id;

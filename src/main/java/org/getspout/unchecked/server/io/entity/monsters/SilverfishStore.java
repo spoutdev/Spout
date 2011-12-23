@@ -1,9 +1,9 @@
 package org.getspout.unchecked.server.io.entity.monsters;
 
+import org.getspout.api.util.nbt.CompoundTag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.monsters.SpoutSilverfish;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
 
 public class SilverfishStore extends MonsterStore<SpoutSilverfish> {
 	public SilverfishStore() {

@@ -1,9 +1,9 @@
 package org.getspout.unchecked.server.io.entity.animals;
 
+import org.getspout.api.util.nbt.CompoundTag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.animals.SpoutChicken;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
 
 public class ChickenStore extends AnimalsStore<SpoutChicken> {
 	public ChickenStore() {

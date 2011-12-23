@@ -3,13 +3,13 @@ package org.getspout.unchecked.server.io.entity;
 import java.util.Map;
 
 import org.bukkit.GameMode;
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.FloatTag;
+import org.getspout.api.util.nbt.IntTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.FloatTag;
-import org.getspout.unchecked.server.util.nbt.IntTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public class PlayerStore extends HumanEntityStore<SpoutPlayer> {
 	public PlayerStore() {

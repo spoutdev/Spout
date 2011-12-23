@@ -3,12 +3,12 @@ package org.getspout.unchecked.server.io.entity;
 import java.util.Map;
 
 import org.bukkit.Location;
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.IntTag;
+import org.getspout.api.util.nbt.ListTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.entity.SpoutHumanEntity;
 import org.getspout.unchecked.server.io.nbt.NbtSerialization;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.IntTag;
-import org.getspout.unchecked.server.util.nbt.ListTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public abstract class HumanEntityStore<T extends SpoutHumanEntity> extends LivingEntityStore<T> {
 	public HumanEntityStore(Class<T> clazz, String id) {

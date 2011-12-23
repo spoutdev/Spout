@@ -1,10 +1,10 @@
 package org.getspout.unchecked.server.io.entity.animals;
 
+import org.getspout.api.util.nbt.CompoundTag;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.animals.SpoutAnimals;
 import org.getspout.unchecked.server.io.entity.CreatureStore;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
 
 public abstract class AnimalsStore<T extends SpoutAnimals> extends CreatureStore<T> {
 	public AnimalsStore(Class<T> clazz, String id) {

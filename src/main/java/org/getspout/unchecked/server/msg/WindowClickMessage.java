@@ -2,7 +2,7 @@ package org.getspout.unchecked.server.msg;
 
 import java.util.Map;
 
-import org.getspout.unchecked.server.util.nbt.Tag;
+import org.getspout.api.util.nbt.Tag;
 
 public final class WindowClickMessage extends Message {
 	private final int id, slot;

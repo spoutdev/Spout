@@ -2,11 +2,11 @@ package org.getspout.unchecked.server.io.blockstate;
 
 import java.util.Map;
 
+import org.getspout.api.util.nbt.ByteTag;
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.StringTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.block.SpoutSign;
-import org.getspout.unchecked.server.util.nbt.ByteTag;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.StringTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public class SignStore extends BlockStateStore<SpoutSign> {
 	public SignStore() {

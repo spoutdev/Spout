@@ -3,11 +3,11 @@ package org.getspout.unchecked.server.io.blockstate;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.IntTag;
+import org.getspout.api.util.nbt.StringTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.block.SpoutBlockState;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.IntTag;
-import org.getspout.unchecked.server.util.nbt.StringTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public abstract class BlockStateStore<T extends SpoutBlockState> {
 	private final String id;

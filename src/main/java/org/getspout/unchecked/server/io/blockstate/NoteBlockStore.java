@@ -2,10 +2,10 @@ package org.getspout.unchecked.server.io.blockstate;
 
 import java.util.Map;
 
+import org.getspout.api.util.nbt.ByteTag;
+import org.getspout.api.util.nbt.CompoundTag;
+import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.server.block.SpoutNoteBlock;
-import org.getspout.unchecked.server.util.nbt.ByteTag;
-import org.getspout.unchecked.server.util.nbt.CompoundTag;
-import org.getspout.unchecked.server.util.nbt.Tag;
 
 public class NoteBlockStore extends BlockStateStore<SpoutNoteBlock> {
 	public NoteBlockStore() {
