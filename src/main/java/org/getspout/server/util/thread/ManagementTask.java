@@ -1,6 +1,7 @@
 package org.getspout.server.util.thread;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 import org.getspout.server.util.thread.future.ManagedFuture;
 
@@ -15,8 +16,6 @@ public abstract class ManagementTask implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected static int taskId = -1;
-
 	public abstract Serializable call(AsyncExecutor executor) throws InterruptedException;
 	
 	/**
@@ -32,5 +31,10 @@ public abstract class ManagementTask implements Serializable {
 	 * @param future the future
 	 */
 	public abstract void setFuture(ManagedFuture<Serializable> future);
-
+	
+	/**
+	 * Gets the enum corresponding to this task
+	 */
+	public abstract ManagementTaskEnum getEnum();
+	
 }
