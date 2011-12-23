@@ -46,7 +46,7 @@ public class Transform {
 	
 	public Transform getAbsolutePosition(){
 		if(parent == null) return this;
-		return this.add(parent);
+		return this.add(parent.getAbsolutePosition());
 		
 	}
 }
