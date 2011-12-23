@@ -1,27 +1,27 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
- * The {@code TAG_String} tag.
+ * The {@code TAG_Double} tag.
  * @author Graham Edgecombe
  */
-public final class StringTag extends Tag {
+public final class DoubleTag extends Tag {
 	/**
 	 * The value.
 	 */
-	private final String value;
+	private final double value;
 
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public StringTag(String name, String value) {
+	public DoubleTag(String name, double value) {
 		super(name);
 		this.value = value;
 	}
 
 	@Override
-	public String getValue() {
+	public Double getValue() {
 		return value;
 	}
 
@@ -32,6 +32,6 @@ public final class StringTag extends Tag {
 		if (name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_String" + append + ": " + value;
+		return "TAG_Double" + append + ": " + value;
 	}
 }

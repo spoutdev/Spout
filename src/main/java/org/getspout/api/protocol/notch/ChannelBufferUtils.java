@@ -1,13 +1,13 @@
 package org.getspout.api.protocol.notch;
 
+import org.getspout.api.io.nbt.CompoundTag;
+import org.getspout.api.io.nbt.NBTInputStream;
+import org.getspout.api.io.nbt.NBTOutputStream;
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.api.math.Vector2;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.util.Color;
 import org.getspout.api.util.Parameter;
-import org.getspout.api.util.nbt.CompoundTag;
-import org.getspout.api.util.nbt.NBTInputStream;
-import org.getspout.api.util.nbt.NBTOutputStream;
-import org.getspout.api.util.nbt.Tag;
 import org.getspout.unchecked.api.inventory.ItemStack;
 import org.jboss.netty.buffer.ChannelBuffer;
 

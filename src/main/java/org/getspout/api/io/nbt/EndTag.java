@@ -1,4 +1,4 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
  * The {@code TAG_End} tag.

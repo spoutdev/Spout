@@ -1,27 +1,27 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
- * The {@code TAG_Int} tag.
+ * The {@code TAG_Byte} tag.
  * @author Graham Edgecombe
  */
-public final class IntTag extends Tag {
+public final class ByteTag extends Tag {
 	/**
 	 * The value.
 	 */
-	private final int value;
+	private final byte value;
 
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public IntTag(String name, int value) {
+	public ByteTag(String name, byte value) {
 		super(name);
 		this.value = value;
 	}
 
 	@Override
-	public Integer getValue() {
+	public Byte getValue() {
 		return value;
 	}
 
@@ -32,6 +32,6 @@ public final class IntTag extends Tag {
 		if (name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Int" + append + ": " + value;
+		return "TAG_Byte" + append + ": " + value;
 	}
 }

@@ -1,4 +1,4 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
  * A class which contains NBT-related utility methods.

@@ -1,27 +1,27 @@
-package org.getspout.api.util.nbt;
+package org.getspout.api.io.nbt;
 
 /**
- * The {@code TAG_Byte} tag.
+ * The {@code TAG_Short} tag.
  * @author Graham Edgecombe
  */
-public final class ByteTag extends Tag {
+public final class ShortTag extends Tag {
 	/**
 	 * The value.
 	 */
-	private final byte value;
+	private final short value;
 
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public ByteTag(String name, byte value) {
+	public ShortTag(String name, short value) {
 		super(name);
 		this.value = value;
 	}
 
 	@Override
-	public Byte getValue() {
+	public Short getValue() {
 		return value;
 	}
 
@@ -32,6 +32,6 @@ public final class ByteTag extends Tag {
 		if (name != null && !name.equals("")) {
 			append = "(\"" + this.getName() + "\")";
 		}
-		return "TAG_Byte" + append + ": " + value;
+		return "TAG_Short" + append + ": " + value;
 	}
 }

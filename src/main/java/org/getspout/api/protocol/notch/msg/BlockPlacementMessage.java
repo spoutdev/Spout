@@ -1,7 +1,7 @@
 package org.getspout.api.protocol.notch.msg;
 
+import org.getspout.api.io.nbt.Tag;
 import org.getspout.api.protocol.Message;
-import org.getspout.api.util.nbt.Tag;
 
 import java.util.Map;
 
