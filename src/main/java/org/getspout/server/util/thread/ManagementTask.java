@@ -34,6 +34,8 @@ public abstract class ManagementTask implements Serializable {
 	
 	/**
 	 * Gets the enum corresponding to this task
+	 * 
+	 * @return the enum
 	 */
 	public abstract ManagementTaskEnum getEnum();
 	
