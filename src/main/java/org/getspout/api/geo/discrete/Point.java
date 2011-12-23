@@ -15,10 +15,19 @@ public class Point extends Vector3 {
 		super(point);
 		world = point.getWorld();
 	}
+	public Point(Vector3 vector, World w){
+		super(vector);
+		this.world = w;
+	}
 
 	public Point(World world, float x, float y, float z) {
 		super(x, y, z);
 		this.world = world;
+	}
+	
+	public Point add(Point other){
+		if(this.world != other.world) throw new IllegalArgumentException("Cannot add two points in seperate worlds");
+		return new Point(Vector3.add((Vector3)this, (Vector3)other), this.world);
 	}
 
 	/**
