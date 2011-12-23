@@ -8,22 +8,13 @@ import org.getspout.api.metadata.Metadatable;
  * 
  * 
  */
-public abstract class Entity implements Metadatable {
-	Transform transform = new Transform();
-	Controller controller;
+public interface Entity extends Metadatable {
 	
+	public int getId();
 	
-	public Controller getController() {
-		return controller;
-	}
-	public void setController(Controller controller) {
-		this.controller = controller;
-	}
-	public Transform getTransform() {
-		return transform;
-	}
+	public Controller getController() ;
+	public void setController(Controller controller);
+	public Transform getTransform();
 	
-	public void onTick(float dt){
-		if(controller != null) controller.onTick(dt);
-	}
+	public void onTick(float dt);
 }
