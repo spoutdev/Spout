@@ -17,8 +17,8 @@
 package org.getspout.unchecked.api.event.block;
 
 import org.bukkit.block.Block;
-import org.getspout.unchecked.api.event.Event;
-import org.getspout.unchecked.api.event.EventSource;
+import org.getspout.api.event.Event;
+import org.getspout.api.event.EventSource;
 
 /**
  * Block-related event.

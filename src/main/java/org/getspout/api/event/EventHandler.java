@@ -14,11 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event;
+package org.getspout.api.event;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An empty interface that all event handler classes have to implement.
+ * An annotation to mark methods as being event handler methods
  */
-public interface Listener {
 
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EventHandler {
+
+	Class<? extends Event> event();
+
+	Order priority();
 }

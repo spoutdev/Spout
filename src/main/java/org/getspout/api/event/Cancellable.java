@@ -14,22 +14,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.getspout.api.event;
 
 /**
- * An annotation to mark methods as being event handler methods
+ * Interface for events that can be cancelled.
  */
+public interface Cancellable {
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface EventHandler {
+	/**
+	 * If an event stops propogating (ie, is cancelled) partway through an even
+	 * slot, that slot will not cease execution, but future even slots will not
+	 * be called.
+	 *
+	 * @param cancelled True to set event canceled, False to uncancel event.
+	 */
+	public void setCancelled(boolean cancelled);
 
-	Class<? extends org.getspout.unchecked.api.event.Event> event();
-
-	Order priority();
+	/**
+	 * Get event canceled state.
+	 *
+	 * @return whether event is cancelled
+	 */
+	public boolean isCancelled();
 }

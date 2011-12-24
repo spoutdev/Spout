@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.event;
+package org.getspout.api.event;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

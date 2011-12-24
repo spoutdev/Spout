@@ -17,8 +17,8 @@
 package org.getspout.unchecked.api.event.entity;
 
 import org.getspout.api.entity.Entity;
-import org.getspout.unchecked.api.event.Cancellable;
-import org.getspout.unchecked.api.event.HandlerList;
+import org.getspout.api.event.Cancellable;
+import org.getspout.api.event.HandlerList;
 
 /**
  * Called when an entity targets or untargets another entity.

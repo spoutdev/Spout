@@ -16,8 +16,8 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
+import org.getspout.api.event.HandlerList;
 import org.getspout.api.geo.World;
-import org.getspout.unchecked.api.event.HandlerList;
 
 /**
  * Called when an entity changes its world.

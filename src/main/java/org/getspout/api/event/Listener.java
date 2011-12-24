@@ -14,20 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event;
+package org.getspout.api.event;
 
-@SuppressWarnings("serial")
-public class EventException extends Exception {
+/**
+ * An empty interface that all event handler classes have to implement.
+ */
+public interface Listener {
 
-	public EventException(String message) {
-		super(message);
-	}
-
-	public EventException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public EventException(Throwable cause) {
-		super(cause);
-	}
 }

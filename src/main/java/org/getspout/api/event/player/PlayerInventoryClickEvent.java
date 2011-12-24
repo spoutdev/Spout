@@ -16,8 +16,8 @@
  */
 package org.getspout.api.event.player;
 
-import org.getspout.unchecked.api.event.HandlerList;
-import org.getspout.unchecked.api.event.Result;
+import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.Result;
 import org.getspout.unchecked.api.inventory.InventorySlotType;
 import org.getspout.unchecked.api.inventory.ItemStack;
 import org.getspout.unchecked.api.inventory.PlayerInventory;

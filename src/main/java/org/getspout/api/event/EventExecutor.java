@@ -14,26 +14,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event;
+package org.getspout.api.event;
 
-/**
- * Interface for events that can be cancelled.
- */
-public interface Cancellable {
-
-	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even
-	 * slot, that slot will not cease execution, but future even slots will not
-	 * be called.
-	 *
-	 * @param cancelled True to set event canceled, False to uncancel event.
-	 */
-	public void setCancelled(boolean cancelled);
-
-	/**
-	 * Get event canceled state.
-	 *
-	 * @return whether event is cancelled
-	 */
-	public boolean isCancelled();
+public interface EventExecutor {
+	public void execute(Event event) throws EventException;
 }
