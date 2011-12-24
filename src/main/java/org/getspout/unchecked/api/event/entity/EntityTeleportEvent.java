@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.getspout.api.event.HandlerList;
+import org.getspout.unchecked.api.event.HandlerList;
 
 /**
  * Called when a player is teleported.

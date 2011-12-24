@@ -18,5 +18,10 @@ public interface Entity extends Metadatable {
 	
 	public void onTick(float dt);
 	
+	/**
+	 * Checks if this entity's controller is an instance of the provided controller
+	 * @param clazz A controller to check if this entitie's controller is a subclass of that controller
+	 * @return
+	 */
 	public boolean is(Class<?> clazz);
 }

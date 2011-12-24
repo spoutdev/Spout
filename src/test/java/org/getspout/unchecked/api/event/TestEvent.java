@@ -1,8 +1,5 @@
 package org.getspout.unchecked.api.event;
 
-import org.getspout.api.event.Event;
-import org.getspout.api.event.HandlerList;
-
 public class TestEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();

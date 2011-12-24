@@ -16,8 +16,8 @@
  */
 package org.getspout.unchecked.api.event.player;
 
-import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.player.PlayerLeaveEvent;
+import org.getspout.unchecked.api.event.Cancellable;
 
 /**
  * Called when a player gets kicked from the server

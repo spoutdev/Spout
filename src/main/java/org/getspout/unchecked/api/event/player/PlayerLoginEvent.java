@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.player;
 
-import org.getspout.api.event.HandlerList;
+import org.getspout.unchecked.api.event.HandlerList;
 
 /**
  * Stores details for players attempting to log in

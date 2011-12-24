@@ -18,7 +18,7 @@ package org.getspout.unchecked.api.event.entity;
 
 import java.util.List;
 
-import org.getspout.api.event.HandlerList;
+import org.getspout.unchecked.api.event.HandlerList;
 import org.getspout.unchecked.api.inventory.ItemStack;
 
 /**

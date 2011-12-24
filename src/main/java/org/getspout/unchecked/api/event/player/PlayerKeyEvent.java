@@ -16,10 +16,10 @@
  */
 package org.getspout.unchecked.api.event.player;
 
-import org.getspout.api.event.Cancellable;
-import org.getspout.api.event.HandlerList;
 import org.getspout.api.gui.ScreenType;
 import org.getspout.api.keyboard.Keyboard;
+import org.getspout.unchecked.api.event.Cancellable;
+import org.getspout.unchecked.api.event.HandlerList;
 
 public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

@@ -1,7 +1,7 @@
 package org.getspout.api.entity;
 
 public abstract class Controller {
-	Entity parent;
+	protected Entity parent;
 	public void attachToEntity(Entity e){
 		this.parent = e;
 	}
