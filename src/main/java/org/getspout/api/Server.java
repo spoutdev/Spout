@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.getspout.api.geo.World;
 import org.getspout.unchecked.api.OfflinePlayer;
+import org.omg.CORBA.Environment;
 
 /**
  * Represents the server-specific implementation of Minecraft.
@@ -149,4 +150,13 @@ public interface Server extends Game {
 	 * @return operators
 	 */
 	public Collection<OfflinePlayer> getOps();
+	
+	/**
+	 * Loads a world, with the option to create worlds that don't exist
+	 * 
+	 * @param name the name of the world
+	 * @param create true if the world should be created
+	 * @return the world or null on failure
+	 */
+	public World loadWorld(String name, boolean create);
 }
