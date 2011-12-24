@@ -26,6 +26,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		return controller;
 	}
 	public void setController(Controller controller) {
+		controller.attachToEntity(this);
 		this.controller = controller;
 	}
 	public Transform getTransform() {
