@@ -17,8 +17,8 @@
 package org.getspout.unchecked.api.event.player;
 
 import org.bukkit.block.Block;
-import org.getspout.unchecked.api.event.Cancellable;
-import org.getspout.unchecked.api.event.HandlerList;
+import org.getspout.api.event.Cancellable;
+import org.getspout.api.event.HandlerList;
 
 /**
  * This event is fired when the player is almost about to enter the bed.

@@ -18,9 +18,9 @@ package org.getspout.unchecked.api.event.player;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.getspout.unchecked.api.event.Cancellable;
-import org.getspout.unchecked.api.event.HandlerList;
-import org.getspout.unchecked.api.event.Result;
+import org.getspout.api.event.Cancellable;
+import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.Result;
 import org.getspout.unchecked.api.event.block.BlockAction;
 
 /**

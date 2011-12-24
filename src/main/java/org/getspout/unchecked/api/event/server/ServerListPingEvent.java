@@ -18,7 +18,7 @@ package org.getspout.unchecked.api.event.server;
 
 import java.net.InetAddress;
 
-import org.getspout.unchecked.api.event.HandlerList;
+import org.getspout.api.event.HandlerList;
 
 /**
  * Called when the server is pinged in a client's server list.

@@ -17,7 +17,7 @@
 package org.getspout.unchecked.api.event.player;
 
 import org.getspout.api.entity.Entity;
-import org.getspout.unchecked.api.event.Event;
+import org.getspout.api.event.Event;
 
 /**
  * Represents a player-related event.
