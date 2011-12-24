@@ -79,7 +79,7 @@ public interface Game extends Named, EventSource {
 	/**
 	 * Returns the current IP address.
 	 *
-	 * If this game is a server, this is the address being broadcasted.
+	 * If this game is a server, this is the address being listened on.
 	 *
 	 * If this game is a client, and connected to a server, this is the address
 	 * connected to.
@@ -91,6 +91,22 @@ public interface Game extends Named, EventSource {
 	 * @return address
 	 */
 	public String getAddress();
+	
+	/**
+	 * Returns all IP addresses in use.
+	 *
+	 * If this game is a server, this is the addresses being listened on.
+	 *
+	 * If this game is a client, and connected to a server, this is the address
+	 * connected to.
+	 *
+	 * If neither, this is null.
+	 *
+	 * Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
+	 *
+	 * @return address
+	 */
+	public String getAllAddresses();
 
 	/**
 	 * True if this game allows the Nether environment to exist.
