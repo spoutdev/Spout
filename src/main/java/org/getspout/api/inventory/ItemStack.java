@@ -53,18 +53,18 @@ public interface ItemStack {
 	public void setDamage(short damage);
 
 	/**
-	 * returns a copy of the map containing the nbt data for this stack
+	 * returns a copy of the map containing the aux data for this stack
 	 * 
-	 * @return the nbt data
+	 * @return the aux data
 	 */
-	public Map<String, Tag> getNBTData();
+	public Map<String, Tag> getAuxData();
 	
 	/**
-	 * Sets the nbt data for this stack
+	 * Sets the aux data for this stack
 	 * 
-	 * @return the nbt data
+	 * @return the aux data
 	 */
-	public void setNBTData(Map<String, Tag> NBTData);
+	public void setAuxData(Map<String, Tag> AuxData);
 	
 
 }
