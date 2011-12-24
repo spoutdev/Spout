@@ -106,7 +106,7 @@ public interface Game extends Named, EventSource {
 	 *
 	 * @return address
 	 */
-	public String getAllAddresses();
+	public String[] getAllAddresses();
 
 	/**
 	 * True if this game allows the Nether environment to exist.
