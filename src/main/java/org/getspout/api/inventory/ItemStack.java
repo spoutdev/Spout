@@ -64,7 +64,7 @@ public interface ItemStack {
 	 * 
 	 * @return the aux data
 	 */
-	public void setAuxData(Map<String, Tag> AuxData);
+	public void setAuxData(Map<String, Tag> auxData);
 	
 
 }
