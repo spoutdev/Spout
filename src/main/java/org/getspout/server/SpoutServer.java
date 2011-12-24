@@ -2,6 +2,8 @@ package org.getspout.server;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -13,6 +15,7 @@ import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.geo.World;
+import org.getspout.api.plugin.CommonPluginManager;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.unchecked.api.OfflinePlayer;
@@ -20,50 +23,75 @@ import org.getspout.unchecked.api.inventory.Recipe;
 
 
 public class SpoutServer implements Server {
+	
+	private volatile int version = 0;
+	
+	private volatile int maxPlayers = 20;
+	
+	private volatile String primaryAddress;
+	
+	private volatile String[] allAddresses;
+	
+	private String name = "Spout Server";
+	
+	/**
+	 * The set of allowable dimensions for the server
+	 */
+	private HashSet<String> dimensions = new HashSet<String>();
+	
+	/**
+	 * This list of players for the server
+	 */
+	private LinkedHashSet<Entity> players = new LinkedHashSet<Entity>();
+	private final static Entity[] emptyEntityArray = new Entity[0];
+	
+	/**
+	 * The plugin manager for the server
+	 */
+	private PluginManager pluginManager = new CommonPluginManager(this, null, 0.0);
+	
+	/**
+	 * The logger for this class.
+	 */
+	public static final Logger logger = Logger.getLogger("Minecraft");
+	
 	public static void main(String[] args) {
 		org.getspout.unchecked.server.SpoutServer.main(args);
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	@Override
 	public long getVersion() {
-		// TODO Auto-generated method stub
-		return 0;
+		return version;
 	}
 
 	@Override
 	public Entity[] getPlayers() {
-		// TODO Auto-generated method stub
-		return null;
+		return players.toArray(emptyEntityArray);
 	}
 
 	@Override
 	public int getMaxPlayers() {
-		// TODO Auto-generated method stub
-		return 0;
+		return maxPlayers;
 	}
 
 	@Override
 	public String getAddress() {
-		// TODO Auto-generated method stub
-		return null;
+		return primaryAddress;
+	}
+	
+	@Override
+	public String[] getAllAddresses() {
+		return allAddresses;
 	}
 
 	@Override
-	public boolean hasNether() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean hasTheEnd() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean hasDimension(String dimension) {
+		return dimensions.contains(dimension);
 	}
 
 	@Override
@@ -74,14 +102,12 @@ public class SpoutServer implements Server {
 
 	@Override
 	public PluginManager getPluginManager() {
-		// TODO Auto-generated method stub
-		return null;
+		return pluginManager;
 	}
 
 	@Override
 	public Logger getLogger() {
-		// TODO Auto-generated method stub
-		return null;
+		return logger;
 	}
 
 	@Override
