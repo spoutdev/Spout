@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.command;
+package org.getspout.api.command;
 
 /**
  * Exception thrown when invalid command usage is given for a command.

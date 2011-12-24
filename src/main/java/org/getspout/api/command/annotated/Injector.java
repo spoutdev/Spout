@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.command.annotated;
+package org.getspout.api.command.annotated;
 
 /**
  * An {@link AnnotatedCommandRegistrationFactory} uses this this class to create

@@ -1,16 +1,16 @@
-package org.getspout.unchecked.api.command.annotated;
+package org.getspout.api.command.annotated;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.getspout.unchecked.api.command.Command;
-import org.getspout.unchecked.api.command.CommandContext;
-import org.getspout.unchecked.api.command.CommandException;
-import org.getspout.unchecked.api.command.CommandExecutor;
-import org.getspout.unchecked.api.command.CommandSource;
-import org.getspout.unchecked.api.command.WrappedCommandException;
+import org.getspout.api.command.Command;
+import org.getspout.api.command.CommandContext;
+import org.getspout.api.command.CommandException;
+import org.getspout.api.command.CommandExecutor;
+import org.getspout.api.command.CommandSource;
+import org.getspout.api.command.WrappedCommandException;
 
 public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 	private final Object instance;

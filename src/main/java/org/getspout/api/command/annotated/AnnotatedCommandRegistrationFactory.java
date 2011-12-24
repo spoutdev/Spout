@@ -1,10 +1,10 @@
-package org.getspout.unchecked.api.command.annotated;
+package org.getspout.api.command.annotated;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.getspout.api.util.Named;
-import org.getspout.unchecked.api.command.CommandRegistrationsFactory;
+import org.getspout.api.command.CommandRegistrationsFactory;
 
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
 
@@ -21,7 +21,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		this.executorFactory = executorFactory;
 	}
 
-	public boolean create(Named owner, Class<?> commands, org.getspout.unchecked.api.command.Command parent) {
+	public boolean create(Named owner, Class<?> commands, org.getspout.api.command.Command parent) {
 		Object instance = null;
 		if (injector != null) {
 			instance = injector.newInstance(commands);
@@ -40,7 +40,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			if (command.aliases().length < 1) {
 				return false;
 			}
-			org.getspout.unchecked.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]);
+			org.getspout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]);
 			for (String alias : command.aliases()) {
 				child.addAlias(alias);
 			}

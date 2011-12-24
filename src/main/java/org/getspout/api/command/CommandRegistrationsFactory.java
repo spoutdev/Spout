@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.command;
+package org.getspout.api.command;
 
 import java.util.Set;
 

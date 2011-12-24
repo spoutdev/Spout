@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.command;
+package org.getspout.api.command;
 
 /**
  * Thrown to wrap any exceptions caught during execution of a command

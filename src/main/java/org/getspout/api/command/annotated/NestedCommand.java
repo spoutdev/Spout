@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.command.annotated;
+package org.getspout.api.command.annotated;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

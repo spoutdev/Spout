@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.command;
+package org.getspout.api.command;
 
 import org.bukkit.ChatColor;
 import org.getspout.api.Game;
