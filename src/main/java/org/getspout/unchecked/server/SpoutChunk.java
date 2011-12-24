@@ -11,12 +11,12 @@ import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.notch.msg.CompressedChunkMessage;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.block.SpoutBlockState;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.CompressedChunkMessage;
-import org.getspout.unchecked.server.msg.Message;
 
 /**
  * Represents a chunk of the map.

@@ -16,6 +16,7 @@ import org.getspout.api.io.nbt.Tag;
 import org.getspout.api.math.Vector2;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.util.Color;
+import org.getspout.api.util.Parameter;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**

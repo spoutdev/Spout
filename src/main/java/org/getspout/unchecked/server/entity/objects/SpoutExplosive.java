@@ -1,12 +1,12 @@
 package org.getspout.unchecked.server.entity.objects;
 
 import org.bukkit.entity.Explosive;
+import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.notch.msg.SpawnVehicleMessage;
 import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.SpoutEntity;
-import org.getspout.unchecked.server.msg.Message;
-import org.getspout.unchecked.server.msg.SpawnVehicleMessage;
 
 public abstract class SpoutExplosive extends SpoutEntity implements Explosive {
 	private float radius;

@@ -1,9 +1,8 @@
 package org.getspout.unchecked.server.block;
 
 import org.bukkit.block.Sign;
-import org.getspout.unchecked.server.SpoutChunk;
+import org.getspout.api.protocol.notch.msg.UpdateSignMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.UpdateSignMessage;
 
 public class SpoutSign extends SpoutBlockState implements Sign {
 	private String[] lines;

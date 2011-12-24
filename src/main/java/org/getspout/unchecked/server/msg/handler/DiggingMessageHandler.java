@@ -8,7 +8,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-
+import org.getspout.api.protocol.notch.msg.DiggingMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.BlockID;
@@ -17,7 +17,6 @@ import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.item.ItemProperties;
-import org.getspout.unchecked.server.msg.DiggingMessage;
 import org.getspout.unchecked.server.net.Session;
 
 /**

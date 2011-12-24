@@ -1,5 +1,10 @@
 package org.getspout.unchecked.server.entity;
 
+import static org.getspout.api.util.map.TIntPairHashSet.keysToLong;
+import static org.getspout.api.util.map.TIntPairHashSet.longToKey1;
+import static org.getspout.api.util.map.TIntPairHashSet.longToKey2;
+import gnu.trove.iterator.TLongIterator;
+
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,11 +34,30 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
-
-import gnu.trove.iterator.TLongIterator;
-
+import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.notch.msg.BlockChangeMessage;
+import org.getspout.api.protocol.notch.msg.ChatMessage;
+import org.getspout.api.protocol.notch.msg.DestroyEntityMessage;
+import org.getspout.api.protocol.notch.msg.EntityEffectMessage;
+import org.getspout.api.protocol.notch.msg.EntityEquipmentMessage;
+import org.getspout.api.protocol.notch.msg.EntityMetadataMessage;
+import org.getspout.api.protocol.notch.msg.EntityRemoveEffectMessage;
+import org.getspout.api.protocol.notch.msg.ExperienceMessage;
+import org.getspout.api.protocol.notch.msg.HealthMessage;
+import org.getspout.api.protocol.notch.msg.IdentificationMessage;
+import org.getspout.api.protocol.notch.msg.LoadChunkMessage;
+import org.getspout.api.protocol.notch.msg.PlayEffectMessage;
+import org.getspout.api.protocol.notch.msg.PlayNoteMessage;
+import org.getspout.api.protocol.notch.msg.PositionRotationMessage;
+import org.getspout.api.protocol.notch.msg.RespawnMessage;
+import org.getspout.api.protocol.notch.msg.SetWindowSlotMessage;
+import org.getspout.api.protocol.notch.msg.SpawnPlayerMessage;
+import org.getspout.api.protocol.notch.msg.SpawnPositionMessage;
+import org.getspout.api.protocol.notch.msg.StateChangeMessage;
+import org.getspout.api.protocol.notch.msg.StatisticMessage;
+import org.getspout.api.protocol.notch.msg.UserListItemMessage;
+import org.getspout.api.util.Parameter;
 import org.getspout.api.util.map.TIntPairHashSet;
-import org.getspout.server.util.Parameter;
 import org.getspout.server.util.Position;
 import org.getspout.server.util.TextWrapper;
 import org.getspout.unchecked.server.EventFactory;
@@ -45,31 +69,7 @@ import org.getspout.unchecked.server.inventory.SpoutInventory;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.inventory.SpoutPlayerInventory;
 import org.getspout.unchecked.server.io.StorageOperation;
-import org.getspout.unchecked.server.msg.BlockChangeMessage;
-import org.getspout.unchecked.server.msg.ChatMessage;
-import org.getspout.unchecked.server.msg.DestroyEntityMessage;
-import org.getspout.unchecked.server.msg.EntityEffectMessage;
-import org.getspout.unchecked.server.msg.EntityEquipmentMessage;
-import org.getspout.unchecked.server.msg.EntityMetadataMessage;
-import org.getspout.unchecked.server.msg.EntityRemoveEffectMessage;
-import org.getspout.unchecked.server.msg.ExperienceMessage;
-import org.getspout.unchecked.server.msg.HealthMessage;
-import org.getspout.unchecked.server.msg.IdentificationMessage;
-import org.getspout.unchecked.server.msg.LoadChunkMessage;
-import org.getspout.unchecked.server.msg.Message;
-import org.getspout.unchecked.server.msg.PlayEffectMessage;
-import org.getspout.unchecked.server.msg.PlayNoteMessage;
-import org.getspout.unchecked.server.msg.PositionRotationMessage;
-import org.getspout.unchecked.server.msg.RespawnMessage;
-import org.getspout.unchecked.server.msg.SetWindowSlotMessage;
-import org.getspout.unchecked.server.msg.SpawnPlayerMessage;
-import org.getspout.unchecked.server.msg.SpawnPositionMessage;
-import org.getspout.unchecked.server.msg.StateChangeMessage;
-import org.getspout.unchecked.server.msg.StatisticMessage;
-import org.getspout.unchecked.server.msg.UserListItemMessage;
 import org.getspout.unchecked.server.net.Session;
-
-import static org.getspout.api.util.map.TIntPairHashSet.*;
 
 /**
  * Represents an in-game player.

@@ -1,7 +1,7 @@
 package org.getspout.unchecked.server.msg.handler;
 
+import org.getspout.api.protocol.notch.msg.RespawnMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.RespawnMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public class RespawnMessageHandler extends MessageHandler<RespawnMessage> {

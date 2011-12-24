@@ -11,16 +11,15 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
+import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.notch.msg.EntityRotationMessage;
+import org.getspout.api.protocol.notch.msg.EntityTeleportMessage;
+import org.getspout.api.protocol.notch.msg.RelativeEntityPositionMessage;
+import org.getspout.api.protocol.notch.msg.RelativeEntityPositionRotationMessage;
 import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutChunk;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
-import org.getspout.unchecked.server.msg.EntityRotationMessage;
-import org.getspout.unchecked.server.msg.EntityTeleportMessage;
-import org.getspout.unchecked.server.msg.Message;
-import org.getspout.unchecked.server.msg.RelativeEntityPositionMessage;
-import org.getspout.unchecked.server.msg.RelativeEntityPositionRotationMessage;
 
 /**
  * Represents some entity in the world such as an item on the floor or a player.

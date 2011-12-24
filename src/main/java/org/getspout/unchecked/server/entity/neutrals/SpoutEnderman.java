@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Enderman;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.getspout.server.util.Parameter;
+import org.getspout.api.util.Parameter;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.BlockID;

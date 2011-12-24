@@ -2,9 +2,9 @@ package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.getspout.api.protocol.notch.msg.PositionRotationMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.PositionRotationMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public final class PositionRotationMessageHandler extends MessageHandler<PositionRotationMessage> {

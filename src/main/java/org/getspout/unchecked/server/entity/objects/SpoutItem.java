@@ -4,14 +4,13 @@ import java.util.List;
 
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
-
+import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.notch.msg.SpawnItemMessage;
 import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.Damager;
 import org.getspout.unchecked.server.entity.SpoutEntity;
-import org.getspout.unchecked.server.msg.Message;
-import org.getspout.unchecked.server.msg.SpawnItemMessage;
 
 /**
  * Represents an item that is also an
@@ -71,7 +70,7 @@ public final class SpoutItem extends SpoutEntity implements Item {
 		int yaw = Position.getIntYaw(location);
 		int pitch = Position.getIntPitch(location);
 
-		return new SpawnItemMessage(id, item, x, y, z, yaw, pitch, 0);
+		return new SpawnItemMessage(id, item.getTypeId(), item.getAmount(), item.getDurability(), x, y, z, yaw, pitch, 0);
 	}
 
 	@Override

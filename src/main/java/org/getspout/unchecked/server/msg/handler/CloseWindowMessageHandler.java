@@ -1,8 +1,8 @@
 package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.GameMode;
+import org.getspout.api.protocol.notch.msg.CloseWindowMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.CloseWindowMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public final class CloseWindowMessageHandler extends MessageHandler<CloseWindowMessage> {

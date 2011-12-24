@@ -5,13 +5,13 @@ import java.util.List;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.notch.msg.SpawnVehicleMessage;
 import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.Damager;
 import org.getspout.unchecked.server.entity.SpoutEntity;
-import org.getspout.unchecked.server.msg.Message;
-import org.getspout.unchecked.server.msg.SpawnVehicleMessage;
 
 public abstract class SpoutProjectile extends SpoutEntity implements Projectile {
 	private final int type;

@@ -1,13 +1,12 @@
 package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.GameMode;
-
+import org.getspout.api.protocol.notch.msg.QuickBarMessage;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.inventory.SpoutInventory;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.item.ItemProperties;
-import org.getspout.unchecked.server.msg.QuickBarMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public class QuickBarMessageHandler extends MessageHandler<QuickBarMessage> {

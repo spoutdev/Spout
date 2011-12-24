@@ -1,7 +1,8 @@
 package org.getspout.unchecked.server.msg.handler;
 
+import org.getspout.api.entity.Entity;
+import org.getspout.api.protocol.notch.msg.EntityActionMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.EntityActionMessage;
 import org.getspout.unchecked.server.net.Session;
 
 /**

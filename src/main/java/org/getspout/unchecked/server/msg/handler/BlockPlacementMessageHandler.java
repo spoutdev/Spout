@@ -7,6 +7,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
+import org.getspout.api.protocol.notch.msg.BlockChangeMessage;
+import org.getspout.api.protocol.notch.msg.BlockPlacementMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
@@ -14,8 +16,6 @@ import org.getspout.unchecked.server.block.SpoutBlockState;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.item.ItemProperties;
-import org.getspout.unchecked.server.msg.BlockChangeMessage;
-import org.getspout.unchecked.server.msg.BlockPlacementMessage;
 import org.getspout.unchecked.server.net.Session;
 
 /**

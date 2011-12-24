@@ -3,13 +3,12 @@ package org.getspout.unchecked.server.msg.handler;
 import java.util.logging.Level;
 
 import org.bukkit.GameMode;
-
+import org.getspout.api.protocol.notch.msg.TransactionMessage;
+import org.getspout.api.protocol.notch.msg.WindowClickMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.inventory.CraftingInventory;
 import org.getspout.unchecked.server.inventory.SpoutInventory;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
-import org.getspout.unchecked.server.msg.TransactionMessage;
-import org.getspout.unchecked.server.msg.WindowClickMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public final class WindowClickMessageHandler extends MessageHandler<WindowClickMessage> {

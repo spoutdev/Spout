@@ -2,7 +2,7 @@ package org.getspout.unchecked.server.net;
 
 import java.io.IOException;
 
-import org.getspout.unchecked.server.net.codec.MessageCodec;
+import org.getspout.api.protocol.MessageCodec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;

@@ -8,10 +8,10 @@ import java.net.URLEncoder;
 import java.util.logging.Level;
 
 import org.bukkit.event.player.PlayerPreLoginEvent;
+import org.getspout.api.protocol.notch.msg.IdentificationMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.IdentificationMessage;
 import org.getspout.unchecked.server.net.Session;
 import org.getspout.unchecked.server.net.Session.State;
 

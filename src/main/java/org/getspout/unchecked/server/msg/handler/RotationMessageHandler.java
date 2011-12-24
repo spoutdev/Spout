@@ -1,8 +1,8 @@
 package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.Location;
+import org.getspout.api.protocol.notch.msg.RotationMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.RotationMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public final class RotationMessageHandler extends MessageHandler<RotationMessage> {

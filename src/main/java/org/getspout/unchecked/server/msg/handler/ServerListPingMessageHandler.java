@@ -1,11 +1,11 @@
 package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.event.server.ServerListPingEvent;
+import org.getspout.api.protocol.notch.msg.KickMessage;
+import org.getspout.api.protocol.notch.msg.ServerListPingMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.KickMessage;
-import org.getspout.unchecked.server.msg.ServerListPingMessage;
 import org.getspout.unchecked.server.net.Session;
 
 /**

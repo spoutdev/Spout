@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.bukkit.entity.Slime;
 import org.bukkit.inventory.ItemStack;
-import org.getspout.server.util.Parameter;
+import org.getspout.api.util.Parameter;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.Damager;

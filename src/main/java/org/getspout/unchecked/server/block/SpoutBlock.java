@@ -6,11 +6,11 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
+import org.getspout.api.protocol.notch.msg.BlockChangeMessage;
 import org.getspout.unchecked.server.SpoutChunk;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.physics.BlockPhysicsEngine;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.BlockChangeMessage;
 
 /**
  * Represents a single block in a world.

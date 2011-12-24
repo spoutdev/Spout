@@ -1,7 +1,7 @@
 package org.getspout.unchecked.server.msg.handler;
 
+import org.getspout.api.protocol.notch.msg.ChatMessage;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.ChatMessage;
 import org.getspout.unchecked.server.net.Session;
 
 public final class ChatMessageHandler extends MessageHandler<ChatMessage> {

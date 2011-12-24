@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
-import org.getspout.server.util.Parameter;
+import org.getspout.api.util.Parameter;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.Angerable;

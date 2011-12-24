@@ -2,11 +2,10 @@ package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
-
+import org.getspout.api.protocol.notch.msg.AnimateEntityMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.block.BlockID;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.AnimateEntityMessage;
 import org.getspout.unchecked.server.net.Session;
 
 /**
