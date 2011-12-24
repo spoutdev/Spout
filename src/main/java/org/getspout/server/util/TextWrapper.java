@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util;
+package org.getspout.server.util;
 
 /**
  * Class for automatically wrapping chat lines while maintaining color.

@@ -33,8 +33,10 @@ import org.bukkit.map.MapView;
 import gnu.trove.iterator.TLongIterator;
 
 import org.getspout.api.util.map.TIntPairHashSet;
+import org.getspout.server.util.Parameter;
+import org.getspout.server.util.Position;
+import org.getspout.server.util.TextWrapper;
 import org.getspout.unchecked.server.EventFactory;
-import org.getspout.unchecked.server.SpoutChunk;
 import org.getspout.unchecked.server.SpoutOfflinePlayer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.SpoutBlockState;
@@ -66,9 +68,6 @@ import org.getspout.unchecked.server.msg.StateChangeMessage;
 import org.getspout.unchecked.server.msg.StatisticMessage;
 import org.getspout.unchecked.server.msg.UserListItemMessage;
 import org.getspout.unchecked.server.net.Session;
-import org.getspout.unchecked.server.util.Parameter;
-import org.getspout.unchecked.server.util.Position;
-import org.getspout.unchecked.server.util.TextWrapper;
 
 import static org.getspout.api.util.map.TIntPairHashSet.*;
 

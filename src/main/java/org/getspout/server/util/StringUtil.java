@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util;
+package org.getspout.server.util;
 
 public class StringUtil {
 	public static int getLevenshteinDistance(String s, String t) {

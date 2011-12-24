@@ -2,8 +2,8 @@ package org.getspout.unchecked.server.net.codec;
 
 import java.io.IOException;
 
+import org.getspout.server.util.ChannelBufferUtils;
 import org.getspout.unchecked.server.msg.UserListItemMessage;
-import org.getspout.unchecked.server.util.ChannelBufferUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 

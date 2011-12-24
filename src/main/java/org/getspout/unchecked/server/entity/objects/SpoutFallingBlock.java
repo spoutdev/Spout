@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.entity.FallingSand;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.BlockID;
@@ -11,7 +12,6 @@ import org.getspout.unchecked.server.entity.Damager;
 import org.getspout.unchecked.server.entity.SpoutEntity;
 import org.getspout.unchecked.server.msg.Message;
 import org.getspout.unchecked.server.msg.SpawnVehicleMessage;
-import org.getspout.unchecked.server.util.Position;
 
 public class SpoutFallingBlock extends SpoutEntity implements FallingSand {
 	private final int type;

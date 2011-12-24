@@ -2,7 +2,7 @@ package org.getspout.unchecked.server.msg;
 
 import java.util.List;
 
-import org.getspout.unchecked.server.util.Parameter;
+import org.getspout.server.util.Parameter;
 
 public final class EntityMetadataMessage extends Message {
 	private final int id;

@@ -19,7 +19,7 @@ import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 
-import org.getspout.unchecked.server.util.StringUtil;
+import org.getspout.server.util.StringUtil;
 
 /**
  * SimpleCommandMap that ignores certain "vanilla" commands and supports fuzzy

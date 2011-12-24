@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util;
+package org.getspout.server.util;
 
 /**
  * Simple 2-dimensional Perlin noise generator.

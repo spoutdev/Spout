@@ -1,11 +1,11 @@
-package org.getspout.unchecked.server.util.bans;
+package org.getspout.server.util.bans;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.getspout.server.util.PlayerListFile;
 import org.getspout.unchecked.server.SpoutServer;
-import org.getspout.unchecked.server.util.PlayerListFile;
 
 /**
  * Implementation of BanManager that uses PlayerListFiles.

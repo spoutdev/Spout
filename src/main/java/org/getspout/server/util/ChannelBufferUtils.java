@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util;
+package org.getspout.server.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

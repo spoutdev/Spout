@@ -6,13 +6,13 @@ import java.util.List;
 import org.bukkit.entity.Enderman;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.getspout.server.util.Parameter;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.BlockID;
 import org.getspout.unchecked.server.entity.Damager;
 import org.getspout.unchecked.server.entity.monsters.SpoutMonster;
 import org.getspout.unchecked.server.item.ItemID;
-import org.getspout.unchecked.server.util.Parameter;
 
 public class SpoutEnderman extends SpoutMonster implements Enderman {
 	/**

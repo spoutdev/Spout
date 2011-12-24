@@ -1,7 +1,7 @@
 package org.getspout.unchecked.server.net.codec;
 
+import org.getspout.server.util.ChannelBufferUtils;
 import org.getspout.unchecked.server.msg.KickMessage;
-import org.getspout.unchecked.server.util.ChannelBufferUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 

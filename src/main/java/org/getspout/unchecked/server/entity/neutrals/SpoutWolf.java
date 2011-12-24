@@ -6,12 +6,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.server.util.Parameter;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.Angerable;
 import org.getspout.unchecked.server.entity.Damager;
 import org.getspout.unchecked.server.entity.animals.SpoutAnimals;
-import org.getspout.unchecked.server.util.Parameter;
 
 public class SpoutWolf extends SpoutAnimals implements Wolf, Angerable {
 	private boolean angry, sitting, tamed;

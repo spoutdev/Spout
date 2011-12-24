@@ -16,11 +16,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Vehicle;
+import org.getspout.server.util.Parameter;
+import org.getspout.server.util.TargetBlock;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.msg.EntityMetadataMessage;
-import org.getspout.unchecked.server.util.Parameter;
-import org.getspout.unchecked.server.util.TargetBlock;
 
 /**
  * A SpoutLivingEntity is a {@link org.bukkit.entity.Player} or

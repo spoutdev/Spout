@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util.bans;
+package org.getspout.server.util.bans;
 
 import java.util.Set;
 

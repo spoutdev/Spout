@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.util;
+package org.getspout.server.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;

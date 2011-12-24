@@ -5,13 +5,13 @@ import java.util.List;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
+import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.entity.Damager;
 import org.getspout.unchecked.server.entity.SpoutEntity;
 import org.getspout.unchecked.server.msg.Message;
 import org.getspout.unchecked.server.msg.SpawnItemMessage;
-import org.getspout.unchecked.server.util.Position;
 
 /**
  * Represents an item that is also an

@@ -63,7 +63,7 @@ import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.net.Session;
-import org.getspout.unchecked.server.util.bans.BanManager;
+import org.getspout.server.util.bans.BanManager;
 
 /**
  * Central class for the calling of events.

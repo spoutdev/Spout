@@ -2,11 +2,11 @@ package org.getspout.unchecked.server.entity;
 
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
+import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.msg.Message;
 import org.getspout.unchecked.server.msg.SpawnMobMessage;
-import org.getspout.unchecked.server.util.Position;
 
 /**
  * Represents a monster such as a creeper.

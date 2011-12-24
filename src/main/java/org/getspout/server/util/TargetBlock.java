@@ -20,7 +20,7 @@
  * THE SOFTWARE.
 */
 
-package org.getspout.unchecked.server.util;
+package org.getspout.server.util;
 
 import gnu.trove.set.hash.TIntHashSet;
 

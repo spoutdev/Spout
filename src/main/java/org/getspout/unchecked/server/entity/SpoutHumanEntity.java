@@ -13,13 +13,13 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.getspout.server.util.Position;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.inventory.SpoutPlayerInventory;
 import org.getspout.unchecked.server.msg.Message;
 import org.getspout.unchecked.server.msg.SpawnPlayerMessage;
-import org.getspout.unchecked.server.util.Position;
 
 /**
  * Represents a human entity, such as an NPC or a player.

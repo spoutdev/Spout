@@ -6,11 +6,11 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Sheep;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.server.util.Parameter;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.BlockID;
 import org.getspout.unchecked.server.entity.Damager;
-import org.getspout.unchecked.server.util.Parameter;
 
 public class SpoutSheep extends SpoutAnimals implements Sheep {
 	/**
