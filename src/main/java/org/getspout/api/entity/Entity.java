@@ -17,4 +17,6 @@ public interface Entity extends Metadatable {
 	public Transform getTransform();
 	
 	public void onTick(float dt);
+	
+	public boolean is(Class<?> clazz);
 }
