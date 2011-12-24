@@ -35,7 +35,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public void onTick(float dt){
 		if(controller != null) controller.onTick(dt);
 	}
-
+	
 	@Override
 	public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
 		super.setMetadata(this, metadataKey, newMetadataValue);		
@@ -54,6 +54,11 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	@Override
 	public void removeMetadata(String metadataKey, Plugin owningPlugin) {
 		super.removeMetadata(this, metadataKey, owningPlugin);		
+	}
+
+	@Override
+	public boolean is(Class<?> clazz) {		
+		return clazz.isAssignableFrom(this.getController().getClass());
 	}
 
 
