@@ -1,29 +1,27 @@
 package org.getspout.api.protocol.notch.msg;
 
 import org.getspout.api.protocol.Message;
-import org.getspout.unchecked.api.inventory.ItemStack;
 
 public final class SpawnItemMessage extends Message {
 	private final int id, x, y, z, rotation, pitch, roll;
-	private final ItemStack item;
+	private final int itemId, count;
+	private final short damage;
 
-	public SpawnItemMessage(int id, ItemStack item, int x, int y, int z, int rotation, int pitch, int roll) {
+	public SpawnItemMessage(int id, int itemId, int count, short damage, int x, int y, int z, int rotation, int pitch, int roll) {
 		this.id = id;
-		this.item = item;
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.rotation = rotation;
 		this.pitch = pitch;
 		this.roll = roll;
+		this.itemId = itemId;
+		this.count = count;
+		this.damage = damage;
 	}
 
 	public int getId() {
 		return id;
-	}
-
-	public ItemStack getItem() {
-		return item;
 	}
 
 	public int getX() {
@@ -49,9 +47,21 @@ public final class SpawnItemMessage extends Message {
 	public int getRoll() {
 		return roll;
 	}
+	
+	public int getItemId() {
+		return itemId;
+	}
+	
+	public int getCount() {
+		return count;
+	}
+	
+	public short getDamage() {
+		return damage;
+	}
 
 	@Override
 	public String toString() {
-		return "SpawnItemMessage{id=" + id + ",item=" + item + ",x=" + x + ",y=" + y + ",z=" + z + ",rotation=" + rotation + ",pitch=" + pitch + ",roll=" + roll + "}";
+		return "SpawnItemMessage{id=" + id + ",item=[" + itemId + "," + count + "," + damage + "],x=" + x + ",y=" + y + ",z=" + z + ",rotation=" + rotation + ",pitch=" + pitch + ",roll=" + roll + "}";
 	}
 }

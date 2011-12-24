@@ -16,7 +16,7 @@ public final class SpawnItemCodec extends MessageCodec<SpawnItemMessage> {
 	@Override
 	public SpawnItemMessage decode(ChannelBuffer buffer) throws IOException {
 		int id = buffer.readInt();
-		int item = buffer.readUnsignedShort();
+		int itemId = buffer.readUnsignedShort();
 		int count = buffer.readUnsignedByte();
 		int damage = buffer.readUnsignedShort();
 		int x = buffer.readInt();
@@ -25,16 +25,16 @@ public final class SpawnItemCodec extends MessageCodec<SpawnItemMessage> {
 		int rotation = buffer.readUnsignedByte();
 		int pitch = buffer.readUnsignedByte();
 		int roll = buffer.readUnsignedByte();
-		return new SpawnItemMessage(id, new ItemStack(item, count, (short) damage), x, y, z, rotation, pitch, roll);
+		return new SpawnItemMessage(id, itemId, count, (short)damage, x, y, z, rotation, pitch, roll);
 	}
 
 	@Override
 	public ChannelBuffer encode(SpawnItemMessage message) throws IOException {
 		ChannelBuffer buffer = ChannelBuffers.buffer(22);
 		buffer.writeInt(message.getId());
-		buffer.writeShort(message.getItem().getTypeId());
-		buffer.writeByte(message.getItem().getAmount());
-		buffer.writeShort(message.getItem().getDurability());
+		buffer.writeShort(message.getItemId());
+		buffer.writeByte(message.getCount());
+		buffer.writeShort(message.getDamage());
 		buffer.writeInt(message.getX());
 		buffer.writeInt(message.getY());
 		buffer.writeInt(message.getZ());
