@@ -109,18 +109,12 @@ public interface Game extends Named, EventSource {
 	public String[] getAllAddresses();
 
 	/**
-	 * True if this game allows the Nether environment to exist.
-	 *
-	 * @return whether the Nether exists
+	 * True if the Game allows a particular Dimension to exist
+	 * 
+	 * @param dimension the dimension
+	 * @return true if the dimension is allowed to exist
 	 */
-	public boolean hasNether();
-
-	/**
-	 * True if this game allows 'The End' environment to exist.
-	 *
-	 * @return whether the Nether exists
-	 */
-	public boolean hasTheEnd();
+	public boolean hasDimension(String dimension);
 
 	/**
 	 * Broadcasts the given message to all players
