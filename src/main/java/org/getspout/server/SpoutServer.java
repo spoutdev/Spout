@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.getspout.api.Game;
 import org.getspout.api.GameMode;
+import org.getspout.api.Server;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
@@ -15,10 +15,11 @@ import org.getspout.api.event.EventManager;
 import org.getspout.api.geo.World;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.PluginManager;
+import org.getspout.unchecked.api.OfflinePlayer;
 import org.getspout.unchecked.api.inventory.Recipe;
 
 
-public class SpoutServer implements Game {
+public class SpoutServer implements Server {
 	public static void main(String[] args) {
 		org.getspout.unchecked.server.SpoutServer.main(args);
 	}
@@ -199,6 +200,90 @@ public class SpoutServer implements Game {
 
 	@Override
 	public Platform getPlatform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isWhitelist() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setWhitelist(boolean whitelist) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateWhitelist() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String[] getWhitelistedPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean unloadWorld(String name, boolean save) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean unloadWorld(World world, boolean save) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isOnlineMode() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public OfflinePlayer getOfflinePlayer(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<String> getIPBans() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void ban(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unban(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Collection<OfflinePlayer> getBannedPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<OfflinePlayer> getOps() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public World loadWorld(String name, boolean create) {
 		// TODO Auto-generated method stub
 		return null;
 	}
