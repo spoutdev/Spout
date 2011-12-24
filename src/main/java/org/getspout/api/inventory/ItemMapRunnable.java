@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.inventory;
+package org.getspout.api.inventory;
 
 public interface ItemMapRunnable {
 

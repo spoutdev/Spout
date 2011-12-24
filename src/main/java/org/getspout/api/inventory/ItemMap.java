@@ -1,4 +1,4 @@
-package org.getspout.unchecked.api.inventory;
+package org.getspout.api.inventory;
 
 import org.getspout.api.io.store.SimpleStore;
 
