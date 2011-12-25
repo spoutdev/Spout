@@ -32,7 +32,7 @@
  */
 package org.bukkit;
 
-import org.getspout.api.block.Biome;
+import org.getspout.api.geo.Biome;
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks Purpose is to

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.getspout.api.block;
+package org.getspout.api.geo;
 
 public enum Biome {
 	FOREST,
