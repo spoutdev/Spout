@@ -75,7 +75,7 @@ public class ItemStack {
 	 * @return the aux data
 	 */
 	public Map<String, Tag> getAuxData() {
-		return Tag.clone(auxData);
+		return Tag.cloneMap(auxData);
 	}
 	
 	/**
@@ -84,7 +84,7 @@ public class ItemStack {
 	 * @return the aux data
 	 */
 	public void setAuxData(Map<String, Tag> auxData) {
-		this.auxData = Tag.clone(auxData);
+		this.auxData = Tag.cloneMap(auxData);
 	}
 
 }

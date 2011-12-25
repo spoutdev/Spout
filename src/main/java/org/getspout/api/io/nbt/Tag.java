@@ -1,6 +1,9 @@
 package org.getspout.api.io.nbt;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Represents a single NBT tag.
@@ -47,8 +50,12 @@ public abstract class Tag {
 	 * @param map the map
 	 * @return a clone of the map
 	 */
-	public static Map<String, Tag> clone(Map<String, Tag> map) {
-		return null;
+	public static Map<String, Tag> cloneMap(Map<String, Tag> map) {
+		Map<String, Tag> newMap = new HashMap<String, Tag>();
+		for (Entry<String, Tag> entry : map.entrySet()) {
+			newMap.put(entry.getKey(), entry.getValue().clone());
+		}
+		return newMap;
 	}
 	
 	/**

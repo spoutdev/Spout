@@ -46,7 +46,7 @@ public final class CompoundTag extends Tag {
 	}
 	
 	public CompoundTag clone() {
-		Map<String, Tag> newMap = Tag.clone(value);
+		Map<String, Tag> newMap = Tag.cloneMap(value);
 		return new CompoundTag(getName(), newMap);
 	}
 }
