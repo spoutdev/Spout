@@ -1,20 +1,4 @@
 /*
- * This file is part of Bukkit (http://bukkit.org/).
- *
- * Bukkit is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Bukkit is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-/*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,35 +16,40 @@
  */
 package org.bukkit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum Instrument {
-
-	PIANO((byte) 0x0), // All other
-	BASS_DRUM((byte) 0x1), // Stone
-	SNARE_DRUM((byte) 0x2), // Sand
-	STICKS((byte) 0x3), // Glass
-	BASS_GUITAR((byte) 0x4); // Wood
-
-	private final byte type;
-	private final static Map<Byte, Instrument> types = new HashMap<Byte, Instrument>();
-
-	private Instrument(byte type) {
-		this.type = type;
+	BASE_GUITAR(0),
+	SNARE_DRUM(1),
+	CLICKS(2),
+	BASS_DRUM(3),
+	PIANO(4),
+	;
+	
+	private byte id;
+	private String name;
+	Instrument(int id) {
+		this.id = (byte)id;
+		this.name = name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
 	}
-
-	public byte getType() {
-		return type;
+	
+	public byte getId() {
+		return id;
 	}
-
-	public static Instrument getByType(final byte type) {
-		return types.get(type);
+	
+	@Override
+	public String toString() {
+		return name;
 	}
-
-	static {
-		for (Instrument instrument : Instrument.values()) {
-			types.put(instrument.getType(), instrument);
+	
+	public static Instrument getInstrumentFromId(byte id) {
+		switch(id) {
+			case 0: return BASE_GUITAR;
+			case 1: return SNARE_DRUM;
+			case 2: return CLICKS;
+			case 3: return BASS_DRUM;
+			case 4: return PIANO;
+			default: throw new IllegalArgumentException("Invalid id");
 		}
 	}
+}
+	
 }
