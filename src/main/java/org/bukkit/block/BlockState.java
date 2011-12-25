@@ -35,6 +35,8 @@ package org.bukkit.block;
 import javax.swing.text.Position;
 
 import org.getspout.api.geo.World;
+import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.metadata.Metadatable;
 
 /**

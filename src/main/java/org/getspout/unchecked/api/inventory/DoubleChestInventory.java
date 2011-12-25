@@ -16,8 +16,8 @@
  */
 package org.getspout.unchecked.api.inventory;
 
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.getspout.api.geo.cuboid.Block;
 
 public interface DoubleChestInventory extends Inventory {
 	/**

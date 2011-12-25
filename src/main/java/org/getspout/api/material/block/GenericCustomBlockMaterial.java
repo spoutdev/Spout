@@ -5,8 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.bukkit.block.BlockFace;
-import org.getspout.api.block.design.BlockDesign;
-import org.getspout.api.block.design.GenericBlockDesign;
 import org.getspout.api.geo.World;
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.CustomBlockMaterial;
@@ -17,6 +15,8 @@ import org.getspout.api.entity.Entity;
 import org.getspout.api.packet.PacketUtil;
 import org.getspout.unchecked.api.inventory.ItemStack;
 import org.getspout.api.plugin.Plugin;
+import org.getspout.api.render.BlockDesign;
+import org.getspout.api.render.GenericBlockDesign;
 
 public class GenericCustomBlockMaterial implements CustomBlockMaterial {
 	public BlockDesign design = new GenericBlockDesign();

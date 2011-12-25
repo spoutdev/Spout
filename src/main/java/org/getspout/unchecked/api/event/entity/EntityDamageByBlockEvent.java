@@ -16,7 +16,7 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.bukkit.block.Block;
+import org.getspout.api.geo.cuboid.Block;
 
 /**
  * Called when an entity is damaged by a block.

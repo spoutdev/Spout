@@ -1,5 +1,6 @@
 package org.getspout.api.geo.cuboid;
 
+import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Pointm;
 import org.getspout.api.math.Vector3;
@@ -36,5 +37,9 @@ public class Cuboid {
 
 	public int getZ() {
 		return (int) (base.getZ() / size.getZ());
+	}
+	
+	public World getWorld() {
+		return base.getWorld();
 	}
 }

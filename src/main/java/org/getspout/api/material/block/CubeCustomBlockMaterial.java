@@ -1,7 +1,7 @@
 package org.getspout.api.material.block;
 
-import org.getspout.api.block.design.GenericCubeBlockDesign;
 import org.getspout.api.plugin.Plugin;
+import org.getspout.api.render.GenericCubeBlockDesign;
 
 public abstract class CubeCustomBlockMaterial extends GenericCustomBlockMaterial {
 

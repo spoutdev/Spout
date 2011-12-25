@@ -16,10 +16,10 @@
  */
 package org.getspout.unchecked.api.event.block;
 
-import org.bukkit.block.Block;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.event.block.BlockChangeEvent;
+import org.getspout.api.geo.cuboid.Block;
 
 /**
  * Called when a block melts, disappears, or fades.

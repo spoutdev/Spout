@@ -16,8 +16,8 @@
  */
 package org.getspout.unchecked.api.event.entity;
 
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.getspout.api.geo.cuboid.Block;
 
 /**
  * Called when a projectile hits a block.
