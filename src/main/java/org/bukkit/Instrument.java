@@ -24,8 +24,8 @@ public enum Instrument {
 	PIANO(4),
 	;
 	
-	private byte id;
-	private String name;
+	private final byte id;
+	private final String name;
 	Instrument(int id) {
 		this.id = (byte)id;
 		this.name = name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
@@ -40,7 +40,7 @@ public enum Instrument {
 		return name;
 	}
 	
-	public static Instrument getInstrumentFromId(byte id) {
+	public static Instrument getInstrumentFromId(final byte id) {
 		switch(id) {
 			case 0: return BASE_GUITAR;
 			case 1: return SNARE_DRUM;
@@ -50,6 +50,4 @@ public enum Instrument {
 			default: throw new IllegalArgumentException("Invalid id");
 		}
 	}
-}
-	
 }
