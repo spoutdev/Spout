@@ -1,5 +1,7 @@
 package org.getspout.api.io.nbt;
 
+import java.util.Map;
+
 /**
  * Represents a single NBT tag.
  * @author Graham Edgecombe
@@ -38,4 +40,21 @@ public abstract class Tag {
 	 * @return The value of this tag.
 	 */
 	public abstract Object getValue();
+	
+	/**
+	 * Clones a Map<String, Tag>
+	 * 
+	 * @param map the map
+	 * @return a clone of the map
+	 */
+	public static Map<String, Tag> clone(Map<String, Tag> map) {
+		return null;
+	}
+	
+	/**
+	 * Clones the Tag
+	 * 
+	 * @return the clone
+	 */
+	public abstract Tag clone();
 }

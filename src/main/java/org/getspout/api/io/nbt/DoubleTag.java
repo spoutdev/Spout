@@ -34,4 +34,8 @@ public final class DoubleTag extends Tag {
 		}
 		return "TAG_Double" + append + ": " + value;
 	}
+	
+	public DoubleTag clone() {
+		return new DoubleTag(getName(), value);
+	}
 }

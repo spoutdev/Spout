@@ -34,4 +34,8 @@ public final class LongTag extends Tag {
 		}
 		return "TAG_Long" + append + ": " + value;
 	}
+	
+	public LongTag clone() {
+		return new LongTag(getName(), value);
+	}
 }

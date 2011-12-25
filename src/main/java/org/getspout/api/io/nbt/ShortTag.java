@@ -34,4 +34,8 @@ public final class ShortTag extends Tag {
 		}
 		return "TAG_Short" + append + ": " + value;
 	}
+	
+	public ShortTag clone() {
+		return new ShortTag(getName(), value);
+	}
 }

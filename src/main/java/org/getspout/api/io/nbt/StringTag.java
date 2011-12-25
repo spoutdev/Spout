@@ -34,4 +34,8 @@ public final class StringTag extends Tag {
 		}
 		return "TAG_String" + append + ": " + value;
 	}
+	
+	public StringTag clone() {
+		return new StringTag(getName(), value);
+	}
 }

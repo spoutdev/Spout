@@ -1,5 +1,7 @@
 package org.getspout.api.io.nbt;
 
+import java.util.Arrays;
+
 /**
  * The {@code TAG_Byte_Array} tag.
  * @author Graham Edgecombe
@@ -42,5 +44,11 @@ public final class ByteArrayTag extends Tag {
 			append = "(\"" + this.getName() + "\")";
 		}
 		return "TAG_Byte_Array" + append + ": " + hex.toString();
+	}
+	
+	public ByteArrayTag clone() {
+		byte[] clonedArray = Arrays.copyOf(value, value.length);
+		
+		return new ByteArrayTag(getName(), clonedArray);
 	}
 }

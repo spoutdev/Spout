@@ -1,5 +1,6 @@
 package org.getspout.api.io.nbt;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,5 +59,16 @@ public final class ListTag<T extends Tag> extends Tag {
 		}
 		bldr.append("}");
 		return bldr.toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ListTag clone() {
+		List<T> newList = new ArrayList<T>();
+		
+		for (T v : value) {
+			newList.add((T)v.clone());
+		}
+		
+		return new ListTag<T>(getName(), type, newList);
 	}
 }

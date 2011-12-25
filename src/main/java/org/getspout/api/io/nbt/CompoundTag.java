@@ -44,4 +44,9 @@ public final class CompoundTag extends Tag {
 		bldr.append("}");
 		return bldr.toString();
 	}
+	
+	public CompoundTag clone() {
+		Map<String, Tag> newMap = Tag.clone(value);
+		return new CompoundTag(getName(), newMap);
+	}
 }

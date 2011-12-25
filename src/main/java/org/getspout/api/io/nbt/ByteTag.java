@@ -34,4 +34,8 @@ public final class ByteTag extends Tag {
 		}
 		return "TAG_Byte" + append + ": " + value;
 	}
+	
+	public ByteTag clone() {
+		return new ByteTag(getName(), value);
+	}
 }
