@@ -16,8 +16,8 @@
  */
 package org.bukkit.block;
 
-import org.bukkit.Instrument;
 import org.bukkit.Note;
+import org.getspout.api.Instrument;
 
 public interface NoteBlock extends BlockState {
 
