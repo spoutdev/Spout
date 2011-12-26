@@ -17,7 +17,7 @@
 package org.getspout.api;
 
 public enum Instrument {
-	BASE_GUITAR(0),
+	BASS_GUITAR(0),
 	SNARE_DRUM(1),
 	CLICKS(2),
 	BASS_DRUM(3),
@@ -42,7 +42,7 @@ public enum Instrument {
 	
 	public static Instrument getInstrumentFromId(final byte id) {
 		switch(id) {
-			case 0: return BASE_GUITAR;
+			case 0: return BASS_GUITAR;
 			case 1: return SNARE_DRUM;
 			case 2: return CLICKS;
 			case 3: return BASS_DRUM;
