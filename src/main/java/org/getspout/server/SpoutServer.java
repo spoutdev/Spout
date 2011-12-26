@@ -6,9 +6,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.getspout.api.GameMode;
+import org.getspout.api.Player;
 import org.getspout.api.Server;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
@@ -17,8 +19,8 @@ import org.getspout.api.event.EventManager;
 import org.getspout.api.geo.World;
 import org.getspout.api.plugin.CommonPluginManager;
 import org.getspout.api.plugin.Platform;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.api.plugin.PluginManager;
-import org.getspout.unchecked.api.OfflinePlayer;
 import org.getspout.unchecked.api.inventory.Recipe;
 
 
@@ -31,6 +33,8 @@ public class SpoutServer implements Server {
 	private volatile String primaryAddress;
 	
 	private volatile String[] allAddresses;
+	
+	private File pluginDirectory = new File("plugins");
 	
 	private String name = "Spout Server";
 	
@@ -57,6 +61,30 @@ public class SpoutServer implements Server {
 	
 	public static void main(String[] args) {
 		org.getspout.unchecked.server.SpoutServer.main(args);
+		
+		//SpoutServer server = new SpoutServer();
+		//server.start();
+	}
+	
+	public void start() {
+		
+		// Start loading plugins
+		loadPlugins();
+	}
+	
+	public void loadPlugins() {
+		
+		pluginManager.clearPlugins();
+		
+		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
+		for (Plugin plugin : plugins) {
+			try {
+				plugin.onLoad();
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[] {plugin.getDescription().getName(), ex.getMessage()});
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -67,11 +95,6 @@ public class SpoutServer implements Server {
 	@Override
 	public long getVersion() {
 		return version;
-	}
-
-	@Override
-	public Entity[] getPlayers() {
-		return players.toArray(emptyEntityArray);
 	}
 
 	@Override
@@ -118,18 +141,6 @@ public class SpoutServer implements Server {
 
 	@Override
 	public File getUpdateFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Entity getPlayer(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Entity getPlayer(String name, boolean exact) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -273,12 +284,6 @@ public class SpoutServer implements Server {
 	}
 
 	@Override
-	public OfflinePlayer getOfflinePlayer(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Collection<String> getIPBans() {
 		// TODO Auto-generated method stub
 		return null;
@@ -297,19 +302,43 @@ public class SpoutServer implements Server {
 	}
 
 	@Override
-	public Collection<OfflinePlayer> getBannedPlayers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<OfflinePlayer> getOps() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public World loadWorld(String name, boolean create) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Player[] getPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Player[] getOnlinePlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Player getPlayer(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Player getPlayer(String name, boolean exact) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Player> getBannedPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Player> getOps() {
 		// TODO Auto-generated method stub
 		return null;
 	}
