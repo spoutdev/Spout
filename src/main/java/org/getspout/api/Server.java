@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.getspout.api.geo.World;
-import org.getspout.unchecked.api.OfflinePlayer;
-import org.omg.CORBA.Environment;
 
 /**
  * Represents the server-specific implementation of Minecraft.
@@ -102,19 +100,6 @@ public interface Server extends Game {
 	public boolean isOnlineMode();
 
 	/**
-	 * Gets an instance of the OfflinePlayer object for manipulation. <br/>
-	 * <br/>
-	 * Searches all online players first, and returns any online players that
-	 * match the name. If no player online matches, an OfflinePlayer is created.
-	 *
-	 * An offline player may be an instance of a {@link Player}.
-	 *
-	 * @param name to search for
-	 * @return OfflinePlayer
-	 */
-	public OfflinePlayer getOfflinePlayer(String name);
-
-	/**
 	 * Gets a collection of all banned IP's, in string format.
 	 *
 	 * @return banned IP addresses
@@ -142,14 +127,14 @@ public interface Server extends Game {
 	 *
 	 * @return banned players
 	 */
-	public Collection<OfflinePlayer> getBannedPlayers();
+	public Collection<Player> getBannedPlayers();
 
 	/**
 	 * Returns a collection of all server operators
 	 *
 	 * @return operators
 	 */
-	public Collection<OfflinePlayer> getOps();
+	public Collection<Player> getOps();
 	
 	/**
 	 * Loads a world, with the option to create worlds that don't exist

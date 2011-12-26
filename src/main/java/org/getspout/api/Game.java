@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.getspout.api.command.Command;
+import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.EventSource;
@@ -38,8 +40,6 @@ import org.getspout.api.geo.World;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.util.Named;
-import org.getspout.api.command.Command;
-import org.getspout.api.command.CommandSource;
 import org.getspout.unchecked.api.inventory.Recipe;
 
 /**
@@ -67,7 +67,14 @@ public interface Game extends Named, EventSource {
 	 *
 	 * @return array of all active players
 	 */
-	public Entity[] getPlayers();
+	public Player[] getPlayers();
+	
+	/**
+	 * Gets all players currently online
+	 *
+	 * @return array of all active players
+	 */
+	public Player[] getOnlinePlayers();
 
 	/**
 	 * Gets the maximum number of players this game can host, or -1 if infinite
@@ -176,7 +183,7 @@ public interface Game extends Named, EventSource {
 	 * @param name to look up
 	 * @return Player if found, else null
 	 */
-	public Entity getPlayer(String name);
+	public Player getPlayer(String name);
 
 	/**
 	 * Gets the player bythe given username. <br/>
@@ -190,7 +197,7 @@ public interface Game extends Named, EventSource {
 	 * @param name to look up
 	 * @return Player if found, else null
 	 */
-	public Entity getPlayer(String name, boolean exact);
+	public Player getPlayer(String name, boolean exact);
 
 	/**
 	 * Matches the given username to all players that contain it in their name.

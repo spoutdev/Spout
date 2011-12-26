@@ -16,13 +16,13 @@
  */
 package org.getspout.api.metadata;
 
-import org.getspout.unchecked.api.OfflinePlayer;
+import org.getspout.api.Player;
 
 /**
  * A PlayerMetadataStore stores metadata for {@link org.getspout.api.old.entity.entity.Player}
  * and {@link OfflinePlayer} objects.
  */
-public class PlayerMetadataStore extends MetadataStoreBase<OfflinePlayer> implements MetadataStore<OfflinePlayer> {
+public class PlayerMetadataStore extends MetadataStoreBase<Player> implements MetadataStore<Player> {
 	/**
 	 * Generates a unique metadata key for {@link org.getspout.api.old.entity.entity.Player} and
 	 * {@link OfflinePlayer} using the player name.
@@ -34,7 +34,7 @@ public class PlayerMetadataStore extends MetadataStoreBase<OfflinePlayer> implem
 	 */
 
 	@Override
-	protected String disambiguate(OfflinePlayer player, String metadataKey) {
+	protected String disambiguate(Player player, String metadataKey) {
 		return player.getName().toLowerCase() + ":" + metadataKey;
 	}
 }
