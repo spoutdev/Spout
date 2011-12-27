@@ -17,10 +17,12 @@ import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
+import org.getspout.api.plugin.CommonPluginLoader;
 import org.getspout.api.plugin.CommonPluginManager;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.Plugin;
 import org.getspout.api.plugin.PluginManager;
+import org.getspout.api.plugin.security.CommonSecurityManager;
 import org.getspout.unchecked.api.inventory.Recipe;
 
 
@@ -48,11 +50,17 @@ public class SpoutServer implements Server {
 	 */
 	private LinkedHashSet<Entity> players = new LinkedHashSet<Entity>();
 	private final static Entity[] emptyEntityArray = new Entity[0];
+
+	/**
+	 * The security manager
+	 * TODO - need to integrate this
+	 */
+	private CommonSecurityManager securityManager = new CommonSecurityManager(0);
 	
 	/**
 	 * The plugin manager for the server
 	 */
-	private PluginManager pluginManager = new CommonPluginManager(this, null, 0.0);
+	private CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
 	
 	/**
 	 * The logger for this class.
@@ -74,9 +82,16 @@ public class SpoutServer implements Server {
 	
 	public void loadPlugins() {
 		
+		System.out.println("Loading plugins:");
+		
+		pluginManager.registerPluginLoader(CommonPluginLoader.class);
+		
 		pluginManager.clearPlugins();
 		
 		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
+		
+		System.out.println("Plugins: " + plugins.length);
+		
 		for (Plugin plugin : plugins) {
 			try {
 				plugin.onLoad();
