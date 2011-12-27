@@ -1,16 +1,14 @@
 package org.getspout.unchecked.server.msg.handler;
 
-import org.bukkit.Location;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.PositionRotationMessage;
-import org.getspout.unchecked.server.EventFactory;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.net.Session;
 
 public final class PositionRotationMessageHandler extends MessageHandler<PositionRotationMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, PositionRotationMessage message) {
-		if (player == null) {
+	public void handle(Session session, Player player, PositionRotationMessage message) {
+		/*if (player == null) {
 			return;
 		}
 
@@ -25,5 +23,6 @@ public final class PositionRotationMessageHandler extends MessageHandler<Positio
 		}
 
 		player.setRawLocation(event.getTo());
+		*/
 	}
 }

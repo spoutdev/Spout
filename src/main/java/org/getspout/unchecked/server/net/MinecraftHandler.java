@@ -3,7 +3,8 @@ package org.getspout.unchecked.server.net;
 import java.util.logging.Level;
 
 import org.getspout.api.protocol.Message;
-import org.getspout.unchecked.server.SpoutServer;
+import org.getspout.api.protocol.bootstrap.BootstrapCodecLookupService;
+import org.getspout.server.SpoutServer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -37,7 +38,7 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 		Channel c = e.getChannel();
 		server.getChannelGroup().add(c);
 
-		Session session = new Session(server, c);
+		SpoutSession session = new SpoutSession(server, c, new BootstrapCodecLookupService());
 		server.getSessionRegistry().add(session);
 		ctx.setAttachment(session);
 
@@ -49,7 +50,7 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 		Channel c = e.getChannel();
 		server.getChannelGroup().remove(c);
 
-		Session session = (Session) ctx.getAttachment();
+		SpoutSession session = (SpoutSession) ctx.getAttachment();
 		server.getSessionRegistry().remove(session);
 		session.dispose(true);
 
@@ -58,7 +59,7 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-		Session session = (Session) ctx.getAttachment();
+		SpoutSession session = (SpoutSession) ctx.getAttachment();
 		session.messageReceived((Message) e.getMessage());
 	}
 
@@ -68,7 +69,7 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 		if (c.isOpen()) {
 			server.getChannelGroup().remove(c);
 
-			Session session = (Session) ctx.getAttachment();
+			SpoutSession session = (SpoutSession) ctx.getAttachment();
 			server.getSessionRegistry().remove(session);
 			session.dispose(true);
 

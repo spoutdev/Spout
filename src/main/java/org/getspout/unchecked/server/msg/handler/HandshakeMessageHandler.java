@@ -1,15 +1,17 @@
 package org.getspout.unchecked.server.msg.handler;
 
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.HandshakeMessage;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.net.Session;
-import org.getspout.unchecked.server.net.Session.State;
+import org.getspout.unchecked.server.net.SpoutSession;
+import org.getspout.unchecked.server.net.SpoutSession.State;
 
 public final class HandshakeMessageHandler extends MessageHandler<HandshakeMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, HandshakeMessage message) {
-		Session.State state = session.getState();
-		if (state == Session.State.EXCHANGE_HANDSHAKE) {
+	public void handle(Session session, Player player, HandshakeMessage message) {
+		/*SpoutSession.State state = session.getState();
+		if (state == SpoutSession.State.EXCHANGE_HANDSHAKE) {
 			session.setState(State.EXCHANGE_IDENTIFICATION);
 			if (session.getServer().getOnlineMode()) {
 				session.send(new HandshakeMessage(session.getSessionId()));
@@ -18,6 +20,6 @@ public final class HandshakeMessageHandler extends MessageHandler<HandshakeMessa
 			}
 		} else {
 			session.disconnect("Handshake already exchanged.");
-		}
+		}*/
 	}
 }

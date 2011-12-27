@@ -1,11 +1,15 @@
 package org.getspout.server;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +27,21 @@ import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.Plugin;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.plugin.security.CommonSecurityManager;
+import org.getspout.api.protocol.CodecLookupService;
+import org.getspout.api.protocol.CommonPipelineFactory;
+import org.getspout.api.protocol.Session;
+import org.getspout.api.protocol.SessionRegistry;
+import org.getspout.api.protocol.bootstrap.BootstrapCodecLookupService;
 import org.getspout.unchecked.api.inventory.Recipe;
+import org.getspout.unchecked.server.net.SpoutSession;
+import org.getspout.unchecked.server.net.SpoutSessionRegistry;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 
 public class SpoutServer implements Server {
@@ -67,17 +85,52 @@ public class SpoutServer implements Server {
 	 */
 	public static final Logger logger = Logger.getLogger("Minecraft");
 	
+	/**
+	 * A group containing all of the channels.
+	 */
+	private final ChannelGroup group = new DefaultChannelGroup();
+	
+	/**
+	 * The network executor service - Netty dispatches events to this thread
+	 * pool.
+	 */
+	private final ExecutorService executor = Executors.newCachedThreadPool();
+	
+	/**
+	 * A list of all the active {@link SpoutSession}s.
+	 */
+	private final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
+	
+	/**
+	 * The bootstrap codec
+	 */
+	private final CodecLookupService bootstrapCodec = new BootstrapCodecLookupService();
+	
+	public SpoutServer() {
+		init();
+	}
+	
 	public static void main(String[] args) {
-		org.getspout.unchecked.server.SpoutServer.main(args);
+		//org.getspout.unchecked.server.SpoutServer.main(args);
 		
-		//SpoutServer server = new SpoutServer();
-		//server.start();
+		SpoutServer server = new SpoutServer();
+		server.start();
+		
+		server.bind(new InetSocketAddress("localhost", 25565));
 	}
 	
 	public void start() {
 		
 		// Start loading plugins
 		loadPlugins();
+	}
+
+	public void init() {
+		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
+		bootstrap.setFactory(factory);
+
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		bootstrap.setPipelineFactory(pipelineFactory);
 	}
 	
 	public void loadPlugins() {
@@ -100,6 +153,21 @@ public class SpoutServer implements Server {
 				ex.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * The {@link ServerBootstrap} used to initialize Netty.
+	 */
+	private final ServerBootstrap bootstrap = new ServerBootstrap();
+	
+	/**
+	 * Binds this server to the specified address.
+	 *
+	 * @param address The addresss.
+	 */
+	public void bind(SocketAddress address) {
+		logger.log(Level.INFO, "Binding to address: {0}...", address);
+		group.add(bootstrap.bind(address));
 	}
 
 	@Override
@@ -356,6 +424,21 @@ public class SpoutServer implements Server {
 	public Collection<Player> getOps() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Session newSession(Channel channel) {
+		return new SpoutSession(this, channel, bootstrapCodec);
+	}
+
+	@Override
+	public ChannelGroup getChannelGroup() {
+		return group;
+	}
+
+	@Override
+	public SessionRegistry getSessionRegistry() {
+		return sessions;
 	}
 
 }

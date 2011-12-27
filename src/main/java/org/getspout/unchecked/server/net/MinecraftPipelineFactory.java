@@ -1,6 +1,6 @@
 package org.getspout.unchecked.server.net;
 
-import org.getspout.unchecked.server.SpoutServer;
+import org.getspout.server.SpoutServer;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.StaticChannelPipeline;

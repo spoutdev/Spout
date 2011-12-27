@@ -5,21 +5,19 @@ import java.net.SocketAddress;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.HandlerLookupService;
+import org.getspout.api.protocol.CodecLookupService;
 import org.getspout.api.protocol.Message;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.BlockPlacementMessage;
 import org.getspout.api.protocol.notch.msg.KickMessage;
 import org.getspout.api.protocol.notch.msg.PingMessage;
-import org.getspout.api.protocol.notch.msg.UserListItemMessage;
-import org.getspout.unchecked.server.EventFactory;
-import org.getspout.unchecked.server.SpoutServer;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.msg.handler.HandlerLookupService;
-import org.getspout.unchecked.server.msg.handler.MessageHandler;
+import org.getspout.server.SpoutServer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 
@@ -29,12 +27,15 @@ import org.jboss.netty.channel.ChannelFutureListener;
  *
  * @author Graham Edgecombe
  */
-public final class Session {
+public final class SpoutSession implements Session {
 	/**
 	 * The number of ticks which are elapsed before a client is disconnected due
 	 * to a timeout.
 	 */
 	private static final int TIMEOUT_TICKS = 300;
+	
+	private AtomicReference<CodecLookupService> codec = new AtomicReference<CodecLookupService>();
+	private AtomicReference<HandlerLookupService> handler = new AtomicReference<HandlerLookupService>();
 
 	/**
 	 * The state this connection is currently in.
@@ -93,7 +94,7 @@ public final class Session {
 	/**
 	 * The player associated with this session (if there is one).
 	 */
-	private SpoutPlayer player;
+	private Player player;
 
 	/**
 	 * The random long used for client-server handshake
@@ -118,9 +119,10 @@ public final class Session {
 	 * @param server The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public Session(SpoutServer server, Channel channel) {
+	public SpoutSession(SpoutServer server, Channel channel, CodecLookupService codec) {
 		this.server = server;
 		this.channel = channel;
+		this.codec.set(codec);
 	}
 
 	/**
@@ -146,7 +148,7 @@ public final class Session {
 	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
-	public SpoutPlayer getPlayer() {
+	public Player getPlayer() {
 		return player;
 	}
 
@@ -157,34 +159,34 @@ public final class Session {
 	 * @throws IllegalStateException if there is already a player associated
 	 *             with this session.
 	 */
-	public void setPlayer(SpoutPlayer player) {
+	public void setPlayer(Player player) {
 		if (this.player != null) {
 			throw new IllegalStateException();
 		}
 
 		this.player = player;
-		PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
+		/*PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
 		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
 			disconnect(event.getKickMessage(), true);
 			return;
-		}
+		}*/
 
-		String message = EventFactory.onPlayerJoin(player).getJoinMessage();
-		if (message != null) {
-			server.broadcastMessage(message);
-		}
+		//String message = EventFactory.onPlayerJoin(player).getJoinMessage();
+		//if (message != null) {
+		//	server.broadcastMessage(message);
+		//}
 
-		player.loadData();
-		player.saveData();
+		//player.loadData();
+		//player.saveData();
 
-		player.getWorld().getRawPlayers().add(player);
-		player.teleport(player.getLocation().add(0, 0.5, 0));
+		//player.getWorld().getRawPlayers().add(player);
+		//player.teleport(player.getLocation().add(0, 0.5, 0));
 		
-		Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short) timeoutCounter);
+		/*Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short) timeoutCounter);
 		for (Player sendPlayer : server.getOnlinePlayers()) {
-			((SpoutPlayer) sendPlayer).getSession().send(userListMessage);
-			send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, (short) ((SpoutPlayer) sendPlayer).getSession().timeoutCounter));
-		}
+			//((SpoutPlayer) sendPlayer).getSession().send(userListMessage);
+			//send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, (short) ((SpoutPlayer) sendPlayer).getSession().timeoutCounter));
+		}*/
 	}
 
 	@SuppressWarnings("unchecked")
@@ -193,7 +195,7 @@ public final class Session {
 
 		Message message;
 		while ((message = messageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) HandlerLookupService.find(message.getClass());
+			MessageHandler<Message> handler = (MessageHandler<Message>) this.handler.get().find(message.getClass());
 			if (handler != null) {
 				handler.handle(this, player, message);
 			}
@@ -241,16 +243,16 @@ public final class Session {
 	 */
 	public void disconnect(String reason, boolean overrideKick) {
 		if (player != null && !overrideKick) {
-			PlayerKickEvent event = EventFactory.onPlayerKick(player, reason);
+			/*PlayerKickEvent event = EventFactory.onPlayerKick(player, reason);
 			if (event.isCancelled()) {
 				return;
-			}
+			}*/
 
-			reason = event.getReason();
+			//reason = event.getReason();
 
-			if (event.getLeaveMessage() != null) {
-				server.broadcastMessage(event.getLeaveMessage());
-			}
+			//if (event.getLeaveMessage() != null) {
+			//	server.broadcastMessage(event.getLeaveMessage());
+			//}
 
 			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
 			dispose(false);
@@ -284,7 +286,7 @@ public final class Session {
 
 	@Override
 	public String toString() {
-		return Session.class.getName() + " [address=" + channel.getRemoteAddress() + "]";
+		return SpoutSession.class.getName() + " [address=" + channel.getRemoteAddress() + "]";
 	}
 
 	/**
@@ -293,7 +295,7 @@ public final class Session {
 	 * @param message The message.
 	 * @param <T> The type of message.
 	 */
-	<T extends Message> void messageReceived(T message) {
+	public <T extends Message> void messageReceived(T message) {
 		messageQueue.add(message);
 	}
 
@@ -301,18 +303,18 @@ public final class Session {
 	 * Disposes of this session by destroying the associated player, if there is
 	 * one.
 	 */
-	void dispose(boolean broadcastQuit) {
+	public void dispose(boolean broadcastQuit) {
 		if (player != null) {
-			player.remove();
-			Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, (short) 0);
-			for (Player player : server.getOnlinePlayers()) {
-				((SpoutPlayer) player).getSession().send(userListMessage);
-			}
+			//player.remove();
+			//Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, (short) 0);
+			//for (Player player : server.getOnlinePlayers()) {
+			//	((SpoutPlayer) player).getSession().send(userListMessage);
+			//}
 
-			String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-			if (broadcastQuit && text != null) {
-				server.broadcastMessage(text);
-			}
+			//String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+			//if (broadcastQuit && text != null) {
+			//	server.broadcastMessage(text);
+			//}
 			player = null; // in case we are disposed twice
 		}
 	}
@@ -336,5 +338,20 @@ public final class Session {
 
 	public void setPreviousPlacement(BlockPlacementMessage message) {
 		previousPlacement = message;
+	}
+
+	@Override
+	public CodecLookupService getCodecLookupService() {
+		return codec.get();
+	}
+
+	@Override
+	public void setCodecLookupService(CodecLookupService codecLookupService) {
+		this.codec.set(codecLookupService);
+	}
+	
+	@Override
+	public void setHandlerLookupService(HandlerLookupService handlerLookupService) {
+		this.handler.set(handlerLookupService);
 	}
 }

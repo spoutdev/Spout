@@ -8,20 +8,23 @@ import java.net.URLEncoder;
 import java.util.logging.Level;
 
 import org.bukkit.event.player.PlayerPreLoginEvent;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.IdentificationMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.net.Session;
-import org.getspout.unchecked.server.net.Session.State;
+import org.getspout.unchecked.server.net.SpoutSession;
+import org.getspout.unchecked.server.net.SpoutSession.State;
 
 public final class IdentificationMessageHandler extends MessageHandler<IdentificationMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, IdentificationMessage message) {
-		Session.State state = session.getState();
+	public void handle(Session session, Player player, IdentificationMessage message) {
+		/*SpoutSession.State state = session.getState();
 
 		// Are we at the proper stage?
-		if (state == Session.State.EXCHANGE_IDENTIFICATION) {
+		if (state == SpoutSession.State.EXCHANGE_IDENTIFICATION) {
 			if (message.getId() < SpoutServer.PROTOCOL_VERSION) {
 				session.disconnect("Outdated client!");
 			} else if (message.getId() > SpoutServer.PROTOCOL_VERSION) {
@@ -63,5 +66,6 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
 			boolean game = state == State.GAME;
 			session.disconnect(game ? "Identification already exchanged." : "Handshake not yet exchanged.");
 		}
+		*/
 	}
 }

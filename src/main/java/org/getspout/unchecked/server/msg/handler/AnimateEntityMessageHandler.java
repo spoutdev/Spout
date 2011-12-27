@@ -2,11 +2,13 @@ package org.getspout.unchecked.server.msg.handler;
 
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.AnimateEntityMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.block.BlockID;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.net.Session;
 
 /**
  * A {@link MessageHandler} which handles {@link org.bukkit.entity.Entity}
@@ -14,8 +16,8 @@ import org.getspout.unchecked.server.net.Session;
  */
 public final class AnimateEntityMessageHandler extends MessageHandler<AnimateEntityMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, AnimateEntityMessage message) {
-		Block block = player.getTargetBlock(null, 6);
+	public void handle(Session session, Player player, AnimateEntityMessage message) {
+		/*Block block = player.getTargetBlock(null, 6);
 		if (block == null || block.getTypeId() == BlockID.AIR) {
 			if (EventFactory.onPlayerInteract(player, Action.LEFT_CLICK_AIR).isCancelled()) {
 				return; // TODO: Item interactions
@@ -37,5 +39,6 @@ public final class AnimateEntityMessageHandler extends MessageHandler<AnimateEnt
 				// TODO: other things?
 				return;
 		}
+		*/
 	}
 }

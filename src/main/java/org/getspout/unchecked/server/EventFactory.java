@@ -62,7 +62,7 @@ import org.bukkit.inventory.ItemStack;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.net.Session;
+import org.getspout.unchecked.server.net.SpoutSession;
 import org.getspout.server.util.bans.BanManager;
 
 /**
@@ -139,7 +139,7 @@ public final class EventFactory {
 		return callEvent(event);
 	}
 
-	public static PlayerPreLoginEvent onPlayerPreLogin(String name, Session session) {
+	public static PlayerPreLoginEvent onPlayerPreLogin(String name, SpoutSession session) {
 		return callEvent(new PlayerPreLoginEvent(name, session.getAddress().getAddress()));
 	}
 

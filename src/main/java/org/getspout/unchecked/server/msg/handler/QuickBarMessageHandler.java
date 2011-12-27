@@ -1,18 +1,16 @@
 package org.getspout.unchecked.server.msg.handler;
 
-import org.bukkit.GameMode;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.QuickBarMessage;
 import org.getspout.unchecked.server.block.BlockProperties;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.inventory.SpoutInventory;
-import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.item.ItemProperties;
-import org.getspout.unchecked.server.net.Session;
 
 public class QuickBarMessageHandler extends MessageHandler<QuickBarMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, QuickBarMessage message) {
-		if (player.getGameMode() != GameMode.CREATIVE) {
+	public void handle(Session session, Player player, QuickBarMessage message) {
+		/*if (player.getGameMode() != GameMode.CREATIVE) {
 			player.kickPlayer("Now now, don't try that here. Won't work.");
 			return;
 		}
@@ -31,6 +29,7 @@ public class QuickBarMessageHandler extends MessageHandler<QuickBarMessage> {
 		} else {
 			player.setItemOnCursor(null);
 		}
+		*/
 	}
 
 	public boolean checkValidId(int id) {

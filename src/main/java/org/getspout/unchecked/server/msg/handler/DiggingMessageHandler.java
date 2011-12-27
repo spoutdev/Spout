@@ -8,28 +8,29 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.DiggingMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.SpoutWorld;
 import org.getspout.unchecked.server.block.BlockID;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.item.ItemProperties;
-import org.getspout.unchecked.server.net.Session;
 
 /**
  * A {@link MessageHandler} which processes digging messages.
  */
 public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, DiggingMessage message) {
+	public void handle(Session session, Player player, DiggingMessage message) {
 		if (player == null) {
 			return;
 		}
 
-		boolean blockBroken = false;
+		/*boolean blockBroken = false;
 
 		SpoutWorld world = player.getWorld();
 
@@ -85,6 +86,6 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
 			}
 			world.playEffectExceptTo(block.getLocation(), Effect.STEP_SOUND, block.getTypeId(), 64, player);
 			block.setTypeId(BlockID.AIR);
-		}
+		}*/
 	}
 }

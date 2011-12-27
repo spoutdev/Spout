@@ -58,6 +58,7 @@ import org.getspout.api.protocol.notch.msg.StatisticMessage;
 import org.getspout.api.protocol.notch.msg.UserListItemMessage;
 import org.getspout.api.util.Parameter;
 import org.getspout.api.util.map.TIntPairHashSet;
+import org.getspout.server.SpoutServer;
 import org.getspout.server.util.Position;
 import org.getspout.server.util.TextWrapper;
 import org.getspout.unchecked.server.EventFactory;
@@ -69,7 +70,7 @@ import org.getspout.unchecked.server.inventory.SpoutInventory;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.inventory.SpoutPlayerInventory;
 import org.getspout.unchecked.server.io.StorageOperation;
-import org.getspout.unchecked.server.net.Session;
+import org.getspout.unchecked.server.net.SpoutSession;
 
 /**
  * Represents an in-game player.
@@ -86,7 +87,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	/**
 	 * This player's session.
 	 */
-	private final Session session;
+	private final SpoutSession session;
 
 	/**
 	 * Cumulative amount of experience points the player has collected.
@@ -180,11 +181,11 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 * @param session The player's session.
 	 * @param name The player's name.
 	 */
-	public SpoutPlayer(Session session, String name) {
-		super(session.getServer(), (SpoutWorld) session.getServer().getWorlds().get(0), name);
+	public SpoutPlayer(SpoutSession session, String name) {
+		super(null, null, name);
 		this.session = session;
 		health = 20;
-		if (session.getState() != Session.State.GAME) {
+		if (session.getState() != SpoutSession.State.GAME) {
 			session.send(new IdentificationMessage(getEntityId(), "", world.getSeed(), getGameMode().getValue(), world.getEnvironment().getId(), 1, world.getMaxHeight(), session.getServer().getMaxPlayers()));
 		}
 		streamBlocks(); // stream the initial set of blocks
@@ -321,7 +322,7 @@ public final class SpoutPlayer extends SpoutHumanEntity implements Player, Inven
 	 *
 	 * @return The session.
 	 */
-	public Session getSession() {
+	public SpoutSession getSession() {
 		return session;
 	}
 

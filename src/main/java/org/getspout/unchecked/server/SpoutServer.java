@@ -74,8 +74,8 @@ import org.getspout.unchecked.server.io.StorageQueue;
 import org.getspout.unchecked.server.io.mcregion.McRegionWorldStorageProvider;
 import org.getspout.unchecked.server.map.SpoutMapView;
 import org.getspout.unchecked.server.net.MinecraftPipelineFactory;
-import org.getspout.unchecked.server.net.Session;
-import org.getspout.unchecked.server.net.SessionRegistry;
+import org.getspout.unchecked.server.net.SpoutSession;
+import org.getspout.unchecked.server.net.SpoutSessionRegistry;
 import org.getspout.unchecked.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.bans.BanManager;
 import org.getspout.server.util.bans.FlatFileBanManager;
@@ -186,9 +186,9 @@ public final class SpoutServer implements Server {
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 
 	/**
-	 * A list of all the active {@link Session}s.
+	 * A list of all the active {@link SpoutSession}s.
 	 */
-	private final SessionRegistry sessions = new SessionRegistry();
+	private final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 
 	/**
 	 * The console manager of this server.
@@ -279,7 +279,7 @@ public final class SpoutServer implements Server {
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
 		bootstrap.setFactory(factory);
 
-		ChannelPipelineFactory pipelineFactory = new MinecraftPipelineFactory(this);
+		ChannelPipelineFactory pipelineFactory = new MinecraftPipelineFactory(null);
 		bootstrap.setPipelineFactory(pipelineFactory);
 
 		// TODO: This needs a cleanup badly
@@ -625,9 +625,9 @@ public final class SpoutServer implements Server {
 	/**
 	 * Gets the session registry.
 	 *
-	 * @return The {@link SessionRegistry}.
+	 * @return The {@link SpoutSessionRegistry}.
 	 */
-	public SessionRegistry getSessionRegistry() {
+	public SpoutSessionRegistry getSessionRegistry() {
 		return sessions;
 	}
 

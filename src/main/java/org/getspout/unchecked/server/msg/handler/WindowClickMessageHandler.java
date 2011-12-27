@@ -1,25 +1,19 @@
 package org.getspout.unchecked.server.msg.handler;
 
-import java.util.logging.Level;
-
-import org.bukkit.GameMode;
-import org.getspout.api.protocol.notch.msg.TransactionMessage;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.WindowClickMessage;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.inventory.CraftingInventory;
-import org.getspout.unchecked.server.inventory.SpoutInventory;
-import org.getspout.unchecked.server.inventory.SpoutItemStack;
-import org.getspout.unchecked.server.net.Session;
 
 public final class WindowClickMessageHandler extends MessageHandler<WindowClickMessage> {
 
 	@Override
-	public void handle(Session session, SpoutPlayer player, WindowClickMessage message) {
+	public void handle(Session session, Player player, WindowClickMessage message) {
 		if (player == null) {
 			return;
 		}
 
-		SpoutInventory inv = player.getInventory();
+		/*SpoutInventory inv = player.getInventory();
 		int slot = inv.getItemSlot(message.getSlot());
 
 		// Modify slot if needed
@@ -56,40 +50,41 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 			response(session, message, false);
 			return;
 		}
+		*/
 
-		if (message.isShift()) {
-			if (false /* inv == player.getInventory().getOpenWindow() */) {
-				// TODO: if player has e.g. chest open
-			} else if (inv == player.getInventory().getCraftingInventory()) {
-				// TODO: crafting stuff
-			} else {
-				if (slot < 9) {
-					for (int i = 9; i < 36; ++i) {
-						if (inv.getItem(i) == null) {
-							// TODO: deal with item stacks
-							inv.setItem(i, currentItem);
-							inv.setItem(slot, null);
-							response(session, message, true);
-							return;
-						}
-					}
-				} else {
-					for (int i = 0; i < 9; ++i) {
-						if (inv.getItem(i) == null) {
-							// TODO: deal with item stacks
-							inv.setItem(i, currentItem);
-							inv.setItem(slot, null);
-							response(session, message, true);
-							return;
-						}
-					}
-				}
-			}
-			response(session, message, false);
-			return;
-		}
+		//if (message.isShift()) {
+		//	if (false /* inv == player.getInventory().getOpenWindow() */) {
+		//		// TODO: if player has e.g. chest open
+		//	} else if (inv == player.getInventory().getCraftingInventory()) {
+		//		// TODO: crafting stuff
+		//	} else {
+		//		if (slot < 9) {
+		//			for (int i = 9; i < 36; ++i) {
+		//				if (inv.getItem(i) == null) {
+		//					// TODO: deal with item stacks
+		//					inv.setItem(i, currentItem);
+		//					inv.setItem(slot, null);
+		//					response(session, message, true);
+		//					return;
+		//				}
+		//			}
+		//		} else {
+		//			for (int i = 0; i < 9; ++i) {
+		//				if (inv.getItem(i) == null) {
+		//					// TODO: deal with item stacks
+		//					inv.setItem(i, currentItem);
+		//					inv.setItem(slot, null);
+		//					response(session, message, true);
+		//					return;
+		//				}
+		//			}
+		//		}
+		//	}
+		//	response(session, message, false);
+		//	return;
+		//}
 
-		if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && player.getItemOnCursor() != null) {
+		/*if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && player.getItemOnCursor() != null) {
 			response(session, message, false);
 			return;
 		}
@@ -100,11 +95,11 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
 
 		if (inv == player.getInventory().getCraftingInventory() && slot == CraftingInventory.RESULT_SLOT && currentItem != null) {
 			player.getInventory().getCraftingInventory().craft();
-		}
+		}*/
 	}
 
-	private void response(Session session, WindowClickMessage message, boolean success) {
-		session.send(new TransactionMessage(message.getId(), message.getTransaction(), success));
-	}
+	//private void response(SpoutSession session, WindowClickMessage message, boolean success) {
+	//	session.send(new TransactionMessage(message.getId(), message.getTransaction(), success));
+	//}
 
 }

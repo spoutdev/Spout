@@ -7,26 +7,27 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
+import org.getspout.api.player.Player;
+import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.BlockChangeMessage;
 import org.getspout.api.protocol.notch.msg.BlockPlacementMessage;
 import org.getspout.unchecked.server.EventFactory;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.block.SpoutBlockState;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.inventory.SpoutItemStack;
 import org.getspout.unchecked.server.item.ItemProperties;
-import org.getspout.unchecked.server.net.Session;
 
 /**
  * A {@link MessageHandler} which processes digging messages.
  */
 public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlacementMessage> {
 	@Override
-	public void handle(Session session, SpoutPlayer player, BlockPlacementMessage message) {
-		if (player == null) {
-			return;
-		}
+	public void handle(Session session, Player player, BlockPlacementMessage message) {
+		//if (player == null) {
+		//	return;
+		//}
 
 		/**
 		 * The notch client's packet sending is weird. Here's how it works: If
@@ -38,7 +39,7 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
 		 * usually happens. Sometimes it doesn't happen like that. Therefore, a
 		 * hacky workaround.
 		 */
-		if (message.getDirection() == 255) {
+		/*if (message.getDirection() == 255) {
 			// Right-clicked air. Note that the client doesn't send this if they are holding nothing.
 			BlockPlacementMessage previous = session.getPreviousPlacement();
 			if (previous == null || previous.getCount() != message.getCount() && previous.getId() != message.getId() && previous.getDamage() != message.getDamage()) {
@@ -115,6 +116,6 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
 		if (sendRevert) {
 			player.getSession().send(new BlockChangeMessage(target.getX(), target.getY(), target.getZ(), target.getTypeId(), target.getData()));
 			player.setItemInHand(holding);
-		}
+		}*/
 	}
 }
