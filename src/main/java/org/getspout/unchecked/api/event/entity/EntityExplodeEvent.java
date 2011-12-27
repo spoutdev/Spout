@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.entity.EntityEvent;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.discrete.Point;
 

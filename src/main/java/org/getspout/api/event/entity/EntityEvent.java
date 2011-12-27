@@ -14,41 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.entity;
+package org.getspout.api.event.entity;
 
 import org.getspout.api.entity.Entity;
-import org.getspout.api.event.Cancellable;
-import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.entity.EntityEvent;
+import org.getspout.api.event.Event;
 
 /**
- * Called when an entity is tamed.
+ * Represents an entity-related event.
  */
-public class EntityTameEvent extends EntityEvent implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
+public abstract class EntityEvent extends Event {
+	private Entity entity;
 
-	private Entity owner;
-
-	public Entity getOwner() {
-		return owner;
+	public Entity getEntity() {
+		return entity;
 	}
 
-	public void setOwner(Entity owner) {
-		this.owner = owner;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
+	public void setEntity(Entity entity) {
+		this.entity = entity;
 	}
 
 }

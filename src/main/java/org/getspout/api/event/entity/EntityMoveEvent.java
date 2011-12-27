@@ -14,37 +14,57 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.entity;
+package org.getspout.api.event.entity;
 
-import org.getspout.api.entity.Entity;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.entity.EntityEvent;
+import org.getspout.api.geo.discrete.Point;
+
 
 /**
- * Called when a pig is zapped.
+ * Holds information for entity movement events
  */
-public class PigZapEvent extends EntityEvent implements Cancellable {
+public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private Entity pigZombie;
+	private Point from;
 
-	private Entity lightning;
+	private Point to;
 
-	public Entity getLightning() {
-		return lightning;
+	/**
+	 * Gets the Point this entity moved from
+	 *
+	 * @return Point the entity moved from
+	 */
+	public Point getFrom() {
+		return from;
 	}
 
-	public void setLightning(Entity lightning) {
-		this.lightning = lightning;
+	/**
+	 * Sets the Point to mark as where the entity moved from
+	 *
+	 * @param from New Point to mark as the entitys previous Point
+	 */
+	public void setFrom(Point from) {
+		this.from = from;
 	}
 
-	public Entity getPigZombie() {
-		return pigZombie;
+	/**
+	 * Gets the Point this entity moved to
+	 *
+	 * @return Point the entity moved to
+	 */
+	public Point getTo() {
+		return to;
 	}
 
-	public void setPigZombie(Entity pigZombie) {
-		this.pigZombie = pigZombie;
+	/**
+	 * Sets the Point that this entity will move to
+	 *
+	 * @param to New Point this entity will move to
+	 */
+	public void setTo(Point to) {
+		this.to = to;
 	}
 
 	@Override

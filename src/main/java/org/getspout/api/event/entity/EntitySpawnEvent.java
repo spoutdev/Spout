@@ -14,38 +14,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.entity;
+package org.getspout.api.event.entity;
 
-import org.getspout.api.entity.Entity;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.entity.EntityEvent;
+import org.getspout.api.geo.discrete.Point;
 
 /**
- * Called when a pig is zapped.
+ * Called when an entity spawns into the world.
  */
-public class PigZapEvent extends EntityEvent implements Cancellable {
+public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private Entity pigZombie;
+	private Point point;
 
-	private Entity lightning;
-
-	public Entity getLightning() {
-		return lightning;
+	/**
+	 * Gets the location in which spawning will take place.
+	 *
+	 * @return
+	 */
+	public Point getPoint() {
+		return point;
 	}
 
-	public void setLightning(Entity lightning) {
-		this.lightning = lightning;
+	public void setPoint(Point point) {
+		this.point = point;
 	}
 
-	public Entity getPigZombie() {
-		return pigZombie;
-	}
-
-	public void setPigZombie(Entity pigZombie) {
-		this.pigZombie = pigZombie;
-	}
 
 	@Override
 	public HandlerList getHandlers() {
@@ -60,5 +55,6 @@ public class PigZapEvent extends EntityEvent implements Cancellable {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
+
 
 }

@@ -14,47 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.entity;
+package org.getspout.api.event.entity;
 
-import org.getspout.api.entity.Entity;
-import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.entity.EntityEvent;
 
 /**
- * Called when a pig is zapped.
+ * Called when a player is teleported.
  */
-public class PigZapEvent extends EntityEvent implements Cancellable {
+public class EntityTeleportEvent extends EntityMoveEvent {
 	private static HandlerList handlers = new HandlerList();
-
-	private Entity pigZombie;
-
-	private Entity lightning;
-
-	public Entity getLightning() {
-		return lightning;
-	}
-
-	public void setLightning(Entity lightning) {
-		this.lightning = lightning;
-	}
-
-	public Entity getPigZombie() {
-		return pigZombie;
-	}
-
-	public void setPigZombie(Entity pigZombie) {
-		this.pigZombie = pigZombie;
-	}
 
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
 	}
 
 	public static HandlerList getHandlerList() {

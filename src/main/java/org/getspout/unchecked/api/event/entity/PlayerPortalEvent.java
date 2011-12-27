@@ -18,6 +18,7 @@ package org.getspout.unchecked.api.event.entity;
 
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.entity.EntityTeleportEvent;
 import org.getspout.unchecked.api.TravelAgent;
 
 /**

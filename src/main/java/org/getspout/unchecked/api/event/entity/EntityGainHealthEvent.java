@@ -6,6 +6,7 @@ package org.getspout.unchecked.api.event.entity;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.entity.EntityEvent;
 
 /**
  * Called when an entity gains health.
