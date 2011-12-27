@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.getspout.api.geo.World;
+import org.getspout.api.player.Player;
 
 /**
  * Represents the server-specific implementation of Minecraft.

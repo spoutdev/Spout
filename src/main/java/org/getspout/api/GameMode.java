@@ -16,6 +16,8 @@
  */
 package org.getspout.api;
 
+import org.getspout.api.player.Player;
+
 /**
  * Is a representation of the different game modes that {@link Player}s may
  * have. <br/> {@link GameMode#CREATIVE} implies that the player has no restrictions

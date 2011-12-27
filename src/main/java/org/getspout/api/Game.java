@@ -37,6 +37,7 @@ import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.World;
+import org.getspout.api.player.Player;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.util.Named;

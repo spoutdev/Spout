@@ -19,53 +19,57 @@ package org.getspout.api.event.player;
 import org.getspout.api.event.HandlerList;
 
 /**
- * Called when a player leaves the server.
+ * Stores details for players attempting to log in
  */
-public class PlayerLeaveEvent extends PlayerEvent {
+public class PlayerLoginEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 
 	private String message;
 
-	private boolean quit;
+	private boolean allowed;
+
+	public boolean isAllowed() {
+		return allowed;
+	}
+
+	public void setAllowed(boolean allowed) {
+		this.allowed = allowed;
+	}
 
 	/**
-	 * Gets the message to be sent to all players when leaving.
+	 * Gets the message to use if the player cannot log in.
 	 *
-	 * @return
+	 * @return Current message
 	 */
 	public String getMessage() {
 		return message;
 	}
 
 	/**
-	 * Sets the message to be sent to all players when leaving.
+	 * Sets the message to use if the player cannot log in.
 	 *
-	 * @param message
+	 * @param message The message to set
 	 */
-	public void setMessage(String message) {
+	public void setMessage(final String message) {
 		this.message = message;
 	}
 
 	/**
-	 * Gets if this event was a quit.
-	 *
-	 * @return True if the player quit.
+	 * Allows the player to log in
 	 */
-	public boolean isQuit() {
-		return quit;
+	public void allow() {
+		allowed = true;
 	}
 
 	/**
-	 * Gets if the player was kicked.
+	 * Disallows the player from logging in, with the given reason
 	 *
-	 * @return True if the player was kicked.
+	 * @param result New result for disallowing the player
+	 * @param message Kick message to display to the user
 	 */
-	public boolean isKick() {
-		return !quit;
-	}
-
-	public void setQuit(boolean quit) {
-		this.quit = quit;
+	public void disallow(String message) {
+		allowed = false;
+		this.message = message;
 	}
 
 	@Override

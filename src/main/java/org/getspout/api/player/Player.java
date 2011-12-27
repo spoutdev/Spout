@@ -1,7 +1,6 @@
-package org.getspout.api;
+package org.getspout.api.player;
 
 import org.getspout.api.entity.Entity;
-import org.getspout.api.geo.discrete.Transform;
 
 public interface Player {
 	

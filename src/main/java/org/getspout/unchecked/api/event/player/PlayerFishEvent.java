@@ -19,6 +19,7 @@ package org.getspout.unchecked.api.event.player;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.player.PlayerEvent;
 
 /**
  * Called when a player fishes for something.

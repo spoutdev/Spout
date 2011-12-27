@@ -16,56 +16,55 @@
  */
 package org.getspout.api.event.player;
 
+import java.net.InetAddress;
+
+import org.getspout.api.event.Event;
 import org.getspout.api.event.HandlerList;
 
 /**
- * Called when a player leaves the server.
+ * Stores details for players attempting to log in
  */
-public class PlayerLeaveEvent extends PlayerEvent {
+public class PlayerPreLoginEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
 
-	private String message;
+	private String name;
 
-	private boolean quit;
+	private InetAddress address;
 
 	/**
-	 * Gets the message to be sent to all players when leaving.
+	 * Gets the player's name.
 	 *
-	 * @return
+	 * @return the player's name
 	 */
-	public String getMessage() {
-		return message;
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * Sets the message to be sent to all players when leaving.
+	 * Sets the player's name.
 	 *
-	 * @param message
+	 * @param name The name to set
 	 */
-	public void setMessage(String message) {
-		this.message = message;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
-	 * Gets if this event was a quit.
+	 * Gets the player IP address.
 	 *
-	 * @return True if the player quit.
+	 * @return The IP address
 	 */
-	public boolean isQuit() {
-		return quit;
+	public InetAddress getAddress() {
+		return address;
 	}
 
 	/**
-	 * Gets if the player was kicked.
+	 * Sets the player IP address.
 	 *
-	 * @return True if the player was kicked.
+	 * @param ipAddress The IP Address to set.
 	 */
-	public boolean isKick() {
-		return !quit;
-	}
-
-	public void setQuit(boolean quit) {
-		this.quit = quit;
+	public void setAddress(InetAddress ipAddress) {
+		address = ipAddress;
 	}
 
 	@Override

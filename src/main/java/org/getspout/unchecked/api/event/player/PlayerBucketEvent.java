@@ -19,6 +19,7 @@ package org.getspout.unchecked.api.event.player;
 import org.bukkit.block.BlockFace;
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.player.PlayerEvent;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.unchecked.api.inventory.ItemStack;
 

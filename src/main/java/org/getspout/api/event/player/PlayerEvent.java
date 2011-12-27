@@ -14,24 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.player;
+package org.getspout.api.event.player;
 
-import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.player.PlayerEvent;
+import org.getspout.api.player.Player;
+import org.getspout.api.event.Event;
 
 /**
- * Called when a player joins.
+ * Represents a player-related event.
  */
-public class PlayerJoinEvent extends PlayerEvent {
-	private static HandlerList handlers = new HandlerList();
+public abstract class PlayerEvent extends Event {
+	private Player player;
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
+	public Player getPlayer() {
+		return player;
 	}
 
-	public static HandlerList getHandlerList() {
-		return handlers;
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 
 }

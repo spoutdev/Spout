@@ -16,56 +16,51 @@
  */
 package org.getspout.api.event.player;
 
+import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.gui.ScreenType;
+import org.getspout.api.keyboard.Keyboard;
 
-/**
- * Called when a player leaves the server.
- */
-public class PlayerLeaveEvent extends PlayerEvent {
+public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private String message;
+	private Keyboard key;
 
-	private boolean quit;
+	private boolean pressed;
 
-	/**
-	 * Gets the message to be sent to all players when leaving.
-	 *
-	 * @return
-	 */
-	public String getMessage() {
-		return message;
+	private ScreenType screenType;
+
+	public Keyboard getKey() {
+		return key;
 	}
 
-	/**
-	 * Sets the message to be sent to all players when leaving.
-	 *
-	 * @param message
-	 */
-	public void setMessage(String message) {
-		this.message = message;
+	public void setKey(Keyboard key) {
+		this.key = key;
 	}
 
-	/**
-	 * Gets if this event was a quit.
-	 *
-	 * @return True if the player quit.
-	 */
-	public boolean isQuit() {
-		return quit;
+	public ScreenType getScreenType() {
+		return screenType;
 	}
 
-	/**
-	 * Gets if the player was kicked.
-	 *
-	 * @return True if the player was kicked.
-	 */
-	public boolean isKick() {
-		return !quit;
+	public void setScreenType(ScreenType screenType) {
+		this.screenType = screenType;
 	}
 
-	public void setQuit(boolean quit) {
-		this.quit = quit;
+	public boolean isPressed() {
+		return pressed;
+	}
+
+	public boolean isReleased() {
+		return !pressed;
+	}
+
+	public void setPressed(boolean pressed) {
+		this.pressed = pressed;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 	@Override

@@ -16,15 +16,15 @@
  */
 package org.getspout.api.metadata;
 
-import org.getspout.api.Player;
+import org.getspout.api.player.Player;
 
 /**
- * A PlayerMetadataStore stores metadata for {@link org.getspout.api.old.entity.entity.Player}
+ * A PlayerMetadataStore stores metadata for {@link org.getspout.api.player.old.entity.entity.Player}
  * and {@link OfflinePlayer} objects.
  */
 public class PlayerMetadataStore extends MetadataStoreBase<Player> implements MetadataStore<Player> {
 	/**
-	 * Generates a unique metadata key for {@link org.getspout.api.old.entity.entity.Player} and
+	 * Generates a unique metadata key for {@link org.getspout.api.player.old.entity.entity.Player} and
 	 * {@link OfflinePlayer} using the player name.
 	 *
 	 * @see MetadataStoreBase#Disambiguate(Object, String)

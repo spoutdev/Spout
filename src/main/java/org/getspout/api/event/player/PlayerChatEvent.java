@@ -16,56 +16,38 @@
  */
 package org.getspout.api.event.player;
 
+import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
 
 /**
- * Called when a player leaves the server.
+ * Called when a player speaks in chat.
  */
-public class PlayerLeaveEvent extends PlayerEvent {
+public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
 	private String message;
 
-	private boolean quit;
-
 	/**
-	 * Gets the message to be sent to all players when leaving.
+	 * Gets the message that the player sent.
 	 *
-	 * @return
+	 * @return The message of the player.
 	 */
 	public String getMessage() {
 		return message;
 	}
 
 	/**
-	 * Sets the message to be sent to all players when leaving.
+	 * Overrides the sent message.
 	 *
-	 * @param message
+	 * @param message The message to set
 	 */
 	public void setMessage(String message) {
 		this.message = message;
 	}
 
-	/**
-	 * Gets if this event was a quit.
-	 *
-	 * @return True if the player quit.
-	 */
-	public boolean isQuit() {
-		return quit;
-	}
-
-	/**
-	 * Gets if the player was kicked.
-	 *
-	 * @return True if the player was kicked.
-	 */
-	public boolean isKick() {
-		return !quit;
-	}
-
-	public void setQuit(boolean quit) {
-		this.quit = quit;
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
 	}
 
 	@Override

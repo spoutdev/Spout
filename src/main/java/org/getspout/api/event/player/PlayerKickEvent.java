@@ -14,46 +14,47 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.player;
+package org.getspout.api.event.player;
 
-import org.getspout.api.entity.Entity;
 import org.getspout.api.event.Cancellable;
-import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.player.PlayerEvent;
 
 /**
- * Called when a player right clicks an entity.
+ * Called when a player gets kicked from the server
  */
-public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
-
-	protected Entity rightClicked;
+public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
+	private String kickReason;
 
 	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
 	}
 
-	/**
-	 * Gets the entity that was right clicked by the player.
-	 *
-	 * @return entity right clicked by player
-	 */
-	public Entity getRightClicked() {
-		return rightClicked;
-	}
-
-	public void setRightClicked(Entity rightClicked) {
-		this.rightClicked = rightClicked;
+	@Override
+	public boolean isKick() {
+		return true;
 	}
 
 	@Override
-	public HandlerList getHandlers() {
-		return handlers;
+	public boolean isQuit() {
+		return false;
 	}
 
-	public static HandlerList getHandlerList() {
-		return handlers;
+	/**
+	 * Gets the reason why the player is getting kicked
+	 *
+	 * @return string kick reason
+	 */
+	public String getKickReason() {
+		return kickReason;
+	}
+
+	/**
+	 * Sets the reason why the player is getting kicked
+	 *
+	 * @param kickReason kick reason
+	 */
+	public void setKickReason(String kickReason) {
+		this.kickReason = kickReason;
 	}
 
 }

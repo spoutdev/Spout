@@ -1,12 +1,12 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
+ * This file is part of Spout API (http://wiki.getspout.org/).
  *
- * SpoutAPI is free software: you can redistribute it and/or modify
+ * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * SpoutAPI is distributed in the hope that it will be useful,
+ * Spout API is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
@@ -14,37 +14,38 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.getspout.unchecked.api.event.player;
+package org.getspout.api.event.inventory;
 
-import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
-import org.getspout.api.event.player.PlayerEvent;
-import org.getspout.unchecked.api.entity.object.Item;
+import org.getspout.unchecked.api.inventory.Inventory;
 
 /**
- * Called when a player drops an item from their inventory
+ * Called when a player closes an inventory.
  */
-public class PlayerDropItemEvent extends PlayerEvent implements Cancellable {
+public class PlayerInventoryCloseEvent extends PlayerInventoryEvent {
 	private static HandlerList handlers = new HandlerList();
 
-	private Item drop;
+	private Inventory other;
 
 	/**
-	 * Gets the ItemDrop created by the player
+	 * Get's the top (or main) inventory that was closed
 	 *
-	 * @return ItemDrop created by the player
+	 * @return inventory closed
 	 */
-	public Item getItemDrop() {
-		return drop;
-	}
-
-	public void setItemDrop(Item item) {
-		drop = item;
-	}
 
 	@Override
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
+	public Inventory getInventory() {
+		return inventory;
+	}
+
+	/**
+	 * Get's the second, bottom inventory that was closed.
+	 *
+	 * @return bottom inventory closed or null if there was no second inventory
+	 *         closed
+	 */
+	public Inventory getBottomInventory() {
+		return other;
 	}
 
 	@Override
