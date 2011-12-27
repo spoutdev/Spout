@@ -7,7 +7,7 @@ import org.getspout.api.event.HandlerList;
  * This is the opposite of Spawn
  *
  */
-public class EntityDestroyEvent extends EntityEvent {
+public class EntityDespawnEvent extends EntityEvent {
 	private static HandlerList handlers = new HandlerList();
 
 	public HandlerList getHandlers() {
