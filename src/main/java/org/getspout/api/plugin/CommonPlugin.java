@@ -34,6 +34,11 @@ import org.getspout.api.UnsafeMethod;
 public abstract class CommonPlugin implements Plugin {
 
 	private PluginDescriptionFile description;
+	private CommonClassLoader classLoader;
+	private CommonPluginLoader pluginLoader;
+	private Game game;
+	private File dataFolder;
+	private File paramFile;
 	private boolean enabled;
 
 	@UnsafeMethod
@@ -60,11 +65,11 @@ public abstract class CommonPlugin implements Plugin {
 	}
 
 	public PluginLoader getPluginLoader() {
-		return null;
+		return pluginLoader;
 	}
 
 	public Logger getLogger() {
-		return null;
+		return game.getLogger();
 	}
 
 	public PluginDescriptionFile getDescription() {
@@ -75,13 +80,18 @@ public abstract class CommonPlugin implements Plugin {
 	public void initialize(CommonPluginLoader commonsPluginLoader, Game game,
 			PluginDescriptionFile desc, File dataFolder, File paramFile,
 			CommonClassLoader loader) {
+		this.description = desc;
+		this.classLoader = loader;
+		this.game = game;
+		this.pluginLoader = commonsPluginLoader;
+		this.dataFolder = dataFolder;
+		this.paramFile = paramFile;
 		// TODO Auto-generated method stub
 		
 	}
 
 	public ClassLoader getClassLoader() {
-		// TODO Auto-generated method stub
-		return null;
+		return classLoader;
 	}
 
 }

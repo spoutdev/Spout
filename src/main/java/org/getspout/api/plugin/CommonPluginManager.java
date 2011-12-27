@@ -69,8 +69,9 @@ public class CommonPluginManager implements PluginManager {
 		PluginLoader instance = null;
 		
 		try {
-			Constructor<? extends PluginLoader> constructor = loader.getConstructor();
-			instance = constructor.newInstance();
+			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Game.class, CommonSecurityManager.class, double.class});
+
+			instance = constructor.newInstance(new Object[] {game, manager, key});
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error registering plugin loader!", e);
 		}
