@@ -40,8 +40,12 @@ import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.PluginManager;
+import org.getspout.api.protocol.Session;
+import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.api.util.Named;
 import org.getspout.unchecked.api.inventory.Recipe;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.group.ChannelGroup;
 
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
@@ -343,4 +347,27 @@ public interface Game extends Named, EventSource {
 	 * @return current platform type
 	 */
 	public Platform getPlatform();
+	
+	/**
+	 * Creates a new Session
+	 * 
+	 * @param channel the associated channel
+	 * @return the session
+	 */
+	public Session newSession(Channel channel);
+	
+	/**
+	 * Gets the network channel group.
+	 *
+	 * @return The {@link ChannelGroup}.
+	 */
+	public ChannelGroup getChannelGroup();
+	
+	/**
+	 * Gets the session registry.
+	 *
+	 * @return The {@link SessionRegistry}.
+	 */
+	public SessionRegistry getSessionRegistry();
+
 }

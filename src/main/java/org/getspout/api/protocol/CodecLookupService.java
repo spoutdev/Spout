@@ -15,6 +15,8 @@ public abstract class CodecLookupService {
 	 */
 	protected final MessageCodec<?>[] opcodeTable = new MessageCodec<?>[256];
 
+	protected final MessageCodec<?>[] expandedOpcodeTable = new MessageCodec<?>[65536];
+
 	/**
 	 * A table which maps messages to codecs. This is generally used to map
 	 * outgoing packets to a codec.
@@ -34,18 +36,28 @@ public abstract class CodecLookupService {
 	protected <T extends Message, C extends MessageCodec<T>> void bind(Class<C> clazz) throws InstantiationException, IllegalAccessException {
 		MessageCodec<T> codec = clazz.newInstance();
 
-		opcodeTable[codec.getOpcode()] = codec;
+		if (codec.isExpanded()) {
+			expandedOpcodeTable[codec.getOpcode()] = codec;
+		} else {
+			opcodeTable[codec.getOpcode()] = codec;
+		}
 		classTable.put(codec.getType(), codec);
 	}
-
+	
 	/**
-	 * Finds a codec by opcode.
+	 * Finds a codec by short opcode.
 	 *
 	 * @param opcode The opcode.
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
 	public MessageCodec<?> find(int opcode) {
-		return opcodeTable[opcode];
+		MessageCodec<?> codec = opcodeTable[(opcode >> 8) & 0xFF];
+		
+		if (codec != null) {
+			return codec;
+		} else {
+			return expandedOpcodeTable[opcode];
+		}
 	}
 
 	/**
