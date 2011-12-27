@@ -10,13 +10,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.getspout.api.GameMode;
-import org.getspout.api.Player;
 import org.getspout.api.Server;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.geo.World;
+import org.getspout.api.player.Player;
 import org.getspout.api.plugin.CommonPluginManager;
 import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.Plugin;
