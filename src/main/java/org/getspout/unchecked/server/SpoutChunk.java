@@ -7,23 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.notch.msg.CompressedChunkMessage;
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.block.SpoutBlockState;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
+import org.getspout.server.entity.SpoutPlayer;
 
+import org.getspout.api.entity.Entity;
+import org.getspout.api.geo.cuboid.Chunk;
 /**
  * Represents a chunk of the map.
  *
  * @author Graham Edgecombe
  */
-public final class SpoutChunk implements Chunk {
+public final class SpoutChunk extends Chunk {
 	/**
 	 * The radius (not including the current chunk) of the chunks that the
 	 * player can see. Used as a default when no custom value is specified.
@@ -120,14 +118,14 @@ public final class SpoutChunk implements Chunk {
 
 	private final static Entity[] blankEntityArray = new Entity[0];
 
-	@Override
+
 	public Entity[] getEntities() {
 		List<Entity> entities = world.getEntities();
 		List<Entity> chunkEntities = new ArrayList<Entity>();
 
 		for (Entity e : entities) {
-			int cx = e.getLocation().getBlockX() >> 4;
-			int cz = e.getLocation().getBlockZ() >> 4;
+			int cx = (int)e.getTransform().getPosition().getX() >> 4;
+			int cz = (int)e.getTransform().getPosition().getZ() >> 4;
 
 			if (cx == x && cz == z) {
 				chunkEntities.add(e);
