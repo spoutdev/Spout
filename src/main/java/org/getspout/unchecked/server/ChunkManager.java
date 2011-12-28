@@ -8,9 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 
-import org.bukkit.generator.BlockPopulator;
-import org.bukkit.generator.ChunkGenerator;
-
+import org.getspout.api.generator.Populator;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.util.map.TIntPairObjectHashMap;
 import org.getspout.unchecked.server.io.ChunkIoService;
 
@@ -29,7 +28,7 @@ public final class ChunkManager {
 	/**
 	 * The chunk generator used to generate new chunks.
 	 */
-	private final ChunkGenerator generator;
+	private final WorldGenerator generator;
 
 	/**
 	 * The world this ChunkManager is managing.
@@ -58,7 +57,7 @@ public final class ChunkManager {
 	 * @param service The I/O service.
 	 * @param generator The world generator.
 	 */
-	public ChunkManager(SpoutWorld world, ChunkIoService service, ChunkGenerator generator) {
+	public ChunkManager(SpoutWorld world, ChunkIoService service, WorldGenerator generator) {
 		this.world = world;
 		this.service = service;
 		this.generator = generator;
@@ -125,8 +124,8 @@ public final class ChunkManager {
 						long zRand = popRandom.nextLong() / 2 * 2 + 1;
 						popRandom.setSeed(x * xRand + z * zRand ^ world.getSeed());
 
-						for (BlockPopulator p : world.getPopulators()) {
-							p.populate(world, popRandom, chunk2);
+						for (Populator p : world.getPopulators()) {
+							p.populate(chunk2, world, popRandom);
 						}
 					}
 				}
@@ -183,7 +182,7 @@ public final class ChunkManager {
 
 		if (canPopulate(x, z)) {
 			chunk.setPopulated(true);
-			for (BlockPopulator p : world.getPopulators()) {
+			for (Populator p : world.getPopulators()) {
 				p.populate(world, new Random(), chunk);
 			}
 		}
@@ -242,7 +241,7 @@ public final class ChunkManager {
 	/**
 	 * Get the chunk generator.
 	 */
-	public ChunkGenerator getGenerator() {
+	public WorldGenerator getGenerator() {
 		return generator;
 	}
 }

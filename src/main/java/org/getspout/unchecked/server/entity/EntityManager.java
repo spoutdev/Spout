@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.getspout.server.entity.SpoutEntity;
+import org.getspout.api.entity.Controller;
 
 /**
  * A class which manages all of the entities within a world.
@@ -23,7 +24,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	/**
 	 * A map of entity types to a set containing all entities of that type.
 	 */
-	private final Map<Class<? extends SpoutEntity>, Set<? extends SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends SpoutEntity>, Set<? extends SpoutEntity>>();
+	private final Map<Class<? extends Controller>, Set<? extends SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, Set<? extends SpoutEntity>>();
 
 	/**
 	 * The next id to check.
@@ -38,10 +39,10 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @return A collection of entities with the specified type.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends SpoutEntity> Collection<T> getAll(Class<T> type) {
-		Set<T> set = (Set<T>) groupedEntities.get(type);
+	public Collection<SpoutEntity> getAll(Class<? extends Controller> type) {
+		Set<SpoutEntity> set = (Set<SpoutEntity>) groupedEntities.get(type);
 		if (set == null) {
-			set = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
+			set = Collections.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
 			groupedEntities.put(type, set);
 		}
 		return set;
@@ -78,7 +79,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			if (!entities.containsKey(id)) {
 				entities.put(id, entity);
 				entity.setId(id);
-				((Collection<SpoutEntity>) getAll(entity.getClass())).add(entity);
+				((Collection<SpoutEntity>) getAll(entity.getController().getClass())).add(entity);
 				nextId = id + 1;
 				return id;
 			}
@@ -87,7 +88,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		for (int id = Integer.MIN_VALUE; id < -1; id++) { // as -1 is used as a special value
 			if (!entities.containsKey(id)) {
 				entities.put(id, entity);
-				((Collection<SpoutEntity>) getAll(entity.getClass())).add(entity);
+				((Collection<SpoutEntity>) getAll(entity.getController().getClass())).add(entity);
 				nextId = id + 1;
 				return id;
 			}
@@ -103,7 +104,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	void deallocate(SpoutEntity entity) {
 		entities.remove(entity.getId());
-		getAll(entity.getClass()).remove(entity);
+		getAll(entity.getController().getClass()).remove(entity);
 	}
 
 	@Override

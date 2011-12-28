@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.getspout.api.entity.Entity;
+import org.getspout.api.entity.PlayerController;
+import org.getspout.api.generator.Populator;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Chunk;
@@ -25,6 +28,7 @@ import org.getspout.api.protocol.notch.msg.TimeMessage;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
+import org.getspout.server.player.SpoutPlayer;
 import org.getspout.unchecked.server.io.StorageOperation;
 import org.getspout.unchecked.server.io.WorldMetadataService;
 import org.getspout.unchecked.server.io.WorldMetadataService.WorldFinalValues;
@@ -69,7 +73,7 @@ public final class SpoutWorld implements World {
 	/**
 	 * The world populators for this world.
 	 */
-	private final List<BlockPopulator> populators;
+	private final List<Populator> populators;
 	
 	/**
 	 * The world seed.
@@ -160,7 +164,7 @@ public final class SpoutWorld implements World {
 	 * @param environment The environment.
 	 * @param generator The world generator.
 	 */
-	public SpoutWorld(SpoutServer server, String name, long seed, WorldStorageProvider provider, ChunkGenerator generator) {
+	public SpoutWorld(SpoutServer server, String name, long seed, WorldStorageProvider provider, WorldGenerator generator) {
 		this.server = server;
 		this.name = name;
 		provider.setWorld(this);
@@ -310,18 +314,13 @@ public final class SpoutWorld implements World {
 		return entities;
 	}
 
-	public Collection<SpoutPlayer> getRawPlayers() {
-		return entities.getAll(SpoutPlayer.class);
-	}
-
 	// SpoutEntity lists
-
 	
 	public List<Player> getPlayers() {
-		Collection<SpoutPlayer> players = entities.getAll(SpoutPlayer.class);
+		Collection<SpoutEntity> players = entities.getAll(PlayerController.class);
 		ArrayList<Player> result = new ArrayList<Player>();
-		for (Player p : players) {
-			result.add(p);
+		for (SpoutEntity p : players) {
+			result.add(((PlayerController)p.getController()).getPlayer());
 		}
 		return result;
 	}
@@ -372,7 +371,6 @@ public final class SpoutWorld implements World {
 
 	// various fixed world properties
 
-	@Override
 	public long getSeed() {
 		return seed;
 	}
@@ -442,7 +440,7 @@ public final class SpoutWorld implements World {
 			}
 		}
 
-		for (Player player : getRawPlayers()) {
+		for (Player player : getPlayers()) {
 			player.saveData(async);
 		}
 
@@ -452,12 +450,12 @@ public final class SpoutWorld implements World {
 	// map generation
 
 	@Override
-	public ChunkGenerator getGenerator() {
+	public WorldGenerator getGenerator() {
 		return chunks.getGenerator();
 	}
 
 	@Override
-	public List<BlockPopulator> getPopulators() {
+	public List<Populator> getPopulators() {
 		return populators;
 	}
 
@@ -776,37 +774,16 @@ public final class SpoutWorld implements World {
 	}
 
 
-	// explosions
-
-	@Override
-	public boolean createExplosion(Location loc, float power, boolean setFire) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public boolean createExplosion(Location loc, float power) {
-		return createExplosion(loc, power, false);
-	}
-
-	@Override
-	public boolean createExplosion(double x, double y, double z, float power, boolean setFire) {
-		return createExplosion(new Location(this, x, y, z), power, setFire);
-	}
-
-	@Override
-	public boolean createExplosion(double x, double y, double z, float power) {
-		return createExplosion(new Location(this, x, y, z), power, false);
-	}
 
 	// effects
 
 	@Override
-	public void playEffect(Location location, Effect effect, int data) {
+	public void playEffect(Point location, Effect effect, int data) {
 		playEffect(location, effect, data, 64);
 	}
 
 	@Override
-	public void playEffect(Location location, Effect effect, int data, int radius) {
+	public void playEffect(Point location, Effect effect, int data, int radius) {
 		for (Player player : getPlayers()) {
 			if (player.getLocation().distance(location) <= radius) {
 				player.playEffect(location, effect, data);
@@ -814,7 +791,7 @@ public final class SpoutWorld implements World {
 		}
 	}
 
-	public void playEffectExceptTo(Location location, Effect effect, int data, int radius, Player exclude) {
+	public void playEffectExceptTo(Point location, Effect effect, int data, int radius, Player exclude) {
 		for (Player player : getPlayers()) {
 			if (!player.equals(exclude) && player.getLocation().distance(location) <= radius) {
 				player.playEffect(location, effect, data);
@@ -847,16 +824,6 @@ public final class SpoutWorld implements World {
 	@Override
 	public void setAutoSave(boolean value) {
 		autosave = value;
-	}
-
-	@Override
-	public void setDifficulty(Difficulty difficulty) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public Difficulty getDifficulty() {
-		return Difficulty.PEACEFUL;
 	}
 
 	// level data write
@@ -927,12 +894,53 @@ public final class SpoutWorld implements World {
 	 *
 	 * @return world folder
 	 */
-	@Override
 	public File getWorldFolder() {
 		return storageProvider.getFolder();
 	}
 
 	public SpoutServer getServer() {
 		return server;
+	}
+
+	@Override
+	public long getAge() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int setTime(int time) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDayLength() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int setDayLength(int time) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Block getBlock(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Block getBlock(Point point) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Chunk getRegion(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
