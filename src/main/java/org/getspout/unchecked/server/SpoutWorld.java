@@ -15,6 +15,7 @@ import org.getspout.api.entity.Entity;
 import org.getspout.api.entity.PlayerController;
 import org.getspout.api.generator.Populator;
 import org.getspout.api.generator.WorldGenerator;
+import org.getspout.api.geo.Biome;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Chunk;
@@ -638,9 +639,9 @@ public final class SpoutWorld implements World {
 	@Override
 	public Biome getBiome(int x, int z) {
 		if (environment == Environment.THE_END) {
-			return Biome.SKY;
+			return Biome.END;
 		} else if (environment == Environment.NETHER) {
-			return Biome.HELL;
+			return Biome.NETHER;
 		}
 
 		return Biome.FOREST;
