@@ -9,10 +9,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.getspout.api.player.Player;
-import org.getspout.api.protocol.HandlerLookupService;
 import org.getspout.api.protocol.CodecLookupService;
+import org.getspout.api.protocol.HandlerLookupService;
 import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.Protocol;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.BlockPlacementMessage;
 import org.getspout.api.protocol.notch.msg.KickMessage;
@@ -34,9 +35,6 @@ public final class SpoutSession implements Session {
 	 */
 	private static final int TIMEOUT_TICKS = 300;
 	
-	private AtomicReference<CodecLookupService> codec = new AtomicReference<CodecLookupService>();
-	private AtomicReference<HandlerLookupService> handler = new AtomicReference<HandlerLookupService>();
-
 	/**
 	 * The state this connection is currently in.
 	 */
@@ -101,6 +99,11 @@ public final class SpoutSession implements Session {
 	 */
 
 	private String sessionId = Long.toString(random.nextLong(), 16).trim();
+	
+	/**
+	 * The protocol for this session
+	 */
+	private AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(Protocol.bootstrap);
 
 	/**
 	 * Handling ping messages
@@ -119,10 +122,10 @@ public final class SpoutSession implements Session {
 	 * @param server The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutSession(SpoutServer server, Channel channel, CodecLookupService codec) {
+	public SpoutSession(SpoutServer server, Channel channel) {
 		this.server = server;
 		this.channel = channel;
-		this.codec.set(codec);
+		
 	}
 
 	/**
@@ -195,7 +198,7 @@ public final class SpoutSession implements Session {
 
 		Message message;
 		while ((message = messageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) this.handler.get().find(message.getClass());
+			MessageHandler<Message> handler = (MessageHandler<Message>) this.protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				handler.handle(this, player, message);
 			}
@@ -341,17 +344,11 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public CodecLookupService getCodecLookupService() {
-		return codec.get();
-	}
-
-	@Override
-	public void setCodecLookupService(CodecLookupService codecLookupService) {
-		this.codec.set(codecLookupService);
-	}
-	
-	@Override
-	public void setHandlerLookupService(HandlerLookupService handlerLookupService) {
-		this.handler.set(handlerLookupService);
+	public void setProtocol(Protocol protocol) {
+		if (!this.protocol.compareAndSet(Protocol.bootstrap, protocol)) {
+			throw new IllegalArgumentException("The protocol may only be set once per session");
+		} else {
+			server.getLogger().info("Setting protocol to " + protocol.getName());
+		}
 	}
 }

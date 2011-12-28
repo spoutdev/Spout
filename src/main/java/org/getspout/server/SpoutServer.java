@@ -101,11 +101,6 @@ public class SpoutServer implements Server {
 	 */
 	private final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	
-	/**
-	 * The bootstrap codec
-	 */
-	private final CodecLookupService bootstrapCodec = new BootstrapCodecLookupService();
-	
 	public SpoutServer() {
 		init();
 	}
@@ -117,12 +112,28 @@ public class SpoutServer implements Server {
 		server.start();
 		
 		server.bind(new InetSocketAddress("localhost", 25565));
+		
+		server.go();
 	}
 	
 	public void start() {
 		
 		// Start loading plugins
 		loadPlugins();
+		
+	}
+	
+	// TODO - remove
+	public void go() {
+		System.out.println("Entering infinite loop");
+		
+		while (true) {
+			sessions.pulse();
+			try {
+				Thread.sleep(50);
+			} catch (Exception e) {
+			}
+		}
 	}
 
 	public void init() {
@@ -428,7 +439,7 @@ public class SpoutServer implements Server {
 
 	@Override
 	public Session newSession(Channel channel) {
-		return new SpoutSession(this, channel, bootstrapCodec);
+		return new SpoutSession(this, channel);
 	}
 
 	@Override

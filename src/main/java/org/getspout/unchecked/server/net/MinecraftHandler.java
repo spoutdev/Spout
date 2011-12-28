@@ -38,7 +38,7 @@ public class MinecraftHandler extends SimpleChannelUpstreamHandler {
 		Channel c = e.getChannel();
 		server.getChannelGroup().add(c);
 
-		SpoutSession session = new SpoutSession(server, c, new BootstrapCodecLookupService());
+		SpoutSession session = new SpoutSession(server, c);
 		server.getSessionRegistry().add(session);
 		ctx.setAttachment(session);
 
