@@ -27,6 +27,8 @@ package org.getspout.api.plugin;
 
 import java.util.logging.Logger;
 
+import org.getspout.api.Game;
+
 public interface Plugin {
 	
 	/**
@@ -80,5 +82,10 @@ public interface Plugin {
 	 * @return description
 	 */
 	public PluginDescriptionFile getDescription();
-
+	
+	/**
+	 * Returns the game object
+	 * @return game
+	 */
+	public Game getGame();
 }

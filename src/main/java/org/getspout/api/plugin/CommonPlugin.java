@@ -93,5 +93,9 @@ public abstract class CommonPlugin implements Plugin {
 	public ClassLoader getClassLoader() {
 		return classLoader;
 	}
+	
+	public Game getGame() {
+		return game;
+	}
 
 }
