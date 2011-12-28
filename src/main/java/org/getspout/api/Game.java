@@ -299,21 +299,6 @@ public interface Game extends Named, EventSource {
 	 */
 	public void stop();
 
-	/**
-	 * Gets the default {@link GameMode} that is applied to all new players that
-	 * join.
-	 *
-	 * @return default game mode
-	 */
-	public GameMode getDefaultGameMode();
-
-	/**
-	 * Sets the default {@link GameMode} that is applied to all new players that
-	 * join.
-	 *
-	 * @param mode to set
-	 */
-	public void setDefaultGameMode(GameMode mode);
 
 	/**
 	 * Gets the folder that contains the world save data.
