@@ -17,6 +17,7 @@
 package org.getspout.api.event.player;
 
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.player.Player;
 
 /**
  * Called when a player joins.
@@ -24,6 +25,9 @@ import org.getspout.api.event.HandlerList;
 public class PlayerJoinEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 
+	public PlayerJoinEvent(Player p){
+		super(p);
+	}
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

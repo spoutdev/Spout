@@ -17,6 +17,7 @@
 package org.getspout.api.event.player;
 
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.player.Player;
 
 /**
  * Called when a player leaves the server.
@@ -28,6 +29,12 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	private boolean quit;
 
+	public PlayerLeaveEvent(Player p, String reason, boolean quit){
+		super(p);
+		this.message = reason;
+		this.quit = quit;
+	}
+	
 	/**
 	 * Gets the message to be sent to all players when leaving.
 	 *

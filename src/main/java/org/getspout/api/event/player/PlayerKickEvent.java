@@ -17,6 +17,7 @@
 package org.getspout.api.event.player;
 
 import org.getspout.api.event.Cancellable;
+import org.getspout.api.player.Player;
 
 /**
  * Called when a player gets kicked from the server
@@ -24,6 +25,11 @@ import org.getspout.api.event.Cancellable;
 public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 	private String kickReason;
 
+	public PlayerKickEvent(Player p, String reason){
+		super(p, reason, false);
+		this.kickReason = reason;
+	}
+	
 	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);

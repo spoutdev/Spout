@@ -18,6 +18,7 @@ package org.getspout.api.event.player;
 
 import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.player.Player;
 
 /**
  * Called when a player speaks in chat.
@@ -26,7 +27,13 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
 	private String message;
-
+	public PlayerChatEvent() {}
+	
+	public PlayerChatEvent(Player p, String message){
+		super(p);
+		this.message = message;
+	}
+	
 	/**
 	 * Gets the message that the player sent.
 	 *

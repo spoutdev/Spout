@@ -23,7 +23,13 @@ import org.getspout.api.event.Event;
  * Represents a player-related event.
  */
 public abstract class PlayerEvent extends Event {
-	private Player player;
+	protected Player player;
+	
+	public PlayerEvent() {}
+	
+	public PlayerEvent(Player p){
+		this.player = p;
+	}
 
 	public Player getPlayer() {
 		return player;
