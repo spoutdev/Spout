@@ -300,18 +300,6 @@ public class SpoutServer implements Server {
 	}
 
 	@Override
-	public GameMode getDefaultGameMode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setDefaultGameMode(GameMode mode) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public File getWorldFolder() {
 		// TODO Auto-generated method stub
 		return null;
