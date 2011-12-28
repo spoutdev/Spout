@@ -23,7 +23,6 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 		this.server = server;
 	}
 
-	@Override
 	public ChannelPipeline getPipeline() throws Exception {
 		CommonHandler handler = new CommonHandler(server);
 		CommonEncoder encoder = new CommonEncoder();
