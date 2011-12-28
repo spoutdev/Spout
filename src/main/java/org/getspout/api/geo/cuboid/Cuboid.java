@@ -42,4 +42,25 @@ public class Cuboid {
 	public World getWorld() {
 		return base.getWorld();
 	}
+	
+	public int hashCode() {
+		int hash = getX();
+		hash += (hash << 5) + getY();
+		hash += (hash << 5) + getZ();
+		return hash;
+	}
+	
+	public boolean equals(Object obj) {
+		
+		if (obj == null) {
+			return false;
+		} else if (!(obj instanceof Cuboid)) {
+			return false;
+		} else {
+			Cuboid cuboid = (Cuboid)obj;
+			
+			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld() == getWorld() && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
+		}
+		
+	}
 }
