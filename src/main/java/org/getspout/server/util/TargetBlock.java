@@ -24,11 +24,12 @@ package org.getspout.server.util;
 
 import gnu.trove.set.hash.TIntHashSet;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.util.Vector;
+import org.getspout.api.geo.World;
+import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.geo.discrete.Transform;
+import org.getspout.api.math.Vector3;
+import org.getspout.server.entity.SpoutEntity;
 import org.getspout.unchecked.server.block.BlockID;
-import org.getspout.unchecked.server.entity.SpoutLivingEntity;
 
 /**
  * This class uses an inefficient method to figure out what block a player is
@@ -44,10 +45,10 @@ public class TargetBlock {
 	private World world;
 	private int maxDistance;
 	private double checkDistance, curDistance;
-	private Vector targetPos = new Vector();
-	private Vector targetPosDouble = new Vector();
-	private Vector prevPos = new Vector();
-	private Vector offset = new Vector();
+	private Vector3 targetPos = new Vector3();
+	private Vector3 targetPosDouble = new Vector3();
+	private Vector3 prevPos = new Vector3();
+	private Vector3 offset = new Vector3();
 	private TIntHashSet transparentBlocks = null;
 
 	/**
@@ -55,9 +56,10 @@ public class TargetBlock {
 	 *
 	 * @param player player to work with
 	 */
-	public TargetBlock(SpoutLivingEntity player, TIntHashSet transparent) {
-		world = player.getWorld();
-		setValues(player.getLocation(), 300, player.getEyeHeight(), 0.2, transparent);
+	public TargetBlock(SpoutEntity player, TIntHashSet transparent) {
+		Transform epos = player.getTransform();
+		world = epos.getPosition().getWorld();
+		setValues(epos.getPosition(), 300, player.getEyeHeight(), 0.2, transparent);
 	}
 
 	/**
@@ -68,8 +70,8 @@ public class TargetBlock {
 	 * @param checkDistance how often to check for blocks, the smaller the more
 	 *            precise
 	 */
-	public TargetBlock(SpoutLivingEntity player, int maxDistance, double checkDistance, TIntHashSet transparent) {
-		world = player.getWorld();
+	public TargetBlock(SpoutEntity player, int maxDistance, double checkDistance, TIntHashSet transparent) {
+		world = player.getTransform().getPosition().getWorld();
 		setValues(player.getLocation(), maxDistance, player.getEyeHeight(), checkDistance, transparent);
 	}
 
@@ -82,7 +84,7 @@ public class TargetBlock {
 	 * @param checkDistance how often to check for blocks, the smaller the more
 	 *            precise
 	 */
-	private void setValues(Location loc, int maxDistance, double viewHeight, double checkDistance, TIntHashSet transparent) {
+	private void setValues(Point loc, int maxDistance, double viewHeight, double checkDistance, TIntHashSet transparent) {
 		this.maxDistance = maxDistance;
 		this.checkDistance = checkDistance;
 		curDistance = 0;
@@ -91,7 +93,7 @@ public class TargetBlock {
 
 		double h = checkDistance * Math.cos(Math.toRadians(yRotation));
 
-		offset = new Vector((h * Math.cos(Math.toRadians(xRotation))), (checkDistance * Math.sin(Math.toRadians(yRotation))), (h * Math.sin(Math.toRadians(xRotation))));
+		offset = new Vector3((h * Math.cos(Math.toRadians(xRotation))), (checkDistance * Math.sin(Math.toRadians(yRotation))), (h * Math.sin(Math.toRadians(xRotation))));
 
 		targetPosDouble = loc.add(0, viewHeight, 0).toVector();
 		targetPos = targetPosDouble.toBlockVector();
@@ -109,14 +111,14 @@ public class TargetBlock {
 	 *
 	 * @return Block
 	 */
-	public Location getAnyTargetBlock() {
+	public Point getAnyTargetBlock() {
 		boolean searchForLastBlock = true;
-		Location lastBlock = null;
+		Point lastBlock = null;
 		while (getNextBlock()) {
 			if (world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR) {
 				if (searchForLastBlock) {
 					lastBlock = getCurrentBlock();
-					if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxHeight() - 1) {
+					if (lastBlock.getY() <= 0 || lastBlock.getY() >= world.getMaxHeight() - 1) {
 						searchForLastBlock = false;
 					}
 				}
@@ -124,7 +126,7 @@ public class TargetBlock {
 				break;
 			}
 		}
-		Location currentBlock = getCurrentBlock();
+		Point currentBlock = getCurrentBlock();
 		return currentBlock != null ? currentBlock : lastBlock;
 	}
 
@@ -134,7 +136,7 @@ public class TargetBlock {
 	 *
 	 * @return Block
 	 */
-	public Location getTargetBlock() {
+	public Point getTargetBlock() {
 		while (getNextBlock() && world.getBlockTypeIdAt(getCurrentBlock()) == BlockID.AIR) {
 			;
 		}
@@ -147,7 +149,7 @@ public class TargetBlock {
 	 *
 	 * @return Block
 	 */
-	public Location getSolidTargetBlock() {
+	public Point getSolidTargetBlock() {
 		while (getNextBlock() && transparentBlocks.contains(world.getBlockTypeIdAt(getCurrentBlock()))) {
 			;
 		}
@@ -180,11 +182,11 @@ public class TargetBlock {
 	 *
 	 * @return block position
 	 */
-	public Location getCurrentBlock() {
+	public Point getCurrentBlock() {
 		if (curDistance > maxDistance) {
 			return null;
 		} else {
-			return targetPos.toLocation(world);
+			return new Point(targetPos, world);
 		}
 	}
 
@@ -193,7 +195,7 @@ public class TargetBlock {
 	 *
 	 * @return block position
 	 */
-	public Location getPreviousBlock() {
-		return prevPos.toLocation(world);
+	public Point getPreviousBlock() {
+		return new Point(prevPos, world);
 	}
 }

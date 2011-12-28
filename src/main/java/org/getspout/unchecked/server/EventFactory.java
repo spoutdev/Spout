@@ -2,68 +2,21 @@ package org.getspout.unchecked.server;
 
 import java.net.InetAddress;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LightningStrike;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockCanBuildEvent;
-import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
-import org.bukkit.event.vehicle.VehicleCreateEvent;
-import org.bukkit.event.vehicle.VehicleDamageEvent;
-import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.event.vehicle.VehicleEnterEvent;
-import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.event.vehicle.VehicleUpdateEvent;
-import org.bukkit.event.weather.LightningStrikeEvent;
-import org.bukkit.event.weather.ThunderChangeEvent;
-import org.bukkit.event.weather.WeatherChangeEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.SpawnChangeEvent;
-import org.bukkit.event.world.WorldInitEvent;
-import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.event.world.WorldSaveEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
-import org.bukkit.inventory.ItemStack;
+
 import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.net.SpoutSession;
+import org.getspout.api.Spout;
+import org.getspout.api.event.Event;
+import org.getspout.api.event.player.PlayerChatEvent;
+import org.getspout.api.event.player.PlayerJoinEvent;
+import org.getspout.api.event.player.PlayerKickEvent;
+import org.getspout.api.event.player.PlayerLeaveEvent;
+import org.getspout.api.event.player.PlayerLoginEvent;
+import org.getspout.api.event.player.PlayerPreLoginEvent;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.player.Player;
+import org.getspout.server.player.SpoutPlayer;
 import org.getspout.server.util.bans.BanManager;
 
 /**
@@ -82,7 +35,7 @@ public final class EventFactory {
 	 * @return the called event
 	 */
 	private static <T extends Event> T callEvent(T event) {
-		Bukkit.getServer().getPluginManager().callEvent(event);
+		Spout.getGame().getPluginManager().callEvent(event);
 		return event;
 	}
 
@@ -92,23 +45,25 @@ public final class EventFactory {
 		return callEvent(new PlayerChatEvent(player, message));
 	}
 
-	public static PlayerCommandPreprocessEvent onPlayerCommand(Player player, String message) {
+	//TODO: This doesn't exist, but it's pretty smart
+	/*public static PlayerCommandPreprocessEvent onPlayerCommand(Player player, String message) {
 		return callEvent(new PlayerCommandPreprocessEvent(player, message));
-	}
+	}*/
 
 	public static PlayerJoinEvent onPlayerJoin(Player player) {
-		return callEvent(new PlayerJoinEvent(player, ChatColor.YELLOW + player.getName() + " joined the game"));
+		return callEvent(new PlayerJoinEvent(player));
 	}
 
 	public static PlayerKickEvent onPlayerKick(Player player, String reason) {
-		return callEvent(new PlayerKickEvent(player, reason, null));
+		return callEvent(new PlayerKickEvent(player, reason));
 	}
 
-	public static PlayerQuitEvent onPlayerQuit(Player player) {
-		return callEvent(new PlayerQuitEvent(player, ChatColor.YELLOW + player.getName() + " left the game"));
+	public static PlayerLeaveEvent onPlayerLeave(Player player) {
+		return callEvent(new PlayerLeaveEvent(player, player.getName() + " left the game", true));
 	}
 
-	public static PlayerMoveEvent onPlayerMove(Player player, Location from, Location to) {
+	//TODO: This doesn't exist, but it's pretty smart
+	/*public static PlayerMoveEvent onPlayerMove(Player player, Location from, Location to) {
 		return callEvent(new PlayerMoveEvent(player, from, to));
 	}
 
@@ -122,7 +77,7 @@ public final class EventFactory {
 
 	public static PlayerTeleportEvent onPlayerTeleport(Player player, Location from, Location to, TeleportCause cause) {
 		return callEvent(new PlayerTeleportEvent(player, from, to, cause));
-	}
+	}*/
 
 	public static PlayerLoginEvent onPlayerLogin(SpoutPlayer player) {
 		BanManager manager = player.getServer().getBanManager();

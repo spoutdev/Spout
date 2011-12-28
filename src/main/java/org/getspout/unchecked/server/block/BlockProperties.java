@@ -2,9 +2,8 @@ package org.getspout.unchecked.server.block;
 
 import java.util.Arrays;
 
-import org.getspout.api.inventory.ItemStack;
-import org.getspout.api.material.Material;
-import org.getspout.api.material.MaterialData;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.getspout.unchecked.server.block.data.Stairs;
 import org.getspout.unchecked.server.block.data.Trapdoor;
 import org.getspout.unchecked.server.block.physics.AttachablePhysics;
@@ -64,7 +63,7 @@ public enum BlockProperties {
 	RED_MUSHROOM(BlockID.RED_MUSHROOM, place(), passthru()),
 	GOLD_BLOCK(BlockID.GOLD_BLOCK),
 	IRON_BLOCK(BlockID.IRON_BLOCK),
-	DOUBLE_STEP(BlockID.DOUBLE_STEP, drops(new ItemStack(MaterialData.stoneSlab, 2))),
+	DOUBLE_STEP(BlockID.DOUBLE_STEP, drops(new ItemStack(BlockID.STEP, 2))),
 	STEP(BlockID.STEP, passthru(), physics(new DoubleStepPhysics())), // TODO: height
 	BRICK(BlockID.BRICK),
 	TNT(BlockID.TNT, redstone()),
@@ -103,14 +102,14 @@ public enum BlockProperties {
 	ICE(BlockID.ICE, opaque(2)),
 	SNOW_BLOCK(BlockID.SNOW_BLOCK),
 	CACTUS(BlockID.CACTUS, place(), physics(new SpecialPlaceBelowPhysics(BlockID.CACTUS, true, BlockID.SAND))),
-	CLAY(BlockID.CLAY, drops(new ItemStack(MaterialData.clay, 4))),
+	CLAY(BlockID.CLAY, drops(new ItemStack(ItemID.CLAY_BALL, 4))),
 	SUGAR_CANE_BLOCK(BlockID.SUGAR_CANE_BLOCK, place(), drops(ItemID.SUGAR_CANE)),
 	JUKEBOX(BlockID.JUKEBOX, interact()),
 	FENCE(BlockID.FENCE, place(), opaque(0)),
 	PUMPKIN(BlockID.PUMPKIN, place()),
 	NETHERRACK(BlockID.NETHERRACK),
 	SOUL_SAND(BlockID.SOUL_SAND),
-	GLOWSTONE(BlockID.GLOWSTONE, drops(new ItemStack(MaterialData.glowstoneDust, 4))),
+	GLOWSTONE(BlockID.GLOWSTONE, drops(new ItemStack(ItemID.GLOWSTONE_DUST, 4))),
 	PORTAL(BlockID.PORTAL, place()/*, physics()*/),
 	JACK_O_LANTERN(BlockID.JACK_O_LANTERN, place()),
 	CAKE_BLOCK(BlockID.CAKE_BLOCK, passthru()),
@@ -161,7 +160,7 @@ public enum BlockProperties {
 	}
 
 	public static BlockProperties get(Material material) {
-		return get(material.getRawId());
+		return get(material.getId());
 	}
 
 	public static BlockProperties get(int id) {
@@ -187,7 +186,7 @@ public enum BlockProperties {
 
 	private BlockProperties(int id, Property... props) {
 		this.id = id;
-		drops = new ItemStack[] {new ItemStack(MaterialData.getMaterial(id), 1)};
+		drops = new ItemStack[] {new ItemStack(id, 1)};
 
 		for (Property p : props) {
 			p.apply(this);
@@ -201,8 +200,8 @@ public enum BlockProperties {
 	public ItemStack[] getDrops(short damage) {
 		ItemStack[] drops = this.drops.clone();
 		for (ItemStack stack : drops) {
-			if (stack.getDamage() == -1) {
-				stack.setDamage(damage);
+			if (stack.getDurability() == -1) {
+				stack.setDurability(damage);
 			}
 		}
 		return drops;
@@ -263,7 +262,7 @@ public enum BlockProperties {
 		return new Property() {
 			@Override
 			public void apply(BlockProperties p) {
-				p.drops = new ItemStack[] {new ItemStack(MaterialData.getMaterial(mat), 1)};
+				p.drops = new ItemStack[] {new ItemStack(mat, 1)};
 			}
 		};
 	}
@@ -272,7 +271,7 @@ public enum BlockProperties {
 		return new Property() {
 			@Override
 			public void apply(BlockProperties p) {
-				p.drops = new ItemStack[] {new ItemStack(MaterialData.getMaterial(mat), 1, (short) damage)};
+				p.drops = new ItemStack[] {new ItemStack(mat, 1, (short) damage)};
 			}
 		};
 	}
