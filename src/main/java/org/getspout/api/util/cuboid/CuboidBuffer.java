@@ -26,7 +26,7 @@ import org.getspout.api.math.Vector3;
  */
 public abstract class CuboidBuffer {
 
-	private final World world; // TODO - should this be included?
+	private final World world;
 
 	private final int sizeX;
 	private final int sizeY;

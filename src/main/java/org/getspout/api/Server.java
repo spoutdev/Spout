@@ -16,6 +16,7 @@
  */
 package org.getspout.api;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -145,4 +146,31 @@ public interface Server extends Game {
 	 * @return the world or null on failure
 	 */
 	public World loadWorld(String name, boolean create);
+	
+	/**
+	 * Gets the server's configuration directory
+	 * 
+	 * @return the config directory
+	 */
+	public File getConfigDirectory();
+	
+	/**
+	 * Gets the server's log file
+	 * 
+	 * @return the log filename
+	 */
+	public String getLogFile();
+	
+	/**
+	* Gets a list of available commands from the command map.
+	*
+	* @return A list of all commands at the time.
+	*/
+	public String[] getAllCommands();
+	
+	/**
+	* Stops this server.
+	*/
+	public void shutdown();
+	
 }
