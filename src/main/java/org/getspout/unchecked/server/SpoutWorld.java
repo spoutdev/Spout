@@ -27,7 +27,7 @@ import org.getspout.api.protocol.notch.msg.LoadChunkMessage;
 import org.getspout.api.protocol.notch.msg.StateChangeMessage;
 import org.getspout.api.protocol.notch.msg.TimeMessage;
 import org.getspout.unchecked.server.block.SpoutBlock;
-import org.getspout.unchecked.server.entity.EntityManager;
+import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.player.SpoutPlayer;
 import org.getspout.unchecked.server.io.StorageOperation;

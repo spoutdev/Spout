@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.entity;
+package org.getspout.server.entity;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.api.entity.Controller;
 
 /**

@@ -1,6 +1,5 @@
-package org.getspout.unchecked.server.entity;
+package org.getspout.server.entity;
 
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.unchecked.server.SpoutServer;
 import org.getspout.unchecked.server.SpoutWorld;
 

@@ -1,4 +1,4 @@
-package org.getspout.unchecked.server.entity;
+package org.getspout.server.entity;
 
 public class ActiveEntityEffect {
 	private final EntityEffect effect;
