@@ -29,4 +29,11 @@ public class BoundingBox {
 		return CollisionHelper.checkCollision(this, b);
 	}
 
+	public boolean intersects(Segment b) {
+		return CollisionHelper.checkCollision(this, b);
+	}
+
+	public boolean intersects(Plane b) {
+		return CollisionHelper.checkCollision(this, b);
+	}
 }

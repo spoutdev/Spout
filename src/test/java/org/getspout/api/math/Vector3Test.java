@@ -205,6 +205,13 @@ public class Vector3Test {
 		Vector3 a = new Vector3(1,0,0);
 		Vector3 b = (new Vector3(2,0,0)).subtract(a);
 		if(!a.equals(b))fail("a should be equal to b");
+
+		a = Vector3.Up;
+		b = Vector3.Right;
+
+		boolean result = a.equals(b);
+
+		assertFalse(result);
 	}
 
 }

@@ -3,11 +3,31 @@ package org.getspout.api.math;
 import org.getspout.api.util.Color;
 
 public class MathHelper {
+	/**
+	 * A "close to zero" double epsilon value for use
+	 */
+	public static final double DBL_EPSILON = Double.longBitsToDouble(0x3cb0000000000000L);
+
+	/**
+	 * A "close to zero" float epsilon value for use
+	 */
+	public static final float FLT_EPSILON = Float.intBitsToFloat(0x34000000);
+
+	/**
+	 * A "close to zero" float epsilon value for use
+	 */
+	public static final float ZERO_TOLERANCE = 0.0001f;
+
 	public static final double PI = Math.PI;
+
 	public static final double SQUARED_PI = PI * PI;
+
 	public static final double HALF_PI = 0.5 * PI;
+
 	public static final double QUATER_PI = 0.5 * HALF_PI;
+
 	public static final double TWO_PI = 2.0 * PI;
+
 	public static final double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
 	/**
@@ -122,6 +142,7 @@ public class MathHelper {
 	public static Vector3 getDirectionVector(double pitch, double yaw) {
 		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate((new Quaternion(pitch, Vector3.UNIT_Y)).multiply(new Quaternion(yaw, Vector3.UNIT_Z))));
 	}
+
 	/**
 	 * Returns the forward vector transformed by the provided quaternion
 	 *
@@ -132,12 +153,8 @@ public class MathHelper {
 	public static Vector3 getDirectionVector(Quaternion rot) {
 		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(rot));
 	}
-	
-	
-	
 
 	//Fast Math Implementation
-
 	public final static double cos(final double x) {
 		return sin(x + (x > HALF_PI ? -THREE_PI_HALVES : HALF_PI));
 	}
@@ -174,13 +191,19 @@ public class MathHelper {
 	}
 
 	private static final double sin_a = -4 / SQUARED_PI;
+
 	private static final double sin_b = 4 / PI;
+
 	private static final double sin_p = 9d / 40;
 
 	private final static double asin_a = -0.0481295276831013447d;
+
 	private final static double asin_b = -0.343835993947915197d;
+
 	private final static double asin_c = 0.962761848425913169d;
+
 	private final static double asin_d = 1.00138940860107040d;
 
 	private final static double atan_a = 0.280872d;
+
 }
