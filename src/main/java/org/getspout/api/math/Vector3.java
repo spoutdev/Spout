@@ -360,7 +360,10 @@ public class Vector3 implements Comparable<Vector3> {
 		if (a == b) {
 			return true;
 		}
-		return compareTo((Vector3) a, (Vector3) b) == 0;
+		Vector3 x = (Vector3)a;
+		Vector3 y = (Vector3)b;
+		if(x.getX() == y.getX() && x.getY() == y.getY() && x.getZ() == y.getZ()) return true;
+		return false;
 	}
 
 }
