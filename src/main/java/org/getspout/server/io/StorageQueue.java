@@ -50,6 +50,7 @@ public class StorageQueue extends Thread {
 	}
 
 	public void end() {
+		// TODO - is this a good plan?  Write operations shouldn't be cancelled on exit
 		interrupt();
 		running = false;
 		pending.clear();
