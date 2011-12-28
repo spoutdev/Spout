@@ -154,4 +154,23 @@ public interface Server extends Game {
 	 */
 	public File getConfigDirectory();
 	
+	/**
+	 * Gets the server's log file
+	 * 
+	 * @return the log filename
+	 */
+	public String getLogFile();
+	
+	/**
+	* Gets a list of available commands from the command map.
+	*
+	* @return A list of all commands at the time.
+	*/
+	public String[] getAllCommands();
+	
+	/**
+	* Stops this server.
+	*/
+	public void shutdown();
+	
 }
