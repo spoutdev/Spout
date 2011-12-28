@@ -63,6 +63,7 @@ import org.getspout.unchecked.server.block.BlockProperties;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.entity.SpoutPlayer;
 import org.getspout.unchecked.server.net.SpoutSession;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.server.util.bans.BanManager;
 
 /**
@@ -209,7 +210,8 @@ public final class EventFactory {
 		return callEvent(new ChunkUnloadEvent(chunk));
 	}
 
-	public static SpawnChangeEvent onSpawnChange(SpoutWorld world, Location previousLocation) {
+	public static SpawnChangeEvent onSpawnChange(SpoutWorld world, Point previousLocation) {
+		//TODO: Bukkit Call!
 		return callEvent(new SpawnChangeEvent(world, previousLocation));
 	}
 

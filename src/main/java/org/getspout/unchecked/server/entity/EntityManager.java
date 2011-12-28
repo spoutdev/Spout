@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.getspout.server.entity.SpoutEntity;
+
 /**
  * A class which manages all of the entities within a world.
  *
@@ -75,7 +77,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		for (int id = nextId; id < Integer.MAX_VALUE; id++) {
 			if (!entities.containsKey(id)) {
 				entities.put(id, entity);
-				entity.id = id;
+				entity.setId(id);
 				((Collection<SpoutEntity>) getAll(entity.getClass())).add(entity);
 				nextId = id + 1;
 				return id;
@@ -100,7 +102,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @param entity The entity.
 	 */
 	void deallocate(SpoutEntity entity) {
-		entities.remove(entity.getEntityId());
+		entities.remove(entity.getId());
 		getAll(entity.getClass()).remove(entity);
 	}
 

@@ -1,4 +1,4 @@
-package org.getspout.server.indev.entity;
+package org.getspout.server.entity;
 
 import java.util.List;
 
@@ -11,15 +11,20 @@ import org.getspout.api.plugin.Plugin;
 
 public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	Transform transform = new Transform();
+	Transform previousLocation;
 	Controller controller;
-	int id;
+	public int id;
 	
-	public SpoutEntity(int id){ 
-		this.id = id; 
+	public SpoutEntity(){ 
+	
 	}
 	
 	public int getId(){
 		return id;
+	}
+	
+	public void setId(int id){
+		this.id = id; 
 	}
 	
 	public Controller getController() {
@@ -35,6 +40,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	
 	public void onTick(float dt){
 		if(controller != null) controller.onTick(dt);
+	}
+	
+	public void reset(){
+		previousLocation = transform;
 	}
 	
 	@Override

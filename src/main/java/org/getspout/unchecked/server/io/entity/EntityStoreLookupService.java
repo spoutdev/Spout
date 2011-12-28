@@ -4,18 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.getspout.unchecked.server.entity.SpoutEntity;
-import org.getspout.unchecked.server.io.entity.animals.ChickenStore;
-import org.getspout.unchecked.server.io.entity.animals.CowStore;
-import org.getspout.unchecked.server.io.entity.animals.PigStore;
-import org.getspout.unchecked.server.io.entity.animals.SheepStore;
-import org.getspout.unchecked.server.io.entity.monsters.CaveSpiderStore;
-import org.getspout.unchecked.server.io.entity.monsters.CreeperStore;
-import org.getspout.unchecked.server.io.entity.monsters.GhastStore;
-import org.getspout.unchecked.server.io.entity.monsters.SilverfishStore;
-import org.getspout.unchecked.server.io.entity.monsters.SkeletonStore;
-import org.getspout.unchecked.server.io.entity.monsters.SlimeStore;
-import org.getspout.unchecked.server.io.entity.monsters.SpiderStore;
-import org.getspout.unchecked.server.io.entity.monsters.ZombieStore;
 
 /**
  * A class used to lookup message codecs.
@@ -41,18 +29,6 @@ public final class EntityStoreLookupService {
 	static {
 		try {
 			bind(PlayerStore.class);
-			bind(ChickenStore.class);
-			bind(CowStore.class);
-			bind(PigStore.class);
-			bind(SheepStore.class);
-			bind(CaveSpiderStore.class);
-			bind(CreeperStore.class);
-			bind(GhastStore.class);
-			bind(SilverfishStore.class);
-			bind(SkeletonStore.class);
-			bind(SlimeStore.class);
-			bind(SpiderStore.class);
-			bind(ZombieStore.class);
 		} catch (Exception ex) {
 			throw new ExceptionInInitializerError(ex);
 		}

@@ -11,37 +11,20 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import org.bukkit.BlockChangeDelegate;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Difficulty;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.TreeType;
-import org.bukkit.World;
-import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.CreatureType;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.generator.BlockPopulator;
-import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
+import org.getspout.api.entity.Entity;
+import org.getspout.api.geo.World;
+import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.cuboid.Chunk;
+import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.geo.discrete.Pointm;
+import org.getspout.api.math.Vector3;
+import org.getspout.api.player.Player;
 import org.getspout.api.protocol.notch.msg.LoadChunkMessage;
 import org.getspout.api.protocol.notch.msg.StateChangeMessage;
 import org.getspout.api.protocol.notch.msg.TimeMessage;
 import org.getspout.unchecked.server.block.SpoutBlock;
 import org.getspout.unchecked.server.entity.EntityManager;
-import org.getspout.unchecked.server.entity.EntityProperties;
-import org.getspout.unchecked.server.entity.SpoutEntity;
-import org.getspout.unchecked.server.entity.SpoutLightningStrike;
-import org.getspout.unchecked.server.entity.SpoutLivingEntity;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.entity.objects.SpoutItem;
+import org.getspout.server.entity.SpoutEntity;
 import org.getspout.unchecked.server.io.StorageOperation;
 import org.getspout.unchecked.server.io.WorldMetadataService;
 import org.getspout.unchecked.server.io.WorldMetadataService.WorldFinalValues;
@@ -81,18 +64,13 @@ public final class SpoutWorld implements World {
 	/**
 	 * A map between locations and cached Block objects.
 	 */
-	private final Map<Location, SpoutBlock> blockCache = new ConcurrentHashMap<Location, SpoutBlock>();
+	private final Map<Point, SpoutBlock> blockCache = new ConcurrentHashMap<Point, SpoutBlock>();
 
 	/**
 	 * The world populators for this world.
 	 */
 	private final List<BlockPopulator> populators;
-
-	/**
-	 * The environment.
-	 */
-	private final Environment environment;
-
+	
 	/**
 	 * The world seed.
 	 */
@@ -101,7 +79,7 @@ public final class SpoutWorld implements World {
 	/**
 	 * The spawn position.
 	 */
-	private Location spawnLocation;
+	private Pointm spawnLocation;
 
 	/**
 	 * Whether to keep the spawn chunks in memory (prevent them from being
@@ -168,6 +146,10 @@ public final class SpoutWorld implements World {
 	 * The world's UUID
 	 */
 	private final UUID uid;
+	/**
+	 * Last time this world was updated
+	 */
+	float lastTick = 0.0f;
 
 	/**
 	 * Creates a new world with the specified chunk I/O service, environment,
@@ -178,10 +160,9 @@ public final class SpoutWorld implements World {
 	 * @param environment The environment.
 	 * @param generator The world generator.
 	 */
-	public SpoutWorld(SpoutServer server, String name, Environment environment, long seed, WorldStorageProvider provider, ChunkGenerator generator) {
+	public SpoutWorld(SpoutServer server, String name, long seed, WorldStorageProvider provider, ChunkGenerator generator) {
 		this.server = server;
 		this.name = name;
-		this.environment = environment;
 		provider.setWorld(this);
 		chunks = new ChunkManager(this, provider.getChunkIoService(), generator);
 		storageProvider = provider;
@@ -209,8 +190,8 @@ public final class SpoutWorld implements World {
 			spawnLocation = generator.getFixedSpawnLocation(this, random);
 		}
 
-		int centerX = spawnLocation == null ? 0 : spawnLocation.getBlockX() >> 4;
-		int centerZ = spawnLocation == null ? 0 : spawnLocation.getBlockZ() >> 4;
+		int centerX = spawnLocation == null ? 0 : (int)spawnLocation.getX() >> 4;
+		int centerZ = spawnLocation == null ? 0 : (int)spawnLocation.getZ() >> 4;
 
 		server.getLogger().log(Level.INFO, "Preparing spawn for {0}", name);
 		long loadTime = System.currentTimeMillis();
@@ -234,21 +215,22 @@ public final class SpoutWorld implements World {
 		if (spawnLocation == null) {
 			spawnLocation = generator.getFixedSpawnLocation(this, random);
 			if (spawnLocation == null) {
-				spawnLocation = new Location(this, 0, getHighestBlockYAt(0, 0), 0);
+				spawnLocation = new Pointm(this, 0, getHighestBlockYAt(0, 0), 0);
 
-				if (!generator.canSpawn(this, spawnLocation.getBlockX(), spawnLocation.getBlockZ())) {
+				if (!generator.canSpawn(this, spawnLocation.getX(), spawnLocation.getZ())) {
 					// 10 tries only to prevent a return false; bomb
-					for (int tries = 0; tries < 10 && !generator.canSpawn(this, spawnLocation.getBlockX(), spawnLocation.getBlockZ()); ++tries) {
-						spawnLocation.setX(spawnLocation.getX() + random.nextDouble() * 128 - 64);
-						spawnLocation.setZ(spawnLocation.getZ() + random.nextDouble() * 128 - 64);
+					for (int tries = 0; tries < 10 && !generator.canSpawn(this, spawnLocation.getX(), spawnLocation.getZ()); ++tries) {
+						spawnLocation.setX(spawnLocation.getX() + random.nextFloat() * 128 - 64);
+						spawnLocation.setZ(spawnLocation.getZ() + random.nextFloat() * 128 - 64);
 					}
 				}
 
-				spawnLocation.setY(1 + getHighestBlockYAt(spawnLocation.getBlockX(), spawnLocation.getBlockZ()));
+				spawnLocation.setY(1 + getHighestBlockYAt((int)spawnLocation.getX(), (int)spawnLocation.getZ()));
 			}
 		}
 		EventFactory.onWorldLoad(this);
 		save();
+		lastTick = (float)System.currentTimeMillis();
 
 	}
 
@@ -268,16 +250,20 @@ public final class SpoutWorld implements World {
 	 * Updates all the entities within this world.
 	 */
 	public void pulse() {
+		float dt = ((float)System.currentTimeMillis() - lastTick) * 1000;
 		ArrayList<SpoutEntity> temp = new ArrayList<SpoutEntity>(entities.getAll());
 
 		for (SpoutEntity entity : temp) {
-			entity.pulse();
+			entity.onTick(dt);
 		}
 
 		for (SpoutEntity entity : temp) {
 			entity.reset();
 		}
 
+		/*
+		 * 
+		//TODO: This should go in Vanilla
 		// We currently tick at 1/4 the speed of regular MC
 		// Modulus by 12000 to force permanent day.
 		time = (time + 1) % 12000;
@@ -308,7 +294,7 @@ public final class SpoutWorld implements World {
 				strikeLightning(new Location(this, x, y, z));
 			}
 		}
-
+*/
 		if (autosave && --saveTimer <= 0) {
 			saveTimer = 60 * 20;
 			save();
@@ -330,7 +316,7 @@ public final class SpoutWorld implements World {
 
 	// SpoutEntity lists
 
-	@Override
+	
 	public List<Player> getPlayers() {
 		Collection<SpoutPlayer> players = entities.getAll(SpoutPlayer.class);
 		ArrayList<Player> result = new ArrayList<Player>();
@@ -340,7 +326,7 @@ public final class SpoutWorld implements World {
 		return result;
 	}
 
-	@Override
+
 	public List<Entity> getEntities() {
 		Collection<SpoutEntity> list = entities.getAll();
 		ArrayList<Entity> result = new ArrayList<Entity>();
@@ -350,77 +336,48 @@ public final class SpoutWorld implements World {
 		return result;
 	}
 
-	@Override
-	public List<LivingEntity> getLivingEntities() {
-		Collection<SpoutEntity> list = entities.getAll();
-		ArrayList<LivingEntity> result = new ArrayList<LivingEntity>();
-		for (Entity e : list) {
-			if (e instanceof SpoutLivingEntity) {
-				result.add((SpoutLivingEntity) e);
-			}
-		}
-		return result;
-	}
-
 	// Various malleable world properties
 
-	@Override
-	public Location getSpawnLocation() {
+	public Point getSpawnLocation() {
 		return spawnLocation;
 	}
 
-	@Override
 	public boolean setSpawnLocation(int x, int y, int z) {
-		return setSpawnLocation(new Location(this, x, y, z));
+		return setSpawnLocation(new Pointm(this, x, y, z));
 	}
 
-	public boolean setSpawnLocation(Location loc) {
-		Location oldSpawn = spawnLocation;
+	public boolean setSpawnLocation(Pointm loc) {
+		Point oldSpawn = spawnLocation;
 		loc.setWorld(this);
 		spawnLocation = loc;
 		EventFactory.onSpawnChange(this, oldSpawn);
 		return !loc.equals(oldSpawn);
 	}
 
-	@Override
 	public boolean getPVP() {
 		return pvpAllowed;
 	}
 
-	@Override
+
 	public void setPVP(boolean pvp) {
 		pvpAllowed = pvp;
 	}
 
-	@Override
+    //TODO Vanilla?
 	public void setSpawnFlags(boolean allowMonsters, boolean allowAnimals) {
 		spawnMonsters = allowMonsters;
 		spawnAnimals = allowAnimals;
 	}
 
-	@Override
-	public boolean getAllowAnimals() {
-		return spawnAnimals;
-	}
-
-	@Override
-	public boolean getAllowMonsters() {
-		return spawnMonsters;
-	}
 
 	// various fixed world properties
-
-	@Override
-	public Environment getEnvironment() {
-		return environment;
-	}
 
 	@Override
 	public long getSeed() {
 		return seed;
 	}
 
-	@Override
+
 	public UUID getUID() {
 		return uid;
 	}
@@ -430,24 +387,20 @@ public final class SpoutWorld implements World {
 		return name;
 	}
 
-	@Override
 	public long getId() {
 		return (getSeed() + "_" + getName()).hashCode();
 	}
 
-	@Override
 	public int getMaxHeight() {
 		return SpoutChunk.HEIGHT;
 	}
 
-	@Override
 	public int getSeaLevel() {
 		return getMaxHeight() / 2;
 	}
 
 	// force-save
 
-	@Override
 	public void save() {
 		save(true);
 	}
@@ -489,7 +442,7 @@ public final class SpoutWorld implements World {
 			}
 		}
 
-		for (SpoutPlayer player : getRawPlayers()) {
+		for (Player player : getRawPlayers()) {
 			player.saveData(async);
 		}
 
@@ -506,16 +459,6 @@ public final class SpoutWorld implements World {
 	@Override
 	public List<BlockPopulator> getPopulators() {
 		return populators;
-	}
-
-	@Override
-	public boolean generateTree(Location location, TreeType type) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
-		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// get block, chunk, id, highest methods with coords
@@ -555,18 +498,18 @@ public final class SpoutWorld implements World {
 	// get block, chunk, id, highest with locations
 
 	@Override
-	public SpoutBlock getBlockAt(Location location) {
-		return getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	public SpoutBlock getBlockAt(Point location) {
+		return getBlockAt(location.getX(), location.getY(), location.getZ());
 	}
 
 	@Override
-	public int getBlockTypeIdAt(Location location) {
-		return getBlockTypeIdAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	public int getBlockTypeIdAt(Point location) {
+		return getBlockTypeIdAt(location.getX(), location.getY(), location.getZ());
 	}
 
 	@Override
-	public int getHighestBlockYAt(Location location) {
-		return getHighestBlockYAt(location.getBlockX(), location.getBlockZ());
+	public int getHighestBlockYAt(Point location) {
+		return getHighestBlockYAt((int)location.getX(), (int)location.getZ());
 	}
 
 	@Override
@@ -575,13 +518,13 @@ public final class SpoutWorld implements World {
 	}
 
 	@Override
-	public Block getHighestBlockAt(Location location) {
-		return getBlockAt(location.getBlockX(), getHighestBlockYAt(location), location.getBlockZ());
+	public Block getHighestBlockAt(Point location) {
+		return getBlockAt((int)location.getX(), getHighestBlockYAt(location), (int)location.getZ());
 	}
 
 	@Override
-	public Chunk getChunkAt(Location location) {
-		return getChunkAt(location.getBlockX(), location.getBlockZ());
+	public Chunk getChunkAt(Point location) {
+		return getChunkAt((int)location.getX(), (int)location.getZ());
 	}
 
 	@Override
@@ -719,41 +662,21 @@ public final class SpoutWorld implements World {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
-		if (clazz.isInstance(SpoutEntity.class)) {
-			return (T) spawnSpoutEntity(location, (Class<? extends SpoutEntity>) clazz);
-		} else {
-			return spawnBukkitEntity(location, clazz);
-		}
+	public Entity spawn(Point location) throws IllegalArgumentException {
+		//TODO Make this spawn spout entities
+		
+		return null;
+		
+
 	}
-
-	public <T extends Entity> T spawnBukkitEntity(Location location, Class<T> clazz) throws IllegalArgumentException {
-		EntityProperties properties = EntityProperties.getByBukkitClass(clazz);
-		if (properties == null) {
-			throw new IllegalArgumentException("This entity type is unknown to Spout!");
-		}
-
-		T entity = (T) properties.getFactory().createEntity(server, this);
-		entity.teleport(location);
-		return entity;
-	}
-
-	public <T extends SpoutEntity> T spawnSpoutEntity(Location location, Class<T> clazz) throws IllegalArgumentException {
-		EntityProperties properties = EntityProperties.getBySpoutClass(clazz);
-		if (properties == null) {
-			throw new IllegalArgumentException("This entity type is unknown to Spout!");
-		}
-
-		T entity = (T) properties.getFactory().createEntity(server, this);
-		entity.teleport(location);
-		return entity;
-	}
-
+/*
 	@Override
 	public Item dropItem(Location location, ItemStack item) {
-		Item itemEntity = new SpoutItem(server, this, item);
-		itemEntity.teleport(location);
-		return itemEntity;
+		//TODO: Make this work with the new item code;
+		throw new RuntimeException("Old Entity Code did this");
+		//Item itemEntity = new SpoutItem(server, this, item);
+		//itemEntity.teleport(location);
+		//return itemEntity;
 	}
 
 	@Override
@@ -770,14 +693,17 @@ public final class SpoutWorld implements World {
 			dropItemNaturally(location, item.clone());
 		}
 	}
-
+	*/
+	/*
 	@Override
+	//TODO This should go in Vanilla
+	
 	public Arrow spawnArrow(Location location, Vector velocity, float speed, float spread) {
 		Arrow arrow = spawn(location, Arrow.class);
 
 		// Transformative magic
-		Vector randVec = new Vector(random.nextGaussian(), random.nextGaussian(), random.nextGaussian());
-		randVec.multiply(0.007499999832361937D * spread);
+		Vector3 randVec = new Vector3((float)random.nextGaussian(), (float)random.nextGaussian(), (float)random.nextGaussian());
+		randVec = randVec.scale(0.007499999832361937f * spread);
 
 		velocity.normalize();
 		velocity.add(randVec);
@@ -789,7 +715,7 @@ public final class SpoutWorld implements World {
 		arrow.setVelocity(velocity);
 		return arrow;
 	}
-
+*/
 	@Override
 	public LivingEntity spawnCreature(Location loc, CreatureType type) {
 		EntityProperties properties = EntityProperties.getByCreatureType(type);
@@ -849,69 +775,6 @@ public final class SpoutWorld implements World {
 		setTime(time);
 	}
 
-	// Weather related methods
-
-	@Override
-	public boolean hasStorm() {
-		return currentlyRaining;
-	}
-
-	@Override
-	public void setStorm(boolean hasStorm) {
-		if (!EventFactory.onWeatherChange(this, hasStorm).isCancelled()) {
-			currentlyRaining = hasStorm;
-		}
-
-		// Numbers borrowed from CraftBukkit.
-		if (currentlyRaining) {
-			setWeatherDuration(random.nextInt(12000) + 12000);
-		} else {
-			setWeatherDuration(random.nextInt(168000) + 12000);
-		}
-
-		for (SpoutPlayer player : getRawPlayers()) {
-			player.getSession().send(new StateChangeMessage((byte) (currentlyRaining ? 1 : 2), (byte) 0));
-		}
-	}
-
-	@Override
-	public int getWeatherDuration() {
-		return rainingTicks;
-	}
-
-	@Override
-	public void setWeatherDuration(int duration) {
-		rainingTicks = duration;
-	}
-
-	@Override
-	public boolean isThundering() {
-		return currentlyThundering;
-	}
-
-	@Override
-	public void setThundering(boolean thundering) {
-		if (!EventFactory.onThunderChange(this, thundering).isCancelled()) {
-			currentlyThundering = thundering;
-		}
-
-		// Numbers borrowed from CraftBukkit.
-		if (currentlyThundering) {
-			setThunderDuration(random.nextInt(12000) + 3600);
-		} else {
-			setThunderDuration(random.nextInt(168000) + 12000);
-		}
-	}
-
-	@Override
-	public int getThunderDuration() {
-		return thunderingTicks;
-	}
-
-	@Override
-	public void setThunderDuration(int duration) {
-		thunderingTicks = duration;
-	}
 
 	// explosions
 
