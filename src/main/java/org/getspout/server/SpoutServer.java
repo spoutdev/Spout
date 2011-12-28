@@ -57,7 +57,7 @@ public class SpoutServer implements Server {
 	
 	private File configDirectory = new File("config");
 	
-	private String logFile = "server-log";
+	private String logFile = "logs/log-%D";
 	
 	private String name = "Spout Server";
 	
