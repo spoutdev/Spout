@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.getspout.server.SpoutServer;
 import org.getspout.server.util.PlayerListFile;
-import org.getspout.unchecked.server.SpoutServer;
 
 /**
  * Implementation of BanManager that uses PlayerListFiles.
@@ -15,8 +15,8 @@ public class FlatFileBanManager implements BanManager {
 	private final PlayerListFile bannedIps;
 
 	public FlatFileBanManager(SpoutServer server) {
-		bannedIps = new PlayerListFile(new File(server.getConfigDir(), "banned-ips.txt"));
-		bannedNames = new PlayerListFile(new File(server.getConfigDir(), "banned-names.txt"));
+		bannedIps = new PlayerListFile(new File(server.getConfigDirectory(), "banned-ips.txt"));
+		bannedNames = new PlayerListFile(new File(server.getConfigDirectory(), "banned-names.txt"));
 	}
 
 	@Override

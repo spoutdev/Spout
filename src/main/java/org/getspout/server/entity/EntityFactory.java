@@ -1,7 +1,7 @@
 package org.getspout.server.entity;
 
-import org.getspout.unchecked.server.SpoutServer;
-import org.getspout.unchecked.server.SpoutWorld;
+import org.getspout.server.SpoutServer;
+import org.getspout.server.SpoutWorld;
 
 public interface EntityFactory {
 	public SpoutEntity createEntity(SpoutServer server, SpoutWorld world);

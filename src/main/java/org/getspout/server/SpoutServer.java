@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.getspout.api.GameMode;
 import org.getspout.api.Server;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
@@ -27,14 +26,13 @@ import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.Plugin;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.plugin.security.CommonSecurityManager;
-import org.getspout.api.protocol.CodecLookupService;
 import org.getspout.api.protocol.CommonPipelineFactory;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
-import org.getspout.api.protocol.bootstrap.BootstrapCodecLookupService;
+import org.getspout.server.io.StorageQueue;
+import org.getspout.server.net.SpoutSession;
+import org.getspout.server.net.SpoutSessionRegistry;
 import org.getspout.unchecked.api.inventory.Recipe;
-import org.getspout.unchecked.server.net.SpoutSession;
-import org.getspout.unchecked.server.net.SpoutSessionRegistry;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -55,6 +53,8 @@ public class SpoutServer implements Server {
 	private volatile String[] allAddresses;
 	
 	private File pluginDirectory = new File("plugins");
+	
+	private File configDirectory = new File("config");
 	
 	private String name = "Spout Server";
 	
@@ -100,6 +100,8 @@ public class SpoutServer implements Server {
 	 * A list of all the active {@link SpoutSession}s.
 	 */
 	private final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
+	
+	public static final StorageQueue storeQueue = new StorageQueue();
 	
 	public SpoutServer() {
 		init();
@@ -438,6 +440,11 @@ public class SpoutServer implements Server {
 	@Override
 	public SessionRegistry getSessionRegistry() {
 		return sessions;
+	}
+
+	@Override
+	public File getConfigDirectory() {
+		return configDirectory;
 	}
 
 }
