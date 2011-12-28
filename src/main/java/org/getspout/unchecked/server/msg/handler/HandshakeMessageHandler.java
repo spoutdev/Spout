@@ -4,8 +4,6 @@ import org.getspout.api.player.Player;
 import org.getspout.api.protocol.MessageHandler;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.HandshakeMessage;
-import org.getspout.unchecked.server.net.SpoutSession;
-import org.getspout.unchecked.server.net.SpoutSession.State;
 
 public final class HandshakeMessageHandler extends MessageHandler<HandshakeMessage> {
 	@Override

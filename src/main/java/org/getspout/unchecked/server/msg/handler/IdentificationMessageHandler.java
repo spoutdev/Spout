@@ -1,22 +1,9 @@
 package org.getspout.unchecked.server.msg.handler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-
-import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.getspout.api.player.Player;
 import org.getspout.api.protocol.MessageHandler;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.notch.msg.IdentificationMessage;
-import org.getspout.unchecked.server.EventFactory;
-import org.getspout.unchecked.server.SpoutServer;
-import org.getspout.unchecked.server.entity.SpoutPlayer;
-import org.getspout.unchecked.server.net.SpoutSession;
-import org.getspout.unchecked.server.net.SpoutSession.State;
 
 public final class IdentificationMessageHandler extends MessageHandler<IdentificationMessage> {
 	@Override

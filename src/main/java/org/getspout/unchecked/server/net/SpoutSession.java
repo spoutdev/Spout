@@ -36,29 +36,6 @@ public final class SpoutSession implements Session {
 	private static final int TIMEOUT_TICKS = 300;
 	
 	/**
-	 * The state this connection is currently in.
-	 */
-	public enum State {
-
-		/**
-		 * In the exchange handshake state, the server is waiting for the client
-		 * to send its initial handshake packet.
-		 */
-		EXCHANGE_HANDSHAKE,
-
-		/**
-		 * In the exchange identification state, the server is waiting for the
-		 * client to send its identification packet.
-		 */
-		EXCHANGE_IDENTIFICATION,
-
-		/**
-		 * In the game state the session has an associated player.
-		 */
-		GAME;
-	}
-
-	/**
 	 * The server this session belongs to.
 	 */
 	private final SpoutServer server;
