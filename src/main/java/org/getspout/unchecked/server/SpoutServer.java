@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,35 +21,20 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldCreator;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.MultipleCommandAlias;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Player;
-import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginLoadOrder;
-import org.bukkit.plugin.SimplePluginManager;
-import org.bukkit.plugin.SimpleServicesManager;
-import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.util.permissions.DefaultPermissions;
+import org.getspout.api.GameMode;
+import org.getspout.api.Server;
+import org.getspout.api.Spout;
+import org.getspout.api.command.Command;
+import org.getspout.api.command.CommandSource;
+import org.getspout.api.event.EventManager;
+import org.getspout.api.geo.World;
+import org.getspout.api.player.Player;
+import org.getspout.api.plugin.CommonPluginManager;
+import org.getspout.api.plugin.Platform;
+import org.getspout.api.protocol.Session;
 import org.getspout.server.util.DeadlockMonitor;
 import org.getspout.server.util.PlayerListFile;
+import org.getspout.unchecked.api.inventory.Recipe;
 import org.getspout.unchecked.server.command.BanCommand;
 import org.getspout.unchecked.server.command.ColorCommand;
 import org.getspout.unchecked.server.command.DeopCommand;
@@ -80,6 +66,7 @@ import org.getspout.unchecked.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.bans.BanManager;
 import org.getspout.server.util.bans.FlatFileBanManager;
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
@@ -208,7 +195,7 @@ public final class SpoutServer implements Server {
 	/**
 	 * The plugin manager of this server.
 	 */
-	private final SimplePluginManager pluginManager = new SimplePluginManager(this, commandMap);
+	private final CommonPluginManager pluginManager = new CommonPluginManager(this, commandMap);
 
 	/**
 	 * The crafting manager for this server.
@@ -271,7 +258,7 @@ public final class SpoutServer implements Server {
 	 * Initializes the channel and pipeline factories.
 	 */
 	private void init() {
-		Bukkit.setServer(this);
+		Spout.setGame(this);
 
 		monitor = new DeadlockMonitor();
 		//monitor.start();
@@ -1353,5 +1340,150 @@ public final class SpoutServer implements Server {
 
 	public void reloadConfiguration() {
 		config.load();
+	}
+
+	@Override
+	public Player[] getPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAddress() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] getAllAddresses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasDimension(String dimension) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean processCommand(CommandSource sender, String commandLine) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Player getPlayer(String name, boolean exact) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void save(boolean worlds, boolean players) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean registerRecipe(Recipe recipe) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getSpawnProtectRadius() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setSpawnProtectRadius(int radius) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean allowFlight() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public File getWorldFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Command getRootCommand() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EventManager getEventManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Platform getPlatform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Session newSession(Channel channel) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isWhitelist() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void updateWhitelist() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isOnlineMode() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void ban(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unban(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Collection<Player> getOps() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public World loadWorld(String name, boolean create) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

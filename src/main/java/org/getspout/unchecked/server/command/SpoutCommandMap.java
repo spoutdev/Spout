@@ -10,15 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.PluginManager;
 
+import org.getspout.api.Server;
+import org.getspout.api.plugin.PluginManager;
 import org.getspout.server.util.StringUtil;
 
 /**
