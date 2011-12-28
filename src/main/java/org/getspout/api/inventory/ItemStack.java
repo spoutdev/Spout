@@ -3,24 +3,38 @@ package org.getspout.api.inventory;
 import java.util.Map;
 
 import org.getspout.api.io.nbt.Tag;
-import org.getspout.api.material.ItemMaterial;
+import org.getspout.api.material.Material;
 
 /**
  * Represents a stack of items
  */
 public class ItemStack {
 	
-	private ItemMaterial material;
+	private Material material;
 	private int amount;
 	private short damage;
 	private Map<String, Tag> auxData;
 	
 	/**
+	 * Creates a new ItemStack from the specified Material of the specified amount
+	 * 
+	 */
+	public ItemStack(Material material, int amount) {
+		this(material, amount, (short) 0);
+	}
+
+	public ItemStack(Material material, int amount, short damage) {
+		this.material = material;
+		this.amount = amount;
+		this.damage = damage;
+	}
+
+	/**
 	 * Gets the Material of the stack
 	 * 
 	 * @return the material
 	 */
-	public ItemMaterial getMaterial() {
+	public Material getMaterial() {
 		return material;
 	}
 	
@@ -29,7 +43,7 @@ public class ItemStack {
 	 * 
 	 * @param material the material
 	 */
-	public void setMaterial(ItemMaterial material) {
+	public void setMaterial(Material material) {
 		this.material = material;
 	}
 	
