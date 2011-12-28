@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 public class Inventory implements Serializable {
 
-	ItemStack[] contents;
+	private static final long serialVersionUID = 0L;
+	private ItemStack[] contents;
 
 	public Inventory(int size) {
 		contents = new ItemStack[size];
