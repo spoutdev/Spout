@@ -41,5 +41,33 @@ public class Point extends Vector3 {
 	public World getWorld() {
 		return world;
 	}
+	
+	public int hashCode() {
+		int hash = (int)world.getUID().getLeastSignificantBits();
+		hash += (hash << 5) + (int)world.getUID().getMostSignificantBits();
+		
+		int xx = (int)(x * 1024);
+		int yy = (int)(y * 1024);
+		int zz = (int)(z * 1024);
+		
+		hash += (hash << 5) + xx;
+		hash += (hash << 5) + yy;
+		hash += (hash << 5) + zz;
+		return hash;
+	}
+	
+	public boolean equals(Object obj) {
+		
+		if (obj == null) {
+			return false;
+		} else if (!(obj instanceof Point)) {
+			return false;
+		} else {
+			Point point = (Point)obj;
+			
+			return point.world == world && point.x == x && point.y == y && point.z == z;
+		}
+		
+	}
 
 }
