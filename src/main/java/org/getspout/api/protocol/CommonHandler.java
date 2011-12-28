@@ -21,6 +21,11 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	 * The server.
 	 */
 	private final Server server;
+	
+	/**
+	 * The associated session
+	 */
+	private volatile Session session = null;
 
 	/**
 	 * Creates a new network event handler.
@@ -39,6 +44,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 		Session session = server.newSession(c);
 		server.getSessionRegistry().add(session);
 		ctx.setAttachment(session);
+		this.session = session;
 
 		server.getLogger().info("Channel connected: " + c + ".");
 	}
@@ -75,4 +81,13 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			c.close();
 		}
 	}
+	
+	public void setProtocol(Protocol protocol) {
+		if (session != null) {
+			session.setProtocol(protocol);
+		} else {
+			throw new IllegalStateException("The protocol cannot be set before the channel is associated with a session");
+		}
+	}
+	
 }

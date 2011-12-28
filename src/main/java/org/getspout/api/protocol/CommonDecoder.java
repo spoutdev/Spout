@@ -19,9 +19,16 @@ import org.jboss.netty.handler.codec.replay.VoidEnum;
 public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	
 	private final CodecLookupService bootstrapCodecLookup = new BootstrapCodecLookupService();
-	private CodecLookupService codecLookup = bootstrapCodecLookup;
+	private volatile CodecLookupService codecLookup = bootstrapCodecLookup;
 	private int previousOpcode = -1;
 	private boolean configListen = true;
+	private final CommonHandler handler;
+	private final CommonEncoder encoder;
+	
+	public CommonDecoder(CommonHandler handler, CommonEncoder encoder) {
+		this.encoder = encoder;
+		this.handler = handler;
+	}
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
@@ -54,6 +61,8 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 					
 					if (protocol != null) {
 						codecLookup = protocol.getCodecLookupService();
+						encoder.setProtocol(protocol);
+						handler.setProtocol(protocol);
 						configListen = true;
 					} else {
 						throw new IllegalStateException("No protocol associated with an id of " + id);

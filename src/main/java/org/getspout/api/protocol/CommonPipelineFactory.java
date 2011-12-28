@@ -25,6 +25,8 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {
-		return new StaticChannelPipeline(new CommonDecoder(), new CommonEncoder(), new CommonHandler(server));
+		CommonHandler handler = new CommonHandler(server);
+		CommonEncoder encoder = new CommonEncoder();
+		return new StaticChannelPipeline(new CommonDecoder(handler, encoder), encoder, handler);
 	}
 }

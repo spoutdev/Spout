@@ -16,7 +16,7 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 public class CommonEncoder extends OneToOneEncoder {
 	
 	private final CodecLookupService bootstrapCodecLookup = new BootstrapCodecLookupService();
-	private CodecLookupService codecLookup = bootstrapCodecLookup;
+	private volatile CodecLookupService codecLookup = bootstrapCodecLookup;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -38,5 +38,9 @@ public class CommonEncoder extends OneToOneEncoder {
 			return ChannelBuffers.wrappedBuffer(opcodeBuf, codec.encode(message));
 		}
 		return msg;
+	}
+	
+	public void setProtocol(Protocol protocol) {
+		codecLookup = protocol.getCodecLookupService();
 	}
 }
