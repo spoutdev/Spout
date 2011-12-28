@@ -1,8 +1,11 @@
 package org.getspout.api.protocol;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.getspout.api.Commons;
 import org.getspout.api.protocol.bootstrap.BootstrapCodecLookupService;
+import org.getspout.api.protocol.bootstrap.msg.BootstrapIdentificationMessage;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -18,21 +21,48 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	private final CodecLookupService bootstrapCodecLookup = new BootstrapCodecLookupService();
 	private CodecLookupService codecLookup = bootstrapCodecLookup;
 	private int previousOpcode = -1;
+	private boolean configListen = true;
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
-		int opcode = buf.readUnsignedByte();
+		int opcode = buf.getShort(buf.readerIndex());
 		
 		MessageCodec<?> codec = codecLookup.find(opcode);
 		
 		if (codec == null) {
 			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
 		}
+		
+		if (codec.isExpanded()) {
+			buf.readShort();
+		} else {
+			buf.readByte();
+		}
 
 		previousOpcode = opcode;
 		
-		// TODO - need to add detection for protocol change message
+		Object message = codec.decode(buf);
+		
+		if (configListen) {
+			if (Commons.isSpout) {
+				if (message instanceof BootstrapIdentificationMessage) {
+					BootstrapIdentificationMessage idMessage = (BootstrapIdentificationMessage)message;
 
-		return codec.decode(buf);
+					long id = idMessage.getSeed();
+
+					Protocol protocol = Protocol.getProtocol(id);
+					
+					if (protocol != null) {
+						codecLookup = protocol.getCodecLookupService();
+						configListen = true;
+					} else {
+						throw new IllegalStateException("No protocol associated with an id of " + id);
+					}
+				}
+			}
+		}
+			
+		return message;
 	}
+	
 }

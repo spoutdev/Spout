@@ -18,24 +18,10 @@ public interface Session {
 	public void dispose(boolean broadcastQuit);
 	
 	/**
-	 * Gets the codec lookup service associated with this session.
+	 * Sets the protocol associated with this session.
 	 * 
-	 * @return the codex lookup service (BookstrapCodec until set)
+	 * @param codecLookupService the protocol (Bootstrap until set)
 	 */
-	public CodecLookupService getCodecLookupService();
-	
-	/**
-	 * Sets the codec lookup service associated with this session.
-	 * 
-	 * @param codecLookupService the codec lookup service (Bootstrap until set)
-	 */
-	public void setCodecLookupService(CodecLookupService codecLookupService);
-	
-	/**
-	 * Sets the handler lookup service associated with this session.
-	 * 
-	 * @param handlerLookupService the handler lookup service (Bootstrap until set)
-	 */
-	public void setHandlerLookupService(HandlerLookupService codecLookupService);
+	public void setProtocol(Protocol protocol);
 
 }
