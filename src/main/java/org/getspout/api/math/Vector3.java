@@ -8,30 +8,37 @@ public class Vector3 implements Comparable<Vector3> {
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
 	public static Vector3 ZERO = new Vector3(0, 0, 0);
+
 	/**
 	 * Unit Vector in the X direction. (1, 0, 0)
 	 */
 	public static Vector3 UNIT_X = new Vector3(1, 0, 0);
+
 	/**
 	 * Unit Vector facing Forward. (1, 0, 0)
 	 */
 	public static Vector3 Forward = UNIT_X;
+
 	/**
 	 * Unit Vector in the Y direction. (0, 1, 0)
 	 */
 	public static Vector3 UNIT_Y = new Vector3(0, 1, 0);
+
 	/**
 	 * Unit Vector pointing Up. (0, 1, 0)
 	 */
 	public static Vector3 Up = UNIT_Y;
+
 	/**
 	 * Unit Vector in the Z direction. (0, 0, 1)
 	 */
 	public static Vector3 UNIT_Z = new Vector3(0, 0, 1);
+
 	/**
 	 * Unit Vector pointing Right. (0, 0, 1)
 	 */
 	public static Vector3 Right = UNIT_Z;
+
 	/**
 	 * Unit Vector with all elements set to 1. (1, 1, 1)
 	 */
@@ -169,6 +176,15 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
+	 * Returns a fast approximation of this vector's length.
+	 * 
+	 * @return 
+	 */
+	public float fastLength() {
+		return Vector3.fastLength(this);
+	}
+	
+	/**
 	 * returns the vector with a length of 1
 	 *
 	 * @return
@@ -196,13 +212,14 @@ public class Vector3 implements Comparable<Vector3> {
 	public Vector3 transform(Matrix transformation) {
 		return Vector3.transform(this, transformation);
 	}
-	public Vector3 transform(Quaternion transformation){
+
+	public Vector3 transform(Quaternion transformation) {
 		return Vector3.transform(this, transformation);
 	}
+
 	/**
 	 * Compares two Vector3s
 	 */
-
 	public int compareTo(Vector3 o) {
 		return Vector3.compareTo(this, o);
 	}
@@ -210,30 +227,42 @@ public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Checks if two Vector3s are equal
 	 */
-
-	
 	public boolean equals(Object o) {
 		return Vector3.equals(this, o);
 	}
-	
+
 	/**
 	 * toString Override
 	 */
-	public String toString(){
-		return String.format("{ %f, %f, %f",x,y,z);
+	public String toString() {
+		return String.format("{ %f, %f, %f", x, y, z);
 	}
 
 	/**
-	 * Returns the length of the given vector Note: Makes use of Math.sqrt and
+	 * Returns the length of the given vector. 
+	 * 
+	 * Note: Makes use of Math.sqrt and
 	 * is not cached, so can be slow
 	 *
+	 * Also known as norm. ||a||
+	 * 
 	 * @param a
 	 * @return
 	 */
 	public static float length(Vector3 a) {
-		return (float)Math.sqrt(lengthSquared(a));
+		return (float) Math.sqrt(lengthSquared(a));
 	}
 
+	/**
+	 * Returns an approximate length of the given vector.
+	 * 
+	 * @param a
+	 * @return 
+	 */
+	public static float fastLength(Vector3 a) {
+		return (float) MathHelper.sqrt(lengthSquared(a));
+	}
+	
 	/**
 	 * returns the length squared to the given vector
 	 *
@@ -317,7 +346,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static float[] toArray(Vector3 a) {
-		return new float[] {a.getX(), a.getY(), a.getZ()};
+		return new float[]{a.getX(), a.getY(), a.getZ()};
 	}
 
 	/**
@@ -328,20 +357,20 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param transformation the transformation matrix
 	 * @return
 	 */
-	public static Vector3 transform(Vector3 vector, Matrix transformation) {		
-		
+	public static Vector3 transform(Vector3 vector, Matrix transformation) {
+
 		return Matrix.transform(vector, transformation);
 	}
+
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
 	 * @param vector
 	 * @param rot
 	 * @return
 	 */
-	public static Vector3 transform(Vector3 vector, Quaternion rot){
+	public static Vector3 transform(Vector3 vector, Quaternion rot) {
 		return Vector3.transform(vector, Matrix.rotate(rot));
 	}
-	
 
 	/**
 	 * Compares two Vector3s
@@ -351,7 +380,7 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Checks if two Vector2s are equal
+	 * Checks if two Vector3s are equal
 	 */
 	public static boolean equals(Object a, Object b) {
 		if (!(a instanceof Vector3) || !(b instanceof Vector3)) {
