@@ -27,10 +27,12 @@ import org.getspout.api.Spout;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.event.EventManager;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.CommonPluginManager;
 import org.getspout.api.plugin.Platform;
+import org.getspout.api.plugin.Plugin;
 import org.getspout.api.protocol.Session;
 import org.getspout.server.util.DeadlockMonitor;
 import org.getspout.server.util.PlayerListFile;
@@ -465,15 +467,6 @@ public final class SpoutServer implements Server {
 
 		enablePlugins(PluginLoadOrder.STARTUP);
 
-		// Create worlds
-		String world = config.getString("server.world-name", "world");
-		createWorld(WorldCreator.name(world).environment(Environment.NORMAL));
-		if (getAllowNether()) {
-			createWorld(WorldCreator.name(world + "_nether").environment(Environment.NETHER));
-		}
-		if (getAllowEnd()) {
-			createWorld(WorldCreator.name(world + "_the_end").environment(Environment.THE_END));
-		}
 
 		// Finish loading plugins
 		enablePlugins(PluginLoadOrder.POSTWORLD);
@@ -723,8 +716,8 @@ public final class SpoutServer implements Server {
 	 *
 	 * @return version of this server implementation
 	 */
-	public String getVersion() {
-		return getClass().getPackage().getImplementationVersion();
+	public long getVersion() {
+		return Long.parseLong(getClass().getPackage().getImplementationVersion());
 	}
 
 	public String getBukkitVersion() {
@@ -832,12 +825,12 @@ public final class SpoutServer implements Server {
 	 *
 	 * @return The name of the update folder
 	 */
-	public String getUpdateFolder() {
+	public String getUpdateFolderString() {
 		return config.getString("server.folders.update", "update");
 	}
 
-	public File getUpdateFolderFile() {
-		return new File(getUpdateFolder());
+	public File getUpdateFolder() {
+		return new File(getUpdateFolderString());
 	}
 
 	/**
@@ -918,7 +911,7 @@ public final class SpoutServer implements Server {
 	 *
 	 * @return The ChunkGenerator.
 	 */
-	private ChunkGenerator getGenerator(String name, Environment environment) {
+	private WorldGenerator getGenerator(String name, Environment environment) {
 		if (config.getString("worlds." + name + ".generator") != null) {
 			String[] args = config.getString("worlds." + name + ".generator").split(":", 2);
 			if (getPluginManager().getPlugin(args[0]) == null) {
@@ -937,63 +930,6 @@ public final class SpoutServer implements Server {
 		}
 	}
 
-	/**
-	 * Creates or loads a world with the given name. If the world is already
-	 * loaded, it will just return the equivalent of getWorld(name)
-	 *
-	 * @param name Name of the world to load
-	 * @param environment Environment type of the world
-	 * @return Newly created or loaded World
-	 */
-	@Deprecated
-	public SpoutWorld createWorld(String name, Environment environment) {
-		return createWorld(WorldCreator.name(name).environment(environment));
-	}
-
-	/**
-	 * Creates or loads a world with the given name. If the world is already
-	 * loaded, it will just return the equivalent of getWorld(name)
-	 *
-	 * @param name Name of the world to load
-	 * @param environment Environment type of the world
-	 * @param seed Seed value to create the world with
-	 * @return Newly created or loaded World
-	 */
-	@Deprecated
-	public SpoutWorld createWorld(String name, Environment environment, long seed) {
-		return createWorld(WorldCreator.name(name).environment(environment).seed(seed));
-	}
-
-	/**
-	 * Creates or loads a world with the given name. If the world is already
-	 * loaded, it will just return the equivalent of getWorld(name)
-	 *
-	 * @param name Name of the world to load
-	 * @param environment Environment type of the world
-	 * @param generator ChunkGenerator to use in the construction of the new
-	 *            world
-	 * @return Newly created or loaded World
-	 */
-	@Deprecated
-	public SpoutWorld createWorld(String name, Environment environment, ChunkGenerator generator) {
-		return createWorld(WorldCreator.name(name).environment(environment).generator(generator));
-	}
-
-	/**
-	 * Creates or loads a world with the given name. If the world is already
-	 * loaded, it will just return the equivalent of getWorld(name)
-	 *
-	 * @param name Name of the world to load
-	 * @param environment Environment type of the world
-	 * @param seed Seed value to create the world with
-	 * @param generator ChunkGenerator to use in the construction of the new
-	 *            world
-	 * @return Newly created or loaded World
-	 */
-	@Deprecated
-	public SpoutWorld createWorld(String name, Environment environment, long seed, ChunkGenerator generator) {
-		return createWorld(WorldCreator.name(name).environment(environment).seed(seed).generator(generator));
-	}
 
 	/**
 	 * Creates or loads a world with the given name using the specified options.
