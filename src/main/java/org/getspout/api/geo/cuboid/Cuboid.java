@@ -59,7 +59,7 @@ public class Cuboid {
 		} else {
 			Cuboid cuboid = (Cuboid)obj;
 			
-			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld() == getWorld() && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
+			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld().equals(getWorld()) && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
 		}
 		
 	}

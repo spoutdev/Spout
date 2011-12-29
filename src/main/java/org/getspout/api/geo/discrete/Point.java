@@ -65,7 +65,7 @@ public class Point extends Vector3 {
 		} else {
 			Point point = (Point)obj;
 			
-			return point.world == world && point.x == x && point.y == y && point.z == z;
+			return point.world.equals(world) && point.x == x && point.y == y && point.z == z;
 		}
 		
 	}
