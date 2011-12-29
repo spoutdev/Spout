@@ -6,6 +6,7 @@ import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.EntityMetadataStore;
+import org.getspout.api.metadata.MetadataStringValue;
 import org.getspout.api.metadata.MetadataValue;
 import org.getspout.api.plugin.Plugin;
 
@@ -69,6 +70,23 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	@Override
 	public boolean is(Class<?> clazz) {		
 		return clazz.isAssignableFrom(this.getController().getClass());
+	}
+
+	@Override
+	public void setMetadata(String key, int value) {
+		setMetadata(key, new MetadataStringValue(value));		
+	}
+
+	@Override
+	public void setMetadata(String key, float value) {
+		setMetadata(key, new MetadataStringValue(value));	
+		
+	}
+
+	@Override
+	public void setMetadata(String key, String value) {
+		setMetadata(key, new MetadataStringValue(value));	
+		
 	}
 
 
