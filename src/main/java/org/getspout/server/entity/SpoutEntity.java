@@ -8,6 +8,7 @@ import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.EntityMetadataStore;
 import org.getspout.api.metadata.MetadataStringValue;
 import org.getspout.api.metadata.MetadataValue;
+import org.getspout.api.model.Model;
 import org.getspout.api.plugin.Plugin;
 
 public class SpoutEntity extends EntityMetadataStore implements Entity  {
@@ -15,6 +16,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	Transform previousLocation;
 	Controller controller;
 	public int id;
+	
+	Model model;
+	//CollisionModel collision //Commented out because it doesn't exist yet
+	
 	
 	public SpoutEntity(){ 
 	
@@ -39,11 +44,31 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		return transform;
 	}
 	
+	@Override
+	public void setModel(Model model) {
+		this.model = model;		
+	}
+
+	@Override
+	public Model getModel() {		
+		return model;
+	}
+
+	
+	
 	public void onTick(float dt){
 		if(controller != null) controller.onTick(dt);
 	}
 	
-	public void reset(){
+	
+	/**
+	 * Called when the tick is finished and collisions need to be resolved
+	 * and move events fired
+	 */
+	public void resolve(){
+		//Resolve Collisions Here
+		
+		//Check to see if we should fire off a Move event
 		previousLocation = transform;
 	}
 	
@@ -88,6 +113,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		setMetadata(key, new MetadataStringValue(value));	
 		
 	}
+
 
 
 }
