@@ -1,5 +1,6 @@
 package org.getspout.api.entity;
 
+import org.getspout.api.collision.CollisionModel;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.model.Model;
@@ -21,8 +22,8 @@ public interface Entity extends Metadatable {
 	public Model getModel();
 	
 	//Commented out because CollisionModel doesn't exist yet
-	//public void setCollision(CollisionModel model);
-	//public CollisionModel getCollision();
+	public void setCollision(CollisionModel model);
+	public CollisionModel getCollision();
 	
 	public void onTick(float dt);
 	
