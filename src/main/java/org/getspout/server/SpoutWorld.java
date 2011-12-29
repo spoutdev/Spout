@@ -136,26 +136,6 @@ public class SpoutWorld implements World {
 	}
 
 	@Override
-	public int getTime() {
-		return time.get();
-	}
-
-	@Override
-	public void setTime(int time) {
-		this.time.set(time % dayLength.get());
-	}
-
-	@Override
-	public int getDayLength() {
-		return dayLength.get();
-	}
-
-	@Override
-	public void setDayLength(int dayLength) {
-		this.dayLength.set(dayLength);
-	}
-
-	@Override
 	public Block getBlock(int x, int y, int z) {
 		// TODO Auto-generated method stub
 		return null;
