@@ -2,6 +2,8 @@ package org.getspout.api.geo;
 
 import java.util.UUID;
 
+import org.getspout.api.entity.Controller;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
@@ -68,5 +70,24 @@ public interface World extends EventSource {
 	 */
 	@SnapshotRead
 	public abstract Region getRegion(int x, int y, int z);
+	
+	/**
+	 * Create a new Entity for initialization
+	 * @return
+	 */
+	public Entity createEntity();
+	/**
+	 * Add a created entity to the world for simulation and syncing to clients
+	 * @param e
+	 */
+	public void spawnEntity(Entity e);
+	
+	/**
+	 * Creates and Spawns an entity at the given point and with the given Controller
+	 * @param point The point to spawn the Entity
+	 * @param controller The controller that will be attached to the Entity
+	 * @return The Entity that has been created and spawned
+	 */
+	public Entity createAndSpawnEntity(Point point, Controller controller);
 
 }
