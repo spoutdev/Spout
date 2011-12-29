@@ -5,17 +5,17 @@ import java.util.HashMap;
 import org.getspout.api.collision.CollisionVolume;
 
 public class CollisionNode {
-	CollisionStratagy stratagy = CollisionStratagy.NOCOLLIDE;
+	CollisionStrategy stratagy = CollisionStrategy.NOCOLLIDE;
 	
 	HashMap<String, CollisionNode> children = new HashMap<String, CollisionNode>();
 	
 	CollisionVolume volume;
 	
 	public CollisionNode(CollisionVolume volume){
-		this(volume, CollisionStratagy.NOCOLLIDE);
+		this(volume, CollisionStrategy.NOCOLLIDE);
 	}
 	
-	public CollisionNode(CollisionVolume volume, CollisionStratagy strat){
+	public CollisionNode(CollisionVolume volume, CollisionStrategy strat){
 		this.stratagy = strat;
 		this.volume = volume;
 	}

@@ -66,6 +66,46 @@ public class Segment implements CollisionVolume {
 		return false;
 	}
 
+
+	public boolean contains(CollisionVolume other) {
+		if (other instanceof BoundingBox) {
+			return containsBoundingBox((BoundingBox) other);
+		} else if (other instanceof BoundingSphere) {
+			return containsBoundingSphere((BoundingSphere) other);
+		} else if (other instanceof Plane) {
+			return containsPlane((Plane) other);
+		} else if (other instanceof Ray) {
+			return containsRay((Ray) other);
+		} else if (other instanceof Segment) {
+			return containsSegment((Segment) other);
+		}
+		return false;
+	}
+
+	public boolean containsBoundingBox(BoundingBox b) {
+		return CollisionHelper.contains(b, this);
+	}
+
+	public boolean containsBoundingSphere(BoundingSphere b) {
+		return CollisionHelper.contains(b, this);
+	}
+
+	public boolean containsPlane(Plane b) {
+		return CollisionHelper.contains(b, this);
+	}
+
+	public boolean containsRay(Ray b) {
+		return CollisionHelper.contains(b, this);
+	}
+
+	public boolean containsSegment(Segment b) {
+		return CollisionHelper.contains(this, b);
+	}
+
+	public boolean containsPoint(Vector3 b) {
+		return CollisionHelper.contains(this, b);
+	}
+
 	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
 		// TODO Auto-generated method stub
 		return null;
