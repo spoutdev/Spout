@@ -24,51 +24,12 @@ public interface World extends EventSource {
 	public String getName();
 
 	/**
-	 * Gets the number of ticks since the world was created. This count cannot
-	 * be modified, and increments by one on every tick
+	 * Gets the age of the world in ms. This count cannot be modified, and increments on every tick
 	 *
-	 * @return the world's tick count
+	 * @return the world's age in ms
 	 */
 	@SnapshotRead
 	public long getAge();
-
-	/**
-	 * Gets the current time of day within the world
-	 *
-	 * This value wraps around every 24000 ticks
-	 *
-	 * @return the time of day
-	 */
-	@SnapshotRead
-	public int getTime();
-
-	/**
-	 * Sets the current time of day within the world
-	 *
-	 * This value must be positive and less than the day length for the world.
-	 *
-	 */
-	@DelayedWrite
-	public void setTime(int time);
-
-	/**
-	 * Gets the current day length for the world
-	 *
-	 * This value wraps around every 24000 ticks
-	 *
-	 * @return the time of day
-	 */
-	@SnapshotRead
-	public int getDayLength();
-
-	/**
-	 * Sets the current day length for the world
-	 *
-	 * This value must be positive and less than the day length for the world.
-	 *
-	 */
-	@SnapshotRead
-	public void setDayLength(int time);
 
 	/**
 	 * Gets a Block representing a particular location in the world
