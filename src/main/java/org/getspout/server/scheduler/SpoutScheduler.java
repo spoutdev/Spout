@@ -122,6 +122,21 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
+			
+			asyncExecutors.copySnapshot();
+			
+			for (AsyncExecutor e : asyncExecutors.get()) {
+				e.kill();
+			}
+			
+			try {
+				AsyncExecutorUtils.pulseJoinAll(asyncExecutors.get(), (long)(PULSE_EVERY << 4));
+			} catch (TimeoutException e) {
+				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+			} catch (InterruptedException e) {
+				server.getLogger().info("Main thread interrupted while waiting for executor shutdown");
+			}
+			
 		}
 		
 	}
@@ -174,6 +189,8 @@ public final class SpoutScheduler implements Scheduler {
 	 * Adds new tasks and updates existing tasks, removing them if necessary.
 	 */
 	private boolean tick(long delta) throws InterruptedException {
+		
+		asyncExecutors.copySnapshot();
 		
 		List<AsyncExecutor> executors = asyncExecutors.get();
 		

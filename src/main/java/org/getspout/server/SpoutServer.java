@@ -123,6 +123,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	public SpoutServer() {
 		super(new ThreadAsyncExecutor());
+		registerWithScheduler(scheduler);
 		init();
 	}
 	
@@ -476,8 +477,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public void shutdown() {
 		
-		
-		
 		group.close();
 		bootstrap.getFactory().releaseExternalResources();
 
@@ -495,9 +494,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public void startTickRun(long tick) throws InterruptedException {
-		// TODO Auto-generated method stub
-		
+	public void startTickRun(long delta) throws InterruptedException {
+		// TODO - need to do stuff
 	}
 	
 	public SpoutScheduler getScheduler() {
