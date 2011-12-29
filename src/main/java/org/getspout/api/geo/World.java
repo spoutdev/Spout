@@ -49,7 +49,7 @@ public interface World extends EventSource {
 	 *
 	 */
 	@DelayedWrite
-	public int setTime(int time);
+	public void setTime(int time);
 
 	/**
 	 * Gets the current day length for the world
@@ -68,7 +68,7 @@ public interface World extends EventSource {
 	 *
 	 */
 	@SnapshotRead
-	public int setDayLength(int time);
+	public void setDayLength(int time);
 
 	/**
 	 * Gets a Block representing a particular location in the world
