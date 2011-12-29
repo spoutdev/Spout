@@ -116,8 +116,8 @@ public abstract class AsyncManager {
 	/**
 	 * This method is called in order to start a new tick
 	 * 
-	 * @param tick this number increases by one every tick
+	 * @param delta the time since the last tick
 	 */
-	public abstract void startTickRun(long tick) throws InterruptedException;
+	public abstract void startTickRun(long delta) throws InterruptedException;
 	
 }

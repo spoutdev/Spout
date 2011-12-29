@@ -10,13 +10,15 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.server.util.thread.AsyncManager;
+import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
 import org.getspout.server.util.thread.snapshotable.SnapshotableImmutable;
 import org.getspout.server.util.thread.snapshotable.SnapshotableInt;
 import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
 
-public class SpoutWorld implements World {
+public class SpoutWorld extends AsyncManager implements World {
 	
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	
@@ -124,6 +126,7 @@ public class SpoutWorld implements World {
 	
 	// TODO need world that loads from disk
 	public SpoutWorld(String name, Server server, long seed) {
+		super(new ThreadAsyncExecutor(), server);
 		this.uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
@@ -205,6 +208,17 @@ public class SpoutWorld implements World {
 		e.setController(controller);
 		spawnEntity(e);
 		return e;
+	}
+
+	@Override
+	public void copySnapshotRun() throws InterruptedException {
+		snapshotManager.copyAllSnapshots();
+	}
+
+	@Override
+	public void startTickRun(long tick) throws InterruptedException {
+		System.out.println("Tick: " + tick);
+		
 	}
 
 }
