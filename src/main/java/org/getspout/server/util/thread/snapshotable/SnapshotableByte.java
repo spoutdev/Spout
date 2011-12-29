@@ -1,13 +1,17 @@
-package org.getspout.server.util.thread.snapshotutils;
+package org.getspout.server.util.thread.snapshotable;
 
 import org.getspout.api.util.thread.DelayedWrite;
+import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
 
-public class Snapshotable<T> {
-	private volatile T next;
-	private T snapshot;
+/**
+ * A snapshotable object that supports primitive bytes
+ */
+public class SnapshotableByte implements Snapshotable {
+	private volatile byte next;
+	private byte snapshot;
 	
-	public Snapshotable(SnapshotManager manager, T initial) {
+	public SnapshotableByte(SnapshotManager manager, byte initial) {
 		next = initial;
 		snapshot = initial;
 		manager.add(this);
@@ -19,7 +23,7 @@ public class Snapshotable<T> {
 	 * @param next
 	 */
 	@DelayedWrite
-	public void set(T next) {
+	public void set(byte next) {
 		this.next = next;
 	}
 	
@@ -29,7 +33,7 @@ public class Snapshotable<T> {
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
-	public T get() {
+	public byte get() {
 		return snapshot;
 	}
 	
@@ -38,8 +42,8 @@ public class Snapshotable<T> {
 	 * 
 	 * @return the unstable Live "next" value
 	 */
-	@SnapshotRead
-	public T getLive() {
+	@LiveRead
+	public byte getLive() {
 		return next;
 	}
 	

@@ -10,8 +10,11 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
-import org.getspout.server.util.thread.snapshotutils.SnapshotManager;
-import org.getspout.server.util.thread.snapshotutils.Snapshotable;
+import org.getspout.server.util.thread.snapshotable.SnapshotManager;
+import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
+import org.getspout.server.util.thread.snapshotable.SnapshotableImmutable;
+import org.getspout.server.util.thread.snapshotable.SnapshotableInt;
+import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
 
 public class SpoutWorld implements World {
 	
@@ -46,73 +49,73 @@ public class SpoutWorld implements World {
 	/**
 	* The spawn position.
 	*/
-	private Snapshotable<Point> spawnLocation;
+	private SnapshotableImmutable<Point> spawnLocation;
 
 	/**
 	* Whether to keep the spawn chunks in memory (prevent them from being
 	* unloaded)
 	*/
-	private Snapshotable<Boolean> keepSpawnLoaded = new Snapshotable<Boolean>(snapshotManager, true);
+	private SnapshotableBoolean keepSpawnLoaded = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
 	* Whether PvP is allowed in this world.
 	*/
-	private Snapshotable<Boolean> pvpAllowed = new Snapshotable<Boolean>(snapshotManager, true);
+	private SnapshotableBoolean pvpAllowed = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
 	* Whether animals can spawn in this world.
 	*/
-	private Snapshotable<Boolean> spawnAnimals = new Snapshotable<Boolean>(snapshotManager, true);
+	private SnapshotableBoolean spawnAnimals = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
 	* Whether monsters can spawn in this world.
 	*/
-	private Snapshotable<Boolean> spawnMonsters = new Snapshotable<Boolean>(snapshotManager, true);
+	private SnapshotableBoolean spawnMonsters = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
 	* Whether it is currently raining/snowing on this world.
 	*/
-	private Snapshotable<Boolean> currentlyRaining = new Snapshotable<Boolean>(snapshotManager, false);
+	private SnapshotableBoolean currentlyRaining = new SnapshotableBoolean(snapshotManager, false);
 
 	/**
 	* How many ticks until the rain/snow status is expected to change.
 	*/
-	private Snapshotable<Integer> rainingTicks = new Snapshotable<Integer>(snapshotManager, 0);
+	private SnapshotableInt rainingTicks = new SnapshotableInt(snapshotManager, 0);
 
 	/**
 	* Whether it is currently thundering on this world.
 	*/
-	private Snapshotable<Boolean> currentlyThundering =  new Snapshotable<Boolean>(snapshotManager, false);
+	private SnapshotableBoolean currentlyThundering =  new SnapshotableBoolean(snapshotManager, false);
 
 	/**
 	* How many ticks until the thundering status is expected to change.
 	*/
-	private Snapshotable<Integer> thunderingTicks = new Snapshotable<Integer>(snapshotManager, 0);
+	private SnapshotableInt thunderingTicks = new SnapshotableInt(snapshotManager, 0);
 
 	/**
 	* The current world age.
 	*/
-	private Snapshotable<Long> age = new Snapshotable<Long>(snapshotManager, 0L);
+	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
 
 	/**
 	* The current world time.
 	*/
-	private Snapshotable<Integer> time = new Snapshotable<Integer>(snapshotManager, 0);
+	private SnapshotableInt time = new SnapshotableInt(snapshotManager, 0);
 	
 	/**
 	* The current world time.
 	*/
-	private Snapshotable<Integer> dayLength = new Snapshotable<Integer>(snapshotManager, 0);
+	private SnapshotableInt dayLength = new SnapshotableInt(snapshotManager, 0);
 	
 	/**
 	* The time until the next full-save.
 	*/
-	private Snapshotable<Integer> saveTimer = new Snapshotable<Integer>(snapshotManager, 0);
+	private SnapshotableInt saveTimer = new SnapshotableInt(snapshotManager, 0);
 
 	/**
 	* The check to autosave
 	*/
-	private Snapshotable<Boolean> autosave = new Snapshotable<Boolean>(snapshotManager, true);
+	private SnapshotableBoolean autosave = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
 	* The world's UUID
