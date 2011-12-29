@@ -36,22 +36,50 @@ public class BoundingSphere implements CollisionVolume {
 		return CollisionHelper.checkCollision(this, b);
 	}
 
+	public boolean contains(CollisionVolume other) {
+		return other.containsBoundingSphere(this);
+	}
+
+	public boolean containsBoundingBox(BoundingBox b) {
+		return CollisionHelper.contains(b, this);
+	}
+
+	public boolean containsBoundingSphere(BoundingSphere b) {
+		return CollisionHelper.contains(b, this);
+	}
+
+	public boolean containsPlane(Plane b) {
+		return CollisionHelper.contains(this, b);
+	}
+
+	public boolean containsRay(Ray b) {
+		return CollisionHelper.contains(this, b);
+	}
+
+	public boolean containsSegment(Segment b) {
+		return CollisionHelper.contains(this, b);
+	}
+
+	public boolean containsPoint(Vector3 b) {
+		return CollisionHelper.contains(this, b);
+	}
+
 	public String toString() {
 		return "BoundingSphere{" + "center=" + center + ", radius=" + radius + '}';
 	}
 
 	public boolean intersects(CollisionVolume other) {
-		if(other instanceof BoundingBox){
-			return intersects((BoundingBox)other);
+		if (other instanceof BoundingBox) {
+			return intersects((BoundingBox) other);
 		}
-		if(other instanceof BoundingSphere){
-			return intersects((BoundingSphere)other);
+		if (other instanceof BoundingSphere) {
+			return intersects((BoundingSphere) other);
 		}
-		if(other instanceof Segment){
-			return intersects((Segment)other);
+		if (other instanceof Segment) {
+			return intersects((Segment) other);
 		}
-		if(other instanceof Plane){
-			return intersects((Plane)other);
+		if (other instanceof Plane) {
+			return intersects((Plane) other);
 		}
 		return false;
 	}
@@ -60,4 +88,5 @@ public class BoundingSphere implements CollisionVolume {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

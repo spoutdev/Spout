@@ -392,4 +392,139 @@ public class CollisionHelper {
 		return b.origin.add(b.direction.scale(t));
 	}
 
+	/**
+	 * Returns true if the BoundingBox contains the other BoundingBox.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingBox a, BoundingBox b) {
+		return (a.min.compareTo(b.min) >= 0 && a.max.compareTo(b.max) >= 0);
+	}
+
+	/**
+	 * Returns true if the BoundingBox contains the BoundingSphere.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingBox a, BoundingSphere b) {
+		Vector3 zeroed = a.max.subtract(a.min);
+		Vector3 newCenter = b.center.subtract(a.min);
+		return (newCenter.getX() - b.radius) <= 0
+			&& zeroed.getX() <= (newCenter.getX() + b.radius)
+			&& (newCenter.getY() - b.radius) <= 0
+			&& zeroed.getY() <= (newCenter.getY() + b.radius)
+			&& (newCenter.getZ() - b.radius) <= 0
+			&& zeroed.getZ() <= (newCenter.getZ() + b.radius);
+	}
+
+	/**
+	 * Another pointless method.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingBox a, Plane b) {
+		return false;
+	}
+	
+	/**
+	 * Completely pointless method. You can remove it if you want.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingBox a, Ray b) {
+		return false;
+	}
+	
+	/**
+	 * Returns true if the BoundingBox contains the Segment.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingBox a, Segment b) {
+		return (a.containsPoint(b.origin) && a.containsPoint(b.endpoint));
+	}
+
+	/**
+	 * Returns true if the BoundingSphere contains the BoundingSphere.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingSphere a, BoundingSphere b) {
+		return b.center.subtract(a.center).lengthSquared() 
+			+ (b.radius * b.radius) < a.radius * a.radius;
+	}
+
+	public static boolean contains(BoundingSphere a, Plane b) {
+		return false;
+	}
+
+	/**
+	 * Joke's getting old.
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static boolean contains(BoundingSphere a, Ray b) {
+		return false;
+	}
+
+	public static boolean contains(BoundingSphere a, Segment b) {
+		return a.containsPoint(b.origin) && a.containsPoint(b.endpoint);
+	}
+
+	public static boolean contains(Plane a, Plane b) {
+		return a.normal.equals(b.normal) || a.normal.equals(b.normal.scale(-1));
+	}
+
+	public static boolean contains(Plane a, Ray b) {
+		return a.containsPoint(b.origin) && a.containsPoint(b.origin.add(b.direction));
+	}
+
+	public static boolean contains(Plane a, Segment b) {
+		return a.containsPoint(b.origin) && a.containsPoint(b.endpoint);
+	}
+
+	public static boolean contains(Ray a, Ray b) {
+		return a.containsPoint(b.origin) && a.containsPoint(b.origin.add(b.direction));
+	}
+
+	public static boolean contains(Ray a, Segment b) {
+		return a.contains(a) && a.contains(b);
+	}
+
+	public static boolean contains(Segment a, Segment b) {
+		return a.containsPoint(b.origin) && a.containsPoint(b.endpoint);
+	}
+
+	public static boolean contains(BoundingBox a, Vector3 b) {
+		return a.max.subtract(a.min).compareTo(b.subtract(a.min)) > 0;
+	}
+
+	public static boolean contains(BoundingSphere a, Vector3 b) {
+		return a.center.subtract(b).lengthSquared() <= a.radius * a.radius;
+	}
+
+	public static boolean contains(Plane a, Vector3 b) {
+		return a.distance(b) < MathHelper.FLT_EPSILON;
+	}
+
+	public static boolean contains(Ray a, Vector3 b) {
+		return b.subtract(a.origin).normalize().equals(a.direction);
+	}
+
+	public static boolean contains(Segment a, Vector3 b) {
+		return a.endpoint.subtract(a.origin).normalize().equals(b.subtract(a.origin).normalize()); //There must be a better way
+	}
 }
