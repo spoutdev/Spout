@@ -3,7 +3,7 @@ package org.getspout.api.collision;
 import org.getspout.api.math.MathHelper;
 import org.getspout.api.math.Vector3;
 
-public class Segment {
+public class Segment implements CollisionVolume {
 	/**
 	 * Maximum length for a ray. Calculated as BlockLength*BlocksPerChunk* 10
 	 * chunks
@@ -48,6 +48,27 @@ public class Segment {
 
 	public boolean intersects(Plane b) {
 		return CollisionHelper.checkCollision(this, b);
+	}
+
+	public boolean intersects(CollisionVolume other) {
+		if(other instanceof BoundingBox){
+			return intersects((BoundingBox)other);
+		}
+		if(other instanceof BoundingSphere){
+			return intersects((BoundingSphere)other);
+		}
+		if(other instanceof Segment){
+			return intersects((Segment)other);
+		}
+		if(other instanceof Plane){
+			return intersects((Plane)other);
+		}
+		return false;
+	}
+
+	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

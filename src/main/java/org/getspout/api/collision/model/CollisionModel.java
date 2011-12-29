@@ -1,4 +1,4 @@
-package org.getspout.api.collision;
+package org.getspout.api.collision.model;
 
 /**
  * Defines a Heirachial Collision Volume
@@ -6,5 +6,7 @@ package org.getspout.api.collision;
  *
  */
 public class CollisionModel {
+	CollisionNode root;
+	
 	
 }

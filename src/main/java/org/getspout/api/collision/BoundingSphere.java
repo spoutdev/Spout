@@ -2,7 +2,7 @@ package org.getspout.api.collision;
 
 import org.getspout.api.math.Vector3;
 
-public class BoundingSphere {
+public class BoundingSphere implements CollisionVolume {
 	Vector3 center;
 
 	double radius;
@@ -40,4 +40,24 @@ public class BoundingSphere {
 		return "BoundingSphere{" + "center=" + center + ", radius=" + radius + '}';
 	}
 
+	public boolean intersects(CollisionVolume other) {
+		if(other instanceof BoundingBox){
+			return intersects((BoundingBox)other);
+		}
+		if(other instanceof BoundingSphere){
+			return intersects((BoundingSphere)other);
+		}
+		if(other instanceof Segment){
+			return intersects((Segment)other);
+		}
+		if(other instanceof Plane){
+			return intersects((Plane)other);
+		}
+		return false;
+	}
+
+	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

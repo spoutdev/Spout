@@ -1,6 +1,6 @@
 package org.getspout.api.entity;
 
-import org.getspout.api.collision.CollisionModel;
+import org.getspout.api.collision.model.CollisionModel;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.model.Model;

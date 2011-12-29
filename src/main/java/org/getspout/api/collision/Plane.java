@@ -2,7 +2,7 @@ package org.getspout.api.collision;
 
 import org.getspout.api.math.Vector3;
 
-public class Plane {
+public class Plane implements CollisionVolume {
 	Vector3 point;
 
 	Vector3 normal;
@@ -44,4 +44,24 @@ public class Plane {
 		return new Plane(a, a.cross(b));
 	}
 
+	public boolean intersects(CollisionVolume other) {
+		if(other instanceof BoundingBox){
+			return intersects((BoundingBox)other);
+		}
+		if(other instanceof BoundingSphere){
+			return intersects((BoundingSphere)other);
+		}
+		if(other instanceof Segment){
+			return intersects((Segment)other);
+		}
+		if(other instanceof Plane){
+			return intersects((Plane)other);
+		}
+		return false;
+	}
+
+	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
