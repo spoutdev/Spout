@@ -33,6 +33,14 @@ public interface Metadatable {
 	 * @param newMetadataValue
 	 */
 	public void setMetadata(String metadataKey, MetadataValue newMetadataValue);
+	
+	public void setMetadata(String key, int value);
+	
+	public void setMetadata(String key, float value);
+	
+	public void setMetadata(String key, String value);
+	
+	
 
 	/**
 	 * Returns a list of previously set metadata values from the implementing
