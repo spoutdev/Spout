@@ -178,6 +178,9 @@ public class SpoutServer implements Server {
 		
 		pluginManager.clearPlugins();
 		
+		if (!pluginDirectory.exists()) 
+			pluginDirectory.mkdirs();
+		
 		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
 		
 		System.out.println("Plugins: " + plugins.length);
