@@ -2,6 +2,7 @@ package org.getspout.server.entity;
 
 import java.util.List;
 
+import org.getspout.api.collision.CollisionModel;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.discrete.Transform;
@@ -18,7 +19,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public int id;
 	
 	Model model;
-	//CollisionModel collision //Commented out because it doesn't exist yet
+	CollisionModel collision; //Commented out because it doesn't exist yet
 	
 	
 	public SpoutEntity(){ 
@@ -52,6 +53,17 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	@Override
 	public Model getModel() {		
 		return model;
+	}
+
+	@Override
+	public void setCollision(CollisionModel model) {
+		this.collision = model;
+		
+	}
+
+	@Override
+	public CollisionModel getCollision() {
+		return collision;
 	}
 
 	
@@ -113,6 +125,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		setMetadata(key, new MetadataStringValue(value));	
 		
 	}
+
 
 
 
