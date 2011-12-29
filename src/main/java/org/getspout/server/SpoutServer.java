@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -56,7 +57,11 @@ public class SpoutServer implements Server {
 	
 	private File configDirectory = new File("config");
 	
+	private String logFile = "logs/log-%D";
+	
 	private String name = "Spout Server";
+	
+	private volatile boolean stop = false;
 	
 	/**
 	 * The set of allowable dimensions for the server
@@ -79,6 +84,11 @@ public class SpoutServer implements Server {
 	 * The plugin manager for the server
 	 */
 	private CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
+	
+	/**
+	* The console manager of this server.
+	*/
+	private final ConsoleManager consoleManager = new ConsoleManager(this, "jline");
 	
 	/**
 	 * The logger for this class.
@@ -120,17 +130,31 @@ public class SpoutServer implements Server {
 	
 	public void start() {
 		
+		consoleManager.setupConsole();
+		
 		// Start loading plugins
 		loadPlugins();
 		
 	}
+
+	// TODO - add proper scheduler
+
+	private ConcurrentLinkedQueue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
 	
-	// TODO - remove
+	public void queueTask(Runnable task) {
+		taskQueue.add(task);
+	}
+	
 	public void go() {
 		System.out.println("Entering infinite loop");
 		
-		while (true) {
+		while (!stop) {
 			sessions.pulse();
+			
+			while(!taskQueue.isEmpty()) {
+				taskQueue.poll().run();
+			}
+			
 			try {
 				Thread.sleep(50);
 			} catch (Exception e) {
@@ -153,6 +177,9 @@ public class SpoutServer implements Server {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		
 		pluginManager.clearPlugins();
+		
+		if (!pluginDirectory.exists()) 
+			pluginDirectory.mkdirs();
 		
 		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
 		
@@ -445,6 +472,33 @@ public class SpoutServer implements Server {
 	@Override
 	public File getConfigDirectory() {
 		return configDirectory;
+	}
+
+	@Override
+	public String getLogFile() {
+		return logFile;
+	}
+
+	String[] tempCommands = new String[] {"stop"};
+	
+	@Override
+	public String[] getAllCommands() {
+		// TODO Auto-generated method stub
+		return tempCommands;
+	}
+
+	@Override
+	public void shutdown() {
+		
+		
+		
+		group.close();
+		bootstrap.getFactory().releaseExternalResources();
+
+		// And finally kill the console
+		consoleManager.stop();
+		
+		stop = true;
 	}
 
 }
