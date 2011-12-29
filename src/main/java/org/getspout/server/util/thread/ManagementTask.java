@@ -1,7 +1,6 @@
 package org.getspout.server.util.thread;
 
 import java.io.Serializable;
-import java.util.HashSet;
 
 import org.getspout.server.util.thread.future.ManagedFuture;
 

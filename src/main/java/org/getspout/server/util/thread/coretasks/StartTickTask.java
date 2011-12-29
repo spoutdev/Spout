@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.getspout.server.util.thread.AsyncExecutor;
 import org.getspout.server.util.thread.ManagementRunnable;
-import org.getspout.server.util.thread.ManagementTask;
 import org.getspout.server.util.thread.ManagementTaskEnum;
 
 public class StartTickTask extends ManagementRunnable {
