@@ -14,7 +14,7 @@ import org.getspout.server.util.thread.future.ManagedFuture;
 /**
  * This is a thread that executes tasks
  */
-public abstract class ThreadAsyncExecutor extends PulsableThread implements AsyncExecutor {
+public final class ThreadAsyncExecutor extends PulsableThread implements AsyncExecutor {
 	private ConcurrentLinkedQueue<ManagementTask> taskQueue = new ConcurrentLinkedQueue<ManagementTask>();
 	private AtomicBoolean wakePending = new AtomicBoolean(false);
 	private AtomicInteger wakeCounter = new AtomicInteger(0);
@@ -22,7 +22,7 @@ public abstract class ThreadAsyncExecutor extends PulsableThread implements Asyn
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
 	private AsyncManager manager = null;
-
+	
 	public void setManager(AsyncManager manager) {
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
@@ -104,9 +104,9 @@ public abstract class ThreadAsyncExecutor extends PulsableThread implements Asyn
 	}
 
 	@Override
-	public final boolean startTick(long ticks) {
+	public final boolean startTick(long delta) {
 		ThreadsafetyManager.checkMainThread();
-		taskQueue.add(startTickTask.setTicks(ticks));
+		taskQueue.add(startTickTask.setDelta(delta));
 		return pulse();
 	}
 
@@ -151,6 +151,11 @@ public abstract class ThreadAsyncExecutor extends PulsableThread implements Asyn
 	protected final void pulsedRun() throws InterruptedException {
 		ThreadsafetyManager.checkCurrentThread(this);
 		executeAllTasks();
+	}
+
+	@Override
+	public AsyncManager getManager() {
+		return manager;
 	}
 
 }

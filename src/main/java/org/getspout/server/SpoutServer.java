@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -33,6 +32,10 @@ import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
 import org.getspout.server.net.SpoutSessionRegistry;
+import org.getspout.server.scheduler.SpoutScheduler;
+import org.getspout.server.util.thread.AsyncExecutor;
+import org.getspout.server.util.thread.AsyncManager;
+import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.unchecked.api.inventory.Recipe;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -43,7 +46,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 
-public class SpoutServer implements Server {
+public class SpoutServer extends AsyncManager implements Server {
 	
 	private volatile int version = 0;
 	
@@ -113,7 +116,13 @@ public class SpoutServer implements Server {
 	
 	public static final StorageQueue storeQueue = new StorageQueue();
 	
+	/**
+	 * The scheduler for the server
+	 */
+	private final SpoutScheduler scheduler = new SpoutScheduler(this);
+	
 	public SpoutServer() {
+		super(new ThreadAsyncExecutor());
 		init();
 	}
 	
@@ -125,7 +134,6 @@ public class SpoutServer implements Server {
 		
 		server.bind(new InetSocketAddress("localhost", 25565));
 		
-		server.go();
 	}
 	
 	public void start() {
@@ -134,33 +142,11 @@ public class SpoutServer implements Server {
 		
 		// Start loading plugins
 		loadPlugins();
-		
-	}
 
-	// TODO - add proper scheduler
-
-	private ConcurrentLinkedQueue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
-	
-	public void queueTask(Runnable task) {
-		taskQueue.add(task);
+		scheduler.startMainThread();
 	}
 	
-	public void go() {
-		System.out.println("Entering infinite loop");
-		
-		while (!stop) {
-			sessions.pulse();
-			
-			while(!taskQueue.isEmpty()) {
-				taskQueue.poll().run();
-			}
-			
-			try {
-				Thread.sleep(50);
-			} catch (Exception e) {
-			}
-		}
-	}
+	
 
 	public void init() {
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
@@ -497,8 +483,25 @@ public class SpoutServer implements Server {
 
 		// And finally kill the console
 		consoleManager.stop();
+		scheduler.stop();
 		
 		stop = true;
+	}
+
+	@Override
+	public void copySnapshotRun() throws InterruptedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startTickRun(long tick) throws InterruptedException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public SpoutScheduler getScheduler() {
+		return scheduler;
 	}
 
 }

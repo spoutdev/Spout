@@ -52,9 +52,10 @@ public interface AsyncExecutor {
 	/**
 	 * Instructs the executor to start a new tick
 	 *
+	 * @param delta the time since the last tick in ms
 	 * @return false if the executor was active
 	 */
-	public boolean startTick(long ticks);
+	public boolean startTick(long delta);
 
 	/**
 	 * Returns if this executor has completed its pulse and all submitted tasks

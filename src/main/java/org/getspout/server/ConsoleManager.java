@@ -201,7 +201,7 @@ public final class ConsoleManager {
 						continue;
 					}
 
-					((SpoutServer)server).queueTask(new CommandTask(command.trim()));
+					((SpoutServer)server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (CommandException ex) {
 					System.out.println("Exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
@@ -472,7 +472,7 @@ public final class ConsoleManager {
 			if (e.getKeyChar() == '\n') {
 				String command = jInput.getText().trim();
 				if (command.length() > 0) {
-					((SpoutServer)server).queueTask(new CommandTask(command));
+					((SpoutServer)server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command));
 				}
 				jInput.setText("");
 			}

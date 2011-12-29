@@ -10,23 +10,23 @@ public class StartTickTask extends ManagementRunnable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private long t;
+	private long delta;
 
 	public StartTickTask() {
-		t = 0;
+		delta = 0;
 	}
 
-	public StartTickTask(long ticks) {
-		t = ticks;
+	public StartTickTask(long delta) {
+		this.delta = delta;
 	}
 
-	public StartTickTask setTicks(long ticks) {
-		t = ticks;
+	public StartTickTask setDelta(long delta) {
+		this.delta = delta;
 		return this;
 	}
 
 	public Serializable call(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().startTickRun(t);
+		executor.getManager().startTickRun(delta);
 		return null;
 	}
 	

@@ -15,15 +15,17 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	private ConcurrentLinkedQueue<SnapshotUpdate<T>> pendingUpdates = new ConcurrentLinkedQueue<SnapshotUpdate<T>>();
 	
 	private ArrayList<T> snapshot;
-	
+
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
 		snapshot = new ArrayList<T>();
-		for (T o : initial) {
-			add(o);
+		if (initial != null) {
+			for (T o : initial) {
+				add(o);
+			}
 		}
 		manager.add(this);
 	}
-	
+
 	/**
 	 * Adds an object to the list
 	 * 

@@ -2,15 +2,38 @@ package org.getspout.server.util.thread;
 
 import java.util.WeakHashMap;
 
+import org.getspout.api.Server;
+import org.getspout.server.SpoutServer;
+
 public abstract class AsyncManager {
 	
+	private final Server server; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
 	private final WeakHashMap<Managed,Boolean> managedSet = new WeakHashMap<Managed,Boolean>();
 	private final ManagementTask[] singletonCache = new ManagementTask[ManagementTaskEnum.getMaxId()];
 	
 	public AsyncManager(AsyncExecutor executor) {
 		this.executor = executor;
+		this.server = null;
+	}
+	
+	public AsyncManager(AsyncExecutor executor, Server server) {
+		this.executor = executor;
+		this.server = server;
+		((SpoutServer)server).getScheduler().addAsyncExecutor(executor);
 		executor.setManager(this);
+	}
+	
+	public Server getServer() {
+		if (server == null) {
+			if (!(this instanceof Server)) {
+				throw new IllegalStateException("Only the Server object itself should have a null server reference");
+			} else {
+				return (Server)this;
+			}
+		} else {
+			return server;
+		}
 	}
 	
 	/**
@@ -64,7 +87,9 @@ public abstract class AsyncManager {
 	 * @param managed the object to give responsibility for
 	 */
 	public final void addManaged(Managed managed) {
-		managedSet.put(managed, Boolean.TRUE);
+		synchronized (managedSet) {
+			managedSet.put(managed, Boolean.TRUE);
+		}
 	}
 	
 	/**
@@ -87,4 +112,5 @@ public abstract class AsyncManager {
 	 * @param tick this number increases by one every tick
 	 */
 	public abstract void startTickRun(long tick) throws InterruptedException;
+	
 }

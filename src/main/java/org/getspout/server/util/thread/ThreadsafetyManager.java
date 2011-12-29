@@ -9,7 +9,7 @@ public class ThreadsafetyManager {
 
 	private static Thread mainThread = null;
 
-	public void setMainThread(Thread thread) {
+	public static void setMainThread(Thread thread) {
 		if (mainThread == null) {
 			mainThread = thread;
 		} else {
