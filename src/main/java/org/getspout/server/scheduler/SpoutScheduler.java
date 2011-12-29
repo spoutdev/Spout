@@ -109,11 +109,7 @@ public final class SpoutScheduler implements Scheduler {
 				}
 				long finishTime = System.currentTimeMillis();
 				long freeTime = targetPeriod - (finishTime - startTime);
-				if (freeTime > 0 && targetPeriod > PULSE_EVERY) {
-					targetPeriod--;
-				} else if (freeTime < 0 && targetPeriod < (PULSE_EVERY << 1)) {
-					targetPeriod++;
-				}
+
 				if (freeTime > 0) {
 					try {
 						Thread.sleep(freeTime);
@@ -247,6 +243,13 @@ public final class SpoutScheduler implements Scheduler {
 			if (!e.copySnapshot()) {
 				throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
 			}
+		}
+		
+		try {
+			AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+			joined = true;
+		} catch (TimeoutException e) {
+			server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 		}
 		
 		return true;
