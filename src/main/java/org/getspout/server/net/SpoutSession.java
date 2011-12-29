@@ -13,9 +13,6 @@ import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.MessageHandler;
 import org.getspout.api.protocol.Protocol;
 import org.getspout.api.protocol.Session;
-import org.getspout.api.protocol.notch.msg.BlockPlacementMessage;
-import org.getspout.api.protocol.notch.msg.KickMessage;
-import org.getspout.api.protocol.notch.msg.PingMessage;
 import org.getspout.server.SpoutServer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -89,7 +86,7 @@ public final class SpoutSession implements Session {
 	 * Stores the last block placement message to work around a bug in the
 	 * vanilla client where duplicate packets are sent.
 	 */
-	private BlockPlacementMessage previousPlacement;
+	//private BlockPlacementMessage previousPlacement;
 
 	/**
 	 * Creates a new session.
@@ -183,7 +180,7 @@ public final class SpoutSession implements Session {
 		if (timeoutCounter >= TIMEOUT_TICKS) {
 			if (pingMessageId == 0) {
 				pingMessageId = new Random().nextInt();
-				send(new PingMessage(pingMessageId));
+				// TODO - send(new PingMessage(pingMessageId));
 				timeoutCounter = 0;
 			} else {
 				disconnect("Timed out");
@@ -236,7 +233,7 @@ public final class SpoutSession implements Session {
 			dispose(false);
 		}
 
-		channel.write(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
+		//TODO - channel.write(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
 	}
 
 	/**
@@ -310,13 +307,13 @@ public final class SpoutSession implements Session {
 		pingMessageId = 0;
 	}
 
-	public BlockPlacementMessage getPreviousPlacement() {
+	/*public BlockPlacementMessage getPreviousPlacement() {
 		return previousPlacement;
 	}
 
 	public void setPreviousPlacement(BlockPlacementMessage message) {
 		previousPlacement = message;
-	}
+	}*/
 
 	@Override
 	public void setProtocol(Protocol protocol) {
