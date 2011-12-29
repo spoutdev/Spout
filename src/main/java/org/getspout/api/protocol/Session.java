@@ -1,7 +1,5 @@
 package org.getspout.api.protocol;
 
-import org.getspout.api.protocol.notch.msg.KickMessage;
-
 public interface Session {
 	
 	/**

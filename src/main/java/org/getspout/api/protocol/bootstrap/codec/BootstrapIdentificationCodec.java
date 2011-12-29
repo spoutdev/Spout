@@ -1,8 +1,8 @@
 package org.getspout.api.protocol.bootstrap.codec;
 
 import org.getspout.api.protocol.MessageCodec;
+import org.getspout.api.protocol.bootstrap.ChannelBufferUtils;
 import org.getspout.api.protocol.bootstrap.msg.BootstrapIdentificationMessage;
-import org.getspout.api.protocol.notch.ChannelBufferUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
