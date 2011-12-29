@@ -32,8 +32,6 @@
  */
 package org.bukkit;
 
-import org.getspout.api.geo.Biome;
-
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks Purpose is to
  * allow clean, efficient copy of a chunk data to be made, and then handed off
@@ -118,7 +116,7 @@ public interface ChunkSnapshot {
 	 * @param z Z-coordinate
 	 * @return Biome at given coordinate
 	 */
-	Biome getBiome(int x, int z);
+	//Biome getBiome(int x, int z);
 
 	/**
 	 * Get raw biome temperature (0.0-1.0) at given coordinate
