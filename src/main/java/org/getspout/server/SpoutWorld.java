@@ -4,6 +4,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.getspout.api.Server;
+import org.getspout.api.entity.Controller;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
@@ -179,6 +181,27 @@ public class SpoutWorld implements World {
 			return world.getUID().equals(getUID());
 		}
 		
+	}
+
+	@Override
+	public Entity createEntity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void spawnEntity(Entity e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Entity createAndSpawnEntity(Point point, Controller controller) {
+		Entity e = createEntity();
+		e.getTransform().setPosition(point);
+		e.setController(controller);
+		spawnEntity(e);
+		return e;
 	}
 
 }
