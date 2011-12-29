@@ -68,7 +68,18 @@ public class Segment implements CollisionVolume {
 
 
 	public boolean contains(CollisionVolume other) {
-		return other.containsSegment(this);
+		if (other instanceof BoundingBox) {
+			return containsBoundingBox((BoundingBox) other);
+		} else if (other instanceof BoundingSphere) {
+			return containsBoundingSphere((BoundingSphere) other);
+		} else if (other instanceof Plane) {
+			return containsPlane((Plane) other);
+		} else if (other instanceof Ray) {
+			return containsRay((Ray) other);
+		} else if (other instanceof Segment) {
+			return containsSegment((Segment) other);
+		}
+		return false;
 	}
 
 	public boolean containsBoundingBox(BoundingBox b) {
