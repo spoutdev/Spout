@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
+import org.getspout.server.util.thread.coretasks.KillTask;
 import org.getspout.server.util.thread.coretasks.StartTickTask;
 import org.getspout.server.util.thread.future.ManagedFuture;
 
@@ -21,6 +22,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private AtomicReference<Object> waitingMonitor = new AtomicReference<Object>();
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
+	private KillTask killTask = new KillTask();
 	private AsyncManager manager = null;
 	
 	public void setManager(AsyncManager manager) {
@@ -28,9 +30,11 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
 		}
 		this.manager = manager;
+		this.start();
 	}
 	
 	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
+		System.out.println("Task added: " + task.getClass().getName());
 		if (Thread.currentThread() == this) {
 			executeTask(task);
 		} else {
@@ -109,6 +113,13 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		taskQueue.add(startTickTask.setDelta(delta));
 		return pulse();
 	}
+	
+	@Override
+	public final boolean kill() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(killTask);
+		return pulse();
+	}
 
 	@Override
 	public final boolean isPulseFinished() {
@@ -156,6 +167,12 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	@Override
 	public AsyncManager getManager() {
 		return manager;
+	}
+
+	@Override
+	public void syncKill() throws InterruptedException {
+		executeAllTasks();
+		throw new InterruptedException("Executor killed");
 	}
 
 }

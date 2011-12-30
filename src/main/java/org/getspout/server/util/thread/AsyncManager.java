@@ -3,7 +3,9 @@ package org.getspout.server.util.thread;
 import java.util.WeakHashMap;
 
 import org.getspout.api.Server;
+import org.getspout.api.scheduler.Scheduler;
 import org.getspout.server.SpoutServer;
+import org.getspout.server.scheduler.SpoutScheduler;
 
 public abstract class AsyncManager {
 	
@@ -15,13 +17,18 @@ public abstract class AsyncManager {
 	public AsyncManager(AsyncExecutor executor) {
 		this.executor = executor;
 		this.server = null;
+		executor.setManager(this);
 	}
 	
 	public AsyncManager(AsyncExecutor executor, Server server) {
 		this.executor = executor;
 		this.server = server;
-		((SpoutServer)server).getScheduler().addAsyncExecutor(executor);
 		executor.setManager(this);
+		registerWithScheduler(((SpoutServer)server).getScheduler());
+	}
+	
+	public void registerWithScheduler(Scheduler scheduler) {
+		((SpoutScheduler)scheduler).addAsyncExecutor(executor);
 	}
 	
 	public Server getServer() {
@@ -109,8 +116,8 @@ public abstract class AsyncManager {
 	/**
 	 * This method is called in order to start a new tick
 	 * 
-	 * @param tick this number increases by one every tick
+	 * @param delta the time since the last tick
 	 */
-	public abstract void startTickRun(long tick) throws InterruptedException;
+	public abstract void startTickRun(long delta) throws InterruptedException;
 	
 }

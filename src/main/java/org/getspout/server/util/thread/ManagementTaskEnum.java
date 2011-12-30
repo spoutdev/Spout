@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 
 import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
+import org.getspout.server.util.thread.coretasks.KillTask;
 import org.getspout.server.util.thread.coretasks.StartTickTask;
 
 public enum ManagementTaskEnum {
@@ -19,9 +20,15 @@ public enum ManagementTaskEnum {
 		public StartTickTask call() {
 			return new StartTickTask();
 		}
+	}),
+	KILL(3, new Callable<KillTask>() {
+		@Override
+		public KillTask call() {
+			return new KillTask();
+		}
 	});
 	
-	private static final int maxId = 2;
+	private static final int maxId = 3;
 	private static final HashSet<Integer> ids = new HashSet<Integer>();
 	
 	static {

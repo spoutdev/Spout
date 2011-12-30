@@ -56,6 +56,20 @@ public interface AsyncExecutor {
 	 * @return false if the executor was active
 	 */
 	public boolean startTick(long delta);
+	
+	/**
+	 * Instructs the executor to complete all pending tasks and then shutdown
+	 * 
+	 * @return false if the executor was active
+	 */
+	public boolean kill();
+	
+	/**
+	 * Instructs the executor to complete all pending tasks and then throws an InterruptedException.
+	 * 
+	 * This method is internally called by the executor as a response to the kill() instruction.
+	 */
+	public void syncKill() throws InterruptedException;
 
 	/**
 	 * Returns if this executor has completed its pulse and all submitted tasks
