@@ -7,4 +7,6 @@ import org.getspout.api.geo.cuboid.Block;
 
 public interface WorldGenerator {
 	public Block[][] generate(World w, Random rng, int x, int z);
+	
+	public Populator[] getPopulators();
 }
