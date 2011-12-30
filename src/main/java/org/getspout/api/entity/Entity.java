@@ -21,11 +21,20 @@ public interface Entity extends Metadatable {
 	public void setModel(Model model);
 	public Model getModel();
 	
-	//Commented out because CollisionModel doesn't exist yet
 	public void setCollision(CollisionModel model);
 	public CollisionModel getCollision();
 	
-	public void onTick(float dt);
 	
-	public boolean is(Class<?> clazz);
+	/**
+	 * Returns true if this entity's controller is the provided controller
+	 * @param clazz 
+	 * @return
+	 */
+	public boolean is(Class<? extends Controller> clazz);
+	
+	/**
+	 * Returns true if this entity is spawned and being Simulated in the world
+	 * @return
+	 */
+	public boolean isSpawned();
 }

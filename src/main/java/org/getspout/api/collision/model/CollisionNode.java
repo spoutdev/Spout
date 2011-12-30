@@ -20,11 +20,10 @@ public class CollisionNode {
 		this.volume = volume;
 	}
 	
-	@SuppressWarnings("unused")
 	public void addChild(String name, CollisionVolume volume){
 		if(children.containsKey(name)) throw new IllegalArgumentException("This node already has that child");
 		//TODO add a check to see if this volume contains the other volume
-		if(false) throw new IllegalArgumentException("Our Volume doesn't fully contain the Child Volume"); 
+		if(!this.volume.contains(volume)) throw new IllegalArgumentException("Our Volume doesn't fully contain the Child Volume"); 
 		children.put(name, new CollisionNode(volume));
 	}
 	

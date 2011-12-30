@@ -73,6 +73,8 @@ public interface World extends EventSource {
 	
 	/**
 	 * Create a new Entity for initialization
+	 * 
+	 * This does not add the Entity to the server.  You must call {@link #spawnEntity(Entity)} to simulate the Entity in the world
 	 * @return
 	 */
 	public Entity createEntity();
@@ -84,6 +86,7 @@ public interface World extends EventSource {
 	
 	/**
 	 * Creates and Spawns an entity at the given point and with the given Controller
+	 * This is the same as {@link #createEntity()} and {@link #spawnEntity(Entity)} together.
 	 * @param point The point to spawn the Entity
 	 * @param controller The controller that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
