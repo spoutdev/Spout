@@ -33,6 +33,7 @@ import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
 import org.getspout.server.net.SpoutSessionRegistry;
+import org.getspout.server.player.SpoutPlayer;
 import org.getspout.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.thread.AsyncExecutor;
 import org.getspout.server.util.thread.AsyncManager;
@@ -68,14 +69,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	private volatile boolean stop = false;
 	
 	/**
-	 * The set of allowable dimensions for the server
-	 */
-	private HashSet<String> dimensions = new HashSet<String>();
-	
-	/**
 	 * This list of players for the server
 	 */
-	private LinkedHashSet<Entity> players = new LinkedHashSet<Entity>();
+	private LinkedHashSet<SpoutPlayer> players = new LinkedHashSet<SpoutPlayer>();
 	private final static Entity[] emptyEntityArray = new Entity[0];
 
 	/**
@@ -221,11 +217,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public String[] getAllAddresses() {
 		return allAddresses;
-	}
-
-	@Override
-	public boolean hasDimension(String dimension) {
-		return dimensions.contains(dimension);
 	}
 
 	@Override
