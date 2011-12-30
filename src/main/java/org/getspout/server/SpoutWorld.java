@@ -244,4 +244,9 @@ public class SpoutWorld extends AsyncManager implements World {
 		
 	}
 
+	@Override
+	public long getSeed() {
+		return seed;
+	}
+
 }
