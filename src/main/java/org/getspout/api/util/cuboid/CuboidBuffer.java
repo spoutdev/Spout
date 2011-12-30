@@ -35,6 +35,13 @@ public abstract class CuboidBuffer {
 	private final int baseX;
 	private final int baseY;
 	private final int baseZ;
+	
+	// Note: These values are not actually within the cuboid
+	//       The cuboid goes from baseX to baseX + sizeX - 1
+	//       top* = base* + size*
+	private final int topX;
+	private final int topY;
+	private final int topZ;
 
 	protected final int Xinc;
 	protected final int Yinc;
@@ -50,6 +57,10 @@ public abstract class CuboidBuffer {
 		this.baseX = baseX;
 		this.baseY = baseY;
 		this.baseZ = baseZ;
+		
+		this.topX = baseX + sizeX;
+		this.topY = baseY + sizeY;
+		this.topZ = baseZ + sizeZ;
 
 		Xinc = sizeY * sizeZ;
 		Yinc = 1;
@@ -119,7 +130,15 @@ public abstract class CuboidBuffer {
 			}
 		}
 	}
-
+	
+	protected int getIndex(int x, int y, int z) {
+		if (x < baseX || x >= topX || y < baseY || y >= topY || z < baseZ || z >= topZ) {
+			return -1;
+		} else {
+			return ((y - baseY) * Yinc) + ((x - baseX) * Xinc) + ((z - baseZ) * Zinc);
+		}
+	}
+	
 	protected CuboidBufferCopyRun getCopyRun(CuboidBuffer other) {
 		return new CuboidBufferCopyRun(this, other);
 	}
@@ -146,9 +165,9 @@ public abstract class CuboidBuffer {
 			overlapBaseY = Math.max(source.baseY, target.baseY);
 			overlapBaseZ = Math.max(source.baseZ, target.baseZ);
 
-			overlapSizeX = Math.min(source.sizeX + source.baseX, target.sizeX + target.baseX) - overlapBaseX;
-			overlapSizeY = Math.min(source.sizeY + source.baseY, target.sizeY + target.baseY) - overlapBaseY;
-			overlapSizeZ = Math.min(source.sizeZ + source.baseZ, target.sizeZ + target.baseZ) - overlapBaseZ;
+			overlapSizeX = Math.min(source.topX, target.topX) - overlapBaseX;
+			overlapSizeY = Math.min(source.topY, target.topY) - overlapBaseY;
+			overlapSizeZ = Math.min(source.topZ, target.topZ) - overlapBaseZ;
 
 			if (overlapSizeX < 0 || overlapSizeY < 0 || overlapSizeZ < 0) {
 				sourceIndex = -1;

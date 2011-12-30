@@ -8,7 +8,6 @@ import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
-import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.api.util.thread.Threadsafe;
 
@@ -92,5 +91,13 @@ public interface World extends EventSource {
 	 * @return The Entity that has been created and spawned
 	 */
 	public Entity createAndSpawnEntity(Point point, Controller controller);
+	
+	/**
+	 * Gets the world's seed.  This value is immutable and set at world creation
+	 * 
+	 * @return the seed
+	 */
+	@Threadsafe
+	public long getSeed();
 
 }

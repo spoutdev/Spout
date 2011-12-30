@@ -40,5 +40,23 @@ public class CuboidShortBuffer extends CuboidBuffer {
 			throw new IllegalArgumentException("Only CuboidShortBuffers may be used as the data source when copying to a CuboidShortBuffer");
 		}
 	}
+	
+	public void set(int x, int y, int z, short data) {
+		int index = getIndex(x, y, z);
+		if (index < 0) {
+			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
+		} else {
+			buffer[index] = data;
+		}
+	}
+	
+	public short get(int x, int y, int z) {
+		int index = getIndex(x, y, z);
+		if (index < 0) {
+			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
+		} else {
+			return buffer[index];
+		}
+	}
 
 }
