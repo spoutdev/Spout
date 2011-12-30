@@ -126,7 +126,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	*/
 	private final UUID uid;
 	
-	
+	/**
+	 * Holds all of the entities to be simulated
+	 */
 	EntityManager entityManager;
 
 	
@@ -219,7 +221,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void spawnEntity(Entity e) {
-		if(entityManager.getAll().contains((SpoutEntity)e)) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
+		if(e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		entityManager.allocate((SpoutEntity)e);		
 	}
 

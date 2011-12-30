@@ -13,10 +13,13 @@ import org.getspout.api.model.Model;
 import org.getspout.api.plugin.Plugin;
 
 public class SpoutEntity extends EntityMetadataStore implements Entity  {
+	public final static int NOTSPAWNEDID = -1;
+	
 	Transform transform = new Transform();
 	Transform previousLocation;
 	Controller controller;
-	public int id = -1;
+	
+	public int id = NOTSPAWNEDID;
 	
 	Model model;
 	CollisionModel collision;
@@ -74,7 +77,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	
 	@Override
 	public boolean isSpawned(){
-		return (id == -1);
+		return (id == NOTSPAWNEDID);
 	}
 	
 	/**
