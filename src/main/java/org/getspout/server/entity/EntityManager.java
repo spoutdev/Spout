@@ -23,7 +23,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	/**
 	 * A map of entity types to a set containing all entities of that type.
 	 */
-	private final Map<Class<? extends Controller>, Set<? extends SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, Set<? extends SpoutEntity>>();
+	private final Map<Class<? extends Controller>, Set<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, Set<SpoutEntity>>();
 
 	/**
 	 * The next id to check.
@@ -37,7 +37,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @param <T> The type of entity.
 	 * @return A collection of entities with the specified type.
 	 */
-	@SuppressWarnings("unchecked")
 	public Collection<SpoutEntity> getAll(Class<? extends Controller> type) {
 		Set<SpoutEntity> set = (Set<SpoutEntity>) groupedEntities.get(type);
 		if (set == null) {
@@ -72,8 +71,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @param entity The entity.
 	 * @return The id.
 	 */
-	@SuppressWarnings("unchecked")
-	int allocate(SpoutEntity entity) {
+	public int allocate(SpoutEntity entity) {
 		for (int id = nextId; id < Integer.MAX_VALUE; id++) {
 			if (!entities.containsKey(id)) {
 				entities.put(id, entity);
@@ -101,7 +99,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 *
 	 * @param entity The entity.
 	 */
-	void deallocate(SpoutEntity entity) {
+	public void deallocate(SpoutEntity entity) {
 		entities.remove(entity.getId());
 		getAll(entity.getController().getClass()).remove(entity);
 	}

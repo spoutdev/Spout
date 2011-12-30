@@ -10,6 +10,8 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.server.entity.EntityManager;
+import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
 import org.getspout.server.util.thread.snapshotable.SnapshotableImmutable;
@@ -122,12 +124,37 @@ public class SpoutWorld implements World {
 	*/
 	private final UUID uid;
 	
+	
+	EntityManager entityManager;
+	
+	private long lastPulse = 0;
+	
+	
 	// TODO need world that loads from disk
 	public SpoutWorld(String name, Server server, long seed) {
 		this.uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
 		this.name = name;
+		this.lastPulse = System.currentTimeMillis();
+		this.entityManager = new EntityManager();
+	}
+	
+	public void pulse(){
+		long thisPulse = System.currentTimeMillis();
+		float dt = lastPulse - thisPulse / 1000;
+		
+		//Update all entities
+		for(SpoutEntity ent : entityManager){
+			ent.onTick(dt);
+		}
+		
+		//Resolve and collisions and prepare for a snapshot.
+		for(SpoutEntity ent : entityManager){
+			ent.resolve();
+		}
+		
+		lastPulse = thisPulse;
 	}
 
 	@Override
@@ -188,14 +215,14 @@ public class SpoutWorld implements World {
 
 	@Override
 	public Entity createEntity() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new SpoutEntity();
 	}
 
 	@Override
 	public void spawnEntity(Entity e) {
-		// TODO Auto-generated method stub
-		
+		if(entityManager.getAll().contains((SpoutEntity)e)) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
+		entityManager.allocate((SpoutEntity)e);		
 	}
 
 	@Override

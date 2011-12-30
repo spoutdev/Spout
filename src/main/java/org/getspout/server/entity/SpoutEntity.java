@@ -16,7 +16,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	Transform transform = new Transform();
 	Transform previousLocation;
 	Controller controller;
-	public int id;
+	public int id = -1;
 	
 	Model model;
 	CollisionModel collision;
@@ -72,6 +72,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		if(controller != null) controller.onTick(dt);
 	}
 	
+	@Override
+	public boolean isSpawned(){
+		return (id == -1);
+	}
 	
 	/**
 	 * Called when the tick is finished and collisions need to be resolved
@@ -105,7 +109,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	}
 
 	@Override
-	public boolean is(Class<?> clazz) {		
+	public boolean is(Class<? extends Controller> clazz) {		
 		return clazz.isAssignableFrom(this.getController().getClass());
 	}
 
@@ -125,7 +129,6 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		setMetadata(key, new MetadataStringValue(value));	
 		
 	}
-
 
 
 
