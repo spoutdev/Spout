@@ -36,6 +36,7 @@ import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.EventSource;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.Platform;
@@ -246,6 +247,18 @@ public interface Game extends Named, EventSource {
 	 * @return a {@link List} of actively loaded worlds
 	 */
 	public List<World> getWorlds();
+	
+	/**
+	 * Loads a world with the given name and generator
+	 * If the world doesn't exist on disk, it creates it.
+	 * 
+	 * if the world is already loaded, this functions the same as {@link #getWorld(String)}
+	 * 
+	 * @param worldName Name of the world
+	 * @param generator World Generator
+	 * @return 
+	 */
+	public World loadWorld(String name, WorldGenerator generator);
 
 	/**
 	 * Initiates a save of the server state, including configuration files.

@@ -12,6 +12,7 @@ import org.getspout.api.model.Model;
  */
 public interface Entity extends Metadatable {
 	
+
 	public int getId();
 	
 	public Controller getController() ;

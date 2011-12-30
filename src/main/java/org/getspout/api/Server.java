@@ -138,14 +138,6 @@ public interface Server extends Game {
 	 */
 	public Collection<Player> getOps();
 	
-	/**
-	 * Loads a world, with the option to create worlds that don't exist
-	 * 
-	 * @param name the name of the world
-	 * @param create true if the world should be created
-	 * @return the world or null on failure
-	 */
-	public World loadWorld(String name, boolean create);
 	
 	/**
 	 * Gets the server's configuration directory
