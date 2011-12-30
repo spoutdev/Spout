@@ -143,20 +143,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.entityManager = new EntityManager();
 	}
 	
-	public void pulse(long delta){		
-		float dt =  delta / 1000;	
-		
-		//Update all entities
-		for(SpoutEntity ent : entityManager){
-			ent.onTick(dt);
-		}
-		
-		//Resolve and collisions and prepare for a snapshot.
-		for(SpoutEntity ent : entityManager){
-			ent.resolve();
-		}
-	}
-
 	@Override
 	public String getName() {
 		return name;
@@ -239,8 +225,18 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void startTickRun(long tick) throws InterruptedException {
-		System.out.println("Tick: " + tick);
+	public void startTickRun(long delta) throws InterruptedException {
+		System.out.println("Tick: " + delta);
+	
+		//Update all entities
+		for(SpoutEntity ent : entityManager){
+			ent.onTick(delta);
+		}
+		
+		//Resolve and collisions and prepare for a snapshot.
+		for(SpoutEntity ent : entityManager){
+			ent.resolve();
+		}
 		
 	}
 
