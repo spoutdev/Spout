@@ -18,6 +18,7 @@ import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.CommonPluginLoader;
@@ -400,12 +401,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public World loadWorld(String name, boolean create) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Player[] getPlayers() {
 		// TODO Auto-generated method stub
 		return null;
@@ -500,6 +495,12 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	public SpoutScheduler getScheduler() {
 		return scheduler;
+	}
+
+	@Override
+	public World loadWorld(String name, WorldGenerator generator) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

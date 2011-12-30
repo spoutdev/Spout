@@ -214,8 +214,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity() {
-		
+	public Entity createEntity() {		
 		return new SpoutEntity();
 	}
 
