@@ -145,7 +145,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	public void pulse(){
 		long thisPulse = System.currentTimeMillis();
-		float dt = lastPulse - thisPulse / 1000;
+		float dt =  thisPulse - lastPulse / 1000;
 		
 		//Update all entities
 		for(SpoutEntity ent : entityManager){
