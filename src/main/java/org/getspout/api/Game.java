@@ -122,14 +122,6 @@ public interface Game extends Named, EventSource {
 	public String[] getAllAddresses();
 
 	/**
-	 * True if the Game allows a particular Dimension to exist
-	 * 
-	 * @param dimension the dimension
-	 * @return true if the dimension is allowed to exist
-	 */
-	public boolean hasDimension(String dimension);
-
-	/**
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to iterating over
