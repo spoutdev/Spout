@@ -366,6 +366,17 @@ public class SpoutServer extends AsyncManager implements Server {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public World loadWorld(String name, WorldGenerator generator) {
+		//If the world is already loaded, just return that world
+		
+		//create or load a new world
+		
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public boolean isOnlineMode() {
@@ -488,10 +499,5 @@ public class SpoutServer extends AsyncManager implements Server {
 		return scheduler;
 	}
 
-	@Override
-	public World loadWorld(String name, WorldGenerator generator) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
