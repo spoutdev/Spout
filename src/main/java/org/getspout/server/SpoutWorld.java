@@ -128,8 +128,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	
 	EntityManager entityManager;
-	
-	private long lastPulse = 0;
+
 	
 	
 	// TODO need world that loads from disk
@@ -139,13 +138,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.server = server;
 		this.seed = seed;
 		this.name = name;
-		this.lastPulse = System.currentTimeMillis();
 		this.entityManager = new EntityManager();
 	}
 	
-	public void pulse(){
-		long thisPulse = System.currentTimeMillis();
-		float dt =  thisPulse - lastPulse / 1000;
+	public void pulse(long delta){		
+		float dt =  delta / 1000;	
 		
 		//Update all entities
 		for(SpoutEntity ent : entityManager){
@@ -156,8 +153,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		for(SpoutEntity ent : entityManager){
 			ent.resolve();
 		}
-		
-		lastPulse = thisPulse;
 	}
 
 	@Override
