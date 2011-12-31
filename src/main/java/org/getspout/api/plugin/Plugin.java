@@ -88,4 +88,5 @@ public interface Plugin {
 	 * @return game
 	 */
 	public Game getGame();
+
 }

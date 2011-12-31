@@ -87,4 +87,11 @@ public interface Scheduler {
 	 * @return Active workers
 	 */
 	public List<Task> getPendingTasks();
+	
+	/**
+	 * Gets the snapshot lock.  This lock can be used by async threads to readlock stable snapshot data.
+	 * 
+	 * @return the snapshot lock
+	 */
+	public SnapshotLock getSnapshotLock();
 }
