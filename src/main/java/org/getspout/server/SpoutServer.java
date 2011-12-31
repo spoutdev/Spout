@@ -146,10 +146,11 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 		// Start loading plugins
 		loadPlugins();
-
-		scheduler.startMainThread();
 		
 		enablePlugins();
+		scheduler.startMainThread();
+		
+
 	}
 	
 	
