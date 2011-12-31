@@ -49,4 +49,12 @@ public class Transform {
 		return this.add(parent.getAbsolutePosition());
 		
 	}
+	
+	public Transform copy(){
+		Transform t = new Transform();
+		t.setPosition(new Point(this.position));
+		t.setRotation(new Quaternion(this.rotation));
+		t.setScale(new Vector3m(this.scale));
+		return t;
+	}
 }

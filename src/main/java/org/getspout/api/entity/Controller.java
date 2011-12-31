@@ -7,5 +7,9 @@ public abstract class Controller {
 	}
 	
 	public abstract void onAttached();
+	/**
+	 * 
+	 * @param dt the number of seconds since last update
+	 */
 	public abstract void onTick(float dt);
 }

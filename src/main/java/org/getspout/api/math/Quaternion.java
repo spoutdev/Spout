@@ -37,6 +37,12 @@ public class Quaternion {
 		this(axis.getX() * MathHelper.sin(Math.toRadians(angle/2)), axis.getY() * MathHelper.sin(Math.toRadians(angle/2)), axis.getZ() * MathHelper.sin(Math.toRadians(angle/2)), MathHelper.cos(Math.toRadians(angle/2)));
 	}
 	/**
+	 *  Copy Constructor
+	 */
+	public Quaternion(Quaternion rotation) {
+		this(rotation.x, rotation.y, rotation.z, rotation.w);
+	}
+	/**
 	 * Returns the X component of the quaternion
 	 * @return
 	 */
