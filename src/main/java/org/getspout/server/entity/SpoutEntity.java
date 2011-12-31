@@ -92,7 +92,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		//Resolve Collisions Here
 		
 		//Check to see if we should fire off a Move event
-		previousLocation = transform;
+		previousLocation = transform.copy();
 	}
 	
 	@Override
