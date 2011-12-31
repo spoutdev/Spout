@@ -62,6 +62,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	private File configDirectory = new File("config");
 	
+	private File updateDirectory = new File("update");
+	
 	private String logFile = "logs/log-%D";
 	
 	private String name = "Spout Server";
@@ -119,6 +121,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
 	
 	/**
+	 * If the server has a whitelist or not
+	 */
+	private volatile boolean whitelist = false;
+	
+	/**
 	 * loaded plugins
 	 */
 	private Plugin[] plugins;
@@ -146,7 +153,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 		// Start loading plugins
 		loadPlugins();
-		
 		enablePlugins();
 		scheduler.startMainThread();
 		
@@ -257,8 +263,8 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public File getUpdateFolder() {
-		// TODO Auto-generated method stub
-		return null;
+		if(!updateDirectory.exists()) updateDirectory.mkdirs();
+		return updateDirectory;
 	}
 
 	@Override
@@ -340,21 +346,18 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public Platform getPlatform() {
-		// TODO Auto-generated method stub
-		return null;
+	public Platform getPlatform() {		
+		return Platform.SERVER;
 	}
 
 	@Override
 	public boolean isWhitelist() {
-		// TODO Auto-generated method stub
-		return false;
+		return whitelist;
 	}
 
 	@Override
 	public void setWhitelist(boolean whitelist) {
-		// TODO Auto-generated method stub
-		
+		this.whitelist = whitelist;		
 	}
 
 	@Override
