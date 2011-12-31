@@ -71,13 +71,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.2.7.Final</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
 			<version>1.0</version>
@@ -88,6 +81,8 @@
 			<groupId>com.grahamedgecombe.jterminal</groupId>
 			<artifactId>jterminal</artifactId>
 			<version>1.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>
@@ -102,11 +97,6 @@
 			<version>5.1.18</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.trove4j</groupId>
-			<artifactId>trove4j</artifactId>
-			<version>3.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
