@@ -119,7 +119,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
 	
 	public SpoutServer() {
-		super(new ThreadAsyncExecutor());
+		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
 		init();
 	}
@@ -156,8 +156,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	public void loadPlugins() {
 		
-		System.out.println("Loading plugins:");
-		
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		
 		pluginManager.clearPlugins();
@@ -166,8 +164,6 @@ public class SpoutServer extends AsyncManager implements Server {
 			pluginDirectory.mkdirs();
 		
 		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
-		
-		System.out.println("Plugins: " + plugins.length);
 		
 		for (Plugin plugin : plugins) {
 			try {
@@ -491,8 +487,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public void startTickRun(long delta) throws InterruptedException {
-		// TODO - need to do stuff
+	public void startTickRun(int stage, long delta) throws InterruptedException {
+		System.out.println("Server Tick: " + delta + " stage " + stage);
 	}
 	
 	public SpoutScheduler getScheduler() {

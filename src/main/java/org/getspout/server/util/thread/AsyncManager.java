@@ -9,20 +9,23 @@ import org.getspout.server.scheduler.SpoutScheduler;
 
 public abstract class AsyncManager {
 	
+	private final int maxStage;
 	private final Server server; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
 	private final WeakHashMap<Managed,Boolean> managedSet = new WeakHashMap<Managed,Boolean>();
 	private final ManagementTask[] singletonCache = new ManagementTask[ManagementTaskEnum.getMaxId()];
 	
-	public AsyncManager(AsyncExecutor executor) {
+	public AsyncManager(int maxStage, AsyncExecutor executor) {
 		this.executor = executor;
 		this.server = null;
+		this.maxStage = maxStage;
 		executor.setManager(this);
 	}
 	
-	public AsyncManager(AsyncExecutor executor, Server server) {
+	public AsyncManager(int maxStage, AsyncExecutor executor, Server server) {
 		this.executor = executor;
 		this.server = server;
+		this.maxStage = maxStage;
 		executor.setManager(this);
 		registerWithScheduler(((SpoutServer)server).getScheduler());
 	}
@@ -31,6 +34,7 @@ public abstract class AsyncManager {
 		((SpoutScheduler)scheduler).addAsyncExecutor(executor);
 	}
 	
+	// TODO - is this required ?
 	public Server getServer() {
 		if (server == null) {
 			if (!(this instanceof Server)) {
@@ -42,6 +46,8 @@ public abstract class AsyncManager {
 			return server;
 		}
 	}
+	
+	// TODO - these 2 methods are probably overly complex for requirements
 	
 	/**
 	 * Gets a singleton task if available.
@@ -117,7 +123,17 @@ public abstract class AsyncManager {
 	 * This method is called in order to start a new tick
 	 * 
 	 * @param delta the time since the last tick
+	 * @return the number of stages that the executor requires
 	 */
-	public abstract void startTickRun(long delta) throws InterruptedException;
+	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
+	
+	/**
+	 * Gets the number of stages this manager requires per tick
+	 * 
+	 * @return the number of stages
+	 */
+	public final int getStages() {
+		return maxStage;
+	}
 	
 }

@@ -134,8 +134,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	
 	// TODO need world that loads from disk
+	// TODO set up number of stages ?
 	public SpoutWorld(String name, Server server, long seed) {
-		super(new ThreadAsyncExecutor(), server);
+		super(1, new ThreadAsyncExecutor(), server);
 		this.uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
@@ -225,8 +226,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void startTickRun(long delta) throws InterruptedException {
-		System.out.println("Tick: " + delta);
+	public void startTickRun(int stage, long delta) throws InterruptedException {
+		System.out.println("World Tick: " + delta + " stage " + stage);
 		
 		float dt = delta / 1000.f;
 		//Update all entities

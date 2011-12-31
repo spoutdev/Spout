@@ -190,20 +190,38 @@ public final class SpoutScheduler implements Scheduler {
 		
 		List<AsyncExecutor> executors = asyncExecutors.get();
 		
-		for (AsyncExecutor e : executors) {
-			if (!e.startTick(delta)) {
-				return false;
-			}
-		}
+		int stage = 0;
+		boolean allStagesComplete = false;
 		
 		boolean joined = false;
-		while (!joined && !shutdown) {
-			try {
-				AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
-				joined = true;
-			} catch (TimeoutException e) {
-				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+		
+		while (!allStagesComplete) {
+			
+			allStagesComplete = true;
+
+			for (AsyncExecutor e : executors) {
+				if (stage < e.getManager().getStages()) {
+					allStagesComplete = false;
+					if (!e.startTick(stage, delta)) {
+						return false;
+					}
+				} else {
+					continue;
+				}
 			}
+
+			joined = false;
+			
+			while (!joined && !shutdown) {
+				try {
+					AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+					joined = true;
+				} catch (TimeoutException e) {
+					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+				}
+			}
+			
+			stage++;
 		}
 
 		// Bring in new tasks this tick.

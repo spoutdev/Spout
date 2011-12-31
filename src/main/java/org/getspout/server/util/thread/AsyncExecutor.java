@@ -50,12 +50,15 @@ public interface AsyncExecutor {
 	public boolean copySnapshot();
 
 	/**
-	 * Instructs the executor to start a new tick
+	 * Instructs the executor to start a new tick or stage.
+	 * 
+	 * The first stage in a tick is stage zero
 	 *
-	 * @param delta the time since the last tick in ms
+	 * @param stage the stage number for the tick
+	 * @param delta the time since the last tick in ms (only relevant for stage 0)
 	 * @return false if the executor was active
 	 */
-	public boolean startTick(long delta);
+	public boolean startTick(int stage, long delta);
 	
 	/**
 	 * Instructs the executor to complete all pending tasks and then shutdown

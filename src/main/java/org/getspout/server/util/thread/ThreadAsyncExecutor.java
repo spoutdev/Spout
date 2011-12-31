@@ -108,9 +108,9 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	}
 
 	@Override
-	public final boolean startTick(long delta) {
+	public final boolean startTick(int stage, long delta) {
 		ThreadsafetyManager.checkMainThread();
-		taskQueue.add(startTickTask.setDelta(delta));
+		taskQueue.add(startTickTask.setStageDelta(stage, delta));
 		return pulse();
 	}
 	
