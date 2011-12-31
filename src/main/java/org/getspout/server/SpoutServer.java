@@ -118,6 +118,12 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
 	
+	/**
+	 * loaded plugins
+	 */
+	private Plugin[] plugins;
+	
+	
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
@@ -142,6 +148,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		loadPlugins();
 
 		scheduler.startMainThread();
+		
+		enablePlugins();
 	}
 	
 	
@@ -163,10 +171,11 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (!pluginDirectory.exists()) 
 			pluginDirectory.mkdirs();
 		
-		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
+		plugins = pluginManager.loadPlugins(pluginDirectory);
 		
 		for (Plugin plugin : plugins) {
 			try {
+				//Technically unsafe.  This should call the security manager
 				plugin.onLoad();
 			} catch (Exception ex) {
 				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[] {plugin.getDescription().getName(), ex.getMessage()});
@@ -174,6 +183,14 @@ public class SpoutServer extends AsyncManager implements Server {
 			}
 		}
 	}
+	
+	private void enablePlugins(){
+		for(Plugin plugin : plugins){
+			pluginManager.enablePlugin(plugin);
+		}
+		
+	}
+
 	
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
