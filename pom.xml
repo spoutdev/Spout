@@ -1,8 +1,8 @@
 <!--
-	Maven build file for SpoutCommons
+	Maven build file for SpoutAPI
 
 	Copyright (c) 2011 SpoutDev <http://www.getspout.org>
-	SpoutCommons is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
+	SpoutAPI is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -14,7 +14,7 @@
 	<version>dev-SNAPSHOT</version>
 	<name>SpoutAPI</name>
 	<url>http://www.getspout.org</url>
-	<description>Common API for the Spout client and server framework.</description>
+	<description>SpoutAPI is an API for the spout framework. Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
