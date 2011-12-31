@@ -1,5 +1,14 @@
 package org.getspout.api.protocol.bootstrap;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.getspout.api.io.nbt.CompoundTag;
 import org.getspout.api.io.nbt.NBTInputStream;
 import org.getspout.api.io.nbt.NBTOutputStream;
@@ -10,14 +19,6 @@ import org.getspout.api.util.Color;
 import org.getspout.api.util.Parameter;
 import org.getspout.unchecked.api.inventory.ItemStack;
 import org.jboss.netty.buffer.ChannelBuffer;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Contains several {@link org.jboss.netty.buffer.ChannelBuffer}-related utility methods.
@@ -140,13 +141,17 @@ public final class ChannelBufferUtils {
 	 * <em>after</em> it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
-		byte[] bytes = str.getBytes(CHARSET_UTF8);
-		if (bytes.length >= 65536) {
-			throw new IllegalArgumentException("Encoded UTF-8 string too long.");
-		}
+		try {
+			byte[] bytes = str.getBytes(CHARSET_UTF8.name());
+			if (bytes.length >= 65536) {
+				throw new IllegalArgumentException("Encoded UTF-8 string too long.");
+			}
 
-		buf.writeShort(bytes.length);
-		buf.writeBytes(bytes);
+			buf.writeShort(bytes.length);
+			buf.writeBytes(bytes);
+		} catch (UnsupportedEncodingException uee) {
+			throw new IllegalStateException("Unable to find UTF8 encoding system");
+		}
 	}
 
 	/**
@@ -177,7 +182,11 @@ public final class ChannelBufferUtils {
 		byte[] bytes = new byte[len];
 		buf.readBytes(bytes);
 
-		return new String(bytes, CHARSET_UTF8);
+		try {
+			return new String(bytes, CHARSET_UTF8.name());
+		} catch (UnsupportedEncodingException uee) {
+			throw new IllegalStateException("Unable to find UTF8 encoding system");
+		}
 	}
 
 	public static Map<String, Tag> readCompound(ChannelBuffer buf) {
