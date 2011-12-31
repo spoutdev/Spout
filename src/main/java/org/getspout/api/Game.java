@@ -44,6 +44,8 @@ import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.api.util.Named;
+import org.getspout.api.util.thread.LiveRead;
+import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.unchecked.api.inventory.Recipe;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
@@ -221,10 +223,14 @@ public interface Game extends Named, EventSource {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
+	 * 
+	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 *
 	 * @param name of the world to search for
 	 * @return world if found, else null
 	 */
+	@LiveRead
+	@SnapshotRead
 	public World getWorld(String name);
 
 	/**
@@ -234,16 +240,24 @@ public interface Game extends Named, EventSource {
 	 * and checking for a world that matches {@link World#getUID()}. <br/>
 	 * <br/>
 	 *
+	 * Worlds are added to the list immediately, but removed at the end of a tick.
+	 *
 	 * @param uid of the world to search for
 	 * @return world if found, else null
 	 */
+	@LiveRead
+	@SnapshotRead
 	public World getWorld(UUID uid);
 
 	/**
 	 * Gets a List of actively loaded worlds
+	 * 
+	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 *
 	 * @return a {@link List} of actively loaded worlds
 	 */
+	@LiveRead
+	@SnapshotRead
 	public Collection<World> getWorlds();
 	
 	/**
@@ -256,6 +270,7 @@ public interface Game extends Named, EventSource {
 	 * @param generator World Generator
 	 * @return 
 	 */
+	@LiveRead
 	public World loadWorld(String name, WorldGenerator generator);
 
 	/**
@@ -264,8 +279,8 @@ public interface Game extends Named, EventSource {
 	 * It will save the state of the world, if specificed, and the state of
 	 * players, if specified.
 	 *
-	 * @param worlds whether or not to save the state of all active worlds
-	 * @param players whether or not to save the state of all active players
+	 * @param worlds true to save the state of all active worlds
+	 * @param players true to save the state of all active players
 	 */
 	public void save(boolean worlds, boolean players);
 
