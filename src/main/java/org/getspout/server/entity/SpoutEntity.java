@@ -81,7 +81,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	
 	@Override
 	public boolean isSpawned(){
-		return (id == NOTSPAWNEDID);
+		return (id != NOTSPAWNEDID);
 	}
 	
 	/**
