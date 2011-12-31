@@ -149,6 +149,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	public void start() {
 		
+	
+		
 		consoleManager.setupConsole();
 		
 		// Start loading plugins
@@ -514,6 +516,12 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	public SpoutScheduler getScheduler() {
 		return scheduler;
+	}
+
+	@Override
+	public File getConfigFolder() {
+		if(!configDirectory.exists()) configDirectory.mkdirs();
+		return configDirectory;
 	}
 
 
