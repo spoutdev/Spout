@@ -7,11 +7,5 @@ public abstract class Controller {
 	}
 	
 	public abstract void onAttached();
-	
-	/**
-	 * Called once per tick
-	 * 
-	 * @param dt milliseconds since the last tick
-	 */
-	public abstract void onTick(long dt);
+	public abstract void onTick(float dt);
 }
