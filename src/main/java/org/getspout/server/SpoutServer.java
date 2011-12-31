@@ -5,12 +5,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -33,14 +29,16 @@ import org.getspout.api.plugin.security.CommonSecurityManager;
 import org.getspout.api.protocol.CommonPipelineFactory;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
+import org.getspout.api.util.thread.LiveRead;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
 import org.getspout.server.net.SpoutSessionRegistry;
 import org.getspout.server.player.SpoutPlayer;
 import org.getspout.server.scheduler.SpoutScheduler;
-import org.getspout.server.util.thread.AsyncExecutor;
 import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
+import org.getspout.server.util.thread.snapshotable.SnapshotManager;
+import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.getspout.unchecked.api.inventory.Recipe;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -72,6 +70,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	private String name = "Spout Server";
 	
 	private volatile boolean stop = false;
+	
+	private SnapshotManager snapshotManager = new SnapshotManager();
 	
 	/**
 	 * This list of players for the server
@@ -133,8 +133,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private Plugin[] plugins;
 	
-	Map<String,SpoutWorld> loadedWorlds = new ConcurrentHashMap<String, SpoutWorld>();
-	
+	SnapshotableConcurrentHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentHashMap<String, SpoutWorld>(snapshotManager, null);
 	
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
@@ -282,13 +281,12 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public World getWorld(String name) {
-		if(!loadedWorlds.containsKey(name)) return null;
-		return loadedWorlds.get(name);
+		return loadedWorlds.getValue(name);
 	}
 
 	@Override
 	public World getWorld(UUID uid) {
-		for(SpoutWorld world : loadedWorlds.values()){
+		for(SpoutWorld world : loadedWorlds.getValues()){
 			if(world.getUID().equals(uid)) return world;
 		}
 		return null;
@@ -297,7 +295,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public Collection<World> getWorlds() {		
 		Collection<World> w = new ArrayList<World>();
-		for(SpoutWorld world : loadedWorlds.values()){
+		for(SpoutWorld world : loadedWorlds.getValues()){
 			w.add(world);
 		}
 		return w;
@@ -386,31 +384,40 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public boolean unloadWorld(String name, boolean save) {		
-		return unloadWorld(loadedWorlds.get(name), save);
+		return unloadWorld(loadedWorlds.getValue(name), save);
 	}
 
 	@Override
 	public boolean unloadWorld(World world, boolean save) {
-		if(!loadedWorlds.containsValue(world))return true;
-		if(save){
-			SpoutWorld w = (SpoutWorld) world;
-			//TODO Save the world, save the cheerleader
+		if (world == null) {
+			return false;
+		} else {
+			boolean success = loadedWorlds.remove(world.getName(), (SpoutWorld)world);
+			if (success) {
+				if(save){
+					SpoutWorld w = (SpoutWorld) world;
+					//TODO Save the world, save the cheerleader
+				}
+				//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
+				//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
+			}
+			return success;
 		}
-		loadedWorlds.remove(world.getName());
-		return true;
 	}
 	
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
-		//TODO: Make this more concurrent
-		
-		//If the world is already loaded, just return that world
-		if(loadedWorlds.containsKey(name)) return loadedWorlds.get(name);
-		//create or load a new world
+		// TODO - should include generator (and non-zero seed)
 		SpoutWorld world = new SpoutWorld(name, this, 0);
-		loadedWorlds.put(name, world);
 		
-		return world;
+		World oldWorld = loadedWorlds.putIfAbsent(name, world);
+		
+		if (oldWorld != null) {
+			return oldWorld;
+		} else {
+			// TODO - probably something like world.start();   ?
+			return world;
+		}
 	}
 
 	@Override
@@ -521,8 +528,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
-		// TODO Auto-generated method stub
-		
+		snapshotManager.copyAllSnapshots();
 	}
 
 	@Override
