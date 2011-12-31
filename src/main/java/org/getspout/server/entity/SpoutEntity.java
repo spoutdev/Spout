@@ -75,7 +75,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	 * 
 	 * @param dt milliseonds since the last tick
 	 */
-	public void onTick(long dt){
+	public void onTick(float dt){
 		if(controller != null) controller.onTick(dt);
 	}
 	

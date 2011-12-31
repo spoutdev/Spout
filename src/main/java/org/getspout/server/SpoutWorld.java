@@ -227,10 +227,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void startTickRun(long delta) throws InterruptedException {
 		System.out.println("Tick: " + delta);
-	
+		
+		float dt = delta / 1000.f;
 		//Update all entities
 		for(SpoutEntity ent : entityManager){
-			ent.onTick(delta);
+			ent.onTick(dt);
 		}
 		
 		//Resolve and collisions and prepare for a snapshot.
