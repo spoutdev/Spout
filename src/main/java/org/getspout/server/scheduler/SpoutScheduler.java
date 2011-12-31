@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.getspout.api.plugin.Plugin;
 import org.getspout.api.scheduler.Scheduler;
+import org.getspout.api.scheduler.SnapshotLock;
 import org.getspout.api.scheduler.Task;
 import org.getspout.api.scheduler.Worker;
 import org.getspout.api.util.thread.DelayedWrite;
@@ -20,6 +21,7 @@ import org.getspout.server.SpoutServer;
 import org.getspout.server.util.thread.AsyncExecutor;
 import org.getspout.server.util.thread.AsyncExecutorUtils;
 import org.getspout.server.util.thread.ThreadsafetyManager;
+import org.getspout.server.util.thread.lock.SpoutSnapshotLock;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableArrayList;
 
@@ -72,6 +74,8 @@ public final class SpoutScheduler implements Scheduler {
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
 	
 	private volatile boolean shutdown = false;
+	
+	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
 	
 	private final Thread mainThread;
 	
@@ -186,6 +190,39 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	private boolean tick(long delta) throws InterruptedException {
 		
+		// Bring in new tasks this tick.
+		synchronized (newTasks) {
+			for (SpoutTask task : newTasks) {
+				tasks.add(task);
+			}
+			newTasks.clear();
+		}
+
+		// Remove old tasks this tick.
+		synchronized (oldTasks) {
+			for (SpoutTask task : oldTasks) {
+				tasks.remove(task);
+			}
+			oldTasks.clear();
+		}
+
+		// Run the relevant tasks.
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext();) {
+			SpoutTask task = it.next();
+			boolean cont = false;
+			try {
+				if (task.isSync()) {
+					cont = task.pulse();
+				} else {
+					activeWorkers.add(new SpoutWorker(task, this));
+				}
+			} finally {
+				if (!cont) {
+					it.remove();
+				}
+			}
+		}
+		
 		asyncExecutors.copySnapshot();
 		
 		List<AsyncExecutor> executors = asyncExecutors.get();
@@ -224,54 +261,54 @@ public final class SpoutScheduler implements Scheduler {
 			stage++;
 		}
 
-		// Bring in new tasks this tick.
-		synchronized (newTasks) {
-			for (SpoutTask task : newTasks) {
-				tasks.add(task);
-			}
-			newTasks.clear();
-		}
-
-		// Remove old tasks this tick.
-		synchronized (oldTasks) {
-			for (SpoutTask task : oldTasks) {
-				tasks.remove(task);
-			}
-			oldTasks.clear();
-		}
-
-		// Run the relevant tasks.
-		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext();) {
-			SpoutTask task = it.next();
-			boolean cont = false;
-			try {
-				if (task.isSync()) {
-					cont = task.pulse();
-				} else {
-					activeWorkers.add(new SpoutWorker(task, this));
-				}
-			} finally {
-				if (!cont) {
-					it.remove();
-				}
-			}
-		}
-		
-		for (AsyncExecutor e : executors) {
-			if (!e.copySnapshot()) {
-				throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
-			}
-		}
+		lockSnapshotLock();
 		
 		try {
-			AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
-			joined = true;
-		} catch (TimeoutException e) {
-			server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+			for (AsyncExecutor e : executors) {
+				if (!e.copySnapshot()) {
+					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
+				}
+			}
+
+			try {
+				AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+				joined = true;
+			} catch (TimeoutException e) {
+				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+			}
+		} finally {
+			unlockSnapshotLock();
 		}
-		
+
 		return true;
 	}
+	
+	private void lockSnapshotLock() {
+		
+		int delay = 500;
+		int threshold = 50;
+		
+		long startTime = System.currentTimeMillis();
+		
+		boolean success = false;
+		
+		while (!success) {
+			success = snapshotLock.writeLock(delay);
+			if (!success) {
+				delay *= 1.5;
+				List<Plugin> violatingPlugins = snapshotLock.getLockingPlugins(threshold);
+				server.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
+				for (Plugin p : violatingPlugins) {
+					server.getLogFile().indexOf(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
+				}
+			}
+		}	
+	}
+	
+	private void unlockSnapshotLock() {
+		snapshotLock.writeUnlock();
+	}
+	
 
 	@Override
 	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
@@ -359,6 +396,10 @@ public final class SpoutScheduler implements Scheduler {
 		if (!worker.shouldContinue()) {
 			oldTasks.add(worker.getTask());
 		}
+	}
+	
+	public SnapshotLock getSnapshotLock() {
+		return snapshotLock;
 	}
 }
 
