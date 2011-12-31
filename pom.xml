@@ -50,9 +50,9 @@
 		</repository>
 	</repositories>
 
-	<!--  Dependency -->
+	<!-- Dependency -->
 	<dependencies>
-		</dependency>
+		<dependency>
 			<groupId>org.jboss.netty</groupId>
 			<artifactId>netty</artifactId>
 			<version>3.2.7.Final</version>
