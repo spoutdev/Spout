@@ -168,7 +168,13 @@ public interface Game extends Named, EventSource {
 	 * @return The name of the update folder
 	 */
 	public File getUpdateFolder();
-
+	/**
+	 * Gets the config folder for the game
+	 * 
+	 * It's in the server root
+	 * @return 
+	 */
+	public File getConfigFolder();
 	/**
 	 * Gets a player by the given username. <br/>
 	 * <br/>
