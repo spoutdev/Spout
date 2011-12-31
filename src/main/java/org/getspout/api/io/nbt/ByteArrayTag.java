@@ -47,8 +47,21 @@ public final class ByteArrayTag extends Tag {
 	}
 	
 	public ByteArrayTag clone() {
-		byte[] clonedArray = Arrays.copyOf(value, value.length);
+		byte[] clonedArray = cloneArray(value);
 		
 		return new ByteArrayTag(getName(), clonedArray);
+	}
+	
+	private byte[] cloneArray(byte[] byteArray) {
+		if (byteArray == null) {
+			return null;
+		} else {
+			int length = byteArray.length;
+			byte[] newArray = new byte[length];
+			for (int i = 0; i < length; i++) {
+				newArray[i] = byteArray[i];
+			}
+			return newArray;
+		}
 	}
 }

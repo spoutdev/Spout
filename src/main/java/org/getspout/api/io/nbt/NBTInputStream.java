@@ -70,7 +70,7 @@ public final class NBTInputStream implements Closeable {
 			int nameLength = is.readShort() & 0xFFFF;
 			byte[] nameBytes = new byte[nameLength];
 			is.readFully(nameBytes);
-			name = new String(nameBytes, NBTConstants.CHARSET);
+			name = new String(nameBytes, NBTConstants.CHARSET.name());
 		} else {
 			name = "";
 		}
@@ -124,7 +124,7 @@ public final class NBTInputStream implements Closeable {
 			length = is.readShort();
 			bytes = new byte[length];
 			is.readFully(bytes);
-			return new StringTag(name, new String(bytes, NBTConstants.CHARSET));
+			return new StringTag(name, new String(bytes, NBTConstants.CHARSET.name()));
 
 		case NBTConstants.TYPE_LIST:
 			int childType = is.readByte();

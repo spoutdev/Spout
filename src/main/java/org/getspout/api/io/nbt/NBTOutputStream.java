@@ -53,7 +53,7 @@ public final class NBTOutputStream implements Closeable {
 	public void writeTag(Tag tag) throws IOException {
 		int type = NBTUtils.getTypeCode(tag.getClass());
 		String name = tag.getName();
-		byte[] nameBytes = name.getBytes(NBTConstants.CHARSET);
+		byte[] nameBytes = name.getBytes(NBTConstants.CHARSET.name());
 
 		os.writeByte(type);
 		os.writeShort(nameBytes.length);
@@ -179,7 +179,7 @@ public final class NBTOutputStream implements Closeable {
 	 * @throws java.io.IOException if an I/O error occurs.
 	 */
 	private void writeStringTagPayload(StringTag tag) throws IOException {
-		byte[] bytes = tag.getValue().getBytes(NBTConstants.CHARSET);
+		byte[] bytes = tag.getValue().getBytes(NBTConstants.CHARSET.name());
 		os.writeShort(bytes.length);
 		os.write(bytes);
 	}
