@@ -3,11 +3,14 @@ package org.getspout.server;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -129,6 +132,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * loaded plugins
 	 */
 	private Plugin[] plugins;
+	
+	Map<String,SpoutWorld> loadedWorlds = new ConcurrentHashMap<String, SpoutWorld>();
 	
 	
 	public SpoutServer() {
@@ -277,20 +282,25 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public World getWorld(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!loadedWorlds.containsKey(name)) return null;
+		return loadedWorlds.get(name);
 	}
 
 	@Override
 	public World getWorld(UUID uid) {
-		// TODO Auto-generated method stub
+		for(SpoutWorld world : loadedWorlds.values()){
+			if(world.getUID().equals(uid)) return world;
+		}
 		return null;
 	}
 
 	@Override
-	public List<World> getWorlds() {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<World> getWorlds() {		
+		Collection<World> w = new ArrayList<World>();
+		for(SpoutWorld world : loadedWorlds.values()){
+			w.add(world);
+		}
+		return w;
 	}
 
 	@Override
@@ -375,26 +385,32 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public boolean unloadWorld(String name, boolean save) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean unloadWorld(String name, boolean save) {		
+		return unloadWorld(loadedWorlds.get(name), save);
 	}
 
 	@Override
 	public boolean unloadWorld(World world, boolean save) {
-		// TODO Auto-generated method stub
-		return false;
+		if(!loadedWorlds.containsValue(world))return true;
+		if(save){
+			SpoutWorld w = (SpoutWorld) world;
+			//TODO Save the world, save the cheerleader
+		}
+		loadedWorlds.remove(world.getName());
+		return true;
 	}
 	
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
+		//TODO: Make this more concurrent
+		
 		//If the world is already loaded, just return that world
-		
+		if(loadedWorlds.containsKey(name)) return loadedWorlds.get(name);
 		//create or load a new world
+		SpoutWorld world = new SpoutWorld(name, this, 0);
+		loadedWorlds.put(name, world);
 		
-		
-		// TODO Auto-generated method stub
-		return null;
+		return world;
 	}
 
 	@Override
