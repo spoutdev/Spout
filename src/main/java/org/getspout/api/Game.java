@@ -244,7 +244,7 @@ public interface Game extends Named, EventSource {
 	 *
 	 * @return a {@link List} of actively loaded worlds
 	 */
-	public List<World> getWorlds();
+	public Collection<World> getWorlds();
 	
 	/**
 	 * Loads a world with the given name and generator

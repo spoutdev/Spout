@@ -64,14 +64,6 @@ public interface Server extends Game {
 	public String[] getWhitelistedPlayers();
 
 	/**
-	 * Gets a list of all active and loaded worlds in memory
-	 *
-	 * @return list of loaded worlds
-	 */
-
-	public List<World> getWorlds();
-
-	/**
 	 * Unloads this world from memory. <br/>
 	 * <br/>
 	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
