@@ -28,7 +28,7 @@ dependencies will be automatically downloaded by Maven if they are not found.
 
 The command `mvn package` will build Spout, and `mvn install` will copy it
 to your local Maven repository. Official builds of Spout may be found on
-[Jenkins](http://ci.onarandombox.com/job/Spout).
+[Jenkins](http://ci.getspout.org/job/Spout).
 
 Running
 -------
