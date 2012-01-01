@@ -19,6 +19,7 @@ package org.getspout.api.event.inventory;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.event.Result;
 import org.getspout.api.inventory.ItemStack;
+import org.getspout.api.inventory.PlayerInventory;
 
 public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	private static HandlerList handlers = new HandlerList();

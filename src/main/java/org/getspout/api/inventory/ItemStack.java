@@ -95,10 +95,11 @@ public class ItemStack {
 	/**
 	 * Sets the aux data for this stack
 	 * 
-	 * @return the aux data
+	 * @return the item stack
 	 */
-	public void setAuxData(Map<String, Tag> auxData) {
+	public ItemStack setAuxData(Map<String, Tag> auxData) {
 		this.auxData = Tag.cloneMap(auxData);
+		return this;
 	}
 	
 	public ItemStack clone() {

@@ -17,6 +17,7 @@
 package org.getspout.api.event.inventory;
 
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.inventory.CraftingInventory;
 import org.getspout.api.inventory.ItemStack;
 
 /**

@@ -32,4 +32,8 @@ public class Inventory implements Serializable {
 		}
 		return false;
 	}
+	
+	public int getSize() {
+		return contents.length;
+	}
 }
