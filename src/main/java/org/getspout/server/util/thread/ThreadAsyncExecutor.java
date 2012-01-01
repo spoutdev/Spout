@@ -24,13 +24,34 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private StartTickTask startTickTask = new StartTickTask();
 	private KillTask killTask = new KillTask();
 	private AsyncManager manager = null;
+	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
 	
 	public void setManager(AsyncManager manager) {
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
 		}
 		this.manager = manager;
-		this.start();
+	}
+	
+	public boolean startExecutor() {
+		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.STARTED)) {
+			super.start();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	// TODO - needs hardening - maybe halts at the next snapshot copy ?
+	public boolean haltExecutor() {
+		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.HALTED)) {
+			return true;
+		} else if (state.compareAndSet(ExecutorState.STARTED, ExecutorState.HALTED)) {
+			super.interrupt();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
@@ -173,6 +194,12 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	public void syncKill() throws InterruptedException {
 		executeAllTasks();
 		throw new InterruptedException("Executor killed");
+	}
+	
+	private static enum ExecutorState {
+		CREATED,
+		STARTED,
+		HALTED
 	}
 
 }

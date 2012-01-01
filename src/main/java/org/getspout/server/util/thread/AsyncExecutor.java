@@ -111,5 +111,18 @@ public interface AsyncExecutor {
 	 * enableWake must be matched by a call to disableWake.
 	 */
 	public void enableWake();
-
+	
+	/**
+	 * Starts the executor.  An executor may only be started once.
+	 * 
+	 * @return false if the executor was already started
+	 */
+	public boolean startExecutor();
+	
+	/**
+	 * Halts the executor.  An executor may only be halted once.
+	 * 
+	 * @return false if the executor was already halted
+	 */
+	public boolean haltExecutor();
 }

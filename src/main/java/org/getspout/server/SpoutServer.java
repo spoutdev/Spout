@@ -139,6 +139,9 @@ public class SpoutServer extends AsyncManager implements Server {
 		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
 		init();
+		if (!getExecutor().startExecutor()) {
+			throw new IllegalStateException("SpoutServer's executor was already started");
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -396,6 +399,9 @@ public class SpoutServer extends AsyncManager implements Server {
 			if (success) {
 				if(save){
 					SpoutWorld w = (SpoutWorld) world;
+					if (!w.getExecutor().haltExecutor()) {
+						throw new IllegalStateException("Executor was already halted when halting was attempted");
+					}
 					//TODO Save the world, save the cheerleader
 				}
 				//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
@@ -415,7 +421,9 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (oldWorld != null) {
 			return oldWorld;
 		} else {
-			// TODO - probably something like world.start();   ?
+			if (!world.getExecutor().startExecutor()) {
+				throw new IllegalStateException("Unable to start executor for new world");
+			}
 			return world;
 		}
 	}
