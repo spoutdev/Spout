@@ -12,6 +12,7 @@ public class CopySnapshotTask extends ManagementRunnable {
 	
 	public Serializable call(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().copySnapshotRun();
+		executor.haltCheck();
 		return null;
 	}
 

@@ -229,17 +229,32 @@ public class SpoutWorld extends AsyncManager implements World {
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		System.out.println("World Tick: " + delta + " stage " + stage);
 		
-		float dt = delta / 1000.f;
-		//Update all entities
-		for(SpoutEntity ent : entityManager){
-			ent.onTick(dt);
+		switch (stage) {
+		case 0: {
+			float dt = delta / 1000.f;
+			//Update all entities
+			for(SpoutEntity ent : entityManager){
+				ent.onTick(dt);
+			}
+			break;
+		}
+		case 1: {
+			//Resolve and collisions and prepare for a snapshot.
+			for(SpoutEntity ent : entityManager){
+				ent.resolve();
+			}
+			break;
+		}
+		default: {
+			throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
+		}
 		}
 		
-		//Resolve and collisions and prepare for a snapshot.
-		for(SpoutEntity ent : entityManager){
-			ent.resolve();
-		}
-		
+	}
+	
+	@Override
+	public void haltRun() throws InterruptedException {
+		// TODO - save on halt ?
 	}
 
 	@Override

@@ -562,6 +562,11 @@ public class SpoutServer extends AsyncManager implements Server {
 		System.out.println("Server Tick: " + delta + " stage " + stage);
 	}
 	
+	@Override
+	public void haltRun() throws InterruptedException {
+		logger.info("Server halting");
+	}
+	
 	public SpoutScheduler getScheduler() {
 		return scheduler;
 	}
@@ -571,6 +576,5 @@ public class SpoutServer extends AsyncManager implements Server {
 		if(!configDirectory.exists()) configDirectory.mkdirs();
 		return configDirectory;
 	}
-
 
 }

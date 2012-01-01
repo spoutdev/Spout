@@ -34,7 +34,6 @@ public abstract class AsyncManager {
 		((SpoutScheduler)scheduler).addAsyncExecutor(executor);
 	}
 	
-	// TODO - is this required ?
 	public Server getServer() {
 		if (server == null) {
 			if (!(this instanceof Server)) {
@@ -123,9 +122,17 @@ public abstract class AsyncManager {
 	 * This method is called in order to start a new tick
 	 * 
 	 * @param delta the time since the last tick
-	 * @return the number of stages that the executor requires
 	 */
 	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
+	
+	/**
+	 * This method is called when the associated executor is halted and occurs right after the copySnapshotRun() method call.
+	 * 
+	 * This method is not called if the executor is halted before being started.
+	 * 
+	 * @param delta the time since the last tick
+	 */
+	public abstract void haltRun() throws InterruptedException;
 	
 	/**
 	 * Gets the number of stages this manager requires per tick

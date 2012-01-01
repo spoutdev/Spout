@@ -61,13 +61,6 @@ public interface AsyncExecutor {
 	public boolean startTick(int stage, long delta);
 	
 	/**
-	 * Instructs the executor to complete all pending tasks and then shutdown
-	 * 
-	 * @return false if the executor was active
-	 */
-	public boolean kill();
-	
-	/**
 	 * Instructs the executor to complete all pending tasks and then throws an InterruptedException.
 	 * 
 	 * This method is internally called by the executor as a response to the kill() instruction.
@@ -122,7 +115,14 @@ public interface AsyncExecutor {
 	/**
 	 * Halts the executor.  An executor may only be halted once.
 	 * 
+	 * Halting happens after the next snapshot copy.
+	 * 
 	 * @return false if the executor was already halted
 	 */
 	public boolean haltExecutor();
+	
+	/**
+	 * Checks if the executor should halt.  This is called after every snapshot update.
+	 */
+	public void haltCheck() throws InterruptedException;
 }

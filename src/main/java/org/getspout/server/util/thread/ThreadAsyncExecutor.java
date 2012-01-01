@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.getspout.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
-import org.getspout.server.util.thread.coretasks.KillTask;
 import org.getspout.server.util.thread.coretasks.StartTickTask;
 import org.getspout.server.util.thread.future.ManagedFuture;
 
@@ -22,7 +22,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private AtomicReference<Object> waitingMonitor = new AtomicReference<Object>();
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
-	private KillTask killTask = new KillTask();
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
 	
@@ -42,20 +41,26 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		}
 	}
 	
-	// TODO - needs hardening - maybe halts at the next snapshot copy ?
 	public boolean haltExecutor() {
 		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.HALTED)) {
 			return true;
-		} else if (state.compareAndSet(ExecutorState.STARTED, ExecutorState.HALTED)) {
-			super.interrupt();
+		} else if (state.compareAndSet(ExecutorState.STARTED, ExecutorState.HALTING)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
+	@Override
+	public void haltCheck() throws InterruptedException {
+		if (state.compareAndSet(ExecutorState.HALTING, ExecutorState.HALTED)) {
+			getManager().haltRun();
+			((SpoutScheduler)(getManager().getServer().getScheduler())).removeAsyncExecutor(this);
+			throw new InterruptedException("Executor halted");
+		}
+	}
+	
 	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
-		System.out.println("Task added: " + task.getClass().getName());
 		if (Thread.currentThread() == this) {
 			executeTask(task);
 		} else {
@@ -136,13 +141,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	}
 	
 	@Override
-	public final boolean kill() {
-		ThreadsafetyManager.checkMainThread();
-		taskQueue.add(killTask);
-		return pulse();
-	}
-
-	@Override
 	public final boolean isPulseFinished() {
 		try {
 			disableWake();
@@ -199,6 +197,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private static enum ExecutorState {
 		CREATED,
 		STARTED,
+		HALTING,
 		HALTED
 	}
 

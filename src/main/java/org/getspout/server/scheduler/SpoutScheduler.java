@@ -125,18 +125,42 @@ public final class SpoutScheduler implements Scheduler {
 			
 			asyncExecutors.copySnapshot();
 			
+			// Halt all executors, except the Server
+			
 			for (AsyncExecutor e : asyncExecutors.get()) {
-				e.kill();
+				if (!(e.getManager() instanceof SpoutServer)) {
+					if (!e.haltExecutor()) {
+						throw new IllegalStateException("Unable to halt executor for " + e.getManager());
+					}
+				}
+			}
+
+			try {
+				copySnapshot(asyncExecutors.get());
+			} catch (InterruptedException ex) {
+				SpoutServer.logger.log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
+			}
+			
+			asyncExecutors.copySnapshot();
+			
+			// Halt the executor for the Server
+
+			for (AsyncExecutor e : asyncExecutors.get()) {
+				if (!(e.getManager() instanceof SpoutServer)) {
+					throw new IllegalStateException("Only the server should be left to shutdown");
+				} else {
+					if (!e.haltExecutor()) {
+						throw new IllegalStateException("Unable to halt SpoutServer executor");
+					}
+				}
 			}
 			
 			try {
-				AsyncExecutorUtils.pulseJoinAll(asyncExecutors.get(), (long)(PULSE_EVERY << 4));
-			} catch (TimeoutException e) {
-				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-			} catch (InterruptedException e) {
-				server.getLogger().info("Main thread interrupted while waiting for executor shutdown");
+				copySnapshot(asyncExecutors.get());
+			} catch (InterruptedException ex) {
+				SpoutServer.logger.log(Level.SEVERE, "Error while shutting down server: {0}", ex.getMessage());
 			}
-			
+
 		}
 		
 	}
@@ -190,6 +214,8 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	private boolean tick(long delta) throws InterruptedException {
 		
+		asyncExecutors.copySnapshot();
+		
 		// Bring in new tasks this tick.
 		synchronized (newTasks) {
 			for (SpoutTask task : newTasks) {
@@ -222,8 +248,6 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
-		
-		asyncExecutors.copySnapshot();
 		
 		List<AsyncExecutor> executors = asyncExecutors.get();
 		
@@ -263,6 +287,14 @@ public final class SpoutScheduler implements Scheduler {
 
 		lockSnapshotLock();
 		
+		copySnapshot(executors);
+
+		return true;
+	}
+	
+	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
+		lockSnapshotLock();
+		
 		try {
 			for (AsyncExecutor e : executors) {
 				if (!e.copySnapshot()) {
@@ -272,15 +304,12 @@ public final class SpoutScheduler implements Scheduler {
 
 			try {
 				AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
-				joined = true;
 			} catch (TimeoutException e) {
 				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 			}
 		} finally {
 			unlockSnapshotLock();
 		}
-
-		return true;
 	}
 	
 	private void lockSnapshotLock() {
