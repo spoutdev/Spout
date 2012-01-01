@@ -17,7 +17,7 @@
 package org.getspout.api.event.inventory;
 
 import org.getspout.api.event.HandlerList;
-import org.getspout.unchecked.api.inventory.Inventory;
+import org.getspout.api.inventory.Inventory;
 
 /**
  * Called when a player opens an inventory.

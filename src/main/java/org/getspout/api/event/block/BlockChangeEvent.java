@@ -16,10 +16,8 @@
  */
 package org.getspout.api.event.block;
 
-import org.bukkit.block.BlockState;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
-import org.getspout.unchecked.api.event.block.BlockEvent;
 
 /**
  * Called when a block changes its state.

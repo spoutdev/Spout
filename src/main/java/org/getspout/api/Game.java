@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandSource;
-import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.generator.WorldGenerator;
@@ -46,7 +45,6 @@ import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.api.util.Named;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
-import org.getspout.unchecked.api.inventory.Recipe;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
@@ -283,7 +281,7 @@ public interface Game extends Named, EventSource {
 	 * @return true if the recipe was registered, false if there was a conflict
 	 *         with an existing recipe.
 	 */
-	public boolean registerRecipe(Recipe recipe);
+	//public boolean registerRecipe(Recipe recipe);
 
 	/**
 	 * Ends this game instance safely. All worlds, players, and configuration

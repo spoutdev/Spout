@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.bukkit.block.BlockFace;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.inventory.ItemMap;

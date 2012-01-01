@@ -20,7 +20,7 @@ import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.event.player.PlayerEvent;
 import org.getspout.api.geo.discrete.Point;
-import org.getspout.unchecked.api.inventory.Inventory;
+import org.getspout.api.inventory.Inventory;
 
 /**
  * Represents an inventory-related event.

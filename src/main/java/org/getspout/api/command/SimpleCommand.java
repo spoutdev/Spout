@@ -1,5 +1,8 @@
 package org.getspout.api.command;
 
+import gnu.trove.set.TCharSet;
+import gnu.trove.set.hash.TCharHashSet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,12 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import gnu.trove.procedure.TCharProcedure;
-import gnu.trove.set.TCharSet;
-import gnu.trove.set.hash.TCharHashSet;
-
-import org.bukkit.util.Java15Compat;
-
+import org.getspout.api.util.MiscCompatibilityUtils;
 import org.getspout.api.util.Named;
 import org.getspout.api.util.StringUtil;
 
@@ -164,7 +162,7 @@ public class SimpleCommand implements Command {
 		if (executor == null || baseIndex >= args.length) {
 			throw new MissingCommandException("No command found!", getUsage(args, baseIndex));
 		}
-		args = Java15Compat.Arrays_copyOfRange(args, baseIndex, args.length);
+		args = MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length);
 
 		CommandContext context = new CommandContext(args, valueFlags);
 		for (char flag : context.getFlags().toArray()) {
