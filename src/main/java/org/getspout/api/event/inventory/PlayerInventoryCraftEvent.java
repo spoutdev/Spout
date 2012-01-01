@@ -30,8 +30,6 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	private ItemStack cursor;
 
-	private InventorySlotType slotType;
-
 	private int slotNum;
 
 	private ItemStack[][] matrix;
@@ -139,19 +137,6 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 
 	public void setSlot(int slotNum) {
 		this.slotNum = slotNum;
-	}
-
-	/**
-	 * Gets the slot type being interacted with
-	 *
-	 * @return slot type
-	 */
-	public InventorySlotType getSlotType() {
-		return slotType;
-	}
-
-	public void setSlotType(InventorySlotType slotType) {
-		this.slotType = slotType;
 	}
 
 	/**

@@ -24,8 +24,6 @@ import org.getspout.api.inventory.PlayerInventory;
 public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	private static HandlerList handlers = new HandlerList();
 
-	protected InventorySlotType type;
-
 	protected ItemStack item;
 
 	protected ItemStack cursor;
@@ -71,19 +69,6 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 		if (result == Result.DENY) {
 			setCancelled(true);
 		}
-	}
-
-	/**
-	 * Gets the type of slot that is being interacted with
-	 *
-	 * @return slot type
-	 */
-	public InventorySlotType getSlotType() {
-		return type;
-	}
-
-	public void setSlotType(InventorySlotType type) {
-		this.type = type;
 	}
 
 	/**
