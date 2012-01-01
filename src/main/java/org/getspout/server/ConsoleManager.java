@@ -1,3 +1,29 @@
+/*
+ * This file is part of spout (1) (http://www.getspout.org/).
+ *
+ * The spout (1) is licensed under the SpoutDev license version 1.
+ *
+ * spout (1) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev license version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
+
 package org.getspout.server;
 
 import java.awt.BorderLayout;
@@ -43,11 +69,12 @@ import jline.ConsoleReader;
 import jline.NullCompletor;
 import jline.SimpleCompletor;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandException;
+import org.getspout.api.ChatColor;
 import org.getspout.api.Server;
 
 import com.grahamedgecombe.jterminal.JTerminal;
+import org.getspout.api.command.CommandException;
+import org.getspout.api.command.CommandSource;
 
 /**
  * A meta-class to handle all logging and input-related console improvements.
@@ -57,6 +84,7 @@ public final class ConsoleManager {
 	private final Server server;
 
 	private ConsoleReader reader;
+	private ColoredCommandSource source;
 	private ConsoleCommandThread thread;
 	private final FancyConsoleHandler consoleHandler;
 	private final RotatingFileHandler fileHandler;
@@ -146,6 +174,10 @@ public final class ConsoleManager {
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 	}
+	
+	public ColoredCommandSource getCommandSource() {
+		return source;
+	}
 
 	public void stop() {
 		consoleHandler.flush();
@@ -158,6 +190,7 @@ public final class ConsoleManager {
 	}
 
 	public void setupConsole() {
+		source = new ColoredCommandSource();
 		thread = new ConsoleCommandThread();
 
 		if (jTerminal == null) {
@@ -179,9 +212,24 @@ public final class ConsoleManager {
 		if (!string.contains("\u00A7")) {
 			return string;
 		} else if ((!jLine || !reader.getTerminal().isANSISupported()) && jTerminal == null) {
-			return ChatColor.stripColor(string);
+			return ChatColor.strip(string);
 		} else {
-			return string.replace(ChatColor.RED.toString(), "\033[1;31m").replace(ChatColor.YELLOW.toString(), "\033[1;33m").replace(ChatColor.GREEN.toString(), "\033[1;32m").replace(ChatColor.AQUA.toString(), "\033[1;36m").replace(ChatColor.BLUE.toString(), "\033[1;34m").replace(ChatColor.LIGHT_PURPLE.toString(), "\033[1;35m").replace(ChatColor.BLACK.toString(), "\033[0;0m").replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m").replace(ChatColor.DARK_RED.toString(), "\033[0;31m").replace(ChatColor.GOLD.toString(), "\033[0;33m").replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m").replace(ChatColor.DARK_AQUA.toString(), "\033[0;36m").replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m").replace(ChatColor.DARK_PURPLE.toString(), "\033[0;35m").replace(ChatColor.GRAY.toString(), "\033[0;37m").replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
+			return string.replace(ChatColor.RED.toString(), "\033[1;31m")
+					.replace(ChatColor.YELLOW.toString(), "\033[1;33m")
+					.replace(ChatColor.BRIGHT_GREEN.toString(), "\033[1;32m")
+					.replace(ChatColor.CYAN.toString(), "\033[1;36m")
+					.replace(ChatColor.BLUE.toString(), "\033[1;34m")
+					.replace(ChatColor.PINK.toString(), "\033[1;35m")
+					.replace(ChatColor.BLACK.toString(), "\033[0;0m")
+					.replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m")
+					.replace(ChatColor.DARK_RED.toString(), "\033[0;31m")
+					.replace(ChatColor.GOLD.toString(), "\033[0;33m")
+					.replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m")
+					.replace(ChatColor.DARK_CYAN.toString(), "\033[0;36m")
+					.replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m")
+					.replace(ChatColor.PURPLE.toString(), "\033[0;35m")
+					.replace(ChatColor.GRAY.toString(), "\033[0;37m")
+					.replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
 		}
 	}
 
@@ -202,10 +250,8 @@ public final class ConsoleManager {
 					}
 
 					((SpoutServer)server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
-				} catch (CommandException ex) {
-					System.out.println("Exception while executing command: " + ex.getMessage());
-					ex.printStackTrace();
 				} catch (Exception ex) {
+					server.getLogger().severe("Impossible exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
 				}
 			}
@@ -215,7 +261,7 @@ public final class ConsoleManager {
 	private class ServerShutdownThread extends Thread {
 		@Override
 		public void run() {
-			server.shutdown();
+			server.stop();
 		}
 	}
 
@@ -228,33 +274,37 @@ public final class ConsoleManager {
 
 		@Override
 		public void run() {
-			if (command.equals("stop")) {
-				server.shutdown();
-			}
-			/*command = EventFactory.onServerCommand(sender, command).getCommand();
+			//command = EventFactory.onServerCommand(sender, command).getCommand();
 
-			if (!server.dispatchCommand(sender, command)) {
+			/*if (*/server.processCommand(source, command);/*) {
 				String firstword = command;
 				if (command.indexOf(' ') >= 0) {
 					firstword = command.substring(0, command.indexOf(' '));
 				}
 
-				System.out.println("Command not found: " + firstword);
-			}*/
+				System.out.println("Command not found: " + firstword);*/
+			//}
 		}
 	}
 
 	// TODO - convert to command source
-	private class ColoredCommandSender {
+	public class ColoredCommandSource implements CommandSource {
 		//private final PermissibleBase perm = new PermissibleBase(this);
 
 		public String getName() {
 			return "CONSOLE";
 		}
 
-		//public void sendMessage(String text) {
-		//	server.getLogger().info(text);
-		//}
+		public boolean sendMessage(String text) {
+			server.getLogger().info(text);
+			return true;
+		}
+
+		@Override
+		public boolean sendRawMessage(String text) {
+			server.getLogger().info(text);
+			return true;
+		}
 
 		//public boolean isOp() {
 		//	return true;
@@ -464,7 +514,7 @@ public final class ConsoleManager {
 
 		@Override
 		public void windowClosing(WindowEvent e) {
-			server.shutdown();
+			server.stop();
 		}
 
 		@Override

@@ -6,15 +6,25 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.getspout.api.ChatColor;
 import org.getspout.api.Server;
 import org.getspout.api.command.Command;
+import org.getspout.api.command.CommandException;
+import org.getspout.api.command.CommandRegistrationsFactory;
 import org.getspout.api.command.CommandSource;
+import org.getspout.api.command.RootCommand;
+import org.getspout.api.command.WrappedCommandException;
+import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
+import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
+import org.getspout.api.command.annotated.SimpleInjector;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.generator.WorldGenerator;
@@ -30,6 +40,7 @@ import org.getspout.api.protocol.CommonPipelineFactory;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.api.util.thread.LiveRead;
+import org.getspout.server.command.AdministrationCommands;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
 import org.getspout.server.net.SpoutSessionRegistry;
@@ -50,8 +61,6 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 
 public class SpoutServer extends AsyncManager implements Server {
-	
-	private volatile int version = 0;
 	
 	private volatile int maxPlayers = 20;
 	
@@ -134,7 +143,13 @@ public class SpoutServer extends AsyncManager implements Server {
 	private Plugin[] plugins;
 	
 	SnapshotableConcurrentHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentHashMap<String, SpoutWorld>(snapshotManager, null);
-	
+
+	/**
+	 * The root commnd for this server
+	 */
+	private final RootCommand rootCommand = new RootCommand(this);
+
+
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
@@ -155,9 +170,14 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 	
 	public void start() {
-		
-	
-		
+
+		CommandRegistrationsFactory<Class<?>> commandRegFactory =
+				new AnnotatedCommandRegistrationFactory(new SimpleInjector(this),
+						new SimpleAnnotatedCommandExecutorFactory());
+
+		// Register commands
+		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
+
 		consoleManager.setupConsole();
 		
 		// Start loading plugins
@@ -229,8 +249,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public long getVersion() {
-		return version;
+	public String getVersion() {
+		return getClass().getPackage().getImplementationVersion();
 	}
 
 	@Override
@@ -250,8 +270,10 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void broadcastMessage(String message) {
-		// TODO Auto-generated method stub
-		
+		for (Player player : getOnlinePlayers()) {
+			player.sendMessage(message);
+		}
+		consoleManager.getCommandSource().sendMessage(message);
 	}
 
 	@Override
@@ -265,9 +287,17 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public boolean processCommand(CommandSource sender, String commandLine) {
-		// TODO Auto-generated method stub
-		return false;
+	public void processCommand(CommandSource source, String commandLine) {
+		try {
+			getRootCommand().execute(source, commandLine.split(" "), -1, false);
+		} catch (WrappedCommandException e) {
+			source.sendMessage(ChatColor.RED + "Internal error executing command!");
+			source.sendMessage(ChatColor.RED + "Error: " + e.getMessage() + "; See console for details.");
+			e.printStackTrace();
+		} catch (CommandException e) {
+			// TODO: Better exception handling!
+			source.sendMessage(ChatColor.RED + e.getMessage());
+		}
 	}
 
 	@Override
@@ -277,9 +307,14 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public Collection<Entity> matchPlayer(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Player> matchPlayer(String name) {
+		List<Player> result = new ArrayList<Player>();
+		for (Player player : getOnlinePlayers()) {
+			if (player.getName().startsWith(name)) {
+				result.add(player);
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -335,12 +370,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public File getWorldFolder() {
 		// TODO Auto-generated method stub
 		return null;
@@ -348,8 +377,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public Command getRootCommand() {
-		// TODO Auto-generated method stub
-		return null;
+		return rootCommand;
 	}
 
 	@Override
@@ -453,21 +481,14 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public Player[] getPlayers() {
+	public List<String> getAllPlayers() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Player[] getOnlinePlayers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Player getPlayer(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return players.toArray(new Player[players.size()]);
 	}
 
 	@Override
@@ -512,18 +533,15 @@ public class SpoutServer extends AsyncManager implements Server {
 	public String getLogFile() {
 		return logFile;
 	}
-
-	String[] tempCommands = new String[] {"stop"};
 	
 	@Override
 	public String[] getAllCommands() {
-		// TODO Auto-generated method stub
-		return tempCommands;
+		Set<String> result = getRootCommand().getChildNames();
+		return result.toArray(new String[result.size()]);
 	}
 
 	@Override
-	public void shutdown() {
-		
+	public void stop() {
 		group.close();
 		bootstrap.getFactory().releaseExternalResources();
 

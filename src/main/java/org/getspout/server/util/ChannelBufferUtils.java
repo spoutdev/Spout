@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.inventory.ItemStack;
+import org.getspout.api.inventory.ItemStack;
 import org.getspout.api.io.nbt.CompoundTag;
 import org.getspout.api.io.nbt.NBTInputStream;
 import org.getspout.api.io.nbt.NBTOutputStream;
 import org.getspout.api.io.nbt.Tag;
+import org.getspout.api.material.MaterialData;
 import org.getspout.api.math.Vector2;
 import org.getspout.api.math.Vector3;
 import org.getspout.api.util.Color;
@@ -62,9 +63,9 @@ public final class ChannelBufferUtils {
 					break;
 				case Parameter.TYPE_ITEM:
 					ItemStack item = ((Parameter<ItemStack>) parameter).getValue();
-					buf.writeShort(item.getTypeId());
+					buf.writeShort(item.getMaterial().getRawId());
 					buf.writeByte(item.getAmount());
-					buf.writeShort(item.getDurability());
+					buf.writeShort(item.getDamage());
 					break;
 			}
 		}
@@ -105,7 +106,7 @@ public final class ChannelBufferUtils {
 					int id = buf.readShort();
 					int count = buf.readByte();
 					short damage = buf.readShort();
-					ItemStack item = new ItemStack(id, count, damage);
+					ItemStack item = new ItemStack(MaterialData.getMaterial(id), count, damage);
 					parameters.add(new Parameter<ItemStack>(type, index, item));
 					break;
 			}

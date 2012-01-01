@@ -13,7 +13,7 @@ import org.getspout.api.scheduler.SnapshotLock;
 
 public class SpoutSnapshotLock implements SnapshotLock {
 
-	private ReentrantReadWriteLock lock;
+	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	
 	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
 	
