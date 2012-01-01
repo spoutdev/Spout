@@ -100,5 +100,11 @@ public class ItemStack {
 	public void setAuxData(Map<String, Tag> auxData) {
 		this.auxData = Tag.cloneMap(auxData);
 	}
+	
+	public ItemStack clone() {
+		ItemStack newStack = new ItemStack(material, amount, damage);
+		newStack.setAuxData(auxData);
+		return newStack;
+	}
 
 }
