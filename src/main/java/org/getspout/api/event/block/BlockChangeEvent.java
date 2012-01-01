@@ -16,6 +16,7 @@
  */
 package org.getspout.api.event.block;
 
+import org.getspout.api.block.BlockSnapshot;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
 
@@ -27,16 +28,15 @@ public abstract class BlockChangeEvent extends BlockEvent {
 		super(block, source);
 	}
 
-	private BlockState newState;
+	private BlockSnapshot snapshot;
 
 	/**
-	 * Gets the final block state that the block will change to after this event
-	 * executes.
+	 * Gets the new state for the block, once this event has completed
 	 *
 	 * @return final block state
 	 */
-	public BlockState getNewState() {
-		return newState;
+	public BlockSnapshot getSnapshot() {
+		return snapshot;
 	}
 
 	/**
@@ -44,8 +44,8 @@ public abstract class BlockChangeEvent extends BlockEvent {
 	 *
 	 * @param state to set
 	 */
-	public void setNewState(BlockState state) {
-		newState = state;
+	public void setNewState(BlockSnapshot newState) {
+		snapshot = newState;
 	}
 
 	@Override
