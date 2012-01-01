@@ -109,7 +109,19 @@ public class Quaternion {
 	public Quaternion rotate(double angle, Vector3 axis){
 		return Quaternion.rotate(this, angle, axis);
 	}
-	
+	/**
+	 * Returns the angles about each axis of this quaternion stored in a Vector3
+	 * 
+	 * vect.X = Rotation about the X axis (Roll)
+	 * vect.Y = Rotation about the Y axis (Yaw)
+	 * vect.Z = Rotation about the Z axis (Pitch)
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public Vector3 getAxisAngles(){
+		return Quaternion.getAxisAngles(this);
+	}
 	
 	/**
 	 * Returns the length squared of the given Quaternion
@@ -160,6 +172,23 @@ public class Quaternion {
 	 */
 	public static Quaternion rotate(Quaternion a, double angle, Vector3 axis){
 		return multiply(new Quaternion(angle, axis), a);
+	}
+	/**
+	 * Returns the angles about each axis of this quaternion stored in a Vector3
+	 * 
+	 * vect.X = Rotation about the X axis (Roll)
+	 * vect.Y = Rotation about the Y axis (Yaw)
+	 * vect.Z = Rotation about the Z axis (Pitch)
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public static Vector3 getAxisAngles(Quaternion a){
+		float roll = (float)Math.atan2(2 * (a.getX() * a.getY() + a.getZ() * a.getW()), 1 - 2 * (a.getY() * a.getY() + a.getZ() * a.getZ()));
+		float pitch = (float)Math.asin(2 * (a.getX() * a.getZ() - a.getW() * a.getY()));
+		float yaw = (float)Math.atan2(2 * ( a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW()));
+		
+		return new Vector3(roll, pitch, yaw);
 	}
 	
 	
