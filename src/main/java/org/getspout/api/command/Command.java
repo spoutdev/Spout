@@ -17,7 +17,7 @@ import org.getspout.api.util.Named;
  * </pre>
  */
 
-public interface Command {
+public interface Command extends RawCommandExecutor{
 
 	/**
 	 * Creates a command and adds it as a sub-command to the active Command.
@@ -165,27 +165,12 @@ public interface Command {
 	public Command flags(String flags);
 
 	/**
-	 * Executes a command based on the provided arguments.
-	 *
-	 * The base index is equal to the number of arguments that have already been
-	 * processed by super commands.
-	 *
-	 * @param source the {@link CommandSource} that sent this command.
-	 * @param args the command arguments
-	 * @param baseIndex the arguments that have already been processed by
-	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
-	 *            commands.
-	 * @return true on success
-	 */
-	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
-
-	/**
 	 * Gets the usage message for the command.
 	 *
 	 * @param input The raw input that was given
 	 * @return the command's usage message
 	 */
-	public String getUsage(String[] input);
+	public String getUsage(String[] input, int baseIndex);
 
 	/**
 	 * Gets the command's preferred name

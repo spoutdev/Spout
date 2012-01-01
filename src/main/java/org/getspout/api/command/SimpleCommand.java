@@ -26,6 +26,7 @@ public class SimpleCommand implements Command {
 	private boolean locked;
 	protected List<String> aliases = new ArrayList<String>();
 	protected CommandExecutor executor;
+	protected RawCommandExecutor rawExecutor;
 	protected String help;
 	protected String usage;
 	protected final TCharSet valueFlags = new TCharHashSet();
@@ -47,20 +48,6 @@ public class SimpleCommand implements Command {
 		children.put(primaryName, sub);
 		sub.parent = this;
 		return sub;
-	}
-
-	public Command registerAsSub(Named owner, Command command) {
-		if (isLocked()) {
-			return this;
-		}
-		String primaryName = command.getPreferredName();
-		while (children.containsKey(primaryName)) {
-			primaryName = owner.getName() + ":" + primaryName;
-		}
-		children.put(primaryName, command);
-		command.setParent(this);
-		command.lock(owner);
-		return command;
 	}
 
 	public Command sub(Named owner, String primaryName) {
@@ -159,28 +146,31 @@ public class SimpleCommand implements Command {
 		return addFlags(flags);
 	}
 
-	public boolean execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
-		if (args.length > 1 && children.size() > 0) {
+	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
+		if (rawExecutor != null && rawExecutor != this) {
+			rawExecutor.execute(source,  args, baseIndex, fuzzyLookup);
+			return;
+		}
+
+		if (args.length > baseIndex && children.size() > 0) {
 			Command sub = getChild(args[0], fuzzyLookup);
 			if (sub == null) {
-				return false;
+				throw new MissingCommandException("Child command needed!", getUsage(args, baseIndex));
 			}
-			return sub.execute(source, args, ++baseIndex, fuzzyLookup);
+			sub.execute(source, args, ++baseIndex, fuzzyLookup);
+			return;
 		}
 
 		if (executor == null || baseIndex >= args.length) {
-			return false;
+			throw new MissingCommandException("No command found!", getUsage(args, baseIndex));
 		}
 		args = Java15Compat.Arrays_copyOfRange(args, baseIndex, args.length);
 
 		CommandContext context = new CommandContext(args, valueFlags);
-		if (!context.getFlags().forEach(new TCharProcedure() {
-
-			public boolean execute(char c) {
-				return flags.contains(c);
+		for (char flag : context.getFlags().toArray()) {
+			if (!flags.contains(flag)) {
+				throw new CommandUsageException("Unknown flag:" + flag, this);
 			}
-		})) {
-			return false;
 		}
 
 		try {
@@ -190,7 +180,6 @@ public class SimpleCommand implements Command {
 		} catch (Throwable t) {
 			throw new WrappedCommandException(t);
 		}
-		return true;
 	}
 
 	public String getPreferredName() {
@@ -209,7 +198,7 @@ public class SimpleCommand implements Command {
 		return new ArrayList<String>(aliases);
 	}
 
-	public String getUsage(String[] input) {
+	public String getUsage(String[] input, int baseIndex) {
 		return help + " - " + usage;
 	}
 

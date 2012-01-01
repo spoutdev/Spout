@@ -1,10 +1,11 @@
 package org.getspout.api.player;
 
+import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.protocol.Session;
 
-public interface Player {
+public interface Player extends CommandSource {
 	
 	/**
 	 * Gets the player's name
@@ -12,6 +13,13 @@ public interface Player {
 	 * @return the player's name
 	 */
 	public String getName();
+
+	/**
+	 * Sends a message as if the player had typed it into their chat gui.
+	 *
+	 * @param message The message to send
+	 */
+	public void chat(String message);
 	
 	/**
 	 * Gets the entity corresponding to the player

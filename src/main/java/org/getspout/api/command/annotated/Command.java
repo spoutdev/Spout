@@ -17,7 +17,7 @@ public @interface Command {
 
 	public String desc();
 
-	public String flags();
+	public String flags() default "";
 
 	public int min() default 0;
 

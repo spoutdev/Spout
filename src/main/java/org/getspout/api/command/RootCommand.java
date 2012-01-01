@@ -1,6 +1,6 @@
 package org.getspout.api.command;
 
-import org.bukkit.ChatColor;
+import org.getspout.api.ChatColor;
 import org.getspout.api.Game;
 import org.getspout.api.SpoutRuntimeException;
 
@@ -11,8 +11,8 @@ public class RootCommand extends SimpleCommand {
 	}
 
 	@Override
-	public String getUsage(String[] input) {
-		return ChatColor.GRAY + "Command '" + (input.length > 0 ? input[0] : getPreferredName()) + "' could not be found";
+	public String getUsage(String[] input, int baseIndex) {
+		return ChatColor.RED + "Command '" + (input.length > baseIndex ? input[baseIndex] : getPreferredName()) + "' could not be found";
 	}
 
 	@Override

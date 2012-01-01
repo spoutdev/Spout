@@ -68,14 +68,14 @@ public interface Game extends Named, EventSource {
 	 *
 	 * @return build version
 	 */
-	public long getVersion();
+	public String getVersion();
 
 	/**
-	 * Gets all players currently active
+	 * Returns all player names that have ever played on this Game, whether they are online or not.
 	 *
-	 * @return array of all active players
+	 * @return all the player names
 	 */
-	public Player[] getPlayers();
+	public List<String> getAllPlayers();
 	
 	/**
 	 * Gets all players currently online
@@ -127,7 +127,7 @@ public interface Game extends Named, EventSource {
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to iterating over
-	 * {@link #getPlayers()} and invoking {@link Player#sendMessage(String)} for
+	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(String)} for
 	 * each player.
 	 *
 	 * @param message to send
@@ -152,14 +152,14 @@ public interface Game extends Named, EventSource {
 	public Logger getLogger();
 
 	/**
-	 * Sends a command from the given command sender. The command will be
+	 * Sends a command from the given command source. The command will be
 	 * handled as if the sender has sent it itself.
 	 *
-	 * @param sender that is responsible for the command
+	 * @param source that is responsible for the command
 	 * @param commandLine text
 	 * @return true if dispatched
 	 */
-	public boolean processCommand(CommandSource sender, String commandLine);
+	public void processCommand(CommandSource source, String commandLine);
 
 	/**
 	 * Gets the update folder. The update folder is used to safely update
@@ -170,6 +170,7 @@ public interface Game extends Named, EventSource {
 	 * @return The name of the update folder
 	 */
 	public File getUpdateFolder();
+
 	/**
 	 * Gets the config folder for the game
 	 * 
@@ -177,30 +178,21 @@ public interface Game extends Named, EventSource {
 	 * @return 
 	 */
 	public File getConfigFolder();
+
 	/**
-	 * Gets a player by the given username. <br/>
+	 * Gets the player by the given username. <br/>
 	 * <br/>
-	 * This method will iterate over over all players and find the closest match
+	 * If searching for the exact name, this method will iterate and check for
+	 * exact matches. <br/>
+	 * <br/>
+	 * Otherwise, this method will iterate over over all players and find the closest match
 	 * to the given name, by comparing the length of other player names that
 	 * start with the given parameter. <br/>
 	 * <br/>
 	 * This method is case-insensitive.
 	 *
 	 * @param name to look up
-	 * @return Player if found, else null
-	 */
-	public Player getPlayer(String name);
-
-	/**
-	 * Gets the player bythe given username. <br/>
-	 * <br/>
-	 * If searching for the exact name, this method will iterate and check for
-	 * exact matches, ignoring case. <br/>
-	 * <br/>
-	 * Otherwise, this method's implementation is described by
-	 * {@link #getPlayer(String)}
-	 *
-	 * @param name to look up
+	 * @param exact Whether to use exact lookup
 	 * @return Player if found, else null
 	 */
 	public Player getPlayer(String name, boolean exact);
@@ -214,7 +206,7 @@ public interface Game extends Named, EventSource {
 	 * @param name to match
 	 * @return Collection of all possible matches
 	 */
-	public Collection<Entity> matchPlayer(String name);
+	public Collection<Player> matchPlayer(String name);
 
 	/**
 	 * Searches for an actively loaded world that exactly matches the given
@@ -266,7 +258,7 @@ public interface Game extends Named, EventSource {
 	 * 
 	 * if the world is already loaded, this functions the same as {@link #getWorld(String)}
 	 * 
-	 * @param worldName Name of the world
+	 * @param name Name of the world
 	 * @param generator World Generator
 	 * @return 
 	 */
@@ -294,37 +286,10 @@ public interface Game extends Named, EventSource {
 	public boolean registerRecipe(Recipe recipe);
 
 	/**
-	 * Gets the radius of the area around the spawn that is protected, in
-	 * blocks.
-	 *
-	 * @return spawn protect radius
-	 */
-	public int getSpawnProtectRadius();
-
-	/**
-	 * Sets the radius of the area around the spawn that is protected, in
-	 * blocks.
-	 *
-	 * @param radius to protect
-	 */
-	public void setSpawnProtectRadius(int radius);
-
-	/**
-	 * True if this server does not check if players are flying or not.
-	 *
-	 * If disabled, the server will attempt to verify that players are not
-	 * flying, and kick any players that are flying.
-	 *
-	 * @return allow flight
-	 */
-	public boolean allowFlight();
-
-	/**
 	 * Ends this game instance safely. All worlds, players, and configuration
 	 * data is saved, and all threads are ended cleanly.
 	 */
 	public void stop();
-
 
 	/**
 	 * Gets the folder that contains the world save data.

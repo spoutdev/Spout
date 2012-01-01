@@ -151,10 +151,31 @@ public interface Server extends Game {
 	* @return A list of all commands at the time.
 	*/
 	public String[] getAllCommands();
-	
+
 	/**
-	* Stops this server.
-	*/
-	public void shutdown();
+	 * Gets the radius of the area around the spawn that is protected, in
+	 * blocks.
+	 *
+	 * @return spawn protect radius
+	 */
+	public int getSpawnProtectRadius();
+
+	/**
+	 * Sets the radius of the area around the spawn that is protected, in
+	 * blocks.
+	 *
+	 * @param radius to protect
+	 */
+	public void setSpawnProtectRadius(int radius);
+
+	/**
+	 * True if this server does not check if players are flying or not.
+	 *
+	 * If disabled, the server will attempt to verify that players are not
+	 * flying, and kick any players that are flying.
+	 *
+	 * @return allow flight
+	 */
+	public boolean allowFlight();
 	
 }

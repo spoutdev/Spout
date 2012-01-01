@@ -3,6 +3,7 @@ package org.getspout.api.command.annotated;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.getspout.api.command.Command;
@@ -24,10 +25,10 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 	public boolean processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 		try {
 			List<Object> commandArgs = new ArrayList<Object>(4);
-			commandArgs.add(source);
 			commandArgs.add(args);
+			commandArgs.add(source);
 			commandArgs.addAll(getAdditionalArgs(source, command));
-			method.invoke(instance, commandArgs.toArray(new Object[commandArgs.size()]));
+			method.invoke(instance, (Object[])commandArgs.toArray());
 		} catch (IllegalAccessException e) {
 			throw new WrappedCommandException(e);
 		} catch (InvocationTargetException e) {

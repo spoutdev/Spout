@@ -27,8 +27,8 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			instance = injector.newInstance(commands);
 		}
 		boolean success = true;
-		for (Method method : commands.getClass().getMethods()) {
-			// Simple checks
+		for (Method method : commands.getMethods()) {
+			// Basic checks
 			if (!Modifier.isStatic(method.getModifiers()) && injector == null) {
 				continue;
 			}
@@ -41,9 +41,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 				return false;
 			}
 			org.getspout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]);
-			for (String alias : command.aliases()) {
-				child.addAlias(alias);
-			}
+			child.addAlias(command.aliases());
 			child.addFlags(command.flags());
 			child.setUsage(command.usage());
 			child.setHelp(command.desc());
