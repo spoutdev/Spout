@@ -39,7 +39,6 @@ import org.getspout.api.plugin.security.CommonSecurityManager;
 import org.getspout.api.protocol.CommonPipelineFactory;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
-import org.getspout.api.util.thread.LiveRead;
 import org.getspout.server.command.AdministrationCommands;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
@@ -50,7 +49,6 @@ import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
-import org.getspout.unchecked.api.inventory.Recipe;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -345,11 +343,11 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 	}
 
-	@Override
+/*	@Override
 	public boolean registerRecipe(Recipe recipe) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	}*/
 
 	@Override
 	public int getSpawnProtectRadius() {
