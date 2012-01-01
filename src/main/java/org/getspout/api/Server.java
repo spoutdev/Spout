@@ -18,10 +18,10 @@ package org.getspout.api;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
+import org.getspout.api.scheduler.Scheduler;
 
 /**
  * Represents the server-specific implementation of Minecraft.
@@ -177,5 +177,12 @@ public interface Server extends Game {
 	 * @return allow flight
 	 */
 	public boolean allowFlight();
+	
+	/**
+	 * Gets the scheduler
+	 * 
+	 * @return the scheduler
+	 */
+	public Scheduler getScheduler();
 	
 }
