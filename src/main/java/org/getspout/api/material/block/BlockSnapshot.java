@@ -1,4 +1,4 @@
-package org.getspout.api.block;
+package org.getspout.api.material.block;
 
 import java.util.Collections;
 import java.util.Map;

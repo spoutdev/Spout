@@ -9,6 +9,7 @@ import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.inventory.ItemMap;
 import org.getspout.api.material.CustomItemMaterial;
 import org.getspout.api.material.MaterialData;
+import org.getspout.api.material.block.BlockFace;
 import org.getspout.api.packet.PacketUtil;
 import org.getspout.api.plugin.Plugin;
 

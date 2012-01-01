@@ -16,9 +16,9 @@
  */
 package org.getspout.api.event.block;
 
-import org.getspout.api.block.BlockSnapshot;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.material.block.BlockSnapshot;
 
 /**
  * Called when a block changes its state.
