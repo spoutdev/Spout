@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.getspout.api.util.map.TInt21TripleObjectHashMap;
+import org.getspout.api.util.map.TUnmodifiableInt21TripleObjectHashMap;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -23,10 +24,14 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	private final ConcurrentHashMap<TripleInt, Boolean> dirtyMap;
 	private final ConcurrentLinkedQueue<TripleInt> dirtyQueue;
 	private final TInt21TripleObjectHashMap<V> snapshot;
+	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableSnapshot;
+	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableLive;
 	
 	public SnapshotableConcurrentTripleIntHashMap(SnapshotManager manager) {
-		snapshot = new TInt21TripleObjectHashMap<V>();
 		live = new TInt21TripleObjectHashMap<V>();
+		snapshot = new TInt21TripleObjectHashMap<V>();
+		unmutableSnapshot = new TUnmodifiableInt21TripleObjectHashMap<V>(snapshot);
+		unmutableLive = new TUnmodifiableInt21TripleObjectHashMap<V>(live);
 		dirtyQueue = new ConcurrentLinkedQueue<TripleInt>();
 		dirtyMap = new ConcurrentHashMap<TripleInt, Boolean>();
 		manager.add(this);
@@ -125,14 +130,11 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	/**
 	 * Gets the snapshot value
 	 * 
-	 * DO NOT MODIFY THIS MAP
-	 * 
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
 	public TInt21TripleObjectHashMap<V> get() {
-		// TODO - implement unmodifiableMap
-		return snapshot;
+		return unmutableSnapshot;
 	}
 	
 	/**
@@ -144,8 +146,7 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	 */
 	@LiveRead
 	public TInt21TripleObjectHashMap<V> getLive() {
-		// TODO - implement unmodifiableMap
-		return live;
+		return unmutableLive;
 	}
 	
 	/**
