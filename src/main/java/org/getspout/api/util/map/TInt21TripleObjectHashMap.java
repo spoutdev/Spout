@@ -3,6 +3,7 @@ package org.getspout.api.util.map;
 import java.util.Collection;
 
 import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 
@@ -10,7 +11,7 @@ import gnu.trove.set.TLongSet;
  * A simplistic map that supports a 3 21 bit integers for keys, using a trove long Object hashmap in the backend. 1 bit is wasted.
  */
 public class TInt21TripleObjectHashMap<K> {
-	private TLongObjectHashMap<K> map;
+	protected TLongObjectMap<K> map;
 
 	public TInt21TripleObjectHashMap() {
 		map = new TLongObjectHashMap<K>(100);
@@ -18,6 +19,10 @@ public class TInt21TripleObjectHashMap<K> {
 
 	public TInt21TripleObjectHashMap(int capacity) {
 		map = new TLongObjectHashMap<K>(capacity);
+	}
+	
+	public TInt21TripleObjectHashMap(TLongObjectMap<K> map) {
+		this.map = map;
 	}
 
 	public K put(int key1, int key2, int key3, K value) {
@@ -74,6 +79,10 @@ public class TInt21TripleObjectHashMap<K> {
 
 	public K[] values() {
 		return map.values();
+	}
+	
+	protected TLongObjectMap<K> getInternalMap() {
+		return map;
 	}
 
 	private static final long key(int x, int y, int z) {
