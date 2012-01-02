@@ -1,5 +1,7 @@
 package org.getspout.server.util.thread.snapshotable;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -10,11 +12,18 @@ import org.getspout.api.util.thread.SnapshotRead;
 public class SnapshotableShortArray implements Snapshotable {
 	
 	private final short[] snapshot;
-	private final short[] live;
+	private short[] live;
+	private int[] dirtyArray;
+	private AtomicInteger dirtyIndex = new AtomicInteger(0);
 	
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial) {
+		this(manager, initial, 50);
+	}
+	
+	public SnapshotableShortArray(SnapshotManager manager, short[] initial, int dirtySize) {
 		this.snapshot = new short[initial.length];
 		this.live = new short[initial.length];
+		this.dirtyArray = new int[dirtySize];
 		for (int i = 0; i < initial.length; i++) {
 			this.snapshot[i] = initial[i];
 			this.live[i] = initial[i];
@@ -52,6 +61,11 @@ public class SnapshotableShortArray implements Snapshotable {
 	@DelayedWrite
 	public short set(int index, short value) {
 		live[index] = value;
+		live = live; // for thread safety
+		int localDirtyIndex = dirtyIndex.getAndIncrement();
+		if (localDirtyIndex < dirtyArray.length) {
+			dirtyArray[localDirtyIndex] = index;
+		}
 		return snapshot[index];
 	}
 
@@ -60,8 +74,16 @@ public class SnapshotableShortArray implements Snapshotable {
 	 */
 	@Override
 	public void copySnapshot() {
-		for (int i = 0; i < live.length; i++) {
-			this.snapshot[i] = live[i];
+		int length = dirtyIndex.get();
+		if (length <= dirtyArray.length) {
+			for (int i = 0; i < length; i++) {
+				int index = dirtyArray[i];
+				this.snapshot[index] = live[index];
+			}
+		} else {
+			for (int i = 0; i < live.length; i++) {
+				this.snapshot[i] = live[i];
+			}
 		}
 	}
 
