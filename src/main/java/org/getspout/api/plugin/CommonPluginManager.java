@@ -233,7 +233,7 @@ public class CommonPluginManager implements PluginManager {
 			boolean locked = manager.lock(key);
 			
 			try {
-				plugin.getPluginLoader().enablePlugin(plugin);
+				plugin.getPluginLoader().disablePlugin(plugin);
 			} catch (Exception e) {
 				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while enabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}

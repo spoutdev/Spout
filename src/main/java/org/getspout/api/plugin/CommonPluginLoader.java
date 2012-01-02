@@ -82,6 +82,7 @@ public class CommonPluginLoader implements PluginLoader {
 			
 			try {
 				cp.setEnabled(true);
+				cp.onEnable();
 			} catch (Exception e) {
 				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
@@ -104,6 +105,7 @@ public class CommonPluginLoader implements PluginLoader {
 			
 			try {
 				cp.setEnabled(false);
+				cp.onDisable();
 			} catch (Exception e) {
 				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(e.getMessage()).toString(), e);
 			}
