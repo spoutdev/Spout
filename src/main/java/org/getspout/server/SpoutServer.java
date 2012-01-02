@@ -74,7 +74,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	private File updateDirectory = new File("update");
 	
-	private String logFile = "logs/log-%D";
+	private String logFile = "logs/log-%D.txt";
 	
 	private String name = "Spout Server";
 	
