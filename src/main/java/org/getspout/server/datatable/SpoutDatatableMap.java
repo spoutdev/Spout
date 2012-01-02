@@ -13,8 +13,8 @@ import org.getspout.server.datatable.value.SpoutDatatableObject;
 public class SpoutDatatableMap implements DatatableMap {
 	TIntObjectHashMap<DatatableTuple> map = new TIntObjectHashMap<DatatableTuple>();
 	@Override
-	public void set(String key, DatatableTuple value) {
-		map.put(key.hashCode(), value);
+	public void set(DatatableTuple value) {
+		map.put(value.hashCode(), value);
 
 	}
 
