@@ -44,7 +44,9 @@ public class SnapshotableByteArray implements Snapshotable {
 	 */
 	@LiveRead
 	public byte getLive(int index) {
-		return live[index];
+		synchronized(live) {
+			return live[index];
+		}
 	}
 	
 	/**
@@ -55,8 +57,9 @@ public class SnapshotableByteArray implements Snapshotable {
 	 */
 	@DelayedWrite
 	public byte set(int index, byte value) {
-		live[index] = value;
-		live = live; // for thread safety
+		synchronized(live) {
+			live[index] = value;
+		}
 		int localDirtyIndex = dirtyIndex.getAndIncrement();
 		if (localDirtyIndex < dirtyArray.length) {
 			dirtyArray[localDirtyIndex] = index;

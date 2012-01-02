@@ -49,7 +49,9 @@ public class SnapshotableShortArray implements Snapshotable {
 	 */
 	@LiveRead
 	public short getLive(int index) {
-		return live[index];
+		synchronized(live) {
+			return live[index];
+		}
 	}
 	
 	/**
@@ -60,8 +62,9 @@ public class SnapshotableShortArray implements Snapshotable {
 	 */
 	@DelayedWrite
 	public short set(int index, short value) {
-		live[index] = value;
-		live = live; // for thread safety
+		synchronized(live) {
+			live[index] = value;
+		}
 		int localDirtyIndex = dirtyIndex.getAndIncrement();
 		if (localDirtyIndex < dirtyArray.length) {
 			dirtyArray[localDirtyIndex] = index;
