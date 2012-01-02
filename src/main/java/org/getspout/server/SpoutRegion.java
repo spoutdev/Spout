@@ -117,7 +117,7 @@ public class SpoutRegion extends Region{
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					Chunk chunk = chunks[x][y][z].get();
+					Chunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
 						((SpoutChunk)chunk).copySnapshotRun();
 					}
