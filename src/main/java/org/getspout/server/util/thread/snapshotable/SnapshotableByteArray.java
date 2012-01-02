@@ -12,13 +12,18 @@ import org.getspout.api.util.thread.SnapshotRead;
 public class SnapshotableByteArray implements Snapshotable {
 	
 	private final byte[] snapshot;
-	private byte[] live;
-	private int[] dirtyArray;
-	private AtomicInteger dirtyIndex = new AtomicInteger(0);
+	private final byte[] live;
+	private final int[] dirtyArray;
+	private final AtomicInteger dirtyIndex = new AtomicInteger(0);
 	
 	public SnapshotableByteArray(SnapshotManager manager, byte[] initial) {
+		this(manager, initial, 100);
+	}
+		
+	public SnapshotableByteArray(SnapshotManager manager, byte[] initial, int dirtySize) {
 		this.snapshot = new byte[initial.length];
 		this.live = new byte[initial.length];
+		this.dirtyArray = new int[dirtySize];
 		for (int i = 0; i < initial.length; i++) {
 			this.snapshot[i] = initial[i];
 			this.live[i] = initial[i];

@@ -12,9 +12,9 @@ import org.getspout.api.util.thread.SnapshotRead;
 public class SnapshotableShortArray implements Snapshotable {
 	
 	private final short[] snapshot;
-	private short[] live;
-	private int[] dirtyArray;
-	private AtomicInteger dirtyIndex = new AtomicInteger(0);
+	private final short[] live;
+	private final int[] dirtyArray;
+	private final AtomicInteger dirtyIndex = new AtomicInteger(0);
 	
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial) {
 		this(manager, initial, 50);
