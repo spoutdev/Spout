@@ -24,7 +24,6 @@ public class RegionSource {
 	 */
 	private final World world;
 	
-	@SuppressWarnings("unchecked")
 	public RegionSource(World world) {
 		this.world = world;
 	}
@@ -83,7 +82,7 @@ public class RegionSource {
 	public Region getRegion(int x, int y, int z, boolean load) {
 		Region region = loadedRegions.getLive(x, y, z);
 		
-		if (region != null) {
+		if (region != null || !load) {
 			return region;
 		} else {
 			region = new SpoutRegion(world, x << Region.REGION_SIZE_BITS, y << Region.REGION_SIZE_BITS, z << Region.REGION_SIZE_BITS, this);
