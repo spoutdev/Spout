@@ -140,8 +140,6 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	/**
 	 * Gets the live/unstable value
 	 * 
-	 * DO NOT MODIFY THIS MAP
-	 * 
 	 * @return the stable snapshot value
 	 */
 	@LiveRead
