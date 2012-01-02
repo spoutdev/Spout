@@ -13,6 +13,11 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * Internal size of a side of a chunk
 	 */
 	public static int CHUNK_SIZE = 16;
+	
+	/**
+	 * Number of bits on the side of a chunk
+	 */
+	public static int CHUNK_SIZE_BITS = 4;
 
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE);

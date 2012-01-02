@@ -7,6 +7,7 @@ import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventSource;
 import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -60,16 +61,44 @@ public interface World extends EventSource, BlockAccess {
 	public UUID getUID();
 	
 	/**
-	 * Gets the region at (x, y, z)
+	 * Gets the region at region coordinates (x, y, z)
 	 * 
 	 * @param x the region x coordinate
 	 * @param y the region y coordinate
 	 * @param z the region z coordinate
-	 * @param material
+	 * @return the region
+	 */
+	@SnapshotRead
+	public Region getRegion(int x, int y, int z);
+	
+	/**
+	 * Gets the region at block position
+	 * 
+	 * @param point in the world
+	 * @return the region
+	 */
+	@SnapshotRead
+	public Region getRegion(Point point);
+	
+	/**
+	 * Gets the chunk at chunk coordinates (x, y, z)
+	 * 
+	 * @param x the chunk x coordinate
+	 * @param y the chunk y coordinate
+	 * @param z the chunk z coordinate
 	 * @return the chunk
 	 */
 	@SnapshotRead
-	public abstract Region getRegion(int x, int y, int z);
+	public Chunk getChunk(int x, int y, int z);
+	
+	/**
+	 * Gets the chunk at block position
+	 * 
+	 * @param point in the world
+	 * @return the chunk
+	 */
+	@SnapshotRead
+	public Chunk getChunk(Point point);
 	
 	/**
 	 * Create a new Entity for initialization
