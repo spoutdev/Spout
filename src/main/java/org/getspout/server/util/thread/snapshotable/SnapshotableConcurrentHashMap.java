@@ -176,8 +176,8 @@ public class SnapshotableConcurrentHashMap<K, V> implements Snapshotable {
 	}
 	
 	private void markDirty(K key) {
-		boolean success = dirtyMap.putIfAbsent(key, Boolean.TRUE);
-		if (success) {
+		Boolean old = dirtyMap.putIfAbsent(key, Boolean.TRUE);
+		if (old == null) {
 			dirtyQueue.add(key);
 		}
 	}

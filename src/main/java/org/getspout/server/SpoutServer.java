@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.getspout.api.ChatColor;
 import org.getspout.api.Server;
+import org.getspout.api.Spout;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandException;
 import org.getspout.api.command.CommandRegistrationsFactory;
@@ -136,8 +137,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	/**
 	 * loaded plugins
 	 */
-	private Plugin[] plugins;
-	
 	private SnapshotableConcurrentLinkedHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentLinkedHashMap<String, SpoutWorld>(snapshotManager, null);
 	
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
@@ -158,8 +157,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 	
 	public static void main(String[] args) {
-		//org.getspout.unchecked.server.SpoutServer.main(args);
-		
 		SpoutServer server = new SpoutServer();
 		server.start();
 		
@@ -168,6 +165,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 	
 	public void start() {
+		Spout.setGame(this);
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory =
 				new AnnotatedCommandRegistrationFactory(new SimpleInjector(this),
@@ -205,7 +203,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (!pluginDirectory.exists()) 
 			pluginDirectory.mkdirs();
 		
-		plugins = pluginManager.loadPlugins(pluginDirectory);
+		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
 		
 		for (Plugin plugin : plugins) {
 			try {
@@ -219,7 +217,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 	
 	private void enablePlugins(){
-		for(Plugin plugin : plugins){
+		for(Plugin plugin : pluginManager.getPlugins()){
 			pluginManager.enablePlugin(plugin);
 		}
 		
