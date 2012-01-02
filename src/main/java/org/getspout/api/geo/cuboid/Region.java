@@ -8,8 +8,21 @@ import org.getspout.api.util.thread.SnapshotRead;
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
  */
 public abstract class Region extends Cube {
+	
+	/**
+	 * Number of chunks on a side of a region
+	 */
+	public static final int REGION_SIZE = 16;
+	
+	/**
+	 * Number of bits in {@link #REGION_SIZE}
+	 */
+	public static final int REGION_SIZE_BITS = 4;
 
-	private final static float EDGE = 256.0f;
+	/**
+	 * Number of blocks on a side of a region
+	 */
+	private final static int EDGE = 256;
 
 	public Region(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE);
@@ -26,4 +39,11 @@ public abstract class Region extends Cube {
 	 */
 	@SnapshotRead
 	public abstract Chunk getChunk(int x, int y, int z);
+	
+	/**
+	 * Performs the nessecary tasks to unload this region from the world, and all associated chunks.
+	 * 
+	 * @param save whether to save the region and associated data.
+	 */
+	public abstract void unload(boolean save);
 }
