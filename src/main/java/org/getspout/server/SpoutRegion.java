@@ -8,6 +8,8 @@ import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
+import org.getspout.server.entity.EntityManager;
+import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.util.TripleInt;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
@@ -26,7 +28,9 @@ public class SpoutRegion extends Region{
 	public SnapshotableReference<Chunk>[][][] chunks = new SnapshotableReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
 	
 	/**
-	 * Coordinates of the lower, left start of the region. Add {@link RegionSource#REGION_SIZE} to the coords to get the upper right end of the region.
+	 * Region coordinates of the lower, left start of the region. Add {@link Region#REGION_SIZE} to the coords to get the upper right end of the region.
+	 * 
+	 * Convert to block coords by left shifting ({@link Region#REGION_SIZE_BITS} + {@link Chunk#CHUNK_SIZE_BITS})
 	 */
 	private final int x, y, z;
 	
@@ -39,6 +43,11 @@ public class SpoutRegion extends Region{
 	 * Snapshot manager for this region
 	 */
 	protected SnapshotManager snapshotManager = new SnapshotManager();
+
+	/**
+	 * Holds all of the entities to be simulated
+	 */
+	protected final EntityManager entityManager = new EntityManager();
 
 	public SpoutRegion(World world, float x, float y, float z, RegionSource source) {
 		super(world, x, y, z);
@@ -178,6 +187,26 @@ public class SpoutRegion extends Region{
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
+		switch (stage) {
+		case 0: {
+			float dt = delta / 1000.f;
+			//Update all entities
+			for(SpoutEntity ent : entityManager){
+				ent.onTick(dt);
+			}
+			break;
+		}
+		case 1: {
+			//Resolve and collisions and prepare for a snapshot.
+			for(SpoutEntity ent : entityManager){
+				ent.resolve();
+			}
+			break;
+		}
+		default: {
+			throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
+		}
+	}
 	}
 
 	public void haltRun() throws InterruptedException {
