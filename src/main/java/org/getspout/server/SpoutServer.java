@@ -48,7 +48,7 @@ import org.getspout.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
-import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
+import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentLinkedHashMap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -140,7 +140,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private Plugin[] plugins;
 	
-	SnapshotableConcurrentHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentHashMap<String, SpoutWorld>(snapshotManager, null);
+	SnapshotableConcurrentLinkedHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentLinkedHashMap<String, SpoutWorld>(snapshotManager, null);
 
 	/**
 	 * The root commnd for this server
@@ -557,7 +557,6 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-		System.out.println("Server Tick: " + delta + " stage " + stage);
 	}
 	
 	@Override
