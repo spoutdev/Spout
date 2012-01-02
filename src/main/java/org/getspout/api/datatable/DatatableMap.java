@@ -2,7 +2,7 @@ package org.getspout.api.datatable;
 
 public interface DatatableMap extends Outputable {
 
-	public void set(String key, DatatableTuple value);
+	public void set(DatatableTuple value);
 	
 	public DatatableTuple get(String key);
 	
