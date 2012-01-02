@@ -14,7 +14,7 @@ import org.getspout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends EventSource {
+public interface World extends EventSource, BlockAccess {
 
 	/**
 	 * Gets the name of the world
