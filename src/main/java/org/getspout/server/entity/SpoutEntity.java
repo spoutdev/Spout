@@ -7,6 +7,7 @@ import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.EntityMetadataStore;
 import org.getspout.api.metadata.MetadataStringValue;
@@ -18,7 +19,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public final static int NOTSPAWNEDID = -1;
 	
 	Transform transform = new Transform();
-	Transform previousLocation;
+	Transform transformSnapshot = new Transform();
 	Controller controller;
 	
 	public int id = NOTSPAWNEDID;
@@ -95,7 +96,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		//Resolve Collisions Here
 		
 		//Check to see if we should fire off a Move event
-		previousLocation = transform.copy();
+	}
+	
+	public void copyToSnapshot() {
+		transformSnapshot = transform.copy();
 	}
 	
 	@Override
@@ -142,11 +146,12 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 
 	@Override
 	public Chunk getChunk() {
-		return transform.getPosition().getWorld().getChunk(transform.getPosition());
+		Point position = transformSnapshot.getPosition();
+		return position.getWorld().getChunk(position);
 	}
 
 	@Override
 	public Region getRegion() {
-		return transform.getPosition().getWorld().getRegion(transform.getPosition());
-	}
+		Point position = transformSnapshot.getPosition();
+		return position.getWorld().getRegion(position);	}
 }
