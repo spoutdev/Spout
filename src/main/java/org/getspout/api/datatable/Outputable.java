@@ -1,10 +1,11 @@
 package org.getspout.api.datatable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public interface Outputable {
-	void writeBytes(DataOutputStream out ) throws IOException;
-	Outputable readBytes(DataInputStream in) throws IOException;	
+	void output(OutputStream out ) throws IOException;
+	void input(InputStream in) throws IOException;	
 }
