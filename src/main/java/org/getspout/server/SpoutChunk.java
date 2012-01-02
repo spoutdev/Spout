@@ -23,20 +23,18 @@ public class SpoutChunk extends Chunk{
 	/**
 	 * The snapshot manager for the region that this chunk is located in.
 	 */
-	private final SnapshotManager manager;
+	private final SnapshotManager snapshotManager = new SnapshotManager();
 
-	public SpoutChunk(World world, float x, float y, float z, SnapshotManager manager) {
+	public SpoutChunk(World world, float x, float y, float z) {
 		super(world, x, y, z);
-		this.manager = manager;
-		this.blockIds = new SnapshotableShortArray(manager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
-		this.blockData = new SnapshotableByteArray(manager, new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
+		this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
+		this.blockData = new SnapshotableByteArray(snapshotManager, new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
 	}
 	
-	public SpoutChunk(World world, float x, float y, float z, SnapshotManager manager, short[] blockIds, byte[] data) {
+	public SpoutChunk(World world, float x, float y, float z, short[] blockIds, byte[] data) {
 		super(world, x, y, z);
-		this.manager = manager;
-		this.blockIds = new SnapshotableShortArray(manager, blockIds);
-		this.blockData = new SnapshotableByteArray(manager, data);
+		this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
+		this.blockData = new SnapshotableByteArray(snapshotManager, data);
 	}
 
 	@Override
@@ -93,6 +91,15 @@ public class SpoutChunk extends Chunk{
 	public void unload(boolean save) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void copySnapshotRun() throws InterruptedException {
+		snapshotManager.copyAllSnapshots();
+	}
+	
+	// Saves the chunk data - this occurs directly after a snapshot update
+	public void syncSave() {
+		// TODO
 	}
 
 }

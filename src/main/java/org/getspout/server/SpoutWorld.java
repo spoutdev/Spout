@@ -229,7 +229,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-		System.out.println("World Tick: " + delta + " stage " + stage);
 		
 		switch (stage) {
 			case 0: {
@@ -317,5 +316,5 @@ public class SpoutWorld extends AsyncManager implements World {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	
 }
