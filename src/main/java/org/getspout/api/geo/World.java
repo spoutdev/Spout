@@ -2,6 +2,7 @@ package org.getspout.api.geo;
 
 import java.util.UUID;
 
+import org.getspout.api.Server;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventSource;
@@ -99,5 +100,11 @@ public interface World extends EventSource, BlockAccess {
 	 */
 	@Threadsafe
 	public long getSeed();
-
+	
+	/**
+	 * Gets the server associated with this world
+	 * 
+	 * @return the server
+	 */
+	public Server getServer();
 }
