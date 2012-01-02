@@ -27,8 +27,8 @@ public interface BlockAccess {
 	 * Sets the block at (x, y, z) to the given material type and returns the snapshot value
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param material
 	 * @return the block's material from the snapshot
 	 */
@@ -42,8 +42,8 @@ public interface BlockAccess {
 	 * For ids greater than 255, the id must represent a value custom id
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param id
 	 * @return the block's id from the snapshot
 	 */
@@ -55,8 +55,8 @@ public interface BlockAccess {
 	 * Gets the snapshot material for the block at (x, y, z)
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @return the block's material from the snapshot
 	 */
 	@SnapshotRead
@@ -68,8 +68,8 @@ public interface BlockAccess {
 	 * Note: using live material may have a negative performance impact, relative to reading the snapshot value
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param live whether to use the live id, or snapshot value
 	 * @return the block's material
 	 */
@@ -81,8 +81,8 @@ public interface BlockAccess {
 	 * Gets the snapshot id for the block at (x, y, z)
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @return the block's material from the snapshot
 	 */
 	@SnapshotRead
@@ -94,8 +94,8 @@ public interface BlockAccess {
 	 * Note: using live id may have a negative performance impact, relative to reading the snapshot value
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param live whether to use the live id, or snapshot value
 	 * @return the block's material
 	 */
@@ -107,8 +107,8 @@ public interface BlockAccess {
 	 * Gets the snapshot data for the block at (x, y, z)
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @return the block's data from the snapshot
 	 */
 	@SnapshotRead
@@ -120,8 +120,8 @@ public interface BlockAccess {
 	 * Note: using live data may have a negative performance impact, relative to reading the snapshot value
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param live whether to use the live data, or snapshot value
 	 * @return the block's data
 	 */
@@ -133,8 +133,8 @@ public interface BlockAccess {
 	 * Sets the snapshot data for the block at (x, y, z) to the given data and returns the snapshot value.
 	 * 
 	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param data to set at the block
 	 * @return the block's data from the snapshot
 	 */
