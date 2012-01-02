@@ -241,6 +241,57 @@ public class CollisionHelper {
 		return !a.normal.equals(b.normal) && !a.normal.equals(b.normal.scale(-1));
 	}
 
+	
+	public static Vector3 getCollision(BoundingSphere a, BoundingBox b){
+		//TODO implement this
+		return null;
+	}
+	
+	public static Vector3 getCollision(BoundingBox a, Plane b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(BoundingSphere a, BoundingSphere b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(BoundingBox a, Segment b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(BoundingSphere a, Plane b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(Plane a, Plane b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(Plane a, Ray b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(Plane a, Segment b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(Ray a, Ray b){
+		//TODO this
+		return null;
+	}
+	
+	public static Vector3 getCollision(Segment a, Segment b){
+		//TODO this
+		return null;
+	}
+	
 	public static Vector3 getCollision(BoundingBox a, Ray b) {
 		float tmin = 0.0f;
 		float tmax = Float.MAX_VALUE;
@@ -422,7 +473,9 @@ public class CollisionHelper {
 	}
 
 	/**
-	 * Another pointless method.
+	 * Checks if a box contains a Plane
+	 * 
+	 * Will always return false.
 	 * 
 	 * @param a
 	 * @param b
@@ -433,7 +486,9 @@ public class CollisionHelper {
 	}
 	
 	/**
-	 * Completely pointless method. You can remove it if you want.
+	 * Checks if a BoundingBox will contain a Ray
+	 * 
+	 * Will always return false.
 	 * 
 	 * @param a
 	 * @param b
