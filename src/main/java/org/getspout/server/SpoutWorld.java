@@ -38,8 +38,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	* The region source
 	*/
-	// TODO
-	//private final RegionSource regions;
+	private final RegionSource regions;
 
 	/**
 	* This world's Random instance.
@@ -143,6 +142,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.seed = seed;
 		this.name = name;
 		this.entityManager = new EntityManager();
+		this.regions = new RegionSource(this);
 	}
 	
 	@Override
@@ -175,8 +175,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	@Override
 	public Region getRegion(int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return null;
+		return regions.getRegion(x, y, z);
 	}
 	
 	@Override
