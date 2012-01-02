@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +26,6 @@ import org.getspout.api.command.WrappedCommandException;
 import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
-import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
@@ -49,6 +49,7 @@ import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentLinkedHashMap;
+import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -76,15 +77,12 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	private String name = "Spout Server";
 	
-	private volatile boolean stop = false;
-	
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	
 	/**
 	 * This list of players for the server
 	 */
 	private LinkedHashSet<SpoutPlayer> players = new LinkedHashSet<SpoutPlayer>();
-	private final static Entity[] emptyEntityArray = new Entity[0];
 
 	/**
 	 * The security manager
@@ -140,8 +138,10 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private Plugin[] plugins;
 	
-	SnapshotableConcurrentLinkedHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentLinkedHashMap<String, SpoutWorld>(snapshotManager, null);
-
+	private SnapshotableConcurrentLinkedHashMap<String,SpoutWorld> loadedWorlds = new SnapshotableConcurrentLinkedHashMap<String, SpoutWorld>(snapshotManager, null);
+	
+	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	
 	/**
 	 * The root commnd for this server
 	 */
@@ -453,6 +453,32 @@ public class SpoutServer extends AsyncManager implements Server {
 			return world;
 		}
 	}
+	
+	@Override
+	public boolean setDefaultWorld(World world) {
+		if (world == null) {
+			return false;
+		} else {
+			defaultWorld.set(world);
+			return true;
+		}
+	}
+
+	@Override
+	public World getDefaultWorld() {
+		World d = defaultWorld.get();
+		if (d == null || !loadedWorlds.get().containsKey(d.getName())) {
+			Map<String, SpoutWorld> l = loadedWorlds.get();
+			if (l.size() == 0) {
+				return null;
+			} else {
+				World first = l.values().iterator().next();
+				return first;
+			}
+		} else {
+			return d;
+		}
+	}
 
 	@Override
 	public boolean isOnlineMode() {
@@ -546,8 +572,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		// And finally kill the console
 		consoleManager.stop();
 		scheduler.stop();
-		
-		stop = true;
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
-import org.getspout.server.util.thread.snapshotable.SnapshotableImmutable;
+import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 import org.getspout.server.util.thread.snapshotable.SnapshotableInt;
 import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
 
@@ -53,7 +53,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	* The spawn position.
 	*/
-	private SnapshotableImmutable<Point> spawnLocation;
+	private SnapshotableReference<Point> spawnLocation;
 
 	/**
 	* Whether to keep the spawn chunks in memory (prevent them from being

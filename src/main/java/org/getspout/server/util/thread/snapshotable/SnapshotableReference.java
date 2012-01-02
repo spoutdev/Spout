@@ -11,11 +11,11 @@ import org.getspout.api.util.thread.SnapshotRead;
  * 
  * @param <T> the underlying type
  */
-public class SnapshotableImmutable<T> implements Snapshotable {
+public class SnapshotableReference<T> implements Snapshotable {
 	private volatile T next;
 	private T snapshot;
 	
-	public SnapshotableImmutable(SnapshotManager manager, T initial) {
+	public SnapshotableReference(SnapshotManager manager, T initial) {
 		next = initial;
 		snapshot = initial;
 		manager.add(this);
