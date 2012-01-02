@@ -25,6 +25,7 @@ import org.getspout.api.math.Vector3;
 import org.getspout.api.util.Color;
 
 public abstract class PacketUtil {
+
 	public static final int maxString = 32767;
 	public static final byte FLAG_COLORINVALID = 1;
 	public static final byte FLAG_COLOROVERRIDE = 2;
@@ -193,4 +194,79 @@ public abstract class PacketUtil {
 		return new Vector2(input.readFloat(), input.readFloat());
 	}
 
+	/**
+	 * Unpacks an integer from the smallest space for network use.
+	 * @param input network stream
+	 * @return the value
+	 * @throws IOException on network error
+	 */
+	public static int readPacked(final DataInputStream input)
+			throws IOException {
+		int value = input.readByte();
+		if ((value & 0x80) > 0) {
+			value = (value & 0x7F) + (input.readByte() << 7);
+		}
+		if ((value & 0x4000) > 0) {
+			value = (value & 0x3FFF) + (input.readByte() << 14);
+		}
+		if ((value & 0x200000) > 0) {
+			value = (value & 0x1FFFFF) + (input.readByte() << 21);
+		}
+		if ((value & 0x10000000) > 0) {
+			value = (value & 0x0FFFFFFF) + (input.readByte() << 28);
+		}
+		return value;
+	}
+
+	/**
+	 * Packs an integer into the smallest space for network use.
+	 * @param output network stream
+	 * @param value the value
+	 * @throws IOException on network error
+	 */
+	public static void writePacked(final DataOutputStream output, final int value)
+			throws IOException {
+		if (value < 0x80) {
+			output.writeByte(value);
+		} else if (value < 0x4000) {
+			output.writeByte(value & 0x7F | 0x80);
+			output.writeByte((value & 0x3F80) >>> 7);
+		} else if (value < 0x200000) {
+			output.writeByte(value & 0x7F | 0x80);
+			output.writeByte((value & 0x3FFF | 0x4000) >>> 7);
+			output.writeByte((value & 0x1FFFFF) >>> 14);
+		} else if (value < 0x10000000) {
+			output.writeByte(value & 0x7F | 0x80);
+			output.writeByte((value & 0x3FFF | 0x4000) >>> 7);
+			output.writeByte((value & 0x1FFFFF | 0x200000) >>> 14);
+			output.writeByte((value & 0x0FFFFFFF) >>> 21);
+		} else {
+			output.writeByte(value & 0x7F | 0x80);
+			output.writeByte((value & 0x3FFF | 0x4000) >>> 7);
+			output.writeByte((value & 0x1FFFFF | 0x200000) >>> 14);
+			output.writeByte((value & 0x0FFFFFFF | 0x10000000) >>> 21);
+			output.writeByte(value >>> 28);
+		}
+	}
+
+	/**
+	 * Gets the number of bytes it will take to send a packed number.
+	 * @param value the number to pack
+	 * @return the number of bytes
+	 */
+	public static int getPackedSize(final int value) {
+		int size = 0;
+		if (value < 0x80) {
+			size = 1;
+		} else if (value < 0x4000) {
+			size = 2;
+		} else if (value < 0x200000) {
+			size = 3;
+		} else if (value < 0x10000000) {
+			size = 4;
+		} else {
+			size = 5;
+		}
+		return size;
+	}
 }
