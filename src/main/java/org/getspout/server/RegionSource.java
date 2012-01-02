@@ -2,13 +2,13 @@ package org.getspout.server;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Region;
-import org.getspout.api.util.map.TInt24TripleObjectHashMap;
+import org.getspout.api.util.map.TInt21TripleObjectHashMap;
 
 public class RegionSource {
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
-	private final TInt24TripleObjectHashMap<Region> loadedRegions = new TInt24TripleObjectHashMap<Region>(100);
+	private final TInt21TripleObjectHashMap<Region> loadedRegions = new TInt21TripleObjectHashMap<Region>(100);
 	
 	/**
 	 * World associated with this region source
