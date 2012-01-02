@@ -10,6 +10,7 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.material.BlockMaterial;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.util.thread.AsyncManager;
@@ -178,6 +179,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		return null;
 	}
 	
+	@Override
 	public int hashCode() {
 		UUID uid = getUID();
 		long hash = uid.getMostSignificantBits();
@@ -186,8 +188,9 @@ public class SpoutWorld extends AsyncManager implements World {
 		return (int)(hash ^ (hash >> 32));
 	}
 	
+	@Override
+	
 	public boolean equals(Object obj) {
-		
 		if (obj == null) {
 			return false;
 		} else if (!(obj instanceof SpoutWorld)) {
@@ -230,24 +233,24 @@ public class SpoutWorld extends AsyncManager implements World {
 		System.out.println("World Tick: " + delta + " stage " + stage);
 		
 		switch (stage) {
-		case 0: {
-			float dt = delta / 1000.f;
-			//Update all entities
-			for(SpoutEntity ent : entityManager){
-				ent.onTick(dt);
+			case 0: {
+				float dt = delta / 1000.f;
+				//Update all entities
+				for(SpoutEntity ent : entityManager){
+					ent.onTick(dt);
+				}
+				break;
 			}
-			break;
-		}
-		case 1: {
-			//Resolve and collisions and prepare for a snapshot.
-			for(SpoutEntity ent : entityManager){
-				ent.resolve();
+			case 1: {
+				//Resolve and collisions and prepare for a snapshot.
+				for(SpoutEntity ent : entityManager){
+					ent.resolve();
+				}
+				break;
 			}
-			break;
-		}
-		default: {
-			throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
-		}
+			default: {
+				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
+			}
 		}
 		
 	}
@@ -260,6 +263,60 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public long getSeed() {
 		return seed;
+	}
+
+	@Override
+	public BlockMaterial setBlockMaterial(int x, int y, int z, BlockMaterial material) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public short setBlockId(int x, int y, int z, short id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public BlockMaterial getBlockMaterial(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BlockMaterial getBlockMaterial(int x, int y, int z, boolean live) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public short getBlockId(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public short getBlockId(int x, int y, int z, boolean live) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public byte getBlockData(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public byte getBlockData(int x, int y, int z, boolean live) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public byte setBlockData(int x, int y, int z, byte data) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
