@@ -7,16 +7,16 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 
 /**
- * A simplistic map that supports a 3 24 bit integers for keys, using a trove long Object hashmap in the backend.
+ * A simplistic map that supports a 3 21 bit integers for keys, using a trove long Object hashmap in the backend. 1 bit is wasted.
  */
-public class TInt24TripleObjectHashMap<K> {
+public class TInt21TripleObjectHashMap<K> {
 	private TLongObjectHashMap<K> map;
 
-	public TInt24TripleObjectHashMap() {
+	public TInt21TripleObjectHashMap() {
 		map = new TLongObjectHashMap<K>(100);
 	}
 
-	public TInt24TripleObjectHashMap(int capacity) {
+	public TInt21TripleObjectHashMap(int capacity) {
 		map = new TLongObjectHashMap<K>(capacity);
 	}
 
@@ -77,6 +77,6 @@ public class TInt24TripleObjectHashMap<K> {
 	}
 
 	private static final long key(int x, int y, int z) {
-		return (x & 0xFFFFFF) << 48 | (z & 0xFFFFFF) << 24 | y & 0xFFFFFF;
+		return (x & 0x200000) << 42 | (z & 0x200000) << 21 | y & 0x200000;
 	}
 }
