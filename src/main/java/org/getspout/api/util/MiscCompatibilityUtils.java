@@ -33,10 +33,12 @@ public class MiscCompatibilityUtils {
 		
 		@SuppressWarnings("unchecked")
 		Class<T[]> clazz = (Class<T[]>)original.getClass();
+		@SuppressWarnings("unchecked")
+		Class<T> clazzComponent = (Class<T>)clazz.getComponentType();
 	
 		int length = to - from;
 		
-		T[] newArray = clazz.cast(Array.newInstance(clazz, length));
+		T[] newArray = clazz.cast(Array.newInstance(clazzComponent, length));
 		
 		int d = 0;
 		

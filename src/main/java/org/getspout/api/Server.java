@@ -22,6 +22,8 @@ import java.util.Collection;
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
 import org.getspout.api.scheduler.Scheduler;
+import org.getspout.api.util.thread.DelayedWrite;
+import org.getspout.api.util.thread.SnapshotRead;
 
 /**
  * Represents the server-specific implementation of Minecraft.
@@ -84,6 +86,27 @@ public interface Server extends Game {
 	 * @return true if the world was unloaded, false if not
 	 */
 	public boolean unloadWorld(World world, boolean save);
+	
+	/**
+	 * Sets the default world.  
+	 * 
+	 * The first loaded world will be set as the default world automatically.
+	 * 
+	 * New players start in the default world.
+	 * 
+	 * @param world the default world
+	 * @return true on success
+	 */
+	@DelayedWrite
+	public boolean setDefaultWorld(World world);
+	
+	/**
+	 * Gets the default world.
+	 * 
+	 * @return the default world
+	 */
+	@SnapshotRead
+	public World getDefaultWorld();
 
 	/**
 	 * True if this server is checking minecraft.net's authentication servers to

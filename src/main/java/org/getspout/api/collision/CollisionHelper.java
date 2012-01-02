@@ -2,7 +2,7 @@ package org.getspout.api.collision;
 
 import org.getspout.api.math.MathHelper;
 import org.getspout.api.math.Vector3;
-import org.getspout.api.math.Vector3;
+import org.getspout.api.math.Vector3m;
 
 public class CollisionHelper {
 	/**
@@ -286,6 +286,51 @@ public class CollisionHelper {
 		//TODO this
 		return null;
 	}
+	/**
+	 * Gets the intersection between two BoundingBoxes.
+	 * Null will be returned if there's no collision.
+	 * 
+	 * Inspiration taken from:
+	 * http://clb.demon.fi/MathGeoLib/docs/AABB.cpp_code.html#876
+	 * http://tekpool.wordpress.com/2006/10/12/rectangle-intersection-find-the-intersecting-rectangle/
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static BoundingBox getIntersection(BoundingBox a, BoundingBox b) {
+		if ( ! checkCollision(a, b)) return null;
+		
+		Vector3 intersectionMin = new Vector3(
+			Math.max(a.min.getX(), b.min.getX()),
+			Math.max(a.min.getY(), b.min.getY()),
+			Math.max(a.min.getZ(), b.min.getZ())
+		);
+		
+		Vector3 intersectionMax = new Vector3(
+			Math.min(a.max.getX(), b.max.getX()),
+			Math.min(a.max.getY(), b.max.getY()),
+			Math.min(a.max.getZ(), b.max.getZ())
+		);
+
+		return new BoundingBox(intersectionMin, intersectionMax);
+	}
+	
+	/**
+	 * Gets the collision point between two BoundingBoxes.
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static Vector3 getCollision(BoundingBox a, BoundingBox b) {
+		BoundingBox intersection = getIntersection(a, b);
+		if (intersection == null) return null;
+		Vector3m ret = new Vector3m(intersection.min);
+		ret.add(intersection.max);
+		ret.scale(0.5f);
+		return ret;
+	}
+	
 	
 	public static Vector3 getCollision(Segment a, Segment b){
 		//TODO this
