@@ -1,8 +1,11 @@
 package org.getspout.server;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.getspout.api.Server;
+import org.getspout.api.entity.Controller;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
@@ -29,8 +32,6 @@ public class SpoutRegion extends Region{
 	
 	/**
 	 * Region coordinates of the lower, left start of the region. Add {@link Region#REGION_SIZE} to the coords to get the upper right end of the region.
-	 * 
-	 * Convert to block coords by left shifting ({@link Region#REGION_SIZE_BITS} + {@link Chunk#CHUNK_SIZE_BITS})
 	 */
 	private final int x, y, z;
 	
@@ -210,6 +211,59 @@ public class SpoutRegion extends Region{
 	}
 
 	public void haltRun() throws InterruptedException {
+	}
+	
+	/**
+	 * Gets all entities with the specified type.
+	 *
+	 * @param type The {@link Class} for the type.
+	 * @param <T> The type of entity.
+	 * @return A collection of entities with the specified type.
+	 */
+	public Collection<SpoutEntity> getAll(Class<? extends Controller> type) {
+		return entityManager.getAll(type);
+	}
+	
+	/**
+	 * Gets all entities.
+	 *
+	 * @return A collection of entities.
+	 */
+	public Collection<SpoutEntity> getAll() {
+		return entityManager.getAll();
+	}
+
+	/**
+	 * Gets an entity by its id.
+	 *
+	 * @param id The id.
+	 * @return The entity, or {@code null} if it could not be found.
+	 */
+	public SpoutEntity getEntity(int id) {
+		return entityManager.getEntity(id);
+	}
+
+	/**
+	 * Allocates the id for an entity.
+	 *
+	 * @param entity The entity.
+	 * @return The id.
+	 */
+	public int allocate(SpoutEntity entity) {
+		return entityManager.allocate(entity);
+	}
+
+	/**
+	 * Deallocates the id for an entity.
+	 *
+	 * @param entity The entity.
+	 */
+	public void deallocate(SpoutEntity entity) {
+		entityManager.deallocate(entity);
+	}
+
+	public Iterator<SpoutEntity> iterator() {
+		return entityManager.iterator();
 	}
 
 }

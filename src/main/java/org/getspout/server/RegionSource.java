@@ -1,6 +1,7 @@
 package org.getspout.server;
 
 import org.getspout.api.geo.World;
+import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -38,7 +39,8 @@ public class RegionSource {
 	 */
 	@SnapshotRead
 	public Region getRegionFromBlock(int x, int y, int z) {
-		return getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS);
+		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
+		return getRegion(x >> shifts, y >> shifts, z >> shifts);
 	}
 	
 	/**
@@ -85,7 +87,7 @@ public class RegionSource {
 		if (region != null || !load) {
 			return region;
 		} else {
-			region = new SpoutRegion(world, x << Region.REGION_SIZE_BITS, y << Region.REGION_SIZE_BITS, z << Region.REGION_SIZE_BITS, this);
+			region = new SpoutRegion(world, x, y, z, this);
 			Region current = loadedRegions.putIfAbsent(x,  y, z, region);
 			
 			if (current != null) {

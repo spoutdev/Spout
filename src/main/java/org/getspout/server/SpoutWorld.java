@@ -8,6 +8,7 @@ import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
+import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.material.BlockMaterial;
@@ -179,6 +180,31 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 	
 	@Override
+	public Region getRegion(Point point) {
+		int x = (int)Math.floor(point.getX());
+		int y = (int)Math.floor(point.getY());
+		int z = (int)Math.floor(point.getZ());
+		return regions.getRegionFromBlock(x, y, z);
+	}
+
+	@Override
+	public Chunk getChunk(int x, int y, int z) {
+		Region region = getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS);
+		if (region != null) {
+			return region.getChunk(x % Region.REGION_SIZE_BITS, y % Region.REGION_SIZE_BITS, z % Region.REGION_SIZE_BITS);
+		}
+		return null;
+	}
+
+	@Override
+	public Chunk getChunk(Point point) {
+		int x = (int)Math.floor(point.getX());
+		int y = (int)Math.floor(point.getY());
+		int z = (int)Math.floor(point.getZ());
+		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
+	}
+	
+	@Override
 	public int hashCode() {
 		UUID uid = getUID();
 		long hash = uid.getMostSignificantBits();
@@ -210,7 +236,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void spawnEntity(Entity e) {
 		if(e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
-		entityManager.allocate((SpoutEntity)e);		
+		SpoutRegion region = (SpoutRegion)e.getRegion();
+		region.allocate((SpoutEntity)e);
 	}
 
 	@Override
@@ -316,5 +343,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	
 	
 }

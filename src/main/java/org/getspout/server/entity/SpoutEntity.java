@@ -5,6 +5,8 @@ import java.util.List;
 import org.getspout.api.collision.model.CollisionModel;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.geo.cuboid.Chunk;
+import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.EntityMetadataStore;
 import org.getspout.api.metadata.MetadataStringValue;
@@ -138,6 +140,13 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		
 	}
 
+	@Override
+	public Chunk getChunk() {
+		return transform.getPosition().getWorld().getChunk(transform.getPosition());
+	}
 
-
+	@Override
+	public Region getRegion() {
+		return transform.getPosition().getWorld().getRegion(transform.getPosition());
+	}
 }
