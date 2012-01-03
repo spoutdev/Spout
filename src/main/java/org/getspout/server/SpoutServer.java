@@ -33,7 +33,10 @@ import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
 import org.getspout.api.datatable.DatatableTuple;
 import org.getspout.api.event.EventManager;
+import org.getspout.api.event.Order;
 import org.getspout.api.event.SimpleEventManager;
+import org.getspout.api.event.player.PlayerConnectEvent;
+import org.getspout.api.event.player.PlayerJoinEvent;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.math.Vector3;
@@ -69,6 +72,8 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.getspout.server.datatable.SpoutDatatableMap;
 import org.getspout.server.datatable.value.*;
 import org.getspout.server.entity.SpoutEntity;
+import org.getspout.server.executor.PlayerConnectExecutor;
+import org.getspout.server.executor.PlayerJoinEventExecutor;
 
 
 public class SpoutServer extends AsyncManager implements Server {
@@ -237,6 +242,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
+		
+		registerInternalEvents();
 		scheduler.startMainThread();
 		
 
@@ -280,7 +287,16 @@ public class SpoutServer extends AsyncManager implements Server {
 		}
 		
 	}
+	
+	private void registerInternalEvents(){
+		getEventManager().registerEvent(PlayerConnectEvent.class, Order.MONITOR, new PlayerConnectExecutor(), this);
+		getEventManager().registerEvent(PlayerJoinEvent.class, Order.LATEST, new PlayerJoinEventExecutor(this), this);
+		
+	}
 
+	public Collection<SpoutPlayer> rawGetAllOnlinePlayers(){
+		return players;
+	}
 	
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.

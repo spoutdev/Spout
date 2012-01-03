@@ -7,6 +7,7 @@ import org.getspout.api.protocol.Session;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.api.util.thread.Threadsafe;
+import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
@@ -99,5 +100,9 @@ public class SpoutPlayer implements Player {
 	@Override
 	public boolean sendRawMessage(String message) {
 		return false;
+	}
+	
+	public void setEntity(SpoutEntity p){
+		this.entity = p;
 	}
 }
