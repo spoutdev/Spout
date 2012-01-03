@@ -81,36 +81,36 @@ public class PluginDescriptionFile {
 			this.name = (String) map.get("name");
 
 			if (!this.name.matches("^[A-Za-z0-9 _.-]+$")) {
-				throw new InvalidDescriptionFileException("The field 'name' in spout.yml contains invalid characters.");
+				throw new InvalidDescriptionFileException("The field 'name' in plugin.yml contains invalid characters.");
 			}
 		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'name' is not defined in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'name' is not defined in the plugin.yml!");
 		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'name' is of the wrong type in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'name' is of the wrong type in the plugin.yml!");
 		}
 
 		try {
 			this.main = (String) map.get("main");
 		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'main' is not defined in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'main' is not defined in the plugin.yml!");
 		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'main' is of the wrong type in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'main' is of the wrong type in the plugin.yml!");
 		}
 
 		try {
 			this.version = map.get("version").toString();
 		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'version' is not defined in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'version' is not defined in the plugin.yml!");
 		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'version' is of the wrong type in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'version' is of the wrong type in the plugin.yml!");
 		}
 
 		try {
 			this.platform = Platform.valueOf(map.get("platform").toString().toUpperCase());
 		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'platform' is not defined in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'platform' is not defined in the plugin.yml!");
 		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'platform' is of the wrong type in the spout.yml!");
+			throw new InvalidDescriptionFileException(ex, "The field 'platform' is of the wrong type in the plugin.yml!");
 		}
 		
 		this.fullname = new StringBuilder().append(name).append(" v").append(version).toString();
@@ -119,7 +119,7 @@ public class PluginDescriptionFile {
 			try {
 				this.author = (String) map.get("author");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'author' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'author' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -127,7 +127,7 @@ public class PluginDescriptionFile {
 			try {
 				this.authors = (List<String>) map.get("authors");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'authors' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'authors' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -135,7 +135,7 @@ public class PluginDescriptionFile {
 			try {
 				this.depends = (List<String>) map.get("depends");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'depends' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'depends' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -143,7 +143,7 @@ public class PluginDescriptionFile {
 			try {
 				this.softdepends = (List<String>) map.get("softdepends");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'softdepends' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'softdepends' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -151,7 +151,7 @@ public class PluginDescriptionFile {
 			try {
 				this.description = (String) map.get("description");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'description' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'description' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -159,7 +159,7 @@ public class PluginDescriptionFile {
 			try {
 				this.load = LoadOrder.valueOf(map.get("load").toString().toUpperCase());
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'load' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'load' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -167,7 +167,7 @@ public class PluginDescriptionFile {
 			try {
 				this.reload = (Boolean) map.get("reload");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'reload' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'reload' is of the wrong type in the plugin.yml!");
 			}
 		}
 
@@ -175,7 +175,7 @@ public class PluginDescriptionFile {
 			try {
 				this.website = (String) map.get("website");
 			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'website' is of the wrong type in the spout.yml!");
+				throw new InvalidDescriptionFileException(ex, "The field 'website' is of the wrong type in the plugin.yml!");
 			}
 		}
 

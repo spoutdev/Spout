@@ -32,7 +32,7 @@ public class InvalidDescriptionFileException extends Exception {
 	private final String message;
 
 	public InvalidDescriptionFileException(Throwable throwable) {
-		this(throwable, "Invalid spout.yml");
+		this(throwable, "Invalid plugin.yml");
 	}
 
 	public InvalidDescriptionFileException(String message) {
@@ -45,7 +45,7 @@ public class InvalidDescriptionFileException extends Exception {
 	}
 
 	public InvalidDescriptionFileException() {
-		this(null, "Invalid spout.yml");
+		this(null, "Invalid plugin.yml");
 	}
 
 	public Throwable getCause() {
