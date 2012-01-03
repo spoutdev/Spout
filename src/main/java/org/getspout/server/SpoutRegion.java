@@ -3,6 +3,7 @@ package org.getspout.server;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.Server;
 import org.getspout.api.entity.Controller;
@@ -11,6 +12,7 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.util.thread.DelayedWrite;
+import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
@@ -71,22 +73,40 @@ public class SpoutRegion extends Region{
 	@Override
 	@SnapshotRead
 	public Chunk getChunk(int x, int y, int z) {
-		if (x < Region.REGION_SIZE && x > 0 && y < Region.REGION_SIZE && y > 0 && z < Region.REGION_SIZE && z > 0) {
+		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
 			return chunks[x][y][z].get();
 		}
 		throw new IndexOutOfBoundsException("Invalid coordinates");
 	}
 	
-
 	@Override
-	public Chunk getChunk(int x, int y, int z, boolean load) {
-		if (x < Region.REGION_SIZE && x > 0 && y < Region.REGION_SIZE && y > 0 && z < Region.REGION_SIZE && z > 0) {
+	@LiveRead
+	public Chunk getChunkLive(int x, int y, int z, boolean load) {
+		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
 			Chunk chunk = chunks[x][y][z].get();
 			if (chunk != null || !load) {
 				return chunk;
 			}
 			//TODO: generate new chunk
 			//this.getWorld().
+			
+			SnapshotableReference<Chunk> ref = chunks[x][y][z];
+
+			boolean success = false;
+			
+			while (!success) {
+				SpoutChunk newChunk = new SpoutChunk(getWorld(), x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
+				success = ref.compareAndSet(null, newChunk);
+
+				if (success) {
+					return newChunk;
+				} else {
+					Chunk oldChunk = ref.getLive();
+					if (oldChunk != null) {
+						return oldChunk;
+					}
+				}
+			}
 		}
 		throw new IndexOutOfBoundsException("Invalid coordinates");
 	}
@@ -136,6 +156,8 @@ public class SpoutRegion extends Region{
 	
 	
 	public void copySnapshotRun() throws InterruptedException {
+		entityManager.copyAllSnapshots();
+		
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
@@ -234,6 +256,10 @@ public class SpoutRegion extends Region{
 	public void haltRun() throws InterruptedException {
 	}
 	
+	public void preSnapshotRun() throws InterruptedException {
+		entityManager.preSnapshot();
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Collection<Entity> getAll(Class<? extends Controller> type) {
 		return (Collection<Entity>)(Collection)entityManager.getAll(type);
@@ -269,5 +295,9 @@ public class SpoutRegion extends Region{
 
 	public Iterator<SpoutEntity> iterator() {
 		return entityManager.iterator();
+	}
+	
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 }

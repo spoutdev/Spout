@@ -44,6 +44,21 @@ public class RegionSource {
 	}
 	
 	/**
+	 * Gets the region associated with the block x, y, z coordinates
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param true to load the region
+	 * @return region, if it is loaded and exists
+	 */
+	@LiveRead
+	public Region getRegionFromBlockLive(int x, int y, int z, boolean load) {
+		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
+		return getRegionLive(x >> shifts, y >> shifts, z >> shifts, load);
+	}
+	
+	/**
 	 * Gets the region associated with the region x, y, z coordinates
 	 * 
 	 * @param x the x coordinate
@@ -65,7 +80,7 @@ public class RegionSource {
 	 * @return region, if it is loaded and exists
 	 */
 	@LiveRead
-	public Region getLiveRegion(int x, int y, int z) {
+	public Region getRegionLive(int x, int y, int z) {
 		return loadedRegions.getLive(x, y, z);
 	}
 	
@@ -81,14 +96,14 @@ public class RegionSource {
 	 * @return region
 	 */
 	@LiveRead
-	public Region getRegion(int x, int y, int z, boolean load) {
+	public Region getRegionLive(int x, int y, int z, boolean load) {
 		Region region = loadedRegions.getLive(x, y, z);
 		
 		if (region != null || !load) {
 			return region;
 		} else {
 			region = new SpoutRegion(world, x, y, z, this);
-			Region current = loadedRegions.putIfAbsent(x,  y, z, region);
+			Region current = loadedRegions.putIfAbsent(x, y, z, region);
 			
 			if (current != null) {
 				return current;

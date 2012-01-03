@@ -93,25 +93,41 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * Allocates the id for an entity.
 	 *
 	 * @param entity The entity.
+	 * @param currentId the entity's current id, or null
 	 * @return The id.
 	 */
+	// TODO - should be a global server based id register, not regional
 	public int allocate(SpoutEntity entity) {
-		for (int id = nextId; id < Integer.MAX_VALUE; id++) {
-			if (!entities.getLive().containsKey(id)) {
-				entities.put(id, entity);
-				entity.setId(id);
-				getRawAll(entity.getController().getClass()).add(entity);
-				nextId = id + 1;
-				return id;
+		int currentId = entity.getId();
+		if (currentId != SpoutEntity.NOTSPAWNEDID) {
+			entities.put(currentId, entity);
+			getRawAll(entity.getController().getClass()).add(entity);
+			return currentId;
+		} else {
+			for (int id = nextId; id < Integer.MAX_VALUE; id++) {
+				if (!entities.getLive().containsKey(id)) {
+					entities.put(id, entity);
+					entity.setId(id);
+					Controller controller = entity.getController();
+					if (controller != null) {
+						getRawAll(controller.getClass()).add(entity);
+					}
+					nextId = id + 1;
+					return id;
+				}
 			}
-		}
 
-		for (int id = Integer.MIN_VALUE; id < -1; id++) { // as -1 is used as a special value
-			if (!entities.getLive().containsKey(id)) {
-				entities.put(id, entity);
-				getRawAll(entity.getController().getClass()).add(entity);
-				nextId = id + 1;
-				return id;
+			for (int id = Integer.MIN_VALUE; id < -1; id++) { // as -1 is used as a special value
+				if (!entities.getLive().containsKey(id)) {
+					entities.put(id, entity);
+					entity.setId(id);
+					Controller controller = entity.getController();
+					if (controller != null) {
+						getRawAll(controller.getClass()).add(entity);
+					}
+					nextId = id + 1;
+					return id;
+				}
 			}
 		}
 
@@ -125,7 +141,10 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		entities.remove(entity.getId());
-		getRawAll(entity.getController().getClass()).remove(entity);
+		Controller controller = entity.getController();
+		if (controller != null) {
+			getRawAll(entity.getController().getClass()).remove(entity);
+		}
 	}
 
 	@Override
@@ -133,11 +152,26 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		return entities.get().values().iterator();
 	}
 	
+	public void preSnapshot() {
+		// Entity removal and additions happen here
+		for (SpoutEntity e : entities.get().values()) {
+			e.preSnapshot();
+		}		
+	}
+	
 	/**
 	 * Updates the snapshot for all entities
 	 */
 	public void copyAllSnapshots() {
-		// Entity removal and additions happen here
+		for (SpoutEntity e : entities.get().values()) {
+			Controller controller = e.getController();
+			if (controller != null) {
+				controller.snapshotStart();
+			}
+		}
+		for (SpoutEntity e : entities.get().values()) {
+			e.copyToSnapshot();
+		}
 		snapshotManager.copyAllSnapshots();
 	}
 }

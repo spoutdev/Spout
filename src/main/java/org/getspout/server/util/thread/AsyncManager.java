@@ -114,6 +114,11 @@ public abstract class AsyncManager {
 	}
 	
 	/**
+	 * This method is called directly before copySnapshot is called
+	 */
+	public abstract void preSnapshotRun() throws InterruptedException;
+	
+	/**
 	 * This method is called in order to update the snapshot at the end of each tick
 	 */
 	public abstract void copySnapshotRun() throws InterruptedException;

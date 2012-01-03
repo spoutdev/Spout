@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 
 import org.getspout.server.util.thread.coretasks.CopySnapshotTask;
+import org.getspout.server.util.thread.coretasks.PreSnapshotTask;
 import org.getspout.server.util.thread.coretasks.StartTickTask;
 
 public enum ManagementTaskEnum {
@@ -18,6 +19,12 @@ public enum ManagementTaskEnum {
 		@Override
 		public StartTickTask call() {
 			return new StartTickTask();
+		}
+	}),
+	PRE_SNAPSHOT(3, new Callable<PreSnapshotTask>() {
+		@Override
+		public PreSnapshotTask call() {
+			return new PreSnapshotTask();
 		}
 	});
 	

@@ -1,10 +1,12 @@
 package org.getspout.server.entity;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.collision.model.CollisionModel;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.entity.PlayerController;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
@@ -16,14 +18,17 @@ import org.getspout.api.metadata.MetadataValue;
 import org.getspout.api.model.Model;
 import org.getspout.api.plugin.Plugin;
 import org.getspout.api.util.StringMap;
+import org.getspout.server.SpoutRegion;
+import org.getspout.server.SpoutServer;
 
 public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public final static int NOTSPAWNEDID = -1;
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), null, 0, Short.MAX_VALUE);
 	
-	Transform transform = new Transform();
-	Transform transformSnapshot = new Transform();
-	Controller controller;
+	private TransformAndManager transformAndManager;
+	private AtomicReference<TransformAndManager> transformAndManagerLive = new AtomicReference<TransformAndManager>();
+	private Controller controller;
+	private final SpoutServer server;
 	
 	public int id = NOTSPAWNEDID;
 	
@@ -31,8 +36,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	CollisionModel collision;
 	
 	
-	public SpoutEntity(){ 
-	
+	public SpoutEntity(SpoutServer server){ 
+		this.server = server;
+		transformAndManager = new TransformAndManager(null, this.server.getEntityManager());
+		server.getEntityManager().allocate(this);
 	}
 	
 	public int getId(){
@@ -51,8 +58,40 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		this.controller = controller;
 		controller.onAttached();
 	}
+
+	@Override
 	public Transform getTransform() {
-		return transform;
+		return transformAndManager.transform;
+	}
+	
+	@Override
+	public Transform getLiveTransform() {
+		return transformAndManagerLive.get().transform;
+	}
+	
+	@Override
+	public void setTransform(Transform transform) {
+		//boolean success = false;
+		
+		//while (!success) {
+			
+			// TransformAndManager oldTM = transformAndManagerLive.get();
+			
+			// TODO - code to handle world level entity managers
+			
+			Point newPosition = transform.getPosition();
+			Region newRegion = newPosition.getWorld().getRegion(newPosition);
+			if (newRegion == null && this.getController() instanceof PlayerController) {
+				newRegion = newPosition.getWorld().getRegionLive(newPosition, true);
+			}
+			EntityManager newEntityManager = ((SpoutRegion)newRegion).getEntityManager();
+			
+			TransformAndManager newTM = new TransformAndManager(transform, newEntityManager);
+			
+			transformAndManagerLive.set(newTM);
+			
+		//}
+		
 	}
 	
 	@Override
@@ -75,8 +114,6 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public CollisionModel getCollision() {
 		return collision;
 	}
-
-	
 	
 	/**
 	 * 
@@ -101,8 +138,20 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		//Check to see if we should fire off a Move event
 	}
 	
+	public void preSnapshot() {
+		TransformAndManager live = transformAndManagerLive.get();
+		if (live == null || transformAndManager == null || live.entityManager != transformAndManager.entityManager) {
+			if (transformAndManager != null && transformAndManager.entityManager != null) {
+				transformAndManager.entityManager.deallocate(this);
+			}
+			if (live != null && live.entityManager != null) {
+				live.entityManager.allocate(this);
+			}
+		}
+	}
+	
 	public void copyToSnapshot() {
-		transformSnapshot = transform.copy();
+		transformAndManager = transformAndManagerLive.get();
 	}
 	
 	@Override
@@ -149,12 +198,32 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 
 	@Override
 	public Chunk getChunk() {
-		Point position = transformSnapshot.getPosition();
+		Point position = transformAndManager.transform.getPosition();
 		return position.getWorld().getChunk(position);
 	}
 
 	@Override
 	public Region getRegion() {
-		Point position = transformSnapshot.getPosition();
-		return position.getWorld().getRegion(position);	}
+		Point position = transformAndManager.transform.getPosition();
+		return position.getWorld().getRegion(position);	
+	}
+	
+	private static class TransformAndManager {
+		public final Transform transform;
+		public final EntityManager entityManager;
+		
+		public TransformAndManager() {
+			this.transform = null;
+			this.entityManager = null;
+		}
+		
+		public TransformAndManager(Transform transform, EntityManager entityManager) {
+			if (transform != null) {
+				this.transform = transform.copy();
+			} else {
+				this.transform = null;
+			}
+			this.entityManager = entityManager;
+		}
+	}
 }

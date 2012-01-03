@@ -297,12 +297,29 @@ public final class SpoutScheduler implements Scheduler {
 		
 		try {
 			for (AsyncExecutor e : executors) {
+				if (!e.preSnapshot()) {
+					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
+				}
+			}
+			
+			boolean joined = false;
+			
+			while (!joined && !(shutdown && (!alreadyShutdown))) {
+				try {
+					AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+					joined = true;
+				} catch (TimeoutException e) {
+					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+				}
+			}
+			
+			for (AsyncExecutor e : executors) {
 				if (!e.copySnapshot()) {
 					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
 				}
 			}
 
-			boolean joined = false;
+			joined = false;
 			
 			while (!joined && !(shutdown && (!alreadyShutdown))) {
 				try {

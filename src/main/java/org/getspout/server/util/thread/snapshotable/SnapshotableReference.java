@@ -1,5 +1,7 @@
 package org.getspout.server.util.thread.snapshotable;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -12,11 +14,11 @@ import org.getspout.api.util.thread.SnapshotRead;
  * @param <T> the underlying type
  */
 public class SnapshotableReference<T> implements Snapshotable {
-	private volatile T next;
+	private AtomicReference<T> next = new AtomicReference<T>();
 	private T snapshot;
 	
 	public SnapshotableReference(SnapshotManager manager, T initial) {
-		next = initial;
+		next.set(initial);
 		snapshot = initial;
 		manager.add(this);
 	}
@@ -28,7 +30,19 @@ public class SnapshotableReference<T> implements Snapshotable {
 	 */
 	@DelayedWrite
 	public void set(T next) {
-		this.next = next;
+		this.next.set(next);
+	}
+	
+	/**
+	 * Sets the live value to update, if the live value is equal to expect.
+	 * 
+	 * @param expect the expected value
+	 * @param update the new value
+	 * @return true on success
+	 */
+	@DelayedWrite
+	public boolean compareAndSet(T expect, T update) {
+		return next.compareAndSet(expect, update);
 	}
 	
 	/**
@@ -48,14 +62,14 @@ public class SnapshotableReference<T> implements Snapshotable {
 	 */
 	@LiveRead
 	public T getLive() {
-		return next;
+		return next.get();
 	}
 	
 	/**
 	 * Copies the next value to the snapshot value
 	 */
 	public void copySnapshot() {
-		snapshot = next;
+		snapshot = next.get();
 	}
 
 }

@@ -11,6 +11,7 @@ import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
@@ -18,9 +19,9 @@ import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
-import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 import org.getspout.server.util.thread.snapshotable.SnapshotableInt;
 import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
+import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 
 public class SpoutWorld extends AsyncManager implements World {
 	
@@ -54,7 +55,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	* The spawn position.
 	*/
-	private SnapshotableReference<Point> spawnLocation;
+	private SnapshotableReference<Transform> spawnLocation = new SnapshotableReference<Transform>(snapshotManager, null);
 
 	/**
 	* Whether to keep the spawn chunks in memory (prevent them from being
@@ -130,7 +131,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * Holds all of the entities to be simulated
 	 */
-	EntityManager entityManager;
+	private final EntityManager entityManager;
 
 	
 	
@@ -186,12 +187,34 @@ public class SpoutWorld extends AsyncManager implements World {
 		int z = (int)Math.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z);
 	}
+	
+	@Override
+	public Region getRegionLive(int x, int y, int z, boolean load) {
+		return regions.getRegionLive(x, y, z, load);
+	}
+	
+	@Override
+	public Region getRegionLive(Point point, boolean load) {
+		int x = (int)Math.floor(point.getX());
+		int y = (int)Math.floor(point.getY());
+		int z = (int)Math.floor(point.getZ());
+		return regions.getRegionFromBlockLive(x, y, z,  load);
+	}
 
 	@Override
 	public Chunk getChunk(int x, int y, int z) {
 		Region region = getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS);
 		if (region != null) {
-			return region.getChunk(x % Region.REGION_SIZE_BITS, y % Region.REGION_SIZE_BITS, z % Region.REGION_SIZE_BITS);
+			return region.getChunk(x & (Region.REGION_SIZE - 1), y & (Region.REGION_SIZE - 1), z & (Region.REGION_SIZE - 1));
+		}
+		return null;
+	}
+	
+	@Override
+	public Chunk getChunkLive(int x, int y, int z, boolean load) {
+		Region region = getRegionLive(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, load);
+		if (region != null) {
+			return region.getChunkLive(x & (Region.REGION_SIZE - 1), y & (Region.REGION_SIZE - 1), z & (Region.REGION_SIZE - 1), load);
 		}
 		return null;
 	}
@@ -202,6 +225,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		int y = (int)Math.floor(point.getY());
 		int z = (int)Math.floor(point.getZ());
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
+	}
+	
+	@Override
+	public Chunk getChunkLive(Point point, boolean load) {
+		int x = (int)Math.floor(point.getX());
+		int y = (int)Math.floor(point.getY());
+		int z = (int)Math.floor(point.getZ());
+		return getChunkLive(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
 	}
 	
 	@Override
@@ -230,7 +261,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Entity createEntity() {		
-		return new SpoutEntity();
+		return new SpoutEntity((SpoutServer)server);
 	}
 
 	@Override
@@ -251,6 +282,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
+		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
 	}
 
@@ -344,6 +376,23 @@ public class SpoutWorld extends AsyncManager implements World {
 		return 0;
 	}
 
+	@Override
+	public Transform getSpawnPoint() {
+		return this.spawnLocation.get();
+	}
 	
+	@Override
+	public void setSpawnPoint(Transform transform) {
+		this.spawnLocation.set(transform.copy());
+	}
+
+	public EntityManager getEntityManager() {
+		return entityManager;
+	}
+
+	@Override
+	public void preSnapshotRun() throws InterruptedException {
+		entityManager.preSnapshot();
+	}
 	
 }

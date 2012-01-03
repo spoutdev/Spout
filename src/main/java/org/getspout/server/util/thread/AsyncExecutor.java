@@ -43,6 +43,13 @@ public interface AsyncExecutor {
 	public void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException;
 	
 	/**
+	 * Instructs the executor to execute all pre-snapshot operations
+	 *
+	 * @return false if the executor was active
+	 */
+	public boolean preSnapshot();
+	
+	/**
 	 * Instructs the executor to copy all updated data to its snapshot
 	 *
 	 * @return false if the executor was active

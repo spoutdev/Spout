@@ -32,7 +32,6 @@ import org.getspout.api.command.WrappedCommandException;
 import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
-import org.getspout.api.datatable.DatatableTuple;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.Order;
 import org.getspout.api.event.SimpleEventManager;
@@ -40,7 +39,8 @@ import org.getspout.api.event.player.PlayerConnectEvent;
 import org.getspout.api.event.player.PlayerJoinEvent;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
-import org.getspout.api.math.Vector3;
+import org.getspout.api.geo.cuboid.Region;
+import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.CommonPluginLoader;
 import org.getspout.api.plugin.CommonPluginManager;
@@ -53,6 +53,12 @@ import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.api.util.config.Configuration;
 import org.getspout.server.command.AdministrationCommands;
+import org.getspout.server.datatable.SpoutDatatableMap;
+import org.getspout.server.datatable.value.SpoutDatatableInt;
+import org.getspout.server.entity.EntityManager;
+import org.getspout.server.entity.SpoutEntity;
+import org.getspout.server.executor.PlayerConnectExecutor;
+import org.getspout.server.executor.PlayerJoinEventExecutor;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
 import org.getspout.server.net.SpoutSessionRegistry;
@@ -70,12 +76,6 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-
-import org.getspout.server.datatable.SpoutDatatableMap;
-import org.getspout.server.datatable.value.*;
-import org.getspout.server.entity.SpoutEntity;
-import org.getspout.server.executor.PlayerConnectExecutor;
-import org.getspout.server.executor.PlayerJoinEventExecutor;
 
 
 public class SpoutServer extends AsyncManager implements Server {
@@ -95,6 +95,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	private String logFile = "logs/log-%D.txt";
 	
 	private String name = "Spout Server";
+	
+	private EntityManager entityManager = new EntityManager();
 	
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	
@@ -269,8 +271,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 		registerInternalEvents();
 		scheduler.startMainThread();
-		
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -379,7 +379,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 	
 	private void registerInternalEvents(){
-		getEventManager().registerEvent(PlayerConnectEvent.class, Order.MONITOR, new PlayerConnectExecutor(), this);
+		getEventManager().registerEvent(PlayerConnectEvent.class, Order.MONITOR, new PlayerConnectExecutor(this), this);
 		getEventManager().registerEvent(PlayerJoinEvent.class, Order.LATEST, new PlayerJoinEventExecutor(this), this);
 		
 	}
@@ -751,6 +751,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
+		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
 	}
 
@@ -794,6 +795,24 @@ public class SpoutServer extends AsyncManager implements Server {
 		Configuration config = new Configuration(configFile);
 		config.load();
 		return config;
+	}
+	
+	public EntityManager getExpectedEntityManager(Point point) {
+		Region region = point.getWorld().getRegion(point);
+		return ((SpoutRegion)region).getEntityManager();
+	}
+	
+	public EntityManager getExpectedEntityManager(World world) {
+		return ((SpoutWorld)world).getEntityManager();
+	}
+
+	@Override
+	public void preSnapshotRun() throws InterruptedException {
+		entityManager.preSnapshot();
+	}
+	
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
 }
