@@ -1,5 +1,7 @@
 package org.getspout.api.protocol;
 
+import org.getspout.api.Game;
+
 public interface Session {
 	
 	/**
@@ -72,5 +74,7 @@ public interface Session {
 		 */
 		GAME;
 	}
+	
+	public Game getGame();
 
 }
