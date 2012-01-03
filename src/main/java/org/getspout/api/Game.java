@@ -343,5 +343,19 @@ public interface Game extends Named, EventSource {
 	 * @return The {@link SessionRegistry}.
 	 */
 	public SessionRegistry getSessionRegistry();
+	
+	/**
+	 * Gets the default world generator for this game. Specific generators can be specified when loading new worlds.
+	 * 
+	 * @return default world generator.
+	 */
+	public WorldGenerator getDefaultGenerator();
+	
+	/**
+	 * Sets the default world generator for this game. Any worlds without a specific world generator will use this generator.
+	 * 
+	 * @param generator to use by default
+	 */
+	public void setDefaultGenerator(WorldGenerator generator);
 
 }
