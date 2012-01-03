@@ -3,7 +3,7 @@ package org.getspout.api.datatable;
 
 public interface DatatableTuple extends Outputable {
 
-	public void set(String key, Object value);
+	public void set(int key, Object value);
 	
 	public void setFlags(byte flags);
 	
