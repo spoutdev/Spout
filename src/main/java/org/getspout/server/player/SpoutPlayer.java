@@ -2,7 +2,6 @@ package org.getspout.server.player;
 
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Entity;
-import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.player.Player;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.util.thread.DelayedWrite;
@@ -15,18 +14,14 @@ public class SpoutPlayer implements Player {
 	private Session session;
 	private final String name;
 	private Entity entity;
-	private Transform transform;
 	
 	private volatile boolean update = false;
 	private Session sessionNext;
 	private Entity entityNext;
-	private Transform transformNext;
 	
-	public SpoutPlayer(String name, Transform transform) {
+	public SpoutPlayer(String name) {
 		update = true;
 		this.name = name;
-		this.transformNext = transform;
-		this.transform = transform;
 	}
 
 	@Override
@@ -39,18 +34,6 @@ public class SpoutPlayer implements Player {
 	@SnapshotRead
 	public Entity getEntity() {
 		return entity;
-	}
-
-	@Override
-	@SnapshotRead
-	public Transform getTransform() {
-		Entity entity = getEntity();
-		if (entity == null) {
-			return transform;
-		} else {
-			return entity.getTransform();
-		}
-		
 	}
 
 	@Override
@@ -72,7 +55,6 @@ public class SpoutPlayer implements Player {
 			throw new IllegalStateException("Attempting to disconnect an offline player");
 		} else {
 			update = true;
-			this.transformNext = entity.getTransform();
 			this.entityNext = null;
 			this.sessionNext = null;
 			// TODO - save on disconnect ?
@@ -90,7 +72,6 @@ public class SpoutPlayer implements Player {
 		if (update) {
 			this.entity = entityNext;
 			this.session = sessionNext;
-			this.transform = transformNext;
 		}
 	}
 
