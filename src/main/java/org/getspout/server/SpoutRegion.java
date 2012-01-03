@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.getspout.api.Server;
 import org.getspout.api.entity.Controller;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
@@ -73,7 +74,27 @@ public class SpoutRegion extends Region{
 		if (x < Region.REGION_SIZE && x > 0 && y < Region.REGION_SIZE && y > 0 && z < Region.REGION_SIZE && z > 0) {
 			return chunks[x][y][z].get();
 		}
-		return null;
+		throw new IndexOutOfBoundsException("Invalid coordinates");
+	}
+	
+
+	@Override
+	public Chunk getChunk(int x, int y, int z, boolean load) {
+		if (x < Region.REGION_SIZE && x > 0 && y < Region.REGION_SIZE && y > 0 && z < Region.REGION_SIZE && z > 0) {
+			Chunk chunk = chunks[x][y][z].get();
+			if (chunk != null || !load) {
+				return chunk;
+			}
+			//TODO: generate new chunk
+			//this.getWorld().
+		}
+		throw new IndexOutOfBoundsException("Invalid coordinates");
+	}
+
+	@Override
+	public boolean hasChunk(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	SpoutRegionManager getManager() {
@@ -213,32 +234,16 @@ public class SpoutRegion extends Region{
 	public void haltRun() throws InterruptedException {
 	}
 	
-	/**
-	 * Gets all entities with the specified type.
-	 *
-	 * @param type The {@link Class} for the type.
-	 * @param <T> The type of entity.
-	 * @return A collection of entities with the specified type.
-	 */
-	public Collection<SpoutEntity> getAll(Class<? extends Controller> type) {
-		return entityManager.getAll(type);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Collection<Entity> getAll(Class<? extends Controller> type) {
+		return (Collection<Entity>)(Collection)entityManager.getAll(type);
 	}
 	
-	/**
-	 * Gets all entities.
-	 *
-	 * @return A collection of entities.
-	 */
-	public Collection<SpoutEntity> getAll() {
-		return entityManager.getAll();
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Collection<Entity> getAll() {
+		return (Collection<Entity>)(Collection)entityManager.getAll();
 	}
 
-	/**
-	 * Gets an entity by its id.
-	 *
-	 * @param id The id.
-	 * @return The entity, or {@code null} if it could not be found.
-	 */
 	public SpoutEntity getEntity(int id) {
 		return entityManager.getEntity(id);
 	}
@@ -265,5 +270,4 @@ public class SpoutRegion extends Region{
 	public Iterator<SpoutEntity> iterator() {
 		return entityManager.iterator();
 	}
-
 }

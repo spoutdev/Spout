@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import org.getspout.api.plugin.security.CommonSecurityManager;
 import org.getspout.api.protocol.CommonPipelineFactory;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
+import org.getspout.api.util.config.Configuration;
 import org.getspout.server.command.AdministrationCommands;
 import org.getspout.server.io.StorageQueue;
 import org.getspout.server.net.SpoutSession;
@@ -95,6 +97,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	private String name = "Spout Server";
 	
 	private SnapshotManager snapshotManager = new SnapshotManager();
+	
+	/**
+	 * Default world generator
+	 */
+	private WorldGenerator defaultGenerator = null;
 	
 	/**
 	 * This list of players for the server
@@ -149,6 +156,16 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * If the server has a whitelist or not
 	 */
 	private volatile boolean whitelist = false;
+	
+	/**
+	 * If the server allows flight
+	 */
+	private volatile boolean allowFlight = false;
+	
+	/**
+	 * A list of all players who can log onto this server, if using a whitelist.
+	 */
+	private List<String> whitelistedPlayers = new ArrayList<String>();
 	
 	/**
 	 * loaded plugins
@@ -239,6 +256,13 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		consoleManager.setupConsole();
 		
+		try {
+			loadConfig();
+		}
+		catch (Throwable t) {
+			throw new RuntimeException("Failed to parse config", t);
+		}
+		
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
@@ -248,8 +272,74 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 
 	}
-	
-	
+
+	@SuppressWarnings("unchecked")
+	private void loadConfig() throws IOException{
+		Configuration config = getConfiguration();
+		boolean save = false;
+		try {
+			Map<String, String> generators = (Map<String, String>) config.getProperty("worlds");
+			if (generators == null) {
+				generators = new HashMap<String, String>();
+				generators.put("world", "default");
+				save = true;
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read world generators from the config file!");
+		}
+		try {
+			List<String> whitelist = (List<String>) config.getProperty("whitelist");
+			if (whitelist == null) {
+				whitelist = new ArrayList<String>();
+				whitelist.add("Notch");
+				whitelist.add("ez");
+				whitelist.add("jeb");
+				config.setProperty("whitelist", whitelist);
+				save = true;
+			}
+			this.whitelistedPlayers = whitelist;
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read whitelist from the config file!");
+		}
+		try {
+			List<String> bannedList = (List<String>) config.getProperty("banlist");
+			if (bannedList == null) {
+				bannedList = new ArrayList<String>();
+				bannedList.add("satan");
+				config.setProperty("banlist", bannedList);
+				save = true;
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read banlist from the config file!");
+		}
+		try {
+			Boolean fly = (Boolean) config.getProperty("allowflight");
+			if (fly == null) {
+				fly = false;
+				config.setProperty("allowflight", false);
+				save = true;
+			}
+			allowFlight = fly;
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read flight permissions from the config file!");
+		}
+		try {
+			Boolean whitelist = (Boolean) config.getProperty("usewhitelist");
+			if (whitelist == null) {
+				whitelist = false;
+				config.setProperty("usewhitelist", false);
+				save = true;
+			}
+			this.whitelist = whitelist;
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read whitelist value from the config file!");
+		}
+	}
 
 	public void init() {
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
@@ -435,8 +525,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public boolean allowFlight() {
-		// TODO Auto-generated method stub
-		return false;
+		return allowFlight;
 	}
 
 	@Override
@@ -470,16 +559,31 @@ public class SpoutServer extends AsyncManager implements Server {
 		this.whitelist = whitelist;		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void updateWhitelist() {
-		// TODO Auto-generated method stub
-		
+		try {
+			Configuration config = getConfiguration();
+			List<String> whitelist = (List<String>) config.getProperty("whitelist");
+			if (whitelist != null) {
+				this.whitelistedPlayers = whitelist;
+			}
+			else {
+				whitelistedPlayers = new ArrayList<String>();
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read whitelist from the config file!");
+		}
 	}
 
 	@Override
 	public String[] getWhitelistedPlayers() {
-		// TODO Auto-generated method stub
-		return null;
+		String[] whitelist = new String[whitelistedPlayers.size()];
+		for (int i = 0; i < whitelist.length; i++) {
+			whitelist[i] = whitelistedPlayers.get(i);
+		}
+		return whitelist;
 	}
 
 	@Override
@@ -668,6 +772,28 @@ public class SpoutServer extends AsyncManager implements Server {
 	public File getConfigFolder() {
 		if(!configDirectory.exists()) configDirectory.mkdirs();
 		return configDirectory;
+	}
+
+	@Override
+	public WorldGenerator getDefaultGenerator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDefaultGenerator(WorldGenerator generator) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private Configuration getConfiguration() throws IOException {
+		File configFile = new File(getConfigFolder(), "spout.yml");
+		if (!configFile.exists()) {
+			configFile.createNewFile();
+		}
+		Configuration config = new Configuration(configFile);
+		config.load();
+		return config;
 	}
 
 }
