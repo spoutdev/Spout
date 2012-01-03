@@ -1,6 +1,7 @@
 package org.getspout.api.geo.discrete;
 
 import org.getspout.api.math.Quaternion;
+import org.getspout.api.math.Vector3;
 import org.getspout.api.math.Vector3m;
 
 public class Transform {	
@@ -10,6 +11,14 @@ public class Transform {
 	
 	Transform parent = null;
 	
+	public Transform() {
+	}
+	
+	public Transform(Point position, Quaternion rotation, Vector3 scale) {
+		this.position = new Point(position);
+		this.rotation = new Quaternion(rotation);
+		this.scale = new Vector3m(scale);
+	}
 	
 	public Point getPosition() {
 		return position;

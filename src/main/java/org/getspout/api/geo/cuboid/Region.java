@@ -7,6 +7,7 @@ import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.util.thread.DelayedWrite;
+import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
 
 /**
@@ -53,8 +54,8 @@ public abstract class Region extends Cube {
 	 * @param load whether to load or generate the chunk if none exists
 	 * @return the chunk
 	 */
-	@SnapshotRead
-	public abstract Chunk getChunk(int x, int y, int z, boolean load);
+	@LiveRead
+	public abstract Chunk getChunkLive(int x, int y, int z, boolean load);
 	
 	
 	/**
@@ -68,7 +69,7 @@ public abstract class Region extends Cube {
 	public abstract boolean hasChunk(int x, int y, int z);
 	
 	/**
-	 * Queues a chunk for saving at the next available oppertunity.
+	 * Queues a chunk for saving at the next available opportunity.
 	 * 
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate

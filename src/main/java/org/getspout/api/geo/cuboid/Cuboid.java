@@ -47,6 +47,8 @@ public class Cuboid {
 		int hash = getX();
 		hash += (hash << 5) + getY();
 		hash += (hash << 5) + getZ();
+		hash += (hash << 5) + getWorld().getUID().getLeastSignificantBits();
+		hash += (hash << 5) + getWorld().getUID().getMostSignificantBits();
 		return hash;
 	}
 	
@@ -62,5 +64,9 @@ public class Cuboid {
 			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld().equals(getWorld()) && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
 		}
 		
+	}
+	
+	public String toString() {
+		return "Cuboid[" + size.getX() + ", " + size.getY() + ", " + size.getZ() + "]@[" + getX() + ", " + getY() + ", " + getZ() + "]";
 	}
 }

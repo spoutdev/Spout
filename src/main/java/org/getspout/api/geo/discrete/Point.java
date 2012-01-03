@@ -32,7 +32,22 @@ public class Point extends Vector3 {
 	public Point add(Vector3 other){
 		return new Point(Vector3.add((Vector3)this, other), this.world);
 	}
-
+	
+	/**
+	 * Gets the Manhattan distance between two points.
+	 * 
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds. 
+	 * 
+	 * Otherwise, it returns the Mahattan distance.
+	 * 
+	 */
+	public double getMahattanDistance(Point other) {
+		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
+			return Double.MAX_VALUE;
+		}
+		return Math.abs(x - other.x) + Math.abs(y - other.y) + Math.abs(z - other.z);
+	}
+	
 	/**
 	 * Gets the world this point is locate in
 	 *

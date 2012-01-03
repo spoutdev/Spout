@@ -3,10 +3,12 @@ package org.getspout.api.entity;
 import org.getspout.api.collision.model.CollisionModel;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
-import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.metadata.Metadatable;
 import org.getspout.api.model.Model;
+import org.getspout.api.util.thread.DelayedWrite;
+import org.getspout.api.util.thread.LiveRead;
+import org.getspout.api.util.thread.SnapshotRead;
 
 /**
  * Represents an entity, which may or may not be spawned into the world.
@@ -15,10 +17,37 @@ public interface Entity extends Metadatable {
 	
 	public int getId();
 	
+	// TODO - should these be main thread only ?
 	public Controller getController() ;
 	public void setController(Controller controller);
+	
+	/**
+	 * Gets the transform for entity
+	 * 
+	 * @return
+	 */
+	@SnapshotRead
 	public Transform getTransform();
 	
+	/**
+	 * Gets the live/unstable position of the entity.  
+	 * 
+	 * Use of live reads may have a negative performance impact
+	 * 
+	 * @return
+	 */
+	@LiveRead
+	public Transform getLiveTransform();
+	
+	/**
+	 * Set transform
+	 * 
+	 * @param transform new Transform
+	 */
+	@DelayedWrite
+	public void setTransform(Transform transform);
+	
+	// TODO - add thread timing annotations
 	public void setModel(Model model);
 	public Model getModel();
 	
@@ -46,6 +75,7 @@ public interface Entity extends Metadatable {
 	 * 
 	 * @return chunk
 	 */
+	@SnapshotRead
 	public Chunk getChunk();
 	
 	/**
@@ -53,5 +83,17 @@ public interface Entity extends Metadatable {
 	 * 
 	 * @return region
 	 */
+	@SnapshotRead
 	public Region getRegion();
+	
+	/**
+	 * Called just before a snapshot update.  
+	 * 
+	 * This is intended purely as a monitor based step.  
+	 * 
+	 * No updates should be made to the entity at this stage.
+	 * 
+	 * It can be used to send packets for network update.
+	 */
+	public void preSnapshot();
 }
