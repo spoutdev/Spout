@@ -1,5 +1,6 @@
 package org.getspout.api.datatable;
 
+
 public interface DatatableMap extends Outputable {
 
 	public void set(DatatableTuple value);

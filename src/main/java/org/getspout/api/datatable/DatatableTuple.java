@@ -1,5 +1,6 @@
 package org.getspout.api.datatable;
 
+
 public interface DatatableTuple extends Outputable {
 
 	public void set(String key, Object value);
