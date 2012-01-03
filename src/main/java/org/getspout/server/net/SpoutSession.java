@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.getspout.api.Game;
 import org.getspout.api.player.Player;
 import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.MessageHandler;
@@ -15,7 +16,6 @@ import org.getspout.api.protocol.Protocol;
 import org.getspout.api.protocol.Session;
 import org.getspout.server.SpoutServer;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
 
 /**
  * A single connection to the server, which may or may not be associated with a
@@ -322,5 +322,9 @@ public final class SpoutSession implements Session {
 		} else {
 			server.getLogger().info("Setting protocol to " + protocol.getName());
 		}
+	}
+	
+	public Game getGame() {
+		return server;
 	}
 }

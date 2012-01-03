@@ -28,6 +28,7 @@ import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
 import org.getspout.api.event.EventManager;
+import org.getspout.api.event.SimpleEventManager;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
@@ -145,6 +146,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * The root commnd for this server
 	 */
 	private final RootCommand rootCommand = new RootCommand(this);
+	
+	/**
+	 * The event manager
+	 */
+	private final EventManager eventManager = new SimpleEventManager();
 
 
 	public SpoutServer() {
@@ -378,8 +384,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public EventManager getEventManager() {
-		// TODO Auto-generated method stub
-		return null;
+		return eventManager;
 	}
 
 	@Override
@@ -579,6 +584,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
+		sessions.pulse();
 	}
 	
 	@Override
