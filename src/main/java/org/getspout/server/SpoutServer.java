@@ -1,6 +1,10 @@
 package org.getspout.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -27,10 +31,12 @@ import org.getspout.api.command.WrappedCommandException;
 import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
+import org.getspout.api.datatable.DatatableTuple;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.SimpleEventManager;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
+import org.getspout.api.math.Vector3;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.CommonPluginLoader;
 import org.getspout.api.plugin.CommonPluginManager;
@@ -59,6 +65,10 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+
+import org.getspout.server.datatable.SpoutDatatableMap;
+import org.getspout.server.datatable.value.*;
+import org.getspout.server.entity.SpoutEntity;
 
 
 public class SpoutServer extends AsyncManager implements Server {
@@ -162,7 +172,49 @@ public class SpoutServer extends AsyncManager implements Server {
 		}
 	}
 	
-	public static void main(String[] args) {
+	private void testDatatable(){
+		long time = System.currentTimeMillis();
+		SpoutDatatableMap table = new SpoutDatatableMap(SpoutEntity.entityStringMap);
+		for(int i = 0; i< 1000; i++){
+			table.set(new SpoutDatatableInt(SpoutEntity.entityStringMap.register(""+i), i));
+			
+		}
+		long entry = System.currentTimeMillis() - time;
+		System.out.println("Datatable Entry Time: " + entry / 1000.f);
+		
+		
+		File out = new File("datatable.dat");
+		if(!out.exists())
+			try {
+				out.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		try {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream(10000);
+			
+			long outputspeed = System.currentTimeMillis();
+			table.output(stream);
+			long asdf = System.currentTimeMillis() - outputspeed;
+			System.out.println("Datatable serialization Time: " + asdf / 1000.f);
+			FileOutputStream s = new FileOutputStream(out);
+			s.write(stream.toByteArray());
+			s.flush();
+			s.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public static void main(String[] args) {	
+		
 		SpoutServer server = new SpoutServer();
 		server.start();
 		

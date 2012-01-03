@@ -18,13 +18,22 @@ public class SpoutDatatableObject implements DatatableTuple {
 	public static final byte Persist = 0x1;
 	public static final byte Sync = 0x2;
 	
-	protected int keyhash;
+	protected int keyID;
 	protected byte flags;
 	Object data;
 	
+	public SpoutDatatableObject(int key){
+		keyID = key;
+	}
+	public SpoutDatatableObject(int key, Object dat){
+		keyID = key;
+		this.data = dat;
+	}
+	
+	
 	@Override
-	public void set(String key, Object value) {
-		keyhash = key.hashCode();
+	public void set(int key, Object value) {
+		keyID = key;
 		if(!(value instanceof Vector3) || !(value instanceof Vector2) || !(value instanceof Quaternion)) throw new IllegalArgumentException("Unsuported Metadata type");
 		data = value;
 
@@ -32,7 +41,7 @@ public class SpoutDatatableObject implements DatatableTuple {
 
 	@Override
 	public int hashCode(){
-		return keyhash;
+		return keyID;
 	}
 
 	
@@ -90,7 +99,7 @@ public class SpoutDatatableObject implements DatatableTuple {
 			Quaternion v = (Quaternion) data;
 			value.setQuatval(QuaternionBuf.newBuilder().setX(v.getX()).setY(v.getY()).setZ(v.getZ()).setW(v.getW()));
 		}
-		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyhash).setFlags(flags).setValue(value).build();
+		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyID).setFlags(flags).setValue(value).build();
 		entry.writeTo(out);
 		
 	}
@@ -98,7 +107,7 @@ public class SpoutDatatableObject implements DatatableTuple {
 	@Override
 	public void input(InputStream in) throws IOException {
 		DatatableEntry entry = DatatableEntry.parseFrom(in);
-		keyhash = entry.getKeyHash();
+		keyID = entry.getKeyHash();
 		flags = (byte)entry.getFlags();
 		if(entry.getValue().hasQuatval()) data = entry.getValue().getQuatval();
 		if(entry.getValue().hasVec3Val()) data = entry.getValue().getVec3Val();
@@ -110,41 +119,35 @@ public class SpoutDatatableObject implements DatatableTuple {
 		//TODO THIS IS UGLY
 		//Redo this after test is done
 		DatatableEntry entry = DatatableEntry.parseFrom(in);
-		int hashcode = entry.getKeyHash();
+		int keyID = entry.getKeyHash();
 		byte flags = (byte)entry.getFlags();
 		if(entry.getValue().hasIntval()){
-			SpoutDatatableInt i = new SpoutDatatableInt();
-			i.keyhash = hashcode;
+			SpoutDatatableInt i = new SpoutDatatableInt(keyID);
 			i.setFlags(flags);
 			i.data = entry.getValue().getIntval();
 			return i;
 		} else if(entry.getValue().hasFloatval()){
-			SpoutDatatableFloat i = new SpoutDatatableFloat();
-			i.keyhash = hashcode;
+			SpoutDatatableFloat i = new SpoutDatatableFloat(keyID);
 			i.setFlags(flags);
 			i.data = entry.getValue().getFloatval();
 			return i;
 		}else if(entry.getValue().hasBoolval()){
-			SpoutDatatableBool i = new SpoutDatatableBool();
-			i.keyhash = hashcode;
+			SpoutDatatableBool i = new SpoutDatatableBool(keyID);
 			i.setFlags(flags);
 			i.data = entry.getValue().getBoolval();
 			return i;
 		}else if(entry.getValue().hasVec3Val()){
-			SpoutDatatableObject i = new SpoutDatatableObject();
-			i.keyhash = hashcode;
+			SpoutDatatableObject i = new SpoutDatatableObject(keyID);
 			i.setFlags(flags);
 			i.data = entry.getValue().getVec3Val();
 			return i;
 		}else if(entry.getValue().hasVec2Val()){
-			SpoutDatatableObject i = new SpoutDatatableObject();
-			i.keyhash = hashcode;
+			SpoutDatatableObject i = new SpoutDatatableObject(keyID);
 			i.setFlags(flags);
 			i.data = entry.getValue().getVec2Val();
 			return i;
 		}else if(entry.getValue().hasQuatval()){
-			SpoutDatatableObject i = new SpoutDatatableObject();
-			i.keyhash = hashcode;
+			SpoutDatatableObject i = new SpoutDatatableObject(keyID);
 			i.setFlags(flags);
 			i.data = entry.getValue().getQuatval();
 			return i;

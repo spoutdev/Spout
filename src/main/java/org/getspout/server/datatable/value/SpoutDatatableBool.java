@@ -8,17 +8,24 @@ import org.getspout.server.datatable.SpoutDatatableProto.DatatableEntry;
 import org.getspout.server.datatable.SpoutDatatableProto.DatatableValue;
 
 public class SpoutDatatableBool extends SpoutDatatableObject {
-
 	boolean data;
 	
+	public SpoutDatatableBool(int key) {
+		super(key);
+	}
+	public SpoutDatatableBool(int key, boolean value){
+		super(key);
+		this.data = value;
+	}
+
 	@Override
-	public void set(String key, Object value) {
+	public void set(int key, Object value) {
 		throw new IllegalArgumentException("This is an boolean value, use set(string,bool)");
 
 	}
 
 	public void set(String key, boolean value) {
-		keyhash = key.hashCode();
+		keyID = key.hashCode();
 		data= value;
 	}
 
@@ -45,7 +52,7 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 	@Override
 	public void output(OutputStream out) throws IOException {
 		DatatableValue value = DatatableValue.newBuilder().setBoolval(data).build();
-		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyhash).setFlags(flags).setValue(value).build();
+		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyID).setFlags(flags).setValue(value).build();
 		entry.writeTo(out);
 		
 	}
@@ -53,7 +60,7 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 	@Override
 	public void input(InputStream in) throws IOException {
 		DatatableEntry entry = DatatableEntry.parseFrom(in);
-		keyhash = entry.getKeyHash();
+		keyID = entry.getKeyHash();
 		flags = (byte)entry.getFlags();
 		data = entry.getValue().getBoolval();
 		

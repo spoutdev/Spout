@@ -9,14 +9,17 @@ import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Transform;
+import org.getspout.api.io.store.MemoryStore;
 import org.getspout.api.metadata.EntityMetadataStore;
 import org.getspout.api.metadata.MetadataStringValue;
 import org.getspout.api.metadata.MetadataValue;
 import org.getspout.api.model.Model;
 import org.getspout.api.plugin.Plugin;
+import org.getspout.api.util.StringMap;
 
 public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public final static int NOTSPAWNEDID = -1;
+	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), null, 0, Short.MAX_VALUE);
 	
 	Transform transform = new Transform();
 	Transform transformSnapshot = new Transform();

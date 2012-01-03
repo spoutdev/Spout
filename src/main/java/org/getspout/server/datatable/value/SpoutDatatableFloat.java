@@ -8,17 +8,24 @@ import org.getspout.server.datatable.SpoutDatatableProto.DatatableEntry;
 import org.getspout.server.datatable.SpoutDatatableProto.DatatableValue;
 
 public class SpoutDatatableFloat extends SpoutDatatableObject {
-
 	float data;
 	
+	
+	public SpoutDatatableFloat(int key) {
+		super(key);
+	}
+	public SpoutDatatableFloat(int key, float value){
+		super(key);
+		this.data = value;
+	}	
 	@Override
-	public void set(String key, Object value) {
+	public void set(int key, Object value) {
 		throw new IllegalArgumentException("This is an int value, use set(string,float)");
 
 	}
 
 	public void set(String key, float value) {
-		keyhash = key.hashCode();
+		keyID = key.hashCode();
 		data= value;
 	}
 	
@@ -46,7 +53,7 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 	@Override
 	public void output(OutputStream out) throws IOException {
 		DatatableValue value = DatatableValue.newBuilder().setFloatval(data).build();
-		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyhash).setFlags(flags).setValue(value).build();
+		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyID).setFlags(flags).setValue(value).build();
 		entry.writeTo(out);
 		
 	}
@@ -54,7 +61,7 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 	@Override
 	public void input(InputStream in) throws IOException {
 		DatatableEntry entry = DatatableEntry.parseFrom(in);
-		keyhash = entry.getKeyHash();
+		keyID = entry.getKeyHash();
 		flags = (byte)entry.getFlags();
 		data = entry.getValue().getFloatval();
 		
