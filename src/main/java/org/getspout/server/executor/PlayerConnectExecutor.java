@@ -22,9 +22,8 @@ public class PlayerConnectExecutor implements EventExecutor {
 	public void execute(PlayerConnectEvent event) throws EventException {
 		if(event.isCancelled()) return;
 		//Create the player
-		SpoutPlayer player = new SpoutPlayer(event.getPlayerName());
+		SpoutPlayer player = new SpoutPlayer(event.getPlayerName(), new SpoutEntity(server), event.getSession());
 		((SpoutSession)event.getSession()).setPlayer(player);
-		player.setEntity(new SpoutEntity(server));
 		
 		Spout.getGame().getEventManager().callEvent(new PlayerJoinEvent(player));
 		

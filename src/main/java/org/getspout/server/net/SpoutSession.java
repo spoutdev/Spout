@@ -15,6 +15,7 @@ import org.getspout.api.protocol.MessageHandler;
 import org.getspout.api.protocol.Protocol;
 import org.getspout.api.protocol.Session;
 import org.getspout.server.SpoutServer;
+import org.getspout.server.player.SpoutPlayer;
 import org.jboss.netty.channel.Channel;
 
 /**

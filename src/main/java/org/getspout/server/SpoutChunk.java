@@ -4,6 +4,7 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.MaterialData;
+import org.getspout.api.util.cuboid.CuboidShortBuffer;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableByteArray;
 import org.getspout.server.util.thread.snapshotable.SnapshotableShortArray;
@@ -100,6 +101,20 @@ public class SpoutChunk extends Chunk{
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
 		// TODO
+	}
+	
+	// TODO - use CuboidBuffer internally ?
+	public CuboidShortBuffer getBlockCuboidBufferLive() {
+		int x = getX() << Chunk.CHUNK_SIZE_BITS;;
+		int y = getY() << Chunk.CHUNK_SIZE_BITS;;
+		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
+		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
+		
+		if (y < 4) {
+			snapshot.flood((short)1);
+		}
+		
+		return snapshot;
 	}
 
 }

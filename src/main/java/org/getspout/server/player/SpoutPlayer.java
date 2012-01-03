@@ -1,5 +1,8 @@
 package org.getspout.server.player;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.player.Player;
@@ -7,22 +10,24 @@ import org.getspout.api.protocol.Session;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.api.util.thread.Threadsafe;
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
 	
+	private final AtomicReference<Session> sessionLive = new AtomicReference<Session>();
 	private Session session;
 	private final String name;
+	private final AtomicReference<Entity> entityLive = new AtomicReference<Entity>();
 	private Entity entity;
+	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
+	private boolean online;
 	
-	private volatile boolean update = false;
-	private Session sessionNext;
-	private Entity entityNext;
-	
-	public SpoutPlayer(String name) {
-		update = true;
+	public SpoutPlayer(String name, Entity entity, Session session) {
 		this.name = name;
+		this.sessionLive.set(session);
+		this.session = session;
+		this.entityLive.set(entity);
+		this.entity = entity;
 	}
 
 	@Override
@@ -46,36 +51,29 @@ public class SpoutPlayer implements Player {
 	@Override
 	@SnapshotRead
 	public boolean isOnline() {
-		return session != null && entity != null;
+		return online;
 	}
 	
 	@DelayedWrite
 	public void disconnect() {
-		Entity entity = getEntity();
 		if (entity == null) {
 			throw new IllegalStateException("Attempting to disconnect an offline player");
 		} else {
-			update = true;
-			this.entityNext = null;
-			this.sessionNext = null;
-			// TODO - save on disconnect ?
+			// TODO - actually handle disconnect properly
+			onlineLive.set(false);
+			sessionLive.set(null);
+			entityLive.set(null);
 		}
 	}
 	
 	@DelayedWrite
-	public void connect(Entity entity, Session session) {
-		update = true;
-		this.entityNext = entity;
-		this.sessionNext = session;
+	public void connect(Session session, Entity entity) {
+		// TODO, do all 3 atomically .. or remove this method and make everything final?
+		onlineLive.set(true);
+		sessionLive.set(session);
+		entityLive.set(entity);
 	}
 	
-	public void copySnapshot() {
-		if (update) {
-			this.entity = entityNext;
-			this.session = sessionNext;
-		}
-	}
-
 	@Override
 	public void chat(String message) {
 		if (message.startsWith("/")) {
@@ -100,9 +98,5 @@ public class SpoutPlayer implements Player {
 	@Override
 	public boolean sendRawMessage(String message) {
 		return false;
-	}
-	
-	public void setEntity(SpoutEntity p){
-		this.entity = p;
 	}
 }
