@@ -33,13 +33,13 @@ public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
 	}
 
 	@Override
-	public boolean clear() {
+	public synchronized boolean clear() {
 		dirty = true;
 		return super.clear();
 	}
 
 	@Override
-	public boolean save() {
+	public synchronized boolean save() {
 		if (dirty) {
 			Collection<String> strings = getStrings();
 			boolean saved = FileUtil.stringToFile(strings, file);
@@ -53,7 +53,7 @@ public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
 	}
 
 	@Override
-	public boolean load() {
+	public synchronized boolean load() {
 		Collection<String> strings = FileUtil.fileToString(file);
 		if (strings == null) {
 			return false;
@@ -66,7 +66,7 @@ public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
 	}
 
 	@Override
-	public T remove(String key) {
+	public synchronized T remove(String key) {
 		T value = super.remove(key);
 		if (value != null) {
 			dirty = true;
@@ -75,12 +75,12 @@ public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
 	}
 
 	@Override
-	public T set(String key, T value) {
+	public synchronized T set(String key, T value) {
 		dirty = true;
 		return super.set(key, value);
 	}
 
-	private Collection<String> getStrings() {
+	private synchronized Collection<String> getStrings() {
 		Iterator<Entry<String, T>> itr = super.getEntrySet().iterator();
 		ArrayList<String> strings = new ArrayList<String>(super.getSize());
 		while (itr.hasNext()) {
@@ -129,9 +129,9 @@ public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
 
 	@SuppressWarnings("unchecked")
 	private T parse(String string) {
-		if (clazz == Integer.class) {
+		if (clazz.equals(Integer.class)) {
 			return (T) (Object) Integer.parseInt(string);
-		} else if (clazz == String.class) {
+		} else if (clazz.equals(String.class)) {
 			return (T) string;
 		} else {
 			throw new IllegalArgumentException("Unable to parse clazzes of type " + clazz.getName());

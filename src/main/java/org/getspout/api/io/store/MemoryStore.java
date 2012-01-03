@@ -21,40 +21,40 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		reverseMap = new HashMap<T, String>();
 	}
 
-	public boolean save() {
+	public synchronized boolean save() {
 		return true;
 	}
 
-	public boolean load() {
+	public synchronized boolean load() {
 		return true;
 	}
 
-	public Collection<String> getKeys() {
+	public synchronized Collection<String> getKeys() {
 		return map.keySet();
 	}
 
-	public Set<Entry<String, T>> getEntrySet() {
+	public synchronized Set<Entry<String, T>> getEntrySet() {
 		return map.entrySet();
 	}
 
-	public int getSize() {
+	public synchronized int getSize() {
 		return map.size();
 	}
 
-	public boolean clear() {
+	public synchronized boolean clear() {
 		map.clear();
 		return true;
 	}
 
-	public T get(String key) {
+	public synchronized T get(String key) {
 		return map.get(key);
 	}
 
-	public String reverseGet(T value) {
+	public synchronized String reverseGet(T value) {
 		return reverseMap.get(value);
 	}
 
-	public T get(String key, T def) {
+	public synchronized T get(String key, T def) {
 		T value = get(key);
 		if (value == null) {
 			return def;
@@ -63,7 +63,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		}
 	}
 
-	public T remove(String key) {
+	public synchronized T remove(String key) {
 		T value = map.remove(key);
 		if (value != null) {
 			reverseMap.remove(value);
@@ -71,13 +71,22 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		return value;
 	}
 
-	public T set(String key, T value) {
+	public synchronized T set(String key, T value) {
 		T oldValue = map.put(key, value);
 		if (oldValue != null) {
 			reverseMap.remove(oldValue);
 		}
 		reverseMap.put(value, key);
 		return oldValue;
+	}
+	
+	public synchronized boolean setIfAbsent(String key, T value) {
+		if (map.get(key) != null || reverseMap.get(value) != null) {
+			return false;
+		} else {
+			set(key, value);
+			return true;
+		}
 	}
 
 }

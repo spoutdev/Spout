@@ -10,7 +10,10 @@ import java.util.Set;
  * It is used to store maps that map Strings to classes of type T
  *
  * Subclasses can implement backing to the file system.
+ * 
+ * Implementing classes must be synchronized
  *
+ * This is a two-way map, so each value only maps back to one key
  */
 
 public interface SimpleStore<T> {
@@ -98,5 +101,12 @@ public interface SimpleStore<T> {
 	 * @return returns the old value associated with the key
 	 */
 	public T set(String key, T value);
+	
+	/**
+	 * Sets the value associated with a key, but only if neither the key or value are in use
+	 *
+	 * @return true if the key/value pair was set
+	 */
+	public boolean setIfAbsent(String key, T value);
 
 }
