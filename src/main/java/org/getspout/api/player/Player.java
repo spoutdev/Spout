@@ -2,7 +2,6 @@ package org.getspout.api.player;
 
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
-import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.protocol.Session;
 
 public interface Player extends CommandSource {
@@ -28,13 +27,6 @@ public interface Player extends CommandSource {
 	 */
 	public Entity getEntity();
 	
-	/**
-	 * Gets the player's position.  For offline players, this is where they will appear when they login
-	 * 
-	 * @return the player's position transform
-	 */
-	public Transform getTransform();
-
 	/**
 	 * Gets the session associated with the Player.
 	 * 
