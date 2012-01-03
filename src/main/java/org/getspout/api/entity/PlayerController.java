@@ -83,6 +83,8 @@ public abstract class PlayerController extends Controller {
 			chunksSent++;
 		}
 		
+		sendPosition(liveTransform);
+		
 		super.snapshotStart();
 	}
 	
@@ -133,7 +135,7 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * This method is called during the startSnapshot stage of the tick.
 	 * 
-	 * It is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 * 
 	 * @param c the chunk
 	 */
@@ -144,10 +146,20 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * This method is called during the startSnapshot stage of the tick.
 	 * 
-	 * It is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 * 
 	 * @param c the chunk
 	 */
 	protected abstract void freeChunk(Chunk c);
 	
+	/**
+	 * Sends the player's position to the client
+	 * 
+	 * This method is called during the startSnapshot stage of the tick.
+	 * 
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * 
+	 * @param t the transform
+	 */
+	protected abstract void sendPosition(Transform t);
 }

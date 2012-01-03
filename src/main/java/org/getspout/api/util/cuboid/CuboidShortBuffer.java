@@ -9,17 +9,17 @@ public class CuboidShortBuffer extends CuboidBuffer {
 	private final short[] buffer;
 	private CuboidShortBuffer source;
 
-	protected CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		buffer = new short[sizeX * sizeY * sizeZ];
 	}
 
-	protected CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
+	public CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
 		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		buffer = new short[(int) (sizeX * sizeY * sizeZ)];
 	}
 
-	protected CuboidShortBuffer(Point base, Vector3 size) {
+	public CuboidShortBuffer(Point base, Vector3 size) {
 		super(base, size);
 		buffer = new short[(int) (size.getX() * size.getY() * size.getZ())];
 	}
@@ -56,6 +56,16 @@ public class CuboidShortBuffer extends CuboidBuffer {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		} else {
 			return buffer[index];
+		}
+	}
+	
+	public short[] getRawArray() {
+		return buffer;
+	}
+	
+	public void flood(short id) {
+		for (int i = 0; i < buffer.length; i++) {
+			buffer[i] = id;
 		}
 	}
 
