@@ -19,7 +19,7 @@ public abstract class PlayerController extends Controller {
 	protected Player owner;
 	
 	private final static int TARGET_SIZE = 5 * Chunk.CHUNK_SIZE;
-	private final static int CHUNKS_PER_TICK = 20;
+	private final static int CHUNKS_PER_TICK = 200;
 
 	private final int viewDistance = 5;
 	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
@@ -34,10 +34,12 @@ public abstract class PlayerController extends Controller {
 	
 	private Point lastChunkCheck;
 	
+	private Set<Chunk> chunkInitQueue = new LinkedHashSet<Chunk>();
 	private Set<Chunk> priorityChunkSendQueue = new LinkedHashSet<Chunk>();
 	private Set<Chunk> chunkSendQueue = new LinkedHashSet<Chunk>();
 	private Set<Chunk> chunkFreeQueue = new LinkedHashSet<Chunk>();
-	
+
+	private Set<Chunk> initializedChunks = new LinkedHashSet<Chunk>();
 	private Set<Chunk> activeChunks = new LinkedHashSet<Chunk>();
 	
 	public void snapshotStart() {
@@ -48,6 +50,7 @@ public abstract class PlayerController extends Controller {
 		
 		// TODO - teleport smoothing
 		
+		Transform lastTransform = parent.getTransform();
 		Transform liveTransform = parent.getLiveTransform();
 		
 		if (liveTransform != null) {
@@ -57,13 +60,27 @@ public abstract class PlayerController extends Controller {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 			}
+			
+			if (lastTransform == null || lastTransform.getPosition().getWorld() != liveTransform.getPosition().getWorld()) {
+				worldChanged(liveTransform.getPosition().getWorld());
+			}
 		}
 		
 		for (Chunk c : chunkFreeQueue) {
-			freeChunk(c);
+			if (initializedChunks.remove(c)) {
+				freeChunk(c);
+			}
 		}
 		
 		chunkFreeQueue.clear();
+		
+		for (Chunk c : chunkInitQueue) {
+			if (initializedChunks.add(c)) {
+				initChunk(c);
+			}
+		}
+		
+		chunkInitQueue.clear();
 		
 		int chunksSent = 0;
 		
@@ -71,14 +88,18 @@ public abstract class PlayerController extends Controller {
 		
 		i = priorityChunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			sendChunk(i.next());
+			Chunk c = i.next();
+			sendChunk(c);
+			activeChunks.add(c);
 			i.remove();
 			chunksSent++;
 		}
 		
 		i = chunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			sendChunk(i.next());
+			Chunk c = i.next();
+			sendChunk(c);
+			activeChunks.add(c);
 			i.remove();
 			chunksSent++;
 		}
@@ -94,6 +115,7 @@ public abstract class PlayerController extends Controller {
 		priorityChunkSendQueue.clear();
 		chunkSendQueue.clear();
 		chunkFreeQueue.clear();
+		chunkInitQueue.clear();
 
 		World world = currentPosition.getWorld();
 		
@@ -125,6 +147,7 @@ public abstract class PlayerController extends Controller {
 							chunkSendQueue.add(c);
 						}
 					}
+					chunkInitQueue.add(c);
 				}
 			}
 		}
@@ -150,6 +173,17 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * @param c the chunk
 	 */
+	protected abstract void initChunk(Chunk c);
+	
+	/**
+	 * Frees a chunk on the client.
+	 * 
+	 * This method is called during the startSnapshot stage of the tick.
+	 * 
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * 
+	 * @param c the chunk
+	 */
 	protected abstract void freeChunk(Chunk c);
 	
 	/**
@@ -162,4 +196,15 @@ public abstract class PlayerController extends Controller {
 	 * @param t the transform
 	 */
 	protected abstract void sendPosition(Transform t);
+	
+	/**
+	 * Called when the player's world changes.
+	 * 
+	 * This method is called during the startSnapshot stage of the tick.
+	 * 
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * 
+	 * @param t the transform
+	 */
+	protected abstract void worldChanged(World world);
 }
