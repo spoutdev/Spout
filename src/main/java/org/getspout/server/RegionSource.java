@@ -102,7 +102,10 @@ public class RegionSource {
 		if (region != null || !load) {
 			return region;
 		} else {
-			region = new SpoutRegion(world, x, y, z, this);
+			int rx = (x << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
+			int ry = (y << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
+			int rz = (z << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
+			region = new SpoutRegion(world, rx, ry, rz, this);
 			Region current = loadedRegions.putIfAbsent(x, y, z, region);
 			
 			if (current != null) {

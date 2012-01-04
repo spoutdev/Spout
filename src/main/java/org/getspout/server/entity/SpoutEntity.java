@@ -53,6 +53,11 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public Controller getController() {
 		return controller;
 	}
+	
+	public Controller getControllerLive() {
+		return controller;
+	}
+	
 	public void setController(Controller controller) {
 		controller.attachToEntity(this);
 		this.controller = controller;
@@ -75,12 +80,12 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 		
 		//while (!success) {
 			
-			// TransformAndManager oldTM = transformAndManagerLive.get();
-			
 			// TODO - code to handle world level entity managers
 			
 			Point newPosition = transform.getPosition();
 			Region newRegion = newPosition.getWorld().getRegion(newPosition);
+			
+			// TODO - entity moved into unloaded chunk - what happens for normal entities
 			if (newRegion == null && this.getController() instanceof PlayerController) {
 				newRegion = newPosition.getWorld().getRegionLive(newPosition, true);
 			}

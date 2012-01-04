@@ -95,7 +95,11 @@ public class SpoutRegion extends Region{
 			boolean success = false;
 			
 			while (!success) {
-				SpoutChunk newChunk = new SpoutChunk(getWorld(), x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
+				int cx = (this.getX() * Region.REGION_SIZE + x) * Chunk.CHUNK_SIZE;
+				int cy = (this.getY() * Region.REGION_SIZE + y) * Chunk.CHUNK_SIZE;
+				int cz = (this.getZ() * Region.REGION_SIZE + z) * Chunk.CHUNK_SIZE;
+
+				SpoutChunk newChunk = new SpoutChunk(getWorld(), cx, cy , cz);
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {
