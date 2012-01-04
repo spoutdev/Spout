@@ -212,13 +212,13 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	@Override
 	public Chunk getChunk() {
 		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld().getChunk(position);
+		return position.getWorld().getChunkLive(position, true);
 	}
 
 	@Override
 	public Region getRegion() {
 		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld().getRegion(position);
+		return position.getWorld().getRegionLive(position, true);
 	}
 	
 	private static class TransformAndManager {
