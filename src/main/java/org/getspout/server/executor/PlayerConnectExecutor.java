@@ -6,10 +6,9 @@ import org.getspout.api.event.EventException;
 import org.getspout.api.event.EventExecutor;
 import org.getspout.api.event.player.PlayerConnectEvent;
 import org.getspout.api.event.player.PlayerJoinEvent;
+import org.getspout.api.player.Player;
 import org.getspout.server.SpoutServer;
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.net.SpoutSession;
-import org.getspout.server.player.SpoutPlayer;
 
 public class PlayerConnectExecutor implements EventExecutor {
 	
@@ -22,10 +21,13 @@ public class PlayerConnectExecutor implements EventExecutor {
 	public void execute(PlayerConnectEvent event) throws EventException {
 		if(event.isCancelled()) return;
 		//Create the player
-		SpoutPlayer player = new SpoutPlayer(event.getPlayerName(), new SpoutEntity(server), event.getSession());
-		((SpoutSession)event.getSession()).setPlayer(player);
+		Player player = server.addPlayer(event.getPlayerName(), (SpoutSession)event.getSession());
 		
-		Spout.getGame().getEventManager().callEvent(new PlayerJoinEvent(player));
+		if (player != null) {
+			Spout.getGame().getEventManager().callEvent(new PlayerJoinEvent(player));
+		} else {
+			event.getSession().disconnect("Player is already online");
+		}
 		
 	}
 

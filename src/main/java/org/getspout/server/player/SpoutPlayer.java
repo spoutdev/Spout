@@ -22,6 +22,10 @@ public class SpoutPlayer implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	
+	public SpoutPlayer(String name) {
+		this.name = name;
+	}
+	
 	public SpoutPlayer(String name, Entity entity, Session session) {
 		this.name = name;
 		this.sessionLive.set(session);
@@ -55,23 +59,25 @@ public class SpoutPlayer implements Player {
 	}
 	
 	@DelayedWrite
-	public void disconnect() {
-		if (entity == null) {
-			throw new IllegalStateException("Attempting to disconnect an offline player");
-		} else {
-			// TODO - actually handle disconnect properly
-			onlineLive.set(false);
+	public boolean disconnect() {
+		if (onlineLive.compareAndSet(true, false)) {
 			sessionLive.set(null);
 			entityLive.set(null);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
 	@DelayedWrite
-	public void connect(Session session, Entity entity) {
-		// TODO, do all 3 atomically .. or remove this method and make everything final?
-		onlineLive.set(true);
-		sessionLive.set(session);
-		entityLive.set(entity);
+	public boolean connect(Session session, Entity entity) {
+		if (onlineLive.compareAndSet(false, true)) {
+			sessionLive.set(session);
+			entityLive.set(entity);
+			return true;
+		} else {
+			return true;
+		}
 	}
 	
 	@Override

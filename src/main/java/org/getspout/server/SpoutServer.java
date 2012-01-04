@@ -67,6 +67,7 @@ import org.getspout.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
+import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentLinkedHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -106,9 +107,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	private WorldGenerator defaultGenerator = null;
 	
 	/**
-	 * This list of players for the server
+	 * Online player list
 	 */
-	private LinkedHashSet<SpoutPlayer> players = new LinkedHashSet<SpoutPlayer>();
+	private final SnapshotableConcurrentLinkedHashMap<String, Player> players = new SnapshotableConcurrentLinkedHashMap<String, Player>(snapshotManager, null);
 
 	/**
 	 * The security manager
@@ -185,8 +186,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * The event manager
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
-
-
+	
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
@@ -384,8 +384,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 	}
 
-	public Collection<SpoutPlayer> rawGetAllOnlinePlayers(){
-		return players;
+	public Collection<Player> rawGetAllOnlinePlayers(){
+		return players.get().values();
 	}
 	
 	/**
@@ -685,9 +685,10 @@ public class SpoutServer extends AsyncManager implements Server {
 		return null;
 	}
 
+	private Player[] emptyPlayerArray = new Player[0];
 	@Override
 	public Player[] getOnlinePlayers() {
-		return players.toArray(new Player[players.size()]);
+		return players.get().values().toArray(emptyPlayerArray);
 	}
 
 	@Override
@@ -813,6 +814,37 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	public EntityManager getEntityManager() {
 		return entityManager;
+	}
+	
+	// Players should use weak map?
+	public Player addPlayer(String playerName, SpoutSession session) {
+		Player player = null;
+
+		boolean success = false;
+		
+		while (!success) {
+			player = players.getLive().get(playerName);
+
+			if (player != null) {
+				if (!((SpoutPlayer)player).connect(session, new SpoutEntity(this))) {
+					// Means player was already online
+					return null;
+				} else {
+					success = true;
+				}
+			} else {
+				player = new SpoutPlayer(playerName, new SpoutEntity(this), session);
+				if (players.putIfAbsent(playerName, player) == null) {
+					success = true;
+				}
+			}
+		}
+		if (player == null) {
+			throw new IllegalStateException("Attempting to set session to null player, which shouldn't be possible");
+		} else {
+			session.setPlayer(player);
+		}
+		return player;
 	}
 
 }

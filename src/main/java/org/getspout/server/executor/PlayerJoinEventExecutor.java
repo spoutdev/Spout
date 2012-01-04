@@ -20,8 +20,6 @@ public class PlayerJoinEventExecutor implements EventExecutor {
 			p.disconnect();
 		}
 		
-		server.rawGetAllOnlinePlayers().add(p);
-		
 		server.broadcastMessage(p.getName() + " Has Connected");
 	}
 	

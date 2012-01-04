@@ -235,6 +235,7 @@ public final class SpoutSession implements Session {
 		}
 
 		//TODO - channel.write(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
+		channel.close();
 	}
 
 	/**

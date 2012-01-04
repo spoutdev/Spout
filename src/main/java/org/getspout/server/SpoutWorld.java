@@ -13,12 +13,16 @@ import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.material.BlockMaterial;
+import org.getspout.api.player.Player;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
+import org.getspout.server.net.SpoutSession;
+import org.getspout.server.player.SpoutPlayer;
 import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
+import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotableInt;
 import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
 import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
@@ -133,8 +137,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final EntityManager entityManager;
 
-	
-	
 	// TODO need world that loads from disk
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Server server, long seed) {
