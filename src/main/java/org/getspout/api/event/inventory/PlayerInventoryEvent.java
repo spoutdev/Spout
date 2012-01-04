@@ -21,6 +21,7 @@ import org.getspout.api.event.HandlerList;
 import org.getspout.api.event.player.PlayerEvent;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.inventory.Inventory;
+import org.getspout.api.player.Player;
 
 /**
  * Represents an inventory-related event.
@@ -31,6 +32,10 @@ public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancel
 	protected Point point = null;
 
 	protected Inventory inventory;
+
+	public PlayerInventoryEvent(Player p) {
+		super(p);
+	}
 
 	/**
 	 * Gets the inventory involved in this event.

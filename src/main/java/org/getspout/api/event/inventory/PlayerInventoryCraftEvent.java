@@ -19,6 +19,7 @@ package org.getspout.api.event.inventory;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.inventory.CraftingInventory;
 import org.getspout.api.inventory.ItemStack;
+import org.getspout.api.player.Player;
 
 /**
  * Called when a player crafts something.
@@ -39,6 +40,10 @@ public class PlayerInventoryCraftEvent extends PlayerInventoryEvent {
 	private boolean left;
 
 	private boolean shift;
+
+	public PlayerInventoryCraftEvent(Player p) {
+		super(p);
+	}
 
 	/**
 	 * Gets the inventory where the crafting is taking place

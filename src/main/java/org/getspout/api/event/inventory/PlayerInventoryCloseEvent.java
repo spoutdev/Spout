@@ -18,6 +18,7 @@ package org.getspout.api.event.inventory;
 
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.inventory.Inventory;
+import org.getspout.api.player.Player;
 
 /**
  * Called when a player closes an inventory.
@@ -26,6 +27,10 @@ public class PlayerInventoryCloseEvent extends PlayerInventoryEvent {
 	private static HandlerList handlers = new HandlerList();
 
 	private Inventory other;
+
+	public PlayerInventoryCloseEvent(Player p) {
+		super(p);
+	}
 
 	/**
 	 * Get's the top (or main) inventory that was closed

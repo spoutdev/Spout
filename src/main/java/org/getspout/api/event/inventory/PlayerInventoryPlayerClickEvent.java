@@ -17,8 +17,13 @@
 package org.getspout.api.event.inventory;
 
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.player.Player;
 
 public class PlayerInventoryPlayerClickEvent extends PlayerInventoryClickEvent {
+
+	public PlayerInventoryPlayerClickEvent(Player p) {
+		super(p);
+	}
 
 	@Override
 	protected int convertSlot(int slot) {

@@ -20,6 +20,7 @@ import org.getspout.api.event.HandlerList;
 import org.getspout.api.event.Result;
 import org.getspout.api.inventory.ItemStack;
 import org.getspout.api.inventory.PlayerInventory;
+import org.getspout.api.player.Player;
 
 public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	private static HandlerList handlers = new HandlerList();
@@ -37,6 +38,10 @@ public class PlayerInventoryClickEvent extends PlayerInventoryEvent {
 	protected boolean leftClick;
 
 	protected boolean shift;
+
+	public PlayerInventoryClickEvent(Player p) {
+		super(p);
+	}
 
 	@Override
 	public void setCancelled(boolean cancel) {
