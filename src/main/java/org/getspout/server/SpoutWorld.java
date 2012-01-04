@@ -173,6 +173,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.name = name;
 		this.entityManager = new EntityManager();
 		this.regions = new RegionSource(this);
+		//load spawn regions
+		for (int dx = -1; dx < 1; dx++) {
+			for (int dy = -1; dy < 1; dy++) {
+				for (int dz = -1; dz < 1; dz++) {
+					regions.getRegionLive(dx, dy, dz, true);
+				}
+			}
+		}
 	}
 
 	@Override
