@@ -86,6 +86,6 @@ public class TInt21TripleObjectHashMap<K> {
 	}
 
 	private static final long key(int x, int y, int z) {
-		return (x & 0x1FFFFF) << 42 | (z & 0x1FFFFF) << 21 | y & 0x1FFFFF;
+		return (((long)x) & 0x1FFFFF) << 42 | (((long)z) & 0x1FFFFF) << 21 | ((long)y) & 0x1FFFFF;
 	}
 }

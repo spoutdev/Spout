@@ -49,6 +49,20 @@ public class Point extends Vector3 {
 	}
 	
 	/**
+	 * Gets the largest distance between two points, when projected onto one of the axes.
+	 * 
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds. 
+	 * 
+	 * Otherwise, it returns the max distance.
+	 */
+	public double getMaxDistance(Point other) {
+		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
+			return Double.MAX_VALUE;
+		}
+		return Math.max(Math.abs(x - other.x), Math.max(Math.abs(y - other.y), Math.abs(z - other.z)));
+	}
+	
+	/**
 	 * Gets the world this point is locate in
 	 *
 	 * @return the world

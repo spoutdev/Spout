@@ -73,6 +73,7 @@ public abstract class PlayerController extends Controller {
 		for (Chunk c : chunkFreeQueue) {
 			if (initializedChunks.remove(c)) {
 				freeChunk(c);
+				activeChunks.remove(c);
 			}
 		}
 		
@@ -131,7 +132,7 @@ public abstract class PlayerController extends Controller {
 		
 		Point playerChunkBase = currentChunk.getBase();
 		
-		for (Chunk c : activeChunks) {
+		for (Chunk c : initializedChunks) {
 			Point base = c.getBase();
 			
 			if (base.getMahattanDistance(playerChunkBase) > blockViewDistance) {
@@ -148,14 +149,19 @@ public abstract class PlayerController extends Controller {
 			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
 				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
 					Chunk c = world.getChunkLive(x, y, z, true);
-					if (!activeChunks.contains(c)) {
-						if (c.getBase().getMahattanDistance(playerChunkBase) <= TARGET_SIZE) {
-							priorityChunkSendQueue.add(c);
-						} else {
-							chunkSendQueue.add(c);
+					double distance = c.getBase().getMahattanDistance(playerChunkBase);
+					if (distance <= blockViewDistance) {
+						if (!activeChunks.contains(c)) {
+							if (distance <= TARGET_SIZE) {
+								priorityChunkSendQueue.add(c);
+							} else {
+								chunkSendQueue.add(c);
+							}
+						}
+						if (!initializedChunks.contains(c)) {
+							chunkInitQueue.add(c);
 						}
 					}
-					chunkInitQueue.add(c);
 				}
 			}
 		}
