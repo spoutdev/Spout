@@ -96,4 +96,15 @@ public interface Entity extends Metadatable {
 	 * It can be used to send packets for network update.
 	 */
 	public void preSnapshot();
+	
+	/**
+	 * Kills the entity.  This takes effect at the next snapshot.
+	 * 
+	 * If the entity's position is set before the next snapshot, the entity won't be removed.
+	 * 
+	 * @return true if the entity was alive
+	 */
+	@DelayedWrite
+	@LiveRead
+	public boolean kill();
 }

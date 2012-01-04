@@ -124,7 +124,7 @@ public class Quaternion {
 	}
 	
 	public String toString(){
-		return "{"+x+","+y+","+z+","+w+"}";
+		return getClass().getSimpleName() + "{"+x+","+y+","+z+","+w+"}";
 	}
 	
 	/**

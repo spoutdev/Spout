@@ -84,5 +84,9 @@ public class Point extends Vector3 {
 		}
 		
 	}
+	
+	public String toString() {
+		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
+	}
 
 }

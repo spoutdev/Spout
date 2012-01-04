@@ -42,6 +42,9 @@ public abstract class PlayerController extends Controller {
 	private Set<Chunk> initializedChunks = new LinkedHashSet<Chunk>();
 	private Set<Chunk> activeChunks = new LinkedHashSet<Chunk>();
 	
+	private boolean first = true;
+	private volatile boolean teleported = false;
+	
 	public void snapshotStart() {
 		
 		if (parent == null) {
@@ -61,8 +64,9 @@ public abstract class PlayerController extends Controller {
 				lastChunkCheck = currentPosition;
 			}
 			
-			if (lastTransform == null || lastTransform.getPosition().getWorld() != liveTransform.getPosition().getWorld()) {
+			if (first || lastTransform == null || lastTransform.getPosition().getWorld() != liveTransform.getPosition().getWorld()) {
 				worldChanged(liveTransform.getPosition().getWorld());
+				teleported = true;
 			}
 		}
 		
@@ -104,7 +108,11 @@ public abstract class PlayerController extends Controller {
 			chunksSent++;
 		}
 		
-		sendPosition(liveTransform);
+		if (teleported) {
+			sendPosition(liveTransform);
+			first = false;
+			teleported = false;
+		}
 		
 		super.snapshotStart();
 	}

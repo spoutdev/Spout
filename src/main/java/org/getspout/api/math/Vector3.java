@@ -613,5 +613,5 @@ public class Vector3 implements Comparable<Vector3> {
 		if(x.getX() == y.getX() && x.getY() == y.getY() && x.getZ() == y.getZ()) return true;
 		return false;
 	}
-
+	
 }

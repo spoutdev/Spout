@@ -66,4 +66,8 @@ public class Transform {
 		t.setScale(new Vector3m(this.scale));
 		return t;
 	}
+	
+	public String toString() {
+		return getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
+	}
 }
