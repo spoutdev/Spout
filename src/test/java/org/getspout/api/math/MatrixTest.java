@@ -168,7 +168,6 @@ public class MatrixTest {
 				{ 0, 0, 0, 1}
 		};
 		Matrix m = Matrix.rotateX(theta);
-		System.out.println(m);
 		compareMatrixToArray(m, id);
 	}
 
@@ -221,6 +220,17 @@ public class MatrixTest {
 		};
 		
 		compareMatrixToArray(m, id);
+		
+		rot = new Quaternion(90, new Vector3(0,1,0));
+		
+		id = new double[][] { { 0, 0, 1, 0},
+				{ 0, 1, 0, 0},
+				{ -1, 0, 0, 0},
+				{ 0, 0, 0, 1}
+		};
+		
+		compareMatrixToArray(m, id);
+		
 	}
 
 }

@@ -264,19 +264,19 @@ public class Matrix {
 		Matrix res = createIdentity();
 		Quaternion r = rot.normalize(); //Confirm that we are dealing with a unit quaternion
 		
-		res.set(0, 0, 1 - 2 * r.getY() * r.getY() - 2 * r.getZ() * r.getZ());
-		res.set(0, 1, 2 * r.getX() * r.getY() + 2 * r.getW() * r.getZ());
-		res.set(0, 2, 2 * r.getX() * r.getZ() - 2 * r.getW() * r.getY());
+		res.set(0, 0, 1 - (2 * r.getY() * r.getY()) - (2 * r.getZ() * r.getZ()));
+		res.set(0, 1, (2 * r.getX() * r.getY()) - (2 * r.getW() * r.getZ()));
+		res.set(0, 2, (2 * r.getX() * r.getZ()) + (2 * r.getW() * r.getY()));
 		res.set(0, 3, 0);
 		
-		res.set(1, 0, 2 * r.getX() * r.getY() - 2 * r.getW() * r.getZ());
-		res.set(1, 1, 1 - 2 * r.getX() * r.getX() - 2 * r.getZ() * r.getZ());
-		res.set(1, 2, 2 * r.getY() * r.getZ() - 2 * r.getW() * r.getX());
+		res.set(1, 0, (2 * r.getX() * r.getY()) + (2 * r.getW() * r.getZ()));
+		res.set(1, 1, 1 - (2 * r.getX() * r.getX()) - (2 * r.getZ() * r.getZ()));
+		res.set(1, 2, (2 * r.getY() * r.getZ()) - (2 * r.getW() * r.getX()));
 		res.set(1, 3, 0);
 		
-		res.set(2, 0, 2 * r.getX() * r.getZ() + 2 * r.getW() * r.getY());
-		res.set(2, 1, 2 * r.getY() * r.getZ() + 2 * r.getW() * r.getZ());
-		res.set(2, 2, 1 - 2 * r.getX() * r.getX() - 2 * r.getY() * r.getY());
+		res.set(2, 0, (2 * r.getX() * r.getZ()) - (2 * r.getW() * r.getY()));
+		res.set(2, 1, (2 * r.getY() * r.getZ()) + (2 * r.getW() * r.getZ()));
+		res.set(2, 2, 1 - (2 * r.getX() * r.getX()) - (2 * r.getY() * r.getY()));
 		res.set(2, 3, 0);
 		
 		//3, [0-3] will be 0,0,0,1 due to identity matrix
@@ -285,6 +285,8 @@ public class Matrix {
 	}
 	
 	public static Vector3 transform(Vector3 v, Matrix m){
+		System.out.println(v);
+		System.out.println(m);
 		float[] vector = { v.getX(), v.getY(), v.getZ(), 1};
 		float[] vres = new float[4];
 		for (int i = 0; i < m.dimension; i++) {
@@ -294,6 +296,7 @@ public class Matrix {
 				vres[i] += n;
 			
 			}
+			System.out.println(vres[i]);
 		}
 		
 		return new Vector3(vres[0], vres[1], vres[2]);

@@ -41,7 +41,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingBox_BoundingBox() {
-		System.out.println("checkCollision");
 		BoundingBox a = new BoundingBox(
 			new Vector3(1, 1, 1),
 			new Vector3(3, 3, 3));
@@ -79,7 +78,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingBox_BoundingSphere() {
-		System.out.println("checkCollision");
 		BoundingBox a = new BoundingBox(
 			new Vector3(1, 1, 1),
 			new Vector3(3, 3, 3));
@@ -108,7 +106,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingBox_Segment() {
-		System.out.println("checkCollision");
 		BoundingBox a = new BoundingBox(
 			new Vector3(-2, -2, -2),
 			new Vector3(0, 0, 0));
@@ -147,7 +144,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingBox_Plane() {
-		System.out.println("checkCollision");
 		BoundingBox a = new BoundingBox(
 			new Vector3(-1, -1, -1),
 			new Vector3(1, 1, 1));
@@ -186,8 +182,7 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingSphere_BoundingSphere() {
-		System.out.println("checkCollision");
-
+		
 		BoundingSphere a = new BoundingSphere(
 			new Vector3(0, 0, 0),
 			1);
@@ -226,7 +221,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingSphere_Segment() {
-		System.out.println("checkCollision");
 		BoundingSphere a = new BoundingSphere(
 			new Vector3(1, 1, 1),
 			1);
@@ -265,8 +259,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingSphere_Ray() {
-		System.out.println("checkCollision");
-
 		BoundingSphere a = new BoundingSphere(
 			new Vector3(0, 0, 0),
 			10);
@@ -305,8 +297,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_BoundingSphere_Plane() {
-		System.out.println("checkCollision");
-
 		//Edge collision
 
 		BoundingSphere a = new BoundingSphere(
@@ -337,9 +327,7 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_Segment_Segment() {
-		System.out.println("checkCollision");
-
-		Segment a = new Segment(
+			Segment a = new Segment(
 			new Vector3(0, 0, 0),
 			new Vector3(0, 10, 0));
 
@@ -367,8 +355,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_Segment_Plane() {
-		System.out.println("checkCollision");
-
 		Segment a = new Segment(
 			new Vector3(0, -1, 0),
 			new Vector3(0, 1, 0));
@@ -397,8 +383,6 @@ public class CollisionHelperTest {
 	 */
 	@Test
 	public void testCheckCollision_Plane_Plane() {
-		System.out.println("checkCollision");
-
 		Plane a = new Plane(
 			new Vector3(0, 0, 0),
 			Vector3.Up);

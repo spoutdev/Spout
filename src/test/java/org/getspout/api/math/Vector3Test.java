@@ -9,46 +9,43 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class Vector3Test {
-	public static double eps = 0.01;
+	public static double eps = 0.1;
+	
+	private void testValue(Vector3 v, float x, float y, float z){
+		if(Math.abs(v.getX() - x ) >= eps || Math.abs(v.getY() - y) >= eps || Math.abs(v.getZ() - z) >= eps){
+			fail("Test Fail! Expected {" + x + "," + y +"," + z +"} but got "+ v);
+		}
+	}
+	
 	@Test
 	public void testVector3DoubleDoubleDouble() {
 		Vector3 v = new Vector3(2.0f, 4.0f, -1.0f);
-		if(v.getX() != 2.0) fail("X does not equal 2");
-		if(v.getY() != 4.0) fail("Y does not equal 4");
-		if(v.getZ() != -1.0) fail("Z does not equal -1");
+		testValue(v, 2.f, 4.f, -1.f);
 	}
 
 	@Test
 	public void testVector3() {
 		Vector3 v = new Vector3();
-		if(v.getX() != 0.0) fail("X does not equal 0");
-		if(v.getY() != 0.0) fail("Y does not equal 0");
-		if(v.getZ() != 0.0) fail("Z does not equal 0");
+		testValue(v, 0, 0, 0);
 		
 	}
 
 	@Test
 	public void testVector3Vector3() {
 		Vector3 v = new Vector3(new Vector3(-1.0f, 3.0f, 2.0f));
-		if(v.getX() != -1.0) fail("X does not equal -1.0");
-		if(v.getY() != 3.0) fail("Y does not equal 3.0");
-		if(v.getZ() != 2.0) fail("Z does not equal 2.0");
+		testValue(v, -1.f, 3.f, 2.f);
 	}
 
 	@Test
 	public void testVector3Vector2Double() {
 		Vector3 v = new Vector3(new Vector2(-1.0f, 3.0f), 1.0f);
-		if(v.getX() != -1.0) fail("X does not equal -1.0");
-		if(v.getY() != 3.0) fail("Y does not equal 3.0");
-		if(v.getZ() != 1.0) fail("Z does not equal 2.0");
+		testValue(v, -1.f, 3.f, 1.f);
 	}
 
 	@Test
 	public void testVector3Vector2() {
 		Vector3 v = new Vector3(new Vector2(-1.0f, 3.0f));
-		if(v.getX() != -1.0) fail("X does not equal -1.0");
-		if(v.getY() != 3.0) fail("Y does not equal 3.0");
-		if(v.getZ() != 0.0) fail("Z does not equal 2.0");
+		testValue(v, -1.f, 3.f, 0);
 	}
 
 	@Test
@@ -82,45 +79,33 @@ public class Vector3Test {
 	public void testSubtractVector3Vector3() {
 		Vector3 x = new Vector3(1,0, 0);
 		Vector3 z = x.subtract(x);
-		if(z.getX() != 0.0) fail("z.X does not equal 0");
-		if(z.getY() != 0.0) fail("z.Y does not equal 0");
-		if(z.getZ() != 0.0) fail("z.Z does not equal 0");
+		testValue(z, 0, 0, 0);
 		
 		Vector3 u = new Vector3(1,3, 10);
 		Vector3 v = u.subtract(new Vector3(5, 2, 5));
-		if(v.getX() != -4.0) fail("v.X does not equal -4");
-		if(v.getY() != 1.0) fail("v.Y does not equal 1");
-		if(v.getZ() != 5.0) fail("v.Z does not equal 5");
+		testValue(v, -4, 1, 5);
 	}
 
 	@Test
 	public void testAddVector3Vector3() {
 		Vector3 x = new Vector3(1,0, 0);
 		Vector3 z = x.add(x);
-		if(z.getX() != 2.0) fail("z.X does not equal 2");
-		if(z.getY() != 0.0) fail("z.Y does not equal 0");
-		if(z.getZ() != 0.0) fail("z.Z does not equal 0");
-		
+		testValue(z, 2.f, 0.f, 0.f);
+
 		Vector3 u = new Vector3(1,3, 10);
 		Vector3 v = u.add(new Vector3(5, 2, 5));
-		if(v.getX() != 6.0) fail("v.X does not equal 6");
-		if(v.getY() != 5.0) fail("v.Y does not equal 5");
-		if(v.getZ() != 15.0) fail("v.Z does not equal 15");
+		testValue(v, 6.f, 5.f, 15.f);
 	}
 
 	@Test
 	public void testScaleVector3Double() {
 		Vector3 s = new Vector3(1,0,0);
 		Vector3 z = s.scale(5);
-		if(z.getX() != 5.0) fail("z.X does not equal 5");
-		if(z.getY() != 0.0) fail("z.Y does not equal 0");
-		if(z.getZ() != 0.0) fail("z.Z does not equal 0");
+		testValue(z, 5, 0, 0);
 		
 		Vector3 u = new Vector3(1,3, 10);
 		Vector3 v = u.scale(5);
-		if(v.getX() != 5.0) fail("v.X does not equal 5");
-		if(v.getY() != 15.0) fail("v.Y does not equal 15");
-		if(v.getZ() != 50.0) fail("v.Z does not equal 50");
+		testValue(v, 5.f, 15.f, 50.f);
 	}
 
 	@Test
@@ -140,26 +125,19 @@ public class Vector3Test {
 		Vector3 x = new Vector3(1,0,0);
 		Vector3 y = new Vector3(0,1,0);
 		Vector3 z = x.cross(y);
-		if(z.getX() != 0.0) fail("z.X does not equal 0, it's " + z.getX());
-		if(z.getY() != 0.0) fail("z.Y does not equal 0, it's " + z.getY());
-		if(z.getZ() != 1.0) fail("z.Z does not equal 1, it's " + z.getZ());
-		
+		testValue(z, 0, 0, 1.f);
+
 		Vector3 a = new Vector3(2,5,3);
 		Vector3 b = new Vector3(3, -1,8);
 		Vector3 c = a.cross(b);
-		if(c.getX() != 43) fail("z.X does not equal 43, it's " + c.getX());
-		if(c.getY() != -7) fail("z.Y does not equal -7, it's " + c.getY());
-		if(c.getZ() != -17) fail("z.Z does not equal -17, it's " + c.getZ());
-		
+		testValue(c, 43.f, -7.f, -17.f);		
 	}
 
 	@Test
 	public void testToArrayVector3() {
 		Vector3 x = new Vector3(1,0,0);
 		float[] y = x.toArray();
-		if(y[0] != 1.0) fail("z.X does not equal 1, it's " + y[0]);
-		if(y[1] != 0.0) fail("z.Y does not equal 0, it's " + y[1]);
-		if(y[2] != 0.0) fail("z.Z does not equal 0, it's " + y[2]);
+		testValue(x, y[0], y[1], y[2]);
 		
 	}
 
@@ -167,12 +145,11 @@ public class Vector3Test {
 	public void testTransformVector3Matrix() {
 		Vector3 x = new Vector3(1,0,0);
 		Vector3 u = x.transform(Matrix.rotateY(90));
-		if(! u.equals(new Vector3(0,0,-1))) fail("{1,0,0} rotated about Y ");
+		testValue(u, 0, 0, -1);
 		
 		Vector3 y = new Vector3(2,4,5);
 		Vector3 v = y.transform(Matrix.rotateX(30));
-		Vector3 res = new Vector3(2,.964f,6.33f);
-		if(! v.equals(res)) fail("{2,4,5} rotated about X, expected" + res + " Got "+ v );
+		testValue(v, 2,.964f,6.33f);
 		
 	}
 
@@ -180,12 +157,12 @@ public class Vector3Test {
 	public void testTransformVector3Quaternion() {
 		Vector3 x = new Vector3(1,0,0);	
 		Vector3 u = x.transform(new Quaternion(90, new Vector3(0,1,0)));
-		if(! u.equals(new Vector3(0,0,-1))) fail("{1,0,0} rotated about Y, got " + u );
+		testValue(u, 0, 0,-1);
 		
 		Vector3 y = new Vector3(2,4,5);
 		Vector3 v = y.transform(new Quaternion(30, new Vector3(1,0,0)));
-		Vector3 res = new Vector3(2,.964f,6.33f);
-		if(! v.equals(res)) fail("{2,4,5} rotated about X, expected" + res + " Got "+ v );
+		testValue(v, 2,.964f,6.33f);
+		
 		
 	}
 
