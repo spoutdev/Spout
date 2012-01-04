@@ -115,7 +115,7 @@ public class SimpleEventManager implements EventManager {
 					}
 				}
 
-			}, eh.priority(), plugin));
+			}, eh.order(), plugin));
 		}
 		return ret;
 	}
