@@ -230,6 +230,26 @@ public class Vector3 implements Comparable<Vector3> {
 	public Vector3 abs() {
 		return new Vector3(Math.abs(x), Math.abs(y), Math.abs(z));
 	}
+	
+	/**
+	 * Gets the distance between this Vector3 and a given Vector3.
+	 * 
+	 * @param a
+	 * @return 
+	 */
+	public double distance(Vector3 a) {
+		return Vector3.distance(a, this);
+	}
+	
+	/**
+	 * Raises the X, Y, and Z values of this Vector3 to the given power.
+	 * 
+	 * @param power
+	 * @return 
+	 */
+	public Vector3 pow(double power) {
+		return Vector3.pow(this, power);
+	}
 
 	/**
 	 * returns the squared length of the vector
@@ -487,6 +507,29 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public static Vector3 rand() {
 		return new Vector3(Math.random(), Math.random(), Math.random());
+	}
+	
+	/**
+	 * Gets the distance between two Vector3. 
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static double distance(Vector3 a, Vector3 b) {
+		double xzDist = Vector2.distance(a.toVector2(), b.toVector2());
+		return Math.sqrt(Math.pow(xzDist, 2) + Math.pow(Math.abs(Vector3.subtract(a, b).getY()), 2));
+	}
+	
+	/**
+	 * Raises the X, Y, and Z values of a Vector3 to the given power.
+	 * 
+	 * @param o
+	 * @param power
+	 * @return 
+	 */
+	public static Vector3 pow(Vector3 o, double power) {
+		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
 	}
 	
 	/**

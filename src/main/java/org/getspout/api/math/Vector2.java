@@ -220,6 +220,26 @@ public class Vector2 implements Comparable<Vector2> {
 	public Vector2 abs() {
 		return new Vector2(Math.abs(x), Math.abs(y));
 	}
+	
+	/**
+	 * Gets the distance between this Vector2 and a given Vector2.
+	 * 
+	 * @param a
+	 * @return 
+	 */
+	public double distance(Vector2 a) {
+		return Vector2.distance(a, this);
+	}
+	
+	/**
+	 * Raises the X and Y values of this Vector2 to the given power.
+	 * 
+	 * @param power
+	 * @return 
+	 */
+	public Vector2 pow(double power) {
+		return Vector2.pow(this, power);
+	}
 
 	/**
 	 * Calculates the length of this Vector2 squared.
@@ -493,6 +513,29 @@ public class Vector2 implements Comparable<Vector2> {
 	 */
 	public static int compareTo(Vector2 a, Vector2 b) {
 		return (int) a.lengthSquared() - (int) b.lengthSquared();
+	}
+	
+	/**
+	 * Gets the distance between two Vector2. 
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static double distance(Vector2 a, Vector2 b) {
+		Vector2 tempVector = Vector2.pow(Vector2.subtract(a, b), 2);
+		return Math.sqrt(tempVector.x + tempVector.y);
+	}
+	
+	/**
+	 * Raises the X and Y values of a Vector2 to the given power.
+	 * 
+	 * @param o
+	 * @param power
+	 * @return 
+	 */
+	public static Vector2 pow(Vector2 o, double power) {
+		return new Vector2(Math.pow(o.x, power), Math.pow(o.y, power));
 	}
 
 	/**
