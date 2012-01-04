@@ -310,6 +310,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public Entity createAndSpawnEntity(Point point, Controller controller) {
 		Entity e = createEntity(point, controller);
+		//initialize region if needed
+		getRegionLive(point, true);
 		spawnEntity(e);
 		return e;
 	}
