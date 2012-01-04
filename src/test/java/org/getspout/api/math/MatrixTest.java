@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class MatrixTest {
-	private static final double eps = 0.0000001;
+	private static final double eps = 0.01;
 	
 	private void compareMatrixToArray(Matrix m, double[][] array){
 		for(int y = 0; y < m.getDimension(); y++){
@@ -197,7 +197,30 @@ public class MatrixTest {
 
 	@Test
 	public void testRotate() {
-		fail("Not yet implemented");
+		Matrix m;
+		Quaternion rot;
+		
+		rot = Quaternion.identity;
+		m = Matrix.rotate(rot);
+		
+		double[][] id = { { 1, 0, 0, 0},
+				{ 0, 1, 0, 0},
+				{ 0, 0, 1, 0},
+				{ 0, 0, 0, 1}
+		};
+		
+		compareMatrixToArray(m, id);
+		
+		rot = new Quaternion(4,3,2,0);
+		m = Matrix.rotate(rot);
+		
+		id = new double[][] { { 0.103448, 0.827586, 0.551724, 0},
+				{ 0.827586, -0.37931,  0.413793, 0},
+				{ 0.551724, 0.413793,  -0.724138, 0},
+				{ 0, 0, 0, 1}
+		};
+		
+		compareMatrixToArray(m, id);
 	}
 
 }
