@@ -11,7 +11,7 @@ public class Quaternion {
 	/**
 	 * Represents no rotation
 	 */
-	public static Quaternion identitiy = new Quaternion(1,0,0,0);
+	public static Quaternion identity = new Quaternion(1,0,0,0);
 	
 	/**
 	 * Constructs a new Quaternion with the given xyzw 
