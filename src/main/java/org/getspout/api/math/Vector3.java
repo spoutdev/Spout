@@ -235,7 +235,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * toString Override
 	 */
 	public String toString() {
-		return String.format("{ %f, %f, %f", x, y, z);
+		return String.format("{ %f, %f, %f }", x, y, z);
 	}
 
 	/**

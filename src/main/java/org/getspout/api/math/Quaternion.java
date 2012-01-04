@@ -11,7 +11,7 @@ public class Quaternion {
 	/**
 	 * Represents no rotation
 	 */
-	public static Quaternion identity = new Quaternion(1,0,0,0);
+	public static Quaternion identity = new Quaternion(0,0,0,1);
 	
 	/**
 	 * Constructs a new Quaternion with the given xyzw 
@@ -34,7 +34,7 @@ public class Quaternion {
 	 * @param axis
 	 */
 	public Quaternion(float angle, Vector3 axis){
-		this(axis.getX() * (float)MathHelper.sin(Math.toRadians(angle/2)), axis.getY() * (float)MathHelper.sin(Math.toRadians(angle/2)), axis.getZ() * (float)MathHelper.sin(Math.toRadians(angle/2)), (float)MathHelper.cos(Math.toRadians(angle/2)));
+		this(axis.getX() * (float)MathHelper.sin(Math.toRadians(angle)/2), axis.getY() * (float)MathHelper.sin(Math.toRadians(angle)/2), axis.getZ() * (float)MathHelper.sin(Math.toRadians(angle)/2), (float)MathHelper.cos(Math.toRadians(angle)/2));
 	}
 	/**
 	 *  Copy Constructor
@@ -123,6 +123,10 @@ public class Quaternion {
 		return Quaternion.getAxisAngles(this);
 	}
 	
+	public String toString(){
+		return "{"+x+","+y+","+z+","+w+"}";
+	}
+	
 	/**
 	 * Returns the length squared of the given Quaternion
 	 * @param a
@@ -156,9 +160,15 @@ public class Quaternion {
 	 * @return
 	 */
 	public static Quaternion multiply(Quaternion a, Quaternion b){
-		float x = a.w * b.x + a.x * b.w + a.y * b.z + a.z * b.y;
-		float y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
-		float z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
+		float x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
+		
+		
+		float y = a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z;
+		
+		
+		float z = a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x;
+		
+		
 		float w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
 		
 		return new Quaternion(x,y,z,w);
@@ -184,9 +194,12 @@ public class Quaternion {
 	 * @return
 	 */
 	public static Vector3 getAxisAngles(Quaternion a){
-		float roll = (float)Math.atan2(2 * (a.getX() * a.getY() + a.getZ() * a.getW()), 1 - 2 * (a.getY() * a.getY() + a.getZ() * a.getZ()));
-		float pitch = (float)Math.asin(2 * (a.getX() * a.getZ() - a.getW() * a.getY()));
-		float yaw = (float)Math.atan2(2 * ( a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW()));
+		//Forward is 1,0,0
+		float yaw = (float)Math.toDegrees(Math.atan2(2 * (a.getX() * a.getY() + a.getZ() * a.getW()), 1 - 2 * (a.getY() * a.getY() + a.getZ() * a.getZ())));
+		//According to this calculation, {0, 1, 0} is down, so we need to multiply by -1
+		float pitch = -1 * (float)Math.toDegrees(Math.asin(2 * (a.getX() * a.getZ() - a.getW() * a.getY())));
+		//Our left and right are swapped from this calculation, so we need to subtract the angle from 180.
+		float roll = 180 - (float)Math.toDegrees(Math.atan2(2 * ( a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW())));
 		
 		return new Vector3(roll, pitch, yaw);
 	}

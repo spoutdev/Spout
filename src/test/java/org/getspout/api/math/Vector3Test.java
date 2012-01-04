@@ -180,7 +180,7 @@ public class Vector3Test {
 	public void testTransformVector3Quaternion() {
 		Vector3 x = new Vector3(1,0,0);	
 		Vector3 u = x.transform(new Quaternion(90, new Vector3(0,1,0)));
-		if(! u.equals(new Vector3(0,0,-1))) fail("{1,0,0} rotated about Y ");
+		if(! u.equals(new Vector3(0,0,-1))) fail("{1,0,0} rotated about Y, got " + u );
 		
 		Vector3 y = new Vector3(2,4,5);
 		Vector3 v = y.transform(new Quaternion(30, new Vector3(1,0,0)));
