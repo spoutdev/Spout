@@ -10,7 +10,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,10 +33,7 @@ import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
 import org.getspout.api.event.EventManager;
-import org.getspout.api.event.Order;
 import org.getspout.api.event.SimpleEventManager;
-import org.getspout.api.event.player.PlayerConnectEvent;
-import org.getspout.api.event.player.PlayerJoinEvent;
 import org.getspout.api.event.server.PreCommandEvent;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
@@ -66,7 +63,6 @@ import org.getspout.server.scheduler.SpoutScheduler;
 import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
-import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentLinkedHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -149,17 +145,17 @@ public class SpoutServer extends AsyncManager implements Server {
 	public static final StorageQueue storeQueue = new StorageQueue();
 
 	/**
-	 * The scheduler for the server
+	 * The scheduler for the server.
 	 */
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
 
 	/**
-	 * If the server has a whitelist or not
+	 * If the server has a whitelist or not.
 	 */
 	private volatile boolean whitelist = false;
 
 	/**
-	 * If the server allows flight
+	 * If the server allows flight.
 	 */
 	private volatile boolean allowFlight = false;
 
@@ -167,6 +163,21 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * A list of all players who can log onto this server, if using a whitelist.
 	 */
 	private List<String> whitelistedPlayers = new ArrayList<String>();
+	
+	/**
+	 * A list of all players who can not log onto this server.
+	 */
+	private List<String> bannedPlayers = new ArrayList<String>();
+	
+	/**
+	 * A list of all operators.
+	 */
+	private List<String> operators = new ArrayList<String>();
+	
+	/**
+	 * A folder that holds all of the world data folders inside of it. By default, it does not exist ('.'), meant for organizational purposes.
+	 */
+	private File worldFolder = new File(".");
 
 	/**
 	 * loaded plugins
@@ -176,14 +187,19 @@ public class SpoutServer extends AsyncManager implements Server {
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 
 	/**
-	 * The root commnd for this server
+	 * The root commnd for this server.
 	 */
 	private final RootCommand rootCommand = new RootCommand(this);
 
 	/**
-	 * The event manager
+	 * The event manager.
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
+	
+	/**
+	 * Cached copy of the server configuration, can be used instead of re-parsing the config file for each access
+	 */
+	private Configuration configCache = null;
 
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
@@ -194,6 +210,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void testDatatable() {
 		long time = System.currentTimeMillis();
 		SpoutDatatableMap table = new SpoutDatatableMap(SpoutEntity.entityStringMap);
@@ -209,7 +226,6 @@ public class SpoutServer extends AsyncManager implements Server {
 			try {
 				out.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		try {
@@ -224,10 +240,8 @@ public class SpoutServer extends AsyncManager implements Server {
 			s.flush();
 			s.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -263,6 +277,11 @@ public class SpoutServer extends AsyncManager implements Server {
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
+		
+		//At least one plugin should have registered a default world generator, if not, end now.
+		if (this.getDefaultGenerator() == null) {
+			throw new RuntimeException("Failed to detect any default world generator. A plugin must set it during enabling.");
+		}
 
 		getEventManager().registerEvents(new InternalEventListener(this), this);
 		scheduler.startMainThread();
@@ -270,13 +289,14 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@SuppressWarnings("unchecked")
 	private void loadConfig() throws IOException {
-		Configuration config = getConfiguration();
+		Configuration config = getConfiguration(true);
 		boolean save = false;
 		try {
 			Map<String, String> generators = (Map<String, String>) config.getProperty("worlds");
 			if (generators == null) {
 				generators = new HashMap<String, String>();
 				generators.put("world", "default");
+				config.setProperty("worlds", generators);
 				save = true;
 			}
 		} catch (Exception e) {
@@ -304,6 +324,7 @@ public class SpoutServer extends AsyncManager implements Server {
 				config.setProperty("banlist", bannedList);
 				save = true;
 			}
+			this.bannedPlayers = bannedList;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to read banlist from the config file!");
 		}
@@ -328,6 +349,35 @@ public class SpoutServer extends AsyncManager implements Server {
 			this.whitelist = whitelist;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to read whitelist value from the config file!");
+		}
+		try {
+			String worldFolder = (String) config.getProperty("worldcontainer");
+			if (worldFolder == null) {
+				config.setProperty("worldcontainer", ".");
+				save = true;
+			}
+			else {
+				this.worldFolder = new File(worldFolder);
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read world container value from the config file!");
+		}
+		try {
+			List<String> opsList = (List<String>) config.getProperty("ops");
+			if (opsList == null) {
+				opsList = new ArrayList<String>();
+				opsList.add("Notch");
+				opsList.add("ez");
+				opsList.add("jeb");
+				config.setProperty("ops", opsList);
+				save = true;
+			}
+			this.operators = opsList;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read operators from the config file!");
+		}
+		if (save) {
+			config.save();
 		}
 	}
 
@@ -499,26 +549,13 @@ public class SpoutServer extends AsyncManager implements Server {
 	}*/
 
 	@Override
-	public int getSpawnProtectRadius() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setSpawnProtectRadius(int radius) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public boolean allowFlight() {
 		return allowFlight;
 	}
 
 	@Override
 	public File getWorldFolder() {
-		// TODO Auto-generated method stub
-		return null;
+		return worldFolder;
 	}
 
 	@Override
@@ -550,7 +587,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public void updateWhitelist() {
 		try {
-			Configuration config = getConfiguration();
+			Configuration config = getConfiguration(true);
 			List<String> whitelist = (List<String>) config.getProperty("whitelist");
 			if (whitelist != null) {
 				this.whitelistedPlayers = whitelist;
@@ -569,6 +606,30 @@ public class SpoutServer extends AsyncManager implements Server {
 			whitelist[i] = whitelistedPlayers.get(i);
 		}
 		return whitelist;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void whitelist(String player) {
+		whitelistedPlayers.add(player);
+		try {
+			Configuration config = getConfiguration(true);
+			List<String> whitelist = (List<String>) config.getProperty("whitelist");
+			if (whitelist == null) {
+				whitelist = whitelistedPlayers;
+			}
+			else {
+				whitelist.add(player);
+			}
+			config.setProperty("whitelist", whitelist);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to write whitelist to the config file!");
+		}
+	}
+
+	@Override
+	public void unWhitelist(String player) {
+		whitelistedPlayers.remove(player);
 	}
 
 	@Override
@@ -600,6 +661,10 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
 		// TODO - should include generator (and non-zero seed)
+		if (generator == null) {
+			generator = getGenerator(name);
+		}
+		
 		SpoutWorld world = new SpoutWorld(name, this, 0);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
@@ -641,12 +706,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public boolean isOnlineMode() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public Collection<String> getIPBans() {
 		// TODO Auto-generated method stub
 		return null;
@@ -684,14 +743,20 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public Collection<Player> getBannedPlayers() {
-		// TODO Auto-generated method stub
-		return null;
+		Set<Player> players = new HashSet<Player>();
+		for (String name : bannedPlayers) {
+			players.add(new SpoutPlayer(name));
+		}
+		return players;
 	}
 
 	@Override
 	public Collection<Player> getOps() {
-		// TODO Auto-generated method stub
-		return null;
+		Set<Player> players = new HashSet<Player>();
+		for (String name : operators) {
+			players.add(new SpoutPlayer(name));
+		}
+		return players;
 	}
 
 	@Override
@@ -763,24 +828,13 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public WorldGenerator getDefaultGenerator() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.defaultGenerator;
 	}
 
 	@Override
 	public void setDefaultGenerator(WorldGenerator generator) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private Configuration getConfiguration() throws IOException {
-		File configFile = new File(getConfigFolder(), "spout.yml");
-		if (!configFile.exists()) {
-			configFile.createNewFile();
-		}
-		Configuration config = new Configuration(configFile);
-		config.load();
-		return config;
+		if (generator == null) throw new NullPointerException("Can not set default generator to null!");
+		this.defaultGenerator = generator;
 	}
 
 	public EntityManager getExpectedEntityManager(Point point) {
@@ -831,5 +885,57 @@ public class SpoutServer extends AsyncManager implements Server {
 		}
 		return player;
 	}
+	
 
+	private Configuration getConfiguration() throws IOException {
+		return getConfiguration(false);
+	}
+
+	private Configuration getConfiguration(boolean update) throws IOException {
+		if (configCache != null && !update) {
+			return configCache;
+		}
+		File configFile = new File(getConfigFolder(), "spout.yml");
+		if (!configFile.exists()) {
+			configFile.createNewFile();
+		}
+		Configuration config = new Configuration(configFile);
+		config.load();
+		configCache = config;
+		return config;
+	}
+
+	@SuppressWarnings("unchecked")
+	private WorldGenerator getGenerator(String name) {
+		try {
+			Configuration config = getConfiguration();
+			Map<String, String> generators = (Map<String, String>) config.getProperty("worlds");
+			if (generators != null) {
+				String genName = generators.get(name);
+				if (genName != null && genName.equalsIgnoreCase("default")) {
+					return getDefaultGenerator();
+				}
+				if (genName != null) {
+					String[] split = genName.split(":", 2);
+					String id = (split.length > 1) ? split[1] : null;
+					Plugin plugin = pluginManager.getPlugin(split[0]);
+
+					if (plugin == null) {
+						getLogger().severe("Could not find generator for world '" + name + "', Plugin '" + split[0] + "' could not be found!");
+					}
+					else if (!plugin.isEnabled()) {
+						getLogger().severe("Could not find generator for world '" + name+ "', Plugin '" + split[0] + "' is not enabled!");
+					}
+					else {
+						WorldGenerator gen = plugin.getWorldGenerator(name, id);
+						if (gen != null) {
+							return gen;
+						}
+					}
+				}
+			}
+		}
+		catch (IOException ignore) { }
+		return getDefaultGenerator();
+	}
 }

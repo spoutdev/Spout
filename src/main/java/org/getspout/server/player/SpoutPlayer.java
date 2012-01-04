@@ -24,13 +24,15 @@ public class SpoutPlayer implements Player {
 	private Entity entity;
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
+	private final int hashcode;
 
 	public SpoutPlayer(String name) {
 		this.name = name;
+		hashcode = name.hashCode();
 	}
 
 	public SpoutPlayer(String name, Entity entity, Session session) {
-		this.name = name;
+		this(name);
 		this.sessionLive.set(session);
 		this.session = session;
 		this.entityLive.set(entity);
@@ -122,5 +124,18 @@ public class SpoutPlayer implements Player {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Player) {
+			return obj.hashCode() == hashCode();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return hashcode;
 	}
 }
