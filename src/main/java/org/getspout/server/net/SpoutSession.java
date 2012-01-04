@@ -9,14 +9,18 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.getspout.api.Game;
+import org.getspout.api.event.player.PlayerKickEvent;
+import org.getspout.api.event.player.PlayerLeaveEvent;
 import org.getspout.api.player.Player;
 import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.MessageHandler;
+import org.getspout.api.protocol.PlayerProtocol;
 import org.getspout.api.protocol.Protocol;
 import org.getspout.api.protocol.Session;
 import org.getspout.server.SpoutServer;
 import org.getspout.server.player.SpoutPlayer;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 
 /**
  * A single connection to the server, which may or may not be associated with a
@@ -219,22 +223,22 @@ public final class SpoutSession implements Session {
 	 */
 	public void disconnect(String reason, boolean overrideKick) {
 		if (player != null && !overrideKick) {
-			/*PlayerKickEvent event = EventFactory.onPlayerKick(player, reason);
+			PlayerKickEvent event = getGame().getEventManager().callEvent(new PlayerKickEvent(player, reason));
 			if (event.isCancelled()) {
 				return;
-			}*/
+			}
 
-			//reason = event.getReason();
+			reason = event.getKickReason();
 
-			//if (event.getLeaveMessage() != null) {
-			//	server.broadcastMessage(event.getLeaveMessage());
-			//}
+			if (event.getMessage() != null) {
+				server.broadcastMessage(event.getMessage());
+			}
 
-			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
+			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
 			dispose(false);
 		}
 
-		//TODO - channel.write(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
+		channel.write(protocol.get().getPlayerProtocol().getKickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
 		channel.close();
 	}
 
@@ -288,10 +292,10 @@ public final class SpoutSession implements Session {
 			//	((SpoutPlayer) player).getSession().send(userListMessage);
 			//}
 
-			//String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-			//if (broadcastQuit && text != null) {
-			//	server.broadcastMessage(text);
-			//}
+			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, null, broadcastQuit)).getMessage();
+			if (broadcastQuit && text != null) {
+				server.broadcastMessage(text);
+			}
 			player = null; // in case we are disposed twice
 		}
 	}
@@ -324,6 +328,11 @@ public final class SpoutSession implements Session {
 		} else {
 			server.getLogger().info("Setting protocol to " + protocol.getName());
 		}
+	}
+
+	@Override
+	public PlayerProtocol getPlayerProtocol() {
+		return protocol.get().getPlayerProtocol();
 	}
 
 	public Game getGame() {

@@ -6,7 +6,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.event.player.PlayerChatEvent;
 import org.getspout.api.player.Player;
+import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -89,6 +91,9 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public void chat(String message) {
+		PlayerChatEvent event = Spout.getGame().getEventManager().callEvent(new PlayerChatEvent(this, message));
+		message = event.getMessage();
+		if (event.isCancelled()) return;
 		if (message.startsWith("/")) {
 			Spout.getGame().processCommand(this, message.substring(1));
 		} else {
@@ -110,6 +115,12 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean sendRawMessage(String message) {
-		return false;
+		Message chatMessage = getSession().getPlayerProtocol().getChatMessage(message);
+		if (message != null) {
+			session.send(chatMessage);
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
