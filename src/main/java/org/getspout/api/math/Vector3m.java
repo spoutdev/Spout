@@ -6,8 +6,15 @@ public class Vector3m extends Vector3 {
 		super(x, y, z);
 	}
 
+	public Vector3m(Double x, Double y, Double z) {
+		super(x, y, z);
+	}
+
 	public Vector3m(Vector3 vector) {
-		super(vector.getX(), vector.getY(), vector.getZ());
+		super(vector);
+	}
+
+	public Vector3m() {
 	}
 
 	public void setZ(float z) {
@@ -76,6 +83,58 @@ public class Vector3m extends Vector3 {
 		y = getZ() * that.getX() - getX() * that.getZ();
 		z = getX() * that.getY() - getY() * that.getX();
 
+		return this;
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of this Vector3 up to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector3 ceil() {
+		x = (float) Math.ceil(x);
+		y = (float) Math.ceil(y);
+		z = (float) Math.ceil(z);
+		return this;
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of this Vector3 down to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector3 floor() {
+		x = (float) Math.floor(x);
+		y = (float) Math.floor(y);
+		z = (float) Math.floor(z);
+		return this;
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of this Vector3 to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector3 round() {
+		x = Math.round(x);
+		y = Math.round(y);
+		z = Math.round(z);
+		return this;
+	}
+	
+	/**
+	 * Sets the X, Y, and Z values of this Vector3 to their
+	 * absolute value.
+	 * 
+	 * @return 
+	 */
+	public Vector3 abs() {
+		x = Math.abs(x);
+		y = Math.abs(y);
+		z = Math.abs(z);
 		return this;
 	}
 

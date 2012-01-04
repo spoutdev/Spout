@@ -2,9 +2,21 @@ package org.getspout.api.math;
 
 public class Vector2m extends Vector2 {
 
+	public Vector2m() {
+	}
+
+	public Vector2m(Double x, Double y) {
+		super(x, y);
+	}
+
 	public Vector2m(float x, float y) {
 		super(x, y);
 	}
+
+	public Vector2m(Vector2 original) {
+		super(original);
+	}
+
 
 	/**
 	 * Sets the X coordinate
@@ -49,6 +61,54 @@ public class Vector2m extends Vector2 {
 		float tmp = y;
 		y = -x;
 		x = tmp;
+		return this;
+	}
+	
+	/**
+	 * Rounds the X and Y values of this Vector2 up to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector2 ceil() {
+		x = (float) Math.ceil(x);
+		y = (float) Math.ceil(y);
+		return this;
+	}
+	
+	/**
+	 * Rounds the X and Y values of this Vector2 down to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector2 floor() {
+		x = (float) Math.floor(x);
+		y = (float) Math.floor(y);
+		return this;
+	}
+	
+	/**
+	 * Rounds the X and Y values of this Vector2 to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector2 round() {
+		x = Math.round(x);
+		y = Math.round(y);
+		return this;
+	}
+	
+	/**
+	 * Sets the X and Y values of this Vector2 to their
+	 * absolute value.
+	 * 
+	 * @return 
+	 */
+	public Vector2 abs() {
+		x = Math.abs(x);
+		y = Math.abs(y);
 		return this;
 	}
 
