@@ -29,7 +29,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private String message;
 	public PlayerChatEvent() {}
 	
-	public PlayerChatEvent(Player p, String message){
+	public PlayerChatEvent(Player p, String message) {
 		super(p);
 		this.message = message;
 	}

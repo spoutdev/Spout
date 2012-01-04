@@ -4,6 +4,8 @@ import org.getspout.api.command.CommandSource;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.protocol.Session;
 
+import java.net.InetAddress;
+
 public interface Player extends CommandSource {
 	
 	/**
@@ -40,5 +42,12 @@ public interface Player extends CommandSource {
 	 * @return true if online
 	 */
 	public boolean isOnline();
+
+	/**
+	 * Gets the sessions address
+	 * This is equivalent to getSession().getAddress().getAddress();
+	 * @return The session's address
+	 */
+	public InetAddress getAddress();
 	
 }

@@ -1,5 +1,6 @@
 package org.getspout.api.protocol;
 
+import java.net.InetSocketAddress;
 import org.getspout.api.Game;
 
 public interface Session {
@@ -54,6 +55,13 @@ public interface Session {
 	 * @param reason The reason for disconnection.
 	 */
 	public void disconnect(String reason);
+	
+	/**
+	 * Returns the address of this session.
+	 *
+	 * @return The remote address.
+	 */
+	public InetSocketAddress getAddress();
 	
 	public enum State {
 
