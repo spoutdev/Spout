@@ -12,6 +12,8 @@ import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.io.store.MemoryStore;
+import org.getspout.api.math.Quaternion;
+import org.getspout.api.math.Vector3;
 import org.getspout.api.metadata.EntityMetadataStore;
 import org.getspout.api.metadata.MetadataStringValue;
 import org.getspout.api.metadata.MetadataValue;
@@ -45,7 +47,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
 		this.server = server;
-		transformAndManager = new TransformAndManager(new Transform(point, null, null), this.server.getEntityManager());
+		transformAndManager = new TransformAndManager(new Transform(point, Quaternion.identity , Vector3.ONE), this.server.getEntityManager());
 		this.controller = controller;
 		server.getEntityManager().allocate(this);
 		transformAndManagerLive.set(transformAndManager.copy());
