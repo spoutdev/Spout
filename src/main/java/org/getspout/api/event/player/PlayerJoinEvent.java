@@ -25,7 +25,7 @@ import org.getspout.api.player.Player;
 public class PlayerJoinEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 
-	public PlayerJoinEvent(Player p){
+	public PlayerJoinEvent(Player p) {
 		super(p);
 	}
 	@Override

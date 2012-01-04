@@ -29,7 +29,7 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	private boolean quit;
 
-	public PlayerLeaveEvent(Player p, String reason, boolean quit){
+	public PlayerLeaveEvent(Player p, String reason, boolean quit) {
 		super(p);
 		this.message = reason;
 		this.quit = quit;

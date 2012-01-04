@@ -25,7 +25,7 @@ import org.getspout.api.player.Player;
 public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 	private String kickReason;
 
-	public PlayerKickEvent(Player p, String reason){
+	public PlayerKickEvent(Player p, String reason) {
 		super(p, reason, false);
 		this.kickReason = reason;
 	}

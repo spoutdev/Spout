@@ -20,6 +20,7 @@ import org.getspout.api.event.Cancellable;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.gui.ScreenType;
 import org.getspout.api.keyboard.Keyboard;
+import org.getspout.api.player.Player;
 
 public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -29,6 +30,10 @@ public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 	private boolean pressed;
 
 	private ScreenType screenType;
+
+	public PlayerKeyEvent(Player p) {
+		super(p);
+	}
 
 	public Keyboard getKey() {
 		return key;

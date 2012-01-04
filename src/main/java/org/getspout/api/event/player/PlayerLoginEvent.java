@@ -17,6 +17,7 @@
 package org.getspout.api.event.player;
 
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.player.Player;
 
 /**
  * Stores details for players attempting to log in
@@ -27,6 +28,10 @@ public class PlayerLoginEvent extends PlayerEvent {
 	private String message;
 
 	private boolean allowed;
+
+	public PlayerLoginEvent(Player p) {
+		super(p);
+	}
 
 	public boolean isAllowed() {
 		return allowed;

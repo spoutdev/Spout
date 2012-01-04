@@ -27,7 +27,6 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
 	private String message;
-	public PlayerChatEvent() {}
 	
 	public PlayerChatEvent(Player p, String message) {
 		super(p);

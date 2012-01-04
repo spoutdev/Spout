@@ -25,8 +25,6 @@ import org.getspout.api.event.Event;
 public abstract class PlayerEvent extends Event {
 	protected Player player;
 	
-	public PlayerEvent() {}
-	
 	public PlayerEvent(Player p){
 		this.player = p;
 	}
