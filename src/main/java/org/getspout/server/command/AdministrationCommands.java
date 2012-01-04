@@ -33,8 +33,7 @@ import org.getspout.api.command.annotated.Command;
 import org.getspout.server.SpoutServer;
 
 /**
- *
- * @author zml2008
+ * Commands related to server administration
  */
 public class AdministrationCommands {
 	private final SpoutServer server;

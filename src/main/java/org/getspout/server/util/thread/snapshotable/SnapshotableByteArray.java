@@ -10,16 +10,16 @@ import org.getspout.api.util.thread.SnapshotRead;
  * A snapshotable array of type byte
  */
 public class SnapshotableByteArray implements Snapshotable {
-	
+
 	private final byte[] snapshot;
 	private final byte[] live;
 	private final int[] dirtyArray;
 	private final AtomicInteger dirtyIndex = new AtomicInteger(0);
-	
+
 	public SnapshotableByteArray(SnapshotManager manager, byte[] initial) {
 		this(manager, initial, 100);
 	}
-		
+
 	public SnapshotableByteArray(SnapshotManager manager, byte[] initial, int dirtySize) {
 		this.snapshot = new byte[initial.length];
 		this.live = new byte[initial.length];
@@ -29,10 +29,10 @@ public class SnapshotableByteArray implements Snapshotable {
 			this.live[i] = initial[i];
 		}
 	}
-	
+
 	/**
 	 * Gets the snapshot value in the array
-	 * 
+	 *
 	 * @param index to lookup
 	 * @return snapshot value
 	 */
@@ -40,29 +40,29 @@ public class SnapshotableByteArray implements Snapshotable {
 	public byte get(int index) {
 		return snapshot[index];
 	}
-	
+
 	/**
 	 * Gets the live value in the array
-	 * 
+	 *
 	 * @param index to lookup
 	 * @return live value
 	 */
 	@LiveRead
 	public byte getLive(int index) {
-		synchronized(live) {
+		synchronized (live) {
 			return live[index];
 		}
 	}
-	
+
 	/**
 	 * Sets the value for the next snapshot
-	 * 
+	 *
 	 * @param index to set at
 	 * @param value to set to
 	 */
 	@DelayedWrite
 	public byte set(int index, byte value) {
-		synchronized(live) {
+		synchronized (live) {
 			live[index] = value;
 		}
 		int localDirtyIndex = dirtyIndex.getAndIncrement();

@@ -14,16 +14,16 @@ import org.getspout.api.scheduler.SnapshotLock;
 public class SpoutSnapshotLock implements SnapshotLock {
 
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	
+
 	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public void readLock(Plugin plugin) {
 		lock.readLock().lock();
 		addLock(plugin);
 	}
-	
+
 	public boolean readTryLock(Plugin plugin) {
 		boolean success = lock.readLock().tryLock();
 		if (success) {
@@ -31,28 +31,28 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return success;
 	}
-	
+
 	public void readUnlock(Plugin plugin) {
 		lock.readLock().unlock();
 		addLock(plugin);
 	}
-	
+
 	public boolean writeLock(int delay) {
 		boolean success;
 		try {
-			success = lock.writeLock().tryLock((long)delay, TimeUnit.MILLISECONDS);
+			success = lock.writeLock().tryLock((long) delay, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			success = false;
 		}
 		return success;
 	}
-	
+
 	public List<Plugin> getLockingPlugins(int threshold) {
 		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 		Set<Entry<Plugin, LockInfo>> entries = locks.entrySet();
-		
+
 		long currentTime = System.currentTimeMillis();
-		
+
 		for (Entry<Plugin, LockInfo> e : entries) {
 			LockInfo info = e.getValue();
 			if (info.locks > 0 && (currentTime - info.oldestLock) > threshold) {
@@ -61,7 +61,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return plugins;
 	}
-	
+
 	public void writeUnlock() {
 		lock.writeLock().unlock();
 	}
@@ -73,7 +73,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 		while (!success) {
 			LockInfo oldLockInfo = locks.get(plugin);
-			
+
 			LockInfo newLockInfo;
 			if (oldLockInfo == null || oldLockInfo.locks == 0) {
 				newLockInfo = new LockInfo(currentTime, 1);
@@ -83,13 +83,13 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
 		}
 	}
-	
+
 	public void removeLock(Plugin plugin) {
 		boolean success = false;
 
 		while (!success) {
 			LockInfo oldLockInfo = locks.get(plugin);
-			
+
 			LockInfo newLockInfo;
 			if (oldLockInfo == null) {
 				throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock");
@@ -101,14 +101,15 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 
 	private class LockInfo {
-		
+
 		public LockInfo(long oldestLock, int locks) {
 			this.oldestLock = oldestLock;
 			this.locks = locks;
 		}
-		
-		public final long oldestLock;;
+
+		public final long oldestLock;
+		;
 		public final int locks;
 	}
-	
+
 }

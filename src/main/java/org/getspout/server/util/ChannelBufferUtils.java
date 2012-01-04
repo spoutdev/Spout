@@ -82,7 +82,7 @@ public final class ChannelBufferUtils {
 	public static List<Parameter<?>> readParameters(ChannelBuffer buf) {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 
-		for (int b = buf.readUnsignedByte(); b != 127;) {
+		for (int b = buf.readUnsignedByte(); b != 127; ) {
 			int type = (b & 0x0E) >> 5;
 			int index = b & 0x1F;
 
@@ -121,7 +121,7 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *             it is encoded.
+	 * it is encoded.
 	 */
 	public static void writeString(ChannelBuffer buf, String str) {
 		int len = str.length();
@@ -141,7 +141,7 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *             it is encoded.
+	 * it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
 		byte[] bytes = str.getBytes(CHARSET_UTF8);

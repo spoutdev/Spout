@@ -28,110 +28,110 @@ import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
 import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 
 public class SpoutWorld extends AsyncManager implements World {
-	
+
 	private SnapshotManager snapshotManager = new SnapshotManager();
-	
+
 	/**
-	* The server of this world.
-	*/
+	 * The server of this world.
+	 */
 	private final Server server;
 
 	/**
-	* The name of this world.
-	*/
+	 * The name of this world.
+	 */
 	private final String name;
 
 	/**
-	* The region source
-	*/
+	 * The region source
+	 */
 	private final RegionSource regions;
 
 	/**
-	* This world's Random instance.
-	*/
+	 * This world's Random instance.
+	 */
 	private final Random random = new Random();
 
 	/**
-	* The world seed.
-	*/
+	 * The world seed.
+	 */
 	private final long seed;
 
 	/**
-	* The spawn position.
-	*/
+	 * The spawn position.
+	 */
 	private SnapshotableReference<Transform> spawnLocation = new SnapshotableReference<Transform>(snapshotManager, null);
 
 	/**
-	* Whether to keep the spawn chunks in memory (prevent them from being
-	* unloaded)
-	*/
+	 * Whether to keep the spawn chunks in memory (prevent them from being
+	 * unloaded)
+	 */
 	private SnapshotableBoolean keepSpawnLoaded = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
-	* Whether PvP is allowed in this world.
-	*/
+	 * Whether PvP is allowed in this world.
+	 */
 	private SnapshotableBoolean pvpAllowed = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
-	* Whether animals can spawn in this world.
-	*/
+	 * Whether animals can spawn in this world.
+	 */
 	private SnapshotableBoolean spawnAnimals = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
-	* Whether monsters can spawn in this world.
-	*/
+	 * Whether monsters can spawn in this world.
+	 */
 	private SnapshotableBoolean spawnMonsters = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
-	* Whether it is currently raining/snowing on this world.
-	*/
+	 * Whether it is currently raining/snowing on this world.
+	 */
 	private SnapshotableBoolean currentlyRaining = new SnapshotableBoolean(snapshotManager, false);
 
 	/**
-	* How many ticks until the rain/snow status is expected to change.
-	*/
+	 * How many ticks until the rain/snow status is expected to change.
+	 */
 	private SnapshotableInt rainingTicks = new SnapshotableInt(snapshotManager, 0);
 
 	/**
-	* Whether it is currently thundering on this world.
-	*/
-	private SnapshotableBoolean currentlyThundering =  new SnapshotableBoolean(snapshotManager, false);
+	 * Whether it is currently thundering on this world.
+	 */
+	private SnapshotableBoolean currentlyThundering = new SnapshotableBoolean(snapshotManager, false);
 
 	/**
-	* How many ticks until the thundering status is expected to change.
-	*/
+	 * How many ticks until the thundering status is expected to change.
+	 */
 	private SnapshotableInt thunderingTicks = new SnapshotableInt(snapshotManager, 0);
 
 	/**
-	* The current world age.
-	*/
+	 * The current world age.
+	 */
 	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
 
 	/**
-	* The current world time.
-	*/
+	 * The current world time.
+	 */
 	private SnapshotableInt time = new SnapshotableInt(snapshotManager, 0);
-	
+
 	/**
-	* The current world time.
-	*/
+	 * The current world time.
+	 */
 	private SnapshotableInt dayLength = new SnapshotableInt(snapshotManager, 0);
-	
+
 	/**
-	* The time until the next full-save.
-	*/
+	 * The time until the next full-save.
+	 */
 	private SnapshotableInt saveTimer = new SnapshotableInt(snapshotManager, 0);
 
 	/**
-	* The check to autosave
-	*/
+	 * The check to autosave
+	 */
 	private SnapshotableBoolean autosave = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
-	* The world's UUID
-	*/
+	 * The world's UUID
+	 */
 	private final UUID uid;
-	
+
 	/**
 	 * Holds all of the entities to be simulated
 	 */
@@ -148,7 +148,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.entityManager = new EntityManager();
 		this.regions = new RegionSource(this);
 	}
-	
+
 	@Override
 	public String getName() {
 		return name;
@@ -176,31 +176,31 @@ public class SpoutWorld extends AsyncManager implements World {
 		// TODO non-null
 		return uid;
 	}
-	
+
 	@Override
 	public Region getRegion(int x, int y, int z) {
 		return regions.getRegion(x, y, z);
 	}
-	
+
 	@Override
 	public Region getRegion(Point point) {
-		int x = (int)Math.floor(point.getX());
-		int y = (int)Math.floor(point.getY());
-		int z = (int)Math.floor(point.getZ());
+		int x = (int) Math.floor(point.getX());
+		int y = (int) Math.floor(point.getY());
+		int z = (int) Math.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z);
 	}
-	
+
 	@Override
 	public Region getRegionLive(int x, int y, int z, boolean load) {
 		return regions.getRegionLive(x, y, z, load);
 	}
-	
+
 	@Override
 	public Region getRegionLive(Point point, boolean load) {
-		int x = (int)Math.floor(point.getX());
-		int y = (int)Math.floor(point.getY());
-		int z = (int)Math.floor(point.getZ());
-		return regions.getRegionFromBlockLive(x, y, z,  load);
+		int x = (int) Math.floor(point.getX());
+		int y = (int) Math.floor(point.getY());
+		int z = (int) Math.floor(point.getZ());
+		return regions.getRegionFromBlockLive(x, y, z, load);
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Chunk getChunkLive(int x, int y, int z, boolean load) {
 		Region region = getRegionLive(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, load);
@@ -223,54 +223,54 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Chunk getChunk(Point point) {
-		int x = (int)Math.floor(point.getX());
-		int y = (int)Math.floor(point.getY());
-		int z = (int)Math.floor(point.getZ());
+		int x = (int) Math.floor(point.getX());
+		int y = (int) Math.floor(point.getY());
+		int z = (int) Math.floor(point.getZ());
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
 	}
-	
+
 	@Override
 	public Chunk getChunkLive(Point point, boolean load) {
-		int x = (int)Math.floor(point.getX());
-		int y = (int)Math.floor(point.getY());
-		int z = (int)Math.floor(point.getZ());
+		int x = (int) Math.floor(point.getX());
+		int y = (int) Math.floor(point.getY());
+		int z = (int) Math.floor(point.getZ());
 		return getChunkLive(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		UUID uid = getUID();
 		long hash = uid.getMostSignificantBits();
 		hash += (hash << 5) + uid.getLeastSignificantBits();
-		
-		return (int)(hash ^ (hash >> 32));
+
+		return (int) (hash ^ (hash >> 32));
 	}
-	
+
 	@Override
-	
+
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
 		} else if (!(obj instanceof SpoutWorld)) {
 			return false;
 		} else {
-			SpoutWorld world = (SpoutWorld)obj;
-			
+			SpoutWorld world = (SpoutWorld) obj;
+
 			return world.getUID().equals(getUID());
 		}
-		
+
 	}
 
 	@Override
-	public Entity createEntity() {		
-		return new SpoutEntity((SpoutServer)server);
+	public Entity createEntity() {
+		return new SpoutEntity((SpoutServer) server);
 	}
 
 	@Override
 	public void spawnEntity(Entity e) {
-		if(e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
-		SpoutRegion region = (SpoutRegion)e.getRegion();
-		region.allocate((SpoutEntity)e);
+		if (e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
+		SpoutRegion region = (SpoutRegion) e.getRegion();
+		region.allocate((SpoutEntity) e);
 	}
 
 	@Override
@@ -290,19 +290,19 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-		
+
 		switch (stage) {
 			case 0: {
 				float dt = delta / 1000.f;
 				//Update all entities
-				for(SpoutEntity ent : entityManager){
+				for (SpoutEntity ent : entityManager) {
 					ent.onTick(dt);
 				}
 				break;
 			}
 			case 1: {
 				//Resolve and collisions and prepare for a snapshot.
-				for(SpoutEntity ent : entityManager){
+				for (SpoutEntity ent : entityManager) {
 					ent.resolve();
 				}
 				break;
@@ -311,9 +311,9 @@ public class SpoutWorld extends AsyncManager implements World {
 				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public void haltRun() throws InterruptedException {
 		// TODO - save on halt ?
@@ -382,7 +382,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Transform getSpawnPoint() {
 		return this.spawnLocation.get();
 	}
-	
+
 	@Override
 	public void setSpawnPoint(Transform transform) {
 		this.spawnLocation.set(transform.copy());
@@ -396,5 +396,5 @@ public class SpoutWorld extends AsyncManager implements World {
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshot();
 	}
-	
+
 }

@@ -8,7 +8,7 @@ import org.getspout.server.util.thread.AsyncManager;
  * This class just passes through the period method calls to the SpoutRegion
  */
 public class SpoutRegionManager extends AsyncManager {
-	
+
 	private final SpoutRegion parent;
 
 	public SpoutRegionManager(SpoutRegion parent, int maxStage, AsyncExecutor executor, Server server) {
@@ -19,11 +19,11 @@ public class SpoutRegionManager extends AsyncManager {
 	public SpoutRegion getParent() {
 		return parent;
 	}
-	
+
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
 		parent.copySnapshotRun();
-		
+
 	}
 
 	@Override

@@ -34,7 +34,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	 */
 	public void add(Session session) {
 		if (session instanceof SpoutSession) {
-			sessions.put((SpoutSession)session, true);
+			sessions.put((SpoutSession) session, true);
 		} else if (session != null) {
 			throw new IllegalArgumentException("This session registry can only handle SpoutSessions: ");
 		}

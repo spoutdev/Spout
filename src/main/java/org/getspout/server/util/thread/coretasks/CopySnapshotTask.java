@@ -7,9 +7,9 @@ import org.getspout.server.util.thread.ManagementRunnable;
 import org.getspout.server.util.thread.ManagementTaskEnum;
 
 public class CopySnapshotTask extends ManagementRunnable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public Serializable call(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().copySnapshotRun();
 		executor.haltCheck();

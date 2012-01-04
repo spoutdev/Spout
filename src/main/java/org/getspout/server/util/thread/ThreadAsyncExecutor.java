@@ -26,14 +26,14 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
-	
+
 	public void setManager(AsyncManager manager) {
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
 		}
 		this.manager = manager;
 	}
-	
+
 	public boolean startExecutor() {
 		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.STARTED)) {
 			super.start();
@@ -42,7 +42,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			return false;
 		}
 	}
-	
+
 	public boolean haltExecutor() {
 		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.HALTED)) {
 			return true;
@@ -52,16 +52,16 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void haltCheck() throws InterruptedException {
 		if (state.compareAndSet(ExecutorState.HALTING, ExecutorState.HALTED)) {
 			getManager().haltRun();
-			((SpoutScheduler)(getManager().getServer().getScheduler())).removeAsyncExecutor(this);
+			((SpoutScheduler) (getManager().getServer().getScheduler())).removeAsyncExecutor(this);
 			throw new InterruptedException("Executor halted");
 		}
 	}
-	
+
 	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
 		if (Thread.currentThread() == this) {
 			executeTask(task);
@@ -75,14 +75,14 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		}
 		return future;
 	}
-	
+
 	public final void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException {
 		ThreadsafetyManager.checkCurrentThread(this);
 		checkFuture(future);
-		
+
 		Object monitor = future.getMonitor();
 		waitingMonitor.set(monitor);
-		
+
 		while (!future.isDone()) {
 			executeAllTasks();
 			synchronized (monitor) {
@@ -92,13 +92,13 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 				future.waitForMonitor();
 			}
 		}
-		
+
 		waitingMonitor.set(null);
 	}
-	
+
 	/**
 	 * Checks if the future is associated with this executor
-	 * 
+	 *
 	 * @param future the future
 	 */
 	private void checkFuture(ManagedFuture<Serializable> future) {
@@ -109,7 +109,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	/**
 	 * Executes all tasks on the queue
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	private final void executeAllTasks() throws InterruptedException {
@@ -119,7 +119,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			executeTask(task);
 		}
 	}
-	
+
 	private final void executeTask(ManagementTask task) throws InterruptedException {
 		Serializable returnValue = task.call(this);
 		ManagedFuture<Serializable> future = task.getFuture();
@@ -134,7 +134,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		taskQueue.add(copySnapshotTask);
 		return pulse();
 	}
-	
+
 	@Override
 	public final boolean preSnapshot() {
 		ThreadsafetyManager.checkMainThread();
@@ -148,7 +148,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		taskQueue.add(startTickTask.setStageDelta(stage, delta));
 		return pulse();
 	}
-	
+
 	@Override
 	public final boolean isPulseFinished() {
 		try {
@@ -171,18 +171,18 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			pulse();
 		}
 	}
-	
+
 	@Override
 	public boolean pulse() {
 		Object monitor = waitingMonitor.get();
 		if (monitor != null) {
-			synchronized(monitor) {
+			synchronized (monitor) {
 				monitor.notifyAll();
 			}
 		}
 		return super.pulse();
 	}
-	
+
 	/**
 	 * All tasks on the queue are executed whenever the thread is pulsed
 	 */
@@ -202,7 +202,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		executeAllTasks();
 		throw new InterruptedException("Executor killed");
 	}
-	
+
 	private static enum ExecutorState {
 		CREATED,
 		STARTED,

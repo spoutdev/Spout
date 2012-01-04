@@ -84,21 +84,21 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	public SpoutScheduler(SpoutServer server) {
 		this.server = server;
-		
+
 		mainThread = new MainThread();
 	}
-	
+
 	private class MainThread extends Thread {
-		
+
 		public MainThread() {
 			super("MainThread");
 			ThreadsafetyManager.setMainThread(this);
 		}
-		
+
 		public void run() {
 			long targetPeriod = PULSE_EVERY;
 			long lastTick = System.currentTimeMillis();
-			
+
 			while (!shutdown) {
 				long startTime = System.currentTimeMillis();
 				long delta = startTime - lastTick;
@@ -122,11 +122,11 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
-			
+
 			asyncExecutors.copySnapshot();
-			
+
 			// Halt all executors, except the Server
-			
+
 			for (AsyncExecutor e : asyncExecutors.get()) {
 				if (!(e.getManager() instanceof SpoutServer)) {
 					if (!e.haltExecutor()) {
@@ -140,9 +140,9 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (InterruptedException ex) {
 				SpoutServer.logger.log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
 			}
-			
+
 			asyncExecutors.copySnapshot();
-			
+
 			// Halt the executor for the Server
 
 			for (AsyncExecutor e : asyncExecutors.get()) {
@@ -154,7 +154,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
-			
+
 			try {
 				copySnapshot(asyncExecutors.get(), true);
 			} catch (InterruptedException ex) {
@@ -162,7 +162,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 		}
-		
+
 	}
 
 	public void startMainThread() {
@@ -172,7 +172,7 @@ public final class SpoutScheduler implements Scheduler {
 			mainThread.start();
 		}
 	}
-	
+
 	/**
 	 * Adds an async manager to the scheduler
 	 */
@@ -180,7 +180,7 @@ public final class SpoutScheduler implements Scheduler {
 	public void addAsyncExecutor(AsyncExecutor manager) {
 		asyncExecutors.add(manager);
 	}
-	
+
 	/**
 	 * Removes an async manager from the scheduler
 	 */
@@ -213,9 +213,9 @@ public final class SpoutScheduler implements Scheduler {
 	 * Adds new tasks and updates existing tasks, removing them if necessary.
 	 */
 	private boolean tick(long delta) throws InterruptedException {
-		
+
 		asyncExecutors.copySnapshot();
-		
+
 		// Bring in new tasks this tick.
 		synchronized (newTasks) {
 			for (SpoutTask task : newTasks) {
@@ -233,7 +233,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 
 		// Run the relevant tasks.
-		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext();) {
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
 			SpoutTask task = it.next();
 			boolean cont = false;
 			try {
@@ -248,16 +248,16 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
-		
+
 		List<AsyncExecutor> executors = asyncExecutors.get();
-		
+
 		int stage = 0;
 		boolean allStagesComplete = false;
-		
+
 		boolean joined = false;
-		
+
 		while (!allStagesComplete) {
-			
+
 			allStagesComplete = true;
 
 			for (AsyncExecutor e : executors) {
@@ -272,47 +272,47 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			joined = false;
-			
+
 			while (!joined && !shutdown) {
 				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 				}
 			}
-			
+
 			stage++;
 		}
 
 		lockSnapshotLock();
-		
+
 		copySnapshot(executors, false);
 
 		return true;
 	}
-	
+
 	private void copySnapshot(List<AsyncExecutor> executors, boolean alreadyShutdown) throws InterruptedException {
 		lockSnapshotLock();
-		
+
 		try {
 			for (AsyncExecutor e : executors) {
 				if (!e.preSnapshot()) {
 					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
 				}
 			}
-			
+
 			boolean joined = false;
-			
+
 			while (!joined && !(shutdown && (!alreadyShutdown))) {
 				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 				}
 			}
-			
+
 			for (AsyncExecutor e : executors) {
 				if (!e.copySnapshot()) {
 					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
@@ -320,10 +320,10 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			joined = false;
-			
+
 			while (!joined && !(shutdown && (!alreadyShutdown))) {
 				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (long)(PULSE_EVERY << 4));
+					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
@@ -333,16 +333,16 @@ public final class SpoutScheduler implements Scheduler {
 			unlockSnapshotLock();
 		}
 	}
-	
+
 	private void lockSnapshotLock() {
-		
+
 		int delay = 500;
 		int threshold = 50;
-		
+
 		long startTime = System.currentTimeMillis();
-		
+
 		boolean success = false;
-		
+
 		while (!success) {
 			success = snapshotLock.writeLock(delay);
 			if (!success) {
@@ -353,13 +353,12 @@ public final class SpoutScheduler implements Scheduler {
 					server.getLogFile().indexOf(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
 				}
 			}
-		}	
+		}
 	}
-	
+
 	private void unlockSnapshotLock() {
 		snapshotLock.writeUnlock();
 	}
-	
 
 	@Override
 	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
@@ -448,7 +447,7 @@ public final class SpoutScheduler implements Scheduler {
 			oldTasks.add(worker.getTask());
 		}
 	}
-	
+
 	public SnapshotLock getSnapshotLock() {
 		return snapshotLock;
 	}

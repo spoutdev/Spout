@@ -9,7 +9,7 @@ import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentTripleIntHashMap;
 
 public class RegionSource {
-	
+
 	/**
 	 * The snapshot manager
 	 */
@@ -17,21 +17,21 @@ public class RegionSource {
 
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
-	 */	
+	 */
 	private final SnapshotableConcurrentTripleIntHashMap<Region> loadedRegions = new SnapshotableConcurrentTripleIntHashMap<Region>(snapshotManager);
 
 	/**
 	 * World associated with this region source
 	 */
 	private final World world;
-	
+
 	public RegionSource(World world) {
 		this.world = world;
 	}
-	
+
 	/**
 	 * Gets the region associated with the block x, y, z coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -42,10 +42,10 @@ public class RegionSource {
 		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
 		return getRegion(x >> shifts, y >> shifts, z >> shifts);
 	}
-	
+
 	/**
 	 * Gets the region associated with the block x, y, z coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -57,10 +57,10 @@ public class RegionSource {
 		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
 		return getRegionLive(x >> shifts, y >> shifts, z >> shifts, load);
 	}
-	
+
 	/**
 	 * Gets the region associated with the region x, y, z coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -70,10 +70,10 @@ public class RegionSource {
 	public Region getRegion(int x, int y, int z) {
 		return loadedRegions.get(x, y, z);
 	}
-	
+
 	/**
 	 * Gets the region associated with the region x, y, z coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -83,12 +83,12 @@ public class RegionSource {
 	public Region getRegionLive(int x, int y, int z) {
 		return loadedRegions.getLive(x, y, z);
 	}
-	
+
 	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
-	 * 
+	 *
 	 * Will load or generate a region if requested.
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -98,7 +98,7 @@ public class RegionSource {
 	@LiveRead
 	public Region getRegionLive(int x, int y, int z, boolean load) {
 		Region region = loadedRegions.getLive(x, y, z);
-		
+
 		if (region != null || !load) {
 			return region;
 		} else {
@@ -107,21 +107,21 @@ public class RegionSource {
 			int rz = (z << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
 			region = new SpoutRegion(world, rx, ry, rz, this);
 			Region current = loadedRegions.putIfAbsent(x, y, z, region);
-			
+
 			if (current != null) {
 				return current;
 			} else {
-				if (!((SpoutRegion)region).getManager().getExecutor().startExecutor()) {
+				if (!((SpoutRegion) region).getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
 				return region;
 			}
 		}
 	}
-	
+
 	/**
 	 * True if there is a region loaded at the region x, y, z coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -131,10 +131,10 @@ public class RegionSource {
 	public boolean hasRegion(int x, int y, int z) {
 		return loadedRegions.get(x, y, z) != null;
 	}
-	
+
 	/**
 	 * True if there is a region loaded at the region x, y, z coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -144,28 +144,28 @@ public class RegionSource {
 	public boolean hasRegionLive(int x, int y, int z) {
 		return loadedRegions.getLive(x, y, z) != null;
 	}
-	
+
 	/**
 	 * Unloads and returns the region, if one exists at the coordinates.
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the x coordinate
 	 * @param z the z coordinate
 	 * @param save whether to save the region data
 	 * @return region that was unloaded, or null if none existed
 	 */
-	public Region unloadRegion(int x, int y, int z, boolean save){
+	public Region unloadRegion(int x, int y, int z, boolean save) {
 		Region region = loadedRegions.getLive(x, y, z);
 
 		if (region == null) {
 			return null;
 		} else {
-			((SpoutRegion)region).getManager().getExecutor().haltExecutor();
-			
+			((SpoutRegion) region).getManager().getExecutor().haltExecutor();
+
 			if (save) {
-				((SpoutRegion)region).save();
+				((SpoutRegion) region).save();
 			}
-			
+
 			loadedRegions.remove(x, y, z, region);
 
 			return region;

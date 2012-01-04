@@ -13,7 +13,7 @@ import org.getspout.api.util.thread.Threadsafe;
 import org.getspout.server.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
-	
+
 	private final AtomicReference<Session> sessionLive = new AtomicReference<Session>();
 	private Session session;
 	private final String name;
@@ -21,11 +21,11 @@ public class SpoutPlayer implements Player {
 	private Entity entity;
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
-	
+
 	public SpoutPlayer(String name) {
 		this.name = name;
 	}
-	
+
 	public SpoutPlayer(String name, Entity entity, Session session) {
 		this.name = name;
 		this.sessionLive.set(session);
@@ -57,7 +57,7 @@ public class SpoutPlayer implements Player {
 	public boolean isOnline() {
 		return online;
 	}
-	
+
 	@DelayedWrite
 	public boolean disconnect() {
 		if (onlineLive.compareAndSet(true, false)) {
@@ -68,7 +68,7 @@ public class SpoutPlayer implements Player {
 			return false;
 		}
 	}
-	
+
 	@DelayedWrite
 	public boolean connect(Session session, Entity entity) {
 		if (onlineLive.compareAndSet(false, true)) {
@@ -79,7 +79,7 @@ public class SpoutPlayer implements Player {
 			return true;
 		}
 	}
-	
+
 	@Override
 	public void chat(String message) {
 		if (message.startsWith("/")) {
@@ -95,9 +95,9 @@ public class SpoutPlayer implements Player {
 	public boolean sendMessage(String message) {
 		boolean success = false;
 		if (getEntity() == null)
-		for (String line : TextWrapper.wrapText(message)) {
-			success |= sendRawMessage(line);
-		}
+			for (String line : TextWrapper.wrapText(message)) {
+				success |= sendRawMessage(line);
+			}
 		return success;
 	}
 

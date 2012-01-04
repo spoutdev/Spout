@@ -13,20 +13,20 @@ import org.getspout.server.util.TripleInt;
 
 /**
  * A snapshotable class for triple int HashMaps based on Trove long maps.
- * 
+ *
  * This allows the class to support getLive functionality.
- * 
+ *
  * Removals from the Map occur at the next snapshot update.
  */
 public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
-	
+
 	private final TInt21TripleObjectHashMap<V> live;
 	private final ConcurrentHashMap<TripleInt, Boolean> dirtyMap;
 	private final ConcurrentLinkedQueue<TripleInt> dirtyQueue;
 	private final TInt21TripleObjectHashMap<V> snapshot;
 	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableSnapshot;
 	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableLive;
-	
+
 	public SnapshotableConcurrentTripleIntHashMap(SnapshotManager manager) {
 		live = new TInt21TripleObjectHashMap<V>();
 		snapshot = new TInt21TripleObjectHashMap<V>();
@@ -36,10 +36,10 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 		dirtyMap = new ConcurrentHashMap<TripleInt, Boolean>();
 		manager.add(this);
 	}
-	
+
 	/**
 	 * Adds an object to the map
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -50,14 +50,14 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	@LiveRead
 	public V put(int x, int y, int z, V value) {
 		markDirty(new TripleInt(x, y, z));
-		synchronized(live) {
+		synchronized (live) {
 			return live.put(x, y, z, value);
 		}
 	}
-	
+
 	/**
 	 * Adds an object to the map, if not already present
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -67,7 +67,7 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	@DelayedWrite
 	@LiveRead
 	public V putIfAbsent(int x, int y, int z, V value) {
-		synchronized(live) {
+		synchronized (live) {
 			V oldValue = live.get(x, y, z);
 			if (oldValue == null) {
 				live.put(x, y, z, value);
@@ -77,10 +77,10 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 			return oldValue;
 		}
 	}
-	
+
 	/**
 	 * Removes a key/value pair from the Map
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -89,8 +89,8 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	@DelayedWrite
 	@LiveRead
 	public V remove(int x, int y, int z) {
-		V oldValue; 
-		synchronized(live) {
+		V oldValue;
+		synchronized (live) {
 			oldValue = live.remove(x, y, z);
 			if (oldValue != null) {
 				TripleInt key = new TripleInt(x, y, z);
@@ -99,12 +99,12 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 		}
 		return oldValue;
 	}
-	
+
 	/**
 	 * Removes a key/value pair from the Map.
-	 * 
+	 *
 	 * This method will have no effect if the key does not map to the given value when the removal is attempted
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -114,7 +114,7 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	@DelayedWrite
 	@LiveRead
 	public boolean remove(int x, int y, int z, V value) {
-		synchronized(live) {
+		synchronized (live) {
 			V current = live.get(x, y, z);
 			if (current.equals(value)) {
 				live.remove(x, y, z);
@@ -126,30 +126,30 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the snapshot value
-	 * 
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
 	public TInt21TripleObjectHashMap<V> get() {
 		return unmutableSnapshot;
 	}
-	
+
 	/**
 	 * Gets the live/unstable value
-	 * 
+	 *
 	 * @return the stable snapshot value
 	 */
 	@LiveRead
 	public TInt21TripleObjectHashMap<V> getLive() {
 		return unmutableLive;
 	}
-	
+
 	/**
 	 * Gets a value from a key, checks the Live map and then the snapshot map
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -158,7 +158,7 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	@LiveRead
 	@SnapshotRead
 	public V getValue(int x, int y, int z) {
-		synchronized(live) {
+		synchronized (live) {
 			V liveValue = live.get(x, y, z);
 			if (liveValue == null) {
 				return snapshot.get(x, y, z);
@@ -167,10 +167,10 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets a value from a key
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -180,10 +180,10 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	public V get(int x, int y, int z) {
 		return snapshot.get(x, y, z);
 	}
-	
+
 	/**
 	 * Gets a value from a key
-	 * 
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -191,22 +191,21 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	 */
 	@LiveRead
 	public V getLive(int x, int y, int z) {
-		synchronized(live) {
+		synchronized (live) {
 			return live.get(x, y, z);
 		}
 	}
-	
-	
+
 	/**
 	 * Gets all values that are on the live map and the snapshot map
-	 * 
+	 *
 	 * @return an Iterable containing the values
 	 */
 	@LiveRead
 	@SnapshotRead
 	public Iterable<V> getValues() {
 		LinkedHashSet<V> values = new LinkedHashSet<V>(snapshot.size());
-		synchronized(live) {
+		synchronized (live) {
 			for (V value : live.values()) {
 				values.add(value);
 			}
@@ -216,7 +215,7 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 		}
 		return values;
 	}
-	
+
 	/**
 	 * Copies the next values to the snapshot
 	 */
@@ -232,12 +231,12 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 		dirtyMap.clear();
 		dirtyQueue.clear();
 	}
-	
+
 	private void markDirty(TripleInt key) {
 		Boolean old = dirtyMap.putIfAbsent(key, Boolean.TRUE);
 		if (old == null) {
 			dirtyQueue.add(key);
 		}
 	}
-	
+
 }

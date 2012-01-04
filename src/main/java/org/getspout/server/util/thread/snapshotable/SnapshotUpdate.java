@@ -5,13 +5,13 @@ public class SnapshotUpdate<T> {
 	private final boolean add;
 	private final int index;
 	private final T object;
-	
+
 	public SnapshotUpdate(T object, boolean add) {
 		this.object = object;
 		this.add = add;
 		this.index = -1;
 	}
-	
+
 	public SnapshotUpdate(int index, boolean add) {
 		if (index < 0) {
 			throw new IllegalArgumentException("Negative indexs are not supported");
@@ -22,7 +22,7 @@ public class SnapshotUpdate<T> {
 		this.add = add;
 		this.index = index;
 	}
-	
+
 	public SnapshotUpdate(T object, int index, boolean add) {
 		if (index < 0) {
 			throw new IllegalArgumentException("Negative indexs are not supported");
@@ -33,38 +33,37 @@ public class SnapshotUpdate<T> {
 		this.add = add;
 		this.index = index;
 	}
-	
+
 	/**
 	 * Indicates if this update is an addition or removal
-	 * 
+	 *
 	 * @return true for additions
 	 */
 	public boolean isAdd() {
 		return add;
 	}
-	
+
 	/**
 	 * Indicates if this is an indexed operation
-	 * 
+	 *
 	 * @return true for indexed operations
 	 */
 	public boolean isIndexed() {
 		return index >= 0;
 	}
-	
+
 	/**
 	 * Gets the object
-	 * 
+	 *
 	 * @return the object
 	 */
 	public T getObject() {
 		return object;
 	}
-	
+
 	/**
 	 * Gets the index
-	 * 
-	 * @return the index
+	 *
 	 * @return
 	 */
 	public int getIndex() {
@@ -73,5 +72,5 @@ public class SnapshotUpdate<T> {
 		}
 		return index;
 	}
-	
+
 }

@@ -14,20 +14,20 @@ import org.getspout.api.util.thread.SnapshotRead;
 
 /**
  * A snapshotable class for LinkedHashMaps.
- * 
+ *
  * The snapshot is a LinkedHashMap, so iterator ordering is preserved.
- * 
+ *
  * This allows the class to support getLive functionality.
- * 
+ *
  * Removals from the Map occur at the next snapshot update.
  */
 public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
-	
+
 	private final ConcurrentHashMap<K, V> live;
 	private final ConcurrentHashMap<K, Boolean> dirtyMap;
 	private final ConcurrentLinkedQueue<K> dirtyQueue;
 	private final LinkedHashMap<K, V> snapshot;
-	
+
 	public SnapshotableConcurrentLinkedHashMap(SnapshotManager manager, HashMap<K, V> initial) {
 		snapshot = new LinkedHashMap<K, V>();
 		live = new ConcurrentHashMap<K, V>();
@@ -40,10 +40,10 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		}
 		manager.add(this);
 	}
-	
+
 	/**
 	 * Adds an object to the map
-	 * 
+	 *
 	 * @param key the key
 	 * @param value the value
 	 * @return the previous value
@@ -54,10 +54,10 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		markDirty(key);
 		return live.put(key, value);
 	}
-	
+
 	/**
 	 * Adds an object to the map, if not already present
-	 * 
+	 *
 	 * @param key the key
 	 * @param value the value
 	 * @return the current value, or null on success
@@ -71,10 +71,10 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		}
 		return oldValue;
 	}
-	
+
 	/**
 	 * Removes a key/value pair from the Map
-	 * 
+	 *
 	 * @param key the key of the key/value pair
 	 * @return the previous value
 	 */
@@ -87,12 +87,12 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		}
 		return oldValue;
 	}
-	
+
 	/**
 	 * Removes a key/value pair from the Map.
-	 * 
+	 *
 	 * This method will have no effect if the key does not map to the given value when the removal is attempted
-	 * 
+	 *
 	 * @param key the key
 	 * @param value the value
 	 * @return true if the value was removed
@@ -104,32 +104,32 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		if (success) {
 			markDirty(key);
 		}
-		return success;	
+		return success;
 	}
-	
+
 	/**
-	 * Gets the snapshot value 
-	 * 
+	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
 	public Map<K, V> get() {
 		return Collections.unmodifiableMap(snapshot);
 	}
-	
+
 	/**
 	 * Gets the live/unstable value
-	 * 
+	 *
 	 * @return the stable snapshot value
 	 */
 	@LiveRead
 	public Map<K, V> getLive() {
 		return Collections.unmodifiableMap(live);
 	}
-	
+
 	/**
 	 * Gets a value from a key, checks the Live map and then the snapshot map
-	 * 
+	 *
 	 * @param key key
 	 * @return the live value, or the snapshot value if no live value is present
 	 */
@@ -143,10 +143,10 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 			return liveValue;
 		}
 	}
-	
+
 	/**
 	 * Gets all values that are on the live map and the snapshot map
-	 * 
+	 *
 	 * @return an Iterable containing the values
 	 */
 	@LiveRead
@@ -161,7 +161,7 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		}
 		return values;
 	}
-	
+
 	/**
 	 * Copies the next values to the snapshot
 	 */
@@ -177,12 +177,12 @@ public class SnapshotableConcurrentLinkedHashMap<K, V> implements Snapshotable {
 		dirtyMap.clear();
 		dirtyQueue.clear();
 	}
-	
+
 	private void markDirty(K key) {
 		Boolean old = dirtyMap.putIfAbsent(key, Boolean.TRUE);
 		if (old == null) {
 			dirtyQueue.add(key);
 		}
 	}
-	
+
 }

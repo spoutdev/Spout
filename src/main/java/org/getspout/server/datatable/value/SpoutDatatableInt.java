@@ -9,12 +9,12 @@ import org.getspout.server.datatable.SpoutDatatableProto.DatatableValue;
 
 public class SpoutDatatableInt extends SpoutDatatableObject {
 	int data;
-	
+
 	public SpoutDatatableInt(int key) {
 		super(key);
 	}
-	
-	public SpoutDatatableInt(int key, int value){
+
+	public SpoutDatatableInt(int key, int value) {
 		super(key);
 		this.data = value;
 	}
@@ -27,7 +27,7 @@ public class SpoutDatatableInt extends SpoutDatatableObject {
 
 	public void set(String key, int value) {
 		keyID = key.hashCode();
-		data= value;
+		data = value;
 	}
 
 	@Override
@@ -62,9 +62,9 @@ public class SpoutDatatableInt extends SpoutDatatableObject {
 	public void input(InputStream in) throws IOException {
 		DatatableEntry entry = DatatableEntry.parseFrom(in);
 		keyID = entry.getKeyHash();
-		flags = (byte)entry.getFlags();
+		flags = (byte) entry.getFlags();
 		data = entry.getValue().getIntval();
-		
+
 	}
 
 }

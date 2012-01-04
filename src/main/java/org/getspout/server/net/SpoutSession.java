@@ -72,7 +72,7 @@ public final class SpoutSession implements Session {
 	 */
 
 	private String sessionId = Long.toString(random.nextLong(), 16).trim();
-	
+
 	/**
 	 * The protocol for this session
 	 */
@@ -98,7 +98,7 @@ public final class SpoutSession implements Session {
 	public SpoutSession(SpoutServer server, Channel channel) {
 		this.server = server;
 		this.channel = channel;
-		
+
 	}
 
 	/**
@@ -133,7 +133,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @param player The new player.
 	 * @throws IllegalStateException if there is already a player associated
-	 *             with this session.
+	 * with this session.
 	 */
 	public void setPlayer(Player player) {
 		if (this.player != null) {
@@ -157,7 +157,7 @@ public final class SpoutSession implements Session {
 
 		//player.getWorld().getRawPlayers().add(player);
 		//player.teleport(player.getLocation().add(0, 0.5, 0));
-		
+
 		/*Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short) timeoutCounter);
 		for (Player sendPlayer : server.getOnlinePlayers()) {
 			//((SpoutPlayer) sendPlayer).getSession().send(userListMessage);
@@ -325,7 +325,7 @@ public final class SpoutSession implements Session {
 			server.getLogger().info("Setting protocol to " + protocol.getName());
 		}
 	}
-	
+
 	public Game getGame() {
 		return server;
 	}

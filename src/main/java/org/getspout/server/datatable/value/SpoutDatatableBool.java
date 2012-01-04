@@ -13,7 +13,8 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 	public SpoutDatatableBool(int key) {
 		super(key);
 	}
-	public SpoutDatatableBool(int key, boolean value){
+
+	public SpoutDatatableBool(int key, boolean value) {
 		super(key);
 		this.data = value;
 	}
@@ -26,7 +27,7 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 
 	public void set(String key, boolean value) {
 		keyID = key.hashCode();
-		data= value;
+		data = value;
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 
 	@Override
 	public int asInt() {
-		return (data)?1:0;
+		return (data) ? 1 : 0;
 	}
 
 	@Override
@@ -61,8 +62,8 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 	public void input(InputStream in) throws IOException {
 		DatatableEntry entry = DatatableEntry.parseFrom(in);
 		keyID = entry.getKeyHash();
-		flags = (byte)entry.getFlags();
+		flags = (byte) entry.getFlags();
 		data = entry.getValue().getBoolval();
-		
+
 	}
 }

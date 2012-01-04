@@ -9,18 +9,18 @@ import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableByteArray;
 import org.getspout.server.util.thread.snapshotable.SnapshotableShortArray;
 
-public class SpoutChunk extends Chunk{
+public class SpoutChunk extends Chunk {
 
 	/**
 	 * Internal representation of block ids.
 	 */
 	private final SnapshotableShortArray blockIds;
-	
+
 	/**
 	 * Internal representation of block data.
 	 */
 	private final SnapshotableByteArray blockData;
-	
+
 	/**
 	 * The snapshot manager for the region that this chunk is located in.
 	 */
@@ -31,7 +31,7 @@ public class SpoutChunk extends Chunk{
 		this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
 		this.blockData = new SnapshotableByteArray(snapshotManager, new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
 	}
-	
+
 	public SpoutChunk(World world, float x, float y, float z, short[] blockIds, byte[] data) {
 		super(world, x, y, z);
 		this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
@@ -91,13 +91,13 @@ public class SpoutChunk extends Chunk{
 	@Override
 	public void unload(boolean save) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	public void copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
 	}
-	
+
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
 		// TODO

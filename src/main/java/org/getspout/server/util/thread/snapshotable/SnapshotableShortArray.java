@@ -10,16 +10,16 @@ import org.getspout.api.util.thread.SnapshotRead;
  * A snapshotable array of type short
  */
 public class SnapshotableShortArray implements Snapshotable {
-	
+
 	private final short[] snapshot;
 	private final short[] live;
 	private final int[] dirtyArray;
 	private final AtomicInteger dirtyIndex = new AtomicInteger(0);
-	
+
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial) {
 		this(manager, initial, 50);
 	}
-	
+
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial, int dirtySize) {
 		this.snapshot = new short[initial.length];
 		this.live = new short[initial.length];
@@ -29,10 +29,10 @@ public class SnapshotableShortArray implements Snapshotable {
 			this.live[i] = initial[i];
 		}
 	}
-	
+
 	/**
 	 * Gets the snapshot value in the array
-	 * 
+	 *
 	 * @param index to lookup
 	 * @return snapshot value
 	 */
@@ -40,29 +40,29 @@ public class SnapshotableShortArray implements Snapshotable {
 	public short get(int index) {
 		return snapshot[index];
 	}
-	
+
 	/**
 	 * Gets the live value in the array
-	 * 
+	 *
 	 * @param index to lookup
 	 * @return live value
 	 */
 	@LiveRead
 	public short getLive(int index) {
-		synchronized(live) {
+		synchronized (live) {
 			return live[index];
 		}
 	}
-	
+
 	/**
 	 * Sets the value for the next snapshot
-	 * 
+	 *
 	 * @param index to set at
 	 * @param value to set to
 	 */
 	@DelayedWrite
 	public short set(int index, short value) {
-		synchronized(live) {
+		synchronized (live) {
 			live[index] = value;
 		}
 		int localDirtyIndex = dirtyIndex.getAndIncrement();

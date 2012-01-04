@@ -15,19 +15,21 @@ import org.getspout.server.datatable.value.SpoutDatatableObject;
 public class SpoutDatatableMap implements DatatableMap {
 	final StringMap stringmap;
 	TSynchronizedIntObjectMap<DatatableTuple> map = new TSynchronizedIntObjectMap<DatatableTuple>(new TIntObjectHashMap<DatatableTuple>());
-	
-	public SpoutDatatableMap(StringMap stringmap){
+
+	public SpoutDatatableMap(StringMap stringmap) {
 		this.stringmap = stringmap;
 	}
-	
+
 	@Override
 	public void set(DatatableTuple value) {
 		map.put(value.hashCode(), value);
 
 	}
-	public int getKey(String key){
+
+	public int getKey(String key) {
 		return stringmap.register(key);
 	}
+
 	@Override
 	public DatatableTuple get(String key) {
 		return map.get(key.hashCode());
@@ -47,21 +49,21 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-		for(Object dat : map.values()){
-			DatatableTuple d = (DatatableTuple)dat;
+		for (Object dat : map.values()) {
+			DatatableTuple d = (DatatableTuple) dat;
 			d.output(out);
 		}
-		
+
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
 		DatatableTuple t = SpoutDatatableObject.read(in);
-		while(t != null){
+		while (t != null) {
 			map.put(t.hashCode(), t);
 			t = SpoutDatatableObject.read(in);
 		}
-		
+
 	}
 
 }

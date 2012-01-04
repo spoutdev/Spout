@@ -21,7 +21,7 @@ import org.getspout.api.util.StringMap;
 import org.getspout.server.SpoutRegion;
 import org.getspout.server.SpoutServer;
 
-public class SpoutEntity extends EntityMetadataStore implements Entity  {
+public class SpoutEntity extends EntityMetadataStore implements Entity {
 	public final static int NOTSPAWNEDID = -1;
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), null, 0, Short.MAX_VALUE);
 	
@@ -34,20 +34,19 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	
 	Model model;
 	CollisionModel collision;
-	
-	
-	public SpoutEntity(SpoutServer server){ 
+
+	public SpoutEntity(SpoutServer server) {
 		this.server = server;
 		transformAndManager = new TransformAndManager(null, this.server.getEntityManager());
 		server.getEntityManager().allocate(this);
 	}
-	
-	public int getId(){
+
+	public int getId() {
 		return id;
 	}
-	
-	public void setId(int id){
-		this.id = id; 
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public Controller getController() {
@@ -73,11 +72,11 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	public Transform getLiveTransform() {
 		return transformAndManagerLive.get().transform;
 	}
-	
+
 	@Override
 	public void setTransform(Transform transform) {
 		//boolean success = false;
-		
+
 		//while (!success) {
 			
 			// TODO - code to handle world level entity managers
@@ -101,35 +100,34 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	
 	@Override
 	public void setModel(Model model) {
-		this.model = model;		
+		this.model = model;
 	}
 
 	@Override
-	public Model getModel() {		
+	public Model getModel() {
 		return model;
 	}
 
 	@Override
 	public void setCollision(CollisionModel model) {
 		this.collision = model;
-		
+
 	}
 
 	@Override
 	public CollisionModel getCollision() {
 		return collision;
 	}
-	
+
 	/**
-	 * 
 	 * @param dt milliseonds since the last tick
 	 */
-	public void onTick(float dt){
-		if(controller != null) controller.onTick(dt);
+	public void onTick(float dt) {
+		if (controller != null) controller.onTick(dt);
 	}
 	
 	@Override
-	public boolean isSpawned(){
+	public boolean isSpawned() {
 		return (id != NOTSPAWNEDID);
 	}
 	
@@ -137,7 +135,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	 * Called when the tick is finished and collisions need to be resolved
 	 * and move events fired
 	 */
-	public void resolve(){
+	public void resolve() {
 		//Resolve Collisions Here
 		
 		//Check to see if we should fire off a Move event
@@ -161,7 +159,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	
 	@Override
 	public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
-		super.setMetadata(this, metadataKey, newMetadataValue);		
+		super.setMetadata(this, metadataKey, newMetadataValue);
 	}
 
 	@Override
@@ -180,7 +178,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	}
 
 	@Override
-	public boolean is(Class<? extends Controller> clazz) {		
+	public boolean is(Class<? extends Controller> clazz) {
 		return clazz.isAssignableFrom(this.getController().getClass());
 	}
 
@@ -191,14 +189,14 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 
 	@Override
 	public void setMetadata(String key, float value) {
-		setMetadata(key, new MetadataStringValue(value));	
-		
+		setMetadata(key, new MetadataStringValue(value));
+
 	}
 
 	@Override
 	public void setMetadata(String key, String value) {
-		setMetadata(key, new MetadataStringValue(value));	
-		
+		setMetadata(key, new MetadataStringValue(value));
+
 	}
 
 	@Override
@@ -210,7 +208,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity  {
 	@Override
 	public Region getRegion() {
 		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld().getRegion(position);	
+		return position.getWorld().getRegion(position);
 	}
 	
 	private static class TransformAndManager {

@@ -13,7 +13,7 @@ import org.getspout.api.util.thread.SnapshotRead;
  */
 public class SnapshotableArrayList<T> implements Snapshotable {
 	private ConcurrentLinkedQueue<SnapshotUpdate<T>> pendingUpdates = new ConcurrentLinkedQueue<SnapshotUpdate<T>>();
-	
+
 	private ArrayList<T> snapshot;
 
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
@@ -28,56 +28,54 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list
-	 * 
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
 	public void add(T object) {
 		pendingUpdates.add(new SnapshotUpdate<T>(object, true));
 	}
-	
-	
+
 	/**
 	 * Removes an object from the list
-	 * 
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
 	public void remove(T object) {
 		pendingUpdates.add(new SnapshotUpdate<T>(object, false));
 	}
-	
+
 	/**
 	 * Adds an object to the list at a particular index
-	 * 
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
 	public void add(int index, T object) {
 		pendingUpdates.add(new SnapshotUpdate<T>(object, index, true));
 	}
-	
-	
+
 	/**
 	 * Removes the object from the list at a particular index
-	 * 
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
 	public void remove(int index) {
 		pendingUpdates.add(new SnapshotUpdate<T>(index, false));
 	}
-	
+
 	/**
-	 * Gets the snapshot value 
-	 * 
+	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
 	public List<T> get() {
 		return Collections.unmodifiableList(snapshot);
 	}
-	
+
 	/**
 	 * Copies the next values to the snapshot
 	 */
@@ -87,7 +85,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 			processUpdate(update);
 		}
 	}
-	
+
 	private void processUpdate(SnapshotUpdate<T> update) {
 		if (update.isIndexed()) {
 			if (update.isAdd()) {

@@ -10,7 +10,6 @@ public class AsyncExecutorUtils {
 	 *
 	 * @param threads the threads to join for
 	 * @param timeout how long to wait, or 0 to wait forever
-	 *
 	 */
 	public static void pulseJoinAll(List<AsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
 		ThreadsafetyManager.checkMainThread();

@@ -4,9 +4,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- *
  * A Thread object that can be pulsed
- *
  */
 public abstract class PulsableThread extends Thread {
 	private AtomicBoolean pulsing = new AtomicBoolean(false);
@@ -44,7 +42,7 @@ public abstract class PulsableThread extends Thread {
 	 * completed
 	 *
 	 * @param millis the time in milliseconds to wait before throwing a
-	 *            TimeoutException
+	 * TimeoutException
 	 */
 
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException {

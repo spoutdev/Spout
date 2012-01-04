@@ -174,7 +174,7 @@ public final class ConsoleManager {
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 	}
-	
+
 	public ColoredCommandSource getCommandSource() {
 		return source;
 	}
@@ -249,7 +249,7 @@ public final class ConsoleManager {
 						continue;
 					}
 
-					((SpoutServer)server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
+					((SpoutServer) server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (Exception ex) {
 					server.getLogger().severe("Impossible exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
@@ -276,7 +276,8 @@ public final class ConsoleManager {
 		public void run() {
 			//command = EventFactory.onServerCommand(sender, command).getCommand();
 
-			/*if (*/server.processCommand(source, command);/*) {
+			/*if (*/
+			server.processCommand(source, command);/*) {
 				String firstword = command;
 				if (command.indexOf(' ') >= 0) {
 					firstword = command.substring(0, command.indexOf(' '));
@@ -522,7 +523,7 @@ public final class ConsoleManager {
 			if (e.getKeyChar() == '\n') {
 				String command = jInput.getText().trim();
 				if (command.length() > 0) {
-					((SpoutServer)server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command));
+					((SpoutServer) server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command));
 				}
 				jInput.setText("");
 			}

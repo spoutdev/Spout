@@ -9,7 +9,7 @@ import org.getspout.server.util.thread.ManagementTaskEnum;
 public class StartTickTask extends ManagementRunnable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private long delta;
 	private int stage;
 
@@ -32,7 +32,7 @@ public class StartTickTask extends ManagementRunnable {
 		executor.getManager().startTickRun(stage, delta);
 		return null;
 	}
-	
+
 	@Override
 	public ManagementTaskEnum getEnum() {
 		return ManagementTaskEnum.START_TICK;
