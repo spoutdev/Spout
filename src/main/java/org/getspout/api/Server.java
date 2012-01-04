@@ -64,6 +64,20 @@ public interface Server extends Game {
 	 * @return whitelisted player names
 	 */
 	public String[] getWhitelistedPlayers();
+	
+	/**
+	 * Adds the given player to the list of whitelisted players
+	 * 
+	 * @param player to whitelist
+	 */
+	public void whitelist(String player);
+	
+	/**
+	 * Removes the given player from the list of whitelisted players
+	 * 
+	 * @param player to remove from whitelist
+	 */
+	public void unWhitelist(String player);
 
 	/**
 	 * Unloads this world from memory. <br/>
@@ -107,14 +121,6 @@ public interface Server extends Game {
 	 */
 	@SnapshotRead
 	public World getDefaultWorld();
-
-	/**
-	 * True if this server is checking minecraft.net's authentication servers to
-	 * verify that players own a copy of the game.
-	 *
-	 * @return online mode.
-	 */
-	public boolean isOnlineMode();
 
 	/**
 	 * Gets a collection of all banned IP's, in string format.
@@ -174,22 +180,6 @@ public interface Server extends Game {
 	* @return A list of all commands at the time.
 	*/
 	public String[] getAllCommands();
-
-	/**
-	 * Gets the radius of the area around the spawn that is protected, in
-	 * blocks.
-	 *
-	 * @return spawn protect radius
-	 */
-	public int getSpawnProtectRadius();
-
-	/**
-	 * Sets the radius of the area around the spawn that is protected, in
-	 * blocks.
-	 *
-	 * @param radius to protect
-	 */
-	public void setSpawnProtectRadius(int radius);
 
 	/**
 	 * True if this server does not check if players are flying or not.

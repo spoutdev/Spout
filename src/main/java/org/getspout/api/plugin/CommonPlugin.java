@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import org.getspout.api.Game;
 import org.getspout.api.UnsafeMethod;
+import org.getspout.api.generator.WorldGenerator;
 
 public abstract class CommonPlugin implements Plugin {
 
@@ -55,51 +56,51 @@ public abstract class CommonPlugin implements Plugin {
 	public void onLoad() {
 	}
 
-	public boolean isEnabled() {
+	public final boolean isEnabled() {
 		return enabled;
 	}
 
-	@UnsafeMethod
-	public void setEnabled(boolean enabled) {
+	public final void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public PluginLoader getPluginLoader() {
+	public final PluginLoader getPluginLoader() {
 		return pluginLoader;
 	}
 
-	public Logger getLogger() {
+	public final Logger getLogger() {
 		return game.getLogger();
 	}
 
-	public PluginDescriptionFile getDescription() {
+	public final PluginDescriptionFile getDescription() {
 		return description;
 	}
 
-	@UnsafeMethod
-	public void initialize(CommonPluginLoader commonsPluginLoader, Game game,
-			PluginDescriptionFile desc, File dataFolder, File paramFile,
-			CommonClassLoader loader) {
+	public final void initialize(CommonPluginLoader commonsPluginLoader, Game game, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
 		this.description = desc;
 		this.classLoader = loader;
 		this.game = game;
 		this.pluginLoader = commonsPluginLoader;
 		this.dataFolder = dataFolder;
 		this.paramFile = paramFile;
-		// TODO Auto-generated method stub
-		
 	}
 
-	public ClassLoader getClassLoader() {
+	public final ClassLoader getClassLoader() {
 		return classLoader;
 	}
 
-	public File getDataFolder() {
+	public final File getDataFolder() {
 		return dataFolder;
 	}
 	
-	public Game getGame() {
+	public final Game getGame() {
 		return game;
+	}
+	
+	@UnsafeMethod
+	public WorldGenerator getWorldGenerator(String world, String generator) {
+		getLogger().severe("Unknown generator for world '" + world + "', generator: '" + generator + "'");
+		return null;
 	}
 
 }

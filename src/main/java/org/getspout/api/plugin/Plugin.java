@@ -28,6 +28,7 @@ package org.getspout.api.plugin;
 import java.util.logging.Logger;
 
 import org.getspout.api.Game;
+import org.getspout.api.generator.WorldGenerator;
 
 public interface Plugin {
 	
@@ -88,5 +89,14 @@ public interface Plugin {
 	 * @return game
 	 */
 	public Game getGame();
+	
+	/**
+	 * Gets the suitable generator for the world and generator name.
+	 * 
+	 * @param world name to generate
+	 * @param generator name
+	 * @return world generator
+	 */
+	public WorldGenerator getWorldGenerator(String world, String generator);
 
 }
