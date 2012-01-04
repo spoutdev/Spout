@@ -108,6 +108,11 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 		
 	}
 	
+	public boolean kill() {
+		TransformAndManager oldTM = transformAndManagerLive.getAndSet(new TransformAndManager(null, null));
+		return oldTM.transform == null && oldTM.entityManager == null;
+	}
+	
 	@Override
 	public void setModel(Model model) {
 		this.model = model;

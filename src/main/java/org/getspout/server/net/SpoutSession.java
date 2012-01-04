@@ -286,16 +286,11 @@ public final class SpoutSession implements Session {
 	 */
 	public void dispose(boolean broadcastQuit) {
 		if (player != null) {
-			//player.remove();
-			//Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, (short) 0);
-			//for (Player player : server.getOnlinePlayers()) {
-			//	((SpoutPlayer) player).getSession().send(userListMessage);
-			//}
-
 			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, null, broadcastQuit)).getMessage();
 			if (broadcastQuit && text != null) {
 				server.broadcastMessage(text);
 			}
+			((SpoutPlayer)player).disconnect();
 			player = null; // in case we are disposed twice
 		}
 	}

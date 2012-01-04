@@ -72,6 +72,7 @@ public class SpoutPlayer implements Player {
 	@DelayedWrite
 	public boolean disconnect() {
 		if (onlineLive.compareAndSet(true, false)) {
+			entityLive.get().kill();
 			sessionLive.set(null);
 			entityLive.set(null);
 			return true;

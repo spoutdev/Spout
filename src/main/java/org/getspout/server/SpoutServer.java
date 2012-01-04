@@ -32,6 +32,7 @@ import org.getspout.api.command.WrappedCommandException;
 import org.getspout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.getspout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.getspout.api.command.annotated.SimpleInjector;
+import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.SimpleEventManager;
 import org.getspout.api.event.server.PreCommandEvent;
@@ -859,30 +860,33 @@ public class SpoutServer extends AsyncManager implements Server {
 	public Player addPlayer(String playerName, SpoutSession session) {
 		Player player = null;
 
+		// The new player needs a corresponding entity
+		Entity newEntity = new SpoutEntity(this, this.getDefaultWorld().getSpawnPoint(), null);
+		
 		boolean success = false;
 		
 		while (!success) {
 			player = players.getLive().get(playerName);
 
 			if (player != null) {
-				if (!((SpoutPlayer)player).connect(session, player.getEntity())) {
-					// Means player was already online
+				if (!((SpoutPlayer)player).connect(session, newEntity)) {
+					// Means player was already online - exception?
 					return null;
 				} else {
 					success = true;
-					this.getDefaultWorld().spawnEntity(player.getEntity());
 				}
 			} else {
-				player = new SpoutPlayer(playerName, new SpoutEntity(this, this.getDefaultWorld().getSpawnPoint(), null), session);
+				player = new SpoutPlayer(playerName, newEntity, session);
 				if (players.putIfAbsent(playerName, player) == null) {
 					success = true;
-					this.getDefaultWorld().spawnEntity(player.getEntity());
 				}
 			}
 		}
+
 		if (player == null) {
 			throw new IllegalStateException("Attempting to set session to null player, which shouldn't be possible");
 		} else {
+			newEntity.getTransform().getPosition().getWorld().spawnEntity(newEntity);
 			session.setPlayer(player);
 		}
 		return player;
