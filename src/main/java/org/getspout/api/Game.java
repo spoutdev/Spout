@@ -42,6 +42,7 @@ import org.getspout.api.plugin.Platform;
 import org.getspout.api.plugin.PluginManager;
 import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
+import org.getspout.api.scheduler.Scheduler;
 import org.getspout.api.util.Named;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -357,5 +358,12 @@ public interface Game extends Named, EventSource {
 	 * @param generator to use by default
 	 */
 	public void setDefaultGenerator(WorldGenerator generator);
+	
+	/**
+	 * Gets the scheduler
+	 * 
+	 * @return the scheduler
+	 */
+	public Scheduler getScheduler();
 
 }

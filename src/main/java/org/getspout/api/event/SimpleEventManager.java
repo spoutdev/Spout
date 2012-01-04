@@ -7,10 +7,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.getspout.api.Server;
 import org.getspout.api.Spout;
 import org.getspout.api.plugin.exceptions.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {
+	
+	public <T extends Event> void callDelayedEvent(final T event) {
+		Spout.getGame().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
+			public void run() {
+				callEvent(event);
+			}
+		});
+	}
 
 	public <T extends Event> T callEvent(T event) {
 		HandlerList handlers = event.getHandlers();

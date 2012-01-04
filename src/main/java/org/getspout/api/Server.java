@@ -191,11 +191,4 @@ public interface Server extends Game {
 	 */
 	public boolean allowFlight();
 	
-	/**
-	 * Gets the scheduler
-	 * 
-	 * @return the scheduler
-	 */
-	public Scheduler getScheduler();
-	
 }

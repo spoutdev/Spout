@@ -57,7 +57,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 		Session session = (Session) ctx.getAttachment();
 		server.getSessionRegistry().remove(session);
 		session.dispose(true);
-
+		
 		server.getLogger().info("Channel disconnected: " + c + ".");
 	}
 

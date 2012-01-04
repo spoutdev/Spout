@@ -24,6 +24,13 @@ public interface EventManager {
 	 * @return Called event
 	 */
 	public <T extends Event> T callEvent(T event);
+	
+	/**
+	 * Calls an event with the given details, on the next tick
+	 *
+	 * @param event Event details
+	 */
+	public <T extends Event> void callDelayedEvent(T event);
 
 	/**
 	 * Registers all the events in the given listener class
