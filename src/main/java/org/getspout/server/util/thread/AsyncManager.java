@@ -75,8 +75,8 @@ public abstract class AsyncManager {
 	 * Returns a singleton task to the cache
 	 *
 	 * Tasks should be returned to the cache after usage
-	 *
-	 * @param taskEnum the enum of the task
+	 * 
+	 * @param task the enum of the taskß
 	 * @return an instance of task
 	 */
 	public void returnSingletonTask(ManagementTask task) {
@@ -135,7 +135,6 @@ public abstract class AsyncManager {
 	 *
 	 * This method is not called if the executor is halted before being started.
 	 *
-	 * @param delta the time since the last tick
 	 */
 	public abstract void haltRun() throws InterruptedException;
 

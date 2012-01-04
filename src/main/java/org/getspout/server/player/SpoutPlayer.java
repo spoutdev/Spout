@@ -1,5 +1,6 @@
 package org.getspout.server.player;
 
+import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -56,6 +57,12 @@ public class SpoutPlayer implements Player {
 	@SnapshotRead
 	public boolean isOnline() {
 		return online;
+	}
+
+	@Override
+	@SnapshotRead
+	public InetAddress getAddress() {
+		return session.getAddress().getAddress();
 	}
 
 	@DelayedWrite
