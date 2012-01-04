@@ -150,9 +150,11 @@ public interface World extends EventSource, BlockAccess {
 	 * Create a new Entity for initialization
 	 * 
 	 * This does not add the Entity to the server.  You must call {@link #spawnEntity(Entity)} to simulate the Entity in the world
+	 * @param point The point to spawn the Entity
+	 * @param controller The controller that will be attached to the Entity
 	 * @return
 	 */
-	public Entity createEntity();
+	public Entity createEntity(Point point, Controller controller);
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 * @param e
