@@ -288,8 +288,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity() {
-		return new SpoutEntity((SpoutServer) server);
+	public Entity createEntity(Point point, Controller controller) {
+		return new SpoutEntity((SpoutServer) server, point, controller);
 	}
 
 	@Override
@@ -301,9 +301,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Entity createAndSpawnEntity(Point point, Controller controller) {
-		Entity e = createEntity();
-		e.getTransform().setPosition(point);
-		e.setController(controller);
+		Entity e = createEntity(point, controller);
 		spawnEntity(e);
 		return e;
 	}

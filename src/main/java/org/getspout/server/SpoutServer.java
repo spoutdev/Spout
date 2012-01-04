@@ -865,14 +865,14 @@ public class SpoutServer extends AsyncManager implements Server {
 			player = players.getLive().get(playerName);
 
 			if (player != null) {
-				if (!((SpoutPlayer)player).connect(session, new SpoutEntity(this))) {
+				if (!((SpoutPlayer)player).connect(session, new SpoutEntity(this, this.getDefaultWorld().getSpawnPoint(), null))) {
 					// Means player was already online
 					return null;
 				} else {
 					success = true;
 				}
 			} else {
-				player = new SpoutPlayer(playerName, new SpoutEntity(this), session);
+				player = new SpoutPlayer(playerName, new SpoutEntity(this, this.getDefaultWorld().getSpawnPoint(), null), session);
 				if (players.putIfAbsent(playerName, player) == null) {
 					success = true;
 				}

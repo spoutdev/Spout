@@ -26,7 +26,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), null, 0, Short.MAX_VALUE);
 	
 	private TransformAndManager transformAndManager;
-	private AtomicReference<TransformAndManager> transformAndManagerLive = new AtomicReference<TransformAndManager>();
+	private final AtomicReference<TransformAndManager> transformAndManagerLive = new AtomicReference<TransformAndManager>();
 	private Controller controller;
 	private final SpoutServer server;
 	
@@ -34,11 +34,21 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	
 	Model model;
 	CollisionModel collision;
-
-	public SpoutEntity(SpoutServer server) {
+	
+	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
 		this.server = server;
-		transformAndManager = new TransformAndManager(null, this.server.getEntityManager());
+		transformAndManager = new TransformAndManager(transform, this.server.getEntityManager());
+		this.controller = controller;
 		server.getEntityManager().allocate(this);
+		transformAndManagerLive.set(transformAndManager.copy());
+	}
+
+	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
+		this.server = server;
+		transformAndManager = new TransformAndManager(new Transform(point, null, null), this.server.getEntityManager());
+		this.controller = controller;
+		server.getEntityManager().allocate(this);
+		transformAndManagerLive.set(transformAndManager.copy());
 	}
 
 	public int getId() {
@@ -227,6 +237,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 				this.transform = null;
 			}
 			this.entityManager = entityManager;
+		}
+		
+		public TransformAndManager copy() {
+			return new TransformAndManager(transform != null ? transform.copy() : null, entityManager);
 		}
 	}
 }
