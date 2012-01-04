@@ -31,5 +31,5 @@ public @interface EventHandler {
 
 	Class<? extends Event> event();
 
-	Order priority();
+	Order order() default Order.DEFAULT;
 }
