@@ -1,9 +1,11 @@
 package org.getspout.api.protocol;
 
+import java.security.PublicKey;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.getspout.api.protocol.bootstrap.BootstrapCodecLookupService;
 import org.getspout.api.protocol.bootstrap.BootstrapHandlerLookupService;
+import org.getspout.api.protocol.bootstrap.NullPlayerProtocol;
 
 public class Protocol {
 	
@@ -11,13 +13,15 @@ public class Protocol {
 	
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
+	private final PlayerProtocol playerProtocol;
 	private final String name;
 	
-	public static final Protocol bootstrap = new Protocol("bootstrap", new BootstrapCodecLookupService(), new BootstrapHandlerLookupService());
+	public static final Protocol bootstrap = new Protocol("bootstrap", new BootstrapCodecLookupService(), new BootstrapHandlerLookupService(), new NullPlayerProtocol());
 	
-	public Protocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
+	public Protocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, PlayerProtocol playerProtocol) {
 		this.codecLookup = codecLookup;
 		this.handlerLookup = handlerLookup;
+		this.playerProtocol = playerProtocol;
 		this.name = name;
 	}
 	
@@ -37,6 +41,14 @@ public class Protocol {
 	 */
 	public CodecLookupService getCodecLookupService() {
 		return codecLookup;
+	}
+
+	/**
+	 * Gets the player protocol wrapper associated with this Protocol
+	 * @return the player protocol wrapper
+	 */
+	public PlayerProtocol getPlayerProtocol() {
+		return playerProtocol;
 	}
 	
 	/**

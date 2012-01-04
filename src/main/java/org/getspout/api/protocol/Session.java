@@ -22,9 +22,15 @@ public interface Session {
 	/**
 	 * Sets the protocol associated with this session.
 	 * 
-	 * @param codecLookupService the protocol (Bootstrap until set)
+	 * @param protocol the protocol (Bootstrap until set)
 	 */
 	public void setProtocol(Protocol protocol);
+
+	/**
+	 * Returns the {@link PlayerProtocol} associated with this session.
+	 * Returns bootstrap until another protocol is set.
+	 */
+	public PlayerProtocol getPlayerProtocol();
 	
 	/**
 	 * Gets the state of this session.
