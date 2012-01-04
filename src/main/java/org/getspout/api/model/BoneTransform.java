@@ -5,7 +5,7 @@ import org.getspout.api.math.Vector3;
 
 public class BoneTransform {
 	Vector3 position = Vector3.ZERO;
-	Quaternion rotation = Quaternion.identitiy;
+	Quaternion rotation = Quaternion.identity;
 	Vector3 scale = Vector3.ONE;
 	
 	BoneTransform parent;
