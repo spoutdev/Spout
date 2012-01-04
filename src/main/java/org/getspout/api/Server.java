@@ -30,7 +30,6 @@ import java.util.Collection;
 
 import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
-import org.getspout.api.scheduler.Scheduler;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.SnapshotRead;
 

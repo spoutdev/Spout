@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * The SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,27 +23,57 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.getspout.api.command;
+package org.getspout.api.event.server.permissions;
 
-import org.getspout.api.data.DataSubject;
+import org.getspout.api.event.Event;
+import org.getspout.api.event.HandlerList;
+import org.getspout.api.geo.World;
 import org.getspout.api.permissions.PermissionsSubject;
 
-public interface CommandSource extends PermissionsSubject, DataSubject {
+/**
+ * This event is called when PermissionSubject.getGroups() is called.
+ */
+public class PermissionGetGroupsEvent extends Event {
 
-	/**
-	 * Sends a text message to the source of the command.
-	 *
-	 * @param message the message to send
-	 * @return whether the message was sent correctly
-	 */
-	public boolean sendMessage(String message);
+	private static final HandlerList handlers = new HandlerList();
+	private World world;
+	private PermissionsSubject subject;
+	private String[] groups;
 
-	/**
-	 * Sends a message to the client without any processing by the server, except to prevent exploits.
-	 * @param message The message to send
-	 * @return whether the message was sent correctly
-	 */
-	public boolean sendRawMessage(String message);
+	public PermissionGetGroupsEvent(World world, PermissionsSubject subject) {
+		this.world = world;
+		this.subject = subject;
+	}
 
+	public String[] getGroups() {
+		return groups;
+	}
 
+	public void setGroups(String[] groups) {
+		this.groups = groups;
+	}
+
+	public PermissionsSubject getSubject() {
+		return subject;
+	}
+
+	public void setSubject(PermissionsSubject subject) {
+		this.subject = subject;
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
+	}
+
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

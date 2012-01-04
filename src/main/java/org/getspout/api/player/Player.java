@@ -30,8 +30,10 @@ import org.getspout.api.entity.Entity;
 import org.getspout.api.protocol.Session;
 
 import java.net.InetAddress;
+import org.getspout.api.data.DataSubject;
+import org.getspout.api.permissions.PermissionsSubject;
 
-public interface Player extends CommandSource {
+public interface Player extends CommandSource, PermissionsSubject, DataSubject {
 	
 	/**
 	 * Gets the player's name
@@ -74,5 +76,6 @@ public interface Player extends CommandSource {
 	 * @return The session's address
 	 */
 	public InetAddress getAddress();
+	
 	
 }

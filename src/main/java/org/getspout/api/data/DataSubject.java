@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * The SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,34 +23,41 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.getspout.api.event;
+package org.getspout.api.data;
 
-public enum Result {
+import org.getspout.api.geo.World;
+import org.getspout.api.util.Named;
+
+public interface DataSubject extends Named {
+
 	/**
-	 * Deny the event. Depending on the event, the action indicated by the event
-	 * will either not take place or will be reverted. Some actions may not be
-	 * denied.
+	 * Gets data from the given node
+	 * @param node
+	 * @return 
 	 */
-	DENY(false),
-	/**
-	 * Neither deny nor allow the event. The server will proceed with its normal
-	 * handling.
-	 */
-	DEFAULT(null),
-	/**
-	 * Allow / Force the event. The action indicated by the event will take
-	 * place if possible, even if the server would not normally allow the
-	 * action. Some actions may not be allowed.
-	 */
-	ALLOW(true);
+	public Object getData(String node);
 	
-	private Boolean result;
-
-	private Result(Boolean result) {
-		this.result = result;
-	}
-
-	public Boolean getResult() {
-		return result;
-	}
+	/**
+	 * Gets data from the given node
+	 * @param node
+	 * @param defaultValue
+	 * @return 
+	 */
+	public Object getData(String node, Object defaultValue);
+	
+	/**
+	 * Gets data from the given node
+	 * @param node
+	 * @return 
+	 */
+	public Object getData(World world, String node);
+	
+	/**
+	 * Gets data from the given node
+	 * @param node
+	 * @param defaultValue
+	 * @return 
+	 */
+	public Object getData(World world, String node, Object defaultValue);
+	
 }

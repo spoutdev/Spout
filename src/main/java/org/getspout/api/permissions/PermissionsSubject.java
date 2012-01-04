@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * The SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,34 +23,49 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.getspout.api.event;
+package org.getspout.api.permissions;
 
-public enum Result {
-	/**
-	 * Deny the event. Depending on the event, the action indicated by the event
-	 * will either not take place or will be reverted. Some actions may not be
-	 * denied.
-	 */
-	DENY(false),
-	/**
-	 * Neither deny nor allow the event. The server will proceed with its normal
-	 * handling.
-	 */
-	DEFAULT(null),
-	/**
-	 * Allow / Force the event. The action indicated by the event will take
-	 * place if possible, even if the server would not normally allow the
-	 * action. Some actions may not be allowed.
-	 */
-	ALLOW(true);
+import org.getspout.api.geo.World;
+import org.getspout.api.util.Named;
+
+/**
+ * Interface for classes that can have permissions attached to them. 
+ * 
+ * @author yetanotherx
+ */
+public interface PermissionsSubject extends Named {
 	
-	private Boolean result;
-
-	private Result(Boolean result) {
-		this.result = result;
-	}
-
-	public Boolean getResult() {
-		return result;
-	}
+	/**
+	 * Gets whether or not the Player has a given permission
+	 * @param node
+	 * @return 
+	 */
+	public boolean hasPermission(String node);
+	
+	/**
+	 * Gets whether or not the Player has a given permission in a World
+	 * @param node
+	 * @return 
+	 */
+	public boolean hasPermission(World world, String node);
+	
+	/**
+	 * Gets whether or not the Player is in a given group
+	 * @param group
+	 * @return 
+	 */
+	public boolean isInGroup(String group);
+	
+	/**
+	 * Gets the groups this player is in
+	 * @return 
+	 */
+	public String[] getGroups();
+	
+	/**
+	 * Returns whether or not this subject is a group itself
+	 * @return 
+	 */
+	public boolean isGroup();
+	
 }

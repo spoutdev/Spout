@@ -26,6 +26,7 @@
 
 package org.getspout.api.command;
 
+import org.getspout.api.geo.World;
 import org.getspout.api.util.Named;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +59,26 @@ public class SimpleCommandTest implements Named, CommandSource {
 
 	public boolean sendRawMessage(String message) {
 		System.out.println(message);
+		return true;
+	}
+
+	public boolean hasPermission(String node) {
+		return true;
+	}
+
+	public boolean isInGroup(String group) {
+		return false;
+	}
+
+	public String[] getGroups() {
+		return new String[0];
+	}
+
+	public boolean isGroup() {
+		return false;
+	}
+
+	public boolean hasPermission(World world, String node) {
 		return true;
 	}
 }
