@@ -875,6 +875,7 @@ public class SpoutServer extends AsyncManager implements Server {
 				player = new SpoutPlayer(playerName, new SpoutEntity(this, this.getDefaultWorld().getSpawnPoint(), null), session);
 				if (players.putIfAbsent(playerName, player) == null) {
 					success = true;
+					this.getDefaultWorld().spawnEntity(player.getEntity());
 				}
 			}
 		}

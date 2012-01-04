@@ -41,7 +41,6 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 		this.server = server;
 		transformAndManager = new TransformAndManager(transform, this.server.getEntityManager());
 		this.controller = controller;
-		server.getEntityManager().allocate(this);
 		transformAndManagerLive.set(transformAndManager.copy());
 	}
 
@@ -49,7 +48,6 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 		this.server = server;
 		transformAndManager = new TransformAndManager(new Transform(point, Quaternion.identity , Vector3.ONE), this.server.getEntityManager());
 		this.controller = controller;
-		server.getEntityManager().allocate(this);
 		transformAndManagerLive.set(transformAndManager.copy());
 	}
 
