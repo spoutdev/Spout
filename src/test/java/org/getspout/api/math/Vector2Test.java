@@ -128,5 +128,18 @@ public class Vector2Test {
 		if(! x.equals(y)) fail("Vectors x and y not equal.  Should be equal");
 		
 	}
+	
+	@Test
+	public void testDistance() {
+		Vector2 x = new Vector2(0, 0);
+		Vector2 y = new Vector2(3, 4);
+		if(Vector2.distance(x, y) != 5) fail("Distance between " + x + " and " + y + " is not 5");
+	}
+	
+	@Test
+	public void testPow() {
+		Vector2 y = new Vector2(3, 4);
+		if(!y.pow(3).equals(new Vector2(27, 64))) fail("New vector is not properly raised to the 3rd power.");
+	}
 
 }
