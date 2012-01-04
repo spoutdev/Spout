@@ -45,10 +45,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
-		this.server = server;
-		transformAndManager = new TransformAndManager(new Transform(point, Quaternion.identity , Vector3.ONE), this.server.getEntityManager());
-		this.controller = controller;
-		transformAndManagerLive.set(transformAndManager.copy());
+		this(server, new Transform(point, Quaternion.identity , Vector3.ONE), controller);
 	}
 
 	public int getId() {

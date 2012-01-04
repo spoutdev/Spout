@@ -37,6 +37,8 @@ public class SpoutPlayer implements Player {
 		this.session = session;
 		this.entityLive.set(entity);
 		this.entity = entity;
+		this.online = true;
+		this.onlineLive.set(true);
 	}
 
 	@Override
@@ -139,4 +141,11 @@ public class SpoutPlayer implements Player {
 	public int hashCode() {
 		return hashcode;
 	}
+	
+	public void copyToSnapshot() {
+		session = sessionLive.get();
+		online = onlineLive.get();
+		entity = entityLive.get();
+	}
+	
 }

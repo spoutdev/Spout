@@ -805,6 +805,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	public void copySnapshotRun() throws InterruptedException {
 		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
+		for (Player player : players.get().values()) {
+			((SpoutPlayer)player).copyToSnapshot();
+		}
 	}
 
 	@Override
@@ -870,7 +873,6 @@ public class SpoutServer extends AsyncManager implements Server {
 
 			if (player != null) {
 				if (!((SpoutPlayer)player).connect(session, newEntity)) {
-					// Means player was already online - exception?
 					return null;
 				} else {
 					success = true;

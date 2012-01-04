@@ -48,10 +48,10 @@ public class InternalEventListener implements Listener {
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if(event.isCancelled()) return;
 		//Create the player
-		Player player = server.addPlayer(event.getPlayerName(), (SpoutSession)event.getSession());
+		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession)event.getSession());
 
 		if (player != null) {
-			Spout.getGame().getEventManager().callEvent(new PlayerJoinEvent(player));
+			Spout.getGame().getEventManager().callDelayedEvent(new PlayerJoinEvent(player));
 		} else {
 			event.getSession().disconnect("Player is already online");
 		}
@@ -66,7 +66,7 @@ public class InternalEventListener implements Listener {
 			p.disconnect();
 		}
 
-		server.broadcastMessage(p.getName() + " Has Connected");
+		server.broadcastMessage(p.getName() + " has Connected");
 	}
 
 }
