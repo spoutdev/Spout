@@ -10,17 +10,17 @@ public class Vector2 implements Comparable<Vector2> {
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
-	public static Vector2 ZERO = new Vector2(0, 0);
+	public final static Vector2 ZERO = new Vector2(0, 0);
 
 	/**
 	 * Represents a unit vector in the X direction (1,0)
 	 */
-	public static Vector2 UNIT_X = new Vector2(1, 0);
+	public final static Vector2 UNIT_X = new Vector2(1, 0);
 
 	/**
 	 * Represents a unit vector in the Y direction (0,1)
 	 */
-	public static Vector2 UNTI_Y = new Vector2(0, 1);
+	public final static Vector2 UNTI_Y = new Vector2(0, 1);
 
 	/**
 	 * Represents a unit vector (1,1)
@@ -39,12 +39,31 @@ public class Vector2 implements Comparable<Vector2> {
 		this.x = x;
 		this.y = y;
 	}
+	
+	/**
+	 * Construct and Initialized a Vector2 from the given x, y
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	public Vector2(Double x, Double y) {
+		this(x.floatValue(), y.floatValue());
+	}
 
 	/**
 	 * Construct and Initialized a Vector2 to (0,0)
 	 */
 	public Vector2() {
 		this(0, 0);
+	}
+	
+	/**
+	 * Construct and Initialized a Vector2 from an old Vector2
+	 * 
+	 * @param original 
+	 */
+	public Vector2(Vector2 original) {
+		this(original.x, original.y);
 	}
 
 	/**
@@ -105,6 +124,52 @@ public class Vector2 implements Comparable<Vector2> {
 	public float dot(Vector2 that) {
 		return Vector2.dot(this, that);
 	}
+	
+	/**
+	 * Returns a Vector3 object with a y-value of 0.
+	 * The x of this Vector2 becomes the x of the Vector3,
+	 * the y of this Vector2 becomes the z of the Vector3.
+	 * 
+	 * @return 
+	 */
+	public Vector3 toVector3() {
+		return Vector2.toVector3(this);
+	}
+	
+	/**
+	 * Returns a Vector3m object with a y-value of 0.
+	 * The x of this Vector2 becomes the x of the Vector3m,
+	 * the y of this Vector2 becomes the z of the Vector3m.
+	 * 
+	 * @return 
+	 */
+	public Vector3m toVector3m() {
+		return Vector2.toVector3m(this);
+	}
+	
+	/**
+	 * Returns a Vector3 object with the given y value.
+	 * The x of this Vector2 becomes the x of the Vector3,
+	 * the y of this Vector2 becomes the z of the Vector3.
+	 * 
+	 * @param y Y value to use in the new Vector3.
+	 * @return 
+	 */
+	public Vector3 toVector3(float y) {
+		return Vector2.toVector3(this, y);
+	}
+	
+	/**
+	 * Returns a Vector3m object with the given y value.
+	 * The x of this Vector2 becomes the x of the Vector3m,
+	 * the y of this Vector2 becomes the z of the Vector3m.
+	 * 
+	 * @param y Y value to use in the new Vector3m.
+	 * @return 
+	 */
+	public Vector3m toVector3m(float y) {
+		return Vector2.toVector3m(this, y);
+	}
 
 	/**
 	 * Returns the Cross Product of this Vector2 Note: Cross Product is
@@ -114,6 +179,66 @@ public class Vector2 implements Comparable<Vector2> {
 	 */
 	public Vector2 cross() {
 		return new Vector2(y, -x);
+	}
+	
+	/**
+	 * Rounds the X and Y values of this Vector2 up to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector2 ceil() {
+		return new Vector2(Math.ceil(x), Math.ceil(y));
+	}
+	
+	/**
+	 * Rounds the X and Y values of this Vector2 down to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector2 floor() {
+		return new Vector2(Math.floor(x), Math.floor(y));
+	}
+	
+	/**
+	 * Rounds the X and Y values of this Vector2 to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector2 round() {
+		return new Vector2(Math.round(x), Math.round(y));
+	}
+	
+	/**
+	 * Sets the X and Y values of this Vector2 to their
+	 * absolute value.
+	 * 
+	 * @return 
+	 */
+	public Vector2 abs() {
+		return new Vector2(Math.abs(x), Math.abs(y));
+	}
+	
+	/**
+	 * Gets the distance between this Vector2 and a given Vector2.
+	 * 
+	 * @param a
+	 * @return 
+	 */
+	public double distance(Vector2 a) {
+		return Vector2.distance(a, this);
+	}
+	
+	/**
+	 * Raises the X and Y values of this Vector2 to the given power.
+	 * 
+	 * @param power
+	 * @return 
+	 */
+	public Vector2 pow(double power) {
+		return Vector2.pow(this, power);
 	}
 
 	/**
@@ -246,6 +371,132 @@ public class Vector2 implements Comparable<Vector2> {
 	public static float dot(Vector2 a, Vector2 b) {
 		return a.getX() * b.getX() + a.getY() * b.getY();
 	}
+	
+	/**
+	 * Returns a Vector3 object with a y-value of 0.
+	 * The x of the Vector2 becomes the x of the Vector3,
+	 * the y of the Vector2 becomes the z of the Vector3.
+	 * 
+	 * @param o Vector2 to use as the x/z values
+	 * @return 
+	 */
+	public static Vector3 toVector3(Vector2 o) {
+		return new Vector3(o.x, 0, o.y);
+	}
+	
+	/**
+	 * Returns a Vector3m object with a y-value of 0.
+	 * The x of the Vector2 becomes the x of the Vector3m,
+	 * the y of the Vector2 becomes the z of the Vector3m.
+	 * 
+	 * @param o Vector2 to use as the x/z values
+	 * @return 
+	 */
+	public static Vector3m toVector3m(Vector2 o) {
+		return new Vector3m(o.x, 0, o.y);
+	}
+	
+	/**
+	 * Returns a Vector3 object with the given y-value.
+	 * The x of the Vector2 becomes the x of the Vector3,
+	 * the y of the Vector2 becomes the z of the Vector3.
+	 * 
+	 * @param o Vector2 to use as the x/z values
+	 * @param y Y value of the new Vector3
+	 * @return 
+	 */
+	public static Vector3 toVector3(Vector2 o, float y) {
+		return new Vector3(o.x, y, o.y);
+	}
+	
+	/**
+	 * Returns a Vector3m object with the given y-value.
+	 * The x of the Vector2 becomes the x of the Vector3m,
+	 * the y of the Vector2 becomes the z of the Vector3m.
+	 * 
+	 * @param o Vector2 to use as the x/z values
+	 * @param y Y value of the new Vector3
+	 * @return 
+	 */
+	public static Vector3m toVector3m(Vector2 o, float y) {
+		return new Vector3m(o.x, y, o.y);
+	}
+	
+	/**
+	 * Rounds the X and Y values of the given Vector2 up to 
+	 * the nearest integer value. 
+	 * 
+	 * @param o Vector2 to use
+	 * @return 
+	 */
+	public static Vector2 ceil(Vector2 o) {
+		return new Vector2(Math.ceil(o.x), Math.ceil(o.y));
+	}
+	
+	/**
+	 * Rounds the X and Y values of the given Vector2 down to 
+	 * the nearest integer value. 
+	 * 
+	 * @param o Vector2 to use
+	 * @return 
+	 */
+	public static Vector2 floor(Vector2 o) {
+		return new Vector2(Math.floor(o.x), Math.floor(o.y));
+	}
+	
+	/**
+	 * Rounds the X and Y values of the given Vector2 to 
+	 * the nearest integer value. 
+	 * 
+	 * @param o Vector2 to use
+	 * @return 
+	 */
+	public static Vector2 round(Vector2 o) {
+		return new Vector2(Math.round(o.x), Math.round(o.y));
+	}
+	
+	/**
+	 * Sets the X and Y values of the given Vector2 to their
+	 * absolute value.
+	 * 
+	 * @param o Vector2 to use
+	 * @return 
+	 */
+	public static Vector2 abs(Vector2 o) {
+		return new Vector2(Math.abs(o.x), Math.abs(o.y));
+	}
+	
+	/**
+	 * Returns a Vector2 containing the smallest X and Y values.
+	 * 
+	 * @param o1
+	 * @param o2
+	 * @return 
+	 */
+	public static Vector2 min(Vector2 o1, Vector2 o2) {
+		return new Vector2(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y));
+	}
+	
+	/**
+	 * Returns a Vector2 containing the largest X and Y values.
+	 * 
+	 * @param o1
+	 * @param o2
+	 * @return 
+	 */
+	public static Vector2 max(Vector2 o1, Vector2 o2) {
+		return new Vector2(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y));
+	}
+	
+	/**
+	 * Returns a Vector2 with random X and Y values (between 0 and 1)
+	 * 
+	 * @param o
+	 * @return 
+	 */
+	public static Vector2 rand() {
+		return new Vector2(Math.random(), Math.random());
+	}
 
 	/**
 	 * Returns the provided Vector2 in an array. Element 0 contains x Element 1
@@ -263,6 +514,29 @@ public class Vector2 implements Comparable<Vector2> {
 	public static int compareTo(Vector2 a, Vector2 b) {
 		return (int) a.lengthSquared() - (int) b.lengthSquared();
 	}
+	
+	/**
+	 * Gets the distance between two Vector2. 
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static double distance(Vector2 a, Vector2 b) {
+		Vector2 tempVector = Vector2.pow(Vector2.subtract(a, b), 2);
+		return Math.sqrt(tempVector.x + tempVector.y);
+	}
+	
+	/**
+	 * Raises the X and Y values of a Vector2 to the given power.
+	 * 
+	 * @param o
+	 * @param power
+	 * @return 
+	 */
+	public static Vector2 pow(Vector2 o, double power) {
+		return new Vector2(Math.pow(o.x, power), Math.pow(o.y, power));
+	}
 
 	/**
 	 * Checks if two Vector2s are equal
@@ -275,6 +549,11 @@ public class Vector2 implements Comparable<Vector2> {
 			return true;
 		}
 		return compareTo((Vector2) a, (Vector2) b) == 0;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ")";
 	}
 
 }

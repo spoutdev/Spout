@@ -7,42 +7,42 @@ public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
-	public static Vector3 ZERO = new Vector3(0, 0, 0);
+	public final static Vector3 ZERO = new Vector3(0, 0, 0);
 
 	/**
 	 * Unit Vector in the X direction. (1, 0, 0)
 	 */
-	public static Vector3 UNIT_X = new Vector3(1, 0, 0);
+	public final static Vector3 UNIT_X = new Vector3(1, 0, 0);
 
 	/**
 	 * Unit Vector facing Forward. (1, 0, 0)
 	 */
-	public static Vector3 Forward = UNIT_X;
+	public final static Vector3 Forward = UNIT_X;
 
 	/**
 	 * Unit Vector in the Y direction. (0, 1, 0)
 	 */
-	public static Vector3 UNIT_Y = new Vector3(0, 1, 0);
+	public final static Vector3 UNIT_Y = new Vector3(0, 1, 0);
 
 	/**
 	 * Unit Vector pointing Up. (0, 1, 0)
 	 */
-	public static Vector3 Up = UNIT_Y;
+	public final static Vector3 Up = UNIT_Y;
 
 	/**
 	 * Unit Vector in the Z direction. (0, 0, 1)
 	 */
-	public static Vector3 UNIT_Z = new Vector3(0, 0, 1);
+	public final static Vector3 UNIT_Z = new Vector3(0, 0, 1);
 
 	/**
 	 * Unit Vector pointing Right. (0, 0, 1)
 	 */
-	public static Vector3 Right = UNIT_Z;
+	public final static Vector3 Right = UNIT_Z;
 
 	/**
 	 * Unit Vector with all elements set to 1. (1, 1, 1)
 	 */
-	public static Vector3 ONE = new Vector3(1, 1, 1);
+	public final static Vector3 ONE = new Vector3(1, 1, 1);
 
 	protected float x, y, z;
 
@@ -57,6 +57,17 @@ public class Vector3 implements Comparable<Vector3> {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	/**
+	 * Constructs a new Vector3 with the given x, y, z
+	 *
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public Vector3(Double x, Double y, Double z) {
+		this(x.floatValue(), y.floatValue(), z.floatValue());
 	}
 
 	/**
@@ -154,6 +165,90 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public Vector3 cross(Vector3 that) {
 		return Vector3.cross(this, that);
+	}
+	
+	/**
+	 * Returns a Vector2 object using the X and Z values of
+	 * this Vector3. The x of this Vector3 becomes the x 
+	 * of the Vector2, and the z of this Vector3 becomes the 
+	 * y of the Vector2.
+	 * 
+	 * @return 
+	 */
+	public Vector2 toVector2() {
+		return Vector3.toVector2(this);
+	}
+	
+	/**
+	 * Returns a Vector2m object using the X and Z values of
+	 * this Vector3. The x of this Vector3 becomes the x 
+	 * of the Vector2, and the z of this Vector3 becomes the 
+	 * y of the Vector2m.
+	 * 
+	 * @return 
+	 */
+	public Vector2m toVector2m() {
+		return Vector3.toVector2m(this);
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of this Vector3 up to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector3 ceil() {
+		return new Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z));
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of this Vector3 down to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector3 floor() {
+		return new Vector3(Math.floor(x), Math.floor(y), Math.floor(z));
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of this Vector3 to 
+	 * the nearest integer value. 
+	 * 
+	 * @return 
+	 */
+	public Vector3 round() {
+		return new Vector3(Math.round(x), Math.round(y), Math.round(z));
+	}
+	
+	/**
+	 * Sets the X, Y, and Z values of this Vector3 to their
+	 * absolute value.
+	 * 
+	 * @return 
+	 */
+	public Vector3 abs() {
+		return new Vector3(Math.abs(x), Math.abs(y), Math.abs(z));
+	}
+	
+	/**
+	 * Gets the distance between this Vector3 and a given Vector3.
+	 * 
+	 * @param a
+	 * @return 
+	 */
+	public double distance(Vector3 a) {
+		return Vector3.distance(a, this);
+	}
+	
+	/**
+	 * Raises the X, Y, and Z values of this Vector3 to the given power.
+	 * 
+	 * @param power
+	 * @return 
+	 */
+	public Vector3 pow(double power) {
+		return Vector3.pow(this, power);
 	}
 
 	/**
@@ -337,6 +432,130 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public static Vector3 cross(Vector3 a, Vector3 b) {
 		return new Vector3(a.getY() * b.getZ() - a.getZ() * b.getY(), a.getZ() * b.getX() - a.getX() * b.getZ(), a.getX() * b.getY() - a.getY() * b.getX());
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of the given Vector3 up to 
+	 * the nearest integer value. 
+	 * 
+	 * @param o Vector3 to use
+	 * @return 
+	 */
+	public static Vector3 ceil(Vector3 o) {
+		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of the given Vector3 down to 
+	 * the nearest integer value. 
+	 * 
+	 * @param o Vector3 to use
+	 * @return 
+	 */
+	public static Vector3 floor(Vector3 o) {
+		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
+	}
+	
+	/**
+	 * Rounds the X, Y, and Z values of the given Vector3 to 
+	 * the nearest integer value. 
+	 * 
+	 * @param o Vector3 to use
+	 * @return 
+	 */
+	public static Vector3 round(Vector3 o) {
+		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
+	}
+	
+	/**
+	 * Sets the X, Y, and Z values of the given Vector3 to their
+	 * absolute value.
+	 * 
+	 * @param o Vector3 to use
+	 * @return 
+	 */
+	public static Vector3 abs(Vector3 o) {
+		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
+	}
+	
+	/**
+	 * Returns a Vector3 containing the smallest X, Y, and Z values.
+	 * 
+	 * @param o1
+	 * @param o2
+	 * @return 
+	 */
+	public static Vector3 min(Vector3 o1, Vector3 o2) {
+		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
+	}
+	
+	/**
+	 * Returns a Vector3 containing the largest X, Y, and Z values.
+	 * 
+	 * @param o1
+	 * @param o2
+	 * @return 
+	 */
+	public static Vector3 max(Vector3 o1, Vector3 o2) {
+		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
+	}
+	
+	/**
+	 * Returns a Vector3 with random X, Y, and Z values (between 0 and 1)
+	 * 
+	 * @return 
+	 */
+	public static Vector3 rand() {
+		return new Vector3(Math.random(), Math.random(), Math.random());
+	}
+	
+	/**
+	 * Gets the distance between two Vector3. 
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 
+	 */
+	public static double distance(Vector3 a, Vector3 b) {
+		double xzDist = Vector2.distance(a.toVector2(), b.toVector2());
+		return Math.sqrt(Math.pow(xzDist, 2) + Math.pow(Math.abs(Vector3.subtract(a, b).getY()), 2));
+	}
+	
+	/**
+	 * Raises the X, Y, and Z values of a Vector3 to the given power.
+	 * 
+	 * @param o
+	 * @param power
+	 * @return 
+	 */
+	public static Vector3 pow(Vector3 o, double power) {
+		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
+	}
+	
+	/**
+	 * Returns a Vector2 object using the X and Z values of
+	 * the given Vector3. The x of the Vector3 becomes the x 
+	 * of the Vector2, and the z of this Vector3 becomes the 
+	 * y of the Vector2m.
+	 * 
+	 * @param o Vector3 object to use
+	 * @return 
+	 */
+	public static Vector2 toVector2(Vector3 o) {
+		return new Vector2(o.x, o.z);
+	}
+	
+	/**
+	 * Returns a Vector2m object using the X and Z values of
+	 * the given Vector3. The x of the Vector3 becomes the x 
+	 * of the Vector2m, and the z of this Vector3 becomes the 
+	 * y of the Vector2m.
+	 * 
+	 * @param o Vector3 object to use
+	 * @return 
+	 */
+	public static Vector2m toVector2m(Vector3 o) {
+		return new Vector2m(o.x, o.z);
 	}
 
 	/**

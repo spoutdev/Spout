@@ -213,5 +213,18 @@ public class Vector3Test {
 
 		assertFalse(result);
 	}
+	
+	@Test
+	public void testDistance() {
+		Vector3 x = new Vector3(0, 0, 0);
+		Vector3 y = new Vector3(3, 12, 4);
+		if(Vector3.distance(x, y) != 13) fail("Distance between " + x + " and " + y + " is not 13");
+	}
+	
+	@Test
+	public void testPow() {
+		Vector3 y = new Vector3(3, 12, 4);
+		if(!y.pow(3).equals(new Vector3(27, 1728, 64))) fail("New vector is not properly raised to the 3rd power.");
+	}
 
 }
