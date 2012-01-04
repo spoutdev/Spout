@@ -37,6 +37,7 @@ import org.getspout.api.event.Order;
 import org.getspout.api.event.SimpleEventManager;
 import org.getspout.api.event.player.PlayerConnectEvent;
 import org.getspout.api.event.player.PlayerJoinEvent;
+import org.getspout.api.event.server.PreCommandEvent;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Region;
@@ -432,6 +433,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public void processCommand(CommandSource source, String commandLine) {
 		try {
+			PreCommandEvent event = getEventManager().callEvent(new PreCommandEvent(source, commandLine));
+			if (event.isCancelled()) return;
+			commandLine = event.getMessage();
 			getRootCommand().execute(source, commandLine.split(" "), -1, false);
 		} catch (WrappedCommandException e) {
 			source.sendMessage(ChatColor.RED + "Internal error executing command!");
