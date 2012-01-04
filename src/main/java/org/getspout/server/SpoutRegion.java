@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.Server;
+import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
@@ -239,14 +240,26 @@ public class SpoutRegion extends Region {
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
-					ent.onTick(dt);
+					try {
+						ent.onTick(dt);
+					}
+					catch (Exception e){
+						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+						e.printStackTrace();
+					}
 				}
 				break;
 			}
 			case 1: {
 				//Resolve and collisions and prepare for a snapshot.
 				for (SpoutEntity ent : entityManager) {
-					ent.resolve();
+					try {
+						ent.resolve();
+					}
+					catch (Exception e){
+						Spout.getGame().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
+						e.printStackTrace();
+					}
 				}
 				break;
 			}

@@ -30,6 +30,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.getspout.api.Server;
+import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.geo.World;
@@ -324,28 +325,38 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-
 		switch (stage) {
 			case 0: {
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
-					ent.onTick(dt);
+					try {
+						ent.onTick(dt);
+					}
+					catch (Exception e){
+						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+						e.printStackTrace();
+					}
 				}
 				break;
 			}
 			case 1: {
 				//Resolve and collisions and prepare for a snapshot.
 				for (SpoutEntity ent : entityManager) {
-					ent.resolve();
+					try {
+						ent.resolve();
+					}
+					catch (Exception e){
+						Spout.getGame().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
+						e.printStackTrace();
+					}
 				}
 				break;
 			}
 			default: {
-				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
+				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
 			}
 		}
-
 	}
 
 	@Override
