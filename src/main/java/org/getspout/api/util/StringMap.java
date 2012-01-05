@@ -3,7 +3,6 @@ package org.getspout.api.util;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.getspout.api.inventory.ItemMapRunnable;
 import org.getspout.api.io.store.SimpleStore;
 
 /**
@@ -21,8 +20,6 @@ public class StringMap {
 	private final StringMap parent;
 	private final SimpleStore<Integer> store;
 
-	private final ItemMapRunnable updateTask;
-
 	private final AtomicIntegerArray thisToParentMap;
 	private final AtomicIntegerArray parentToThisMap;
 
@@ -37,10 +34,9 @@ public class StringMap {
 	 * @param minId the lowest valid id
 	 * @param maxId the highest valid id + 1
 	 */
-	public StringMap(StringMap parent, SimpleStore<Integer> store, ItemMapRunnable updateTask, int minId, int maxId) {
+	public StringMap(StringMap parent, SimpleStore<Integer> store, int minId, int maxId) {
 		this.parent = parent;
 		this.store = store;
-		this.updateTask = updateTask;
 		thisToParentMap = new AtomicIntegerArray(maxId);
 		parentToThisMap = new AtomicIntegerArray(maxId);
 		for (int i = 0; i < maxId; i++) {
