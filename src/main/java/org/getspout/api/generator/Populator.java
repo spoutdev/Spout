@@ -1,7 +1,5 @@
 package org.getspout.api.generator;
 
-import java.util.Random;
-
 import org.getspout.api.geo.cuboid.Chunk;
 
 public interface Populator {
@@ -20,7 +18,6 @@ public interface Populator {
 	 * The random number generator will be seeded based on the world seed and the x, y and z coordinates of the chunk so that it gives consistent results.
 	 * 
 	 * @param c the chunk to populate
-	 * @param rng a pre-seeded random number generator
 	 */
-	public void populate(Chunk c, Random rng);
+	public void populate(Chunk c);
 }

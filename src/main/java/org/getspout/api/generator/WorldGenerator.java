@@ -1,7 +1,5 @@
 package org.getspout.api.generator;
 
-import java.util.Random;
-
 import org.getspout.api.util.cuboid.CuboidShortBuffer;
 
 public interface WorldGenerator {
@@ -10,14 +8,13 @@ public interface WorldGenerator {
 	 * 
 	 * The CuboidBuffer will always be exactly one Chunk in size (16x16x16 blocks) and Chunk aligned.
 	 * 
-	 * The random number generator will be seeded based on the world seed and the x, y and z coordinates of the chunk so that it gives consistent results.
-	 * 
 	 * Structural blocks should not contain any lighting sources and the generator should give repeatable results.
 	 * 
+	 * It is recommended that seeded random number generators from WorldGeneratorUtils are used.
+	 * 
 	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
-	 * @param rng a pre-seeded random number generator
 	 */
-	public void generate(CuboidShortBuffer blockData, Random rng);
+	public void generate(CuboidShortBuffer blockData);
 	
 	/**
 	 * Gets an array of Populators for the world generator
