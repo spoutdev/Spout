@@ -3,6 +3,7 @@ package org.getspout.server.entity;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.getspout.api.entity.Controller;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
@@ -34,7 +35,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	/**
 	 * The next id to check.
 	 */
-	private int nextId = 1;
+	private final static AtomicInteger nextId = new AtomicInteger(1);
 
 	private SnapshotableConcurrentHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
 		SnapshotableConcurrentHashSet<SpoutEntity> set = groupedEntities.get(type);
@@ -93,7 +94,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @param entity The entity.
 	 * @return The id.
 	 */
-	// TODO - should be a global server based id register, not regional
 	public int allocate(SpoutEntity entity) {
 		int currentId = entity.getId();
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
@@ -101,34 +101,18 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			getRawAll(entity.getController().getClass()).add(entity);
 			return currentId;
 		} else {
-			for (int id = nextId; id < Integer.MAX_VALUE; id++) {
-				if (!entities.getLive().containsKey(id)) {
-					entities.put(id, entity);
-					entity.setId(id);
-					Controller controller = entity.getController();
-					if (controller != null) {
-						getRawAll(controller.getClass()).add(entity);
-					}
-					nextId = id + 1;
-					return id;
-				}
+			int id = nextId.getAndIncrement();
+			if (id == -2) {
+				throw new IllegalStateException("No new entity ids left");
 			}
-
-			for (int id = Integer.MIN_VALUE; id < -1; id++) { // as -1 is used as a special value
-				if (!entities.getLive().containsKey(id)) {
-					entities.put(id, entity);
-					entity.setId(id);
-					Controller controller = entity.getController();
-					if (controller != null) {
-						getRawAll(controller.getClass()).add(entity);
-					}
-					nextId = id + 1;
-					return id;
-				}
+			entities.put(id, entity);
+			entity.setId(id);
+			Controller controller = entity.getController();
+			if (controller != null) {
+				getRawAll(controller.getClass()).add(entity);
 			}
+			return id;
 		}
-
-		throw new IllegalStateException("No free entity ids");
 	}
 
 	/**

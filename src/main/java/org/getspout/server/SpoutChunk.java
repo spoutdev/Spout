@@ -19,12 +19,12 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Internal representation of block ids.
 	 */
-	private final SnapshotableShortArray blockIds;
+	private SnapshotableShortArray blockIds;
 
 	/**
 	 * Internal representation of block data.
 	 */
-	private final SnapshotableByteArray blockData;
+	private SnapshotableByteArray blockData;
 
 	/**
 	 * The snapshot manager for the region that this chunk is located in.
@@ -69,17 +69,20 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public BlockMaterial setBlockMaterial(int x, int y, int z, BlockMaterial material) {
+		checkChunkLoaded();
 		setBlockId(x, y, z, (short) material.getRawId());
 		return getBlockMaterial(x, y, z);
 	}
 
 	@Override
 	public short setBlockId(int x, int y, int z, short id) {
+		checkChunkLoaded();
 		return blockIds.set((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF, id);
 	}
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
+		checkChunkLoaded();
 		short id = getBlockId(x, y, z);
 		byte data = getBlockData(x, y, z);
 		return MaterialData.getBlock(id, data);
@@ -87,6 +90,7 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z, boolean live) {
+		checkChunkLoaded();
 		short id = getBlockId(x, y, z, live);
 		byte data = getBlockData(x, y, z, live);
 		return MaterialData.getBlock(id, data);
@@ -94,31 +98,37 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public short getBlockId(int x, int y, int z) {
+		checkChunkLoaded();
 		return blockIds.get((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF);
 	}
 
 	@Override
 	public short getBlockId(int x, int y, int z, boolean live) {
+		checkChunkLoaded();
 		return live ? blockIds.getLive((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF) : blockIds.get((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF);
 	}
 
 	@Override
 	public byte getBlockData(int x, int y, int z) {
+		checkChunkLoaded();
 		return blockData.get((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF);
 	}
 
 	@Override
 	public byte getBlockData(int x, int y, int z, boolean live) {
+		checkChunkLoaded();
 		return live ? blockData.getLive((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF) : blockData.get((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF);
 	}
 
 	@Override
 	public byte setBlockData(int x, int y, int z, byte data) {
+		checkChunkLoaded();
 		return blockData.set((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF, data);
 	}
 
 	@Override
 	public void unload(boolean save) {
+		checkChunkLoaded();
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
@@ -136,6 +146,8 @@ public class SpoutChunk extends Chunk {
 				nextState = SaveState.UNLOAD_SAVE; break;
 			case NONE: 
 				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+			case UNLOADED:
+				nextState = SaveState.UNLOADED; break;
 			default: throw new IllegalStateException("Unknown save state: " + state);
 			}
 			success = saveState.compareAndSet(state, nextState);
@@ -144,6 +156,7 @@ public class SpoutChunk extends Chunk {
 	
 	@Override
 	public void save() {
+		checkChunkLoaded();
 		saveNoMark();
 		markForSaveUnload();
 	}
@@ -166,14 +179,26 @@ public class SpoutChunk extends Chunk {
 				nextState = SaveState.SAVE; break;
 			case NONE: 
 				nextState = SaveState.SAVE; break;
+			case UNLOADED:
+				nextState = SaveState.UNLOADED; break;
 			default: throw new IllegalStateException("Unknown save state: " + state);
 			}
 			saveState.compareAndSet(state, nextState);
 		}
 	}
 	
-	public SaveState getAndSetSaveState(SaveState newState) {
-		return saveState.getAndSet(newState);
+	public SaveState getAndResetSaveState() {
+		boolean success = false;
+		SaveState old = null;
+		while (!success) {
+			old = saveState.get();
+			if (old != SaveState.UNLOADED) {
+				success = saveState.compareAndSet(old, SaveState.NONE);
+			} else {
+				success = saveState.compareAndSet(old, SaveState.UNLOADED);
+			}
+		}
+		return old;
 	}
 	
 	public void copySnapshotRun() throws InterruptedException {
@@ -187,6 +212,7 @@ public class SpoutChunk extends Chunk {
 	
 	// TODO - use CuboidBuffer internally ?
 	public CuboidShortBuffer getBlockCuboidBufferLive() {
+		checkChunkLoaded();
 		int x = getX() << Chunk.CHUNK_SIZE_BITS;
 		int y = getY() << Chunk.CHUNK_SIZE_BITS;
 		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
@@ -201,11 +227,13 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean addObserver(Player player) {
+		checkChunkLoaded();
 		return observers.add(player);
 	}
 
 	@Override
 	public boolean removeObserver(Player player) {
+		checkChunkLoaded();
 		boolean success = observers.remove(player);
 		if (success) {
 			if (observers.size() == 0) {
@@ -217,11 +245,29 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 	
+	@Override
+	public boolean isUnloaded() {
+		return saveState.get() == SaveState.UNLOADED;
+	}
+	
+	public void setUnloaded() {
+		saveState.set(SaveState.UNLOADED);
+		blockIds = null;
+		blockData = null;
+	}
+	
+	private void checkChunkLoaded() {
+		if (saveState.get() == SaveState.UNLOADED) {
+			throw new ChunkAccessException("Chunk has been unloaded");
+		}
+	}
+	
 	public static enum SaveState {
 		UNLOAD_SAVE,
 		UNLOAD,
 		SAVE,
-		NONE;
+		NONE,
+		UNLOADED;
 		
 		public boolean isSave() {
 			return this == SAVE || this == UNLOAD_SAVE;
@@ -235,6 +281,17 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public Region getRegion() {
 		return parentRegion;
+	}
+	
+	public static class ChunkAccessException extends RuntimeException {
+
+		private static final long serialVersionUID = 1L;
+
+		public ChunkAccessException(String message) {
+			super(message);
+		}
+		
+		
 	}
 
 }

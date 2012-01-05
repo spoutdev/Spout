@@ -149,6 +149,8 @@ public class SpoutRegion extends Region {
 		if (success) {
 			int num = numberActiveChunks.decrementAndGet();
 			
+			((SpoutChunk)currentChunk).setUnloaded();
+			
 			if (num == 0) {
 				return true;
 			} else if (num < 0) {
@@ -279,7 +281,7 @@ public class SpoutRegion extends Region {
 	public void processChunkSaveUnload(int x, int y, int z) {
 		SpoutChunk c = (SpoutChunk)getChunkLive(x, y, z, false);
 		if (c != null) {
-			SpoutChunk.SaveState oldState = c.getAndSetSaveState(SpoutChunk.SaveState.NONE);
+			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
 			if (oldState.isSave()) {
 				c.syncSave();
 			}
