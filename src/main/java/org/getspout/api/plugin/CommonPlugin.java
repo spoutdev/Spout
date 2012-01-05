@@ -39,7 +39,7 @@ public abstract class CommonPlugin implements Plugin {
 	private CommonPluginLoader pluginLoader;
 	private Game game;
 	private File dataFolder;
-	private File paramFile;
+	private File file;
 	private boolean enabled;
 
 	@UnsafeMethod
@@ -82,7 +82,7 @@ public abstract class CommonPlugin implements Plugin {
 		this.game = game;
 		this.pluginLoader = commonsPluginLoader;
 		this.dataFolder = dataFolder;
-		this.paramFile = paramFile;
+		this.file = paramFile;
 	}
 
 	public final ClassLoader getClassLoader() {
@@ -91,6 +91,10 @@ public abstract class CommonPlugin implements Plugin {
 
 	public final File getDataFolder() {
 		return dataFolder;
+	}
+	
+	public final File getFile() {
+		return file;
 	}
 	
 	public final Game getGame() {
