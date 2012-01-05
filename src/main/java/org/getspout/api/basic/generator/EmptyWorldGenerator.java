@@ -6,12 +6,12 @@ import org.getspout.api.util.cuboid.CuboidShortBuffer;
 
 public class EmptyWorldGenerator implements WorldGenerator {
 
-	public void generate(CuboidShortBuffer blockData) {
-		blockData.flood((short)0);
+	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
+		if (chunkY <= 0)
+			blockData.flood((short)1);
 	}
 
 	public Populator[] getPopulators() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -14,7 +14,7 @@ public interface WorldGenerator {
 	 * 
 	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
 	 */
-	public void generate(CuboidShortBuffer blockData);
+	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ);
 	
 	/**
 	 * Gets an array of Populators for the world generator

@@ -15,8 +15,6 @@ public interface Populator {
 	 * 
 	 * This allows the populator to create features that cross chunk boundaries.
 	 * 
-	 * The random number generator will be seeded based on the world seed and the x, y and z coordinates of the chunk so that it gives consistent results.
-	 * 
 	 * @param c the chunk to populate
 	 */
 	public void populate(Chunk c);
