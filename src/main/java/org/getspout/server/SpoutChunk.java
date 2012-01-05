@@ -36,25 +36,35 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>();
 	
+	/**
+	 * The parent region that manages this chunk
+	 */
 	private final Region parentRegion;
 	
 	/**
 	 * A set of all players who are observing this chunk
 	 */
 	private final HashSet<Player> observers = new HashSet<Player>();
-
-	public SpoutChunk(World world, Region region, float x, float y, float z) {
-		super(world, x, y, z);
-		this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
-		this.blockData = new SnapshotableByteArray(snapshotManager, new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
-		this.parentRegion = region;
-	}
-
+	
 	public SpoutChunk(World world, Region region, float x, float y, float z, short[] blockIds, byte[] data) {
 		super(world, x, y, z);
-		this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
-		this.blockData = new SnapshotableByteArray(snapshotManager, data);
 		this.parentRegion = region;
+		if (blockIds != null) {
+			this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
+		}
+		else {
+			this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
+		}
+		if (data != null) {
+			this.blockData = new SnapshotableByteArray(snapshotManager, data);
+		}
+		else {
+			this.blockData = new SnapshotableByteArray(snapshotManager, new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
+		}
+	}
+	
+	public SpoutChunk(World world, Region region, float x, float y, float z) {
+		this(world, region, x, y, z, null, null);
 	}
 
 	@Override
