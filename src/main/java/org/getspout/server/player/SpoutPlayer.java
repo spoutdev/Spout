@@ -6,7 +6,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.event.Result;
 import org.getspout.api.event.player.PlayerChatEvent;
+import org.getspout.api.event.server.data.RetrieveDataEvent;
+import org.getspout.api.event.server.permissions.PermissionGetGroupsEvent;
+import org.getspout.api.event.server.permissions.PermissionGroupEvent;
+import org.getspout.api.event.server.permissions.PermissionNodeEvent;
+import org.getspout.api.geo.World;
 import org.getspout.api.player.Player;
 import org.getspout.api.protocol.Message;
 import org.getspout.api.protocol.Session;
@@ -158,5 +164,75 @@ public class SpoutPlayer implements Player {
 		online = onlineLive.get();
 		entity = entityLive.get();
 	}
+
+	@Override
+	public boolean hasPermission(World world, String node) {
+		PermissionNodeEvent event = new PermissionNodeEvent(world, this, node);
+		session.getGame().getEventManager().callEvent(event);
+		if (event.getResult() == Result.DEFAULT) {
+			return false;
+		}
+
+		return event.getResult().getResult();
+	}
+
+	@Override
+	public boolean isInGroup(String group) {
+		PermissionGroupEvent event = new PermissionGroupEvent(this.entity.getChunk().getWorld(), this, group);
+		session.getGame().getEventManager().callEvent(event);
+		return event.getResult();
+	}
+
+	@Override
+	public String[] getGroups() {
+		PermissionGetGroupsEvent event = new PermissionGetGroupsEvent(this.entity.getChunk().getWorld(), this);
+		session.getGame().getEventManager().callEvent(event);
+		return event.getGroups();
+	}
+
+	@Override
+	public boolean isGroup() {
+		return false;
+	}
+
+	@Override
+	public boolean hasPermission(String node) {
+		World world = null;
+		try {
+			world = this.entity.getChunk().getWorld();
+		} catch( NullPointerException e ) {
+		}
+		
+		return hasPermission(world, node);
+	}
+
+	public Object getData(String node) {
+		return getData(node, null);
+	}
 	
+	public Object getData(String node, Object defaultValue) {
+		World world = null;
+		try {
+			world = this.entity.getChunk().getWorld();
+		} catch( NullPointerException e ) {
+		}
+		return getData(world, node, defaultValue);
+	}
+	
+	public Object getData(World world, String node) {
+		RetrieveDataEvent event = new RetrieveDataEvent(world, this, node);
+		session.getGame().getEventManager().callEvent(event);
+		return event.getResult();
+	}
+	
+	public Object getData(World world, String node, Object defaultValue) {
+		RetrieveDataEvent event = new RetrieveDataEvent(world, this, node);
+		session.getGame().getEventManager().callEvent(event);
+		Object res = event.getResult();
+		if( res == null ) {
+			return defaultValue;
+		}
+		return res;
+	}
+
 }
