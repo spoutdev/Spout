@@ -8,20 +8,22 @@ public class CuboidShortBuffer extends CuboidBuffer {
 
 	private final short[] buffer;
 	private CuboidShortBuffer source;
+	
+	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] buffer) {
+		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+		this.buffer = buffer;
+	}
 
 	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		buffer = new short[sizeX * sizeY * sizeZ];
+		this(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ]);
 	}
 
 	public CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		buffer = new short[(int) (sizeX * sizeY * sizeZ)];
+		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)]);
 	}
 
 	public CuboidShortBuffer(Point base, Vector3 size) {
-		super(base, size);
-		buffer = new short[(int) (size.getX() * size.getY() * size.getZ())];
+		this(base.getWorld(), (int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())]);
 	}
 
 	@Override
