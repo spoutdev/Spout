@@ -107,7 +107,7 @@ public class CommonPluginLoader implements PluginLoader {
 				cp.setEnabled(false);
 				cp.onDisable();
 			} catch (Exception e) {
-				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(e.getMessage()).toString(), e);
+				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(e.getMessage()).toString(), e);
 			}
 			
 			//TODO call PluginDisableEvent

@@ -229,25 +229,19 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public void disablePlugin(Plugin plugin) {
-		if (!plugin.isEnabled()) {
+		if (plugin.isEnabled()) {
 			boolean locked = manager.lock(key);
 			
 			try {
 				plugin.getPluginLoader().disablePlugin(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while enabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 			
 			if (!locked) 
 				manager.unlock(key);
 		}
 	}
-
-	/*
-	public <TEvent extends Event> TEvent callEvent(TEvent event) {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
 	
 	private void safelyLog(Level level, String message, Throwable ex) {
 		boolean relock = false;

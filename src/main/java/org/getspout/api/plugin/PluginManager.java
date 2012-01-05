@@ -89,6 +89,4 @@ public interface PluginManager {
 	 * @param plugin
 	 */
 	public abstract void disablePlugin(Plugin plugin);
-	
-	//public abstract <TEvent extends Event> TEvent callEvent(TEvent event);
 }
