@@ -318,11 +318,11 @@ public final class SpoutSession implements Session {
 
 	@Override
 	public void setProtocol(Protocol protocol) {
-		if (!this.protocol.compareAndSet(Protocol.bootstrap, protocol)) {
-			throw new IllegalArgumentException("The protocol may only be set once per session");
-		} else {
+		//if (!this.protocol.compareAndSet(Protocol.bootstrap, protocol)) {
+		//	throw new IllegalArgumentException("The protocol may only be set once per session");
+		//} else {
 			server.getLogger().info("Setting protocol to " + protocol.getName());
-		}
+		//}
 	}
 
 	@Override

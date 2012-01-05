@@ -81,7 +81,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	private volatile int maxPlayers = 20;
 
-	private volatile String primaryAddress;
+	private volatile String primaryAddress = "localhost";
 
 	private volatile String[] allAddresses;
 
@@ -255,8 +255,17 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		SpoutServer server = new SpoutServer();
 		server.start();
+		
+		int port = 25565;
+		String[] split = server.getAddress().split(":");
+		if (split.length > 1) {
+			try {
+				port = Integer.parseInt(split[1]);
+			}
+			catch (NumberFormatException e) { }
+		}
 
-		server.bind(new InetSocketAddress("localhost", 25565));
+		server.bind(new InetSocketAddress(split[0], port));
 
 	}
 
@@ -333,29 +342,33 @@ public class SpoutServer extends AsyncManager implements Server {
 			logger.log(Level.SEVERE, "Failed to read banlist from the config file!");
 		}
 		try {
-			Boolean fly = (Boolean) config.getProperty("allowflight");
+			String fly = config.getString("allowflight");
 			if (fly == null) {
-				fly = false;
+				allowFlight = false;
 				config.setProperty("allowflight", false);
 				save = true;
 			}
-			allowFlight = fly;
+			else {
+				allowFlight = fly.equalsIgnoreCase("true");
+			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to read flight permissions from the config file!");
 		}
 		try {
-			Boolean whitelist = (Boolean) config.getProperty("usewhitelist");
+			String whitelist = config.getString("usewhitelist");
 			if (whitelist == null) {
-				whitelist = false;
+				this.whitelist = false;
 				config.setProperty("usewhitelist", false);
 				save = true;
 			}
-			this.whitelist = whitelist;
+			else {
+				this.whitelist = whitelist.equalsIgnoreCase("true");
+			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to read whitelist value from the config file!");
 		}
 		try {
-			String worldFolder = (String) config.getProperty("worldcontainer");
+			String worldFolder = config.getString("worldcontainer");
 			if (worldFolder == null) {
 				config.setProperty("worldcontainer", ".");
 				save = true;
@@ -379,6 +392,18 @@ public class SpoutServer extends AsyncManager implements Server {
 			this.operators = opsList;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to read operators from the config file!");
+		}
+		try {
+			String address = config.getString("address");
+			if (address == null) {
+				config.setProperty("address", "localhost:25565");
+				save = true;
+			}
+			else {
+				this.primaryAddress = address;
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to read server address from the config file!");
 		}
 		if (save) {
 			config.save();

@@ -33,7 +33,6 @@ import org.getspout.api.event.Order;
 import org.getspout.api.event.player.PlayerConnectEvent;
 import org.getspout.api.event.player.PlayerJoinEvent;
 import org.getspout.api.player.Player;
-import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.net.SpoutSession;
 import org.getspout.server.player.SpoutPlayer;
 
