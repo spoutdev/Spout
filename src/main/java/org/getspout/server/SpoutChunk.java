@@ -142,10 +142,10 @@ public class SpoutChunk extends Chunk {
 	
 	// TODO - use CuboidBuffer internally ?
 	public CuboidShortBuffer getBlockCuboidBufferLive() {
-		int x = getX() << Chunk.CHUNK_SIZE_BITS;;
-		int y = getY() << Chunk.CHUNK_SIZE_BITS;;
+		int x = getX() << Chunk.CHUNK_SIZE_BITS;
+		int y = getY() << Chunk.CHUNK_SIZE_BITS;
 		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
-		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
+		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, this.blockIds.getLive());
 		
 		if (y < 0) {
 			snapshot.flood((short)1);

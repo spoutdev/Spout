@@ -1,5 +1,6 @@
 package org.getspout.server.util.thread.snapshotable;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
@@ -31,6 +32,30 @@ public class SnapshotableShortArray implements Snapshotable {
 			this.snapshot[i] = initial[i];
 			set(i, initial[i]);
 		}
+	}
+	
+	/**
+	 * Gets a copy of the snapshot short array
+	 * 
+	 * @return copy of the snapshot short array
+	 */
+	public short[] get() {
+		return Arrays.copyOf(snapshot, snapshot.length);
+	}
+	
+	/**
+	 * Gets a copy of the live short array
+	 * 
+	 * @return copy of the live short array
+	 */
+	public short[] getLive() {
+		short[] live = new short[snapshot.length];
+		for (int i = 0; i < this.live.length(); i++) {
+			int value = this.live.get(i);
+			live[i] = (short)(value & 0xFFFF);
+			live[i+1] = (short)((value >> 16) & 0xFFFF);
+		}
+		return live;
 	}
 
 	/**

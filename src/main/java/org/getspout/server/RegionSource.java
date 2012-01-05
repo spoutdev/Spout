@@ -1,5 +1,7 @@
 package org.getspout.server;
 
+import java.util.Random;
+
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
@@ -24,9 +26,15 @@ public class RegionSource {
 	 * World associated with this region source
 	 */
 	private final World world;
+	
+	/**
+	 * The random used to generate the world
+	 */
+	protected final Random random;
 
-	public RegionSource(World world) {
+	public RegionSource(World world, Random random) {
 		this.world = world;
+		this.random = random;
 	}
 
 	/**

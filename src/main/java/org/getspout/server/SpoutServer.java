@@ -668,7 +668,7 @@ public class SpoutServer extends AsyncManager implements Server {
 			generator = getGenerator(name);
 		}
 		
-		SpoutWorld world = new SpoutWorld(name, this, 0);
+		SpoutWorld world = new SpoutWorld(name, this, 0, generator);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 

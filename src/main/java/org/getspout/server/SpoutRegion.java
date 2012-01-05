@@ -9,9 +9,11 @@ import org.getspout.api.Server;
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
+import org.getspout.api.util.cuboid.CuboidShortBuffer;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
@@ -101,8 +103,14 @@ public class SpoutRegion extends Region {
 				int cx = (this.getX() * Region.REGION_SIZE + x) * Chunk.CHUNK_SIZE;
 				int cy = (this.getY() * Region.REGION_SIZE + y) * Chunk.CHUNK_SIZE;
 				int cz = (this.getZ() * Region.REGION_SIZE + z) * Chunk.CHUNK_SIZE;
+				
+				short[] buffer = new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE];
+				CuboidShortBuffer cBuffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, buffer);
 
-				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz);
+				WorldGenerator generator = getWorld().getGenerator();
+				generator.generate(cBuffer, this.source.random);
+				
+				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz, buffer, null);
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {

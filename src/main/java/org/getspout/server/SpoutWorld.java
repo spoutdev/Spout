@@ -33,6 +33,7 @@ import org.getspout.api.Server;
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
+import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Block;
 import org.getspout.api.geo.cuboid.Chunk;
@@ -40,16 +41,12 @@ import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.geo.discrete.Transform;
 import org.getspout.api.material.BlockMaterial;
-import org.getspout.api.player.Player;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
-import org.getspout.server.net.SpoutSession;
-import org.getspout.server.player.SpoutPlayer;
 import org.getspout.server.util.thread.AsyncManager;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableBoolean;
-import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotableInt;
 import org.getspout.server.util.thread.snapshotable.SnapshotableLong;
 import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
@@ -150,14 +147,19 @@ public class SpoutWorld extends AsyncManager implements World {
 	private SnapshotableInt saveTimer = new SnapshotableInt(snapshotManager, 0);
 
 	/**
-	 * The check to autosave
+	 * The check to autosave.
 	 */
 	private SnapshotableBoolean autosave = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
-	 * The world's UUID
+	 * The world's UUID.
 	 */
 	private final UUID uid;
+	
+	/**
+	 * The generator responsible for generating chunks in this world.
+	 */
+	private final WorldGenerator generator;
 
 	/**
 	 * Holds all of the entities to be simulated
@@ -166,14 +168,16 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	// TODO need world that loads from disk
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Server server, long seed) {
+	public SpoutWorld(String name, Server server, long seed, WorldGenerator generator) {
 		super(1, new ThreadAsyncExecutor(), server);
 		this.uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
 		this.name = name;
+		this.generator = generator;
 		this.entityManager = new EntityManager();
-		this.regions = new RegionSource(this);
+		this.regions = new RegionSource(this, random);
+		
 		//load spawn regions
 		for (int dx = -1; dx < 1; dx++) {
 			for (int dy = -1; dy < 1; dy++) {
@@ -440,6 +444,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshot();
+	}
+
+	@Override
+	public WorldGenerator getGenerator() {
+		return generator;
 	}
 
 }
