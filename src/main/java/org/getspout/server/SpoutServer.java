@@ -797,6 +797,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	public void stop() {
 		group.close();
 		bootstrap.getFactory().releaseExternalResources();
+		
+		getPluginManager().clearPlugins();
 
 		// And finally kill the console
 		consoleManager.stop();
