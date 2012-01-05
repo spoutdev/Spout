@@ -69,6 +69,25 @@ public interface Session {
 	 */
 	public InetSocketAddress getAddress();
 	
+	/**
+	 * Gets the id for this session
+	 * 
+	 * @return session id
+	 */
+	public String getSessionId();
+	
+	/**
+	 * Gets the ping id for this session
+	 * 
+	 * @return ping id
+	 */
+	public int getPingMessageId();
+	
+	/**
+	 * Resets the ping counters
+	 */
+	public void pong();
+	
 	public enum State {
 
 		/**

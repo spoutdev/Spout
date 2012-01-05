@@ -1,14 +1,12 @@
 package org.getspout.api.util.config;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import org.yaml.snakeyaml.DumperOptions;
@@ -21,7 +19,6 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -80,29 +77,25 @@ public class Configuration extends ConfigurationNode {
 	 * Loads the configuration file. All errors are thrown away.
 	 */
 	public void load() {
-		FileInputStream stream = null;
-
+		BufferedReader in = null;
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(file));
-			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			in = new BufferedReader(new FileReader(file));
 			String str;
+			StringBuffer buffer = new StringBuffer(10000);
 			while ((str = in.readLine()) != null) {
-				out.write(str.replaceAll("\t", "    ") + '\n');
+				buffer.append(str.replaceAll("\t", "    "));
+				buffer.append('\n');
 			}
-			
-			in.close();
-			out.close();
-			
-			stream = new FileInputStream(file);
-			read(yaml.load(new UnicodeReader(stream)));
+
+			read(yaml.load(new StringReader(buffer.toString())));
 		} catch (IOException e) {
 			root = new HashMap<String, Object>();
 		} catch (ConfigurationException e) {
 			root = new HashMap<String, Object>();
 		} finally {
 			try {
-				if (stream != null) {
-					stream.close();
+				if (in != null) {
+					in.close();
 				}
 			} catch (IOException e) {}
 		}
