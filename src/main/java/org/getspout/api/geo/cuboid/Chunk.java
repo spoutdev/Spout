@@ -85,4 +85,11 @@ public abstract class Chunk extends Cube implements BlockAccess {
 		return new Point(p.getWorld(), ((int)p.getX()) & BASE_MASK, ((int)p.getY()) & BASE_MASK, ((int)p.getZ()) & BASE_MASK);
 	}
 	
+	/**
+	 * Tests if the chunk has been unloaded.
+	 * 
+	 * Chunks may be unloaded at the end of each tick
+	 */
+	public abstract boolean isUnloaded();
+	
 }
