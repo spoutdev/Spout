@@ -1,8 +1,12 @@
 package org.getspout.api.util.config;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -79,6 +83,16 @@ public class Configuration extends ConfigurationNode {
 		FileInputStream stream = null;
 
 		try {
+			BufferedReader in = new BufferedReader(new FileReader(file));
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			String str;
+			while ((str = in.readLine()) != null) {
+				out.write(str.replaceAll("\t", "    ") + '\n');
+			}
+			
+			in.close();
+			out.close();
+			
 			stream = new FileInputStream(file);
 			read(yaml.load(new UnicodeReader(stream)));
 		} catch (IOException e) {
