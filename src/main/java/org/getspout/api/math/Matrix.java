@@ -285,8 +285,6 @@ public class Matrix {
 	}
 	
 	public static Vector3 transform(Vector3 v, Matrix m){
-		System.out.println(v);
-		System.out.println(m);
 		float[] vector = { v.getX(), v.getY(), v.getZ(), 1};
 		float[] vres = new float[4];
 		for (int i = 0; i < m.dimension; i++) {
@@ -296,7 +294,6 @@ public class Matrix {
 				vres[i] += n;
 			
 			}
-			System.out.println(vres[i]);
 		}
 		
 		return new Vector3(vres[0], vres[1], vres[2]);
