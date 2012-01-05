@@ -25,7 +25,8 @@ import org.getspout.server.SpoutServer;
 
 public class SpoutEntity extends EntityMetadataStore implements Entity {
 	public final static int NOTSPAWNEDID = -1;
-	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), null, 0, Short.MAX_VALUE);
+	// TODO - needs to have a world based version too?
+	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	
 	private TransformAndManager transformAndManager;
 	private final AtomicReference<TransformAndManager> transformAndManagerLive = new AtomicReference<TransformAndManager>();
