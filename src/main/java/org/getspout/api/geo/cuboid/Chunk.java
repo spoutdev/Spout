@@ -62,5 +62,11 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	@DelayedWrite
 	public abstract boolean removeObserver(Player player);
 	
+	/**
+	 * Gets the region that this chunk is located in
+	 * 
+	 * @return
+	 */
+	public abstract Region getRegion();
 	
 }
