@@ -990,8 +990,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public void removeRecipe(Plugin plugin, String recipe) {
+	public Recipe removeRecipe(Plugin plugin, String recipe) {
 		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
