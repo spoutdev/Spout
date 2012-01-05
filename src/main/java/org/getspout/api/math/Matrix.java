@@ -275,7 +275,7 @@ public class Matrix {
 		res.set(1, 3, 0);
 		
 		res.set(2, 0, (2 * r.getX() * r.getZ()) - (2 * r.getW() * r.getY()));
-		res.set(2, 1, (2 * r.getY() * r.getZ()) + (2 * r.getW() * r.getZ()));
+		res.set(2, 1, (2.f * r.getY() * r.getZ()) + (2.f * r.getX() * r.getW()));
 		res.set(2, 2, 1 - (2 * r.getX() * r.getX()) - (2 * r.getY() * r.getY()));
 		res.set(2, 3, 0);
 		

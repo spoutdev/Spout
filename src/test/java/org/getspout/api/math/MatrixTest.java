@@ -222,7 +222,7 @@ public class MatrixTest {
 		compareMatrixToArray(m, id);
 		
 		rot = new Quaternion(90, new Vector3(0,1,0));
-		
+		m = Matrix.rotate(rot);
 		id = new double[][] { { 0, 0, 1, 0},
 				{ 0, 1, 0, 0},
 				{ -1, 0, 0, 0},

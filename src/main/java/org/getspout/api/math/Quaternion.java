@@ -142,7 +142,7 @@ public class Quaternion {
 	 * @return
 	 */
 	public static float length(Quaternion a){
-		return (float)MathHelper.sqrt(lengthSquared(a));
+		return (float)Math.sqrt(lengthSquared(a));
 	}
 	/**
 	 * Constructs and returns a new Quaternion that is the given Quaternion but length() == 1
