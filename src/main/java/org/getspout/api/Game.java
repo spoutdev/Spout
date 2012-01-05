@@ -397,5 +397,5 @@ public interface Game extends Named, EventSource {
 	 * @param recipe name
 	 * @return recipe that was removed
 	 */
-	public void removeRecipe(Plugin plugin, String recipe);
+	public Recipe removeRecipe(Plugin plugin, String recipe);
 }
