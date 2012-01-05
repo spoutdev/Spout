@@ -2,6 +2,7 @@ package org.getspout.api.geo;
 
 import java.util.UUID;
 
+import org.getspout.api.Game;
 import org.getspout.api.Server;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
@@ -205,5 +206,11 @@ public interface World extends EventSource, BlockAccess {
 	 * 
 	 * @return the server
 	 */
-	public Server getServer();
+	public Game getGame();
+
+	/**
+	 * Gets the height of this world in blocks.
+	 * @return The height of this world in blocks
+	 */
+	public int getHeight();
 }
