@@ -16,9 +16,8 @@ public interface WorldGenerator {
 	 * 
 	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
 	 * @param rng a pre-seeded random number generator
-	 * @return the updated CuboidBuffer
 	 */
-	public CuboidShortBuffer generate(CuboidShortBuffer blockData, Random rng);
+	public void generate(CuboidShortBuffer blockData, Random rng);
 	
 	/**
 	 * Gets an array of Populators for the world generator
