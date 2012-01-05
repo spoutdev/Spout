@@ -108,7 +108,7 @@ public class SpoutRegion extends Region {
 				CuboidShortBuffer cBuffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, buffer);
 
 				WorldGenerator generator = getWorld().getGenerator();
-				generator.generate(cBuffer, this.source.random);
+				generator.generate(cBuffer);
 				
 				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz, buffer, null);
 				success = ref.compareAndSet(null, newChunk);

@@ -26,7 +26,6 @@
 
 package org.getspout.server;
 
-import java.util.Random;
 import java.util.UUID;
 
 import org.getspout.api.Server;
@@ -69,11 +68,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The region source
 	 */
 	private final RegionSource regions;
-
-	/**
-	 * This world's Random instance.
-	 */
-	private final Random random = new Random();
 
 	/**
 	 * The world seed.
@@ -176,7 +170,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.name = name;
 		this.generator = generator;
 		this.entityManager = new EntityManager();
-		this.regions = new RegionSource(this, random);
+		this.regions = new RegionSource(this);
 		
 		//load spawn regions
 		for (int dx = -1; dx < 1; dx++) {
