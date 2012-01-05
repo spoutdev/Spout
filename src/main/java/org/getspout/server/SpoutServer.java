@@ -952,32 +952,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		return getDefaultGenerator();
 	}
 	
-	private ConcurrentLinkedQueue<SpoutChunk> unloadPendingChunks = new ConcurrentLinkedQueue<SpoutChunk>();
-
-	/**
-	 * This method processes all unloads.  
-	 * 
-	 * It does not necessarily have to do the actual saving of the files.
-	 */
-	public void processChunkSaveStates() {
-		SpoutChunk c;
-		
-		while ((c = unloadPendingChunks.poll()) != null) {
-			SpoutChunk.SaveState state = c.getAndSetSaveState(SpoutChunk.SaveState.NONE);
-			if (state.isSave()) {
-				c.syncSave();
-			}
-			if (state.isUnload()) {
-				Region r = ((SpoutChunk)c).getRegion();
-				((SpoutRegion)r).forceRemoveChunk(c);
-			}
-		}
-	}
-	
-	void markChunkForSave(SpoutChunk c) {
-		unloadPendingChunks.add(c);
-	}
-
 	@Override
 	public void addRecipe(Recipe recipe) {
 		// TODO Auto-generated method stub

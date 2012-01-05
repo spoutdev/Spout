@@ -32,8 +32,7 @@ public class SpoutRegion extends Region {
 	private final SpoutRegionManager manager;
 	private final Server server;
 
-	private ConcurrentLinkedQueue<TripleInt> save = new ConcurrentLinkedQueue<TripleInt>();
-	private ConcurrentLinkedQueue<TripleInt> unload = new ConcurrentLinkedQueue<TripleInt>();
+	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
 
 	@SuppressWarnings("unchecked")
 	public SnapshotableReference<Chunk>[][][] chunks = new SnapshotableReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
@@ -133,8 +132,7 @@ public class SpoutRegion extends Region {
 	 * @param c the chunk to remove
 	 * @return true if the region is now empty
 	 */
-	public boolean forceRemoveChunk(Chunk c) {
-		System.out.println("Attempting to remove: " + c);
+	public boolean removeChunk(Chunk c) {
 		if (c.getRegion() != this) {
 			return false;
 		}
@@ -149,8 +147,8 @@ public class SpoutRegion extends Region {
 		}
 		boolean success = current.compareAndSet(currentChunk, null);
 		if (success) {
-			System.out.println("Chunk removed");
 			int num = numberActiveChunks.decrementAndGet();
+			
 			if (num == 0) {
 				return true;
 			} else if (num < 0) {
@@ -175,7 +173,10 @@ public class SpoutRegion extends Region {
 	 */
 	@DelayedWrite
 	public void saveChunk(int x, int y, int z) {
-		this.save.add(new TripleInt(x, y, z));
+		Chunk c = getChunkLive(x, y, z, false);
+		if (c != null) {
+			c.save();
+		}
 	}
 
 	/**
@@ -183,24 +184,58 @@ public class SpoutRegion extends Region {
 	 */
 	@DelayedWrite
 	public void save() {
-		this.save.add(TripleInt.NULL);
+		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
+			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
+				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
+					Chunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						((SpoutChunk)chunk).saveNoMark();
+					}
+				}
+			}
+		}
+		markForSaveUnload();
 	}
 
 	@Override
 	public void unload(boolean save) {
-		if (save) {
-			save();
+		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
+			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
+				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
+					Chunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						((SpoutChunk)chunk).unloadNoMark(save);
+					}
+				}
+			}
 		}
-		unload.add(TripleInt.NULL);
-		//Ensure this region is removed from the source. This may be calling the parent method twice, but is harmless.
-		source.unloadRegion(x, y, z, save);
+		markForSaveUnload();
 	}
 
 	public void unloadChunk(int x, int y, int z, boolean save) {
-		if (save) {
-			saveChunk(x, y, z);
+		Chunk c = getChunkLive(x, y, z, false);
+		if (c != null) {
+			c.unload(save);
 		}
-		unload.add(new TripleInt(x, y, z));
+	}
+	
+	public void markForSaveUnload(Chunk c) {
+		if (c.getRegion() != this) {
+			return;
+		}
+		int cx = c.getX() & (Region.REGION_SIZE - 1);
+		int cy = c.getY() & (Region.REGION_SIZE - 1);
+		int cz = c.getZ() & (Region.REGION_SIZE - 1);
+		
+		markForSaveUnload(cx, cy, cz);
+	}
+	
+	public void markForSaveUnload(int x, int y, int z) {
+		saveMarked.add(new TripleInt(x, y, z));
+	}
+	
+	public void markForSaveUnload() {
+		saveMarked.add(TripleInt.NULL);
 	}
 
 	public void copySnapshotRun() throws InterruptedException {
@@ -219,61 +254,39 @@ public class SpoutRegion extends Region {
 		snapshotManager.copyAllSnapshots();
 
 		TripleInt chunkCoords;
-		while ((chunkCoords = save.poll()) != null) {
+		while ((chunkCoords = saveMarked.poll()) != null) {
 			if (chunkCoords == TripleInt.NULL) {
-				saveAllSync();
+				for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
+					for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
+						for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
+							processChunkSaveUnload(dx, dy, dz);
+						}
+					}
+				}
+				// No point in checking any others, since all processed
+				saveMarked.clear();
+				break;
 			} else {
-				saveChunkSync(chunkCoords.x, chunkCoords.y, chunkCoords.z);
+				processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
 			}
 		}
 
-		while ((chunkCoords = unload.poll()) != null) {
-			if (chunkCoords == TripleInt.NULL) {
-				unloadAllSync();
-			} else {
-				unloadChunkSync(chunkCoords.x, chunkCoords.y, chunkCoords.z);
-			}
-		}
-
-		// Updates an nulled chunks
+		// Updates on nulled chunks
 		snapshotManager.copyAllSnapshots();
 
 	}
-
-	private void saveAllSync() {
-		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
-			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
-				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					saveChunkSync(x, y, z);
+	
+	public void processChunkSaveUnload(int x, int y, int z) {
+		SpoutChunk c = (SpoutChunk)getChunkLive(x, y, z, false);
+		if (c != null) {
+			SpoutChunk.SaveState oldState = c.getAndSetSaveState(SpoutChunk.SaveState.NONE);
+			if (oldState.isSave()) {
+				c.syncSave();
+			}
+			if (oldState.isUnload()) {
+				if (removeChunk(c)) {
+					System.out.println("Region is now empty ... remove?");
 				}
-			}
-		}
-	}
-
-	private void unloadAllSync() {
-		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
-			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
-				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					unloadChunkSync(x, y, z);
-				}
-			}
-		}
-	}
-
-	private void saveChunkSync(int x, int y, int z) {
-		if (x < Region.REGION_SIZE && x > 0 && y < Region.REGION_SIZE && y > 0 && z < Region.REGION_SIZE && z > 0) {
-			Chunk chunk = chunks[x][y][z].get();
-			if (chunk != null) {
-				((SpoutChunk) chunk).syncSave();
-			}
-		}
-	}
-
-	private void unloadChunkSync(int x, int y, int z) {
-		if (x < Region.REGION_SIZE && x > 0 && y < Region.REGION_SIZE && y > 0 && z < Region.REGION_SIZE && z > 0) {
-			Chunk chunk = chunks[x][y][z].get();
-			if (chunk != null) {
-				chunks[x][y][z].set(null);
 			}
 		}
 	}

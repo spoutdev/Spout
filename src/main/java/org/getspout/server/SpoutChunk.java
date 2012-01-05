@@ -34,7 +34,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
-	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>();
+	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
 	
 	/**
 	 * The parent region that manages this chunk
@@ -119,12 +119,57 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void unload(boolean save) {
-		if (save) {
-			saveState.set(SaveState.UNLOAD_SAVE);
-		} else {
-			saveState.set(SaveState.UNLOAD_DONT_SAVE);
+		unloadNoMark(save);
+		markForSaveUnload();
+	}
+	public void unloadNoMark(boolean save) {
+		boolean success = false;
+		while (!success) {
+			SaveState state = saveState.get();
+			SaveState nextState;
+			switch (state) {
+			case UNLOAD_SAVE: 
+				nextState = SaveState.UNLOAD_SAVE; break;
+			case UNLOAD: 
+				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+			case SAVE: 
+				nextState = SaveState.UNLOAD_SAVE; break;
+			case NONE: 
+				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+			default: throw new IllegalStateException("Unknown save state: " + state);
+			}
+			success = saveState.compareAndSet(state, nextState);
 		}
-		((SpoutServer)getWorld().getServer()).markChunkForSave(this);
+	}
+	
+	@Override
+	public void save() {
+		saveNoMark();
+		markForSaveUnload();
+	}
+	
+	private void markForSaveUnload() {
+		((SpoutRegion)parentRegion).markForSaveUnload(this);
+	}
+	
+	public void saveNoMark() {
+		boolean success = false;
+		while (!success) {
+			SaveState state = saveState.get();
+			SaveState nextState;
+			switch (state) {
+			case UNLOAD_SAVE: 
+				nextState = SaveState.UNLOAD_SAVE; break;
+			case UNLOAD: 
+				nextState = SaveState.UNLOAD_SAVE; break;
+			case SAVE: 
+				nextState = SaveState.SAVE; break;
+			case NONE: 
+				nextState = SaveState.SAVE; break;
+			default: throw new IllegalStateException("Unknown save state: " + state);
+			}
+			saveState.compareAndSet(state, nextState);
+		}
 	}
 	
 	public SaveState getAndSetSaveState(SaveState newState) {
@@ -174,7 +219,7 @@ public class SpoutChunk extends Chunk {
 	
 	public static enum SaveState {
 		UNLOAD_SAVE,
-		UNLOAD_DONT_SAVE,
+		UNLOAD,
 		SAVE,
 		NONE;
 		
@@ -183,7 +228,7 @@ public class SpoutChunk extends Chunk {
 		}
 		
 		public boolean isUnload() {
-			return this == UNLOAD_SAVE || this == UNLOAD_DONT_SAVE;
+			return this == UNLOAD_SAVE || this == UNLOAD;
 		}
 	}
 	

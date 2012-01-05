@@ -145,31 +145,4 @@ public class RegionSource {
 		return loadedRegions.getLive(x, y, z) != null;
 	}
 
-	/**
-	 * Unloads and returns the region, if one exists at the coordinates.
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the z coordinate
-	 * @param save whether to save the region data
-	 * @return region that was unloaded, or null if none existed
-	 */
-	public Region unloadRegion(int x, int y, int z, boolean save) {
-		Region region = loadedRegions.getLive(x, y, z);
-
-		if (region == null) {
-			return null;
-		} else {
-			((SpoutRegion) region).getManager().getExecutor().haltExecutor();
-
-			if (save) {
-				((SpoutRegion) region).save();
-			}
-
-			loadedRegions.remove(x, y, z, region);
-
-			return region;
-		}
-	}
-
 }
