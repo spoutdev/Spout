@@ -213,7 +213,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * Adds new tasks and updates existing tasks, removing them if necessary.
 	 */
 	private boolean tick(long delta) throws InterruptedException {
-
+		
 		asyncExecutors.copySnapshot();
 
 		// Bring in new tasks this tick.
@@ -285,10 +285,10 @@ public final class SpoutScheduler implements Scheduler {
 			stage++;
 		}
 
-		lockSnapshotLock();
-
 		copySnapshot(executors, false);
-
+		
+		((SpoutServer)server).processUnloads();
+		
 		return true;
 	}
 

@@ -946,4 +946,13 @@ public class SpoutServer extends AsyncManager implements Server {
 		catch (IOException ignore) { }
 		return getDefaultGenerator();
 	}
+	
+	/**
+	 * This method processes all unloads.  
+	 * 
+	 * It does not necessarily have to do the actual saving of the files.
+	 */
+	public void processUnloads() {
+		// TODO
+	}
 }

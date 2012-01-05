@@ -4,6 +4,7 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.MaterialData;
+import org.getspout.api.player.Player;
 import org.getspout.api.util.cuboid.CuboidShortBuffer;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableByteArray;
@@ -115,6 +116,16 @@ public class SpoutChunk extends Chunk {
 		}
 		
 		return snapshot;
+	}
+
+	@Override
+	public boolean addObserver(Player player) {
+		return true;
+	}
+
+	@Override
+	public boolean removeObserver(Player player) {
+		return false;
 	}
 
 }
