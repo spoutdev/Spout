@@ -1,8 +1,10 @@
 package org.getspout.server;
 
+import org.getspout.api.Server;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
+import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
@@ -11,22 +13,17 @@ import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentTriple
 public class RegionSource {
 
 	/**
-	 * The snapshot manager
-	 */
-	private final SnapshotManager snapshotManager = new SnapshotManager();
-
-	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
-	private final SnapshotableConcurrentTripleIntHashMap<Region> loadedRegions = new SnapshotableConcurrentTripleIntHashMap<Region>(snapshotManager);
-
+	private final SnapshotableConcurrentTripleIntHashMap<Region> loadedRegions;
 	/**
 	 * World associated with this region source
 	 */
 	private final World world;
 	
-	public RegionSource(World world) {
+	public RegionSource(World world, SnapshotManager snapshotManager) {
 		this.world = world;
+		loadedRegions = new SnapshotableConcurrentTripleIntHashMap<Region>(snapshotManager);
 	}
 
 	/**
@@ -69,6 +66,27 @@ public class RegionSource {
 	@SnapshotRead
 	public Region getRegion(int x, int y, int z) {
 		return loadedRegions.get(x, y, z);
+	}
+	
+	@DelayedWrite
+	public void removeRegion(final SpoutRegion r) {
+		if (!r.getWorld().equals(world)) {
+			return;
+		}
+		
+		// removeRegion is called during snapshot copy on the Region thread (when the last chunk is removed)
+		// Needs re-syncing to a safe moment
+		world.getServer().getScheduler().scheduleAsyncDelayedTask(null, new Runnable() {
+			public void run() {
+				int x = r.getX();
+				int y = r.getY();
+				int z = r.getZ();
+				boolean success = loadedRegions.remove(x, y, z, r);
+				if (success) {
+					r.getManager().getExecutor().haltExecutor();
+				}
+			}
+		});
 	}
 
 	/**

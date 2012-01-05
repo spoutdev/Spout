@@ -255,13 +255,16 @@ public class SpoutRegion extends Region {
 		}
 		snapshotManager.copyAllSnapshots();
 
+		boolean empty = false;
 		TripleInt chunkCoords;
 		while ((chunkCoords = saveMarked.poll()) != null) {
 			if (chunkCoords == TripleInt.NULL) {
 				for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 					for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 						for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-							processChunkSaveUnload(dx, dy, dz);
+							if (processChunkSaveUnload(dx, dy, dz)) {
+								empty = true;
+							}
 						}
 					}
 				}
@@ -275,10 +278,15 @@ public class SpoutRegion extends Region {
 
 		// Updates on nulled chunks
 		snapshotManager.copyAllSnapshots();
+		
+		if (empty) {
+			source.removeRegion(this);
+		}
 
 	}
 	
-	public void processChunkSaveUnload(int x, int y, int z) {
+	public boolean processChunkSaveUnload(int x, int y, int z) {
+		boolean empty = false;
 		SpoutChunk c = (SpoutChunk)getChunkLive(x, y, z, false);
 		if (c != null) {
 			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
@@ -288,9 +296,11 @@ public class SpoutRegion extends Region {
 			if (oldState.isUnload()) {
 				if (removeChunk(c)) {
 					System.out.println("Region is now empty ... remove?");
+					empty = true;
 				}
 			}
 		}
+		return empty;
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
