@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -38,6 +39,7 @@ import org.getspout.api.event.SimpleEventManager;
 import org.getspout.api.event.server.PreCommandEvent;
 import org.getspout.api.generator.WorldGenerator;
 import org.getspout.api.geo.World;
+import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
 import org.getspout.api.player.Player;
@@ -947,12 +949,31 @@ public class SpoutServer extends AsyncManager implements Server {
 		return getDefaultGenerator();
 	}
 	
+	private ConcurrentLinkedQueue<SpoutChunk> unloadPendingChunks = new ConcurrentLinkedQueue<SpoutChunk>();
+
 	/**
 	 * This method processes all unloads.  
 	 * 
 	 * It does not necessarily have to do the actual saving of the files.
 	 */
-	public void processUnloads() {
-		// TODO
+	public void processChunkSaveStates() {
+		SpoutChunk c;
+		
+		while ((c = unloadPendingChunks.poll()) != null) {
+			SpoutChunk.SaveState state = c.getAndSetSaveState(SpoutChunk.SaveState.NONE);
+			if (state.isSave()) {
+				c.syncSave();
+			}
+			if (state.isUnload()) {
+				Region r = ((SpoutChunk)c).getRegion();
+				((SpoutRegion)r).forceRemoveChunk(c);
+			}
+		}
 	}
+	
+	void markChunkForSave(SpoutChunk c) {
+		unloadPendingChunks.add(c);
+	}
+	
+	
 }

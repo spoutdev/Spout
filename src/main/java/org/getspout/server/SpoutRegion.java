@@ -3,7 +3,7 @@ package org.getspout.server;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.getspout.api.Server;
 import org.getspout.api.Spout;
@@ -23,6 +23,8 @@ import org.getspout.server.util.thread.snapshotable.SnapshotManager;
 import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 
 public class SpoutRegion extends Region {
+	
+	private AtomicInteger numberActiveChunks = new AtomicInteger();
 
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
@@ -100,10 +102,11 @@ public class SpoutRegion extends Region {
 				int cy = (this.getY() * Region.REGION_SIZE + y) * Chunk.CHUNK_SIZE;
 				int cz = (this.getZ() * Region.REGION_SIZE + z) * Chunk.CHUNK_SIZE;
 
-				SpoutChunk newChunk = new SpoutChunk(getWorld(), cx, cy , cz);
+				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz);
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {
+					numberActiveChunks.incrementAndGet();
 					return newChunk;
 				} else {
 					Chunk oldChunk = ref.getLive();
@@ -114,6 +117,39 @@ public class SpoutRegion extends Region {
 			}
 		}
 		throw new IndexOutOfBoundsException("Invalid coordinates");
+	}
+	
+	/**
+	 * Removes a chunk from the region and indicates if the region is empty
+	 * 
+	 * @param c the chunk to remove
+	 * @return true if the region is now empty
+	 */
+	public boolean forceRemoveChunk(Chunk c) {
+		System.out.println("Attempting to remove: " + c);
+		if (c.getRegion() != this) {
+			return false;
+		}
+		int cx = c.getX() & (Region.REGION_SIZE - 1);
+		int cy = c.getY() & (Region.REGION_SIZE - 1);
+		int cz = c.getZ() & (Region.REGION_SIZE - 1);
+		
+		SnapshotableReference<Chunk> current = chunks[cx][cy][cz];
+		Chunk currentChunk = current.getLive();
+		if (currentChunk != c) {
+			return false;
+		}
+		boolean success = current.compareAndSet(currentChunk, null);
+		if (success) {
+			System.out.println("Chunk removed");
+			int num = numberActiveChunks.decrementAndGet();
+			if (num == 0) {
+				return true;
+			} else if (num < 0) {
+				throw new IllegalStateException("Region has less than 0 active chunks");
+			}
+		}
+		return false;
 	}
 
 	@Override

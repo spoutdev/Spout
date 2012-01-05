@@ -1,7 +1,11 @@
 package org.getspout.server;
 
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
+import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.material.MaterialData;
 import org.getspout.api.player.Player;
@@ -26,17 +30,31 @@ public class SpoutChunk extends Chunk {
 	 * The snapshot manager for the region that this chunk is located in.
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
+	
+	/**
+	 * Indicates that the chunk should be saved if unloaded
+	 */
+	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>();
+	
+	private final Region parentRegion;
+	
+	/**
+	 * A set of all players who are observing this chunk
+	 */
+	private final HashSet<Player> observers = new HashSet<Player>();
 
-	public SpoutChunk(World world, float x, float y, float z) {
+	public SpoutChunk(World world, Region region, float x, float y, float z) {
 		super(world, x, y, z);
 		this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
 		this.blockData = new SnapshotableByteArray(snapshotManager, new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
+		this.parentRegion = region;
 	}
 
-	public SpoutChunk(World world, float x, float y, float z, short[] blockIds, byte[] data) {
+	public SpoutChunk(World world, Region region, float x, float y, float z, short[] blockIds, byte[] data) {
 		super(world, x, y, z);
 		this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
 		this.blockData = new SnapshotableByteArray(snapshotManager, data);
+		this.parentRegion = region;
 	}
 
 	@Override
@@ -91,10 +109,18 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void unload(boolean save) {
-		// TODO Auto-generated method stub
-
+		if (save) {
+			saveState.set(SaveState.UNLOAD_SAVE);
+		} else {
+			saveState.set(SaveState.UNLOAD_DONT_SAVE);
+		}
+		((SpoutServer)getWorld().getServer()).markChunkForSave(this);
 	}
-
+	
+	public SaveState getAndSetSaveState(SaveState newState) {
+		return saveState.getAndSet(newState);
+	}
+	
 	public void copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
 	}
@@ -120,12 +146,40 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean addObserver(Player player) {
-		return true;
+		return observers.add(player);
 	}
 
 	@Override
 	public boolean removeObserver(Player player) {
-		return false;
+		boolean success = observers.remove(player);
+		if (success) {
+			if (observers.size() == 0) {
+				this.unload(true);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static enum SaveState {
+		UNLOAD_SAVE,
+		UNLOAD_DONT_SAVE,
+		SAVE,
+		NONE;
+		
+		public boolean isSave() {
+			return this == SAVE || this == UNLOAD_SAVE;
+		}
+		
+		public boolean isUnload() {
+			return this == UNLOAD_SAVE || this == UNLOAD_DONT_SAVE;
+		}
+	}
+	
+	@Override
+	public Region getRegion() {
+		return parentRegion;
 	}
 
 }

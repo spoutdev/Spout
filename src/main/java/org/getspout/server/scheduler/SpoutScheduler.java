@@ -287,7 +287,7 @@ public final class SpoutScheduler implements Scheduler {
 
 		copySnapshot(executors, false);
 		
-		((SpoutServer)server).processUnloads();
+		((SpoutServer)server).processChunkSaveStates();
 		
 		return true;
 	}
