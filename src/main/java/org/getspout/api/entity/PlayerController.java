@@ -48,6 +48,18 @@ public abstract class PlayerController extends Controller {
 	
 	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	
+	public void onDeath() {
+		for (Point p : initializedChunks) {
+			freeChunk(p);
+			activeChunks.remove(p);
+			Chunk c = p.getWorld().getChunkLive(p, false); 
+			if (c != null) {
+				removeObserver(c);
+			}
+		}
+		initializedChunks.clear();
+	}
+	
 	public void snapshotStart() {
 		
 		if (parent == null) {

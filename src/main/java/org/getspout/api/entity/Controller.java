@@ -7,6 +7,14 @@ public abstract class Controller {
 	}
 	
 	public abstract void onAttached();
+	
+	/**
+	 * Called when the entity dies.
+	 * 
+	 * Called just before the snapshotStart method.
+	 */
+	public void onDeath() {
+	}
 	/**
 	 * 
 	 * @param dt the number of seconds since last update
