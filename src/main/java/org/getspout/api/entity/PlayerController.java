@@ -45,6 +45,8 @@ public abstract class PlayerController extends Controller {
 	private boolean first = true;
 	private volatile boolean teleported = false;
 	
+	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
+	
 	public void snapshotStart() {
 		
 		if (parent == null) {
@@ -74,6 +76,7 @@ public abstract class PlayerController extends Controller {
 			if (initializedChunks.remove(c)) {
 				freeChunk(c);
 				activeChunks.remove(c);
+				removeObserver(c);
 			}
 		}
 		
@@ -82,6 +85,7 @@ public abstract class PlayerController extends Controller {
 		for (Chunk c : chunkInitQueue) {
 			if (initializedChunks.add(c)) {
 				initChunk(c);
+				addObserver(c);
 			}
 		}
 		
@@ -116,6 +120,16 @@ public abstract class PlayerController extends Controller {
 		}
 		
 		super.snapshotStart();
+	}
+	
+	private void addObserver(Chunk c) {
+		observed.add(c);
+		c.addObserver(owner);
+	}
+	
+	private void removeObserver(Chunk c) {
+		observed.remove(c);
+		c.removeObserver(owner);
 	}
 	
 	private void checkChunkUpdates(Point currentPosition) {

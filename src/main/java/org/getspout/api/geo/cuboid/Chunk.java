@@ -3,7 +3,9 @@ package org.getspout.api.geo.cuboid;
 import org.getspout.api.geo.BlockAccess;
 import org.getspout.api.geo.World;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.player.Player;
 import org.getspout.api.util.cuboid.CuboidShortBuffer;
+import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 
 /**
@@ -41,5 +43,24 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 */
 	@LiveRead
 	public abstract CuboidShortBuffer getBlockCuboidBufferLive();
+	
+	/**
+	 * Register a player as observing the chunk.  
+	 * 
+	 * @param player the player
+	 * @return false if the player was already observing the chunk
+	 */
+	@DelayedWrite
+	public abstract boolean addObserver(Player player);
+	
+	/**
+	 * De-register a player as observing the chunk.  
+	 * 
+	 * @param player the player
+	 * @return true if the player was observing the chunk
+	 */
+	@DelayedWrite
+	public abstract boolean removeObserver(Player player);
+	
 	
 }
