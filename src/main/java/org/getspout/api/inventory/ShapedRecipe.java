@@ -39,6 +39,7 @@ public class ShapedRecipe implements Recipe {
 	}
 	
 	public ShapedRecipe addRow(ArrayList<Character> row) {
+		rows.add(row);
 		return this;
 	}
 
