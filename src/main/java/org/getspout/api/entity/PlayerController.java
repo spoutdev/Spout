@@ -34,13 +34,14 @@ public abstract class PlayerController extends Controller {
 	
 	private Point lastChunkCheck;
 	
-	private Set<Chunk> chunkInitQueue = new LinkedHashSet<Chunk>();
-	private Set<Chunk> priorityChunkSendQueue = new LinkedHashSet<Chunk>();
-	private Set<Chunk> chunkSendQueue = new LinkedHashSet<Chunk>();
-	private Set<Chunk> chunkFreeQueue = new LinkedHashSet<Chunk>();
+	// Base points used so as not to load chunks unnecessarily
+	private Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
+	private Set<Point> priorityChunkSendQueue = new LinkedHashSet<Point>();
+	private Set<Point> chunkSendQueue = new LinkedHashSet<Point>();
+	private Set<Point> chunkFreeQueue = new LinkedHashSet<Point>();
 
-	private Set<Chunk> initializedChunks = new LinkedHashSet<Chunk>();
-	private Set<Chunk> activeChunks = new LinkedHashSet<Chunk>();
+	private Set<Point> initializedChunks = new LinkedHashSet<Point>();
+	private Set<Point> activeChunks = new LinkedHashSet<Point>();
 	
 	private boolean first = true;
 	private volatile boolean teleported = false;
@@ -72,19 +73,23 @@ public abstract class PlayerController extends Controller {
 			}
 		}
 		
-		for (Chunk c : chunkFreeQueue) {
-			if (initializedChunks.remove(c)) {
-				freeChunk(c);
-				activeChunks.remove(c);
-				removeObserver(c);
+		for (Point p : chunkFreeQueue) {
+			if (initializedChunks.remove(p)) {
+				freeChunk(p);
+				activeChunks.remove(p);
+				Chunk c = p.getWorld().getChunkLive(p, false); 
+				if (c != null) {
+					removeObserver(c);
+				}
 			}
 		}
 		
 		chunkFreeQueue.clear();
 		
-		for (Chunk c : chunkInitQueue) {
-			if (initializedChunks.add(c)) {
-				initChunk(c);
+		for (Point p : chunkInitQueue) {
+			if (initializedChunks.add(p)) {
+				Chunk c = p.getWorld().getChunkLive(p, true); 
+				initChunk(p);
 				addObserver(c);
 			}
 		}
@@ -93,22 +98,24 @@ public abstract class PlayerController extends Controller {
 		
 		int chunksSent = 0;
 		
-		Iterator<Chunk> i;
+		Iterator<Point> i;
 		
 		i = priorityChunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			Chunk c = i.next();
+			Point p = i.next();
+			Chunk c = p.getWorld().getChunkLive(p, true);
 			sendChunk(c);
-			activeChunks.add(c);
+			activeChunks.add(p);
 			i.remove();
 			chunksSent++;
 		}
 		
 		i = chunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			Chunk c = i.next();
+			Point p = i.next();
+			Chunk c = p.getWorld().getChunkLive(p, true);
 			sendChunk(c);
-			activeChunks.add(c);
+			activeChunks.add(p);
 			i.remove();
 			chunksSent++;
 		}
@@ -141,39 +148,38 @@ public abstract class PlayerController extends Controller {
 		chunkInitQueue.clear();
 
 		World world = currentPosition.getWorld();
+		int bx = (int)currentPosition.getX();
+		int by = (int)currentPosition.getY();
+		int bz = (int)currentPosition.getZ();
 		
-		Chunk currentChunk = world.getChunkLive(currentPosition, true);
+		Point playerChunkBase = Chunk.pointToBase(currentPosition);
 		
-		Point playerChunkBase = currentChunk.getBase();
-		
-		for (Chunk c : initializedChunks) {
-			Point base = c.getBase();
-			
-			if (base.getMahattanDistance(playerChunkBase) > blockViewDistance) {
-				chunkFreeQueue.add(c);
+		for (Point p : initializedChunks) {
+			if (p.getMahattanDistance(playerChunkBase) > blockViewDistance) {
+				chunkFreeQueue.add(p);
 			}	
 		}
 		
-		int cx = currentChunk.getX();
-		int cy = currentChunk.getY();
-		int cz = currentChunk.getZ();
+		int cx = bx >> Chunk.CHUNK_SIZE_BITS;
+		int cy = by >> Chunk.CHUNK_SIZE_BITS;
+		int cz = bz >> Chunk.CHUNK_SIZE_BITS;
 		
 		// TODO - circle loading
 		for (int x = cx - viewDistance; x < cx + viewDistance; x++) {
 			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
 				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
-					Chunk c = world.getChunkLive(x, y, z, true);
-					double distance = c.getBase().getMahattanDistance(playerChunkBase);
+					Point base = new Point(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
+					double distance = base.getMahattanDistance(playerChunkBase);
 					if (distance <= blockViewDistance) {
-						if (!activeChunks.contains(c)) {
+						if (!activeChunks.contains(base)) {
 							if (distance <= TARGET_SIZE) {
-								priorityChunkSendQueue.add(c);
+								priorityChunkSendQueue.add(base);
 							} else {
-								chunkSendQueue.add(c);
+								chunkSendQueue.add(base);
 							}
 						}
-						if (!initializedChunks.contains(c)) {
-							chunkInitQueue.add(c);
+						if (!initializedChunks.contains(base)) {
+							chunkInitQueue.add(base);
 						}
 					}
 				}
@@ -201,9 +207,9 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 * 
-	 * @param c the chunk
+	 * @param p the base Point for the chunk
 	 */
-	protected void initChunk(Chunk c){
+	protected void initChunk(Point p){
 		//TODO: Implement Spout Protocol
 	}
 	
@@ -214,9 +220,9 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 * 
-	 * @param c the chunk
+	 * @param p the base Point for the chunk
 	 */
-	protected void freeChunk(Chunk c){
+	protected void freeChunk(Point p){
 		//TODO: Inplement Spout Protocol
 	}
 	

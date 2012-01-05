@@ -22,6 +22,11 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * Number of bits on the side of a chunk
 	 */
 	public final static int CHUNK_SIZE_BITS = 4;
+	
+	/**
+	 * Mask to convert a block integer coordinate into the chunk's base
+	 */
+	public final static int BASE_MASK = -CHUNK_SIZE;
 
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE);
@@ -33,6 +38,13 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * @param save whether the chunk data should be saved.
 	 */
 	public abstract void unload(boolean save);
+	
+	/**
+	 * Performs the necessary tasks to save this chunk.
+	 * 
+	 * @param save whether the chunk data should be saved.
+	 */
+	public abstract void save();
 	
 	/**
 	 * Gets a snapshot of the live block id data for the chunk.
@@ -68,5 +80,9 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * @return
 	 */
 	public abstract Region getRegion();
+	
+	public static Point pointToBase(Point p) {
+		return new Point(p.getWorld(), ((int)p.getX()) & BASE_MASK, ((int)p.getY()) & BASE_MASK, ((int)p.getZ()) & BASE_MASK);
+	}
 	
 }
