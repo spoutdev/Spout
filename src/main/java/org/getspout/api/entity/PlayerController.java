@@ -190,7 +190,9 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * @param c the chunk
 	 */
-	protected abstract void sendChunk(Chunk c);
+	protected void sendChunk(Chunk c){
+		//TODO: Implement Spout Protocol
+	}
 	
 	/**
 	 * Frees a chunk on the client.
@@ -201,7 +203,9 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * @param c the chunk
 	 */
-	protected abstract void initChunk(Chunk c);
+	protected void initChunk(Chunk c){
+		//TODO: Implement Spout Protocol
+	}
 	
 	/**
 	 * Frees a chunk on the client.
@@ -212,7 +216,9 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * @param c the chunk
 	 */
-	protected abstract void freeChunk(Chunk c);
+	protected void freeChunk(Chunk c){
+		//TODO: Inplement Spout Protocol
+	}
 	
 	/**
 	 * Sends the player's position to the client
@@ -223,7 +229,9 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * @param t the transform
 	 */
-	protected abstract void sendPosition(Transform t);
+	protected void sendPosition(Transform t){
+		//TODO: Implement Spout Protocol
+	}
 	
 	/**
 	 * Called when the player's world changes.
@@ -234,5 +242,7 @@ public abstract class PlayerController extends Controller {
 	 * 
 	 * @param t the transform
 	 */
-	protected abstract void worldChanged(World world);
+	protected void worldChanged(World world){
+		//TODO: Implement Spout Protocol
+	}
 }
