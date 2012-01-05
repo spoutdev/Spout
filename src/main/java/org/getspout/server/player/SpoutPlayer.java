@@ -3,7 +3,6 @@ package org.getspout.server.player;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Entity;
@@ -27,8 +26,6 @@ public class SpoutPlayer implements Player {
 	private boolean online;
 	private final int hashcode;
 	
-	private static AtomicInteger uidCounter = new AtomicInteger(1);
-
 	public SpoutPlayer(String name) {
 		this.name = name;
 		hashcode = name.hashCode();
