@@ -266,4 +266,18 @@ public interface Command extends RawCommandExecutor{
 	 * @return The active command.
 	 */
 	public Command setParent(Command parent);
+
+	/**
+	 * Sets a raw command executor that overrides Spout's built-in nested command and command flags handling.
+	 * @param rawExecutor The command's raw executor.
+	 * @return The active command
+	 */
+	public Command setRawExecutor(RawCommandExecutor rawExecutor);
+
+	/**
+	 * @see Command#setRawExecutor(RawCommandExecutor)
+	 * @param rawExecutor The command's raw executor
+	 * @return The active command
+	 */
+	public Command rawExecutor(RawCommandExecutor rawExecutor);
 }

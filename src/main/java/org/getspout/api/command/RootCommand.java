@@ -12,7 +12,7 @@ public class RootCommand extends SimpleCommand {
 
 	@Override
 	public String getUsage(String[] input, int baseIndex) {
-		return ChatColor.RED + "Command '" + (input.length > baseIndex ? input[baseIndex] : getPreferredName()) + "' could not be found";
+		return ChatColor.RED + "Command '" + (input.length > baseIndex ? input[baseIndex + 1] : getPreferredName()) + "' could not be found";
 	}
 
 	@Override

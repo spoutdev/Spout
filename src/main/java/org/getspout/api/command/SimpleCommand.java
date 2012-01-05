@@ -151,7 +151,7 @@ public class SimpleCommand implements Command {
 		}
 
 		if (args.length > baseIndex && children.size() > 0) {
-			Command sub = getChild(args[0], fuzzyLookup);
+			Command sub = getChild(args[baseIndex + 1], fuzzyLookup);
 			if (sub == null) {
 				throw new MissingCommandException("Child command needed!", getUsage(args, baseIndex));
 			}
@@ -334,5 +334,16 @@ public class SimpleCommand implements Command {
 			parent.updateAliases(this);
 		}
 		return this;
+	}
+
+	public Command setRawExecutor(RawCommandExecutor rawExecutor) {
+		if (!isLocked()) {
+			this.rawExecutor = rawExecutor;
+		}
+		return this;
+	}
+
+	public Command rawExecutor(RawCommandExecutor rawExecutor) {
+		return setRawExecutor(rawExecutor);
 	}
 }

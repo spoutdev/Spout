@@ -13,7 +13,7 @@ import java.util.Map;
 public class ConfigurationNode {
 	protected Map<String, Object> root;
 	
-	ConfigurationNode(Map<String, Object> root) {
+	protected ConfigurationNode(Map<String, Object> root) {
 		this.root = root;
 	}
 	
