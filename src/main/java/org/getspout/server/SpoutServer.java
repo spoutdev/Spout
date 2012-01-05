@@ -42,6 +42,7 @@ import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.geo.discrete.Point;
+import org.getspout.api.inventory.Recipe;
 import org.getspout.api.player.Player;
 import org.getspout.api.plugin.CommonPluginLoader;
 import org.getspout.api.plugin.CommonPluginManager;
@@ -975,6 +976,22 @@ public class SpoutServer extends AsyncManager implements Server {
 	
 	void markChunkForSave(SpoutChunk c) {
 		unloadPendingChunks.add(c);
+	}
+
+	@Override
+	public void addRecipe(Recipe recipe) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public Recipe getRecipe(Plugin plugin, String recipe) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeRecipe(Plugin plugin, String recipe) {
+		// TODO Auto-generated method stub
 	}
 	
 	
