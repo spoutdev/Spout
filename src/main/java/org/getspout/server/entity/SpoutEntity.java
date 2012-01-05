@@ -111,6 +111,10 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 		return oldTM.transform == null && oldTM.entityManager == null;
 	}
 	
+	public boolean isDead() {
+		return transformAndManager.transform == null && transformAndManager.entityManager == null;
+	}
+	
 	@Override
 	public void setModel(Model model) {
 		this.model = model;
@@ -160,8 +164,14 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 			if (transformAndManager != null && transformAndManager.entityManager != null) {
 				transformAndManager.entityManager.deallocate(this);
 			}
-			if (live != null && live.entityManager != null) {
-				live.entityManager.allocate(this);
+			if (live != null) {
+				if (live.entityManager != null) {
+					live.entityManager.allocate(this);
+				} else {
+					if (live.transform == null && controller != null) {
+						controller.onDeath();
+					}
+				}
 			}
 		}
 	}
