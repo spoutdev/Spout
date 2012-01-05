@@ -1,6 +1,7 @@
 package org.getspout.server.util.thread.snapshotable;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
@@ -12,8 +13,9 @@ import org.getspout.api.util.thread.SnapshotRead;
 public class SnapshotableShortArray implements Snapshotable {
 
 	private final short[] snapshot;
-	private final short[] live;
-	private final int[] dirtyArray;
+	private final AtomicIntegerArray live;
+	private final AtomicIntegerArray dirtyArray;
+	private final int dirtySize;
 	private final AtomicInteger dirtyIndex = new AtomicInteger(0);
 
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial) {
@@ -22,11 +24,12 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial, int dirtySize) {
 		this.snapshot = new short[initial.length];
-		this.live = new short[initial.length];
-		this.dirtyArray = new int[dirtySize];
+		this.live = new AtomicIntegerArray(initial.length>>1);
+		this.dirtySize = dirtySize;
+		this.dirtyArray = new AtomicIntegerArray(dirtySize);
 		for (int i = 0; i < initial.length; i++) {
 			this.snapshot[i] = initial[i];
-			this.live[i] = initial[i];
+			set(i, initial[i]);
 		}
 	}
 
@@ -49,8 +52,11 @@ public class SnapshotableShortArray implements Snapshotable {
 	 */
 	@LiveRead
 	public short getLive(int index) {
-		synchronized (live) {
-			return live[index];
+		int packed = live.get(index >> 1);
+		if ((index & 0x1) == 0) {
+			return unpackZero(packed);
+		} else {
+			return unpackOne(packed);
 		}
 	}
 
@@ -59,17 +65,39 @@ public class SnapshotableShortArray implements Snapshotable {
 	 *
 	 * @param index to set at
 	 * @param value to set to
+	 * @return the old value
 	 */
 	@DelayedWrite
 	public short set(int index, short value) {
-		synchronized (live) {
-			live[index] = value;
+		boolean success = false;
+		int divIndex = index >> 1;
+		boolean isZero = (index & 0x1) == 0;
+		short one;
+		short zero;
+		short old = 0;
+		
+		while (!success) {
+			int packed = live.get(divIndex);
+			if (isZero) {
+				old = unpackZero(packed);
+				one = unpackOne(packed);
+				zero = value;
+			} else {
+				old = unpackOne(packed);
+				one = value;
+				zero = unpackZero(packed);
+			}
+			success = live.compareAndSet(divIndex, packed, pack(zero, one));
 		}
+		markDirty(index);
+		return old;
+	}
+	
+	private void markDirty(int index) {
 		int localDirtyIndex = dirtyIndex.getAndIncrement();
-		if (localDirtyIndex < dirtyArray.length) {
-			dirtyArray[localDirtyIndex] = index;
+		if (localDirtyIndex < dirtySize) {
+			dirtyArray.set(localDirtyIndex, index);
 		}
-		return snapshot[index];
 	}
 
 	/**
@@ -78,16 +106,28 @@ public class SnapshotableShortArray implements Snapshotable {
 	@Override
 	public void copySnapshot() {
 		int length = dirtyIndex.get();
-		if (length <= dirtyArray.length) {
+		if (length <= dirtySize) {
 			for (int i = 0; i < length; i++) {
-				int index = dirtyArray[i];
-				this.snapshot[index] = live[index];
+				int index = dirtyArray.get(i);
+				this.snapshot[index] = getLive(i);
 			}
 		} else {
-			for (int i = 0; i < live.length; i++) {
-				this.snapshot[i] = live[i];
+			for (int i = 0; i < snapshot.length; i++) {
+				this.snapshot[i] = getLive(i);
 			}
 		}
+	}
+	
+	private int pack(short zero, short one) {
+		return (one & 0xFFFF) << 16 | (zero & 0xFFFF);
+	}
+	
+	private short unpackZero(int value) {
+		return (short)value;
+	}
+
+	private short unpackOne(int value) {
+		return (short)(value >> 16);
 	}
 
 }
