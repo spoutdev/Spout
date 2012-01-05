@@ -321,6 +321,7 @@ public final class SpoutSession implements Session {
 		//if (!this.protocol.compareAndSet(Protocol.bootstrap, protocol)) {
 		//	throw new IllegalArgumentException("The protocol may only be set once per session");
 		//} else {
+			this.protocol.set(protocol);
 			server.getLogger().info("Setting protocol to " + protocol.getName());
 		//}
 	}
