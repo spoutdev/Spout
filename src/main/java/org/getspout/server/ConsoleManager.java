@@ -73,8 +73,8 @@ import org.getspout.api.ChatColor;
 import org.getspout.api.Server;
 
 import com.grahamedgecombe.jterminal.JTerminal;
-import org.getspout.api.command.CommandException;
 import org.getspout.api.command.CommandSource;
+import org.getspout.api.geo.World;
 
 /**
  * A meta-class to handle all logging and input-related console improvements.
@@ -290,7 +290,6 @@ public final class ConsoleManager {
 
 	// TODO - convert to command source
 	public class ColoredCommandSource implements CommandSource {
-		//private final PermissibleBase perm = new PermissibleBase(this);
 
 		public String getName() {
 			return "CONSOLE";
@@ -307,61 +306,51 @@ public final class ConsoleManager {
 			return true;
 		}
 
-		//public boolean isOp() {
-		//	return true;
-		//}
+		@Override
+		public boolean hasPermission(String node) {
+			return true;
+		}
 
-		//public void setOp(boolean value) {
-		//	throw new UnsupportedOperationException("Cannot change operator status of server console");
-		//}
+		@Override
+		public boolean isInGroup(String group) {
+			return false;
+		}
 
-		//public Server getServer() {
-		//	return server;
-		//}
+		@Override
+		public String[] getGroups() {
+			return new String[0];
+		}
 
-		//public boolean isPermissionSet(String name) {
-		//	return perm.isPermissionSet(name);
-		//}
+		@Override
+		public boolean isGroup() {
+			return false;
+		}
 
-		//public boolean isPermissionSet(Permission perm) {
-		//	return this.perm.isPermissionSet(perm);
-		//}
+		@Override
+		public boolean hasPermission(World world, String node) {
+			return true;
+		}
 
-		//public boolean hasPermission(String name) {
-		//	return perm.hasPermission(name);
-		//}
+		@Override
+		public Object getData(String node) {
+			return null;
+		}
 
-		//public boolean hasPermission(Permission perm) {
-		//	return this.perm.hasPermission(perm);
-		//}
+		@Override
+		public Object getData(String node, Object defaultValue) {
+			return defaultValue;
+		}
 
-		//public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {
-		//	return perm.addAttachment(plugin, name, value);
-		//}
+		@Override
+		public Object getData(World world, String node) {
+			return null;
+		}
 
-		//public PermissionAttachment addAttachment(Plugin plugin) {
-		//	return perm.addAttachment(plugin);
-		//}
+		@Override
+		public Object getData(World world, String node, Object defaultValue) {
+			return defaultValue;
+		}
 
-		//public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) {
-		//	return perm.addAttachment(plugin, name, value, ticks);
-		//}
-
-		//public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
-		//	return perm.addAttachment(plugin, ticks);
-		//}
-
-		//public void removeAttachment(PermissionAttachment attachment) {
-		//	perm.removeAttachment(attachment);
-		//}
-
-		//public void recalculatePermissions() {
-		//	perm.recalculatePermissions();
-		//}
-
-		//public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-		//	return perm.getEffectivePermissions();
-		//}
 	}
 
 	private class LoggerOutputStream extends ByteArrayOutputStream {
