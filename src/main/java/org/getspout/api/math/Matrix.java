@@ -8,7 +8,7 @@ package org.getspout.api.math;
  */
 public class Matrix {
 	int dimension;
-	double[] data;
+	float[] data;
 
 	/**
 	 * Creates a new 4x4 matrix, set to the Identity Matrix
@@ -24,7 +24,7 @@ public class Matrix {
 	 */
 	public Matrix(int dim) {
 		dimension = dim;
-		data = new double[dim * dim];
+		data = new float[dim * dim];
 		for (int x = 0; x < dim; x++) {
 			for (int y = 0; y < dim; y++) {
 				if (x == y) {
@@ -47,7 +47,7 @@ public class Matrix {
 	 * @param column
 	 * @return
 	 */
-	public double get(int row, int column) {
+	public float get(int row, int column) {
 		if (row < 0 || row > dimension) {
 			throw new IllegalArgumentException("Row must be between 0 and " + dimension);
 		}
@@ -64,7 +64,7 @@ public class Matrix {
 	 * @param column
 	 * @param value
 	 */
-	public void set(int row, int column, double value) {
+	public void set(int row, int column, float value) {
 		if (row < 0 || row > dimension) {
 			throw new IllegalArgumentException("Row must be between 0 and " + dimension);
 		}
@@ -130,7 +130,7 @@ public class Matrix {
 			for (int j = 0; j < res.dimension; j++) {
 				res.data[index(i, j, res.dimension)] = 0;
 				for (int k = 0; k < res.dimension; k++) {
-					double r = a.data[index(i, k, res.dimension)] * b.data[index(k, j, res.dimension)];
+					float r = a.data[index(i, k, res.dimension)] * b.data[index(k, j, res.dimension)];
 					res.data[index(i, j, res.dimension)] += r;
 					
 				}
@@ -187,7 +187,7 @@ public class Matrix {
 	 * @param ammount
 	 * @return
 	 */
-	public static Matrix scale(double ammount) {
+	public static Matrix scale(float ammount) {
 		Matrix res = createIdentity();
 		res.set(0, 0, ammount);
 		res.set(1, 1, ammount);
@@ -216,12 +216,12 @@ public class Matrix {
 	 * @param rot
 	 * @return
 	 */
-	public static Matrix rotateX(double rot) {
+	public static Matrix rotateX(float rot) {
 		Matrix res = createIdentity();
-		res.set(1, 1, MathHelper.cos(Math.toRadians(rot)));
-		res.set(1, 2, -MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 1, MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 2, MathHelper.cos(Math.toRadians(rot)));
+		res.set(1, 1, (float)MathHelper.cos(Math.toRadians(rot)));
+		res.set(1, 2, (float)-MathHelper.sin(Math.toRadians(rot)));
+		res.set(2, 1,(float) MathHelper.sin(Math.toRadians(rot)));
+		res.set(2, 2, (float)MathHelper.cos(Math.toRadians(rot)));
 
 		return res;
 	}
@@ -232,12 +232,12 @@ public class Matrix {
 	 * @param rot
 	 * @return
 	 */
-	public static Matrix rotateY(double rot) {
+	public static Matrix rotateY(float rot) {
 		Matrix res = createIdentity();
-		res.set(0, 0, MathHelper.cos(Math.toRadians(rot)));
-		res.set(0, 2, MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 0, -MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 2, MathHelper.cos(Math.toRadians(rot)));
+		res.set(0, 0, (float)MathHelper.cos(Math.toRadians(rot)));
+		res.set(0, 2, (float)MathHelper.sin(Math.toRadians(rot)));
+		res.set(2, 0, (float)-MathHelper.sin(Math.toRadians(rot)));
+		res.set(2, 2, (float)MathHelper.cos(Math.toRadians(rot)));
 		return res;
 	}
 
@@ -247,12 +247,12 @@ public class Matrix {
 	 * @param rot
 	 * @return
 	 */
-	public static Matrix rotateZ(double rot) {
+	public static Matrix rotateZ(float rot) {
 		Matrix res = createIdentity();
-		res.set(0, 0, MathHelper.cos(Math.toRadians(rot)));
-		res.set(0, 1, -MathHelper.sin(Math.toRadians(rot)));
-		res.set(1, 0, MathHelper.sin(Math.toRadians(rot)));
-		res.set(1, 1, MathHelper.cos(Math.toRadians(rot)));
+		res.set(0, 0, (float)MathHelper.cos(Math.toRadians(rot)));
+		res.set(0, 1,(float) -MathHelper.sin(Math.toRadians(rot)));
+		res.set(1, 0, (float)MathHelper.sin(Math.toRadians(rot)));
+		res.set(1, 1, (float)MathHelper.cos(Math.toRadians(rot)));
 		return res;
 	}
 	/**
@@ -290,12 +290,16 @@ public class Matrix {
 		for (int i = 0; i < m.dimension; i++) {
 			vres[i] = 0;
 			for (int k = 0; k < m.dimension; k++) {
-				double n = m.get(i, k) * vector[k];
+				float n = m.get(i, k) * vector[k];
 				vres[i] += n;
 			
 			}
 		}
 		
 		return new Vector3(vres[0], vres[1], vres[2]);
+	}
+	
+	public static float[] toArray(Matrix m){
+		return m.data.clone();
 	}
 }

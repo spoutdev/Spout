@@ -143,7 +143,7 @@ public class MatrixTest {
 				{ 0, 0, 5, 0},
 				{ 0, 0, 0, 1}
 		};
-		Matrix m = Matrix.scale(5.0);
+		Matrix m = Matrix.scale(5.0f);
 		compareMatrixToArray(m, id);
 	}
 
@@ -161,7 +161,7 @@ public class MatrixTest {
 
 	@Test
 	public void testRotateX() {
-		double theta = 30;
+		float theta = 30;
 		double[][] id = { { 1, 0, 0, 0},
 				{ 0, MathHelper.cos(Math.toRadians(theta)), -MathHelper.sin(Math.toRadians(theta)), 0},
 				{ 0, MathHelper.sin(Math.toRadians(theta)), MathHelper.cos(Math.toRadians(theta)), 0},
@@ -173,7 +173,7 @@ public class MatrixTest {
 
 	@Test
 	public void testRotateY() {
-		double theta = 10;
+		float theta = 10;
 		double[][] id = { { MathHelper.cos(Math.toRadians(theta)), 0, MathHelper.sin(Math.toRadians(theta)),0},
 				{ 0, 1, 0, 0},
 				{ -MathHelper.sin(Math.toRadians(theta)), 0, MathHelper.cos(Math.toRadians(theta)), 0},
@@ -185,7 +185,7 @@ public class MatrixTest {
 
 	@Test
 	public void testRotateZ() {
-		double theta = 40;
+		float theta = 40;
 		double[][] id = { { MathHelper.cos(Math.toRadians(theta)), -MathHelper.sin(Math.toRadians(theta)), 0, 0},
 				{ MathHelper.sin(Math.toRadians(theta)), MathHelper.cos(Math.toRadians(theta)), 0, 0},
 				{ 0, 0, 1, 0},
