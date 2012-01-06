@@ -45,7 +45,7 @@ public class BlockIterator implements Iterator<Block> {
     		throw new IllegalArgumentException("Direction may not be a zero vector");
     	}
     	
-    	direction.scale(1/max);
+    	direction.multiply(1/max);
     	
     	blocksRead = 0;
     	this.maxDistance = maxDistance;
