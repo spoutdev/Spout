@@ -51,20 +51,6 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
-	public String getFormat() {
-		return format;
-	}
-	
-	public boolean setFormat(String format) {
-		try {
-			String.format(format, player.getName(), message);
-		} catch (Throwable t) {
-			return false;
-		}
-		this.format = format;
-		return true;
-	}
 
 	/**
 	 * Gets the format that will be broadcasted.
