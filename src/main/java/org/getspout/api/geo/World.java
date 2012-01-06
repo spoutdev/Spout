@@ -72,7 +72,7 @@ public interface World extends EventSource, BlockAccess {
 	 * @param z the region z coordinate
 	 * @return the region
 	 */
-	@SnapshotRead
+	@LiveRead
 	public Region getRegion(int x, int y, int z);
 	
 	/**
@@ -85,7 +85,7 @@ public interface World extends EventSource, BlockAccess {
 	 * @return the region
 	 */
 	@LiveRead
-	public Region getRegionLive(int x, int y, int z, boolean load);
+	public Region getRegion(int x, int y, int z, boolean load);
 	
 	/**
 	 * Gets the region at block position
@@ -93,7 +93,7 @@ public interface World extends EventSource, BlockAccess {
 	 * @param point in the world
 	 * @return the region
 	 */
-	@SnapshotRead
+	@LiveRead
 	public Region getRegion(Point point);
 	
 	/**
@@ -104,7 +104,7 @@ public interface World extends EventSource, BlockAccess {
 	 * @return the region
 	 */
 	@LiveRead
-	public Region getRegionLive(Point point, boolean load);
+	public Region getRegion(Point point, boolean load);
 	
 	/**
 	 * Gets the chunk at chunk coordinates (x, y, z)
@@ -114,7 +114,7 @@ public interface World extends EventSource, BlockAccess {
 	 * @param z the chunk z coordinate
 	 * @return the chunk
 	 */
-	@SnapshotRead
+	@LiveRead
 	public Chunk getChunk(int x, int y, int z);
 	
 	/**
@@ -123,8 +123,18 @@ public interface World extends EventSource, BlockAccess {
 	 * @param point in the world
 	 * @return the chunk
 	 */
-	@SnapshotRead
+	@LiveRead
 	public Chunk getChunk(Point point);
+	
+	/**
+	 * Gets the chunk at block position
+	 * 
+	 * @param point in the world
+	 * @param load true if the region should be loaded/generated
+	 * @return the chunk
+	 */
+	@LiveRead
+	public Chunk getChunk(Point point, boolean load);
 	
 	/**
 	 * Gets the chunk at chunk coordinates (x, y, z)
@@ -136,17 +146,7 @@ public interface World extends EventSource, BlockAccess {
 	 * @return the chunk
 	 */
 	@LiveRead
-	public Chunk getChunkLive(int x, int y, int z, boolean load);
-	
-	/**
-	 * Gets the chunk at block position
-	 * 
-	 * @param point in the world
-	 * @param load true if the Chunk should be loaded/generated
-	 * @return the chunk
-	 */
-	@LiveRead
-	public Chunk getChunkLive(Point point, boolean load);
+	public Chunk getChunk(int x, int y, int z, boolean load);
 	
 	/**
 	 * Create a new Entity for initialization
