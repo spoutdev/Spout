@@ -136,7 +136,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			try {
-				copySnapshot(asyncExecutors.get(), true);
+				copySnapshot(asyncExecutors.get());
 			} catch (InterruptedException ex) {
 				SpoutServer.logger.log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
 			}
@@ -156,7 +156,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			try {
-				copySnapshot(asyncExecutors.get(), true);
+				copySnapshot(asyncExecutors.get());
 			} catch (InterruptedException ex) {
 				SpoutServer.logger.log(Level.SEVERE, "Error while shutting down server: {0}", ex.getMessage());
 			}
@@ -285,12 +285,12 @@ public final class SpoutScheduler implements Scheduler {
 			stage++;
 		}
 
-		copySnapshot(executors, false);
+		copySnapshot(executors);
 		
 		return true;
 	}
 
-	private void copySnapshot(List<AsyncExecutor> executors, boolean alreadyShutdown) throws InterruptedException {
+	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
 		lockSnapshotLock();
 
 		try {
@@ -302,7 +302,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			boolean joined = false;
 
-			while (!joined && !(shutdown && (!alreadyShutdown))) {
+			while (!joined) {
 				try {
 					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
 					joined = true;
@@ -319,7 +319,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			joined = false;
 
-			while (!joined && !(shutdown && (!alreadyShutdown))) {
+			while (!joined) {
 				try {
 					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
 					joined = true;
