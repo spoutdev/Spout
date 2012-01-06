@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.getspout.server.datatable.SpoutDatatableProto.DatatableEntry;
-import org.getspout.server.datatable.SpoutDatatableProto.DatatableValue;
-
 public class SpoutDatatableFloat extends SpoutDatatableObject {
 	float data;
 
@@ -52,18 +49,12 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-		DatatableValue value = DatatableValue.newBuilder().setFloatval(data).build();
-		DatatableEntry entry = DatatableEntry.newBuilder().setKeyHash(keyID).setFlags(flags).setValue(value).build();
-		entry.writeTo(out);
-
+		
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
-		DatatableEntry entry = DatatableEntry.parseFrom(in);
-		keyID = entry.getKeyHash();
-		flags = (byte) entry.getFlags();
-		data = entry.getValue().getFloatval();
+	
 
 	}
 

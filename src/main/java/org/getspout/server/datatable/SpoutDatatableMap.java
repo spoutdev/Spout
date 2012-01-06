@@ -49,21 +49,13 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-		for (Object dat : map.values()) {
-			DatatableTuple d = (DatatableTuple) dat;
-			d.output(out);
-		}
+		
 
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
-		DatatableTuple t = SpoutDatatableObject.read(in);
-		while (t != null) {
-			map.put(t.hashCode(), t);
-			t = SpoutDatatableObject.read(in);
-		}
-
+		
 	}
 
 }

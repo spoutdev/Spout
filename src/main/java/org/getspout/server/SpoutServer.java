@@ -214,43 +214,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void testDatatable() {
-		long time = System.currentTimeMillis();
-		SpoutDatatableMap table = new SpoutDatatableMap(SpoutEntity.entityStringMap);
-		for (int i = 0; i < 1000; i++) {
-			table.set(new SpoutDatatableInt(SpoutEntity.entityStringMap.register("" + i), i));
-
-		}
-		long entry = System.currentTimeMillis() - time;
-		System.out.println("Datatable Entry Time: " + entry / 1000.f);
-
-		File out = new File("datatable.dat");
-		if (!out.exists())
-			try {
-				out.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		try {
-			ByteArrayOutputStream stream = new ByteArrayOutputStream(10000);
-
-			long outputspeed = System.currentTimeMillis();
-			table.output(stream);
-			long asdf = System.currentTimeMillis() - outputspeed;
-			System.out.println("Datatable serialization Time: " + asdf / 1000.f);
-			FileOutputStream s = new FileOutputStream(out);
-			s.write(stream.toByteArray());
-			s.flush();
-			s.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 	public static void main(String[] args) {
 
 		SpoutServer server = new SpoutServer();
