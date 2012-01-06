@@ -27,7 +27,7 @@ public class Segment implements CollisionVolume {
 	}
 
 	public Segment(Vector3 start, Vector3 direction, float distance) {
-		this(start, start.add(direction.scale(distance)));
+		this(start, start.add(direction.multiply(distance)));
 	}
 
 	public Segment(Vector3 start, float pitch, float yaw, float distance) {

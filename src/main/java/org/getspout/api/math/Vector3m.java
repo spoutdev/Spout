@@ -2,19 +2,23 @@ package org.getspout.api.math;
 
 public class Vector3m extends Vector3 {
 
+	public Vector3m() {
+	}
+
+	public Vector3m(Vector3 o) {
+		super(o);
+	}
+
+	public Vector3m(int x, int y, int z) {
+		super(x, y, z);
+	}
+
+	public Vector3m(double x, double y, double z) {
+		super(x, y, z);
+	}
+
 	public Vector3m(float x, float y, float z) {
 		super(x, y, z);
-	}
-
-	public Vector3m(Double x, Double y, Double z) {
-		super(x, y, z);
-	}
-
-	public Vector3m(Vector3 vector) {
-		super(vector);
-	}
-
-	public Vector3m() {
 	}
 
 	public void setZ(float z) {
@@ -64,7 +68,7 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
-	public Vector3 scale(float scale) {
+	public Vector3 multiply(float scale) {
 		x *= scale;
 		y *= scale;
 		z *= scale;
