@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class QuaternionTest {
-	final float eps = 0.1f;
+	final float eps = 0.01f;
 	private void testValues(Quaternion q, float x, float y, float z, float w){
 		//System.out.println("Testing! Expected: {"+x+","+y+","+z+","+w+"} got " + q);
 		if(Math.abs(q.getX() - x) > eps || Math.abs(q.getY() - y) > eps 
@@ -27,25 +27,25 @@ public class QuaternionTest {
 	@Test
 	public void testQuaternionDoubleVector3() {
 		Quaternion rot = new Quaternion(0, new Vector3(1,0,0));
-		float qx = 1.f * (float)MathHelper.sin(0);
-		float qy = 0.f * (float)MathHelper.sin(0);
-		float qz = 0.f * (float)MathHelper.sin(0);
-		float qw = (float)MathHelper.cos(0);
+		float qx = 1.f * (float)Math.sin(0);
+		float qy = 0.f * (float)Math.sin(0);
+		float qz = 0.f * (float)Math.sin(0);
+		float qw = (float)Math.cos(0);
 		testValues(rot, qx,qy,qz,qw);
 		
 		rot = new Quaternion(40, new Vector3(3,2,1));
-		qx = 3.f * (float)MathHelper.sin((Math.toRadians(40)/2));
-		qy = 2.f * (float)MathHelper.sin((Math.toRadians(40)/2));
-		qz = 1.f * (float)MathHelper.sin((Math.toRadians(40)/2));
-		qw = (float)MathHelper.cos((Math.toRadians(40)/2));
+		qx = 3.f * (float)Math.sin((Math.toRadians(40)/2));
+		qy = 2.f * (float)Math.sin((Math.toRadians(40)/2));
+		qz = 1.f * (float)Math.sin((Math.toRadians(40)/2));
+		qw = (float)Math.cos((Math.toRadians(40)/2));
 		testValues(rot, qx,qy,qz,qw);
 		
 		
 		rot = new Quaternion(120, new Vector3(6,-3,2));
-		qx = 6.f * (float)MathHelper.sin((Math.toRadians(120)/2));
-		qy = -3.f * (float)MathHelper.sin((Math.toRadians(120)/2));
-		qz = 2.f * (float)MathHelper.sin((Math.toRadians(120)/2));
-		qw = (float)MathHelper.cos((Math.toRadians(120)/2));
+		qx = 6.f * (float)Math.sin((Math.toRadians(120)/2));
+		qy = -3.f * (float)Math.sin((Math.toRadians(120)/2));
+		qz = 2.f * (float)Math.sin((Math.toRadians(120)/2));
+		qw = (float)Math.cos((Math.toRadians(120)/2));
 		testValues(rot, qx,qy,qz,qw);
 	}
 
@@ -72,11 +72,11 @@ public class QuaternionTest {
 		
 		rot = new Quaternion(6,4,3,2);
 		ls = rot.length();
-		if(Math.abs(ls - MathHelper.sqrt(65.0f)) >= eps) fail("Length of " + rot + " Should be 65.f, got " + ls);
+		if(Math.abs(ls - Math.sqrt(65.0f)) >= eps) fail("Length of " + rot + " Should be 65.f, got " + ls);
 		
 		rot = new Quaternion(6,-1,0,2);
 		ls = rot.length();
-		if(Math.abs(ls - MathHelper.sqrt(41.0f)) >= eps) fail("Length of " + rot + " Should be 41.f, got " + ls);
+		if(Math.abs(ls - Math.sqrt(41.0f)) >= eps) fail("Length of " + rot + " Should be 41.f, got " + ls);
 	}
 
 	@Test
@@ -138,10 +138,10 @@ public class QuaternionTest {
 		ang = 45;
 		a = new Quaternion(0,0,0,1);
 		res = a.rotate(ang, new Vector3(x,y,z));
-		qx = x * (float)MathHelper.sin((Math.toRadians(ang)/2));
-		qy = y * (float)MathHelper.sin((Math.toRadians(ang)/2));
-		qz = z * (float)MathHelper.sin((Math.toRadians(ang)/2));
-		qw = (float)MathHelper.cos((Math.toRadians(ang)/2));
+		qx = x * (float)Math.sin((Math.toRadians(ang)/2));
+		qy = y * (float)Math.sin((Math.toRadians(ang)/2));
+		qz = z * (float)Math.sin((Math.toRadians(ang)/2));
+		qw = (float)Math.cos((Math.toRadians(ang)/2));
 		testValues(res, qx, qy, qz, qw);
 		
 		
@@ -151,10 +151,10 @@ public class QuaternionTest {
 		ang = 120;
 		a = new Quaternion(0,0,0,1);
 		res = a.rotate(ang, new Vector3(x,y,z));
-		qx = x * (float)MathHelper.sin((Math.toRadians(ang)/2));
-		qy = y * (float)MathHelper.sin((Math.toRadians(ang)/2));
-		qz = z * (float)MathHelper.sin((Math.toRadians(ang)/2));
-		qw = (float)MathHelper.cos((Math.toRadians(ang)/2));
+		qx = x * (float)Math.sin((Math.toRadians(ang)/2));
+		qy = y * (float)Math.sin((Math.toRadians(ang)/2));
+		qz = z * (float)Math.sin((Math.toRadians(ang)/2));
+		qw = (float)Math.cos((Math.toRadians(ang)/2));
 		testValues(res, qx, qy, qz, qw);
 		
 	}

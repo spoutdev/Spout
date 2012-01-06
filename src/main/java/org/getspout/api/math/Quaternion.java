@@ -34,7 +34,7 @@ public class Quaternion {
 	 * @param axis
 	 */
 	public Quaternion(float angle, Vector3 axis){
-		this(axis.getX() * (float)MathHelper.sin(Math.toRadians(angle)/2), axis.getY() * (float)MathHelper.sin(Math.toRadians(angle)/2), axis.getZ() * (float)MathHelper.sin(Math.toRadians(angle)/2), (float)MathHelper.cos(Math.toRadians(angle)/2));
+		this(axis.getX() * (float)Math.sin(Math.toRadians(angle)/2), axis.getY() * (float)Math.sin(Math.toRadians(angle)/2), axis.getZ() * (float)Math.sin(Math.toRadians(angle)/2), (float)Math.cos(Math.toRadians(angle)/2));
 	}
 	/**
 	 *  Copy Constructor

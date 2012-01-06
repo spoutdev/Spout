@@ -163,8 +163,8 @@ public class MatrixTest {
 	public void testRotateX() {
 		float theta = 30;
 		double[][] id = { { 1, 0, 0, 0},
-				{ 0, MathHelper.cos(Math.toRadians(theta)), -MathHelper.sin(Math.toRadians(theta)), 0},
-				{ 0, MathHelper.sin(Math.toRadians(theta)), MathHelper.cos(Math.toRadians(theta)), 0},
+				{ 0, Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0},
+				{ 0, Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0},
 				{ 0, 0, 0, 1}
 		};
 		Matrix m = Matrix.rotateX(theta);
@@ -174,9 +174,9 @@ public class MatrixTest {
 	@Test
 	public void testRotateY() {
 		float theta = 10;
-		double[][] id = { { MathHelper.cos(Math.toRadians(theta)), 0, MathHelper.sin(Math.toRadians(theta)),0},
+		double[][] id = { { Math.cos(Math.toRadians(theta)), 0, Math.sin(Math.toRadians(theta)),0},
 				{ 0, 1, 0, 0},
-				{ -MathHelper.sin(Math.toRadians(theta)), 0, MathHelper.cos(Math.toRadians(theta)), 0},
+				{ -Math.sin(Math.toRadians(theta)), 0, Math.cos(Math.toRadians(theta)), 0},
 				{ 0, 0, 0, 1}
 		};
 		Matrix m = Matrix.rotateY(theta);
@@ -186,8 +186,8 @@ public class MatrixTest {
 	@Test
 	public void testRotateZ() {
 		float theta = 40;
-		double[][] id = { { MathHelper.cos(Math.toRadians(theta)), -MathHelper.sin(Math.toRadians(theta)), 0, 0},
-				{ MathHelper.sin(Math.toRadians(theta)), MathHelper.cos(Math.toRadians(theta)), 0, 0},
+		double[][] id = { { Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0, 0},
+				{ Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0, 0},
 				{ 0, 0, 1, 0},
 				{ 0, 0, 0, 1}
 		};

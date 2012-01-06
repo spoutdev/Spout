@@ -93,6 +93,14 @@ public class Matrix {
 	public Matrix add(Matrix that) {
 		return Matrix.add(this, that);
 	}
+	
+	/**
+	 * Returns this matrix in a single dimension float array
+	 * @return
+	 */
+	public float[] toArray(){
+		return Matrix.toArray(this);
+	}
 
 	/**
 	 * Adds two matricies together
@@ -218,10 +226,10 @@ public class Matrix {
 	 */
 	public static Matrix rotateX(float rot) {
 		Matrix res = createIdentity();
-		res.set(1, 1, (float)MathHelper.cos(Math.toRadians(rot)));
-		res.set(1, 2, (float)-MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 1,(float) MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 2, (float)MathHelper.cos(Math.toRadians(rot)));
+		res.set(1, 1, (float)Math.cos(Math.toRadians(rot)));
+		res.set(1, 2, (float)-Math.sin(Math.toRadians(rot)));
+		res.set(2, 1,(float) Math.sin(Math.toRadians(rot)));
+		res.set(2, 2, (float)Math.cos(Math.toRadians(rot)));
 
 		return res;
 	}
@@ -234,10 +242,10 @@ public class Matrix {
 	 */
 	public static Matrix rotateY(float rot) {
 		Matrix res = createIdentity();
-		res.set(0, 0, (float)MathHelper.cos(Math.toRadians(rot)));
-		res.set(0, 2, (float)MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 0, (float)-MathHelper.sin(Math.toRadians(rot)));
-		res.set(2, 2, (float)MathHelper.cos(Math.toRadians(rot)));
+		res.set(0, 0, (float)Math.cos(Math.toRadians(rot)));
+		res.set(0, 2, (float)Math.sin(Math.toRadians(rot)));
+		res.set(2, 0, (float)-Math.sin(Math.toRadians(rot)));
+		res.set(2, 2, (float)Math.cos(Math.toRadians(rot)));
 		return res;
 	}
 
@@ -249,10 +257,10 @@ public class Matrix {
 	 */
 	public static Matrix rotateZ(float rot) {
 		Matrix res = createIdentity();
-		res.set(0, 0, (float)MathHelper.cos(Math.toRadians(rot)));
-		res.set(0, 1,(float) -MathHelper.sin(Math.toRadians(rot)));
-		res.set(1, 0, (float)MathHelper.sin(Math.toRadians(rot)));
-		res.set(1, 1, (float)MathHelper.cos(Math.toRadians(rot)));
+		res.set(0, 0, (float)Math.cos(Math.toRadians(rot)));
+		res.set(0, 1,(float) -Math.sin(Math.toRadians(rot)));
+		res.set(1, 0, (float)Math.sin(Math.toRadians(rot)));
+		res.set(1, 1, (float)Math.cos(Math.toRadians(rot)));
 		return res;
 	}
 	/**
@@ -298,7 +306,10 @@ public class Matrix {
 		
 		return new Vector3(vres[0], vres[1], vres[2]);
 	}
-	
+	/**
+	 * Returns the given matrix in a single dimension float array
+	 * @return
+	 */
 	public static float[] toArray(Matrix m){
 		return m.data.clone();
 	}

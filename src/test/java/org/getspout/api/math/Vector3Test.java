@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
  */
 public class Vector3Test {
 
-	public static final double eps = 0.001;
+	public static final double eps = 0.01;
 
 	private void doAssertDouble(String message, double expect, double got) {
 		assertEquals(message, expect, got, eps);
@@ -499,7 +499,7 @@ public class Vector3Test {
 
 		Vector3 y = new Vector3(2, 4, 5);
 		Vector3 v = y.transform(Matrix.rotateX(30));
-		testValue(v, 2, .966f, 6.333f);
+		testValue(v, 2, .9666f, 6.333f);
 
 	}
 
@@ -511,7 +511,7 @@ public class Vector3Test {
 
 		Vector3 y = new Vector3(2, 4, 5);
 		Vector3 v = y.transform(new Quaternion(30, new Vector3(1, 0, 0)));
-		testValue(v, 2, .977f, 6.328f);
+		testValue(v, 2, .964f, 6.328f);
 
 
 	}
