@@ -27,6 +27,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
 	private String message;
+	private String format = "<%1$s> %2$s";
 	
 	public PlayerChatEvent(Player p, String message) {
 		super(p);
@@ -49,6 +50,45 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 */
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	
+	public String getFormat() {
+		return format;
+	}
+	
+	public boolean setFormat(String format) {
+		try {
+			String.format(format, player.getName(), message);
+		} catch (Throwable t) {
+			return false;
+		}
+		this.format = format;
+		return true;
+	}
+
+	/**
+	 * Gets the format that will be broadcasted.
+	 * @return The message format
+	 */
+	public String getFormat() {
+		return format;
+	}
+
+	/**
+	 * Sets the message's format to {@code format}
+	 * Verification is performed to make sure that the string has at least two string
+	 * formatting positions.
+	 * @param format The format to set.
+	 * @return Whether the format was valid.
+	 */
+	public boolean setFormat(String format) {
+		try {
+			String.format(format, player.getName(), message);
+		} catch (Throwable t) {
+			return false;
+		}
+		this.format = format;
+		return true;
 	}
 
 	@Override
