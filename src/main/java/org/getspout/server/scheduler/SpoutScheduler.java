@@ -273,7 +273,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			joined = false;
 
-			while (!joined && !shutdown) {
+			while (!joined) {
 				try {
 					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
 					joined = true;
