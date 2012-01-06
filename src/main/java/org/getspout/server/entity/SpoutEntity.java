@@ -94,7 +94,7 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 			
 			// TODO - entity moved into unloaded chunk - what happens for normal entities
 			if (newRegion == null && this.getController() instanceof PlayerController) {
-				newRegion = newPosition.getWorld().getRegionLive(newPosition, true);
+				newRegion = newPosition.getWorld().getRegion(newPosition, true);
 			}
 			EntityManager newEntityManager = ((SpoutRegion)newRegion).getEntityManager();
 			
@@ -225,13 +225,13 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	@Override
 	public Chunk getChunk() {
 		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld().getChunkLive(position, true);
+		return position.getWorld().getChunk(position, true);
 	}
 
 	@Override
 	public Region getRegion() {
 		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld().getRegionLive(position, true);
+		return position.getWorld().getRegion(position, true);
 	}
 	
 	private static class TransformAndManager {

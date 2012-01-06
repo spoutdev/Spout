@@ -1,7 +1,5 @@
 package org.getspout.server;
 
-import org.getspout.api.Server;
-import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.util.thread.DelayedWrite;
@@ -15,6 +13,7 @@ public class RegionSource {
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
+	// TODO - need to redo this - change to "ConcurrentTripleIntHashMap"
 	private final SnapshotableConcurrentTripleIntHashMap<Region> loadedRegions;
 	/**
 	 * World associated with this region source
@@ -36,8 +35,7 @@ public class RegionSource {
 	 */
 	@SnapshotRead
 	public Region getRegionFromBlock(int x, int y, int z) {
-		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
-		return getRegion(x >> shifts, y >> shifts, z >> shifts);
+		return getRegionFromBlock(x, y, z, false);
 	}
 
 	/**
@@ -50,24 +48,11 @@ public class RegionSource {
 	 * @return region, if it is loaded and exists
 	 */
 	@LiveRead
-	public Region getRegionFromBlockLive(int x, int y, int z, boolean load) {
+	public Region getRegionFromBlock(int x, int y, int z, boolean load) {
 		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
-		return getRegionLive(x >> shifts, y >> shifts, z >> shifts, load);
+		return getRegion(x >> shifts, y >> shifts, z >> shifts, load);
 	}
 
-	/**
-	 * Gets the region associated with the region x, y, z coordinates
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return region, if it is loaded and exists
-	 */
-	@SnapshotRead
-	public Region getRegion(int x, int y, int z) {
-		return loadedRegions.get(x, y, z);
-	}
-	
 	@DelayedWrite
 	public void removeRegion(final SpoutRegion r) {
 		if (!r.getWorld().equals(world)) {
@@ -98,8 +83,8 @@ public class RegionSource {
 	 * @return region, if it is loaded and exists
 	 */
 	@LiveRead
-	public Region getRegionLive(int x, int y, int z) {
-		return loadedRegions.getLive(x, y, z);
+	public Region getRegion(int x, int y, int z) {
+		return getRegion(x, y, z, false);
 	}
 
 	/**
@@ -114,7 +99,7 @@ public class RegionSource {
 	 * @return region
 	 */
 	@LiveRead
-	public Region getRegionLive(int x, int y, int z, boolean load) {
+	public Region getRegion(int x, int y, int z, boolean load) {
 		Region region = loadedRegions.getLive(x, y, z);
 
 		if (region != null || !load) {
@@ -145,21 +130,8 @@ public class RegionSource {
 	 * @param z the z coordinate
 	 * @return true if there is a region loaded
 	 */
-	@SnapshotRead
-	public boolean hasRegion(int x, int y, int z) {
-		return loadedRegions.get(x, y, z) != null;
-	}
-
-	/**
-	 * True if there is a region loaded at the region x, y, z coordinates
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return true if there is a region loaded
-	 */
 	@LiveRead
-	public boolean hasRegionLive(int x, int y, int z) {
+	public boolean hasRegion(int x, int y, int z) {
 		return loadedRegions.getLive(x, y, z) != null;
 	}
 

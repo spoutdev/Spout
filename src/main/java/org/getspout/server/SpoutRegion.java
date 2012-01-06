@@ -30,14 +30,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.getspout.api.Game;
-import org.getspout.api.Server;
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.generator.WorldGenerator;
-import org.getspout.api.geo.World;
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.util.cuboid.CuboidShortBuffer;
@@ -62,7 +61,7 @@ public class SpoutRegion extends Region {
 	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
 
 	@SuppressWarnings("unchecked")
-	public SnapshotableReference<Chunk>[][][] chunks = new SnapshotableReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
+	public AtomicReference<Chunk>[][][] chunks = new AtomicReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
 
 	/**
 	 * Region coordinates of the lower, left start of the region. Add {@link Region#REGION_SIZE} to the coords to get the upper right end of the region.
@@ -95,24 +94,21 @@ public class SpoutRegion extends Region {
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					chunks[dx][dy][dz] = new SnapshotableReference<Chunk>(snapshotManager, null);
+					chunks[dx][dy][dz] = new AtomicReference<Chunk>(null);
 				}
 			}
 		}
 	}
-
+	
 	@Override
-	@SnapshotRead
+	@LiveRead
 	public Chunk getChunk(int x, int y, int z) {
-		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
-			return chunks[x][y][z].get();
-		}
-		throw new IndexOutOfBoundsException("Invalid coordinates");
+		return getChunk(x, y, z, false);
 	}
 
 	@Override
 	@LiveRead
-	public Chunk getChunkLive(int x, int y, int z, boolean load) {
+	public Chunk getChunk(int x, int y, int z, boolean load) {
 		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
 			Chunk chunk = chunks[x][y][z].get();
 			if (chunk != null || !load) {
@@ -121,7 +117,7 @@ public class SpoutRegion extends Region {
 			//TODO: generate new chunk
 			//this.getWorld().
 
-			SnapshotableReference<Chunk> ref = chunks[x][y][z];
+			AtomicReference<Chunk> ref = chunks[x][y][z];
 
 			boolean success = false;
 
@@ -143,7 +139,7 @@ public class SpoutRegion extends Region {
 					numberActiveChunks.incrementAndGet();
 					return newChunk;
 				} else {
-					Chunk oldChunk = ref.getLive();
+					Chunk oldChunk = ref.get();
 					if (oldChunk != null) {
 						return oldChunk;
 					}
@@ -167,8 +163,8 @@ public class SpoutRegion extends Region {
 		int cy = c.getY() & (Region.REGION_SIZE - 1);
 		int cz = c.getZ() & (Region.REGION_SIZE - 1);
 		
-		SnapshotableReference<Chunk> current = chunks[cx][cy][cz];
-		Chunk currentChunk = current.getLive();
+		AtomicReference<Chunk> current = chunks[cx][cy][cz];
+		Chunk currentChunk = current.get();
 		if (currentChunk != c) {
 			return false;
 		}
@@ -204,7 +200,7 @@ public class SpoutRegion extends Region {
 	 */
 	@DelayedWrite
 	public void saveChunk(int x, int y, int z) {
-		Chunk c = getChunkLive(x, y, z, false);
+		Chunk c = getChunk(x, y, z, false);
 		if (c != null) {
 			c.save();
 		}
@@ -244,7 +240,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public void unloadChunk(int x, int y, int z, boolean save) {
-		Chunk c = getChunkLive(x, y, z, false);
+		Chunk c = getChunk(x, y, z, false);
 		if (c != null) {
 			c.unload(save);
 		}
@@ -316,7 +312,7 @@ public class SpoutRegion extends Region {
 	
 	public boolean processChunkSaveUnload(int x, int y, int z) {
 		boolean empty = false;
-		SpoutChunk c = (SpoutChunk)getChunkLive(x, y, z, false);
+		SpoutChunk c = (SpoutChunk)getChunk(x, y, z, false);
 		if (c != null) {
 			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
 			if (oldState.isSave()) {

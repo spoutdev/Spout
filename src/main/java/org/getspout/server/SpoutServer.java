@@ -724,7 +724,14 @@ public class SpoutServer extends AsyncManager implements Server {
 	private Player[] emptyPlayerArray = new Player[0];
 	@Override
 	public Player[] getOnlinePlayers() {
-		return players.get().values().toArray(emptyPlayerArray);
+		Map<String, Player> playerList = players.get();
+		ArrayList<Player> onlinePlayers = new ArrayList<Player>(playerList.size());
+		for (Player player : playerList.values()) {
+			if (player.isOnline()) {
+				onlinePlayers.add(player);
+			}
+		}
+		return onlinePlayers.toArray(emptyPlayerArray);
 	}
 
 	@Override
@@ -789,7 +796,10 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	public void stop(String message) {
 		for (Player player : getOnlinePlayers()) {
-			player.getSession().disconnect(message);
+			Session session = player.getSession();
+			if (session != null) {
+				session.disconnect(message);
+			}
 		}
 		
 		getPluginManager().clearPlugins();

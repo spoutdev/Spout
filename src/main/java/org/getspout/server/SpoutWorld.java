@@ -177,7 +177,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (int dx = -1; dx < 1; dx++) {
 			for (int dy = -1; dy < 1; dy++) {
 				for (int dz = -1; dz < 1; dz++) {
-					regions.getRegionLive(dx, dy, dz, true);
+					regions.getRegion(dx, dy, dz, true);
 				}
 			}
 		}
@@ -225,50 +225,43 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Region getRegionLive(int x, int y, int z, boolean load) {
-		return regions.getRegionLive(x, y, z, load);
+	public Region getRegion(int x, int y, int z, boolean load) {
+		return regions.getRegion(x, y, z, load);
 	}
 
 	@Override
-	public Region getRegionLive(Point point, boolean load) {
+	public Region getRegion(Point point, boolean load) {
 		int x = (int) Math.floor(point.getX());
 		int y = (int) Math.floor(point.getY());
 		int z = (int) Math.floor(point.getZ());
-		return regions.getRegionFromBlockLive(x, y, z, load);
+		return regions.getRegionFromBlock(x, y, z, load);
 	}
 
 	@Override
 	public Chunk getChunk(int x, int y, int z) {
-		Region region = getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS);
-		if (region != null) {
-			return region.getChunk(x & (Region.REGION_SIZE - 1), y & (Region.REGION_SIZE - 1), z & (Region.REGION_SIZE - 1));
-		}
-		return null;
+		return getChunk(x, y, z, false);
 	}
 
 	@Override
-	public Chunk getChunkLive(int x, int y, int z, boolean load) {
-		Region region = getRegionLive(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, load);
+	public Chunk getChunk(int x, int y, int z, boolean load) {
+		Region region = getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, load);
 		if (region != null) {
-			return region.getChunkLive(x & (Region.REGION_SIZE - 1), y & (Region.REGION_SIZE - 1), z & (Region.REGION_SIZE - 1), load);
+			return region.getChunk(x & (Region.REGION_SIZE - 1), y & (Region.REGION_SIZE - 1), z & (Region.REGION_SIZE - 1), load);
 		}
 		return null;
 	}
-
+	
 	@Override
 	public Chunk getChunk(Point point) {
-		int x = (int) Math.floor(point.getX());
-		int y = (int) Math.floor(point.getY());
-		int z = (int) Math.floor(point.getZ());
-		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
+		return getChunk(point, false);
 	}
 
 	@Override
-	public Chunk getChunkLive(Point point, boolean load) {
+	public Chunk getChunk(Point point, boolean load) {
 		int x = (int) Math.floor(point.getX());
 		int y = (int) Math.floor(point.getY());
 		int z = (int) Math.floor(point.getZ());
-		return getChunkLive(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
+		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
 	}
 
 	@Override
@@ -311,7 +304,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Entity createAndSpawnEntity(Point point, Controller controller) {
 		Entity e = createEntity(point, controller);
 		//initialize region if needed
-		getRegionLive(point, true);
+		getRegion(point, true);
 		spawnEntity(e);
 		return e;
 	}
