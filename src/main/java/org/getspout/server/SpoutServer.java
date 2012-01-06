@@ -784,14 +784,22 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void stop() {
-		group.close();
-		bootstrap.getFactory().releaseExternalResources();
+		stop("Server shutting down");
+	}
+
+	public void stop(String message) {
+		for (Player player : getOnlinePlayers()) {
+			player.getSession().disconnect(message);
+		}
 		
 		getPluginManager().clearPlugins();
 
 		// And finally kill the console
 		consoleManager.stop();
 		scheduler.stop();
+
+		group.close();
+		bootstrap.getFactory().releaseExternalResources();
 	}
 
 	@Override

@@ -189,7 +189,9 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public boolean hasChunk(int x, int y, int z) {
-		// TODO Auto-generated method stub
+		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
+			return chunks[x][y][z].get() != null;
+		}
 		return false;
 	}
 

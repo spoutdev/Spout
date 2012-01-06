@@ -30,6 +30,7 @@ import org.getspout.api.command.CommandContext;
 import org.getspout.api.command.CommandException;
 import org.getspout.api.command.CommandSource;
 import org.getspout.api.command.annotated.Command;
+import org.getspout.api.player.Player;
 import org.getspout.server.SpoutServer;
 
 /**
@@ -44,7 +45,11 @@ public class AdministrationCommands {
 	
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
 	public void stop(CommandContext args, CommandSource source) throws CommandException {
-		// TODO: Kick players
-		server.stop();
+		String message = "Server shutting down";
+		if (args.length() > 0) {
+			message = args.getJoinedString(0);
+		}
+
+		server.stop(message);
 	}
 }

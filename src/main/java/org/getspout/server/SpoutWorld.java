@@ -405,8 +405,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public short getBlockId(int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return 0;
+		return getChunk(x, y, z).getBlockId(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
 	}
 
 	@Override
