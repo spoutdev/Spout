@@ -60,6 +60,13 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.royawesome</groupId>
+			<artifactId>jlibnoise</artifactId>
+			<version>dev-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.1</version>
