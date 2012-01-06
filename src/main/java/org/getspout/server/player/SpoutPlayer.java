@@ -102,16 +102,20 @@ public class SpoutPlayer implements Player {
 		if (message.startsWith("/")) {
 			Spout.getGame().processCommand(this, message.substring(1));
 		} else {
-			for (Player player : Spout.getGame().getOnlinePlayers()) {
-				if (player != this) player.sendMessage(message);
+			String formattedMessage = "Formatting error!";
+			try {
+				formattedMessage = String.format(event.getFormat(), getName(), message);
+			} catch (Throwable t) {
+				return;
 			}
+			Spout.getGame().broadcastMessage(formattedMessage);
 		}
 	}
 
 	@Override
 	public boolean sendMessage(String message) {
 		boolean success = false;
-		if (getEntity() == null)
+		if (getEntity() != null)
 			for (String line : TextWrapper.wrapText(message)) {
 				success |= sendRawMessage(line);
 			}

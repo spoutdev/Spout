@@ -28,6 +28,7 @@ package org.getspout.server;
 
 import java.util.UUID;
 
+import org.getspout.api.Game;
 import org.getspout.api.Server;
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
@@ -365,6 +366,17 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public long getSeed() {
 		return seed;
+	}
+
+	@Override
+	public Game getGame() {
+		return server;
+	}
+
+	@Override
+	public int getHeight() {
+		// TODO: Variable world height
+		return 128;
 	}
 
 	@Override

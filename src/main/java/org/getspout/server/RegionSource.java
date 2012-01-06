@@ -19,9 +19,9 @@ public class RegionSource {
 	/**
 	 * World associated with this region source
 	 */
-	private final World world;
+	private final SpoutWorld world;
 	
-	public RegionSource(World world, SnapshotManager snapshotManager) {
+	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
 		loadedRegions = new SnapshotableConcurrentTripleIntHashMap<Region>(snapshotManager);
 	}
@@ -46,7 +46,7 @@ public class RegionSource {
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param true to load the region
+	 * @param load to load the region
 	 * @return region, if it is loaded and exists
 	 */
 	@LiveRead
