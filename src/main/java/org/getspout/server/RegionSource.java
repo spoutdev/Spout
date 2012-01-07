@@ -2,19 +2,18 @@ package org.getspout.server;
 
 import org.getspout.api.geo.cuboid.Chunk;
 import org.getspout.api.geo.cuboid.Region;
+import org.getspout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
-import org.getspout.server.util.thread.snapshotable.SnapshotableConcurrentTripleIntHashMap;
 
 public class RegionSource {
 
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
-	// TODO - need to redo this - change to "ConcurrentTripleIntHashMap"
-	private final SnapshotableConcurrentTripleIntHashMap<Region> loadedRegions;
+	private final TSyncInt21TripleObjectHashMap<Region> loadedRegions;
 	/**
 	 * World associated with this region source
 	 */
@@ -22,7 +21,7 @@ public class RegionSource {
 	
 	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
-		loadedRegions = new SnapshotableConcurrentTripleIntHashMap<Region>(snapshotManager);
+		loadedRegions = new TSyncInt21TripleObjectHashMap<Region>();
 	}
 
 	/**
@@ -100,7 +99,7 @@ public class RegionSource {
 	 */
 	@LiveRead
 	public Region getRegion(int x, int y, int z, boolean load) {
-		Region region = loadedRegions.getLive(x, y, z);
+		Region region = loadedRegions.get(x, y, z);
 
 		if (region != null || !load) {
 			return region;
@@ -132,7 +131,7 @@ public class RegionSource {
 	 */
 	@LiveRead
 	public boolean hasRegion(int x, int y, int z) {
-		return loadedRegions.getLive(x, y, z) != null;
+		return loadedRegions.get(x, y, z) != null;
 	}
 
 }
