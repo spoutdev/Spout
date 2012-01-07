@@ -17,6 +17,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.getspout.api.math.MathHelper;
+
 /**
  * This is a synchronised version of the Trove LongObjectHashMap.
  * 
@@ -29,32 +31,67 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	
 	private final int mapCount;
+	private final int mapMask;
 	private final int hashScramble;
 	private final ReadWriteLock[] lockArray;
 	private final TLongObjectHashMap<V>[] mapArray;
 	private final long no_entry_key;
 	private final AtomicInteger totalKeys = new AtomicInteger(0);
 
+	/**
+	 * Creates a synchronised map based on the Trove long object map
+	 */
 	public TSyncLongObjectHashMap() {
 		this(16);
 	}
 	
+	/**
+	 * Creates a synchronised map based on the Trove long object map
+	 *  
+	 * @param mapCount the number of sub-maps
+	 */
 	public TSyncLongObjectHashMap(int mapCount) {
 		this(mapCount, 32);
 	}
 	
+	/**
+	 * Creates a synchronised map based on the Trove long object map
+	 *  
+	 * @param mapCount the number of sub-maps
+	 * @param initialCapacity the initial capacity of the map
+	 */
 	public TSyncLongObjectHashMap(int mapCount, int initialCapacity) {
 		this(mapCount, initialCapacity, 0.5F);
 	}
 	
+	/**
+	 * Creates a synchronised map based on the Trove long object map
+	 *  
+	 * @param mapCount the number of sub-maps
+	 * @param initialCapacity the initial capacity of the map
+	 * @param loadFactor the load factor for the map
+	 */
 	public TSyncLongObjectHashMap(int mapCount, int initialCapacity, float loadFactor) {
 		this(mapCount, initialCapacity, loadFactor, Constants.DEFAULT_LONG_NO_ENTRY_VALUE);
 	}
 	
+	/**
+	 * Creates a synchronised map based on the Trove long object map
+	 *  
+	 * @param mapCount the number of sub-maps
+	 * @param initialCapacity the initial capacity of the map
+	 * @param loadFactor the load factor for the map
+	 * @param noEntryKey the key used to indicate a null key
+	 */
 	@SuppressWarnings("unchecked")
 	public TSyncLongObjectHashMap(int mapCount, int initialCapacity, float loadFactor, long noEntryKey) {
+		if (mapCount > 0x100000) {
+			throw new IllegalArgumentException("Map count exceeds valid range");
+		}
+		mapCount = MathHelper.roundUpPow2(mapCount);
+		mapMask = mapCount - 1;
 		this.mapCount = mapCount;
-		this.hashScramble = (mapCount << 4) + 1;
+		this.hashScramble = (mapCount << 8) + 1;
 		mapArray = new TLongObjectHashMap[mapCount];
 		lockArray = new ReadWriteLock[mapCount];
 		for (int i = 0; i < mapCount; i++) {
@@ -199,7 +236,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 	
-	// TODO - these should be implemented
+	// TODO - these two methods could be easily implemented
 	public void putAll(Map<? extends Long, ? extends V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
@@ -292,7 +329,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	private int mapHash(long key) {
 		int intKey = (int)((key >> 32) ^ key);
 		
-		return ((0x7FFFFFFF & intKey) % hashScramble) % mapCount;
+		return ((0x7FFFFFFF & intKey) % hashScramble) & mapMask;
 	}
 
 }

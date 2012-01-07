@@ -205,5 +205,30 @@ public class MathHelper {
 	private final static double asin_d = 1.00138940860107040d;
 
 	private final static double atan_a = 0.280872d;
+	
+	// Integer Maths
+	
+	/**
+	 * Rounds an integer up to the next power of 2.
+	 * 
+	 * @param x
+	 * @return the lowest power of 2 greater or equal to x
+	 */
+	public static int roundUpPow2(int x) {
+		if (x <= 0) {
+			return 1;
+		} else if (x > 0x40000000) {
+			throw new IllegalArgumentException("Rounding " + x + " to the next highest power of two would exceed the int range");
+		} else {
+			x--;
+			x |= x >> 1;
+			x |= x >> 2;
+			x |= x >> 4;
+			x |= x >> 8;
+			x |= x >> 16;
+			x++;
+			return x;
+		}
+	}
 
 }
