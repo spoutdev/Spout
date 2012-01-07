@@ -52,7 +52,7 @@ public abstract class PlayerController extends Controller {
 		for (Point p : initializedChunks) {
 			freeChunk(p);
 			activeChunks.remove(p);
-			Chunk c = p.getWorld().getChunkLive(p, false); 
+			Chunk c = p.getWorld().getChunk(p, false); 
 			if (c != null) {
 				removeObserver(c);
 			}
@@ -89,7 +89,7 @@ public abstract class PlayerController extends Controller {
 			if (initializedChunks.remove(p)) {
 				freeChunk(p);
 				activeChunks.remove(p);
-				Chunk c = p.getWorld().getChunkLive(p, false); 
+				Chunk c = p.getWorld().getChunk(p, false); 
 				if (c != null) {
 					removeObserver(c);
 				}
@@ -100,7 +100,7 @@ public abstract class PlayerController extends Controller {
 		
 		for (Point p : chunkInitQueue) {
 			if (initializedChunks.add(p)) {
-				Chunk c = p.getWorld().getChunkLive(p, true); 
+				Chunk c = p.getWorld().getChunk(p, true); 
 				initChunk(p);
 				addObserver(c);
 			}
@@ -115,7 +115,7 @@ public abstract class PlayerController extends Controller {
 		i = priorityChunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 			Point p = i.next();
-			Chunk c = p.getWorld().getChunkLive(p, true);
+			Chunk c = p.getWorld().getChunk(p, true);
 			sendChunk(c);
 			activeChunks.add(p);
 			i.remove();
@@ -125,7 +125,7 @@ public abstract class PlayerController extends Controller {
 		i = chunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 			Point p = i.next();
-			Chunk c = p.getWorld().getChunkLive(p, true);
+			Chunk c = p.getWorld().getChunk(p, true);
 			sendChunk(c);
 			activeChunks.add(p);
 			i.remove();

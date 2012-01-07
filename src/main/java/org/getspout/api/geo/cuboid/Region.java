@@ -42,7 +42,7 @@ public abstract class Region extends Cube {
 	 * @param z the chunk z coordinate
 	 * @return the chunk, if one exists
 	 */
-	@SnapshotRead
+	@LiveRead
 	public abstract Chunk getChunk(int x, int y, int z);
 	
 	/**
@@ -55,7 +55,7 @@ public abstract class Region extends Cube {
 	 * @return the chunk
 	 */
 	@LiveRead
-	public abstract Chunk getChunkLive(int x, int y, int z, boolean load);
+	public abstract Chunk getChunk(int x, int y, int z, boolean load);
 	
 	
 	/**
@@ -65,7 +65,7 @@ public abstract class Region extends Cube {
 	 * @param z the chunk z coordinate
 	 * @return true if chunk exists
 	 */
-	@SnapshotRead
+	@LiveRead
 	public abstract boolean hasChunk(int x, int y, int z);
 	
 	/**
@@ -90,7 +90,7 @@ public abstract class Region extends Cube {
 	public abstract void unloadChunk(int x, int y, int z, boolean save);
 	
 	/**
-	 * Queues all chunks for saving at the next available oppertunity.
+	 * Queues all chunks for saving at the next available opportunity.
 	 */
 	@DelayedWrite
 	public abstract void save();
