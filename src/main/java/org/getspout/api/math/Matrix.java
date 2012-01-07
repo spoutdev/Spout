@@ -136,10 +136,10 @@ public class Matrix {
 		Matrix res = new Matrix(a.dimension);
 		for (int i = 0; i < res.dimension; i++) {
 			for (int j = 0; j < res.dimension; j++) {
-				res.data[index(i, j, res.dimension)] = 0;
+				res.set(i, j, 0);
 				for (int k = 0; k < res.dimension; k++) {
-					float r = a.data[index(i, k, res.dimension)] * b.data[index(k, j, res.dimension)];
-					res.data[index(i, j, res.dimension)] += r;
+					float r =  a.get(i, k) * b.get(k, j); 
+					res.set(i, j, res.get(i, j) + r);
 					
 				}
 			}

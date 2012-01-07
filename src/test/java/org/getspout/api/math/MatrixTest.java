@@ -10,7 +10,7 @@ public class MatrixTest {
 	private void compareMatrixToArray(Matrix m, double[][] array){
 		for(int y = 0; y < m.getDimension(); y++){
 			for(int x = 0; x < m.getDimension(); x++){
-				if(Math.abs(m.get(x, y) - array[x][y]) > eps) fail("Matrix at " + x + "," + y + " is "+ m.get(x, y) + " but it should be "+ array[y][x]);
+				if(Math.abs(m.get(x, y) - array[x][y]) > eps) fail("Matrix at " + x + "," + y + " is "+ m.get(x, y) + " but it should be "+ array[x][y]);
 			}			
 		}
 		
@@ -89,6 +89,42 @@ public class MatrixTest {
 		};
 		
 		compareMatrixToArray(m, mul);
+		
+		//LookAt Test
+		Vector3 center = new Vector3(5, 0, 5);
+		Vector3 up = Vector3.Up;
+		Vector3 at = Vector3.ZERO;
+		
+		Vector3 f = center.subtract(at).normalize();
+		up = up.normalize();
+		
+		Vector3 s = f.cross(up);
+		Vector3 u = s.cross(f);
+
+		
+		Matrix mat = new Matrix(4);
+
+		mat.set(0, 0, s.getX());
+		mat.set(0, 1, s.getY());
+		mat.set(0, 2, s.getZ());
+		
+		mat.set(1, 0, u.getX());
+		mat.set(1, 1, u.getY());
+		mat.set(1,2, u.getZ());
+		
+		mat.set(2, 0, -f.getX());
+		mat.set(2, 1, -f.getY());
+		mat.set(2, 2, -f.getZ());
+	
+		Matrix trans = Matrix.translate(center.multiply(-1));	
+		mat = Matrix.multiply(trans, mat);
+		id = new double[][] { {-0.7071068f , 0.0f , 0.7071068f , -5.0f},
+				{0.0f , 1.0000001f , 0.0f , 0.0f},
+				{-0.7071068f , 0.0f , -0.7071068f, -5.0f},
+				{0.0f , 0.0f , 0.0f , 1.0f}
+			};
+		compareMatrixToArray(mat, id);
+		
 	}
 
 	@Test
