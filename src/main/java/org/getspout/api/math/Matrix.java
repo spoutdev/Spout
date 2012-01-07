@@ -148,7 +148,7 @@ public class Matrix {
 	}
 
 	private static int index(int x, int y, int dim) {
-		return y * dim + x;
+		return x * dim + y;
 	}
 	
 	public String toString(){
