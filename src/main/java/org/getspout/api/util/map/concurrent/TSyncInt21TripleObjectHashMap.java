@@ -22,5 +22,10 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 	public TSyncInt21TripleObjectHashMap(TSyncLongObjectMap<K> map) {
 		this.map = map;
 	}
+	
+	public boolean remove(int x, int y, int z, K value) {
+		long key = key(x, y, z);
+		return ((TSyncLongObjectHashMap<K>)map).remove(key, value);
+	}
 
 }

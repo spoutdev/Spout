@@ -274,7 +274,29 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			lock.unlock();
 		}
 	}
-
+	
+	public boolean remove(long key, V value) {
+		if (value == null) {
+			throw new IllegalArgumentException("Cannot remove null values");
+		}
+		int m = mapHash(key);
+		Lock lock = lockArray[m].writeLock();
+		lock.lock();
+		try {
+			V current = mapArray[m].get(key);
+			if (current == value) {
+				totalKeys.decrementAndGet();
+				mapArray[m].remove(key);
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	
 	public boolean retainEntries(TLongObjectProcedure<? super V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
