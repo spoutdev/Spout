@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	
 	private final int mapCount;
+	private final int hashScramble;
 	private final ReadWriteLock[] lockArray;
 	private final TLongObjectHashMap<V>[] mapArray;
 	private final long no_entry_key;
@@ -53,6 +54,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	@SuppressWarnings("unchecked")
 	public TSyncLongObjectHashMap(int mapCount, int initialCapacity, float loadFactor, long noEntryKey) {
 		this.mapCount = mapCount;
+		this.hashScramble = (mapCount << 4) + 1;
 		mapArray = new TLongObjectHashMap[mapCount];
 		lockArray = new ReadWriteLock[mapCount];
 		for (int i = 0; i < mapCount; i++) {
@@ -288,8 +290,9 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	}
 	
 	private int mapHash(long key) {
-		int intKey = 0x7FFFFFFF & (int)(key + (key << 21));
-		return intKey % mapCount;
+		int intKey = (int)((key >> 32) ^ key);
+		
+		return ((0x7FFFFFFF & intKey) % hashScramble) % mapCount;
 	}
 
 }
