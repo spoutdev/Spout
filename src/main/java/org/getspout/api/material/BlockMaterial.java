@@ -1,6 +1,6 @@
 package org.getspout.api.material;
 
-public interface BlockMaterial extends Material {
+public interface BlockMaterial extends ItemMaterial {
 
 	public float getFriction();
 

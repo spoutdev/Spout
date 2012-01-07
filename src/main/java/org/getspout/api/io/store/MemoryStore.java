@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * This implements a SimpleStore that is stored in memory. It is no persisted
+ * This implements a SimpleStore that is stored in memory. It is not persisted
  * between restarts.
  */
 

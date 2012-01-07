@@ -9,8 +9,8 @@ public interface Material {
 	public boolean hasSubtypes();
 
 	public String getName();
+	
+	public String getDisplayName();
 
-	public String getNotchianName();
-
-	public void setName(String name);
+	public void setDisplayName(String name);
 }
