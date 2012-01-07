@@ -17,7 +17,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class TSyncLongObjectHashMap<V> implements TLongObjectMap<V> {
+/**
+ * This is a synchronised version of the Trove LongObjectHashMap.
+ * 
+ * Read/write locks are used to synchronise access.
+ * 
+ * By default, it creates 16 sub-maps and there is a separate read/write lock for each submap.
+ *
+ * @param <V> the value type
+ */
+public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	
 	private final int mapCount;
 	private final ReadWriteLock[] lockArray;
