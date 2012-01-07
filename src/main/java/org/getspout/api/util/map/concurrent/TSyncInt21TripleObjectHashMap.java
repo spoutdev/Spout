@@ -27,5 +27,10 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 		long key = key(x, y, z);
 		return ((TSyncLongObjectHashMap<K>)map).remove(key, value);
 	}
+	
+	public K putIfAbsent(int x, int y, int z, K value) {
+		long key = key(x, y, z);
+		return ((TSyncLongObjectHashMap<K>)map).putIfAbsent(key, value);
+	}
 
 }
