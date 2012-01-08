@@ -16,14 +16,14 @@ public class KickCommandExecutor implements CommandExecutor {
 		if(source.hasPermission("spout.admin.kick")) {
 			if(args.length() >= 1) {
 				String playerName = args.getString(0);
-				String message = "";
+				String message = "You have been kicked from the server.";
 				if(args.length() >= 2) {
-					message = args.getJoinedString(1);
+					message += " '" + args.getJoinedString(1) + "'";
 				}
 				Player player = Spout.getGame().getPlayer(playerName, true);
 				if(player != null) {
-					//TODO add player.kick();
-					source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '"+player.getName()+"'");
+					player.kick(message);
+					source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '"+player.getName()+ (!message.isEmpty()?"' for reason '" + message + "'":"'"));
 				}
 			}
 		} else {
