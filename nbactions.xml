@@ -9,7 +9,7 @@
         <properties>
             <exec.classpathScope>runtime</exec.classpathScope>
             <exec.workingdir>target</exec.workingdir>
-            <exec.args>-classpath %classpath org.getspout.server.SpoutServer</exec.args>
+            <exec.args>-classpath %classpath org.spout.server.SpoutServer</exec.args>
             <exec.executable>java</exec.executable>
         </properties>
     </action>
