@@ -9,9 +9,9 @@ import org.getspout.api.material.MaterialData;
 
 
 public final class SpoutBlocks {
-	public final BlockMaterial air = new SpoutBlock("air", 0);
-	public final BlockMaterial solid = new SpoutBlock("solid", 1).setHardness(1.f);
-	public final BlockMaterial unbreakable = new SpoutBlock("Unbreakable", 2).setHardness(100.f);
+	public static final BlockMaterial air = new SpoutBlock("air", 0);
+	public static final BlockMaterial solid = new SpoutBlock("solid", 1).setHardness(1.f);
+	public static final BlockMaterial unbreakable = new SpoutBlock("Unbreakable", 2).setHardness(100.f);
 	
 	public static void initialize() {
 		Field[] fields = SpoutBlocks.class.getFields();
