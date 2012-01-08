@@ -85,7 +85,7 @@ public class RegionSource {
 	public Region getRegion(int x, int y, int z) {
 		return getRegion(x, y, z, false);
 	}
-
+	
 	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
 	 *
@@ -99,15 +99,29 @@ public class RegionSource {
 	 */
 	@LiveRead
 	public Region getRegion(int x, int y, int z, boolean load) {
+		return getRegion(x, y, z, load, false);
+	}
+
+	/**
+	 * Gets the region associated with the region x, y, z coordinates <br/>
+	 *
+	 * Will load or generate a region if requested.
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param load whether to load or generate the region if one does not exist at the coordinates
+	 * @param generate all the chunks inside of the region immediately
+	 * @return region
+	 */
+	@LiveRead
+	public Region getRegion(int x, int y, int z, boolean load, boolean generate) {
 		Region region = loadedRegions.get(x, y, z);
 
 		if (region != null || !load) {
 			return region;
 		} else {
-			int rx = (x << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
-			int ry = (y << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
-			int rz = (z << Region.REGION_SIZE_BITS) << Chunk.CHUNK_SIZE_BITS;
-			region = new SpoutRegion(world, rx, ry, rz, this);
+			region = new SpoutRegion(world, x, y, z, this);
 			Region current = loadedRegions.putIfAbsent(x, y, z, region);
 
 			if (current != null) {

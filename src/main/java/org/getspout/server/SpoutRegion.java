@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.getspout.api.Game;
 import org.getspout.api.Spout;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
@@ -54,7 +53,6 @@ public class SpoutRegion extends Region {
 
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
-	private final Game game;
 
 	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
 
@@ -80,19 +78,22 @@ public class SpoutRegion extends Region {
 	 * Holds all of the entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager();
-
+	
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
+		this(world, x, y, z, source, false);
+	}
+
+	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, boolean load) {
 		super(world, x, y, z);
 		this.x = (int) Math.floor(x);
 		this.y = (int) Math.floor(y);
 		this.z = (int) Math.floor(z);
 		this.source = source;
-		this.game = world.getGame();
 		this.manager = new SpoutRegionManager(this, 1, new ThreadAsyncExecutor(), world.getServer());
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					chunks[dx][dy][dz] = new AtomicReference<Chunk>(null);
+					chunks[dx][dy][dz] = new AtomicReference<Chunk>(load ? getChunk(dx, dy, dz, true) : null);
 				}
 			}
 		}
@@ -101,7 +102,7 @@ public class SpoutRegion extends Region {
 	@Override
 	@LiveRead
 	public Chunk getChunk(int x, int y, int z) {
-		return getChunk(x, y, z, false);
+		return getChunk(x, y, z, true);
 	}
 
 	@Override
@@ -120,17 +121,16 @@ public class SpoutRegion extends Region {
 			boolean success = false;
 
 			while (!success) {
-				int cx = (this.getX() * Region.REGION_SIZE + x) * Chunk.CHUNK_SIZE;
-				int cy = (this.getY() * Region.REGION_SIZE + y) * Chunk.CHUNK_SIZE;
-				int cz = (this.getZ() * Region.REGION_SIZE + z) * Chunk.CHUNK_SIZE;
+				int cx = (this.x * Region.REGION_SIZE) + x;
+				int cy = (this.y * Region.REGION_SIZE) + y;
+				int cz = (this.z * Region.REGION_SIZE) + z;
 				
-				short[] buffer = new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE];
-				CuboidShortBuffer cBuffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, buffer);
+				CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx * 16, cy * 16, cz * 16, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
 
 				WorldGenerator generator = getWorld().getGenerator();
-				generator.generate(cBuffer, cx, cy, cz);
+				generator.generate(buffer, cx, cy, cz);
 				
-				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz, buffer);
+				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz, buffer.getRawArray());
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {

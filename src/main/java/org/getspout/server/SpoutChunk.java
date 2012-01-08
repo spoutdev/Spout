@@ -44,7 +44,6 @@ import org.getspout.api.util.cuboid.CuboidShortBuffer;
 import org.getspout.api.util.map.TNibbleTripleObjectHashMap;
 import org.getspout.api.util.map.TNibbleTripleShortHashMap;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
-import org.getspout.server.util.thread.snapshotable.SnapshotableByteArray;
 import org.getspout.server.util.thread.snapshotable.SnapshotableShortArray;
 
 public class SpoutChunk extends Chunk {
@@ -62,6 +61,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Represents complex block data 
 	 */
+	@SuppressWarnings("unused")
 	private TNibbleTripleObjectHashMap<Serializable> complexData;
 
 	/**
@@ -85,7 +85,7 @@ public class SpoutChunk extends Chunk {
 	private final HashSet<Player> observers = new HashSet<Player>();
 	
 	public SpoutChunk(World world, Region region, float x, float y, float z, short[] blockIds) {
-		super(world, x, y, z);
+		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		this.parentRegion = region;
 		if (blockIds != null) {
 			this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
@@ -241,7 +241,7 @@ public class SpoutChunk extends Chunk {
 		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
 		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, this.blockIds.getLive());
 		
-		if (y < 0) {
+		if (y < 32) {
 			snapshot.flood((short)1);
 		}
 		

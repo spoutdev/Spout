@@ -177,7 +177,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (int dx = -1; dx < 1; dx++) {
 			for (int dy = -1; dy < 1; dy++) {
 				for (int dz = -1; dz < 1; dz++) {
-					regions.getRegion(dx, dy, dz, true);
+					regions.getRegion(dx, dy, dz, true, true);
 				}
 			}
 		}
@@ -239,7 +239,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Chunk getChunk(int x, int y, int z) {
-		return getChunk(x, y, z, false);
+		return getChunk(x, y, z, true);
 	}
 
 	@Override
@@ -253,7 +253,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	@Override
 	public Chunk getChunk(Point point) {
-		return getChunk(point, false);
+		return getChunk(point, true);
 	}
 
 	@Override

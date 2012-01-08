@@ -200,9 +200,10 @@ public final class ConsoleManager {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void refreshCommands() {
-		for (Object c : new ArrayList(reader.getCompletors())) {
-			reader.removeCompletor((Completor) c);
+		for (Completor c : new ArrayList<Completor>(reader.getCompletors())) {
+			reader.removeCompletor(c);
 		}
 
 		Completor[] list = new Completor[] {new SimpleCompletor(server.getAllCommands()), new NullCompletor()};
