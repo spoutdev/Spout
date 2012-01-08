@@ -17,7 +17,9 @@ public class TellCommandExecutor implements CommandExecutor {
 			String playerName = args.getString(0);
 			String message = args.getJoinedString(1);
 			Player player = Spout.getGame().getPlayer(playerName, false);
-			if(player != null) {
+			if(player == source) {
+				source.sendMessage("Forever alone.");
+			} else if(player != null) {
 				source.sendMessage("To " + ChatColor.BRIGHT_GREEN + player.getName() + ChatColor.WHITE + ": " + message);
 				player.sendMessage("From " + ChatColor.BRIGHT_GREEN + source.getName() + ChatColor.WHITE + ": " + message);
 			} else {

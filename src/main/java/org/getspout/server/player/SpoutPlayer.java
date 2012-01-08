@@ -293,12 +293,10 @@ public class SpoutPlayer implements Player {
 		return res;
 	}
 
-	@Override
 	public void kick() {
 		kick("");
 	}
 
-	@Override
 	public void kick(String reason) {
 		session.disconnect(reason);
 	}
