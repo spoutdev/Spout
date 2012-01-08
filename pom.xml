@@ -1,7 +1,7 @@
 <!--
 	Maven build file for SpoutAPI
 
-	Copyright (c) 2011 SpoutDev <http://www.getspout.org>
+	Copyright (c) 2011 SpoutDev <http://www.spout.org>
 	SpoutAPI is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
 -->
 
@@ -9,11 +9,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
-	<groupId>org.getspout</groupId>
+	<groupId>org.spout</groupId>
 	<artifactId>spoutapi</artifactId>
 	<version>dev-SNAPSHOT</version>
 	<name>SpoutAPI</name>
-	<url>http://www.getspout.org</url>
+	<url>http://www.spout.org</url>
 	<description>SpoutAPI is an API for the spout framework. Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.</description>
 
 	<properties>
@@ -39,18 +39,18 @@
 	<!-- Continuous integration -->
 	<ciManagement>
 		<system>jenkins</system>
-		<url>http://ci.getspout.org</url>
+		<url>http://ci.spout.org</url>
 	</ciManagement>
 
 	<!-- Repository locations -->
 	<repositories>
 		<repository>
 			<id>spout-repo</id>
-			<url>http://repo.getspout.org</url>
+			<url>http://repo.spout.org</url>
 		</repository>
 	</repositories>
 
-	<!-- Dependency -->
+	<!-- Dependencies -->
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.netty</groupId>
