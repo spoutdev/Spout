@@ -8,7 +8,9 @@ import org.getspout.api.Spout;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.Result;
 import org.getspout.api.event.player.PlayerChatEvent;
-import org.getspout.api.event.server.data.RetrieveDataEvent;
+import org.getspout.api.event.server.data.RetrieveIntDataEvent;
+import org.getspout.api.event.server.data.RetrieveObjectDataEvent;
+import org.getspout.api.event.server.data.RetrieveStringDataEvent;
 import org.getspout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.getspout.api.event.server.permissions.PermissionGroupEvent;
 import org.getspout.api.event.server.permissions.PermissionNodeEvent;
@@ -108,7 +110,7 @@ public class SpoutPlayer implements Player {
 		if (message.startsWith("/")) {
 			Spout.getGame().processCommand(this, message.substring(1));
 		} else {
-			String formattedMessage = "Formatting error!";
+			String formattedMessage;
 			try {
 				formattedMessage = String.format(event.getFormat(), getName(), message);
 			} catch (Throwable t) {
@@ -166,9 +168,20 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
+	public boolean hasPermission(String node) {
+		World world = null;
+		Entity entity = getEntity();
+		if (entity != null) {
+			world = entity.getChunk().getWorld();
+		}
+
+		return hasPermission(world, node);
+	}
+
+	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = new PermissionNodeEvent(world, this, node);
-		session.getGame().getEventManager().callEvent(event);
+		PermissionNodeEvent event = session.getGame().getEventManager()
+				.callEvent(new PermissionNodeEvent(world, this, node));
 		if (event.getResult() == Result.DEFAULT) {
 			return false;
 		}
@@ -178,15 +191,15 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean isInGroup(String group) {
-		PermissionGroupEvent event = new PermissionGroupEvent(this.entity.getChunk().getWorld(), this, group);
-		session.getGame().getEventManager().callEvent(event);
+		PermissionGroupEvent event = session.getGame().getEventManager()
+				.callEvent(new PermissionGroupEvent(this.entity.getChunk().getWorld(), this, group));
 		return event.getResult();
 	}
 
 	@Override
 	public String[] getGroups() {
-		PermissionGetGroupsEvent event = new PermissionGetGroupsEvent(this.entity.getChunk().getWorld(), this);
-		session.getGame().getEventManager().callEvent(event);
+		PermissionGetGroupsEvent event = session.getGame().getEventManager()
+				.callEvent(new PermissionGetGroupsEvent(this.entity.getChunk().getWorld(), this));
 		return event.getGroups();
 	}
 
@@ -195,44 +208,88 @@ public class SpoutPlayer implements Player {
 		return false;
 	}
 
-	@Override
-	public boolean hasPermission(String node) {
-		World world = null;
-		try {
-			world = this.entity.getChunk().getWorld();
-		} catch( NullPointerException e ) {
-		}
-		
-		return hasPermission(world, node);
-	}
-
 	public Object getData(String node) {
 		return getData(node, null);
 	}
 	
 	public Object getData(String node, Object defaultValue) {
 		World world = null;
-		try {
-			world = this.entity.getChunk().getWorld();
-		} catch( NullPointerException e ) {
+		Entity entity = getEntity();
+		if (entity != null) {
+			world = entity.getChunk().getWorld();
 		}
 		return getData(world, node, defaultValue);
 	}
 	
 	public Object getData(World world, String node) {
-		RetrieveDataEvent event = new RetrieveDataEvent(world, this, node);
-		session.getGame().getEventManager().callEvent(event);
-		return event.getResult();
+		return getData(world, node, null);
 	}
 	
 	public Object getData(World world, String node, Object defaultValue) {
-		RetrieveDataEvent event = new RetrieveDataEvent(world, this, node);
-		session.getGame().getEventManager().callEvent(event);
+		RetrieveObjectDataEvent event = session.getGame().getEventManager()
+				.callEvent(new RetrieveObjectDataEvent(world, this, node));
 		Object res = event.getResult();
-		if( res == null ) {
+		if (res == null) {
 			return defaultValue;
 		}
 		return res;
 	}
 
+	@Override
+	public int getInt(String node) {
+		return getInt(node, RetrieveIntDataEvent.DEFAULT_VALUE);
+	}
+
+	@Override
+	public int getInt(String node, int defaultValue) {
+		World world = null;
+		Entity entity = getEntity();
+		if (entity != null) {
+			world = entity.getChunk().getWorld();
+		}
+		return getInt(world, node, defaultValue);
+	}
+
+	@Override
+	public int getInt(World world, String node) {
+		return getInt(world, node, RetrieveIntDataEvent.DEFAULT_VALUE);
+	}
+
+	@Override
+	public int getInt(World world, String node, int defaultValue) {
+		RetrieveIntDataEvent event = session.getGame().getEventManager()
+				.callEvent(new RetrieveIntDataEvent(world, this, node));
+		int res = event.getResult();
+		if (res == RetrieveIntDataEvent.DEFAULT_VALUE) {
+			return defaultValue;
+		}
+		return res;
+	}
+
+	public String getString(String node) {
+		return getString(node, null);
+	}
+
+	public String getString(String node, String defaultValue) {
+		World world = null;
+		Entity entity = getEntity();
+		if (entity != null) {
+			world = entity.getChunk().getWorld();
+		}
+		return getString(world, node, defaultValue);
+	}
+
+	public String getString(World world, String node) {
+		return getString(world, node, null);
+	}
+
+	public String getString(World world, String node, String defaultValue) {
+		RetrieveStringDataEvent event = session.getGame().getEventManager()
+				.callEvent(new RetrieveStringDataEvent(world, this, node));
+		String res = event.getResult();
+		if (res == null) {
+			return defaultValue;
+		}
+		return res;
+	}
 }

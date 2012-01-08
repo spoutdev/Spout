@@ -74,6 +74,7 @@ import org.getspout.api.Server;
 
 import com.grahamedgecombe.jterminal.JTerminal;
 import org.getspout.api.command.CommandSource;
+import org.getspout.api.event.server.data.RetrieveIntDataEvent;
 import org.getspout.api.geo.World;
 
 /**
@@ -292,7 +293,7 @@ public final class ConsoleManager {
 	public class ColoredCommandSource implements CommandSource {
 
 		public String getName() {
-			return "CONSOLE";
+			return "Console";
 		}
 
 		public boolean sendMessage(String text) {
@@ -351,6 +352,45 @@ public final class ConsoleManager {
 			return defaultValue;
 		}
 
+		@Override
+		public int getInt(String node) {
+			return RetrieveIntDataEvent.DEFAULT_VALUE;
+		}
+
+		@Override
+		public int getInt(String node, int defaultValue) {
+			return defaultValue;
+		}
+
+		@Override
+		public int getInt(World world, String node) {
+			return RetrieveIntDataEvent.DEFAULT_VALUE;
+		}
+
+		@Override
+		public int getInt(World world, String node, int defaultValue) {
+			return defaultValue;
+		}
+
+		@Override
+		public String getString(String node) {
+			return null;
+		}
+
+		@Override
+		public String getString(String node, String defaultValue) {
+			return defaultValue;
+		}
+
+		@Override
+		public String getString(World world, String node) {
+			return null;
+		}
+
+		@Override
+		public String getString(World world, String node, String defaultValue) {
+			return defaultValue;
+		}
 	}
 
 	private class LoggerOutputStream extends ByteArrayOutputStream {
