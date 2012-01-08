@@ -28,7 +28,8 @@ package org.spout.api.inventory;
 import java.util.Set;
 
 public class CraftingInventory extends Inventory {
-	
+	private static final long serialVersionUID = 1L;
+
 	private Set<String> allowedSubTypes;
 
 	public CraftingInventory(int size) {

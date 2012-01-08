@@ -265,7 +265,7 @@ public class CollisionHelperTest {
 
 		Ray b = new Ray(
 			new Vector3(0, 10, 0),
-			Vector3.Up.scale(-1));
+			Vector3.Up.multiply(-1));
 
 		boolean result = CollisionHelper.checkCollision(a, b);
 

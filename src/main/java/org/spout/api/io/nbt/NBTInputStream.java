@@ -111,7 +111,7 @@ public final class NBTInputStream implements Closeable {
 	 * @return The tag.
 	 * @throws java.io.IOException if an I/O error occurs.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Tag readTagPayload(int type, String name, int depth) throws IOException {
 		switch (type) {
 		case NBTConstants.TYPE_END:

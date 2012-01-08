@@ -1,27 +1,14 @@
 package org.spout.api.math;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.*;
+
+import static org.spout.api.math.TestUtils.*;
 
 /**
  *
  * @author yetanotherx
  */
 public class Vector3mTest {
-	
-	public static final double eps = 0.001;
-
-	private void doAssertDouble(String message, double expect, double got) {
-		assertEquals(message, expect, got, eps);
-	}
-
-	private void doAssertDouble(double expect, double got) {
-		assertEquals(expect, got, eps);
-	}
-
 	@Test
 	public void testSetValues() {
 		Vector3m x = new Vector3m(0, 4, 5);

@@ -39,8 +39,7 @@ import org.spout.api.io.store.SimpleStore;
  */
 
 public class StringMap {
-
-	private static StringMap root;
+	//private static StringMap root;
 
 	private final StringMap parent;
 	private final SimpleStore<Integer> store;
@@ -48,6 +47,7 @@ public class StringMap {
 	private final AtomicIntegerArray thisToParentMap;
 	private final AtomicIntegerArray parentToThisMap;
 
+	@SuppressWarnings("unused")
 	private final int minId;
 	private final int maxId;
 	private AtomicInteger nextId;
@@ -181,5 +181,4 @@ public class StringMap {
 	public boolean save() {
 		return store.save();
 	}
-
 }

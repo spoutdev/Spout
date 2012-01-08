@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.plugin.exceptions.IllegalPluginAccessException;
 

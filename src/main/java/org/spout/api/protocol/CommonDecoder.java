@@ -26,8 +26,6 @@
 package org.spout.api.protocol;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.spout.api.Commons;
 import org.spout.api.protocol.bootstrap.BootstrapCodecLookupService;
 import org.spout.api.protocol.bootstrap.msg.BootstrapIdentificationMessage;

@@ -1,24 +1,13 @@
 package org.spout.api.math;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
+import static org.spout.api.math.TestUtils.*;
 /**
  *
  * @author yetanotherx
  */
 public class Vector4mTest {
-
-	public static final double eps = 0.001;
-
-	private void doAssertDouble(String message, double expect, double got) {
-		assertEquals(message, expect, got, eps);
-	}
-
-	private void doAssertDouble(double expect, double got) {
-		assertEquals(expect, got, eps);
-	}
-
 	@Test
 	public void testSetValues() {
 		Vector4m x = new Vector4m(0, 4, 3, 4);

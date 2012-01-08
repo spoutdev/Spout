@@ -26,7 +26,6 @@
 package org.spout.api.event.server.data;
 
 import org.spout.api.data.DataSubject;
-import org.spout.api.event.HandlerList;
 import org.spout.api.event.server.NodeBasedEvent;
 import org.spout.api.geo.World;
 

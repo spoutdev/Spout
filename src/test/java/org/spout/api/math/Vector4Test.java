@@ -1,23 +1,14 @@
 package org.spout.api.math;
 
 import static org.junit.Assert.*;
+import static org.spout.api.math.TestUtils.*;
+
 import org.junit.Test;
 
 /**
  * @author yetanotherx
  */
 public class Vector4Test {
-
-	public static final double eps = 0.001;
-
-	private void doAssertDouble(String message, double expect, double got) {
-		assertEquals(message, expect, got, eps);
-	}
-
-	private void doAssertDouble(double expect, double got) {
-		assertEquals(expect, got, eps);
-	}
-
 	@Test
 	public void testUnits() {
 		doAssertDouble("ONE.x does not equal 1", 1, Vector4.ONE.x);
@@ -29,22 +20,22 @@ public class Vector4Test {
 		doAssertDouble("ZERO.y does not equal 0", 0, Vector4.ZERO.y);
 		doAssertDouble("ZERO.z does not equal 0", 0, Vector4.ZERO.z);
 		doAssertDouble("ZERO.w does not equal 0", 0, Vector4.ZERO.w);
-		
+
 		doAssertDouble("UNIT_X.x does not equal 1", 1, Vector4.UNIT_X.x);
 		doAssertDouble("UNIT_X.y does not equal 0", 0, Vector4.UNIT_X.y);
 		doAssertDouble("UNIT_X.z does not equal 0", 0, Vector4.UNIT_X.z);
 		doAssertDouble("UNIT_X.w does not equal 0", 0, Vector4.UNIT_X.w);
-		
+
 		doAssertDouble("UNIT_Y.x does not equal 0", 0, Vector4.UNIT_Y.x);
 		doAssertDouble("UNIT_Y.y does not equal 1", 1, Vector4.UNIT_Y.y);
 		doAssertDouble("UNIT_Y.z does not equal 0", 0, Vector4.UNIT_Y.z);
 		doAssertDouble("UNIT_Y.w does not equal 0", 0, Vector4.UNIT_Y.w);
-		
+
 		doAssertDouble("UNIT_Z.x does not equal 0", 0, Vector4.UNIT_Z.x);
 		doAssertDouble("UNIT_Z.y does not equal 0", 0, Vector4.UNIT_Z.y);
 		doAssertDouble("UNIT_Z.z does not equal 1", 1, Vector4.UNIT_Z.z);
 		doAssertDouble("UNIT_Z.w does not equal 0", 0, Vector4.UNIT_Z.w);
-		
+
 		doAssertDouble("UNIT_W.x does not equal 0", 0, Vector4.UNIT_W.x);
 		doAssertDouble("UNIT_W.y does not equal 0", 0, Vector4.UNIT_W.y);
 		doAssertDouble("UNIT_W.z does not equal 0", 0, Vector4.UNIT_W.z);
@@ -259,7 +250,7 @@ public class Vector4Test {
 		doAssertDouble(-6, b.y);
 		doAssertDouble(1, b.z);
 		doAssertDouble(-2, b.w);
-		
+
 		doAssertDouble(2, c.x);
 		doAssertDouble(-18, c.y);
 		doAssertDouble(2.5, c.z);
@@ -276,7 +267,7 @@ public class Vector4Test {
 		doAssertDouble(-6, b.y);
 		doAssertDouble(1, b.z);
 		doAssertDouble(-2, b.w);
-		
+
 		doAssertDouble(2, c.x);
 		doAssertDouble(-18, c.y);
 		doAssertDouble(2.5, c.z);
@@ -293,7 +284,7 @@ public class Vector4Test {
 		doAssertDouble(-6, b.y);
 		doAssertDouble(1, b.z);
 		doAssertDouble(-2, b.w);
-		
+
 		doAssertDouble(2, c.x);
 		doAssertDouble(-18, c.y);
 		doAssertDouble(2.5, c.z);
@@ -436,7 +427,7 @@ public class Vector4Test {
 	@Test
 	public void testCompareTo() {
 		assertTrue(Vector4.ZERO.compareTo(Vector4.ONE) < 0);
-		
+
 		Vector4 x = new Vector4(5, 3, 4, 6);
 		Vector4 y = new Vector4(-2, 5, -2, 4);
 		assertTrue(x.compareTo(y) >= 0);

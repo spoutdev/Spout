@@ -28,7 +28,6 @@ package org.spout.api.io.nbt;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Represents a single NBT tag.

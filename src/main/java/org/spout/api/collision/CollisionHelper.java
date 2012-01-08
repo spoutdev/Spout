@@ -263,7 +263,7 @@ public class CollisionHelper {
 	}
 
 	public static boolean checkCollision(Plane a, Plane b) {
-		return !a.normal.equals(b.normal) && !a.normal.equals(b.normal.scale(-1));
+		return !a.normal.equals(b.normal) && !a.normal.equals(b.normal.multiply(-1));
 	}
 
 	
@@ -610,7 +610,7 @@ public class CollisionHelper {
 	}
 
 	public static boolean contains(Plane a, Plane b) {
-		return a.normal.equals(b.normal) || a.normal.equals(b.normal.scale(-1));
+		return a.normal.equals(b.normal) || a.normal.equals(b.normal.multiply(-1));
 	}
 
 	public static boolean contains(Plane a, Ray b) {

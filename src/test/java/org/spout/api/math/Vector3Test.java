@@ -2,23 +2,13 @@ package org.spout.api.math;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.spout.api.math.TestUtils.*;
 
 /**
  *
  * @author yetanotherx
  */
 public class Vector3Test {
-
-	public static final double eps = 0.01;
-
-	private void doAssertDouble(String message, double expect, double got) {
-		assertEquals(message, expect, got, eps);
-	}
-
-	private void doAssertDouble(double expect, double got) {
-		assertEquals(expect, got, eps);
-	}
-
 	private void testValue(Vector3 v, float x, float y, float z) {
 		if (Math.abs(v.getX() - x) >= eps || Math.abs(v.getY() - y) >= eps || Math.abs(v.getZ() - z) >= eps) {
 			fail("Test Fail! Expected {" + x + "," + y + "," + z + "} but got " + v);
@@ -500,7 +490,6 @@ public class Vector3Test {
 		Vector3 y = new Vector3(2, 4, 5);
 		Vector3 v = y.transform(Matrix.rotateX(30));
 		testValue(v, 2, .9666f, 6.333f);
-
 	}
 
 	@Test
@@ -512,7 +501,5 @@ public class Vector3Test {
 		Vector3 y = new Vector3(2, 4, 5);
 		Vector3 v = y.transform(new Quaternion(30, new Vector3(1, 0, 0)));
 		testValue(v, 2, .964f, 6.328f);
-
-
 	}
 }

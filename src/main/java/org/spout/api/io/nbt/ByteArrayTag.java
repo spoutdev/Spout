@@ -25,8 +25,6 @@
  */
 package org.spout.api.io.nbt;
 
-import java.util.Arrays;
-
 /**
  * The {@code TAG_Byte_Array} tag.
  * @author Graham Edgecombe

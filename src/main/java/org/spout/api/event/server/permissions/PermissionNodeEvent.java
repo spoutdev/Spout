@@ -25,9 +25,6 @@
  */
 package org.spout.api.event.server.permissions;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 import org.spout.api.event.Result;
 import org.spout.api.event.server.NodeBasedEvent;

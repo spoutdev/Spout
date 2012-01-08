@@ -85,9 +85,9 @@ public final class ListTag<T extends Tag> extends Tag {
 		bldr.append("}");
 		return bldr.toString();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public ListTag clone() {
+	public ListTag<T> clone() {
 		List<T> newList = new ArrayList<T>();
 		
 		for (T v : value) {

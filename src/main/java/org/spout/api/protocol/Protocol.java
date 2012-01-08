@@ -25,7 +25,6 @@
  */
 package org.spout.api.protocol;
 
-import java.security.PublicKey;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.spout.api.protocol.bootstrap.BootstrapCodecLookupService;

@@ -119,10 +119,10 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Constructs a new Vector3 from the given Vector2 and z.
-	 * Use Vector2.toVector3() instead.
 	 *
 	 * @param vector
 	 * @param z
+	 * @deprecated Use {@link Vector2#toVector3(float)} instead
 	 */
 	@Deprecated
 	public Vector3(Vector2 vector, float z) {
@@ -131,9 +131,9 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Constructs a new Vector3 from the given Vector2 and z set to 0
-	 * Use Vector2.toVector3() instead.
 	 * 
 	 * @param vector
+	 * @deprecated Use {@link Vector2#toVector3()} instead
 	 */
 	@Deprecated
 	public Vector3(Vector2 vector) {
@@ -398,10 +398,10 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Scales this Vector3 by the value of the argument.
-	 * Use Vector3.multiply() instead
 	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector3 scaled by the amount.
+	 * @deprecated Use {@link Vector3#multiply(float)} instead
 	 */
 	@Deprecated
 	public Vector3 scale(float scale) {
@@ -410,10 +410,10 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Scales this Vector3 by the value of the argument.
-	 * Use Vector3.multiply() instead
 	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector3 scaled by the amount.
+	 * @deprecated Use {@link Vector3#multiply(double)} instead
 	 */
 	@Deprecated
 	public Vector3 scale(double scale) {
@@ -422,10 +422,10 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Scales this Vector3 by the value of the argument.
-	 * Use Vector3.multiply() instead
 	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector3 scaled by the amount.
+	 * @deprecated Use {@link Vector3#multiply(int)} instead
 	 */
 	@Deprecated
 	public Vector3 scale(int scale) {
@@ -735,6 +735,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @param a
 	 * @param b
 	 * @return
+	 * @deprecated Use {@link Vector3#multiply} instead
 	 */
 	@Deprecated
 	public static Vector3 scale(Vector3 a, float b) {

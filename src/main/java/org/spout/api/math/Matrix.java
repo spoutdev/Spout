@@ -73,11 +73,11 @@ public class Matrix {
 	 * @return
 	 */
 	public float get(int row, int column) {
-		if (row < 0 || row > dimension) {
-			throw new IllegalArgumentException("Row must be between 0 and " + dimension);
+		if (row < 0 || row >= dimension) {
+			throw new IllegalArgumentException("Row must be between 0 and " + (dimension - 1));
 		}
-		if (column < 0 || column > dimension) {
-			throw new IllegalArgumentException("Column must be between 0 and " + dimension);
+		if (column < 0 || column >= dimension) {
+			throw new IllegalArgumentException("Column must be between 0 and " + (dimension - 1));
 		}
 		return data[index(row, column, dimension)];
 	}
@@ -90,11 +90,11 @@ public class Matrix {
 	 * @param value
 	 */
 	public void set(int row, int column, float value) {
-		if (row < 0 || row > dimension) {
-			throw new IllegalArgumentException("Row must be between 0 and " + dimension);
+		if (row < 0 || row >= dimension) {
+			throw new IllegalArgumentException("Row must be between 0 and " + (dimension - 1));
 		}
-		if (column < 0 || column > dimension) {
-			throw new IllegalArgumentException("Column must be between 0 and " + dimension);
+		if (column < 0 || column >= dimension) {
+			throw new IllegalArgumentException("Column must be between 0 and " + (dimension - 1));
 		}
 		data[index(row, column, dimension)] = value;
 	}
@@ -118,7 +118,7 @@ public class Matrix {
 	public Matrix add(Matrix that) {
 		return Matrix.add(this, that);
 	}
-	
+
 	/**
 	 * Returns this matrix in a single dimension float array
 	 * @return
@@ -163,9 +163,9 @@ public class Matrix {
 			for (int j = 0; j < res.dimension; j++) {
 				res.set(i, j, 0);
 				for (int k = 0; k < res.dimension; k++) {
-					float r =  a.get(i, k) * b.get(k, j); 
+					float r =  a.get(i, k) * b.get(k, j);
 					res.set(i, j, res.get(i, j) + r);
-					
+
 				}
 			}
 		}
@@ -175,10 +175,10 @@ public class Matrix {
 	private static int index(int x, int y, int dim) {
 		return x * dim + y;
 	}
-	
+
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		
+
 		for(int y = 0; y < this.dimension; y++){
 			sb.append("[ ");
 			for(int x = 0; x < this.dimension; x++){
@@ -296,27 +296,27 @@ public class Matrix {
 	public static Matrix rotate(Quaternion rot){
 		Matrix res = createIdentity();
 		Quaternion r = rot.normalize(); //Confirm that we are dealing with a unit quaternion
-		
+
 		res.set(0, 0, 1 - (2 * r.getY() * r.getY()) - (2 * r.getZ() * r.getZ()));
 		res.set(0, 1, (2 * r.getX() * r.getY()) - (2 * r.getW() * r.getZ()));
 		res.set(0, 2, (2 * r.getX() * r.getZ()) + (2 * r.getW() * r.getY()));
 		res.set(0, 3, 0);
-		
+
 		res.set(1, 0, (2 * r.getX() * r.getY()) + (2 * r.getW() * r.getZ()));
 		res.set(1, 1, 1 - (2 * r.getX() * r.getX()) - (2 * r.getZ() * r.getZ()));
 		res.set(1, 2, (2 * r.getY() * r.getZ()) - (2 * r.getW() * r.getX()));
 		res.set(1, 3, 0);
-		
+
 		res.set(2, 0, (2 * r.getX() * r.getZ()) - (2 * r.getW() * r.getY()));
 		res.set(2, 1, (2.f * r.getY() * r.getZ()) + (2.f * r.getX() * r.getW()));
 		res.set(2, 2, 1 - (2 * r.getX() * r.getX()) - (2 * r.getY() * r.getY()));
 		res.set(2, 3, 0);
-		
+
 		//3, [0-3] will be 0,0,0,1 due to identity matrix
-		
+
 		return res;
 	}
-	
+
 	public static Vector3 transform(Vector3 v, Matrix m){
 		float[] vector = { v.getX(), v.getY(), v.getZ(), 1};
 		float[] vres = new float[4];
@@ -325,10 +325,10 @@ public class Matrix {
 			for (int k = 0; k < m.dimension; k++) {
 				float n = m.get(i, k) * vector[k];
 				vres[i] += n;
-			
+
 			}
 		}
-		
+
 		return new Vector3(vres[0], vres[1], vres[2]);
 	}
 	/**

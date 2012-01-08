@@ -351,10 +351,10 @@ public class Vector2 implements Comparable<Vector2> {
 
 	/**
 	 * Scales this Vector2 by the value of the argument.
-	 * Use Vector2.multiply() instead
 	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector2 scaled by the amount.
+	 * @deprecated Use {@link Vector2#multiply(float)} instead
 	 */
 	@Deprecated
 	public Vector2 scale(float scale) {
@@ -363,10 +363,10 @@ public class Vector2 implements Comparable<Vector2> {
 
 	/**
 	 * Scales this Vector2 by the value of the argument.
-	 * Use Vector2.multiply() instead
 	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector2 scaled by the amount.
+	 * @deprecated Use {@link Vector2#multiply(double)} instead
 	 */
 	@Deprecated
 	public Vector2 scale(double scale) {
@@ -375,10 +375,10 @@ public class Vector2 implements Comparable<Vector2> {
 
 	/**
 	 * Scales this Vector2 by the value of the argument.
-	 * Use Vector2.multiply() instead
 	 *
 	 * @param scale The amount to scale by
 	 * @return A new Vector2 scaled by the amount.
+	 * @deprecated Use {@link Vector2#multiply(int)} instead
 	 */
 	@Deprecated
 	public Vector2 scale(int scale) {
@@ -669,6 +669,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @param a
 	 * @param b
 	 * @return
+	 * @deprecated Use {@link Vector2#multiply} instead
 	 */
 	@Deprecated
 	public static Vector2 scale(Vector2 a, float b) {

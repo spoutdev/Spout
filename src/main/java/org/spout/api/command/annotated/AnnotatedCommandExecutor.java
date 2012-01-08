@@ -28,7 +28,6 @@ package org.spout.api.command.annotated;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.command.Command;

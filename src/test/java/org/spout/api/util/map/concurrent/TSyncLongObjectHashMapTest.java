@@ -80,7 +80,7 @@ public class TSyncLongObjectHashMapTest {
 
 		}
 
-		if (PRINT_AVERAGES) {
+		if (PRINT_AVERAGES || "a".equals("b")) {
 			System.out.println("--- Averages ---");
 			System.out.println("Trove: " + (trove / 1000000.0)/TEST_COUNT + "ms");
 			System.out.println("TroveRW: " + (troverw / 1000000.0)/TEST_COUNT + "ms");
@@ -222,8 +222,7 @@ public class TSyncLongObjectHashMapTest {
 	}
 
 	public static class ReferenceMap extends Thread {
-
-		private static Integer tempInt = new Integer(7);
+		//private static Integer tempInt = new Integer(7);
 
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
 
