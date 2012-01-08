@@ -23,57 +23,61 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.getspout.api.event.server.permissions;
+package org.getspout.api.event.server;
 
 import org.getspout.api.event.Event;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.Result;
 import org.getspout.api.geo.World;
 import org.getspout.api.permissions.PermissionsSubject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * This event is called when PermissionSubject.getGroups() is called.
+ * This event is a parent event for any event that uses nodes.
  */
-public class PermissionGetGroupsEvent extends Event {
+public abstract class NodeBasedEvent extends Event {
 
-	private static final HandlerList handlers = new HandlerList();
-	private World world;
-	private PermissionsSubject subject;
-	private String[] groups;
+	private String node;
 
-	public PermissionGetGroupsEvent(World world, PermissionsSubject subject) {
-		this.world = world;
-		this.subject = subject;
+	public NodeBasedEvent(String node) {
+		this.node = node;
 	}
-
-	public String[] getGroups() {
-		return groups;
+	
+	public String[] getNodes(boolean wildcard) {
+		if (wildcard) {
+			List<String> nodes = new ArrayList<String>();
+			nodes.add(node);
+			//Checks all the parent nodes of this node
+			//If this method is called with node equal
+			//to this.is.a.perm.node, it will check the
+			//nodes this.is.a.*, this.is.*, this.*, and *
+			String[] split = node.split("\\.");
+			for (int i = split.length - 1; i >= 0; --i) {
+				
+				StringBuilder sb = new StringBuilder();
+				for (int j = 0; j < i; j++) {
+					sb.append(split[j]);
+					sb.append(".");
+				}
+				sb.append("*");
+				
+				nodes.add(sb.toString());
+			}
+			
+			return nodes.toArray(new String[0]);
+		} else {
+			return new String[]{node};
+		}
 	}
-
-	public void setGroups(String[] groups) {
-		this.groups = groups;
+	
+	public String[] getNodes() {
+		return getNodes(true);
 	}
-
-	public PermissionsSubject getSubject() {
-		return subject;
+	
+	public void setNode(String node) {
+		this.node = node;
 	}
-
-	public void setSubject(PermissionsSubject subject) {
-		this.subject = subject;
-	}
-
-	public World getWorld() {
-		return world;
-	}
-
-	public void setWorld(World world) {
-		this.world = world;
-	}
-
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+	
 }

@@ -26,6 +26,7 @@
 
 package org.getspout.api.command;
 
+import org.getspout.api.event.server.data.RetrieveIntDataEvent;
 import org.getspout.api.geo.World;
 import org.getspout.api.util.Named;
 import org.junit.Before;
@@ -80,5 +81,53 @@ public class SimpleCommandTest implements Named, CommandSource {
 
 	public boolean hasPermission(World world, String node) {
 		return true;
+	}
+
+	public Object getData(String node) {
+		return null;
+	}
+
+	public Object getData(String node, Object defaultValue) {
+		return defaultValue;
+	}
+
+	public Object getData(World world, String node) {
+		return null;
+	}
+
+	public Object getData(World world, String node, Object defaultValue) {
+		return defaultValue;
+	}
+
+	public int getInt(String node) {
+		return RetrieveIntDataEvent.DEFAULT_VALUE;
+	}
+
+	public int getInt(String node, int defaultValue) {
+		return defaultValue;
+	}
+
+	public int getInt(World world, String node) {
+		return RetrieveIntDataEvent.DEFAULT_VALUE;
+	}
+
+	public int getInt(World world, String node, int defaultValue) {
+		return defaultValue;
+	}
+
+	public String getString(String node) {
+		return null;
+	}
+
+	public String getString(String node, String defaultValue) {
+		return defaultValue;
+	}
+
+	public String getString(World world, String node) {
+		return null;
+	}
+
+	public String getString(World world, String node, String defaultValue) {
+		return defaultValue;
 	}
 }

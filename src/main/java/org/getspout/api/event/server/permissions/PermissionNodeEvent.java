@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * The SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,59 +30,24 @@ import java.util.List;
 import org.getspout.api.event.Event;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.event.Result;
+import org.getspout.api.event.server.NodeBasedEvent;
 import org.getspout.api.geo.World;
 import org.getspout.api.permissions.PermissionsSubject;
 
 /**
  * This event is called when PermissionSubject.hasPermission() is called.
  */
-public class PermissionNodeEvent extends Event {
+public class PermissionNodeEvent extends NodeBasedEvent {
 	
 	private static final HandlerList handlers = new HandlerList();
 	private World world;
 	private PermissionsSubject subject;
-	private String node;
 	private Result result = Result.DENY;
 	
 	public PermissionNodeEvent(World world, PermissionsSubject subject, String node) {
+		super(node);
 		this.world = world;
 		this.subject = subject;
-		this.node = node;
-	}
-	
-	public String[] getNodes(boolean wildcard) {
-		if (wildcard) {
-			List<String> nodes = new ArrayList<String>();
-			nodes.add(node);
-			//Checks all the parent nodes of this node
-			//If this method is called with node equal
-			//to this.is.a.perm.node, it will check the
-			//nodes this.is.a.*, this.is.*, this.*, and *
-			String[] split = node.split("\\.");
-			for (int i = split.length - 1; i >= 0; --i) {
-				
-				StringBuilder sb = new StringBuilder();
-				for (int j = 0; j < i; j++) {
-					sb.append(split[j]);
-					sb.append(".");
-				}
-				sb.append("*");
-				
-				nodes.add(sb.toString());
-			}
-			
-			return nodes.toArray(new String[0]);
-		} else {
-			return new String[]{node};
-		}
-	}
-	
-	public String[] getNodes() {
-		return getNodes(true);
-	}
-	
-	public void setNode(String node) {
-		this.node = node;
 	}
 	
 	public PermissionsSubject getSubject() {

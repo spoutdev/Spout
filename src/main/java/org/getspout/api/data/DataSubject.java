@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * The SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,7 +33,7 @@ public interface DataSubject extends Named {
 	/**
 	 * Gets data from the given node
 	 * @param node
-	 * @return 
+	 * @return null if the data is not set
 	 */
 	public Object getData(String node);
 	
@@ -41,23 +41,89 @@ public interface DataSubject extends Named {
 	 * Gets data from the given node
 	 * @param node
 	 * @param defaultValue
-	 * @return 
+	 * @return null if the data is not set
 	 */
 	public Object getData(String node, Object defaultValue);
 	
 	/**
-	 * Gets data from the given node
+	 * Gets data from the given node for the given world
+	 * @param world
 	 * @param node
-	 * @return 
+	 * @return null if the data is not set
 	 */
 	public Object getData(World world, String node);
 	
 	/**
+	 * Gets data from the given node for the given world
+	 * @param world
+	 * @param node
+	 * @param defaultValue
+	 * @return null if the data is not set
+	 */
+	public Object getData(World world, String node, Object defaultValue);
+
+	/**
+	 * Gets data from the given node
+	 * @param node
+	 * @return null if the data is not set or the data is not an int
+	 */
+	public int getInt(String node);
+
+	/**
 	 * Gets data from the given node
 	 * @param node
 	 * @param defaultValue
-	 * @return 
+	 * @return null if the data is not set or the data is not an int
 	 */
-	public Object getData(World world, String node, Object defaultValue);
+	public int getInt(String node, int defaultValue);
+
+	/**
+	 * Gets int data from the given node for the given world
+	 * @param world
+	 * @param node
+	 * @return null if the data is not set or the data is not an int
+	 */
+	public int getInt(World world, String node);
+
+	/**
+	 * Gets data from the given node
+	 * @param world
+	 * @param node
+	 * @param defaultValue
+	 * @return null if the data is not set or the data is not an int
+	 */
+	public int getInt(World world, String node, int defaultValue);
+
+	/**
+	 * Gets data from the given node
+	 * @param node
+	 * @return null if the data is not set or the data is not a string
+	 */
+	public String getString(String node);
+
+	/**
+	 * Gets data from the given node
+	 * @param node
+	 * @param defaultValue
+	 * @return null if the data is not set or the data is not a string
+	 */
+	public String getString(String node, String defaultValue);
+
+	/**
+	 * Gets data from the given node
+	 * @param world
+	 * @param node
+	 * @return null if the data is not set or the data is not a string
+	 */
+	public String getString(World world, String node);
+
+	/**
+	 * Gets data from the given node
+	 * @param world
+	 * @param node
+	 * @param defaultValue
+	 * @return null if the data is not set or the data is not a string
+	 */
+	public String getString(World world, String node, String defaultValue);
 	
 }

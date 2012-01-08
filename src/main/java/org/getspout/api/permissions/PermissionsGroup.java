@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * The SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,7 +28,9 @@ package org.getspout.api.permissions;
 import org.getspout.api.data.DataSubject;
 import org.getspout.api.event.EventManager;
 import org.getspout.api.event.Result;
-import org.getspout.api.event.server.data.RetrieveDataEvent;
+import org.getspout.api.event.server.data.RetrieveIntDataEvent;
+import org.getspout.api.event.server.data.RetrieveObjectDataEvent;
+import org.getspout.api.event.server.data.RetrieveStringDataEvent;
 import org.getspout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.getspout.api.event.server.permissions.PermissionGroupEvent;
 import org.getspout.api.event.server.permissions.PermissionNodeEvent;
@@ -50,15 +52,12 @@ public class PermissionsGroup implements PermissionsSubject, DataSubject {
 		this.name = name;
 	}
 
-	@Override
 	public boolean hasPermission(String node) {
 		return hasPermission(null, node);
 	}
 
-	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = new PermissionNodeEvent(world, this, node);
-		manager.callEvent(event);
+		PermissionNodeEvent event = manager.callEvent(new PermissionNodeEvent(world, this, node));
 		if (event.getResult() == Result.DEFAULT) {
 			return false;
 		}
@@ -66,49 +65,85 @@ public class PermissionsGroup implements PermissionsSubject, DataSubject {
 		return event.getResult().getResult();
 	}
 
-	@Override
 	public boolean isInGroup(String group) {
-		PermissionGroupEvent event = new PermissionGroupEvent(null, this, group);
-		manager.callEvent(event);
+		PermissionGroupEvent event = manager.callEvent(new PermissionGroupEvent(null, this, group));
 		return event.getResult();
 	}
 
-	@Override
 	public String[] getGroups() {
-		PermissionGetGroupsEvent event = new PermissionGetGroupsEvent(null, this);
-		manager.callEvent(event);
+		PermissionGetGroupsEvent event = manager.callEvent(new PermissionGetGroupsEvent(null, this));
 		return event.getGroups();
+	}
+
+	public boolean isGroup() {
+		return false;
+	}
+
+	public Object getData(String node) {
+		return getData(node, null);
+	}
+
+	public Object getData(String node, Object defaultValue) {
+		return getData(null, node, defaultValue);
+	}
+
+	public Object getData(World world, String node) {
+		return getData(world, node, null);
+	}
+
+	public Object getData(World world, String node, Object defaultValue) {
+		RetrieveObjectDataEvent event = manager
+				.callEvent(new RetrieveObjectDataEvent(world, this, node));
+		Object res = event.getResult();
+		if (res == null) {
+			return defaultValue;
+		}
+		return res;
+	}
+
+	public int getInt(String node) {
+		return getInt(node, RetrieveIntDataEvent.DEFAULT_VALUE);
+	}
+
+	public int getInt(String node, int defaultValue) {
+		return getInt(null, node, defaultValue);
+	}
+
+	public int getInt(World world, String node) {
+		return getInt(world, node, RetrieveIntDataEvent.DEFAULT_VALUE);
+	}
+
+	public int getInt(World world, String node, int defaultValue) {
+		RetrieveIntDataEvent event = manager.callEvent(new RetrieveIntDataEvent(world, this, node));
+		int res = event.getResult();
+		if (res == RetrieveIntDataEvent.DEFAULT_VALUE) {
+			return defaultValue;
+		}
+		return res;
+	}
+
+	public String getString(String node) {
+		return getString(node, null);
+	}
+
+	public String getString(String node, String defaultValue) {
+		return getString(null, node, defaultValue);
+	}
+
+	public String getString(World world, String node) {
+		return getString(world, node, null);
+	}
+
+	public String getString(World world, String node, String defaultValue) {
+		RetrieveStringDataEvent event = manager.callEvent(new RetrieveStringDataEvent(world, this, node));
+		String res = event.getResult();
+		if (res == null) {
+			return defaultValue;
+		}
+		return res;
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	public boolean isGroup() {
-		return true;
-	}
-	
-	public Object getData(String node) {
-		return getData((World) null, node);
-	}
-	
-	public Object getData(String node, Object defaultValue) {
-		return getData(null, node, defaultValue);
-	}
-	
-	public Object getData(World world, String node) {
-		RetrieveDataEvent event = new RetrieveDataEvent(world, this, node);
-		manager.callEvent(event);
-		return event.getResult();
-	}
-	
-	public Object getData(World world, String node, Object defaultValue) {
-		RetrieveDataEvent event = new RetrieveDataEvent(world, this, node);
-		manager.callEvent(event);
-		Object res = event.getResult();
-		if( res == null ) {
-			return defaultValue;
-		}
-		return res;
 	}
 }

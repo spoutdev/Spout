@@ -23,57 +23,40 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.getspout.api.event.server.permissions;
+package org.getspout.api.event.server.data;
 
-import org.getspout.api.event.Event;
+import org.getspout.api.data.DataSubject;
 import org.getspout.api.event.HandlerList;
 import org.getspout.api.geo.World;
-import org.getspout.api.permissions.PermissionsSubject;
 
 /**
- * This event is called when PermissionSubject.getGroups() is called.
+ * This event is called when DataSubject.getData*() is called.
  */
-public class PermissionGetGroupsEvent extends Event {
+public class RetrieveIntDataEvent extends RetrieveDataEvent {
+	
+	public static final int DEFAULT_VALUE = Integer.MIN_VALUE;
 
 	private static final HandlerList handlers = new HandlerList();
-	private World world;
-	private PermissionsSubject subject;
-	private String[] groups;
+	private int result = DEFAULT_VALUE;
 
-	public PermissionGetGroupsEvent(World world, PermissionsSubject subject) {
-		this.world = world;
-		this.subject = subject;
+	public RetrieveIntDataEvent(World world, DataSubject subject, String node) {
+		super(world, subject, node);
 	}
 
-	public String[] getGroups() {
-		return groups;
+	public void setResult(int result) {
+		this.result = result;
 	}
-
-	public void setGroups(String[] groups) {
-		this.groups = groups;
+	
+	public int getResult() {
+		return result;
 	}
-
-	public PermissionsSubject getSubject() {
-		return subject;
-	}
-
-	public void setSubject(PermissionsSubject subject) {
-		this.subject = subject;
-	}
-
-	public World getWorld() {
-		return world;
-	}
-
-	public void setWorld(World world) {
-		this.world = world;
-	}
-
+	
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-
+	
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
+	
 }

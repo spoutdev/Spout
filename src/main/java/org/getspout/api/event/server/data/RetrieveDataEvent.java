@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
  *
- * The SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev license version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,63 +25,23 @@
  */
 package org.getspout.api.event.server.data;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.getspout.api.data.DataSubject;
-import org.getspout.api.event.Event;
 import org.getspout.api.event.HandlerList;
+import org.getspout.api.event.server.NodeBasedEvent;
 import org.getspout.api.geo.World;
 
 /**
  * This event is called when DataSubject.getData*() is called.
  */
-public class RetrieveDataEvent extends Event {
-	
-	private static final HandlerList handlers = new HandlerList();
+public abstract class RetrieveDataEvent extends NodeBasedEvent {
+
 	private World world;
 	private DataSubject subject;
-	private String node;
-	private Object result;
-	
+
 	public RetrieveDataEvent(World world, DataSubject subject, String node) {
+		super(node);
 		this.world = world;
 		this.subject = subject;
-		this.node = node;
-	}
-	
-	public String[] getNodes(boolean wildcard) {
-		if (wildcard) {
-			List<String> nodes = new ArrayList<String>();
-			nodes.add(node);
-			//Checks all the parent nodes of this node
-			//If this method is called with node equal
-			//to this.is.a.perm.node, it will check the
-			//nodes this.is.a.*, this.is.*, this.*, and *
-			String[] split = node.split("\\.");
-			for (int i = split.length - 1; i >= 0; --i) {
-				
-				StringBuilder sb = new StringBuilder();
-				for (int j = 0; j < i; j++) {
-					sb.append(split[j]);
-					sb.append(".");
-				}
-				sb.append("*");
-				
-				nodes.add(sb.toString());
-			}
-			
-			return nodes.toArray(new String[0]);
-		} else {
-			return new String[]{node};
-		}
-	}
-	
-	public String[] getNodes() {
-		return getNodes(true);
-	}
-	
-	public void setNode(String node) {
-		this.node = node;
 	}
 	
 	public DataSubject getSubject() {
@@ -99,21 +59,4 @@ public class RetrieveDataEvent extends Event {
 	public void setWorld(World world) {
 		this.world = world;
 	}
-
-	public void setResult(Object result) {
-		this.result = result;
-	}
-	
-	public Object getResult() {
-		return result;
-	}
-	
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-	
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
-	
 }
