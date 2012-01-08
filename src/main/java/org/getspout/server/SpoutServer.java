@@ -50,6 +50,9 @@ import org.getspout.api.protocol.Session;
 import org.getspout.api.protocol.SessionRegistry;
 import org.getspout.api.util.config.Configuration;
 import org.getspout.server.command.AdministrationCommands;
+import org.getspout.server.command.KickCommandExecutor;
+import org.getspout.server.command.SayCommandExecutor;
+import org.getspout.server.command.TellCommandExecutor;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.io.StorageQueue;
@@ -234,6 +237,9 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
+		getRootCommand().sub(this, "tell").addAlias("msg").help("/tell <user> something").executor(new TellCommandExecutor());
+		getRootCommand().sub(this, "say").addAlias("chat").help("/say something").executor(new SayCommandExecutor());
+		getRootCommand().sub(this, "kick").help("/kick <player>").executor(new KickCommandExecutor());
 
 		consoleManager.setupConsole();
 
@@ -729,7 +735,26 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public Player getPlayer(String name, boolean exact) {
-		// TODO Auto-generated method stub
+		name = name.toLowerCase();
+		if(exact) {
+			for(Player player:players.getValues()) {
+				if(player.getName().equalsIgnoreCase(name)) {
+					return player;
+				}
+			}
+		} else {
+			int shortestMatch = Integer.MAX_VALUE;
+			Player shortestPlayer = null;
+			for(Player player:players.getValues()) {
+				if(player.getName().toLowerCase().startsWith(name)) {
+					if(player.getName().length() < shortestMatch) {
+						shortestMatch = player.getName().length();
+						shortestPlayer = player;
+					}
+				}
+			}
+			return shortestPlayer;
+		}
 		return null;
 	}
 
