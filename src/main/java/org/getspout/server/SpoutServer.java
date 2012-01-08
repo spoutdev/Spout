@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 import org.getspout.api.ChatColor;
 import org.getspout.api.Server;
 import org.getspout.api.Spout;
+import org.getspout.api.basic.blocks.SpoutBlock;
+import org.getspout.api.basic.blocks.SpoutBlocks;
 import org.getspout.api.command.Command;
 import org.getspout.api.command.CommandException;
 import org.getspout.api.command.CommandRegistrationsFactory;
@@ -249,6 +251,9 @@ public class SpoutServer extends AsyncManager implements Server {
 			throw new RuntimeException("Failed to parse config", t);
 		}
 
+		//Load the API types
+		SpoutBlocks.initialize();
+		
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
