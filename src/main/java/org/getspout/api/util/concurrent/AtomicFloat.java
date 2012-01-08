@@ -31,7 +31,9 @@ public class AtomicFloat extends Number implements Serializable{
 	}
 
 	public final void lazySet(float value) {
-		this.value.lazySet(Float.floatToRawIntBits(value));
+		//TODO JDK 1.6?
+		this.set(value);
+		//this.value.lazySet(Float.floatToRawIntBits(value));
 	}
 
 	public final float getAndSet(float value) {
