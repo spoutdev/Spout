@@ -36,8 +36,8 @@ import org.spout.api.permissions.PermissionsSubject;
 public class PermissionGetGroupsEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
-	private World world;
-	private PermissionsSubject subject;
+	private final World world;
+	private final PermissionsSubject subject;
 	private String[] groups;
 
 	public PermissionGetGroupsEvent(World world, PermissionsSubject subject) {
@@ -57,16 +57,12 @@ public class PermissionGetGroupsEvent extends Event {
 		return subject;
 	}
 
-	public void setSubject(PermissionsSubject subject) {
-		this.subject = subject;
-	}
-
 	public World getWorld() {
 		return world;
 	}
 
-	public void setWorld(World world) {
-		this.world = world;
+	public String getWorldName() {
+		return world == null ? null : world.getName();
 	}
 
 	public HandlerList getHandlers() {

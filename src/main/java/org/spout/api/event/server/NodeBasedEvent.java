@@ -34,45 +34,37 @@ import java.util.List;
  */
 public abstract class NodeBasedEvent extends Event {
 
-	private String node;
+	private final String node;
 
 	public NodeBasedEvent(String node) {
 		this.node = node;
 	}
-	
-	public String[] getNodes(boolean wildcard) {
-		if (wildcard) {
-			List<String> nodes = new ArrayList<String>();
-			nodes.add(node);
-			//Checks all the parent nodes of this node
-			//If this method is called with node equal
-			//to this.is.a.perm.node, it will check the
-			//nodes this.is.a.*, this.is.*, this.*, and *
-			String[] split = node.split("\\.");
-			for (int i = split.length - 1; i >= 0; --i) {
-				
-				StringBuilder sb = new StringBuilder();
-				for (int j = 0; j < i; j++) {
-					sb.append(split[j]);
-					sb.append(".");
-				}
-				sb.append("*");
-				
-				nodes.add(sb.toString());
-			}
-			
-			return nodes.toArray(new String[0]);
-		} else {
-			return new String[]{node};
-		}
-	}
-	
+
 	public String[] getNodes() {
-		return getNodes(true);
+		List<String> nodes = new ArrayList<String>();
+		nodes.add(node);
+		//Checks all the parent nodes of this node
+		//If this method is called with node equal
+		//to this.is.a.perm.node, it will check the
+		//nodes this.is.a.*, this.is.*, this.*, and *
+		String[] split = node.split("\\.");
+		for (int i = split.length - 1; i >= 0; --i) {
+
+			StringBuilder sb = new StringBuilder();
+			for (int j = 0; j < i; j++) {
+				sb.append(split[j]);
+				sb.append(".");
+			}
+			sb.append("*");
+
+			nodes.add(sb.toString());
+		}
+
+		return nodes.toArray(new String[nodes.size()]);
 	}
 	
-	public void setNode(String node) {
-		this.node = node;
+	public String getNode() {
+		return node;
 	}
 	
 }

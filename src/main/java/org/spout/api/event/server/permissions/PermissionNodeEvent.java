@@ -37,8 +37,8 @@ import org.spout.api.permissions.PermissionsSubject;
 public class PermissionNodeEvent extends NodeBasedEvent {
 	
 	private static final HandlerList handlers = new HandlerList();
-	private World world;
-	private PermissionsSubject subject;
+	private final World world;
+	private final PermissionsSubject subject;
 	private Result result = Result.DENY;
 	
 	public PermissionNodeEvent(World world, PermissionsSubject subject, String node) {
@@ -49,10 +49,6 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 	
 	public PermissionsSubject getSubject() {
 		return subject;
-	}
-	
-	public void setSubject(PermissionsSubject subject) {
-		this.subject = subject;
 	}
 	
 	public Result getResult() {
@@ -67,8 +63,8 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 		return world;
 	}
 
-	public void setWorld(World world) {
-		this.world = world;
+	public String getWorldName() {
+		return world == null ? null : world.getName();
 	}
 	
 	public HandlerList getHandlers() {

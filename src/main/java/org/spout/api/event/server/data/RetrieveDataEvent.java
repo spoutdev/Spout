@@ -34,8 +34,8 @@ import org.spout.api.geo.World;
  */
 public abstract class RetrieveDataEvent extends NodeBasedEvent {
 
-	private World world;
-	private DataSubject subject;
+	private final World world;
+	private final DataSubject subject;
 
 	public RetrieveDataEvent(World world, DataSubject subject, String node) {
 		super(node);
@@ -46,16 +46,12 @@ public abstract class RetrieveDataEvent extends NodeBasedEvent {
 	public DataSubject getSubject() {
 		return subject;
 	}
-	
-	public void setSubject(DataSubject subject) {
-		this.subject = subject;
-	}
 
 	public World getWorld() {
 		return world;
 	}
-
-	public void setWorld(World world) {
-		this.world = world;
+	
+	public String getWorldName() {
+		return world == null ? null : world.getName();
 	}
 }
