@@ -63,7 +63,7 @@ public final class ChannelBufferUtils {
 					break;
 				case Parameter.TYPE_ITEM:
 					ItemStack item = ((Parameter<ItemStack>) parameter).getValue();
-					buf.writeShort(item.getMaterial().getRawId());
+					buf.writeShort(item.getMaterial().getId());
 					buf.writeByte(item.getAmount());
 					buf.writeShort(item.getDamage());
 					break;

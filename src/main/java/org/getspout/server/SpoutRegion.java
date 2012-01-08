@@ -42,13 +42,11 @@ import org.getspout.api.geo.cuboid.Region;
 import org.getspout.api.util.cuboid.CuboidShortBuffer;
 import org.getspout.api.util.thread.DelayedWrite;
 import org.getspout.api.util.thread.LiveRead;
-import org.getspout.api.util.thread.SnapshotRead;
 import org.getspout.server.entity.EntityManager;
 import org.getspout.server.entity.SpoutEntity;
 import org.getspout.server.util.TripleInt;
 import org.getspout.server.util.thread.ThreadAsyncExecutor;
 import org.getspout.server.util.thread.snapshotable.SnapshotManager;
-import org.getspout.server.util.thread.snapshotable.SnapshotableReference;
 
 public class SpoutRegion extends Region {
 	
@@ -132,7 +130,7 @@ public class SpoutRegion extends Region {
 				WorldGenerator generator = getWorld().getGenerator();
 				generator.generate(cBuffer, cx, cy, cz);
 				
-				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz, buffer, null);
+				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy , cz, buffer);
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {

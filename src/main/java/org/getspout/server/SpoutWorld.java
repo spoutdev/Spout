@@ -371,58 +371,39 @@ public class SpoutWorld extends AsyncManager implements World {
 		// TODO: Variable world height
 		return 128;
 	}
+	
+	public Chunk getChunkFromBlock(int x, int y, int z) {
+		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
+	}
 
 	@Override
 	public BlockMaterial setBlockMaterial(int x, int y, int z, BlockMaterial material) {
-		// TODO Auto-generated method stub
-		return null;
+		return getChunkFromBlock(x, y, z).setBlockMaterial(x & 0xF, y & 0xF, z & 0xF, material);
 	}
 
 	@Override
 	public short setBlockId(int x, int y, int z, short id) {
-		// TODO Auto-generated method stub
-		return 0;
+		return getChunkFromBlock(x, y, z).setBlockId(x & 0xF, y & 0xF, z & 0xF, id);
 	}
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BlockMaterial getBlockMaterial(int x, int y, int z, boolean live) {
-		// TODO Auto-generated method stub
-		return null;
+		return getChunkFromBlock(x, y, z).getBlockMaterial(x & 0xF, y & 0xF, z & 0xF);
 	}
 
 	@Override
 	public short getBlockId(int x, int y, int z) {
-		return getChunk(x, y, z).getBlockId(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
+		return getChunkFromBlock(x, y, z).getBlockId(x & 0xF, y & 0xF, z & 0xF);
 	}
 
 	@Override
-	public short getBlockId(int x, int y, int z, boolean live) {
-		// TODO Auto-generated method stub
-		return 0;
+	public short getBlockData(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockData(x & 0xF, y & 0xF, z & 0xF);
 	}
 
 	@Override
-	public byte getBlockData(int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public byte getBlockData(int x, int y, int z, boolean live) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public byte setBlockData(int x, int y, int z, byte data) {
-		// TODO Auto-generated method stub
-		return 0;
+	public short setBlockData(int x, int y, int z, short data) {
+		return getChunkFromBlock(x, y, z).setBlockData(x & 0xF, y & 0xF, z & 0xF, data);
 	}
 
 	@Override
