@@ -12,7 +12,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
-	<groupId>org.getspout</groupId>
+	<groupId>org.spout</groupId>
 	<artifactId>spout</artifactId>
 	<version>dev-SNAPSHOT</version>
 	<name>Spout</name>
@@ -64,7 +64,7 @@
 	<!-- Dependencies -->
 	<dependencies>
 		<dependency>
-			<groupId>org.getspout</groupId>
+			<groupId>org.spout</groupId>
 			<artifactId>spoutapi</artifactId>
 			<version>dev-SNAPSHOT</version>
 			<type>jar</type>
@@ -145,7 +145,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>org.getspout.server.SpoutServer</Main-Class>
+							<Main-Class>org.spout.server.SpoutServer</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
 							<Implementation-Version>${describe}</Implementation-Version>
 							<Implementation-Vendor>SpoutDev</Implementation-Vendor>
