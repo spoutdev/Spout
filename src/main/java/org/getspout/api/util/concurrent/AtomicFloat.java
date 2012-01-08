@@ -27,11 +27,11 @@ public class AtomicFloat extends Number implements Serializable{
 	}
 
 	public final void set(float value) {
-		set(Float.floatToRawIntBits(value));
+		this.value.set(Float.floatToRawIntBits(value));
 	}
 
 	public final void lazySet(float value) {
-		this.value.set(Float.floatToRawIntBits(value));
+		this.value.lazySet(Float.floatToRawIntBits(value));
 	}
 
 	public final float getAndSet(float value) {
