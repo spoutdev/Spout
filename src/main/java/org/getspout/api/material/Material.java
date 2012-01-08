@@ -27,9 +27,9 @@ package org.getspout.api.material;
 
 public interface Material {
 
-	public int getRawId();
+	public short getId();
 
-	public int getRawData();
+	public short getData();
 
 	public boolean hasSubtypes();
 

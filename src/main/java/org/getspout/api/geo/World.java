@@ -28,7 +28,6 @@ package org.getspout.api.geo;
 import java.util.UUID;
 
 import org.getspout.api.Game;
-import org.getspout.api.Server;
 import org.getspout.api.entity.Controller;
 import org.getspout.api.entity.Entity;
 import org.getspout.api.event.EventSource;

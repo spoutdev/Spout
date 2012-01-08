@@ -38,7 +38,7 @@ public class MaterialData {
 	 * @param item to add
 	 */
 	public static void registerMaterial(Material mat) {
-		idLookup.put(mat.getRawId(), mat.getRawData(), mat);
+		idLookup.put(mat.getId(), mat.getData(), mat);
 		nameLookup.put(mat.getName().toLowerCase(), mat);
 	}
 
@@ -62,7 +62,7 @@ public class MaterialData {
 	 * @param data to get
 	 * @return material or null if none found
 	 */
-	public static Material getMaterial(short id, byte data) {
+	public static Material getMaterial(short id, short data) {
 		Material mat = idLookup.get(id, data);
 		if (mat != null) {
 			return mat;
@@ -77,7 +77,7 @@ public class MaterialData {
 	 * @return block, or null if none found
 	 */
 	public static BlockMaterial getBlock(short id) {
-		return getBlock(id, (byte) 0);
+		return getBlock(id, (short) 0);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class MaterialData {
 	 * @param data to get
 	 * @return block, or null if none found
 	 */
-	public static BlockMaterial getBlock(short id, byte data) {
+	public static BlockMaterial getBlock(short id, short data) {
 		Material mat = getMaterial(id, data);
 		if (mat instanceof BlockMaterial) {
 			return (BlockMaterial) mat;
@@ -102,7 +102,7 @@ public class MaterialData {
 	 * @return item or null if none found
 	 */
 	public static ItemMaterial getItem(short id) {
-		return getItem(id, (byte) 0);
+		return getItem(id, (short)0);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class MaterialData {
 	 * @param data to get
 	 * @return item or null if none found
 	 */
-	public static ItemMaterial getItem(short id, byte data) {
+	public static ItemMaterial getItem(short id, short data) {
 		Material mat = getMaterial(id, data);
 		if (mat instanceof ItemMaterial) {
 			return (ItemMaterial) mat;

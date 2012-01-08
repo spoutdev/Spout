@@ -27,7 +27,6 @@ package org.getspout.api.geo;
 
 import org.getspout.api.material.BlockMaterial;
 import org.getspout.api.util.thread.DelayedWrite;
-import org.getspout.api.util.thread.LiveRead;
 import org.getspout.api.util.thread.SnapshotRead;
 
 public interface BlockAccess {
@@ -70,22 +69,7 @@ public interface BlockAccess {
 	 */
 	@SnapshotRead
 	public BlockMaterial getBlockMaterial(int x, int y, int z);
-	
-	/**
-	 * Gets the material for the block at (x, y, z)<br/>
-	 * 
-	 * Note: using live material may have a negative performance impact, relative to reading the snapshot value
-	 * 
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param live whether to use the live id, or snapshot value
-	 * @return the block's material
-	 */
-	@SnapshotRead
-	@LiveRead
-	public BlockMaterial getBlockMaterial(int x, int y, int z, boolean live);
-	
+
 	/**
 	 * Gets the snapshot id for the block at (x, y, z)
 	 * 
@@ -96,22 +80,7 @@ public interface BlockAccess {
 	 */
 	@SnapshotRead
 	public short getBlockId(int x, int y, int z);
-	
-	/**
-	 * Gets the id for the block at (x, y, z)<br/>
-	 * 
-	 * Note: using live id may have a negative performance impact, relative to reading the snapshot value
-	 * 
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param live whether to use the live id, or snapshot value
-	 * @return the block's material
-	 */
-	@SnapshotRead
-	@LiveRead
-	public short getBlockId(int x, int y, int z, boolean live);
-	
+
 	/**
 	 * Gets the snapshot data for the block at (x, y, z)
 	 * 
@@ -121,23 +90,8 @@ public interface BlockAccess {
 	 * @return the block's data from the snapshot
 	 */
 	@SnapshotRead
-	public byte getBlockData(int x, int y, int z);
-	
-	/**
-	 * Gets the data for the block at (x, y, z)<br/>
-	 * 
-	 * Note: using live data may have a negative performance impact, relative to reading the snapshot value
-	 * 
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param live whether to use the live data, or snapshot value
-	 * @return the block's data
-	 */
-	@SnapshotRead
-	@LiveRead
-	public byte getBlockData(int x, int y, int z, boolean live);
-	
+	public short getBlockData(int x, int y, int z);
+
 	/**
 	 * Sets the snapshot data for the block at (x, y, z) to the given data and returns the snapshot value.
 	 * 
@@ -149,6 +103,5 @@ public interface BlockAccess {
 	 */
 	@SnapshotRead
 	@DelayedWrite
-	public byte setBlockData(int x, int y, int z, byte data);
-
+	public short setBlockData(int x, int y, int z, short data);
 }
