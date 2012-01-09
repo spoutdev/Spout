@@ -26,6 +26,7 @@
 package org.spout.api.entity;
 
 import org.spout.api.collision.model.CollisionModel;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
@@ -110,6 +111,14 @@ public interface Entity extends Metadatable {
 	 */
 	@SnapshotRead
 	public Region getRegion();
+	
+	/**
+	 * Gets the world the entity is associated with, or null if unspawned.
+	 * 
+	 * @return world
+	 */
+	@SnapshotRead
+	public World getWorld();
 	
 	/**
 	 * Called just before a snapshot update.  

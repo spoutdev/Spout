@@ -25,6 +25,7 @@
  */
 package org.spout.api.geo;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.spout.api.Game;
@@ -237,4 +238,22 @@ public interface World extends EventSource, BlockAccess {
 	 * @return The height of this world in blocks
 	 */
 	public int getHeight();
+	
+	/**
+	 * Gets all entities with the specified type.
+	 *
+	 * @param type The {@link Class} for the type.
+	 * @param <T> The type of entity.
+	 * @return A collection of entities with the specified type.
+	 */
+	@SnapshotRead
+	public Set<Entity> getAll(Class<? extends Controller> type);
+	
+	/**
+	 * Gets all entities.
+	 *
+	 * @return A collection of entities.
+	 */
+	@SnapshotRead
+	public Set<Entity> getAll();
 }
