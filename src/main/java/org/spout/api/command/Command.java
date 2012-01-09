@@ -56,14 +56,6 @@ public interface Command extends RawCommandExecutor{
 	public Command addSubCommand(Named owner, String primaryName);
 
 	/**
-	 * Alias for addSubCommand
-	 *
-	 * @param primaryName the Enum to link sub-command to
-	 * @return the new sub-command
-	 */
-	public Command sub(Named owner, String primaryName);
-
-	/**
 	 * Registers sub commands created by a {@link CommandRegistrationsFactory}
 	 *
 	 * @param owner The owner of these commands
@@ -87,14 +79,7 @@ public interface Command extends RawCommandExecutor{
 	 * @return the new active command or null if the stack was empty
 	 */
 	public Command closeSubCommand();
-
-	/**
-	 * Alias for closeSubCommand.
-	 *
-	 * @return the new active command
-	 */
-	public Command closeSub();
-
+	
 	/**
 	 * Adds an alias to the active Command.
 	 *
@@ -109,14 +94,6 @@ public interface Command extends RawCommandExecutor{
 	public Command addAlias(String... names);
 
 	/**
-	 * Alias for addAlias
-	 *
-	 * @param names the aliases to add
-	 * @return the active Command
-	 */
-	public Command alias(String... names);
-
-	/**
 	 * Sets the help string for the active Command.
 	 *
 	 * If this is called more than once for a Command, subsequent calls will
@@ -126,14 +103,6 @@ public interface Command extends RawCommandExecutor{
 	 * @return the active Command
 	 */
 	public Command setHelp(String help);
-
-	/**
-	 * Alias for setHelpString
-	 *
-	 * @param help the help string
-	 * @return the active Command
-	 */
-	public Command help(String help);
 
 	/**
 	 * Sets the usage string for the active Command.
@@ -147,13 +116,6 @@ public interface Command extends RawCommandExecutor{
 	public Command setUsage(String usage);
 
 	/**
-	 * Alias for setHelpString
-	 *
-	 * @see #setUsage(String)
-	 */
-	public Command usage(String usage);
-
-	/**
 	 * Sets the Executor for the active Command.
 	 *
 	 * If this is called more than once for a Command, subsequent calls will
@@ -165,13 +127,6 @@ public interface Command extends RawCommandExecutor{
 	public Command setExecutor(CommandExecutor executor);
 
 	/**
-	 * Alias for setExecutor
-	 *
-	 * @see #setExecutor(CommandExecutor)
-	 */
-	public Command executor(CommandExecutor executor);
-
-	/**
 	 * Adds flags to this Command's list of allowed flags. Flags are given in
 	 * the format of a String containing the allowed flag characters, where
 	 * value flag characters are followed by a :.
@@ -180,14 +135,6 @@ public interface Command extends RawCommandExecutor{
 	 * @return The active command
 	 */
 	public Command addFlags(String flags);
-
-	/**
-	 * Alias for #addFlags(String)
-	 *
-	 * @param flags The flags to add to this command's list of allowed flags.
-	 * @return The active command
-	 */
-	public Command flags(String flags);
 
 	/**
 	 * Gets the usage message for the command.
@@ -300,9 +247,18 @@ public interface Command extends RawCommandExecutor{
 	public Command setRawExecutor(RawCommandExecutor rawExecutor);
 
 	/**
-	 * @see Command#setRawExecutor(RawCommandExecutor)
-	 * @param rawExecutor The command's raw executor
+	 * Sets the permissions required to use this command.
+	 * @param requireAll Whether to require all of the listed permissions to execute the command.
+	 * @param permissions The permissions required
 	 * @return The active command
 	 */
-	public Command rawExecutor(RawCommandExecutor rawExecutor);
+	public Command setPermissions(boolean requireAll, String... permissions);
+
+	/**
+	 * Sets the arg limits for a command.
+	 * @param min Minimum arg length. Cannot be less than 0.
+	 * @param max Maximum argument length. -1 for unlimited
+	 * @return The active command
+	 */
+	public Command setArgBounds(int min, int max);
 }

@@ -54,6 +54,9 @@ public class SimpleCommand implements Command {
 	protected String usage;
 	protected final TCharSet valueFlags = new TCharHashSet();
 	protected final TCharSet flags = new TCharHashSet();
+	protected String[] permissions = new String[0];
+	protected boolean requireAllPermissions;
+	protected int minArgLength = 0, maxArgLength = -1;
 
 	public SimpleCommand(Named owner, String... names) {
 		aliases.addAll(Arrays.asList(names));
@@ -73,10 +76,6 @@ public class SimpleCommand implements Command {
 		return sub;
 	}
 
-	public Command sub(Named owner, String primaryName) {
-		return addSubCommand(owner, primaryName);
-	}
-
 	public <T> Command addSubCommands(Named owner, T object, CommandRegistrationsFactory<T> factory) {
 		factory.create(owner, object, this);
 		return this;
@@ -88,10 +87,6 @@ public class SimpleCommand implements Command {
 		}
 		lock(owner);
 		return parent;
-	}
-
-	public Command closeSub() {
-		return closeSubCommand();
 	}
 
 	public Command addAlias(String... names) {
@@ -114,19 +109,11 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	public Command alias(String... names) {
-		return addAlias(names);
-	}
-
 	public Command setHelp(String help) {
 		if (!isLocked()) {
 			this.help = help;
 		}
 		return this;
-	}
-
-	public Command help(String help) {
-		return setHelp(help);
 	}
 
 	public Command setUsage(String usage) {
@@ -136,19 +123,11 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	public Command usage(String usage) {
-		return setUsage(usage);
-	}
-
 	public Command setExecutor(CommandExecutor executor) {
 		if (!isLocked()) {
 			this.executor = executor;
 		}
 		return this;
-	}
-
-	public Command executor(CommandExecutor executor) {
-		return setExecutor(executor);
 	}
 
 	public Command addFlags(String flagString) {
@@ -163,10 +142,6 @@ public class SimpleCommand implements Command {
 			}
 		}
 		return this;
-	}
-
-	public Command flags(String flags) {
-		return addFlags(flags);
 	}
 
 	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
@@ -187,13 +162,24 @@ public class SimpleCommand implements Command {
 		if (executor == null || baseIndex >= args.length) {
 			throw new MissingCommandException("No command found!", getUsage(args, baseIndex));
 		}
+
+		if (!hasPermission(source)) {
+			throw new CommandException("You no not have the required permissions!");
+		}
 		args = MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length);
 
 		CommandContext context = new CommandContext(args, valueFlags);
 		for (char flag : context.getFlags().toArray()) {
 			if (!flags.contains(flag)) {
-				throw new CommandUsageException("Unknown flag:" + flag, this);
+				throw new CommandUsageException("Unknown flag:" + flag, getUsage(args, baseIndex));
 			}
+		}
+
+		if (context.length() < minArgLength) {
+			throw new CommandUsageException("Not enough arguments", getUsage(args, baseIndex));
+		}
+		if (maxArgLength >= 0 && context.length() > maxArgLength) {
+			throw new CommandUsageException("Too many arguments", getUsage(args, baseIndex));
 		}
 
 		try {
@@ -368,7 +354,30 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	public Command rawExecutor(RawCommandExecutor rawExecutor) {
-		return setRawExecutor(rawExecutor);
+	public Command setPermissions(boolean requireAll, String... permissions) {
+		this.requireAllPermissions = requireAll;
+		this.permissions = permissions;
+		return this;
+	}
+
+	public boolean hasPermission(CommandSource sender) {
+		if (permissions == null || permissions.length < 1) return true;
+		boolean success = requireAllPermissions;
+		for (String perm : permissions) {
+			if (requireAllPermissions) {
+				success &= sender.hasPermission(perm);
+			} else {
+				success |= sender.hasPermission(perm);
+			}
+		}
+		return success;
+	}
+	
+	public Command setArgBounds(int min, int max) {
+		if (min >= 0) {
+			minArgLength = min;
+		}
+		maxArgLength = max;
+		return this;
 	}
 }
