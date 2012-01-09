@@ -54,7 +54,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		boolean success = true;
 		for (Method method : commands.getMethods()) {
 			// Basic checks
-			if (!Modifier.isStatic(method.getModifiers()) && injector == null) {
+			if (!Modifier.isStatic(method.getModifiers()) && instance == null) {
 				continue;
 			}
 			if (!method.isAnnotationPresent(Command.class)) {
@@ -63,13 +63,20 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 
 			Command command = method.getAnnotation(Command.class);
 			if (command.aliases().length < 1) {
-				return false;
+				success = false;
+				continue;
 			}
-			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]);
-			child.addAlias(command.aliases());
-			child.addFlags(command.flags());
-			child.setUsage(command.usage());
-			child.setHelp(command.desc());
+			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0])
+			.addAlias(command.aliases())
+			.addFlags(command.flags())
+			.setUsage(command.usage())
+			.setHelp(command.desc())
+			.setArgBounds(command.min(), command.max());
+			
+			if (method.isAnnotationPresent(CommandPermissions.class)) {
+				CommandPermissions perms = method.getAnnotation(CommandPermissions.class);
+				child.setPermissions(perms.requireAll(), perms.value());
+			}
 
 			if (method.isAnnotationPresent(NestedCommand.class)) {
 				for (Class<?> clazz : method.getAnnotation(NestedCommand.class).value()) {
@@ -78,6 +85,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			} else {
 				child.setExecutor(executorFactory.getAnnotatedCommandExecutor(instance, method));
 			}
+			child.closeSubCommand();
 		}
 		return success;
 	}
