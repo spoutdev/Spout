@@ -124,7 +124,7 @@ public class SpoutRegion extends Region{
 				int cy = (this.y * Region.REGION_SIZE) + y;
 				int cz = (this.z * Region.REGION_SIZE) + z;
 				
-				CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx * 16, cy * 16, cz * 16, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
+				CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx * Chunk.CHUNK_SIZE, cy * Chunk.CHUNK_SIZE, cz * Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
 
 				WorldGenerator generator = getWorld().getGenerator();
 				generator.generate(buffer, cx, cy, cz);
