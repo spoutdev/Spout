@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.getspout.api.math.MathHelper;
+import org.spout.api.math.MathHelper;
 
 /**
  * Implements a store that stores {int, &lt;T&gt;} elementa.<br>
