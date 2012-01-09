@@ -25,6 +25,10 @@
  */
 package org.spout.api.entity;
 
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
+
 public abstract class Controller {
 	protected Entity parent;
 	public void attachToEntity(Entity e){
@@ -56,5 +60,57 @@ public abstract class Controller {
 	 * It can be used to send packets for network update.
 	 */
 	public void snapshotStart() {
+	}
+	
+	/**
+	 * Checks if this entity has moved this cycle.
+	 * @return {@code true} if so, {@code false} if not.
+	 */
+	public boolean hasMoved() {
+		Transform old = parent.getTransform();
+		Transform current= parent.getLiveTransform();
+		if (current == null) {
+			return false;
+		} else if (old == null) {
+			return true;
+		} else {
+			return Math.abs(old.getPosition().getMahattanDistance(current.getPosition())) > 0.01D;
+		}
+	}
+	
+	/**
+	 * Checks if this entity has moved farther than 128 blocks in this cycle.
+	 * @return {@code true} if so, {@code false} if not.
+	 */
+	public boolean hasTeleported() {
+		Transform old = parent.getTransform();
+		Transform current= parent.getLiveTransform();
+		if (current == null) {
+			return false;
+		} else if (old == null) {
+			return true;
+		} else {
+			return Math.abs(old.getPosition().getMahattanDistance(current.getPosition())) > 128D;
+		}
+	}
+
+	/**
+	 * Checks if this entity has rotated this cycle.
+	 * @return {@code true} if so, {@code false} if not.
+	 */
+	public boolean hasRotated() {
+		Transform old = parent.getTransform();
+		Transform current= parent.getLiveTransform();
+		if (current == null) {
+			return false;
+		} else if (old == null) {
+			return false;
+		} else {
+			Quaternion oldQ = old.getRotation();
+			Quaternion currentQ = current.getRotation();
+			Vector3 oldAngles = oldQ.getAxisAngles();
+			Vector3 currentAngles = currentQ.getAxisAngles();
+			return Math.abs(oldAngles.getX() - currentAngles.getX()) + Math.abs(oldAngles.getY() - currentAngles.getY()) + Math.abs(oldAngles.getZ() - currentAngles.getZ()) > 0.01D;
+		}
 	}
 }
