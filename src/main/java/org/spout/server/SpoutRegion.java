@@ -46,7 +46,7 @@ import org.spout.server.util.TripleInt;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 
-public class SpoutRegion extends Region {
+public class SpoutRegion extends Region{
 	
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 

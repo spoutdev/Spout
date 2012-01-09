@@ -32,6 +32,7 @@ import org.spout.api.collision.model.CollisionModel;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -257,6 +258,12 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	public Region getRegion() {
 		Point position = transformAndManager.transform.getPosition();
 		return position.getWorld().getRegion(position, true);
+	}
+	
+	@Override
+	public World getWorld() {
+		Point position = transformAndManager.transform.getPosition();
+		return position.getWorld();
 	}
 	
 	private static class TransformAndManager {

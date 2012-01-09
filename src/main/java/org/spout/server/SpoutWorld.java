@@ -25,6 +25,7 @@
  */
 package org.spout.server;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.spout.api.Game;
@@ -428,5 +429,22 @@ public class SpoutWorld extends AsyncManager implements World {
 	public WorldGenerator getGenerator() {
 		return generator;
 	}
-
+	
+	@Override
+	public HashSet<Entity> getAll() {
+		HashSet<Entity> entities = new HashSet<Entity>();
+		for (Region region : regions) {
+			entities.addAll(region.getAll());
+		}
+		return entities;
+	}
+	
+	@Override
+	public HashSet<Entity> getAll(Class<? extends Controller> type) {
+		HashSet<Entity> entities = new HashSet<Entity>();
+		for (Region region : regions) {
+			entities.addAll(region.getAll(type));
+		}
+		return entities;
+	}
 }

@@ -25,6 +25,10 @@
  */
 package org.spout.server;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
@@ -33,7 +37,7 @@ import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 
-public class RegionSource {
+public class RegionSource implements Iterable<Region>{
 
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
@@ -171,6 +175,20 @@ public class RegionSource {
 	@LiveRead
 	public boolean hasRegion(int x, int y, int z) {
 		return loadedRegions.get(x, y, z) != null;
+	}
+	
+	/**
+	 * Gets an unmodifiable collection of all loaded regions.
+	 * 
+	 * @return collection of all regions
+	 */
+	public Collection<Region> getRegions() {
+		return Collections.unmodifiableCollection(loadedRegions.valueCollection());
+	}
+
+	@Override
+	public Iterator<Region> iterator() {
+		return getRegions().iterator();
 	}
 
 }
