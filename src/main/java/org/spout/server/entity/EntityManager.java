@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.entity.Controller;
+import org.spout.api.io.store.MemoryStore;
+import org.spout.api.util.StringMap;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashSet;
@@ -59,6 +61,8 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * The next id to check.
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
+	
+	private final StringMap entityMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 
 	private SnapshotableConcurrentHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
 		SnapshotableConcurrentHashSet<SpoutEntity> set = groupedEntities.get(type);
@@ -177,5 +181,12 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			e.copyToSnapshot();
 		}
 		snapshotManager.copyAllSnapshots();
+	}
+	/**
+	 * Gets the string map associated with this entity manager
+	 * @return
+	 */
+	public StringMap getStringMap(){
+		return entityMap;
 	}
 }

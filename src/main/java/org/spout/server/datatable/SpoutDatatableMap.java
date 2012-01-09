@@ -57,7 +57,7 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	@Override
 	public DatatableTuple get(String key) {
-		return map.get(key.hashCode());
+		return map.get(getKey(key));
 	}
 
 	@Override

@@ -25,10 +25,13 @@
  */
 package org.spout.server.entity;
 
+import java.io.Externalizable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.collision.model.CollisionModel;
+import org.spout.api.datatable.Datatable;
+import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
@@ -40,16 +43,18 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.MemoryStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.metadata.EntityMetadataStore;
-import org.spout.api.metadata.MetadataStringValue;
-import org.spout.api.metadata.MetadataValue;
 import org.spout.api.model.Model;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.util.StringMap;
 import org.spout.server.SpoutRegion;
 import org.spout.server.SpoutServer;
+import org.spout.server.datatable.SpoutDatatableMap;
+import org.spout.server.datatable.value.SpoutDatatableBool;
+import org.spout.server.datatable.value.SpoutDatatableFloat;
+import org.spout.server.datatable.value.SpoutDatatableInt;
+import org.spout.server.datatable.value.SpoutDatatableObject;
 
-public class SpoutEntity extends EntityMetadataStore implements Entity {
+public class SpoutEntity implements Entity {
 	public final static int NOTSPAWNEDID = -1;
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
@@ -64,11 +69,14 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 	Model model;
 	CollisionModel collision;
 	
+	SpoutDatatableMap map;
+	
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
 		this.server = server;
 		transformAndManager = new TransformAndManager(transform, this.server.getEntityManager());
 		this.controller = controller;
 		transformAndManagerLive.set(transformAndManager.copy());
+		this.map = new SpoutDatatableMap(this.server.getEntityManager().getStringMap());
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
@@ -206,47 +214,6 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 		transformAndManager = transformAndManagerLive.get();
 	}
 	
-	@Override
-	public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
-		super.setMetadata(this, metadataKey, newMetadataValue);
-	}
-
-	@Override
-	public List<MetadataValue> getMetadata(String metadataKey) {
-		return super.getMetadata(this, metadataKey);
-	}
-
-	@Override
-	public boolean hasMetadata(String metadataKey) {
-		return super.hasMetadata(this, metadataKey);
-	}
-
-	@Override
-	public void removeMetadata(String metadataKey, Plugin owningPlugin) {
-		super.removeMetadata(this, metadataKey, owningPlugin);		
-	}
-
-	@Override
-	public boolean is(Class<? extends Controller> clazz) {
-		return clazz.isAssignableFrom(this.getController().getClass());
-	}
-
-	@Override
-	public void setMetadata(String key, int value) {
-		setMetadata(key, new MetadataStringValue(value));		
-	}
-
-	@Override
-	public void setMetadata(String key, float value) {
-		setMetadata(key, new MetadataStringValue(value));
-
-	}
-
-	@Override
-	public void setMetadata(String key, String value) {
-		setMetadata(key, new MetadataStringValue(value));
-
-	}
 
 	@Override
 	public Chunk getChunk() {
@@ -287,5 +254,41 @@ public class SpoutEntity extends EntityMetadataStore implements Entity {
 		public TransformAndManager copy() {
 			return new TransformAndManager(transform != null ? transform.copy() : null, entityManager);
 		}
+	}
+
+
+	@Override
+	public boolean is(Class<? extends Controller> clazz) {
+		return clazz.isAssignableFrom(this.getController().getClass());
+	}
+
+	
+	@Override
+	public void setData(String key, int value) {
+		map.set(new SpoutDatatableInt(map.getKey(key), value));
+		
+	}
+
+	@Override
+	public void setData(String key, float value) {
+		map.set(new SpoutDatatableFloat(map.getKey(key), value));
+		
+	}
+
+	@Override
+	public void setData(String key, boolean value) {
+		map.set(new SpoutDatatableBool(map.getKey(key), value));
+		
+	}
+
+	@Override
+	public void setData(String key, Externalizable value) {
+		map.set(new SpoutDatatableObject(map.getKey(key), value));
+		
+	}
+
+	@Override
+	public DatatableTuple getData(String key) {
+		return map.get(key);
 	}
 }
