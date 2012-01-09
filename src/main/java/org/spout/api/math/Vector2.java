@@ -349,41 +349,6 @@ public class Vector2 implements Comparable<Vector2> {
 		return Vector2.divide(this, new Vector2(val, val));
 	}
 
-	/**
-	 * Scales this Vector2 by the value of the argument.
-	 *
-	 * @param scale The amount to scale by
-	 * @return A new Vector2 scaled by the amount.
-	 * @deprecated Use {@link Vector2#multiply(float)} instead
-	 */
-	@Deprecated
-	public Vector2 scale(float scale) {
-		return this.multiply(scale);
-	}
-
-	/**
-	 * Scales this Vector2 by the value of the argument.
-	 *
-	 * @param scale The amount to scale by
-	 * @return A new Vector2 scaled by the amount.
-	 * @deprecated Use {@link Vector2#multiply(double)} instead
-	 */
-	@Deprecated
-	public Vector2 scale(double scale) {
-		return this.multiply(scale);
-	}
-
-	/**
-	 * Scales this Vector2 by the value of the argument.
-	 *
-	 * @param scale The amount to scale by
-	 * @return A new Vector2 scaled by the amount.
-	 * @deprecated Use {@link Vector2#multiply(int)} instead
-	 */
-	@Deprecated
-	public Vector2 scale(int scale) {
-		return this.multiply(scale);
-	}
 
 	/**
 	 * Returns this Vector2 dot the Vector2 argument. Dot Product is defined as

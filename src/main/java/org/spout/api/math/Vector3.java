@@ -117,28 +117,6 @@ public class Vector3 implements Comparable<Vector3> {
 		this(0, 0, 0);
 	}
 
-	/**
-	 * Constructs a new Vector3 from the given Vector2 and z.
-	 *
-	 * @param vector
-	 * @param z
-	 * @deprecated Use {@link Vector2#toVector3(float)} instead
-	 */
-	@Deprecated
-	public Vector3(Vector2 vector, float z) {
-		this(vector.getX(), vector.getY(), z);
-	}
-
-	/**
-	 * Constructs a new Vector3 from the given Vector2 and z set to 0
-	 * 
-	 * @param vector
-	 * @deprecated Use {@link Vector2#toVector3()} instead
-	 */
-	@Deprecated
-	public Vector3(Vector2 vector) {
-		this(vector, 0);
-	}
 
 	public float getX() {
 		return x;
@@ -396,41 +374,6 @@ public class Vector3 implements Comparable<Vector3> {
 		return Vector3.divide(this, new Vector3(val, val, val));
 	}
 
-	/**
-	 * Scales this Vector3 by the value of the argument.
-	 *
-	 * @param scale The amount to scale by
-	 * @return A new Vector3 scaled by the amount.
-	 * @deprecated Use {@link Vector3#multiply(float)} instead
-	 */
-	@Deprecated
-	public Vector3 scale(float scale) {
-		return this.multiply(scale);
-	}
-
-	/**
-	 * Scales this Vector3 by the value of the argument.
-	 *
-	 * @param scale The amount to scale by
-	 * @return A new Vector3 scaled by the amount.
-	 * @deprecated Use {@link Vector3#multiply(double)} instead
-	 */
-	@Deprecated
-	public Vector3 scale(double scale) {
-		return this.multiply(scale);
-	}
-
-	/**
-	 * Scales this Vector3 by the value of the argument.
-	 *
-	 * @param scale The amount to scale by
-	 * @return A new Vector3 scaled by the amount.
-	 * @deprecated Use {@link Vector3#multiply(int)} instead
-	 */
-	@Deprecated
-	public Vector3 scale(int scale) {
-		return this.multiply(scale);
-	}
 
 	/**
 	 * Takes the dot product of two vectors
@@ -727,19 +670,6 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public static Vector3 divide(Vector3 a, Vector3 b) {
 		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
-	}
-
-	/**
-	 * Creates a new vector that is A multiplied by the uniform scalar B
-	 *
-	 * @param a
-	 * @param b
-	 * @return
-	 * @deprecated Use {@link Vector3#multiply} instead
-	 */
-	@Deprecated
-	public static Vector3 scale(Vector3 a, float b) {
-		return Vector3.multiply(a, new Vector3(b, b, b));
 	}
 
 	/**

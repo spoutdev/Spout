@@ -78,13 +78,6 @@ public class Vector2m extends Vector2 {
 		return this;
 	}
 
-	@Deprecated
-	@Override
-	public Vector2 scale(float scale) {
-		x *= scale;
-		y *= scale;
-		return this;
-	}
 
 	@Override
 	public Vector2 cross() {
