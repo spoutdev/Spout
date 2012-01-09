@@ -216,15 +216,27 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean isInGroup(String group) {
+		World world = null;
+		Entity entity = getEntity();
+		if (entity != null) {
+			world = entity.getChunk().getWorld();
+		}
+
 		PermissionGroupEvent event = session.getGame().getEventManager()
-				.callEvent(new PermissionGroupEvent(this.entity.getChunk().getWorld(), this, group));
+				.callEvent(new PermissionGroupEvent(world, this, group));
 		return event.getResult();
 	}
 
 	@Override
 	public String[] getGroups() {
+		World world = null;
+		Entity entity = getEntity();
+		if (entity != null) {
+			world = entity.getChunk().getWorld();
+		}
+
 		PermissionGetGroupsEvent event = session.getGame().getEventManager()
-				.callEvent(new PermissionGetGroupsEvent(this.entity.getChunk().getWorld(), this));
+				.callEvent(new PermissionGetGroupsEvent(world, this));
 		return event.getGroups();
 	}
 
