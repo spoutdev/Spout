@@ -42,6 +42,7 @@ public class TSyncLongObjectHashMapTest {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public void testMap() {
 
