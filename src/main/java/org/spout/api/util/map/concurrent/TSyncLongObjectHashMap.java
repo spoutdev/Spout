@@ -11,6 +11,8 @@ import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TLongSet;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -310,7 +312,21 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	}
 
 	public Collection<V> valueCollection() {
-		throw new UnsupportedOperationException("This operation is not supported");
+		HashSet<V> collection = new HashSet<V>();
+		for (int m = 0; m < mapCount; m++) {
+			lockArray[m].readLock().lock();
+		}
+		try {
+			for (int m = 0; m < mapCount; m++) {
+				collection.addAll(mapArray[m].valueCollection());
+			}
+		}
+		finally {
+			for (int m = 0; m < mapCount; m++) {
+				lockArray[m].readLock().unlock();
+			}
+		}
+		return Collections.unmodifiableCollection(collection);
 	}
 
 	public V[] values() {
