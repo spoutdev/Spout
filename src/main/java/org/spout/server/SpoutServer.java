@@ -76,9 +76,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.util.config.Configuration;
 import org.spout.server.command.AdministrationCommands;
-import org.spout.server.command.KickCommandExecutor;
-import org.spout.server.command.SayCommandExecutor;
-import org.spout.server.command.TellCommandExecutor;
+import org.spout.server.command.MessagingCommands;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.io.StorageQueue;
@@ -264,9 +262,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
-		getRootCommand().sub(this, "tell").addAlias("msg").help("/tell <user> something").executor(new TellCommandExecutor());
-		getRootCommand().sub(this, "say").addAlias("chat").help("/say something").executor(new SayCommandExecutor());
-		getRootCommand().sub(this, "kick").help("/kick <player>").executor(new KickCommandExecutor());
+		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
 
 		consoleManager.setupConsole();
 
@@ -844,10 +840,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	public void stop(String message) {
 		for (Player player : getOnlinePlayers()) {
-			Session session = player.getSession();
-			if (session != null) {
-				session.disconnect(message);
-			}
+			player.kick(message);
 		}
 		
 		getPluginManager().clearPlugins();

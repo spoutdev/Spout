@@ -25,10 +25,14 @@
  */
 package org.spout.server.command;
 
+import org.spout.api.ChatColor;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandException;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.player.Player;
 import org.spout.server.SpoutServer;
 
 /**
@@ -42,12 +46,28 @@ public class AdministrationCommands {
 	}
 	
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
+	@CommandPermissions("spout.command.stop")
 	public void stop(CommandContext args, CommandSource source) throws CommandException {
 		String message = "Server shutting down";
 		if (args.length() > 0) {
 			message = args.getJoinedString(0);
 		}
-
 		server.stop(message);
+	}
+
+	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
+	@CommandPermissions("spout.command.kick")
+	public void kick(CommandContext args, CommandSource source) throws CommandException {
+		String playerName = args.getString(0);
+		String message = "You have been kicked from the server.";
+		if (args.length() >= 2) {
+			message = args.getJoinedString(1);
+		}
+
+		Player player = Spout.getGame().getPlayer(playerName, true);
+		if (player != null) {
+			player.kick(message);
+			source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
+		}
 	}
 }
