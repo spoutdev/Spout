@@ -1,4 +1,4 @@
-package org.getspout.api.util.map.concurrent;
+package org.spout.api.util.map.concurrent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
