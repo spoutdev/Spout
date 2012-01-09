@@ -2,8 +2,7 @@ package org.spout.api.util.map.concurrent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-import java.util.concurrent.atomic.AtomicReferenceArray;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -24,7 +23,8 @@ import org.spout.api.math.MathHelper;
 public final class AtomicIntReferenceArrayStore<T> {
 
 	@SuppressWarnings("unchecked")
-	public final T EMPTY = (T)new Object();
+	private final T EMPTY = (T)new Object();
+	private final int UNSTABLE = 1;
 
 	private final int maxLength;
 	private AtomicInteger length = new AtomicInteger(0);
@@ -41,11 +41,11 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * <br>
 	 * When performing a resize operation, a write lock is obtained.  This ensures exclusive access to the arrays in order to perform the resize.
 	 */
-	private final ReadWriteLock resizeLock = new ReentrantReadWriteLock();
+	private AtomicReference<AtomicIntegerArray> seqArray;
+	private AtomicReference<T[]> auxArray;
+	private AtomicReference<int[]> intArray;
 
-	private AtomicIntegerArray intArray;
-	private AtomicReferenceArray<T> auxArray;
-
+	@SuppressWarnings("unchecked")
 	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor, int initialSize) {
 		this.maxLength = MathHelper.roundUpPow2((maxEntries * 3) / 2); // ~50% load factor
 		this.reservedMask = (-MathHelper.roundUpPow2(maxLength)) & 0xFFFF;
@@ -53,9 +53,10 @@ public final class AtomicIntReferenceArrayStore<T> {
 		this.length.set(MathHelper.roundUpPow2(initialSize));
 		this.entries.set(0);
 
-		intArray = new AtomicIntegerArray(this.length.get());
-		auxArray = new AtomicReferenceArray<T>(this.length.get());		
-		emptyFill(auxArray);
+		intArray = new AtomicReference<int[]>(new int[this.length.get()]);
+		auxArray = new AtomicReference<T[]>((T[])new Object[this.length.get()]);
+		seqArray = new AtomicReference<AtomicIntegerArray>(new AtomicIntegerArray(this.length.get()));
+		emptyFill(auxArray.get());
 	}
 
 	/**
@@ -81,14 +82,19 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the int value
 	 */
 	public final int getInt(int index) {
-		Lock lock = obtainReadLockForGet();
-		try {
-			return intArray.get(toInternal(index));
-		} finally {
-			lock.unlock();
+		while (true) {
+			int initialSequence = seqArray.get().get(index);
+			if (initialSequence == UNSTABLE) {
+				continue;
+			}
+			int value = intArray.get()[index];
+			if (seqArray.get().get(index) != initialSequence) {
+				continue;
+			}
+			return value;
 		}
 	}
-	
+
 	/**
 	 * Gets the id value stored at a given index.<br>
 	 * <br>
@@ -100,7 +106,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	public final short getId(int index) {
 		return (short)(getInt(index) >> 16);
 	}
-	
+
 	/**
 	 * Gets the data value stored at a given index.<br>
 	 * <br>
@@ -126,11 +132,16 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the auxiliary data object, null, or EMPTY
 	 */
 	public final T getAuxData(int index) {
-		Lock lock = obtainReadLockForGet();
-		try {
-			return auxArray.get(toInternal(index));
-		} finally {
-			lock.unlock();
+		while (true) {
+			int initialSequence = seqArray.get().get(index);
+			if (initialSequence == UNSTABLE) {
+				continue;
+			}
+			T auxData = auxArray.get()[index];
+			if (seqArray.get().get(index) != initialSequence) {
+				continue;
+			}
+			return auxData;
 		}
 	}
 
@@ -151,17 +162,21 @@ public final class AtomicIntReferenceArrayStore<T> {
 		entries.incrementAndGet();
 
 		while (true) {
-			Lock lock = obtainReadLockForAdd();
+			if (needsResize()) {
+				resizeArrays();
+			}
+			int testIndex = scan.getAndIncrement() & (length.get() - 1);
+			int prevSeq = seqArray.get().getAndSet(testIndex, UNSTABLE);
+			if (prevSeq == UNSTABLE) {
+				continue;
+			}
 			try {
-				int testIndex = scan.getAndIncrement() & (length.get() - 1);
-				boolean success = auxArray.compareAndSet(testIndex, EMPTY, auxData);
-				if (success) {
-					int idAndData = (((int)id) << 16) | (data & 0xFFFF);
-					intArray.set(testIndex, idAndData);
-					return toExternal(testIndex);
-				}
+				int idAndData = (((int)id) << 16) | (data & 0xFFFF);
+				intArray.get()[testIndex] = idAndData;
+				auxArray.get()[testIndex] = auxData;
+				return toExternal(testIndex);
 			} finally {
-				lock.unlock();
+				seqArray.get().set(testIndex, prevSeq + 2);
 			}
 		}
 	}
@@ -171,84 +186,24 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * <br>
 	 * @param index the index
 	 */
-	public final void remove(int index) {
+	public boolean remove(int index) {
 		int localIndex = toInternal(index);
-		Lock lock = obtainReadLockForRemove();
-		try {
-			boolean success = false;
-			T current = auxArray.get(localIndex);
-			if (current == EMPTY) {
-				throw new IllegalStateException("An attempt was made to remove from an empty ");
-			}
-			success = auxArray.compareAndSet(localIndex, current, EMPTY);
-			if (success) {
-				entries.decrementAndGet();
-			} else {
-				throw new IllegalStateException("An attempt was made to remove from an empty ");
-			}
-		} finally {
-			lock.unlock();
-		}
-	}
 
-	private final Lock obtainReadLockForRemove() {
-		return obtainReadLock();
-	}
-
-	private final Lock obtainReadLockForGet() {
-		return obtainReadLock();
-	}
-		
-	/**
-	 * Gets a locked read lock for performing get operations. <br>
-	 * <br>
-	 * This method implements a spinlock if the number of entries exceeds the threshold for a resize.<br>
-	 * This prevents the store from being read locked if a resize is required.<br>
-	 * All operations that had already obtained the read lock will eventually complete.<br>
-	 * The add operation that caused the resize to be required (or another one) will actually perform the resize.<br>
-	 * <br>
-	 * @return the read lock (locked)
-	 */
-	private final Lock obtainReadLock() {
-		while (needsResize()) {
-		}
-		Lock lock = resizeLock.readLock();
-		lock.lock();
-		return lock;
-	}
-
-	/**
-	 * Gets a locked read lock for performing add operations.<br>
-	 * <br>
-	 * If a resize is required, an attempt will be made to write lock the store and if successful, the store will be resized.<br>
-	 * <br>
-	 * Otherwise, an attempt will be made to obtain a read lock.<br>
-	 * <br>
-	 * The method loops until a read lock is successfully obtained.<br>
-	 * <br>
-	 * While a resize is required, no new operations can start.  Once all the outstanding operations complete, the write lock can be obtained.  This prevents starvation.<br>
-	 * <br>
-	 * @return the read lock (locked)
-	 */
-	private final Lock obtainReadLockForAdd() {
 		while (true) {
-			while (!needsResize()) {
-				Lock readLock = resizeLock.readLock();
-				boolean success = readLock.tryLock();
-				if (success) {
-					return readLock;
-				}
-			}
-			Lock writeLock = resizeLock.writeLock();
-			boolean success = writeLock.tryLock();
-			if (!success) {
+			int prevSeq = seqArray.get().getAndSet(localIndex, UNSTABLE);
+			if (prevSeq == UNSTABLE) {
 				continue;
-			} else {
-				try {
-					resizeArrays();
-				} finally {
-					writeLock.unlock();
+			}
+			try {
+				T current = auxArray.get()[localIndex];
+				if (current == EMPTY) {
+					return false;
 				}
+				auxArray.get()[localIndex] = EMPTY;
+				entries.decrementAndGet();
+				return true;
+			} finally {
+				seqArray.get().set(localIndex, prevSeq + 2);
 			}
 		}
 	}
@@ -259,22 +214,87 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * The array length is doubled if needsResize returns true.
 	 */
 	private void resizeArrays() {
-		int newLength = length.get() << 1;
-		if (newLength > maxLength || !needsResize()) {
-			return;
+		int lockedIndexes = 0;
+		int[] seqBackup = new int[0];
+		try {
+			// Lock the first element
+			int firstSeq;
+			do {
+				if (!needsResize()) {
+					return;
+				}
+				firstSeq = seqArray.get().getAndSet(0, UNSTABLE);
+			} while (firstSeq == UNSTABLE);
+			lockedIndexes++;
+			// Once locked, no other thread can do the resize operation
+
+			// Create an array to backup the sequence numbers
+			seqBackup = new int[length.get()];
+			seqBackup[0] = firstSeq;
+
+			// Lock the remaining elements
+			for (int i = 1; i < length.get(); i++) {
+				do {
+					if (!needsResize()) {
+						return;
+					}
+					seqBackup[i] = seqArray.get().getAndSet(i, UNSTABLE);
+				} while (seqBackup[i] == UNSTABLE);
+				lockedIndexes++;
+			}
+
+			// Calculate new length
+			int newLength = length.get() << 1;
+			if (newLength > maxLength || !needsResize()) {
+				return;
+			}
+
+			// 
+			int[] newIntArray = new int[newLength];
+			@SuppressWarnings("unchecked")
+			T[] newAuxArray = (T[])new Object[newLength];
+			AtomicIntegerArray newSeqArray = new AtomicIntegerArray(newLength);
+			emptyFill(newAuxArray);
+
+			// Copy the state of the current array to the new array
+			for (int i = 0; i < length.get(); i++) {
+				newIntArray[i] = intArray.get()[i];
+				newAuxArray[i] = auxArray.get()[i];
+				newSeqArray.set(i, UNSTABLE);
+			}
+
+			// Set the top half of the new array to unstable and EMPTY
+			for (int i = length.get(); i < newLength; i++) {
+				newSeqArray.set(i, UNSTABLE);
+				newAuxArray[i] = EMPTY;
+			}
+			intArray.set(newIntArray);
+			auxArray.set(newAuxArray);
+			seqArray.set(newSeqArray);
+
+			int oldLength = length.get();
+
+			// Update the length, the array already has been lengthened, so this is safe
+			length.set(newLength);
+
+			// Set the top half of the array's sequence number to 0 (from UNSTABLE)
+			for (int i = oldLength; i < newLength; i++) {
+				if (!seqArray.get().compareAndSet(i, UNSTABLE, 0)) {
+					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
+				}
+			}
+		} finally {
+			// Set the bottom half of array to new sequence numbers (from UNSTABLE)
+			for (int i = 0; i < lockedIndexes; i++) {
+				if (!seqArray.get().compareAndSet(i, UNSTABLE, seqBackup[i] + 2)) {
+					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
+				}
+			}
 		}
-		AtomicIntegerArray newIntArray = new AtomicIntegerArray(newLength);
-		AtomicReferenceArray<T> newAuxArray = new AtomicReferenceArray<T>(newLength);
-		emptyFill(newAuxArray);
-		for (int i = 0; i < length.get(); i++) {
-			newIntArray.set(i, intArray.get(i));
-			newAuxArray.set(i, auxArray.get(i));
-		}
-		intArray = newIntArray;
-		auxArray = newAuxArray;
-		length.set(newLength);
+
+
 	}
-	
+
 	/**
 	 * Converts an internal index to an external index.
 	 * 
@@ -284,7 +304,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	private final int toExternal(int internal) {
 		return (internal | reservedMask) & 0xFFFF;
 	}
-	
+
 	/**
 	 * Converts an external index to an internal index.
 	 * 
@@ -294,15 +314,15 @@ public final class AtomicIntReferenceArrayStore<T> {
 	private final int toInternal(int external) {
 		return (external | (~reservedMask)) & 0xFFFF;
 	}
-	
+
 	/**
 	 * Fills an auxiliary array with all empty objects.
 	 * 
 	 * @param array the array to fill
 	 */
-	private final void emptyFill(AtomicReferenceArray<T> array) {
-		for (int i = 0; i < array.length(); i++) {
-			array.set(i, EMPTY);
+	private final void emptyFill(T[] array) {
+		for (int i = 0; i < array.length; i++) {
+			array[i] = EMPTY;
 		}
 	}
 
@@ -314,8 +334,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return true if the array needs to be resized
 	 */
 	// TODO - add timer that allows for resize downwards
-	//      - store last time the array was > half of the threshold.  
-	//      - if more than a threshold downsize the array
+	//      - would need a map to remap the indexes to a lower range though
 	private final boolean needsResize() {
 		return length.get() != maxLength && entries.get() >= (length.get() >> 1);
 	}
