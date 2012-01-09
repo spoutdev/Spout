@@ -58,9 +58,11 @@ public class SpoutPlayer implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
+	private String displayName;
 	
 	public SpoutPlayer(String name) {
 		this.name = name;
+		this.displayName = name;
 		hashcode = name.hashCode();
 	}
 
@@ -78,6 +80,18 @@ public class SpoutPlayer implements Player {
 	@Threadsafe
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	@Threadsafe
+	public String getDisplayName() {
+		return displayName;
+	}
+	
+	@Override
+	@Threadsafe
+	public void setDisplayName(String name) {
+		displayName = name;
 	}
 
 	@Override
