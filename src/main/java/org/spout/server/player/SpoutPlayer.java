@@ -56,11 +56,13 @@ public class SpoutPlayer implements Player {
 	private final AtomicReference<Entity> entityLive = new AtomicReference<Entity>();
 	private Entity entity;
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
+	private final AtomicReference<String> displayName = new AtomicReference<String>();
 	private boolean online;
 	private final int hashcode;
 	
 	public SpoutPlayer(String name) {
 		this.name = name;
+		displayName.set(name);
 		hashcode = name.hashCode();
 	}
 
@@ -78,6 +80,19 @@ public class SpoutPlayer implements Player {
 	@Threadsafe
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	@Threadsafe
+	public String getDisplayName() {
+		return displayName.get();
+	}
+	
+	@Override
+	@Threadsafe	
+	public void setDisplayName(String name) {
+			displayName.set(name);
+		}
 	}
 
 	@Override
