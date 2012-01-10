@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://wwwi.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,68 +19,56 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 import javax.xml.bind.TypeConstraintException;
 import org.spout.api.Spout;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
 
 public abstract class GenericWidget /*extends AbstractEventSource*/ implements Widget {
+	/** Name of the default plugin when none is set. */
+	public static final String PLUGIN = "Spoutcraft";
+	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 5L;
-	/**
-	 * Set if this is Spoutcraft (client), cleared if it is Spout (server)...
-	 */
-	static final protected transient boolean isSpoutcraft = false;
-	protected int X = 0;
-	protected int Y = 0;
-	protected int width = 50;
-	protected int height = 50;
-	protected boolean visible = true;
-	protected transient boolean dirty = true;
-	protected transient Screen screen = null;
-	protected RenderPriority priority = RenderPriority.Normal;
-	protected UUID id = UUID.randomUUID();
-	protected String tooltip = "";
-	protected String plugin = "Spoutcraft";
-	protected WidgetAnchor anchor = WidgetAnchor.SCALE;
+	/** Used for generating unique ids. */
+	private static int lastId = 0;
+	/** Position. */
+	private int X = 0, Y = 0;
+	/** Dimensions. */
+	private int width = 50, height = 50;
+	private boolean visible = true;
+	private transient boolean dirty = true;
+	private RenderPriority priority = RenderPriority.Normal;
+	private int id = -1;
+	private String tooltip = "";
+	private String plugin = PLUGIN;
+	private WidgetAnchor anchor = WidgetAnchor.SCALE;
 	// Server side layout
-	protected Container container = null;
-	protected boolean fixed = false;
-	protected int marginTop = 0, marginRight = 0, marginBottom = 0, marginLeft = 0;
-	protected int minWidth = 0, maxWidth = 427, minHeight = 0, maxHeight = 240;
-	protected int orig_x = 0, orig_y = 0;
-	protected boolean autoDirty = true;
-	protected transient boolean hasPosition = false;
-	protected transient boolean hasSize = false;
+	private Container parent = null;
+	private boolean fixed = false;
+	private int marginTop = 0, marginRight = 0, marginBottom = 0, marginLeft = 0;
+	private int minWidth = 0, maxWidth = 427, minHeight = 0, maxHeight = 240;
+	private boolean autoDirty = true;
+	private transient boolean hasPosition = false;
+	private transient boolean hasSize = false;
 	// Animation
-	protected WidgetAnim animType = WidgetAnim.NONE;
-	protected float animValue = 1f;
-	protected short animCount = 0;
-	protected short animTicks = 20;
-	protected final byte ANIM_REPEAT = (1<<0);
-	protected final byte ANIM_RESET = (1<<1);
-	protected final byte ANIM_RUNNING = (1<<2);
-	protected final byte ANIM_STOPPING = (1<<3);
-	protected byte animFlags = 0;
-	protected transient int animTick = 0; // Current tick
-	protected transient int animFrame = 0; // Current frame
+	private WidgetAnim animType = WidgetAnim.NONE;
+	private float animValue = 1f;
+	private short animCount = 0;
+	private short animTicks = 20;
+	private final byte ANIM_REPEAT = (1<<0);
+	private final byte ANIM_RESET = (1<<1);
+	private final byte ANIM_RUNNING = (1<<2);
+	private final byte ANIM_STOPPING = (1<<3);
+	private byte animFlags = 0;
+	private transient int animTick = 0; // Current tick
+	private transient int animFrame = 0; // Current frame
 
 	public GenericWidget() {
 	}
 
-	@Override
-	final public boolean isSpoutcraft() {
-		return isSpoutcraft;
-	}
-
-	@Override
-	public int getNumBytes() {
-		return 48 + PacketUtil.getNumBytes(tooltip) + PacketUtil.getNumBytes(plugin != null ? plugin : "Spoutcraft");
-	}
-
-	@Override
-	public int getVersion() {
-		return (int) serialVersionUID;
+	public GenericWidget(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
 	public GenericWidget(int X, int Y, int width, int height) {
@@ -88,6 +76,16 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		this.Y = Y;
 		this.width = width;
 		this.height = height;
+	}
+
+	@Override
+	public int getNumBytes() {
+		return 48 + PacketUtil.getNumBytes(tooltip) + PacketUtil.getNumBytes(plugin != null ? plugin : PLUGIN);
+	}
+
+	@Override
+	public int getVersion() {
+		return (int) serialVersionUID;
 	}
 
 	@Override
@@ -123,7 +121,7 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	@Override
 	public Widget setPlugin(String name) {
 		if (name == null || name.length() == 0) {
-			plugin = "Spoutcraft";
+			plugin = PLUGIN;
 		}
 		if (!this.plugin.equals(name)) {
 			this.plugin = name;
@@ -141,9 +139,7 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		setAnchor(WidgetAnchor.getAnchorFromId(input.readByte())); // 6 + 1 = 17
 		setVisible(input.readBoolean()); // 17 + 1 = 18
 		setPriority(RenderPriority.getRenderPriorityFromId(input.readInt())); // 18 + 4 = 22
-		long msb = input.readLong(); // 22 + 8 = 30
-		long lsb = input.readLong(); // 30 + 8 = 38
-		this.id = new UUID(msb, lsb);
+		this.id = input.readInt(); // 22 + 4 = 26
 		setTooltip(PacketUtil.readString(input)); // String
 		setPlugin(PacketUtil.readString(input)); // String
 		animType = WidgetAnim.getAnimationFromId(input.readByte()); // 38 + 1 + 39
@@ -162,10 +158,9 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		output.writeByte(getAnchor().getId()); // 16 + 1 = 17
 		output.writeBoolean(isVisible()); // 17 + 1 = 18
 		output.writeInt(priority.getId()); // 18 + 4 = 22
-		output.writeLong(getId().getMostSignificantBits()); // 22 + 8 = 30
-		output.writeLong(getId().getLeastSignificantBits()); // 30 + 8 = 38
+		output.writeInt(getId()); // 22 + 4 = 26
 		PacketUtil.writeString(output, getTooltip()); // String
-		PacketUtil.writeString(output, plugin != null ? plugin : "Spoutcraft"); // String
+		PacketUtil.writeString(output, plugin != null ? plugin : PLUGIN); // String
 		output.writeByte(animType.getId()); // 38 + 1 = 39
 		output.writeByte(animFlags); // 39 + 1 = 40
 		output.writeFloat(animValue); // 40 + 4 = 44
@@ -184,25 +179,11 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	}
 
 	@Override
-	public UUID getId() {
+	public int getId() {
+		if (id == -1) {
+			id = lastId++;
+		}
 		return id;
-	}
-
-	@Override
-	public Screen getScreen() {
-		return screen;
-	}
-
-	@Override
-	public Widget setScreen(Plugin plugin, Screen screen) {
-		if (getScreen() != null && screen != null && !getScreen().equals(screen)) {
-			getScreen().removeWidget(this);
-		}
-		this.screen = screen;
-		if (plugin != null) {
-			this.plugin = plugin.getDescription().getName();
-		}
-		return this;
 	}
 
 	@Override
@@ -305,8 +286,8 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		if (isVisible() != enable) {
 			visible = enable;
 			updateSize();
-			if (hasContainer()) {
-				getContainer().deferLayout();
+			if (hasParent()) {
+				getParent().deferLayout();
 			}
 			autoDirty();
 		}
@@ -315,7 +296,7 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 
 	@Override
 	public int hashCode() {
-		return getId().hashCode();
+		return getId();
 	}
 
 	@Override
@@ -342,21 +323,37 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	}
 
 	@Override
-	public Container getContainer() {
-		return container;
+	public Container getParent() {
+		return parent;
 	}
 
 	@Override
-	public boolean hasContainer() {
-		return container != null;
+	public boolean hasParent() {
+		return getParent() != null;
 	}
 
 	@Override
-	public void setContainer(Container container) {
-		if (hasContainer() && container != null && !getContainer().equals(container)) {
-			getContainer().removeChild(this);
+	public void setParent(Container parent) {
+		if (hasParent() && parent != null && !getParent().equals(parent)) {
+			getParent().removeChild(this);
 		}
-		this.container = container;
+		this.parent = parent;
+	}
+
+	@Override
+	public Container getScreen() {
+		if (hasParent()) {
+			if (getParent() instanceof Screen) {
+				return getParent();
+			}
+			return getParent().getScreen();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasScreen() {
+		return getScreen() != null;
 	}
 
 	@Override
@@ -526,20 +523,6 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	}
 
 	@Override
-	public Widget savePos() {
-		orig_x = getX();
-		orig_y = getY();
-		return this;
-	}
-
-	@Override
-	public Widget restorePos() {
-		setX(orig_x);
-		setY(orig_y);
-		return this;
-	}
-
-	@Override
 	public Widget copy() {
 		try {
 			Widget copy = getType().getWidgetClass().newInstance();
@@ -567,8 +550,8 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 
 	@Override
 	public Widget updateSize() {
-		if (hasContainer()) {
-			container.updateSize();
+		if (hasParent()) {
+			getParent().updateSize();
 		}
 		return this;
 	}

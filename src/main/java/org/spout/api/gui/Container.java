@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://wwwi.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.spout.api.gui;
+
+import org.spout.api.plugin.Plugin;
 
 /**
  * Containers are a specific type of widget that are designed for easy layout
@@ -35,44 +37,96 @@ package org.spout.api.gui;
 public interface Container extends Widget {
 
 	/**
-	 * Adds a single widget to a container
-	 * @param child The widget to add
-	 * @return Widget
+	 * Adds a single widget to a container.
+	 * @param child the widget to add
+	 * @return this
 	 */
 	public Container addChild(Widget child);
 
 	/**
-	 * Adds a single widget to a container
-	 * @param index The position to insert it, use -1 for append
-	 * @param child The widget to add
-	 * @return Widget
+	 * Adds a single widget to a container.
+	 * @param index the position to insert it, use -1 for append
+	 * @param child the widget to add
+	 * @return this
 	 */
 	public Container insertChild(int index, Widget child);
 
 	/**
 	 * Adds a list of children to a container.
 	 * @param children The widgets to add
-	 * @return 
+	 * @return this
 	 */
 	public Container addChildren(Widget... children);
 
 	/**
-	 * Removes a single widget from this container
-	 * @param child The widget to add
-	 * @return
+	 * Removes a single widget from this container.
+	 * @param child the widget to add
+	 * @return this
 	 */
 	public Container removeChild(Widget child);
 
 	/**
+	 * Removes a list of widget from this container.
+	 * @param children the widgets to remove
+	 * @return this
+	 */
+	public Container removeChildren(Widget... children);
+
+	/**
+	 * Remove all widgets owned by a plugin.
+	 * @param plugin owning widgets to remove
+	 * @return this
+	 */
+	public Container removeChildren(Plugin plugin);
+
+	/**
 	 * Get a list of widgets inside this container.
-	 * @return 
+	 * @return all direct children
 	 */
 	public Widget[] getChildren();
 
 	/**
+	 * Get a list of all widgets inside this container.
+	 * @param deep direct descendents or not
+	 * @return list of widgets
+	 */
+	public Widget[] getChildren(boolean deep);
+
+	/**
+	 * Check if a container contains a widget.
+	 * @param widget to check
+	 * @return if it is a direct child
+	 */
+	public boolean containsChild(Widget widget);
+
+	/**
+	 * Check if a container contains a widget by widget id.
+	 * @param id to check
+	 * @return if it is a direct child
+	 */
+	public boolean containsChild(int id);
+
+	/**
+	 * Get a child by widget id.
+	 * @param id to find
+	 * @return widget or null
+	 */
+	public Widget getChild(int id);
+
+	/**
+	 * Get a direct child by widget id.
+	 * Unlike the other methods, this allows you to limit the search to only
+	 * direct children, and not further down the tree.
+	 * @param id to find
+	 * @param deep perform a deep search
+	 * @return widget or null
+	 */
+	public Widget getChild(int id, boolean deep);
+
+	/**
 	 * Set the automatic layout type for children, triggered by setWidth() or setHeight()
 	 * @param type ContainerType.VERTICAL, .HORIZONTAL or .OVERLAY
-	 * @return the container
+	 * @return this
 	 */
 	public Container setLayout(ContainerType type);
 
@@ -87,7 +141,7 @@ public interface Container extends Widget {
 	 * Unless you specifically need to update the layout at this instant,
 	 * you should use use deferLayout() instead.
 	 * This will re-position and resize all child elements.
-	 * @return
+	 * @return this
 	 */
 	public Container updateLayout();
 
@@ -95,45 +149,53 @@ public interface Container extends Widget {
 	 * Automatically call updateLayout during the next onTick.
 	 * This is automatically called when anything changes that would affect the container layout.
 	 * NOTE: Subclasses should ensure they don't prevent Container.onTick() from running.
-	 * @return
+	 * @return this
 	 */
 	public Container deferLayout();
 
 	/**
+	 * Automatically call updateSize during the next onTick.
+	 * This is automatically called when anything changes that would affect the container resize.
+	 * NOTE: Subclasses should ensure they don't prevent Container.onTick() from running.
+	 * @return this
+	 */
+	public Container deferSize();
+
+	/**
 	 * Set the contents alignment.
-	 * @return 
+	 * @return this
 	 */
 	public Container setAlign(WidgetAnchor anchor);
 
 	/**
 	 * Get the contents alignment.
-	 * @return 
+	 * @return
 	 */
 	public WidgetAnchor getAlign();
 
 	/**
 	 * Reverse the drawing order (right to left or bottom to top).
 	 * @param reverse Set to reverse direction
-	 * @return 
+	 * @return
 	 */
 	public Container setReverse(boolean reverse);
 
 	/**
 	 * If this is drawing in reverse order.
-	 * @return 
+	 * @return
 	 */
 	public boolean getReverse();
 
 	/**
 	 * Determines if children expand to fill width and height
 	 * @param auto
-	 * @return 
+	 * @return this
 	 */
 	public Container setAuto(boolean auto);
 
-	/** 
+	/**
 	 * True if the children will expand to fill width and height
-	 * @return 
+	 * @return
 	 */
 	public boolean isAuto();
 }

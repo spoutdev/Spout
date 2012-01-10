@@ -22,18 +22,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
 
-public abstract class GenericScreen extends GenericWidget implements Screen {
+public abstract class GenericScreen extends GenericContainer implements Screen {
 
-	protected HashMap<Widget, Plugin> widgets = new HashMap<Widget, Plugin>();
-	protected int playerId;
-	protected boolean bg = true;
+	private int playerId;
+	private boolean bg = true;
 
 	public GenericScreen() {
 	}
@@ -48,89 +46,8 @@ public abstract class GenericScreen extends GenericWidget implements Screen {
 	}
 
 	@Override
-	public Widget[] getAttachedWidgets() {
-		Widget[] list = new Widget[widgets.size()];
-		widgets.keySet().toArray(list);
-		return list;
-	}
-
-	@Override
-	public Screen attachWidget(Plugin plugin, Widget widget) {
-		widgets.put(widget, plugin);
-		widget.setPlugin(plugin);
-		widget.setDirty(true);
-		widget.setScreen(this);
-		return this;
-	}
-
-	@Override
-	public Screen attachWidgets(Plugin plugin, Widget... widgets) {
-		for (Widget widget : widgets) {
-			attachWidget(plugin, widget);
-		}
-		return this;
-	}
-
-	@Override
-	public Screen removeWidget(Widget widget) {
-		Player player = Spout.getPlayerFromId(playerId);
-		if (player != null) {
-			if (widgets.containsKey(widget)) {
-				widgets.remove(widget);
-				if (!widget.getType().isServerOnly()) {
-					Spout.getPlayerFromId(playerId).sendPacket(new PacketWidgetRemove(widget, getId()));
-				}
-				widget.setScreen(null);
-			}
-		}
-		return this;
-	}
-
-	@Override
-	public Screen removeWidgets(Plugin p) {
-		for (Widget i : getAttachedWidgets()) {
-			if (widgets.get(i) != null && widgets.get(i).equals(p)) {
-				removeWidget(i);
-			}
-		}
-		return this;
-	}
-
-	@Override
-	public boolean containsWidget(Widget widget) {
-		return containsWidget(widget.getId());
-	}
-
-	@Override
-	public boolean containsWidget(UUID id) {
-		return getWidget(id) != null;
-	}
-
-	@Override
-	public Widget getWidget(UUID id) {
-		for (Widget w : widgets.keySet()) {
-			if (w.getId().equals(id)) {
-				return w;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public boolean updateWidget(Widget widget) {
-		if (widgets.containsKey(widget)) {
-			Plugin plugin = widgets.get(widget);
-			widgets.remove(widget);
-			widgets.put(widget, plugin);
-			widget.setScreen(this);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public void onTick() {
-		Spout player = Spout.getPlayerFromId(playerId);
+		Player player = getPlayer();
 		if (player != null) {
 			for (Widget widget : new HashSet<Widget>(widgets.keySet())) {
 				try {
@@ -184,7 +101,7 @@ public abstract class GenericScreen extends GenericWidget implements Screen {
 	}
 
 	@Override
-	public Spout getPlayer() {
+	public Player getPlayer() {
 		return Spout.getPlayerFromId(playerId);
 	}
 
@@ -206,29 +123,7 @@ public abstract class GenericScreen extends GenericWidget implements Screen {
 	}
 
 	@Override
-	public void setDirty(boolean dirty) {
-		super.setDirty(dirty);
-		if (dirty) {
-			for (Widget widget : getAttachedWidgets()) {
-				widget.setDirty(true);
-			}
-		}
-	}
-
-	@Override
 	public Widget copy() {
 		throw new UnsupportedOperationException("You can not create a copy of a screen");
-	}
-
-	@Override
-	public Set<Widget> getAttachedWidgetsAsSet(boolean recursive) {
-		Set<Widget> set = new HashSet<Widget>();
-		for (Widget w : widgets.keySet()) {
-			set.add(w);
-			if (w instanceof Screen && recursive) {
-				set.addAll(((Screen) w).getAttachedWidgetsAsSet(true));
-			}
-		}
-		return set;
 	}
 }

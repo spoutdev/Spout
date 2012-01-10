@@ -17,7 +17,6 @@
 package org.spout.api.gui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.spout.api.ClientOnly;
@@ -25,25 +24,45 @@ import org.spout.api.plugin.Plugin;
 
 public class GenericContainer extends GenericWidget implements Container {
 
-	protected List<Widget> children = new ArrayList<Widget>();
-	protected ContainerType type = ContainerType.VERTICAL;
-	protected WidgetAnchor align = WidgetAnchor.TOP_LEFT;
-	protected boolean reverse = false;
-	protected int minWidthCalc = 0, maxWidthCalc = 427, minHeightCalc = 0, maxHeightCalc = 240;
-	protected boolean auto = true;
-	protected boolean recalculating = false;
-	protected boolean needsLayout = true;
+	private List<Widget> children = new ArrayList<Widget>();
+	private ContainerType type = ContainerType.VERTICAL;
+	private WidgetAnchor align = WidgetAnchor.TOP_LEFT;
+	private boolean reverse = false;
+	private int minWidthCalc = 0, maxWidthCalc = 427, minHeightCalc = 0, maxHeightCalc = 240;
+	private boolean auto = true;
+	private boolean recalculating = false;
+	private boolean needsLayout = true;
+	private boolean needsSize = true;
 
 	public GenericContainer() {
 	}
 
+	public GenericContainer(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericContainer(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
 	public GenericContainer(Widget... children) {
-		// Shortcuts because we don't have any of the insertChild values setup yet
-		this.children.addAll(Arrays.asList(children));
 		for (Widget child : children) {
-			child.setContainer(this);
+			addChild(child);
 		}
-		updateSize();
+	}
+
+	public GenericContainer(int width, int height, Widget... children) {
+		super(width, height);
+		for (Widget child : children) {
+			addChild(child);
+		}
+	}
+
+	public GenericContainer(int X, int Y, int width, int height, Widget... children) {
+		super(X, Y, width, height);
+		for (Widget child : children) {
+			addChild(child);
+		}
 	}
 
 	@Override
@@ -53,21 +72,19 @@ public class GenericContainer extends GenericWidget implements Container {
 
 	@Override
 	public Container insertChild(int index, Widget child) {
-		if (index < 0 || index > this.children.size()) {
-			this.children.add(child);
-		} else {
-			this.children.add(index, child);
+		if (child != null) {
+			if (index < 0 || index > this.children.size()) {
+				this.children.add(child);
+			} else {
+				this.children.add(index, child);
+			}
+			child.setParent(this);
+			child.shiftXPos(super.getX());
+			child.shiftYPos(super.getY());
+			child.setAnchor(super.getAnchor());
+			deferSize();
+			deferLayout();
 		}
-		child.setContainer(this);
-		child.savePos();
-		child.shiftXPos(super.getX());
-		child.shiftYPos(super.getY());
-		child.setAnchor(super.getAnchor());
-		if (getScreen() != null) {
-			getScreen().attachWidget(child.getPluginName().equals("Spoutcraft") ? getPlugin() : child.getPlugin(), child);
-		}
-		updateSize();
-		deferLayout();
 		return this;
 	}
 
@@ -80,6 +97,41 @@ public class GenericContainer extends GenericWidget implements Container {
 	}
 
 	@Override
+	public Container removeChild(Widget child) {
+		if (children.contains(child)) {
+			children.remove(child);
+			child.setParent(null);
+			// TODO
+			//		if (!child.getType().isServerOnly()) {
+			//			Spout.getPlayerFromId(playerId).sendPacket(new PacketWidgetRemove(widget, getId()));
+			//		}
+			updateSize();
+			deferLayout();
+		}
+		return this;
+	}
+
+	@Override
+	public Container removeChildren(Widget... children) {
+		for (Widget child : children) {
+			this.removeChild(child);
+		}
+		return this;
+	}
+
+	@Override
+	public Container removeChildren(Plugin plugin) {
+		for (Widget child : new ArrayList<Widget>(children)) {
+			if (child.getPluginName().equals(plugin)) {
+				removeChild(child);
+			} else if (child instanceof Container) {
+				((Container) child).removeChildren(plugin);
+			}
+		}
+		return this;
+	}
+
+	@Override
 	public Widget[] getChildren() {
 		Widget[] list = new Widget[children.size()];
 		children.toArray(list);
@@ -87,16 +139,60 @@ public class GenericContainer extends GenericWidget implements Container {
 	}
 
 	@Override
-	public void setDirty(boolean dirty) {
-		super.setDirty(dirty);
-		for (Widget widget : children) {
-			widget.setDirty(dirty);
+	public Widget[] getChildren(boolean deep) {
+		List<Widget> descendents;
+		if (deep) {
+			descendents = new ArrayList<Widget>(children);
+			for (Widget child : children) {
+				if (child instanceof Container) {
+					for (Widget grandchild : ((Container) child).getChildren(true)) {
+						descendents.add(grandchild);
+					}
+				}
+			}
+		} else {
+			descendents = children;
 		}
+		Widget[] list = new Widget[descendents.size()];
+		descendents.toArray(list);
+		return list;
 	}
 
 	@Override
-	public boolean isDirty() {
-		return false;
+	public boolean containsChild(Widget widget) {
+		return containsChild(widget.getId());
+	}
+
+	@Override
+	public boolean containsChild(int id) {
+		return getChild(id) != null;
+	}
+
+	@Override
+	public Widget getChild(int id) {
+		return getChild(id, true);
+	}
+
+	@Override
+	public Widget getChild(int id, boolean deep) {
+		// Check direct children first for speed
+		for (Widget child : children) {
+			if (child.getId() == id) {
+				return child;
+			}
+		}
+		// Then check down the tree if required
+		if (deep) {
+			for (Widget child : children) {
+				if (child instanceof Container) {
+					Widget widget = ((Container) child).getChild(id, true);
+					if (widget != null) {
+						return widget;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -149,31 +245,6 @@ public class GenericContainer extends GenericWidget implements Container {
 		super.setY(pos);
 		for (Widget widget : children) {
 			widget.shiftYPos(delta);
-		}
-		return this;
-	}
-
-	@Override
-	public Container removeChild(Widget child) {
-		children.remove(child);
-		child.setContainer(null);
-		child.restorePos();
-		if (child.getScreen() != null) {
-			child.getScreen().removeWidget(child);
-		}
-		updateSize();
-		deferLayout();
-		return this;
-	}
-
-	public Container setScreen(Screen screen) {
-		super.setScreen(getPlugin(), screen);
-		for (Widget child : children) {
-			if (screen != null) {
-				screen.attachWidget(getPlugin(), child);
-			} else if (child.getScreen() != null) {
-				child.getScreen().removeWidget(child);
-			}
 		}
 		return this;
 	}
@@ -374,6 +445,9 @@ public class GenericContainer extends GenericWidget implements Container {
 
 	@Override
 	public void onTick() {
+		if (needsSize) {
+			updateSize();
+		}
 		if (needsLayout) {
 			updateLayout();
 		}
@@ -397,6 +471,12 @@ public class GenericContainer extends GenericWidget implements Container {
 	@Override
 	public int getMaxHeight() {
 		return Math.min(super.getMaxHeight(), maxHeightCalc);
+	}
+
+	@Override
+	public Container deferSize() {
+		needsSize = true;
+		return this;
 	}
 
 	@Override
@@ -458,13 +538,14 @@ public class GenericContainer extends GenericWidget implements Container {
 				minHeightCalc = minheight;
 				maxHeightCalc = maxheight;
 				deferLayout();
-				if (hasContainer()) { // Push up to parents
-					getContainer().updateSize();
-					getContainer().deferLayout();
+				if (hasParent()) { // Push up to parents
+					getParent().updateSize();
+					getParent().deferLayout();
 				}
 			}
 			recalculating = false;
 		}
+		needsSize = false;
 		return this;
 	}
 

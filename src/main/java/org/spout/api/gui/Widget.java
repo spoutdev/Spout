@@ -50,14 +50,6 @@ public interface Widget {
 	public int getNumBytes();
 
 	/**
-	 * Is this running on Spoutcraft (ie, not on the server) - declared final in
-	 * GenericWidget!
-	 *
-	 * @return if it's running on a client
-	 */
-	public boolean isSpoutcraft();
-
-	/**
 	 * The version this widget is. Mismatched versions will fail to be created.
 	 *
 	 * @return version
@@ -77,7 +69,7 @@ public interface Widget {
 	 *
 	 * @return id
 	 */
-	public UUID getId();
+	public int getId();
 
 	/**
 	 * Called after this widget this created for serialization.
@@ -107,12 +99,28 @@ public interface Widget {
 	public Plugin getPlugin();
 
 	/**
+	 * Get's the plugin that attached this widget to the screen, or null if this
+	 * screen is unattached.
+	 *
+	 * @return plugin that attached this widget to the screen
+	 */
+	public String getPluginName();
+
+	/**
 	 * Internal use only.
 	 *
 	 * @param plugin
 	 * @return this
 	 */
 	public Widget setPlugin(Plugin plugin);
+
+	/**
+	 * Internal use only.
+	 *
+	 * @param plugin
+	 * @return this
+	 */
+	public Widget setPlugin(String name);
 
 	/**
 	 * Marks this widget as needing an update on the client. It will be updated
@@ -178,23 +186,6 @@ public interface Widget {
 	 * @return widget
 	 */
 	public Widget setHeight(int height);
-
-	/**
-	 * Gets the screen this widget is attached to, or null if unattached
-	 *
-	 * @return screen
-	 */
-	public Screen getScreen();
-
-	/**
-	 * Sets the screen and plugin this widget is attached to. Should not be used
-	 * normally, is handled with screen.attachWidget() is called.
-	 *
-	 * @param screen this is attached to
-	 * @param plugin this is attached to
-	 * @return widget
-	 */
-	public Widget setScreen(Plugin plugin, Screen screen);
 
 	/**
 	 * Gets the x coordinate of this widget. Widgets (and screens) render from
@@ -280,18 +271,34 @@ public interface Widget {
 	public String getTooltip();
 
 	/**
-	 * Gets the widget's container
+	 * Gets the parent of this widget, or null if unattached.
+	 * @return parent or null
 	 */
-	//	public Container getContainer();
-	/**
-	 * Does the widget have a container
-	 */
-	public boolean hasContainer();
+	public Container getParent();
 
 	/**
-	 * Sets the parant container for this widget
+	 * Check if this widget has a parent or is unattached.
+	 * @return if it has a parent
 	 */
-	public void setContainer(Container container);
+	public boolean hasParent();
+
+	/**
+	 * Sets the parent for this widget.
+	 * @param parent the container parent
+	 */
+	public void setParent(Container parent);
+
+	/**
+	 * Get the screen this widget is attached to.
+	 * @return screen or null
+	 */
+	public Container getScreen();
+
+	/**
+	 * Check if this widget is connected to a screen.
+	 * @return if connected
+	 */
+	public boolean hasScreen();
 
 	/**
 	 * Container Layout - Set whether the widget will be resized with it's
@@ -475,20 +482,6 @@ public interface Widget {
 	 * @return
 	 */
 	public int getMaxHeight();
-
-	/**
-	 * Container Layout - Save the position for later restoration
-	 *
-	 * @return
-	 */
-	public Widget savePos();
-
-	/**
-	 * Container Layout - Restore the earlier saved position
-	 *
-	 * @return
-	 */
-	public Widget restorePos();
 
 	/**
 	 * Set the anchor point for this widget, default is CENTER
