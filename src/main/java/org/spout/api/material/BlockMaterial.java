@@ -27,6 +27,8 @@ package org.spout.api.material;
 
 public interface BlockMaterial extends ItemMaterial {
 
+	public void onWorldRender();
+
 	public float getFriction();
 
 	public BlockMaterial setFriction(float slip);

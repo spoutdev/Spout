@@ -25,6 +25,8 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.model.Model;
+
 public interface Material {
 
 	public short getId();
@@ -38,4 +40,8 @@ public interface Material {
 	public String getDisplayName();
 
 	public void setDisplayName(String name);
+	
+	public Material setModel(Model model);
+	
+	public Model getModel();
 }

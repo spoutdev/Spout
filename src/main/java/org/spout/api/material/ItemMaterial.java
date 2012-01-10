@@ -27,4 +27,6 @@ package org.spout.api.material;
 
 public interface ItemMaterial extends Material {
 
+	public void onInventoryRender();
+
 }
