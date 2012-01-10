@@ -33,8 +33,8 @@ public class BubbleBar extends GenericWidget implements Widget {
 	 * Package-private constructor.
 	 */
 	BubbleBar() {
-		super();
 		setDirty(false);
+		setId(1);
 		setX(427 / 2 + 82); // 295
 		setY(191);
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...

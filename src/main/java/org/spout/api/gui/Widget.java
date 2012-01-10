@@ -28,7 +28,6 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 import org.spout.api.ClientOnly;
 import org.spout.api.plugin.Plugin;
 
@@ -316,7 +315,60 @@ public interface Widget {
 	 */
 	public boolean isFixed();
 
-	// NOTE: Margins follow the same order as CSS
+	/**
+	 * Used for setting the display mode of widgets.
+	 */
+	public enum Display {
+
+		/** Not shown at all. */
+		NONE,
+		/** Full width, on it's own line. */
+		BLOCK,
+		/** Minimum width, inline with other widgets. */
+		INLINE;
+	}
+
+	/**
+	 * Set the display type of this widget.
+	 * @param display how to display it
+	 * @return this
+	 */
+	public Widget setDisplay(Display display);
+
+	/**
+	 * Get the display type of this widget.
+	 * @return display type
+	 */
+	public Display getDisplay();
+
+	/**
+	 * Used for setting the position of widgets.
+	 */
+	public enum Position {
+
+		/** Default - in the normal flow. */
+		STATIC,
+		/** Same position as STATIC, but used as a base location for RELATIVE children. */
+		RELATIVE,
+		/** Position is set by the X and Y coordinates relative to the first non-STATIC parent. */
+		ABSOLUTE,
+		/** Position is set by the X and Y coordinates relative to the Screen. */
+		FIXED;
+	}
+
+	/**
+	 * Set the position of this widget.
+	 * @param position where to display it
+	 * @return this
+	 */
+	public Widget setPosition(Position position);
+
+	/**
+	 * Get the position of this widget.
+	 * @return the position
+	 */
+	public Position getPosition();
+
 	/**
 	 * Container Layout - Padding to use for automatic container layout - not
 	 * included in dimensions

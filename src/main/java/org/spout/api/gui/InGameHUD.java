@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://wwwi.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -67,15 +67,6 @@ public interface InGameHUD extends Screen {
 	public ExpBar getExpBar();
 
 	/**
-	 * Is true if the widget can be attached to the screen.
-	 * Primary controls, like the health bar can not be attached twice.
-	 * Control widgets that require input from the mouse or keyboard can not be attached
-	 * @param widget
-	 * @return true if the widge can be attached
-	 */
-	public boolean canAttachWidget(Widget widget);
-
-	/**
 	 * Attachs a popup screen and brings it to the front of the screen
 	 * @param screen to pop up
 	 * @return true if the popup screen was attached, false if there was already a popup launched
@@ -96,7 +87,7 @@ public interface InGameHUD extends Screen {
 
 	/**
 	 * Ease of use method setting all the survival mode HUD elements to setVisible(toggle);
-	 * 
+	 *
 	 * @param toggle true or false
 	 */
 	public void toggleSurvivalHUD(boolean toggle);

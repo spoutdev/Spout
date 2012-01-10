@@ -35,8 +35,9 @@ public class ChatTextBox extends GenericWidget implements Widget {
 	 * Package-private constructor.
 	 */
 	ChatTextBox() {
-		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
 		setDirty(false);
+		setId(3);
+		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
 	}
 
 	@Override

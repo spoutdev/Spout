@@ -29,7 +29,8 @@ public class HungerBar extends GenericWidget {
 	 * Package-private constructor.
 	 */
 	HungerBar() {
-		super();
+		setDirty(false);
+		setId(5);
 		setX(427 / 2 + 82); // 295
 		setY(201);
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...

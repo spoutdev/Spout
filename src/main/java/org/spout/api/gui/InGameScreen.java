@@ -16,18 +16,17 @@
  */
 package org.spout.api.gui;
 
-import java.util.UUID;
 import org.spout.api.player.Player;
 
 public class InGameScreen extends GenericScreen implements InGameHUD {
 
-	private final HealthBar health = new HealthBar();
+	private final ArmorBar armor = new ArmorBar();
 	private final BubbleBar bubble = new BubbleBar();
 	private final ChatBar chat = new ChatBar();
 	private final ChatTextBox chatText = new ChatTextBox();
-	private final ArmorBar armor = new ArmorBar();
-	private final HungerBar hunger = new HungerBar();
 	private final ExpBar exp = new ExpBar();
+	private final HealthBar health = new HealthBar();
+	private final HungerBar hunger = new HungerBar();
 	private PopupScreen activePopup = null;
 
 	public InGameScreen(int playerId) {

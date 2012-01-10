@@ -36,8 +36,8 @@ public class ChatBar extends GenericWidget implements Widget {
 	 * Package-private constructor.
 	 */
 	ChatBar() {
-		super();
 		setDirty(false);
+		setId(2);
 		setX(2);
 		setY(-2);
 		setWidth(425);

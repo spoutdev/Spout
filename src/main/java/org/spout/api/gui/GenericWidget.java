@@ -20,7 +20,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import javax.xml.bind.TypeConstraintException;
-import org.spout.api.Spout;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
 
@@ -29,8 +28,8 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	public static final String PLUGIN = "Spoutcraft";
 	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 5L;
-	/** Used for generating unique ids. */
-	private static int lastId = 0;
+	/** Used for generating unique ids, numbers below 16 are reserved for static widgets. */
+	private static int lastId = 0xf;
 	/** Position. */
 	private int X = 0, Y = 0;
 	/** Dimensions. */
@@ -42,12 +41,14 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	private String tooltip = "";
 	private String plugin = PLUGIN;
 	private WidgetAnchor anchor = WidgetAnchor.SCALE;
-	// Server side layout
+	// Layout
 	private Container parent = null;
 	private boolean fixed = false;
 	private int marginTop = 0, marginRight = 0, marginBottom = 0, marginLeft = 0;
 	private int minWidth = 0, maxWidth = 427, minHeight = 0, maxHeight = 240;
 	private boolean autoDirty = true;
+	private Display display = Display.INLINE;
+	private Position position = Position.STATIC;
 	private transient boolean hasPosition = false;
 	private transient boolean hasSize = false;
 	// Animation
@@ -55,10 +56,10 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	private float animValue = 1f;
 	private short animCount = 0;
 	private short animTicks = 20;
-	private final byte ANIM_REPEAT = (1<<0);
-	private final byte ANIM_RESET = (1<<1);
-	private final byte ANIM_RUNNING = (1<<2);
-	private final byte ANIM_STOPPING = (1<<3);
+	private static final byte ANIM_REPEAT = (1<<0);
+	private static final byte ANIM_RESET = (1<<1);
+	private static final byte ANIM_RUNNING = (1<<2);
+	private static final byte ANIM_STOPPING = (1<<3);
 	private byte animFlags = 0;
 	private transient int animTick = 0; // Current tick
 	private transient int animFrame = 0; // Current frame
@@ -178,8 +179,20 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		return dirty;
 	}
 
+	/**
+	 * Set the default widget id, this must be a number lower than 255 for
+	 * static widget ids.
+	 * @param id to use
+	 */
+	protected void setId(int id) {
+		if (id >= 0xf) {
+			throw new UnsupportedOperationException("Static widget ids need to be under 16.");
+		}
+		this.id = id;
+	}
+
 	@Override
-	public int getId() {
+	final public int getId() {
 		if (id == -1) {
 			id = lastId++;
 		}
@@ -368,6 +381,30 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	@Override
 	public boolean isFixed() {
 		return fixed;
+	}
+
+	public Widget setDisplay(Display display) {
+		if (this.display != display) {
+			this.display = display;
+			autoDirty();
+		}
+		return this;
+	}
+
+	public Display getDisplay() {
+		return display;
+	}
+
+	public Widget setPosition(Position position) {
+		if (this.position != position) {
+			this.position = position;
+			autoDirty();
+		}
+		return this;
+	}
+
+	public Position getPosition() {
+		return position;
 	}
 
 	@Override

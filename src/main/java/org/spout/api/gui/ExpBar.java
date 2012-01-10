@@ -24,7 +24,8 @@ public class ExpBar extends GenericWidget {
 	 * Package-private constructor.
 	 */
 	ExpBar() {
-		super();
+		setDirty(false);
+		setId(6);
 		setX(427 / 2 - 91); // 122
 		setY(211);
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
