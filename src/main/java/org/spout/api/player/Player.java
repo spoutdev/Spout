@@ -49,8 +49,8 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject {
 	 * @Threadsafe 
 	 * @return the player's display name
 	 */
-	public String geDisplayName();
-        
+	public String getDisplayName();
+
 	/**
 	 * Sets the player's display name. This method is thread-safe.
 	 * 
