@@ -29,6 +29,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
+import org.spout.api.ClientOnly;
+import org.spout.api.plugin.Plugin;
 
 /**
  * This is the base class of all other widgets, and should never be used
@@ -102,7 +104,7 @@ public interface Widget {
 	 *
 	 * @return plugin that attached this widget to the screen
 	 */
-	//	public Plugin getPlugin();
+	public Plugin getPlugin();
 
 	/**
 	 * Internal use only.
@@ -110,7 +112,7 @@ public interface Widget {
 	 * @param plugin
 	 * @return this
 	 */
-	//	public Widget setPlugin(Plugin plugin);
+	public Widget setPlugin(Plugin plugin);
 
 	/**
 	 * Marks this widget as needing an update on the client. It will be updated
@@ -182,7 +184,7 @@ public interface Widget {
 	 *
 	 * @return screen
 	 */
-	//	public Screen getScreen();
+	public Screen getScreen();
 
 	/**
 	 * Sets the screen and plugin this widget is attached to. Should not be used
@@ -192,7 +194,7 @@ public interface Widget {
 	 * @param plugin this is attached to
 	 * @return widget
 	 */
-	//	public Widget setScreen(Plugin plugin, Screen screen);
+	public Widget setScreen(Plugin plugin, Screen screen);
 
 	/**
 	 * Gets the x coordinate of this widget. Widgets (and screens) render from
@@ -281,7 +283,6 @@ public interface Widget {
 	 * Gets the widget's container
 	 */
 	//	public Container getContainer();
-
 	/**
 	 * Does the widget have a container
 	 */
@@ -290,7 +291,7 @@ public interface Widget {
 	/**
 	 * Sets the parant container for this widget
 	 */
-	//	public void setContainer(Container container);
+	public void setContainer(Container container);
 
 	/**
 	 * Container Layout - Set whether the widget will be resized with it's
@@ -642,4 +643,10 @@ public interface Widget {
 	 * @return if it has a size
 	 */
 	public boolean hasSize();
+
+	/**
+	 * Render the widget on the screen.
+	 */
+	@ClientOnly
+	public void render();
 }
