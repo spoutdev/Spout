@@ -57,7 +57,7 @@ public final class SpoutSession implements Session {
 	 * The number of ticks which are elapsed before a client is disconnected due
 	 * to a timeout.
 	 */
-	private static final int TIMEOUT_TICKS = 300;
+	private static final int TIMEOUT_TICKS = 20 * 60;
 	
 	/**
 	 * The server this session belongs to.
@@ -107,11 +107,6 @@ public final class SpoutSession implements Session {
 	private AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(Protocol.bootstrap);
 
 	/**
-	 * Handling ping messages
-	 */
-	private int pingMessageId;
-
-	/**
 	 * Stores the last block placement message to work around a bug in the
 	 * vanilla client where duplicate packets are sent.
 	 */
@@ -126,7 +121,6 @@ public final class SpoutSession implements Session {
 	public SpoutSession(SpoutServer server, Channel channel) {
 		this.server = server;
 		this.channel = channel;
-
 	}
 
 	/**
@@ -205,15 +199,8 @@ public final class SpoutSession implements Session {
 			}
 			timeoutCounter = 0;
 		}
-
 		if (timeoutCounter >= TIMEOUT_TICKS) {
-			if (pingMessageId == 0) {
-				pingMessageId = new Random().nextInt();
-				// TODO - send(new PingMessage(pingMessageId));
-				timeoutCounter = 0;
-			} else {
-				disconnect("Timed out");
-			}
+			disconnect("Timed out");
 		}
 	}
 
@@ -321,15 +308,6 @@ public final class SpoutSession implements Session {
 
 	public String getSessionId() {
 		return sessionId;
-	}
-
-	public int getPingMessageId() {
-		return pingMessageId;
-	}
-
-	public void pong() {
-		timeoutCounter = 0;
-		pingMessageId = 0;
 	}
 
 	/*public BlockPlacementMessage getPreviousPlacement() {

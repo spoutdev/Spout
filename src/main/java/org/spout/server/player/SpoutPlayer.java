@@ -222,7 +222,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = session.getGame().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
+		PermissionNodeEvent event = Spout.getGame().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
 		if (event.getResult() == Result.DEFAULT) {
 			return false;
 		}
@@ -238,7 +238,7 @@ public class SpoutPlayer implements Player {
 			world = entity.getChunk().getWorld();
 		}
 
-		PermissionGroupEvent event = session.getGame().getEventManager().callEvent(new PermissionGroupEvent(world, this, group));
+		PermissionGroupEvent event = Spout.getGame().getEventManager().callEvent(new PermissionGroupEvent(world, this, group));
 		return event.getResult();
 	}
 
@@ -250,7 +250,7 @@ public class SpoutPlayer implements Player {
 			world = entity.getChunk().getWorld();
 		}
 
-		PermissionGetGroupsEvent event = session.getGame().getEventManager().callEvent(new PermissionGetGroupsEvent(world, this));
+		PermissionGetGroupsEvent event = Spout.getGame().getEventManager().callEvent(new PermissionGetGroupsEvent(world, this));
 		return event.getGroups();
 	}
 
@@ -277,7 +277,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	public Object getData(World world, String node, Object defaultValue) {
-		RetrieveObjectDataEvent event = session.getGame().getEventManager().callEvent(new RetrieveObjectDataEvent(world, this, node));
+		RetrieveObjectDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveObjectDataEvent(world, this, node));
 		Object res = event.getResult();
 		if (res == null) {
 			return defaultValue;
@@ -307,7 +307,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public int getInt(World world, String node, int defaultValue) {
-		RetrieveIntDataEvent event = session.getGame().getEventManager().callEvent(new RetrieveIntDataEvent(world, this, node));
+		RetrieveIntDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveIntDataEvent(world, this, node));
 		int res = event.getResult();
 		if (res == RetrieveIntDataEvent.DEFAULT_VALUE) {
 			return defaultValue;
@@ -333,7 +333,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	public String getString(World world, String node, String defaultValue) {
-		RetrieveStringDataEvent event = session.getGame().getEventManager().callEvent(new RetrieveStringDataEvent(world, this, node));
+		RetrieveStringDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveStringDataEvent(world, this, node));
 		String res = event.getResult();
 		if (res == null) {
 			return defaultValue;
