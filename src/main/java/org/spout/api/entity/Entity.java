@@ -141,4 +141,12 @@ public interface Entity extends Datatable {
 	@DelayedWrite
 	@LiveRead
 	public boolean kill();
+	
+	/**
+	 * True if the entity is dead.
+	 * 
+	 * @return dead
+	 */
+	@SnapshotRead
+	public boolean isDead();
 }
