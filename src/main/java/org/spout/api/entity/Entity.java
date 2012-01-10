@@ -122,14 +122,8 @@ public interface Entity extends Datatable {
 	
 	/**
 	 * Called just before a snapshot update.  
-	 * 
-	 * This is intended purely as a monitor based step.  
-	 * 
-	 * No updates should be made to the entity at this stage.
-	 * 
-	 * It can be used to send packets for network update.
 	 */
-	public void preSnapshot();
+	public void finalizeRun();
 	
 	/**
 	 * Kills the entity.  This takes effect at the next snapshot.

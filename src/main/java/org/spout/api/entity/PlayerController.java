@@ -85,7 +85,7 @@ public abstract class PlayerController extends Controller {
 		initializedChunks.clear();
 	}
 	
-	public void snapshotStart() {
+	public void preSnapshot() {
 		
 		if (parent == null) {
 			return;
@@ -163,7 +163,7 @@ public abstract class PlayerController extends Controller {
 			teleported = false;
 		}
 		
-		super.snapshotStart();
+		super.preSnapshot();
 	}
 	
 	private void addObserver(Chunk c) {

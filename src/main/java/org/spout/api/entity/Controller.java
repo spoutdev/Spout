@@ -40,7 +40,7 @@ public abstract class Controller {
 	/**
 	 * Called when the entity dies.
 	 * 
-	 * Called just before the snapshotStart method.
+	 * Called just before the preSnapshot method.
 	 */
 	public void onDeath() {
 	}
@@ -59,7 +59,7 @@ public abstract class Controller {
 	 * 
 	 * It can be used to send packets for network update.
 	 */
-	public void snapshotStart() {
+	public void preSnapshot() {
 	}
 	
 	/**
