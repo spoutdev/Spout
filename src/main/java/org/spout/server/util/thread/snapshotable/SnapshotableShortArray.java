@@ -58,7 +58,7 @@ public class SnapshotableShortArray implements Snapshotable {
 			set(i, initial[i]);
 		}
 	}
-	
+
 	/**
 	 * Gets a copy of the snapshot short array
 	 * 
@@ -67,7 +67,7 @@ public class SnapshotableShortArray implements Snapshotable {
 	public short[] get() {
 		return Arrays.copyOf(snapshot, snapshot.length);
 	}
-	
+
 	/**
 	 * Gets a copy of the live short array
 	 * 
@@ -77,8 +77,8 @@ public class SnapshotableShortArray implements Snapshotable {
 		short[] live = new short[snapshot.length];
 		for (int i = 0; i < this.live.length(); i++) {
 			int value = this.live.get(i);
-			live[i] = (short)(value & 0xFFFF);
-			live[i+1] = (short)((value >> 16) & 0xFFFF);
+			live[(i << 1)] = (short)(value & 0xFFFF);
+			live[(i << 1) + 1] = (short)((value >> 16) & 0xFFFF);
 		}
 		return live;
 	}
@@ -125,7 +125,7 @@ public class SnapshotableShortArray implements Snapshotable {
 		short one;
 		short zero;
 		short old = 0;
-		
+
 		while (!success) {
 			int packed = live.get(divIndex);
 			if (isZero) {
@@ -142,7 +142,7 @@ public class SnapshotableShortArray implements Snapshotable {
 		markDirty(index);
 		return old;
 	}
-	
+
 	private void markDirty(int index) {
 		int localDirtyIndex = dirtyIndex.getAndIncrement();
 		if (localDirtyIndex < dirtySize) {
@@ -167,11 +167,11 @@ public class SnapshotableShortArray implements Snapshotable {
 			}
 		}
 	}
-	
+
 	private int pack(short zero, short one) {
 		return (one & 0xFFFF) << 16 | (zero & 0xFFFF);
 	}
-	
+
 	private short unpackZero(int value) {
 		return (short)value;
 	}

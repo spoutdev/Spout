@@ -240,10 +240,6 @@ public class SpoutChunk extends Chunk {
 		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
 		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, this.blockIds.getLive());
 		
-		if (y < 32) {
-			snapshot.flood((short)1);
-		}
-		
 		return snapshot;
 	}
 
