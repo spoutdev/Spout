@@ -25,27 +25,44 @@
  */
 package org.spout.api.player;
 
+import java.net.InetAddress;
+
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.Session;
-
-import java.net.InetAddress;
 import org.spout.api.data.DataSubject;
 import org.spout.api.permissions.PermissionsSubject;
 
 public interface Player extends CommandSource, PermissionsSubject, DataSubject {
 	
 	/**
-	 * Gets the player's name
+	 * Gets the player's name. This method is thread-safe.
 	 * 
+	 * @Threadsafe
 	 * @return the player's name
 	 */
 	public String getName();
 
 	/**
+	 * Gets the player's display name. This method is thread-safe.
+	 * 
+	 * @Threadsafe 
+	 * @return the player's display name
+	 */
+	public String geDisplayName();
+        
+	/**
+	 * Sets the player's display name. This method is thread-safe.
+	 * 
+	 * @Threadsafe
+	 * @param the new player's display name
+	 */
+	public void setDisplayName(String name);
+
+	/**
 	 * Sends a message as if the player had typed it into their chat gui.
 	 *
-	 * @param message The message to send
+	 * @param message the message to send
 	 */
 	public void chat(String message);
 	
@@ -87,5 +104,4 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject {
 	 * @param reason the message to send to the player.
 	 */
 	public void kick(String reason);
-	
 }
