@@ -767,7 +767,11 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return 
 	 */
 	public static Vector3 rand() {
-		return new Vector3(Math.random(), Math.random(), Math.random());
+		double[] rands = new double[3];
+		for( int i = 0; i < 3; i++ ) {
+			rands[i] = (Math.random() * 2) - 1;
+		}
+		return new Vector3(rands[0], rands[1], rands[2]);
 	}
 
 	/**

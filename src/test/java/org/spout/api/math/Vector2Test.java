@@ -453,9 +453,9 @@ public class Vector2Test {
 	public void testRand() {
 		for (int i = 0; i < 100; ++i) {
 			Vector2 x = Vector2.rand();
-			assertTrue(x.x >= 0);
+			assertTrue(x.x >= -1);
 			assertTrue(x.x <= 1);
-			assertTrue(x.y >= 0);
+			assertTrue(x.y >= -1);
 			assertTrue(x.y <= 1);
 		}
 	}

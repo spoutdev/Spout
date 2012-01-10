@@ -382,6 +382,16 @@ public class Vector2 implements Comparable<Vector2> {
 	public Vector3m toVector3m() {
 		return Vector2.toVector3m(this);
 	}
+	
+	/**
+	 * Returns a Vector2Polar object with the same value as
+	 * this Vector2
+	 * 
+	 * @return 
+	 */
+	public Vector2Polar toVector2Polar() {
+		return new Vector2Polar(length(), Math.atan2(y, x));
+	}
 
 	/**
 	 * Returns a Vector3 object with the given y value.
@@ -676,6 +686,17 @@ public class Vector2 implements Comparable<Vector2> {
 	public static Vector3m toVector3m(Vector2 o) {
 		return new Vector3m(o.x, 0, o.y);
 	}
+	
+	/**
+	 * Returns a Vector2Polar object with the same value as
+	 * the given Vector2
+	 * 
+	 * @param o Vector2 to use
+	 * @return 
+	 */
+	public static Vector2Polar toVector2Polar(Vector2 o) {
+		return new Vector2Polar(o.length(), Math.atan2(o.y, o.x));
+	}
 
 	/**
 	 * Returns a Vector3 object with the given y-value.
@@ -786,7 +807,11 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return 
 	 */
 	public static Vector2 rand() {
-		return new Vector2(Math.random(), Math.random());
+		double[] rands = new double[2];
+		for( int i = 0; i < 2; i++ ) {
+			rands[i] = (Math.random() * 2) - 1;
+		}
+		return new Vector2(rands[0], rands[1]);
 	}
 
 	/**
