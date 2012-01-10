@@ -271,9 +271,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		} catch (Throwable t) {
 			throw new RuntimeException("Failed to parse config", t);
 		}
-
-		//Load the API types
-		SpoutBlocks.initialize();
 		
 		// Start loading plugins
 		loadPlugins();
