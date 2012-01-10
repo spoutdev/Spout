@@ -80,6 +80,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the int value
 	 */
 	public final int getInt(int index) {
+		index = toInternal(index);
 		while (true) {
 			int initialSequence = seqArray.get().get(index);
 			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
@@ -91,6 +92,18 @@ public final class AtomicIntReferenceArrayStore<T> {
 			}
 			return value;
 		}
+	}
+	
+	/**
+	 * Gets the sequence number associated with the element at a given index.
+	 * 
+	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.
+	 * 
+	 * @param index the index
+	 * @return the sequence number
+	 */
+	public int getSequence(int index) {
+		return this.seqArray.get().get(toInternal(index));
 	}
 
 	/**
@@ -130,6 +143,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the auxiliary data object, null, or EMPTY
 	 */
 	public final T getAuxData(int index) {
+		index = toInternal(index);
 		while (true) {
 			int initialSequence = seqArray.get().get(index);
 			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
@@ -185,23 +199,23 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @param index the index
 	 */
 	public boolean remove(int index) {
-		int localIndex = toInternal(index);
+		index = toInternal(index);
 
 		while (true) {
-			int prevSeq = seqArray.get().getAndSet(localIndex, DatatableSequenceNumber.UNSTABLE);
+			int prevSeq = seqArray.get().getAndSet(index, DatatableSequenceNumber.UNSTABLE);
 			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			try {
-				T current = auxArray.get()[localIndex];
+				T current = auxArray.get()[index];
 				if (current == EMPTY) {
 					return false;
 				}
-				auxArray.get()[localIndex] = EMPTY;
+				auxArray.get()[index] = EMPTY;
 				entries.decrementAndGet();
 				return true;
 			} finally {
-				seqArray.get().set(localIndex, DatatableSequenceNumber.get());
+				seqArray.get().set(index, DatatableSequenceNumber.get());
 			}
 		}
 	}
@@ -306,7 +320,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the equivalent internal index
 	 */
 	private final int toInternal(int external) {
-		return (external | (~reservedMask)) & 0xFFFF;
+		return (external & (~reservedMask)) & 0xFFFF;
 	}
 
 	/**
