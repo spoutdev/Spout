@@ -53,14 +53,16 @@ public class SpoutPlayer implements Player {
 	private final AtomicReference<Session> sessionLive = new AtomicReference<Session>();
 	private Session session;
 	private final String name;
+	private final AtomicReference<String> displayName = new AtomicReference<String>();
 	private final AtomicReference<Entity> entityLive = new AtomicReference<Entity>();
 	private Entity entity;
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
-	
+
 	public SpoutPlayer(String name) {
 		this.name = name;
+		this.displayName.set(name);
 		hashcode = name.hashCode();
 	}
 
@@ -78,6 +80,18 @@ public class SpoutPlayer implements Player {
 	@Threadsafe
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	@Threadsafe
+	public String getDisplayName() {
+		return displayName.get();
+	}
+
+	@Override
+	@Threadsafe
+	public void setDisplayName(String name) {
+		displayName.set(name);
 	}
 
 	@Override
@@ -131,7 +145,9 @@ public class SpoutPlayer implements Player {
 	public void chat(String message) {
 		PlayerChatEvent event = Spout.getGame().getEventManager().callEvent(new PlayerChatEvent(this, message));
 		message = event.getMessage();
-		if (event.isCancelled()) return;
+		if (event.isCancelled()) {
+			return;
+		}
 		if (message.startsWith("/")) {
 			Spout.getGame().processCommand(this, message.substring(1));
 		} else {
@@ -148,10 +164,11 @@ public class SpoutPlayer implements Player {
 	@Override
 	public boolean sendMessage(String message) {
 		boolean success = false;
-		if (getEntity() != null)
+		if (getEntity() != null) {
 			for (String line : TextWrapper.wrapText(message)) {
 				success |= sendRawMessage(line);
 			}
+		}
 		return success;
 	}
 
@@ -165,27 +182,27 @@ public class SpoutPlayer implements Player {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof SpoutPlayer) {
-			SpoutPlayer p = (SpoutPlayer)obj;
+			SpoutPlayer p = (SpoutPlayer) obj;
 			if (p.hashCode() != hashCode()) {
 				return false;
 			} else if (p == this) {
 				return true;
 			} else {
 				return name.equals(p.name);
-			} 
+			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return hashcode;
 	}
-	
+
 	public void copyToSnapshot() {
 		session = sessionLive.get();
 		online = onlineLive.get();
@@ -205,8 +222,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = session.getGame().getEventManager()
-				.callEvent(new PermissionNodeEvent(world, this, node));
+		PermissionNodeEvent event = session.getGame().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
 		if (event.getResult() == Result.DEFAULT) {
 			return false;
 		}
@@ -222,8 +238,7 @@ public class SpoutPlayer implements Player {
 			world = entity.getChunk().getWorld();
 		}
 
-		PermissionGroupEvent event = session.getGame().getEventManager()
-				.callEvent(new PermissionGroupEvent(world, this, group));
+		PermissionGroupEvent event = session.getGame().getEventManager().callEvent(new PermissionGroupEvent(world, this, group));
 		return event.getResult();
 	}
 
@@ -235,8 +250,7 @@ public class SpoutPlayer implements Player {
 			world = entity.getChunk().getWorld();
 		}
 
-		PermissionGetGroupsEvent event = session.getGame().getEventManager()
-				.callEvent(new PermissionGetGroupsEvent(world, this));
+		PermissionGetGroupsEvent event = session.getGame().getEventManager().callEvent(new PermissionGetGroupsEvent(world, this));
 		return event.getGroups();
 	}
 
@@ -248,7 +262,7 @@ public class SpoutPlayer implements Player {
 	public Object getData(String node) {
 		return getData(node, null);
 	}
-	
+
 	public Object getData(String node, Object defaultValue) {
 		World world = null;
 		Entity entity = getEntity();
@@ -257,14 +271,13 @@ public class SpoutPlayer implements Player {
 		}
 		return getData(world, node, defaultValue);
 	}
-	
+
 	public Object getData(World world, String node) {
 		return getData(world, node, null);
 	}
-	
+
 	public Object getData(World world, String node, Object defaultValue) {
-		RetrieveObjectDataEvent event = session.getGame().getEventManager()
-				.callEvent(new RetrieveObjectDataEvent(world, this, node));
+		RetrieveObjectDataEvent event = session.getGame().getEventManager().callEvent(new RetrieveObjectDataEvent(world, this, node));
 		Object res = event.getResult();
 		if (res == null) {
 			return defaultValue;
@@ -294,8 +307,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public int getInt(World world, String node, int defaultValue) {
-		RetrieveIntDataEvent event = session.getGame().getEventManager()
-				.callEvent(new RetrieveIntDataEvent(world, this, node));
+		RetrieveIntDataEvent event = session.getGame().getEventManager().callEvent(new RetrieveIntDataEvent(world, this, node));
 		int res = event.getResult();
 		if (res == RetrieveIntDataEvent.DEFAULT_VALUE) {
 			return defaultValue;
@@ -321,8 +333,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	public String getString(World world, String node, String defaultValue) {
-		RetrieveStringDataEvent event = session.getGame().getEventManager()
-				.callEvent(new RetrieveStringDataEvent(world, this, node));
+		RetrieveStringDataEvent event = session.getGame().getEventManager().callEvent(new RetrieveStringDataEvent(world, this, node));
 		String res = event.getResult();
 		if (res == null) {
 			return defaultValue;
