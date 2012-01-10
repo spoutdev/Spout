@@ -3,9 +3,8 @@ package org.spout.api.util.map.concurrent;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.math.MathHelper;
 
 /**
@@ -24,7 +23,6 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	@SuppressWarnings("unchecked")
 	private final T EMPTY = (T)new Object();
-	private final int UNSTABLE = 1;
 
 	private final int maxLength;
 	private AtomicInteger length = new AtomicInteger(0);
@@ -84,7 +82,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	public final int getInt(int index) {
 		while (true) {
 			int initialSequence = seqArray.get().get(index);
-			if (initialSequence == UNSTABLE) {
+			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			int value = intArray.get()[index];
@@ -134,7 +132,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	public final T getAuxData(int index) {
 		while (true) {
 			int initialSequence = seqArray.get().get(index);
-			if (initialSequence == UNSTABLE) {
+			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			T auxData = auxArray.get()[index];
@@ -166,8 +164,8 @@ public final class AtomicIntReferenceArrayStore<T> {
 				resizeArrays();
 			}
 			int testIndex = scan.getAndIncrement() & (length.get() - 1);
-			int prevSeq = seqArray.get().getAndSet(testIndex, UNSTABLE);
-			if (prevSeq == UNSTABLE) {
+			int prevSeq = seqArray.get().getAndSet(testIndex, DatatableSequenceNumber.UNSTABLE);
+			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			try {
@@ -176,7 +174,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				auxArray.get()[testIndex] = auxData;
 				return toExternal(testIndex);
 			} finally {
-				seqArray.get().set(testIndex, prevSeq + 2);
+				seqArray.get().set(testIndex, DatatableSequenceNumber.get());
 			}
 		}
 	}
@@ -190,8 +188,8 @@ public final class AtomicIntReferenceArrayStore<T> {
 		int localIndex = toInternal(index);
 
 		while (true) {
-			int prevSeq = seqArray.get().getAndSet(localIndex, UNSTABLE);
-			if (prevSeq == UNSTABLE) {
+			int prevSeq = seqArray.get().getAndSet(localIndex, DatatableSequenceNumber.UNSTABLE);
+			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			try {
@@ -203,7 +201,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				entries.decrementAndGet();
 				return true;
 			} finally {
-				seqArray.get().set(localIndex, prevSeq + 2);
+				seqArray.get().set(localIndex, DatatableSequenceNumber.get());
 			}
 		}
 	}
@@ -215,7 +213,6 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 */
 	private void resizeArrays() {
 		int lockedIndexes = 0;
-		int[] seqBackup = new int[0];
 		try {
 			// Lock the first element
 			int firstSeq;
@@ -223,23 +220,20 @@ public final class AtomicIntReferenceArrayStore<T> {
 				if (!needsResize()) {
 					return;
 				}
-				firstSeq = seqArray.get().getAndSet(0, UNSTABLE);
-			} while (firstSeq == UNSTABLE);
+				firstSeq = seqArray.get().getAndSet(0, DatatableSequenceNumber.UNSTABLE);
+			} while (firstSeq == DatatableSequenceNumber.UNSTABLE);
 			lockedIndexes++;
 			// Once locked, no other thread can do the resize operation
 
-			// Create an array to backup the sequence numbers
-			seqBackup = new int[length.get()];
-			seqBackup[0] = firstSeq;
-
 			// Lock the remaining elements
 			for (int i = 1; i < length.get(); i++) {
+				int seq;
 				do {
 					if (!needsResize()) {
 						return;
 					}
-					seqBackup[i] = seqArray.get().getAndSet(i, UNSTABLE);
-				} while (seqBackup[i] == UNSTABLE);
+					seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
+				} while (seq == DatatableSequenceNumber.UNSTABLE);
 				lockedIndexes++;
 			}
 
@@ -260,12 +254,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 			for (int i = 0; i < length.get(); i++) {
 				newIntArray[i] = intArray.get()[i];
 				newAuxArray[i] = auxArray.get()[i];
-				newSeqArray.set(i, UNSTABLE);
+				newSeqArray.set(i, DatatableSequenceNumber.UNSTABLE);
 			}
 
 			// Set the top half of the new array to unstable and EMPTY
 			for (int i = length.get(); i < newLength; i++) {
-				newSeqArray.set(i, UNSTABLE);
+				newSeqArray.set(i, DatatableSequenceNumber.UNSTABLE);
 				newAuxArray[i] = EMPTY;
 			}
 			intArray.set(newIntArray);
@@ -279,14 +273,14 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 			// Set the top half of the array's sequence number to 0 (from UNSTABLE)
 			for (int i = oldLength; i < newLength; i++) {
-				if (!seqArray.get().compareAndSet(i, UNSTABLE, 0)) {
+				if (!seqArray.get().compareAndSet(i, DatatableSequenceNumber.UNSTABLE, DatatableSequenceNumber.get())) {
 					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
 				}
 			}
 		} finally {
 			// Set the bottom half of array to new sequence numbers (from UNSTABLE)
 			for (int i = 0; i < lockedIndexes; i++) {
-				if (!seqArray.get().compareAndSet(i, UNSTABLE, seqBackup[i] + 2)) {
+				if (!seqArray.get().compareAndSet(i, DatatableSequenceNumber.UNSTABLE, DatatableSequenceNumber.get())) {
 					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
 				}
 			}
@@ -336,6 +330,6 @@ public final class AtomicIntReferenceArrayStore<T> {
 	// TODO - add timer that allows for resize downwards
 	//      - would need a map to remap the indexes to a lower range though
 	private final boolean needsResize() {
-		return length.get() != maxLength && entries.get() >= (length.get() >> 1);
+		return length.get() < maxLength && entries.get() >= (length.get() >> 1);
 	}
 }
