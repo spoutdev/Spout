@@ -26,11 +26,9 @@
 package org.spout.server.entity;
 
 import java.io.Externalizable;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.collision.model.CollisionModel;
-import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -44,7 +42,6 @@ import org.spout.api.io.store.MemoryStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.util.StringMap;
 import org.spout.server.SpoutRegion;
 import org.spout.server.SpoutServer;
@@ -94,14 +91,20 @@ public class SpoutEntity implements Entity {
 	public Controller getController() {
 		return controller;
 	}
-	
-	public Controller getControllerLive() {
-		return controller;
-	}
+
 	
 	public void setController(Controller controller) {
 		controller.attachToEntity(this);
+		Region region = getRegion();
+		//remove this controller from the region tracking
+		if (region != null) {
+			((SpoutRegion)region).deallocate(this);
+		}
 		this.controller = controller;
+		//add new controller to the region tracking
+		if (region != null) {
+			((SpoutRegion)region).allocate(this);
+		}
 		controller.onAttached();
 	}
 
@@ -171,7 +174,7 @@ public class SpoutEntity implements Entity {
 	}
 
 	/**
-	 * @param dt milliseonds since the last tick
+	 * @param dt milliseconds since the last tick
 	 */
 	public void onTick(float dt) {
 		if (controller != null) controller.onTick(dt);
@@ -232,30 +235,6 @@ public class SpoutEntity implements Entity {
 		Point position = transformAndManager.transform.getPosition();
 		return position.getWorld();
 	}
-	
-	private static class TransformAndManager {
-		public final Transform transform;
-		public final EntityManager entityManager;
-		
-		public TransformAndManager() {
-			this.transform = null;
-			this.entityManager = null;
-		}
-		
-		public TransformAndManager(Transform transform, EntityManager entityManager) {
-			if (transform != null) {
-				this.transform = transform.copy();
-			} else {
-				this.transform = null;
-			}
-			this.entityManager = entityManager;
-		}
-		
-		public TransformAndManager copy() {
-			return new TransformAndManager(transform != null ? transform.copy() : null, entityManager);
-		}
-	}
-
 
 	@Override
 	public boolean is(Class<? extends Controller> clazz) {
@@ -290,5 +269,28 @@ public class SpoutEntity implements Entity {
 	@Override
 	public DatatableTuple getData(String key) {
 		return map.get(key);
+	}
+	
+	private static class TransformAndManager {
+		public final Transform transform;
+		public final EntityManager entityManager;
+		
+		public TransformAndManager() {
+			this.transform = null;
+			this.entityManager = null;
+		}
+		
+		public TransformAndManager(Transform transform, EntityManager entityManager) {
+			if (transform != null) {
+				this.transform = transform.copy();
+			} else {
+				this.transform = null;
+			}
+			this.entityManager = entityManager;
+		}
+		
+		public TransformAndManager copy() {
+			return new TransformAndManager(transform != null ? transform.copy() : null, entityManager);
+		}
 	}
 }
