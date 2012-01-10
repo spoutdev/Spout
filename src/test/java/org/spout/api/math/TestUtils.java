@@ -3,7 +3,7 @@ package org.spout.api.math;
 import static org.junit.Assert.assertEquals;
 
 public final class TestUtils {
-	public static final double eps = 0.001;
+	public static final double eps = 0.01;
 
 	private TestUtils() {
 	}

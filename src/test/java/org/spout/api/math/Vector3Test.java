@@ -4,10 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.spout.api.math.TestUtils.*;
 
-/**
- *
- * @author yetanotherx
- */
+
 public class Vector3Test {
 	private void testValue(Vector3 v, float x, float y, float z) {
 		if (Math.abs(v.getX() - x) >= eps || Math.abs(v.getY() - y) >= eps || Math.abs(v.getZ() - z) >= eps) {
