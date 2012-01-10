@@ -315,16 +315,34 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
+		for (AsyncExecutor e : executors) {
+			if (!e.finalizeTick()) {
+				throw new IllegalStateException("Attempt made to finalize a tick before snapshot copy while the previous operation was still active");
+			}
+		}
+
+		boolean joined = false;
+
+		while (!joined) {
+			try {
+				AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
+				joined = true;
+			} catch (TimeoutException e) {
+				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+			}
+		}
+
 		lockSnapshotLock();
 
 		try {
+			
 			for (AsyncExecutor e : executors) {
 				if (!e.preSnapshot()) {
-					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
+					throw new IllegalStateException("Attempt made to enter the pre-snapshot stage for a tick while the previous operation was still active");
 				}
 			}
 
-			boolean joined = false;
+			joined = false;
 
 			while (!joined) {
 				try {
@@ -334,7 +352,7 @@ public final class SpoutScheduler implements Scheduler {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 				}
 			}
-
+			
 			for (AsyncExecutor e : executors) {
 				if (!e.copySnapshot()) {
 					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");

@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.server.scheduler.SpoutScheduler;
 import org.spout.server.util.thread.coretasks.CopySnapshotTask;
+import org.spout.server.util.thread.coretasks.FinalizeTask;
 import org.spout.server.util.thread.coretasks.PreSnapshotTask;
 import org.spout.server.util.thread.coretasks.StartTickTask;
 import org.spout.server.util.thread.future.ManagedFuture;
@@ -49,6 +50,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
 	private PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
+	private FinalizeTask finalizeTask = new FinalizeTask();
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
 
@@ -160,6 +162,13 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		return pulse();
 	}
 
+	@Override
+	public final boolean finalizeTick() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(finalizeTask);
+		return pulse();
+	}
+	
 	@Override
 	public final boolean preSnapshot() {
 		ThreadsafetyManager.checkMainThread();

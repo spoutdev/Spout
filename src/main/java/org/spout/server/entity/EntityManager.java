@@ -160,23 +160,26 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		return entities.get().values().iterator();
 	}
 
-	public void preSnapshot() {
+	public void finalizeRun() {
 		// Entity removal and additions happen here
 		for (SpoutEntity e : entities.get().values()) {
-			e.preSnapshot();
+			e.finalizeRun();
 		}
+	}
+	
+	public void preSnapshotRun() throws InterruptedException {
+		for (SpoutEntity e : entities.get().values()) {
+			Controller controller = e.getController();
+			if (controller != null) {
+				controller.preSnapshot();
+			}
+		}		
 	}
 
 	/**
 	 * Updates the snapshot for all entities
 	 */
 	public void copyAllSnapshots() {
-		for (SpoutEntity e : entities.get().values()) {
-			Controller controller = e.getController();
-			if (controller != null) {
-				controller.snapshotStart();
-			}
-		}
 		for (SpoutEntity e : entities.get().values()) {
 			e.copyToSnapshot();
 		}

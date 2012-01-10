@@ -195,7 +195,7 @@ public class SpoutEntity implements Entity {
 		//Check to see if we should fire off a Move event
 	}
 	
-	public void preSnapshot() {
+	public void finalizeRun() {
 		TransformAndManager live = transformAndManagerLive.get();
 		if (live == null || transformAndManager == null || live.entityManager != transformAndManager.entityManager) {
 			if (transformAndManager != null && transformAndManager.entityManager != null) {

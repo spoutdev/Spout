@@ -23,52 +23,25 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.server;
+package org.spout.server.util.thread.coretasks;
 
-import org.spout.api.Server;
+import java.io.Serializable;
+
 import org.spout.server.util.thread.AsyncExecutor;
-import org.spout.server.util.thread.AsyncManager;
+import org.spout.server.util.thread.ManagementRunnable;
+import org.spout.server.util.thread.ManagementTaskEnum;
 
-/**
- * This class just passes through the period method calls to the SpoutRegion
- */
-public class SpoutRegionManager extends AsyncManager {
+public class FinalizeTask extends ManagementRunnable {
 
-	private final SpoutRegion parent;
+	private static final long serialVersionUID = 1L;
 
-	public SpoutRegionManager(SpoutRegion parent, int maxStage, AsyncExecutor executor, Server server) {
-		super(maxStage, executor, server);
-		this.parent = parent;
-	}
-
-	public SpoutRegion getParent() {
-		return parent;
+	public Serializable call(AsyncExecutor executor) throws InterruptedException {
+		executor.getManager().finalizeRun();
+		return null;
 	}
 
 	@Override
-	public void copySnapshotRun() throws InterruptedException {
-		parent.copySnapshotRun();
-
+	public ManagementTaskEnum getEnum() {
+		return ManagementTaskEnum.FINALIZE;
 	}
-
-	@Override
-	public void startTickRun(int stage, long delta) throws InterruptedException {
-		parent.startTickRun(stage, delta);
-	}
-
-	@Override
-	public void haltRun() throws InterruptedException {
-		parent.haltRun();
-	}
-
-	@Override
-	public void finalizeRun() throws InterruptedException {
-		parent.finalizeRun();
-	}
-	
-	@Override
-	public void preSnapshotRun() throws InterruptedException {
-		parent.preSnapshotRun();
-	}
-
 }

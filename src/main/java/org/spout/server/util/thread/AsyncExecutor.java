@@ -68,12 +68,25 @@ public interface AsyncExecutor {
 	public void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException;
 
 	/**
-	 * Instructs the executor to execute all pre-snapshot operations
+	 * This is called as the last stage prior to the snapshot being taken.<br>
+	 * <br>
+	 * It is not considered part of the stable snapshot.
 	 *
 	 * @return false if the executor was active
 	 */
-	public boolean preSnapshot();
+	public boolean finalizeTick();
 
+	/**
+	 * This is called after finalizeTick stage and before the copy snapshot stage.<br>
+	 * <br>
+	 * This is intended as a MONITOR only stage and is used for sending network updates.<br>
+	 * <br>
+	 * All data must remain stable for this stage.
+	 * 
+	 * @return false if the executor was active
+	 */
+	public boolean preSnapshot();
+	
 	/**
 	 * Instructs the executor to copy all updated data to its snapshot
 	 *

@@ -363,8 +363,12 @@ public class SpoutRegion extends Region{
 	public void haltRun() throws InterruptedException {
 	}
 
+	public void finalizeRun() throws InterruptedException {
+		entityManager.finalizeRun();
+	}
+	
 	public void preSnapshotRun() throws InterruptedException {
-		entityManager.preSnapshot();
+		entityManager.preSnapshotRun();
 	}
 
 	@SuppressWarnings( {"rawtypes", "unchecked"})

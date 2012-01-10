@@ -29,35 +29,44 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 
 import org.spout.server.util.thread.coretasks.CopySnapshotTask;
+import org.spout.server.util.thread.coretasks.FinalizeTask;
 import org.spout.server.util.thread.coretasks.PreSnapshotTask;
 import org.spout.server.util.thread.coretasks.StartTickTask;
 
 public enum ManagementTaskEnum {
 
-	COPY_SNAPSHOT(1, new Callable<CopySnapshotTask>() {
+	COPY_SNAPSHOT(0, new Callable<CopySnapshotTask>() {
 		@Override
 		public CopySnapshotTask call() {
 			return new CopySnapshotTask();
 		}
 	}),
-	START_TICK(2, new Callable<StartTickTask>() {
+	START_TICK(1, new Callable<StartTickTask>() {
 		@Override
 		public StartTickTask call() {
 			return new StartTickTask();
 		}
 	}),
-	PRE_SNAPSHOT(3, new Callable<PreSnapshotTask>() {
+	PRE_SNAPSHOT(2, new Callable<PreSnapshotTask>() {
 		@Override
 		public PreSnapshotTask call() {
 			return new PreSnapshotTask();
 		}
+	}),
+	FINALIZE(3, new Callable<FinalizeTask>() {
+		@Override
+		public FinalizeTask call() {
+			return new FinalizeTask();
+		}
 	});
 
-	private static final int maxId = 3;
+	private static final int maxId;
 	private static final HashSet<Integer> ids = new HashSet<Integer>();
 
 	static {
-		for (ManagementTaskEnum e : ManagementTaskEnum.values()) {
+		ManagementTaskEnum[] values = ManagementTaskEnum.values();
+		maxId = values.length;
+		for (ManagementTaskEnum e : values) {
 			reserveId(e.getId());
 		}
 	}

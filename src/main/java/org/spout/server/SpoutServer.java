@@ -900,8 +900,13 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
+	public void finalizeRun() throws InterruptedException {
+		entityManager.finalizeRun();
+	}
+	
+	@Override
 	public void preSnapshotRun() throws InterruptedException {
-		entityManager.preSnapshot();
+		entityManager.preSnapshotRun();
 	}
 
 	public EntityManager getEntityManager() {
