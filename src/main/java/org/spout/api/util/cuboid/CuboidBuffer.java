@@ -171,6 +171,11 @@ public abstract class CuboidBuffer {
 	public abstract void copyElement(int thisIndex, int sourceIndex, int runLength);
 
 	public abstract void setSource(CuboidBuffer source);
+	
+	public String toString() {
+		return this.getClass().getSimpleName() + "{Buffer Size=" + (sizeX * sizeY * sizeZ) + ", Base=(" + world.getName() + ", " + baseX +", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " +
+				"Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
+	}
 
 	protected static class CuboidBufferCopyRun {
 
