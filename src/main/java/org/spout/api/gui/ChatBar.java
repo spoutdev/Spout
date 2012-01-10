@@ -19,7 +19,6 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.util.Color;
 
@@ -33,7 +32,10 @@ public class ChatBar extends GenericWidget implements Widget {
 	private int cursorX = 4, cursorY = 240;
 	protected Color textColor = new Color(1F, 1F, 1F);
 
-	public ChatBar() {
+	/**
+	 * Package-private constructor.
+	 */
+	ChatBar() {
 		super();
 		setDirty(false);
 		setX(2);
@@ -67,11 +69,6 @@ public class ChatBar extends GenericWidget implements Widget {
 	@Override
 	public WidgetType getType() {
 		return WidgetType.ChatBar;
-	}
-
-	@Override
-	public UUID getId() {
-		return new UUID(0, 2);
 	}
 
 	/**

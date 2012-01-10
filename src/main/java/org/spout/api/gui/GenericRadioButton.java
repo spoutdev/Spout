@@ -87,7 +87,7 @@ public class GenericRadioButton extends GenericButton implements RadioButton {
 
 	public List<RadioButton> getRadiosInGroup() {
 		List<RadioButton> ret = new ArrayList<RadioButton>();
-		for (Widget w : getScreen().getAttachedWidgets()) {
+		for (Widget w : getScreen().getChildren(true)) {
 			if (w instanceof RadioButton) {
 				if (((RadioButton) w).getGroup() == group) {
 					ret.add((RadioButton) w);

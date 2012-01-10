@@ -16,22 +16,19 @@
  */
 package org.spout.api.gui;
 
-import java.util.UUID;
 import org.spout.api.ClientOnly;
 
 public class ExpBar extends GenericWidget {
 
-	public ExpBar() {
+	/**
+	 * Package-private constructor.
+	 */
+	ExpBar() {
 		super();
 		setX(427 / 2 - 91); // 122
 		setY(211);
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
 		setAnchor(WidgetAnchor.BOTTOM_CENTER);
-	}
-
-	@Override
-	public UUID getId() {
-		return new UUID(0, 6);
 	}
 
 	@Override

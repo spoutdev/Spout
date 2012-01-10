@@ -19,26 +19,17 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
-import org.spout.api.plugin.Plugin;
 
 public abstract class GenericScreen extends GenericContainer implements Screen {
 
-	private int playerId;
+	private int playerId = -1;
 	private boolean bg = true;
 
 	public GenericScreen() {
-	}
-
-	@Override
-	public int getVersion() {
-		return super.getVersion() + 0;
 	}
 
 	public GenericScreen(int playerId) {
@@ -46,24 +37,16 @@ public abstract class GenericScreen extends GenericContainer implements Screen {
 	}
 
 	@Override
+	public int getVersion() {
+		return super.getVersion() + 0;
+	}
+
+	@Override
 	public void onTick() {
+		super.onTick();
 		Player player = getPlayer();
 		if (player != null) {
-			for (Widget widget : new HashSet<Widget>(widgets.keySet())) {
-				try {
-					widget.onTick();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (Widget widget : widgets.keySet()) {
-				try {
-					widget.onAnimate();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (Widget widget : widgets.keySet()) {
+			for (Widget widget : getChildren()) {
 				if (widget.isDirty()) {
 					if (!widget.hasSize()/* || !widget.hasPosition()*/) {
 						String type = "Unknown";
@@ -90,6 +73,15 @@ public abstract class GenericScreen extends GenericContainer implements Screen {
 	}
 
 	@Override
+	public Screen insertChild(int index, Widget child) {
+		if (child instanceof Screen) {
+			throw new UnsupportedOperationException("Unsupported widget type");
+		}
+		super.insertChild(index, child);
+		return this;
+	}
+
+	@Override
 	public Screen setBgVisible(boolean enable) {
 		bg = enable;
 		return this;
@@ -102,7 +94,7 @@ public abstract class GenericScreen extends GenericContainer implements Screen {
 
 	@Override
 	public Player getPlayer() {
-		return Spout.getPlayerFromId(playerId);
+		return playerId == -1 ? null : Spout.getPlayerFromId(playerId);
 	}
 
 	@Override

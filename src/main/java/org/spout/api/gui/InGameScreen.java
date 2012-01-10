@@ -17,46 +17,28 @@
 package org.spout.api.gui;
 
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.spout.api.plugin.Plugin;
-import org.spout.api.SpoutManager;
-import org.spout.api.event.screen.ScreenCloseEvent;
-import org.spout.api.event.screen.ScreenOpenEvent;
-import org.spout.api.packet.PacketScreenAction;
-import org.spout.api.packet.PacketWidget;
-import org.spout.api.packet.ScreenAction;
-import org.spout.api.player.SpoutPlayer;
+import org.spout.api.player.Player;
 
 public class InGameScreen extends GenericScreen implements InGameHUD {
 
-	protected HealthBar health;
-	protected BubbleBar bubble;
-	protected ChatBar chat;
-	protected ChatTextBox chatText;
-	protected ArmorBar armor;
-	protected HungerBar hunger;
-	protected ExpBar exp;
-	protected PopupScreen activePopup = null;
+	private final HealthBar health = new HealthBar();
+	private final BubbleBar bubble = new BubbleBar();
+	private final ChatBar chat = new ChatBar();
+	private final ChatTextBox chatText = new ChatTextBox();
+	private final ArmorBar armor = new ArmorBar();
+	private final HungerBar hunger = new HungerBar();
+	private final ExpBar exp = new ExpBar();
+	private PopupScreen activePopup = null;
 
 	public InGameScreen(int playerId) {
 		super(playerId);
-		this.health = new HealthBar();
-		this.bubble = new BubbleBar();
-		this.chat = new ChatBar();
-		this.chatText = new ChatTextBox();
-		this.armor = new ArmorBar();
-		this.hunger = new HungerBar();
-		this.exp = new ExpBar();
-
-		attachWidget(null, health).attachWidget(null, bubble).attachWidget(null, chat).attachWidget(null, chatText).attachWidget(null, armor).attachWidget(null, hunger).attachWidget(null, exp);
-
+		super.addChildren(health, bubble, chat, chatText, armor, hunger, exp);
 	}
 
 	@Override
 	public void onTick() {
-		SpoutPlayer player = (SpoutPlayer) SpoutManager.getPlayerFromId(playerId);
+		super.onTick();
+		Player player = getPlayer();
 		if (player != null && player.isSpoutCraftEnabled()) {
 			if (getActivePopup() != null) {
 				if (getActivePopup().isDirty()) {
@@ -68,67 +50,42 @@ public class InGameScreen extends GenericScreen implements InGameHUD {
 				getActivePopup().onTick();
 			}
 		}
-		super.onTick();
 	}
 
 	@Override
-	public InGameScreen attachWidget(Plugin plugin, Widget widget) {
-		if (canAttachWidget(widget)) {
-			super.attachWidget(plugin, widget);
-			return this;
+	public Screen insertChild(int index, Widget child) {
+		if (child instanceof Control) {
+			throw new UnsupportedOperationException("Unsupported widget type");
 		}
-		throw new UnsupportedOperationException("Unsupported widget type");
+		super.insertChild(index, child);
+		return this;
 	}
 
 	@Override
-	public boolean updateWidget(Widget widget) {
-		if (widget instanceof HealthBar) {
-			health = (HealthBar) widget;
-		} else if (widget instanceof BubbleBar) {
-			bubble = (BubbleBar) widget;
-		} else if (widget instanceof ChatTextBox) {
-			chatText = (ChatTextBox) widget;
-		} else if (widget instanceof ChatBar) {
-			chat = (ChatBar) widget;
-		} else if (widget instanceof ArmorBar) {
-			armor = (ArmorBar) widget;
-		} else if (widget instanceof HungerBar) {
-			hunger = (HungerBar) widget;
-		} else if (widget instanceof ExpBar) {
-			exp = (ExpBar) widget;
-		}
-		return super.updateWidget(widget);
-	}
-
-	@Override
-	public Screen removeWidget(Widget widget) {
-		if (widget instanceof HealthBar) {
+	public InGameScreen removeChild(Widget child) {
+		if (child instanceof HealthBar) {
 			throw new UnsupportedOperationException("Cannot remove the health bar. Use setVisible(false) to hide it instead");
 		}
-		if (widget instanceof BubbleBar) {
+		if (child instanceof BubbleBar) {
 			throw new UnsupportedOperationException("Cannot remove the bubble bar. Use setVisible(false) to hide it instead");
 		}
-		if (widget instanceof ChatTextBox) {
+		if (child instanceof ChatTextBox) {
 			throw new UnsupportedOperationException("Cannot remove the chat text box. Use setVisible(false) to hide it instead");
 		}
-		if (widget instanceof ChatBar) {
+		if (child instanceof ChatBar) {
 			throw new UnsupportedOperationException("Cannot remove the chat bar. Use setVisible(false) to hide it instead");
 		}
-		if (widget instanceof ArmorBar) {
+		if (child instanceof ArmorBar) {
 			throw new UnsupportedOperationException("Cannot remove the armor bar. Use setVisible(false) to hide it instead");
 		}
-		if (widget instanceof HungerBar) {
+		if (child instanceof HungerBar) {
 			throw new UnsupportedOperationException("Cannot remove the hunger bar. Use setVisible(false) to hide it instead");
 		}
-		if (widget instanceof ExpBar) {
+		if (child instanceof ExpBar) {
 			throw new UnsupportedOperationException("Cannot remove the exp bar. Use setVisible(false) to hide it instead");
 		}
-		return super.removeWidget(widget);
-	}
-
-	@Override
-	public UUID getId() {
-		return new UUID(0, 0);
+		super.removeChild(child);
+		return this;
 	}
 
 	@Override
@@ -139,22 +96,6 @@ public class InGameScreen extends GenericScreen implements InGameHUD {
 	@Override
 	public int getWidth() {
 		return 427;
-	}
-
-	@Override
-	public boolean closePopup() {
-		if (getActivePopup() == null) {
-			return false;
-		}
-		SpoutPlayer player = SpoutManager.getPlayerFromId(playerId);
-		ScreenCloseEvent event = new ScreenCloseEvent(player, getActivePopup(), ScreenType.CUSTOM_SCREEN);
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
-			return false;
-		}
-		player.sendPacket(new PacketScreenAction(ScreenAction.Close, ScreenType.CUSTOM_SCREEN));
-		activePopup = null;
-		return true;
 	}
 
 	@Override
@@ -215,13 +156,18 @@ public class InGameScreen extends GenericScreen implements InGameHUD {
 	}
 
 	@Override
-	public boolean canAttachWidget(Widget widget) {
-		if (widget instanceof Screen) {
+	public boolean closePopup() {
+		if (getActivePopup() == null) {
 			return false;
 		}
-		if (widget instanceof Control) {
+		Player player = getPlayer();
+		ScreenCloseEvent event = new ScreenCloseEvent(player, getActivePopup(), ScreenType.CUSTOM_SCREEN);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		if (event.isCancelled()) {
 			return false;
 		}
+		player.sendPacket(new PacketScreenAction(ScreenAction.Close, ScreenType.CUSTOM_SCREEN));
+		activePopup = null;
 		return true;
 	}
 
@@ -235,7 +181,13 @@ public class InGameScreen extends GenericScreen implements InGameHUD {
 	}
 
 	public static boolean isCustomWidget(Widget widget) {
-		return widget instanceof HealthBar || widget instanceof BubbleBar || widget instanceof ChatTextBox || widget instanceof ChatBar || widget instanceof ArmorBar;
+		return widget instanceof ArmorBar
+				|| widget instanceof BubbleBar
+				|| widget instanceof ChatBar
+				|| widget instanceof ChatTextBox
+				|| widget instanceof ExpBar
+				|| widget instanceof HealthBar
+				|| widget instanceof HungerBar;
 	}
 
 	@Override
@@ -245,10 +197,10 @@ public class InGameScreen extends GenericScreen implements InGameHUD {
 
 	@Override
 	public void toggleSurvivalHUD(boolean toggle) {
-		health.setVisible(toggle);
-		bubble.setVisible(toggle);
 		armor.setVisible(toggle);
-		hunger.setVisible(toggle);
+		bubble.setVisible(toggle);
 		exp.setVisible(toggle);
+		health.setVisible(toggle);
+		hunger.setVisible(toggle);
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.event.screen.SliderDragEvent;
+import org.spout.api.util.Color;
 
 /**
  * The GenericSlider is a bar with which a user can set a value.
@@ -50,13 +50,13 @@ public interface Slider extends Control, Label {
 
 	@Override
 	public Slider setAlign(WidgetAnchor align);
-
 	/**
 	 * Fires when this slider is dragged on the screen.
-	 * 
+	 *
 	 * This event is also sent to the screen listener, afterwards.
-	 * 
+	 *
 	 * @param event
 	 */
-	public void onSliderDrag(SliderDragEvent event);
+// TODO
+//	public void onSliderDrag(SliderDragEvent event);
 }

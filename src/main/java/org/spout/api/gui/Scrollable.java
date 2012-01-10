@@ -16,6 +16,8 @@
  */
 package org.spout.api.gui;
 
+import org.spout.api.util.Color;
+
 /**
  * This defines a control for a scrollbar.
  */
@@ -58,7 +60,7 @@ public interface Scrollable extends Control {
 	public void ensureVisible(Rectangle rect);
 
 	/**
-	 * Gets the maximum allowed scroll position. 
+	 * Gets the maximum allowed scroll position.
 	 * @param axis
 	 * @return the maximum scroll position. Use the return value to scroll to the very bottom.
 	 * @returns 0 if no scrolling is possible, that means the whole content would fit into the viewport.
@@ -92,13 +94,13 @@ public interface Scrollable extends Control {
 	 * @return
 	 */
 	public int getViewportSize(Orientation axis);
-	
+
 	/**
 	 * Gets the background color of this list
 	 * @return color
 	 */
 	public Color getBackgroundColor();
-	
+
 	/**
 	 * Sets the background color of this list
 	 * @param color to set

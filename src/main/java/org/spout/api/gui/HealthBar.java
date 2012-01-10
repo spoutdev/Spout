@@ -19,7 +19,6 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 import org.spout.api.ClientOnly;
 
 /**
@@ -31,7 +30,10 @@ public class HealthBar extends GenericWidget {
 	private int iconOffset = 8;
 	private float dangerPercent = 20f;
 
-	public HealthBar() {
+	/**
+	 * Package-private constructor.
+	 */
+	HealthBar() {
 		super();
 		setDirty(false);
 		setX(427 / 2 - 91); //122
@@ -64,11 +66,6 @@ public class HealthBar extends GenericWidget {
 	@Override
 	public WidgetType getType() {
 		return WidgetType.HealthBar;
-	}
-
-	@Override
-	public UUID getId() {
-		return new UUID(0, 4);
 	}
 
 	/**

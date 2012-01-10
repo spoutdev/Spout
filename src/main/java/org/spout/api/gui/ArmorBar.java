@@ -19,7 +19,6 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 import org.spout.api.ClientOnly;
 
 /**
@@ -31,7 +30,10 @@ public class ArmorBar extends GenericWidget {
 	private boolean alwaysVisible = false;
 	private int iconOffset = 8;
 
-	public ArmorBar() {
+	/**
+	 * Package-private constructor.
+	 */
+	ArmorBar() {
 		setDirty(false);
 		setX(427 / 2 - 91); //122
 		setY(191);
@@ -63,11 +65,6 @@ public class ArmorBar extends GenericWidget {
 	@Override
 	public WidgetType getType() {
 		return WidgetType.ArmorBar;
-	}
-
-	@Override
-	public UUID getId() {
-		return new UUID(0, 0);
 	}
 
 	/**

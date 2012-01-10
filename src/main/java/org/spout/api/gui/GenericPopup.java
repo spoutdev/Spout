@@ -63,14 +63,6 @@ public class GenericPopup extends GenericScreen implements PopupScreen {
 	}
 
 	@Override
-	public Widget setScreen(Plugin plugin, Screen screen) {
-		if (this.screen != null && screen != null && screen != this.screen) {
-			((InGameHUD) this.screen).closePopup();
-		}
-		return super.setScreen(plugin, screen);
-	}
-
-	@Override
 	public WidgetType getType() {
 		return WidgetType.PopupScreen;
 	}

@@ -1,6 +1,6 @@
 /*
  * This file is part of Spout API (http://wiki.getspout.org/).
- * 
+ *
  * Spout API is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.event.screen.TextFieldChangeEvent;
+import org.spout.api.util.Color;
 
 /**
  * This is a box where the user can input a string.
@@ -70,7 +70,7 @@ public interface TextField extends Control {
 
 	/**
 	 * Sets the maximum lines this text field can hold. If zero is passed, the text field will hold as many lines as it can depending on its size.
-	 * 
+	 *
 	 * @param max lines (0 – 127)
 	 * @return textfield
 	 */
@@ -109,7 +109,7 @@ public interface TextField extends Control {
 	public int getTabIndex();
 
 	/**
-	 * Sets the tab index for this text field. When the player presses 
+	 * Sets the tab index for this text field. When the player presses
 	 * the tabulator key the text field with index+1 will obtain the focus.
 	 * Text fields using the same index may not obtain focus when pressing the tabulator key.
 	 * The behaviour discontinuous index sequences is undefined.
@@ -152,8 +152,7 @@ public interface TextField extends Control {
 	 * This event will also be sent to the screen listener.
 	 * @param event
 	 */
-	public void onTextFieldChange(TextFieldChangeEvent event);
-
+//	public void onTextFieldChange(TextFieldChangeEvent event);
 	/**
 	 * Fires when the user presses Enter.
 	 */

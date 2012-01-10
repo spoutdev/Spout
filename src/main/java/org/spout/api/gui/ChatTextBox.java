@@ -19,7 +19,6 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * The Spout implementation of the default Chat Text Box.
@@ -32,7 +31,10 @@ public class ChatTextBox extends GenericWidget implements Widget {
 	protected int visibleChatLines = 20;
 	protected int fadeoutTicks = 250;
 
-	public ChatTextBox() {
+	/**
+	 * Package-private constructor.
+	 */
+	ChatTextBox() {
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
 		setDirty(false);
 	}
@@ -61,11 +63,6 @@ public class ChatTextBox extends GenericWidget implements Widget {
 		output.writeInt(getNumVisibleLines());
 		output.writeInt(getNumVisibleChatLines());
 		output.writeInt(getFadeoutTicks());
-	}
-
-	@Override
-	public UUID getId() {
-		return new UUID(0, 3);
 	}
 
 	public void render() {

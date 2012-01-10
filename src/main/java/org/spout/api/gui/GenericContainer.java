@@ -133,9 +133,7 @@ public class GenericContainer extends GenericWidget implements Container {
 
 	@Override
 	public Widget[] getChildren() {
-		Widget[] list = new Widget[children.size()];
-		children.toArray(list);
-		return list;
+		return getChildren(false);
 	}
 
 	@Override
@@ -450,6 +448,20 @@ public class GenericContainer extends GenericWidget implements Container {
 		}
 		if (needsLayout) {
 			updateLayout();
+		}
+		for (Widget child : new ArrayList<Widget>(children)) {
+			try {
+				child.onTick();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		for (Widget child : children) {
+			try {
+				child.onAnimate();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

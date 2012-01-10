@@ -50,6 +50,4 @@ public interface Screen extends Container {
 	 * @return the screen type
 	 */
 	public ScreenType getScreenType();
-
-	public Set<Widget> getAttachedWidgetsAsSet(boolean recursive);
 }
