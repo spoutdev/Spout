@@ -474,13 +474,13 @@ public class Vector4Test {
 	public void testRand() {
 		for (int i = 0; i < 100; ++i) {
 			Vector4 x = Vector4.rand();
-			assertTrue(x.x >= 0);
+			assertTrue(x.x >= -1);
 			assertTrue(x.x <= 1);
-			assertTrue(x.y >= 0);
+			assertTrue(x.y >= -1);
 			assertTrue(x.y <= 1);
-			assertTrue(x.z >= 0);
+			assertTrue(x.z >= -1);
 			assertTrue(x.z <= 1);
-			assertTrue(x.w >= 0);
+			assertTrue(x.w >= -1);
 			assertTrue(x.w <= 1);
 		}
 	}

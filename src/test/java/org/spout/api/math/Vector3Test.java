@@ -465,15 +465,15 @@ public class Vector3Test {
 		assertEquals(new Vector3(5, 2, 6), Vector3.max(x, y));
 	}
 
-//	@Test
+	@Test
 	public void testRand() {
 		for (int i = 0; i < 100; ++i) {
 			Vector3 x = Vector3.rand();
-			assertTrue(x.x >= 0);
+			assertTrue(x.x >= -1);
 			assertTrue(x.x <= 1);
-			assertTrue(x.y >= 0);
+			assertTrue(x.y >= -1);
 			assertTrue(x.y <= 1);
-			assertTrue(x.z >= 0);
+			assertTrue(x.z >= -1);
 			assertTrue(x.z <= 1);
 		}
 	}
