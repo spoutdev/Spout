@@ -773,7 +773,11 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return 
 	 */
 	public static Vector4 rand() {
-		return new Vector4(Math.random(), Math.random(), Math.random(), Math.random());
+		double[] rands = new double[4];
+		for( int i = 0; i < 4; i++ ) {
+			rands[i] = (Math.random() * 2) - 1;
+		}
+		return new Vector4(rands[0], rands[1], rands[2], rands[3]);
 	}
 
 	/**
