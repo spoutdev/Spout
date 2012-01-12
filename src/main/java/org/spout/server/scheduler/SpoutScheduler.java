@@ -51,7 +51,38 @@ import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableArrayList;
 
 /**
- * A class which schedules {@link SpoutTask}s.
+ * A class which handles scheduling for the server {@link SpoutTask}s.<br>
+ * <br>
+ * Tasks can be submitted to the scheduler for execution by the main thread.
+ * These tasks are executed during a period where none of the auxiliary threads
+ * are executing.<br>
+ * <br>
+ * Each tick consists of a number of stages.  Each stage is 
+ * executed in parallel, but the next stage is not started 
+ * until all threads have completed the previous stage.<br>
+ * <br>
+ * Except for executing queued serial tasks, all threads are run in parallel.  
+ * The full sequence is as follows:<br>
+ * <ul>
+ *  <li>Single Thread
+ *  <ul>
+ *   <li> <b>Execute queued tasks</b><br>
+ *           Tasks that are submitted for execution are executed one at a time.
+ *  </ul>
+ *  <li>Parallel Threads
+ *  <ul>
+ *  <li> <b>Stage 1</b><br>
+ *          This is the first stage of execution.  Most Events are generated during this stage and the API is fully open for use.
+ *  <li> <b>Stage 2</b><br>
+ *          During this stage, entity collisions are handled.
+ *  <li> <b>Finalize Tick</b><br>
+ *          During this stage, entities are moved between entity managers.
+ *  <li> <b>Pre-snapshot</b><br>
+ *          This is a MONITOR stage, data is stable and no modifications are allowed.
+ *  <li> <b>Copy Snapshot</b><br>
+ *          During this stage all live values are copied to their stable snapshot.  Data is unstable so no reads are permitted during this stage.
+ *  </ul>
+ * </ul>
  *
  */
 public final class SpoutScheduler implements Scheduler {
