@@ -1,5 +1,5 @@
 /*
- * This file is part of SpoutAPI (http://www.getspout.org/).
+ * This file is part of SpoutAPI (http://www.spout.org/).
  *
  * SpoutAPI is licensed under the SpoutDev license version 1.
  *
