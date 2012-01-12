@@ -26,7 +26,9 @@
 package org.spout.server;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,7 +36,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.Spout;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
@@ -78,6 +82,15 @@ public class SpoutRegion extends Region{
 	 */
 	protected final EntityManager entityManager = new EntityManager();
 	
+	/**
+	 * Holds all not populated chunks
+	 */
+	protected Set<Chunk> nonPopulatedChunks = new HashSet<Chunk>();
+	
+	private boolean isPopulatingChunks = false;
+	
+	public static final byte POPULATE_CHUNK_MARGIN = 1;
+	
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, false);
 	}
@@ -112,8 +125,6 @@ public class SpoutRegion extends Region{
 			if (chunk != null || !load) {
 				return chunk;
 			}
-			//TODO: generate new chunk
-			//this.getWorld().
 
 			AtomicReference<Chunk> ref = chunks[x][y][z];
 
@@ -134,6 +145,9 @@ public class SpoutRegion extends Region{
 
 				if (success) {
 					numberActiveChunks.incrementAndGet();
+					if(!newChunk.isPopulated()) {
+						nonPopulatedChunks.add(newChunk);
+					}
 					return newChunk;
 				} else {
 					Chunk oldChunk = ref.get();
@@ -365,6 +379,46 @@ public class SpoutRegion extends Region{
 
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
+		isPopulatingChunks = true;
+		try {
+			Iterator<Chunk> iter = nonPopulatedChunks.iterator();
+			World world = getWorld();
+			int chunkHeight = world.getHeight() >> Chunk.CHUNK_SIZE_BITS - 1;
+			while(iter.hasNext()) {
+				Chunk c = iter.next();
+				if(c.isUnloaded()) {
+					iter.remove();
+				}
+				if(c.isPopulated()) {
+					//Cleanup
+					iter.remove();
+					continue;
+				}
+				int x = c.getX();
+				int y = c.getY();
+				int z = c.getZ();
+				boolean success = true;
+				int missing = 0;
+				seek: for(int dx = x - POPULATE_CHUNK_MARGIN; dx <= x + POPULATE_CHUNK_MARGIN; dx++) {
+					for(int dy = Math.max(y - POPULATE_CHUNK_MARGIN, 0); dy <= Math.min(y + POPULATE_CHUNK_MARGIN, chunkHeight); dy++) {
+						for(int dz = z - POPULATE_CHUNK_MARGIN; dz <= z + POPULATE_CHUNK_MARGIN; dz++) {
+							Chunk neighbor = world.getChunk(dx, dy, dz, false);
+							if(neighbor == null) {
+								success = false;
+								missing ++;
+							}
+						}
+					}
+				}
+				//System.out.println(x + " " + y + " " + z + " "+ missing + " missing");
+				if(success) {
+					c.populate();
+					iter.remove();
+				}
+			}
+		} finally {
+			isPopulatingChunks = false;
+		}
 	}
 	
 	public void preSnapshotRun() throws InterruptedException {
@@ -410,5 +464,11 @@ public class SpoutRegion extends Region{
 
 	public EntityManager getEntityManager() {
 		return entityManager;
+	}
+	
+	public void onChunkPopulated(SpoutChunk chunk) {
+		if(!isPopulatingChunks) {
+			nonPopulatedChunks.remove(chunk);
+		}
 	}
 }

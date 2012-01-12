@@ -342,6 +342,9 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 		populated.set(true);
+		if(getRegion() instanceof SpoutRegion) {
+			((SpoutRegion) getRegion()).onChunkPopulated(this);
+		}
 	}
 
 	@Override
