@@ -25,7 +25,7 @@
  */
 package org.spout.api.datatable;
 
-import java.io.Externalizable;
+import java.io.Serializable;
 
 /**
  * Indicates that the implementing object has a Datatable associated with it
@@ -39,7 +39,7 @@ public interface Datatable {
 	
 	public void setData(String key, boolean value);
 	
-	public void setData(String key, Externalizable value);
+	public void setData(String key, Serializable value);
 	
 	public DatatableTuple getData(String key);
 	

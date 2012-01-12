@@ -31,9 +31,11 @@ public class Inventory implements Serializable {
 
 	private static final long serialVersionUID = 0L;
 	private ItemStack[] contents;
+	private int currentSlot;
 
 	public Inventory(int size) {
 		contents = new ItemStack[size];
+		currentSlot = 0;
 	}
 
 	public ItemStack[] getContents() {
@@ -60,5 +62,18 @@ public class Inventory implements Serializable {
 	
 	public int getSize() {
 		return contents.length;
+	}
+	
+	public ItemStack getCurrentItem() {
+		return getItem(currentSlot);
+	}
+
+	public int getCurrentSlot() {
+		return currentSlot;
+	}
+
+	public void setCurrentSlot(int slot) {
+		if(slot < 0 || slot >= contents.length) throw new ArrayIndexOutOfBoundsException();
+		currentSlot = slot;
 	}
 }
