@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.generator.Populator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -43,6 +44,7 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TNibbleTripleObjectHashMap;
 import org.spout.api.util.map.TNibbleTripleShortHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
+import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.server.util.thread.snapshotable.SnapshotableShortArray;
 
 public class SpoutChunk extends Chunk {
@@ -79,6 +81,11 @@ public class SpoutChunk extends Chunk {
 	private final Region parentRegion;
 	
 	/**
+	 * Holds if the chunk is populated
+	 */
+	private SnapshotableBoolean populated;
+	
+	/**
 	 * A set of all players who are observing this chunk
 	 */
 	private final HashSet<Player> observers = new HashSet<Player>();
@@ -92,6 +99,7 @@ public class SpoutChunk extends Chunk {
 		else {
 			this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
 		}
+		this.populated = new SnapshotableBoolean(snapshotManager, false);
 		
 		blockData = new TNibbleTripleShortHashMap(TCollections.synchronizedMap(new TShortShortHashMap()));
 		complexData = new TNibbleTripleObjectHashMap<Serializable>(TCollections.synchronizedMap(new TShortObjectHashMap<Serializable>()));
@@ -311,6 +319,26 @@ public class SpoutChunk extends Chunk {
 		}
 		
 		
+	}
+
+	@Override
+	public void populate() {
+		populate(false);
+	}
+
+	@Override
+	public void populate(boolean force) {
+		if(isPopulated() && !force) {
+			return;
+		}
+		for (Populator populator:getWorld().getGenerator().getPopulators()) {
+			populator.populate(this);
+		}
+	}
+
+	@Override
+	public boolean isPopulated() {
+		return populated.get();
 	}
 
 }
