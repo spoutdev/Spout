@@ -17,14 +17,9 @@ public class DatatableSequenceNumber {
 	public static final int UNSTABLE = 1;
 	
 	/**
-	 * Sequence number that indicates that the record has expired
-	 */
-	public static final int EXPIRED = 3;
-	
-	/**
 	 * Sequence number that indicates that the read was atomic, and so always is valid
 	 */
-	public static final int ATOMIC = 5;
+	public static final int ATOMIC = 3;
 	
 	/**
 	 * Gets a unique sequence number.

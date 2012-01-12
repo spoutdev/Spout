@@ -30,22 +30,21 @@ public final class AtomicIntReferenceArrayStore<T> {
 	private AtomicInteger scan = new AtomicInteger(0);
 	private final int reservedMask;
 
-	/**
-	 * This read/write lock is used to handle locking for resizing operations.<br>
-	 * <br>
-	 * All operations on the store (including add/remove operations) obtain a read lock before performing the operation.<br>
-	 * <br>
-	 * Since an unlimited number of threads can hold read locks at the same time, this has no performance impact.<br>
-	 * <br>
-	 * When performing a resize operation, a write lock is obtained.  This ensures exclusive access to the arrays in order to perform the resize.
-	 */
 	private AtomicReference<AtomicIntegerArray> seqArray;
 	private AtomicReference<T[]> auxArray;
 	private AtomicReference<int[]> intArray;
 
+	public AtomicIntReferenceArrayStore(int maxEntries) {
+		this(maxEntries, 0.49);
+	}
+	
+	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor) {
+		this(maxEntries, loadFactor, 0);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor, int initialSize) {
-		this.maxLength = MathHelper.roundUpPow2((maxEntries * 3) / 2); // ~50% load factor
+		this.maxLength = MathHelper.roundUpPow2((int)(maxEntries / loadFactor));
 		this.reservedMask = (-MathHelper.roundUpPow2(maxLength)) & 0xFFFF;
 
 		this.length.set(MathHelper.roundUpPow2(initialSize));
@@ -54,7 +53,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 		intArray = new AtomicReference<int[]>(new int[this.length.get()]);
 		auxArray = new AtomicReference<T[]>((T[])new Object[this.length.get()]);
 		seqArray = new AtomicReference<AtomicIntegerArray>(new AtomicIntegerArray(this.length.get()));
-		emptyFill(auxArray.get());
+		emptyFill(auxArray.get(), seqArray.get());
 	}
 
 	/**
@@ -62,13 +61,15 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * <br>
 	 * Only ids where isReverved(id) returns true will be returned by the add(...) method.<br>
 	 * <br>
-	 * Ids from (65536 - length) to 65535 are reserved. 
+	 * Ids from (65536 - length) to 65535 are reserved.
 	 * <br>
+	 * The top 2 bytes of the id are ignored.<br>
 	 * @param id
 	 * @return true if the id is reserved
 	 */
 	public final boolean isReserved(int id) {
-		return ((id & 0xFFFF0000) == 0) && ((id & reservedMask) == id);
+		id = id & 0x0000FFFF;
+		return (id & reservedMask) == id;
 	}
 
 	/**
@@ -204,7 +205,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 		while (true) {
 			int prevSeq = seqArray.get().getAndSet(index, DatatableSequenceNumber.UNSTABLE);
 			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
-				continue;
+				return false;
 			}
 			try {
 				T current = auxArray.get()[index];
@@ -262,7 +263,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 			@SuppressWarnings("unchecked")
 			T[] newAuxArray = (T[])new Object[newLength];
 			AtomicIntegerArray newSeqArray = new AtomicIntegerArray(newLength);
-			emptyFill(newAuxArray);
+			emptyFill(newAuxArray, null);
 
 			// Copy the state of the current array to the new array
 			for (int i = 0; i < length.get(); i++) {
@@ -328,9 +329,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * 
 	 * @param array the array to fill
 	 */
-	private final void emptyFill(T[] array) {
+	private final void emptyFill(T[] array, AtomicIntegerArray iArray) {
 		for (int i = 0; i < array.length; i++) {
 			array[i] = EMPTY;
+			if (iArray != null) {
+				iArray.set(i, DatatableSequenceNumber.get());
+			}
 		}
 	}
 
@@ -346,4 +350,5 @@ public final class AtomicIntReferenceArrayStore<T> {
 	private final boolean needsResize() {
 		return length.get() < maxLength && entries.get() >= (length.get() >> 1);
 	}
+	
 }
