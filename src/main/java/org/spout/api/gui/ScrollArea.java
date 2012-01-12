@@ -25,37 +25,11 @@
  */
 package org.spout.api.gui;
 
-import java.nio.IntBuffer;
-
-/**
- * You must specify the width and height of the background bitmap to be used in
- * the constructor!
- */
-public interface Bitmap extends Widget {
+public interface ScrollArea extends Scrollable, Screen {
 
 	/**
-	 * Get the raw RGBA array used to create the texture.
-	 * @return an array of width * height * 4 bytes
+	 * Recalculates height and width for all widgets.
+	 * This is useful when the size of a widget changed while it was already attached to the ScrollArea.
 	 */
-	public byte[] getRawBitmap();
-
-	/**
-	 * Get the raw width of the bitmap (the widget itself can be scaled to a
-	 * different size like normal).
-	 * @return bitmap size
-	 */
-	public int getRawWidth();
-
-	/**
-	 * Get the raw height of the bitmap (the widget itself can be scaled to a
-	 * different size like normal).
-	 * @return bitmap size
-	 */
-	public int getRawHeight();
-
-	/**
-	 * Get an IntBuffer to use for setting individual pixels in single calls.
-	 * @return the buffer
-	 */
-	public IntBuffer getBuffer();
+	public void updateInnerSize();
 }

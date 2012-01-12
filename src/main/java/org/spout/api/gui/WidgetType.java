@@ -25,105 +25,130 @@
  */
 package org.spout.api.gui;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-public class WidgetType {
+/**
+ * All widgets need to have a WidgetType entry, this allows the client and
+ * server widgets to sync properly. In order to have a network-enabled widget
+ * you must have the same Widget subclass on both client and server, and then
+ * register it as a network type.
+ */
+public final class WidgetType {
 
-	private static HashMap<WidgetType, Integer> lookupClass = new HashMap<WidgetType, Integer>();
-	private static HashMap<Integer, WidgetType> lookupId = new HashMap<Integer, WidgetType>();
-	private static int lastId = 0;
-	public static WidgetType Label = new WidgetType(GenericLabel.class, 0);
-	public static WidgetType HealthBar = new WidgetType(HealthBar.class, 1);
-	public static WidgetType BubbleBar = new WidgetType(BubbleBar.class, 2);
-	public static WidgetType ChatBar = new WidgetType(ChatBar.class, 3);
-	public static WidgetType ChatTextBox = new WidgetType(ChatTextBox.class, 4);
-	public static WidgetType ArmorBar = new WidgetType(ArmorBar.class, 5);
-	public static WidgetType Texture = new WidgetType(GenericTexture.class, 6);
-	public static WidgetType PopupScreen = new WidgetType(GenericPopup.class, 7);
-	public static WidgetType InGameScreen = new WidgetType(null, 8);
-	public static WidgetType ItemWidget = new WidgetType(GenericItemWidget.class, 9);
-	public static WidgetType Button = new WidgetType(GenericButton.class, 10);
-	public static WidgetType Slider = new WidgetType(GenericSlider.class, 11);
-	public static WidgetType TextField = new WidgetType(GenericTextField.class, 12);
-	public static WidgetType Gradient = new WidgetType(GenericGradient.class, 13);
-	public static WidgetType Container = new WidgetType(GenericGradient.class, 14, true);
-	public static WidgetType EntityWidget = new WidgetType(GenericEntityWidget.class, 15);
-	public static WidgetType OverlayScreen = new WidgetType(GenericOverlayScreen.class, 16);
-	public static WidgetType HungerBar = new WidgetType(HungerBar.class, 17);
-	public static WidgetType ExpBar = new WidgetType(ExpBar.class, 18);
-	public static WidgetType CheckBox = new WidgetType(GenericCheckBox.class, 19);
-	public static WidgetType RadioButton = new WidgetType(GenericRadioButton.class, 20);
-	public static WidgetType ListWidget = new WidgetType(GenericListWidget.class, 21);
-	public static WidgetType DirtBackground = new WidgetType(DirtBackground.class, 22);
-	public static WidgetType ScrollArea = new WidgetType(GenericScrollArea.class, 23);
-	public static WidgetType ListView = new WidgetType(GenericListView.class, 24);
-	public static WidgetType ComboBox = new WidgetType(GenericComboBox.class, 25);
-	public static WidgetType Polygon = new WidgetType(GenericPolygon.class, 26);
+	/** A custom widget, not network enabled. */
+	private static final int CUSTOM_WIDGET = -1;
+	/** A network enabled custom widget. */
+	private static final int NETWORK_WIDGET = -2;
+	/** All registered custom widgets. */
+	private static final Set<WidgetType> LOOKUP = new HashSet<WidgetType>();
+	/** Spout registered network widgets, save bandwidth by only sending the id. */
+	public static WidgetType Widget = new WidgetType(GenericWidget.class, CUSTOM_WIDGET),
+			Label = new WidgetType(GenericLabel.class, 0),
+			HealthBar = new WidgetType(HealthBar.class, 1),
+			BubbleBar = new WidgetType(BubbleBar.class, 2),
+			ChatBar = new WidgetType(ChatBar.class, 3),
+			ChatTextBox = new WidgetType(ChatTextBox.class, 4),
+			ArmorBar = new WidgetType(ArmorBar.class, 5),
+			Texture = new WidgetType(GenericTexture.class, 6),
+			PopupScreen = new WidgetType(GenericPopup.class, 7),
+			InGameScreen = new WidgetType(null, 8),
+			ItemWidget = new WidgetType(GenericItemWidget.class, 9),
+			Button = new WidgetType(GenericButton.class, 10),
+			Slider = new WidgetType(GenericSlider.class, 11),
+			TextField = new WidgetType(GenericTextField.class, 12),
+			Gradient = new WidgetType(GenericGradient.class, 13),
+			Container = new WidgetType(GenericGradient.class, 14),
+			EntityWidget = new WidgetType(GenericEntityWidget.class, 15),
+			OverlayScreen = new WidgetType(GenericOverlayScreen.class, 16),
+			HungerBar = new WidgetType(HungerBar.class, 17),
+			ExpBar = new WidgetType(ExpBar.class, 18),
+			CheckBox = new WidgetType(GenericCheckBox.class, 19),
+			RadioButton = new WidgetType(GenericRadioButton.class, 20),
+			ListWidget = new WidgetType(GenericListWidget.class, 21),
+			DirtBackground = new WidgetType(DirtBackground.class, 22),
+			ScrollArea = new WidgetType(GenericScrollArea.class, 23),
+			ListView = new WidgetType(GenericListView.class, 24),
+			ComboBox = new WidgetType(GenericComboBox.class, 25),
+			Polygon = new WidgetType(GenericPolygon.class, 26);
+	/** The widget id, if below zero then it will not be unique. */
 	private final int id;
-	private final boolean client;
+	/** The widget class for creating new instances etc. */
 	private final Class<? extends Widget> widgetClass;
 
-	public WidgetType(Class<? extends Widget> widget) {
-		widgetClass = widget;
-		id = lastId;
-		lastId++;
-		lookupClass.put(this, id);
-		lookupId.put(id, this);
-		client = false;
-	}
-
-	public WidgetType(Class<? extends Widget> widget, int id) {
+	/**
+	 * Create a new WidgetType - only used directly by Spout classes.
+	 * @param widget the widget class
+	 * @param id of internal class or NETWORK_WIDGET or CUSTOM_WIDGET
+	 */
+	private WidgetType(Class<? extends Widget> widget, int id) {
 		widgetClass = widget;
 		this.id = id;
-		if (id > lastId) {
-			lastId = id;
-		}
-		lookupClass.put(this, id);
-		lookupId.put(id, this);
-		client = false;
+		LOOKUP.add(this);
 	}
 
-	public WidgetType(Class<? extends Widget> widget, boolean client) {
-		widgetClass = widget;
-		id = lastId;
-		lastId++;
-		lookupClass.put(this, id);
-		lookupId.put(id, this);
-		this.client = client;
-	}
-
-	public WidgetType(Class<? extends Widget> widget, int id, boolean client) {
-		widgetClass = widget;
-		this.id = id;
-		if (id > lastId) {
-			lastId = id;
-		}
-		lookupClass.put(this, id);
-		lookupId.put(id, this);
-		this.client = client;
-	}
-
+	/**
+	 * Get the widget id.
+	 * @return the id
+	 */
 	public final int getId() {
 		return id;
 	}
 
+	/**
+	 * Get the widget class.
+	 * @return the class
+	 */
 	public final Class<? extends Widget> getWidgetClass() {
 		return widgetClass;
 	}
 
-	public final boolean isClientOnly() {
-		return client;
+	/**
+	 * Check if the widget is network enabled.
+	 * @return if network enabled
+	 */
+	public final boolean isNetworkEnabled() {
+		return id >= 0 || id == NETWORK_WIDGET;
 	}
 
-	public static Integer getWidgetId(Class<? extends Widget> widget) {
-		return lookupClass.get(widget);
+	/**
+	 * Add a private widget class (not network enabled).
+	 * This is safe to call multiple times, as it will always return the same
+	 * instance.
+	 * @param widget the widget class
+	 * @return the WidgetType
+	 */
+	public static WidgetType addType(Class<? extends Widget> widget) {
+		return addType(widget, false);
 	}
 
-	public static WidgetType getWidgetFromId(int id) {
-		return lookupId.get(id);
+	/**
+	 * Add a private widget class.
+	 * This is safe to call multiple times, as it will always return the same
+	 * instance.
+	 * @param widget the widget class
+	 * @param network if it is network enabled
+	 * @return the WidgetType
+	 */
+	public static WidgetType addType(Class<? extends Widget> widget, boolean network) {
+		WidgetType type = getType(widget);
+		if (type == null) {
+			type = new WidgetType(widget, network ? NETWORK_WIDGET : CUSTOM_WIDGET);
+		}
+		return type;
 	}
 
-	public static int getNumWidgetTypes() {
-		return lastId;
+	/**
+	 * Get the WidgetType for a private widget.
+	 * @param widget the widget class
+	 * @return the WidgetType or null
+	 */
+	public static WidgetType getType(Class<? extends Widget> widget) {
+		for (WidgetType type : LOOKUP) {
+			if (type.widgetClass.equals(widget)) {
+				return type;
+			}
+		}
+		return null;
 	}
 }

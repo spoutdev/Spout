@@ -203,21 +203,13 @@ public class GenericContainer extends GenericWidget implements Container {
 	}
 
 	@Override
-	public Container setVisible(boolean enable) {
-		if (enable != isVisible()) {
-			super.setVisible(enable);
-			for (Widget widget : children) {
-				widget.setVisible(enable);
-			}
-		}
-		return this;
-	}
-
-	@Override
-	public Container setPriority(RenderPriority priority) {
+	public Container setPriority(byte priority) {
+		byte old = getPriority();
 		super.setPriority(priority);
 		for (Widget widget : children) {
-			widget.setPriority(priority);
+			if (widget.getPriority() == old) {
+				widget.setPriority(priority);
+			}
 		}
 		return this;
 	}

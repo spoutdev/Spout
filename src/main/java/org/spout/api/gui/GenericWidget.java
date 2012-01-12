@@ -45,7 +45,7 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	private int width = 50, height = 50;
 	private boolean visible = true;
 	private transient boolean dirty = true;
-	private RenderPriority priority = RenderPriority.Normal;
+	private byte priority = 0;
 	private int id = -1;
 	private String tooltip = "";
 	private String plugin = PLUGIN;
@@ -148,7 +148,7 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		setHeight(input.readInt()); // 12 + 4 = 16
 		setAnchor(WidgetAnchor.getAnchorFromId(input.readByte())); // 6 + 1 = 17
 		setVisible(input.readBoolean()); // 17 + 1 = 18
-		setPriority(RenderPriority.getRenderPriorityFromId(input.readInt())); // 18 + 4 = 22
+		setPriority(input.readByte()); // 18 + 1 = 19
 		this.id = input.readInt(); // 22 + 4 = 26
 		setTooltip(PacketUtil.readString(input)); // String
 		setPlugin(PacketUtil.readString(input)); // String
@@ -167,7 +167,7 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 		output.writeInt(getHeight()); // 12 + 4 = 16
 		output.writeByte(getAnchor().getId()); // 16 + 1 = 17
 		output.writeBoolean(isVisible()); // 17 + 1 = 18
-		output.writeInt(priority.getId()); // 18 + 4 = 22
+		output.writeByte(priority); // 18 + 1 = 19
 		output.writeInt(getId()); // 22 + 4 = 26
 		PacketUtil.writeString(output, getTooltip()); // String
 		PacketUtil.writeString(output, plugin != null ? plugin : PLUGIN); // String
@@ -209,13 +209,13 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	}
 
 	@Override
-	public RenderPriority getPriority() {
+	public byte getPriority() {
 		return priority;
 	}
 
 	@Override
-	public Widget setPriority(RenderPriority priority) {
-		if (priority != null && !getPriority().equals(priority)) {
+	public Widget setPriority(byte priority) {
+		if (priority != getPriority()) {
 			this.priority = priority;
 			autoDirty();
 		}

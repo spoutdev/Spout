@@ -182,8 +182,6 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 		return widget.isVisible();
 	}
 
-	RenderPriority[] rvalues = RenderPriority.values();
-
 	public Screen setMouseX(int mouseX) {
 		this.mouseX = mouseX;
 		return this;

@@ -138,23 +138,23 @@ public interface Widget {
 	public boolean isDirty();
 
 	/**
-	 * Gets the render priority for this widget. Highest priorities render first
-	 * (in the background), the lowest priorities render on top (in the
+	 * Gets the render priority for this widget. Lowest priorities render first
+	 * (in the background), the highest priorities render on top (in the
 	 * foreground).
 	 *
-	 * @return priority.
+	 * @return priority
 	 */
-	public RenderPriority getPriority();
+	public byte getPriority();
 
 	/**
-	 * Sets the render priority for this widget. Highest priorities render first
-	 * (in the background), the lowest priorities render on top (in the
+	 * Sets the render priority for this widget. Lowest priorities render first
+	 * (in the background), the highest priorities render on top (in the
 	 * foreground).
 	 *
 	 * @param priority to render at
 	 * @return widget
 	 */
-	public Widget setPriority(RenderPriority priority);
+	public Widget setPriority(byte priority);
 
 	/**
 	 * Gets the width of this widget, in pixels
