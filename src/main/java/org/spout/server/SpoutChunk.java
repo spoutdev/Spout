@@ -32,7 +32,9 @@ import gnu.trove.map.hash.TShortShortHashMap;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
+import org.spout.api.Spout;
 import org.spout.api.generator.Populator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -332,8 +334,14 @@ public class SpoutChunk extends Chunk {
 			return;
 		}
 		for (Populator populator:getWorld().getGenerator().getPopulators()) {
-			populator.populate(this);
+			try {
+				populator.populate(this);
+			} catch(Exception e) {
+				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with "+populator.toString());
+				e.printStackTrace();
+			}
 		}
+		populated.set(true);
 	}
 
 	@Override
