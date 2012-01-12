@@ -117,4 +117,21 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 */
 	public abstract boolean isUnloaded();
 	
+	/**
+	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.
+	 */
+	public abstract void populate();
+	
+	/**
+	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.
+	 * @param force forces to populate the chunk even if it already has been populated.
+	 */
+	public abstract void populate(boolean force);
+	
+	/**
+	 * Gets if this chunk already has been populated.
+	 * @return if the chunk is populated.
+	 */
+	public abstract boolean isPopulated();
+	
 }
