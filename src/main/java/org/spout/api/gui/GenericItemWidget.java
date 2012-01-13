@@ -31,18 +31,37 @@ import java.io.IOException;
 import org.spout.api.ClientOnly;
 import org.spout.api.inventory.ItemStack;
 
-public class GenericItemWidget extends GenericWidget implements ItemWidget {
+public class GenericItemWidget extends AbstractInline implements ItemWidget {
 
-	protected int material = -1;
-	protected short data = -1;
-	protected int depth = 8;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private int material = -1;
+	private short data = -1;
+	private int depth = 8;
 
 	public GenericItemWidget() {
 	}
 
 	public GenericItemWidget(ItemStack item) {
-		this.material = item.getMaterial().getId();
-		this.data = item.getMaterial().getData();
+		setItemStack(item);
+	}
+
+	public GenericItemWidget(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericItemWidget(int width, int height, ItemStack item) {
+		super(width, height);
+		setItemStack(item);
+	}
+
+	public GenericItemWidget(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericItemWidget(int X, int Y, int width, int height, ItemStack item) {
+		super(X, Y, width, height);
+		setItemStack(item);
 	}
 
 	@Override
@@ -97,6 +116,15 @@ public class GenericItemWidget extends GenericWidget implements ItemWidget {
 	@Override
 	public short getData() {
 		return data;
+	}
+
+	public ItemWidget setItemStack(ItemStack item) {
+		if (getTypeId() != item.getMaterial().getId() || getData() != item.getMaterial().getData()) {
+			material = item.getMaterial().getId();
+			data = item.getMaterial().getData();
+			autoDirty();
+		}
+		return this;
 	}
 
 	@Override

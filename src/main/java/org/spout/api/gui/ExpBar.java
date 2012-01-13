@@ -27,7 +27,7 @@ package org.spout.api.gui;
 
 import org.spout.api.ClientOnly;
 
-public class ExpBar extends GenericWidget {
+public class ExpBar extends AbstractWidget {
 
 	/**
 	 * Package-private constructor.

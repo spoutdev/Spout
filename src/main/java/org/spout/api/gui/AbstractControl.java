@@ -32,19 +32,29 @@ import org.spout.api.ClientOnly;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.util.Color;
 
-public abstract class GenericControl extends GenericWidget implements Control {
+public abstract class AbstractControl extends AbstractInline implements Control {
 
-	protected boolean focus = false;
-	protected boolean enabled = true;
-	protected Color color = new Color(0.878F, 0.878F, 0.878F);
-	protected Color disabledColor = new Color(0.625F, 0.625F, 0.625F);
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 3L;
+	private boolean focus = false;
+	private boolean enabled = true;
+	private Color color = new Color(0.878F, 0.878F, 0.878F);
+	private Color disabledColor = new Color(0.625F, 0.625F, 0.625F);
 
-	public GenericControl() {
+	public AbstractControl() {
+	}
+
+	public AbstractControl(int width, int height) {
+		super(width, height);
+	}
+
+	public AbstractControl(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
 	}
 
 	@Override
 	public int getVersion() {
-		return super.getVersion() + 3;
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

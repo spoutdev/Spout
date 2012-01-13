@@ -43,7 +43,7 @@ public final class WidgetType {
 	/** All registered custom widgets. */
 	private static final Set<WidgetType> LOOKUP = new HashSet<WidgetType>();
 	/** Spout registered network widgets, save bandwidth by only sending the id. */
-	public static WidgetType Widget = new WidgetType(GenericWidget.class, CUSTOM_WIDGET),
+	public static WidgetType Widget = new WidgetType(AbstractWidget.class, CUSTOM_WIDGET),
 			Label = new WidgetType(GenericLabel.class, 0),
 			HealthBar = new WidgetType(HealthBar.class, 1),
 			BubbleBar = new WidgetType(BubbleBar.class, 2),

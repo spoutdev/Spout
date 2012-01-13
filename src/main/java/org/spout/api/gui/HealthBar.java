@@ -33,7 +33,7 @@ import org.spout.api.ClientOnly;
 /**
  * The Spout implementation of the default Health Bar.
  */
-public class HealthBar extends GenericWidget {
+public class HealthBar extends AbstractWidget {
 
 	private int icons = 10;
 	private int iconOffset = 8;

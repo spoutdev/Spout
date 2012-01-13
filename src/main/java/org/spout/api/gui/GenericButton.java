@@ -32,27 +32,45 @@ import org.spout.api.ClientOnly;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.util.Color;
 
+public class GenericButton extends AbstractControl implements Button {
 
-public class GenericButton extends GenericControl implements Button {
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 3L;
+	private GenericLabel label = (GenericLabel) new GenericLabel().setAlign(WidgetAnchor.TOP_CENTER);
+	private String disabledText = "";
+	private Color hoverColor = new Color(1, 1, 0.627F);
+	private float scale = 1.0F;
 
-	protected GenericLabel label = (GenericLabel) new GenericLabel().setAlign(WidgetAnchor.TOP_CENTER);
-	protected String disabledText = "";
-	protected Color hoverColor = new Color(1, 1, 0.627F);
-	protected float scale = 1.0F;
-	
 	public GenericButton() {
-		
 	}
-	
-	@Override
-	public int getVersion() {
-		return super.getVersion() + 3;
-	}
-	
+
 	public GenericButton(String text) {
 		setText(text);
 	}
-	
+
+	public GenericButton(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericButton(int width, int height, String text) {
+		super(width, height);
+		setText(text);
+	}
+
+	public GenericButton(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericButton(int X, int Y, int width, int height, String text) {
+		super(X, Y, width, height);
+		setText(text);
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
+	}
+
 	@Override
 	public int getNumBytes() {
 		return super.getNumBytes() + label.getNumBytes() + PacketUtil.getNumBytes(getDisabledText()) + 9;
@@ -111,12 +129,12 @@ public class GenericButton extends GenericControl implements Button {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public Color getHoverColor() {
 		return hoverColor;
 	}
-	
+
 	@Override
 	public Button setHoverColor(Color color) {
 		if (color != null && !getHoverColor().equals(color)) {
@@ -125,7 +143,7 @@ public class GenericButton extends GenericControl implements Button {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public WidgetType getType() {
 		return WidgetType.Button;
@@ -152,24 +170,16 @@ public class GenericButton extends GenericControl implements Button {
 		label.setAlign(pos);
 		return this;
 	}
-	
+
 	@Override
 	public Button copy() {
-		return (Button) ((Button) super.copy())
-				.setDisabledText(getDisabledText())
-				.setText(getText())
-				.setAuto(isAuto())
-				.setTextColor(getTextColor())
-				.setHoverColor(getHoverColor())
-				.setAuto(isAuto())
-				.setResize(isResize());
+		return (Button) ((Button) super.copy()).setDisabledText(getDisabledText()).setText(getText()).setAuto(isAuto()).setTextColor(getTextColor()).setHoverColor(getHoverColor()).setAuto(isAuto()).setResize(isResize());
 	}
 
 //	@Override
 //	public void onButtonClick(ButtonClickEvent event) {
 //		this.callEvent(event);
 //	}
-
 	@Override
 	public boolean isResize() {
 		return label.isResize();

@@ -70,6 +70,14 @@ public interface Gradient extends Widget {
 	public Gradient setColor(Color color);
 
 	/**
+	 * Set both top and bottom gradient color in one call.
+	 * @param top
+	 * @param bottom
+	 * @return gradient
+	 */
+	public Gradient setColor(Color top, Color bottom);
+
+	/**
 	 * Set the direction the gradient is drawn.
 	 * Default is VERTICAL, if using HORIZONTAL then read top as left and bottom as right.
 	 * @param axis the orientation to draw in

@@ -30,17 +30,30 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spout.api.util.Color;
 
-public class GenericPolygon extends GenericWidget implements Polygon {
+public class GenericPolygon extends AbstractInline implements Polygon {
 
-	List<Pair<Point, Color>> points = new LinkedList<Pair<Point,Color>>();
-	Color lastColor = null;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private List<Pair<Point, Color>> points = new LinkedList<Pair<Point, Color>>();
+	private Color lastColor = null;
 
+	public GenericPolygon() {
+	}
+
+	public GenericPolygon(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericPolygon(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
 
 	public WidgetType getType() {
 		return WidgetType.Polygon;
 	}
 
 	public void render() {
+		/*
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -50,33 +63,36 @@ public class GenericPolygon extends GenericWidget implements Polygon {
 		GL11.glTranslated(getActualX(), getActualY(), 0);
 		t.startDrawingQuads();
 		for(Pair<Point, Color> point:points) {
-			Point p = point.getLeft();
-			Color c = point.getRight();
-			t.setColorRGBAFloat(c.getRedF(), c.getGreenF(), c.getBlueF(), c.getAlphaF());
-			t.addVertex(p.getX(), p.getY(), 0);
-			
+		Point p = point.getLeft();
+		Color c = point.getRight();
+		t.setColorRGBAFloat(c.getRedF(), c.getGreenF(), c.getBlueF(), c.getAlphaF());
+		t.addVertex(p.getX(), p.getY(), 0);
+
 		}
 		t.draw();
 		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-	}
-
-	public Polygon addPoint(Point p) throws IllegalStateException {
-		if(lastColor == null) {
-			throw new IllegalStateException("No color set.");
-		}
-		return addPoint(p, lastColor);
+		 */
 	}
 
 	public Polygon addPoint(int x, int y) throws IllegalStateException {
 		return addPoint(new Point(x, y));
 	}
 
+	public Polygon addPoint(Point p) throws IllegalStateException {
+		if (lastColor == null) {
+			throw new IllegalStateException("No color set.");
+		}
+		return addPoint(p, lastColor);
+	}
+
 	public Polygon addPoint(Point p, Color c) {
-		lastColor = c.clone();
-		Pair<Point, Color> toAdd = Pair.of(p, c);
+		if (lastColor == null || !c.equals(lastColor)) {
+			lastColor = c.clone();
+		}
+		Pair<Point, Color> toAdd = Pair.of(p, lastColor);
 		points.add(toAdd);
 		return this;
 	}
@@ -96,14 +112,7 @@ public class GenericPolygon extends GenericWidget implements Polygon {
 	}
 
 	@Override
-	public double getWidth() {
-		// TODO Auto-generated method stub
-		return super.getWidth();
-	}
-
-	@Override
-	public double getHeight() {
-		// TODO Auto-generated method stub
-		return super.getHeight();
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 }

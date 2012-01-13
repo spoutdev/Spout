@@ -33,22 +33,41 @@ import org.spout.api.ClientOnly;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.util.Color;
 
-public class GenericLabel extends GenericWidget implements Label {
+public class GenericLabel extends AbstractInline implements Label {
 
+	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 5L;
-	protected String text = "Your Text Here";
-	protected WidgetAnchor align = WidgetAnchor.TOP_LEFT;
-	protected Color color = new Color(1F, 1F, 1F);
-	protected boolean auto = true;
-	protected boolean resize = false;
-	protected int textWidth = -1, textHeight = -1;
-	protected float scale = 1.0F;
+	private String text = "Your Text Here";
+	private WidgetAnchor align = WidgetAnchor.TOP_LEFT;
+	private Color color = new Color(1F, 1F, 1F);
+	private boolean auto = true;
+	private boolean resize = false;
+	private int textWidth = -1, textHeight = -1;
+	private float scale = 1.0F;
 
 	public GenericLabel() {
 	}
 
 	public GenericLabel(String text) {
-		this.text = text;
+		setText(text);
+	}
+
+	public GenericLabel(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericLabel(int width, int height, String text) {
+		super(width, height);
+		setText(text);
+	}
+
+	public GenericLabel(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericLabel(int X, int Y, int width, int height, String text) {
+		super(X, Y, width, height);
+		setText(text);
 	}
 
 	@Override

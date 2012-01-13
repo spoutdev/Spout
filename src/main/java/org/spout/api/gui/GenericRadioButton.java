@@ -33,14 +33,37 @@ import java.util.List;
 
 public class GenericRadioButton extends GenericButton implements RadioButton {
 
-	boolean selected = false;
-	int group = 0;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private boolean selected = false;
+	private int group = 0;
 
 	public GenericRadioButton() {
 	}
 
 	public GenericRadioButton(String text) {
 		super(text);
+	}
+
+	public GenericRadioButton(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericRadioButton(int width, int height, String text) {
+		super(width, height, text);
+	}
+
+	public GenericRadioButton(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericRadioButton(int X, int Y, int width, int height, String text) {
+		super(X, Y, width, height, text);
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

@@ -31,8 +31,10 @@ import java.util.List;
 import org.spout.api.ClientOnly;
 import org.spout.api.plugin.Plugin;
 
-public class GenericContainer extends GenericWidget implements Container {
+public class GenericContainer extends AbstractBlock implements Container {
 
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
 	private List<Widget> children = new ArrayList<Widget>();
 	private ContainerType type = ContainerType.VERTICAL;
 	private WidgetAnchor align = WidgetAnchor.TOP_LEFT;
@@ -571,6 +573,11 @@ public class GenericContainer extends GenericWidget implements Container {
 	@Override
 	public boolean isAuto() {
 		return auto;
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

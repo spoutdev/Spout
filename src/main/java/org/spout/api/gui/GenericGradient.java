@@ -32,26 +32,55 @@ import org.spout.api.ClientOnly;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.util.Color;
 
-public class GenericGradient extends GenericWidget implements Gradient {
+public class GenericGradient extends AbstractInline implements Gradient {
 
-	protected Color color1 = new Color(0, 0, 0, 0), color2 = new Color(0, 0, 0, 0);
-	protected Orientation axis = Orientation.VERTICAL;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 2L;
+	private Color color1 = new Color(0, 0, 0, 0), color2 = new Color(0, 0, 0, 0);
+	private Orientation axis = Orientation.VERTICAL;
 
 	public GenericGradient() {
 	}
 
 	public GenericGradient(Color both) {
-		this.color1 = this.color2 = both;
+		setColor(both);
 	}
 
 	public GenericGradient(Color top, Color bottom) {
-		this.color1 = top;
-		this.color2 = bottom;
+		setColor(top, bottom);
+	}
+
+	public GenericGradient(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericGradient(int width, int height, Color both) {
+		super(width, height);
+		setColor(both);
+	}
+
+	public GenericGradient(int width, int height, Color top, Color bottom) {
+		super(width, height);
+		setColor(top, bottom);
+	}
+
+	public GenericGradient(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericGradient(int X, int Y, int width, int height, Color both) {
+		super(X, Y, width, height);
+		setColor(both);
+	}
+
+	public GenericGradient(int X, int Y, int width, int height, Color top, Color bottom) {
+		super(X, Y, width, height);
+		setColor(top, bottom);
 	}
 
 	@Override
 	public int getVersion() {
-		return super.getVersion() + 2;
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override
@@ -76,6 +105,13 @@ public class GenericGradient extends GenericWidget implements Gradient {
 	public Gradient setColor(Color color) {
 		setTopColor(color);
 		setBottomColor(color);
+		return this;
+	}
+
+	@Override
+	public Gradient setColor(Color top, Color bottom) {
+		setTopColor(top);
+		setBottomColor(bottom);
 		return this;
 	}
 

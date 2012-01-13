@@ -32,7 +32,7 @@ import javax.xml.bind.TypeConstraintException;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
 
-public abstract class GenericWidget /*extends AbstractEventSource*/ implements Widget {
+public abstract class AbstractWidget /*extends AbstractEventSource*/ implements Widget {
 	/** Name of the default plugin when none is set. */
 	public static final String PLUGIN = "Spoutcraft";
 	/** Current version for serialisation and packet handling.*/
@@ -73,15 +73,15 @@ public abstract class GenericWidget /*extends AbstractEventSource*/ implements W
 	private transient int animTick = 0; // Current tick
 	private transient int animFrame = 0; // Current frame
 
-	public GenericWidget() {
+	public AbstractWidget() {
 	}
 
-	public GenericWidget(int width, int height) {
+	public AbstractWidget(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public GenericWidget(int X, int Y, int width, int height) {
+	public AbstractWidget(int X, int Y, int width, int height) {
 		this.X = X;
 		this.Y = Y;
 		this.width = width;

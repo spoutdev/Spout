@@ -30,7 +30,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import org.spout.api.ClientOnly;
 
-public class HungerBar extends GenericWidget {
+public class HungerBar extends AbstractWidget {
 	private int icons = 10;
 	private int iconOffset = 8;
 

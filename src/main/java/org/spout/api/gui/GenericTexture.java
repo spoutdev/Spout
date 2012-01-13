@@ -31,23 +31,43 @@ import java.io.IOException;
 import org.spout.api.ClientOnly;
 import org.spout.api.packet.PacketUtil;
 
-public class GenericTexture extends GenericWidget implements Texture {
+public class GenericTexture extends AbstractInline implements Texture {
 
-	protected String url = null;
-	protected boolean drawAlpha = false;
-	protected int top = -1;
-	protected int left = -1;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 3L;
+	private String url = null;
+	private boolean drawAlpha = false;
+	private int top = -1;
+	private int left = -1;
 
 	public GenericTexture() {
 	}
 
-	@Override
-	public int getVersion() {
-		return super.getVersion() + 3;
-	}
-
 	public GenericTexture(String url) {
 		this.url = url;
+	}
+
+	public GenericTexture(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericTexture(int width, int height, String url) {
+		super(width, height);
+		this.url = url;
+	}
+
+	public GenericTexture(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericTexture(int X, int Y, int width, int height, String url) {
+		super(X, Y, width, height);
+		this.url = url;
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

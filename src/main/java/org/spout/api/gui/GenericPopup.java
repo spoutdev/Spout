@@ -29,18 +29,27 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import org.spout.api.ClientOnly;
-import org.spout.api.plugin.Plugin;
 
-public class GenericPopup extends GenericScreen implements PopupScreen {
+public class GenericPopup extends AbstractScreen implements PopupScreen {
 
-	protected boolean transparent = false;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private boolean transparent = false;
 
 	public GenericPopup() {
 	}
 
+	public GenericPopup(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericPopup(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
 	@Override
 	public int getVersion() {
-		return super.getVersion() + 0;
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

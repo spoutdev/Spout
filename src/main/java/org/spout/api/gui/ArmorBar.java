@@ -33,7 +33,7 @@ import org.spout.api.ClientOnly;
 /**
  * The Spout implementation of the default Armor Bar.
  */
-public class ArmorBar extends GenericWidget {
+public class ArmorBar extends AbstractWidget {
 
 	private int icons = 10;
 	private boolean alwaysVisible = false;

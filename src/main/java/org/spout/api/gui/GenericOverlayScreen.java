@@ -27,9 +27,11 @@ package org.spout.api.gui;
 
 import org.spout.api.ClientOnly;
 
-public class GenericOverlayScreen extends GenericScreen implements OverlayScreen {
+public class GenericOverlayScreen extends AbstractScreen implements OverlayScreen {
 
-	ScreenType screenType;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private ScreenType screenType;
 	
 	public GenericOverlayScreen(int entityId, ScreenType type) {
 		super(entityId);

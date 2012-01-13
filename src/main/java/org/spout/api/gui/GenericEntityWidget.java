@@ -30,15 +30,35 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import org.spout.api.ClientOnly;
 
-public class GenericEntityWidget extends GenericWidget implements EntityWidget {
+public class GenericEntityWidget extends AbstractInline implements EntityWidget {
 
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
 	private int entityId = 0;
 
 	public GenericEntityWidget() {
 	}
 
 	public GenericEntityWidget(int entityId) {
-		this.entityId = entityId;
+		setEntityId(entityId);
+	}
+
+	public GenericEntityWidget(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericEntityWidget(int width, int height, int entityId) {
+		super(width, height);
+		setEntityId(entityId);
+	}
+
+	public GenericEntityWidget(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericEntityWidget(int X, int Y, int width, int height, int entityId) {
+		super(X, Y, width, height);
+		setEntityId(entityId);
 	}
 
 	@Override
@@ -75,6 +95,11 @@ public class GenericEntityWidget extends GenericWidget implements EntityWidget {
 	@Override
 	public EntityWidget copy() {
 		return ((EntityWidget) super.copy()).setEntityId(getEntityId());
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

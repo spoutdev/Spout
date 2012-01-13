@@ -27,7 +27,7 @@ package org.spout.api.gui;
 
 import org.spout.api.player.Player;
 
-public class InGameScreen extends GenericScreen implements InGameHUD {
+public class InGameScreen extends AbstractScreen implements InGameHUD {
 
 	private final ArmorBar armor = new ArmorBar();
 	private final BubbleBar bubble = new BubbleBar();

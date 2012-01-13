@@ -31,10 +31,12 @@ import org.spout.api.ClientOnly;
 
 public class GenericBitmap extends GenericTexture implements Bitmap {
 
-	protected final byte[] bitmap;
-	protected final ByteBuffer buffer;
-	protected final int bitmapWidth;
-	protected final int bitmapHeight;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private final byte[] bitmap;
+	private final ByteBuffer buffer;
+	private final int bitmapWidth;
+	private final int bitmapHeight;
 
 	public GenericBitmap(int width, int height) {
 		bitmapWidth = width;

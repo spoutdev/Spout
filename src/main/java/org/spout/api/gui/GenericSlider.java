@@ -31,17 +31,27 @@ import java.io.IOException;
 import org.spout.api.ClientOnly;
 import org.spout.api.util.Color;
 
-public class GenericSlider extends GenericControl implements Slider {
+public class GenericSlider extends AbstractControl implements Slider {
 
-	protected Label label = new GenericLabel();
-	protected float slider = 0.5f;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 1L;
+	private Label label = new GenericLabel();
+	private float slider = 0.5f;
 
 	public GenericSlider() {
 	}
 
+	public GenericSlider(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericSlider(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
 	@Override
 	public int getVersion() {
-		return super.getVersion() + 1;
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override
@@ -85,21 +95,13 @@ public class GenericSlider extends GenericControl implements Slider {
 
 	@Override
 	public Slider copy() {
-		return (Slider) ((Slider) super.copy())
-				.setSliderPosition(getSliderPosition())
-				.setText(getText())
-				.setTextColor(getTextColor())
-				.setAuto(isAuto())
-				.setAlign(getAlign())
-				.setScale(getScale())
-				.setResize(isResize());
+		return (Slider) ((Slider) super.copy()).setSliderPosition(getSliderPosition()).setText(getText()).setTextColor(getTextColor()).setAuto(isAuto()).setAlign(getAlign()).setScale(getScale()).setResize(isResize());
 	}
 
 //	@Override
 //	public void onSliderDrag(SliderDragEvent event) {
 //		this.callEvent(event);
 //	}
-
 	@Override
 	public String getText() {
 		return label.getText();

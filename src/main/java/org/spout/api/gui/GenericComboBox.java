@@ -35,9 +35,22 @@ import org.spout.api.packet.PacketUtil;
 
 public class GenericComboBox extends GenericButton implements ComboBox {
 
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
 	private List<String> items = new ArrayList<String>();
 	private boolean open = false;
 	private int selection = -1;
+
+	public GenericComboBox() {
+	}
+
+	public GenericComboBox(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericComboBox(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
 
 	@Override
 	public ComboBox setItems(List<String> items) {
@@ -113,6 +126,11 @@ public class GenericComboBox extends GenericButton implements ComboBox {
 	@Override
 	public WidgetType getType() {
 		return WidgetType.ComboBox;
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

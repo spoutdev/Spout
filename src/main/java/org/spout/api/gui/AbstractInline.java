@@ -25,60 +25,23 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.inventory.ItemStack;
-
 /**
- * The GenericItemWidget class allows you to display a block or item as it
- * would be in the player's inventory.
- *
- * Don't forget that most items are in fact 3d, so also need a depth to draw
- * properly.
+ * An inline widget.
+ * While the display type can be overridden later, this makes development easier.
  */
-public interface ItemWidget extends Widget {
+public abstract class AbstractInline extends AbstractWidget {
 
-	/**
-	 * Sets the type id of this item widget.
-	 * @param id
-	 * @return ItemWidget
-	 */
-	public ItemWidget setTypeId(int id);
+	public AbstractInline() {
+		super.setDisplay(Display.INLINE);
+	}
 
-	/**
-	 * Gets the type id of this item widget.
-	 * @return type id
-	 */
-	public int getTypeId();
+	public AbstractInline(int width, int height) {
+		super(width, height);
+		super.setDisplay(Display.INLINE);
+	}
 
-	/**
-	 * Sets the data of this item widget.
-	 * @param data to set
-	 * @return ItemWidget
-	 */
-	public ItemWidget setData(short data);
-
-	/**
-	 * Gets the data of this item widget, is zero by default.
-	 * @return data
-	 */
-	public short getData();
-
-	/**
-	 * Set the item type and data of this widget in one call.
-	 * @param item
-	 * @return
-	 */
-	public ItemWidget setItemStack(ItemStack item);
-
-	/**
-	 * Sets the z render depth for this 3-d item widget
-	 * @param depth to render at
-	 * @return ItemWidget
-	 */
-	public ItemWidget setDepth(int depth);
-
-	/**
-	 * Gets the z render depth for this 3-d item widget
-	 * @return depth
-	 */
-	public int getDepth();
+	public AbstractInline(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+		super.setDisplay(Display.INLINE);
+	}
 }

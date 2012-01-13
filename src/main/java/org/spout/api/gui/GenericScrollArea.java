@@ -37,13 +37,16 @@ import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 
 public class GenericScrollArea extends GenericScrollable implements ScrollArea {
+
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
 	protected HashMap<Widget, Plugin> widgets = new HashMap<Widget, Plugin>();
 	protected int playerId;
 	protected boolean bgvis;
 	protected int mouseX = -1, mouseY = -1;
 	@SuppressWarnings("unused")
 	private int screenHeight, screenWidth;
-	
+
 	public GenericScrollArea(int playerId) {
 		this.playerId = playerId;
 	}
@@ -53,7 +56,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 		screenWidth = Spout.getClient().getRenderDelegate().getScreenWidth();
 		screenHeight = Spout.getClient().getRenderDelegate().getScreenHeight();
 	}
-	
+
 	public void renderContents() {
 		Spout.getRenderDelegate().renderContents(this);
 	}
@@ -64,7 +67,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 
 	@Override
 	public int getVersion() {
-		return super.getVersion() + 0;
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	public Widget[] getAttachedWidgets() {
@@ -77,7 +80,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 	public Screen attachWidget(Widget widget) {
 		return attachWidget(null, widget);
 	}
-	
+
 	public Screen attachWidget(Plugin Plugin, Widget widget) {
 		widgets.put(widget, Plugin);
 		widget.setPlugin(Plugin);
@@ -90,7 +93,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 	public void updateInnerSize() {
 		int height = 0;
 		int width = 0;
-		for(Widget w:widgets.keySet()) {
+		for (Widget w : widgets.keySet()) {
 			height = (int) Math.max(height, w.getY() + w.getHeight());
 			width = (int) Math.max(width, w.getX() + w.getWidth());
 		}
@@ -104,7 +107,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 		updateInnerSize();
 		return this;
 	}
-	
+
 	public Screen removeWidgets(Plugin Plugin) {
 		for (Widget i : getAttachedWidgets()) {
 			if (widgets.get(i) != null && widgets.get(i).equals(Plugin)) {
@@ -114,15 +117,15 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 		updateInnerSize();
 		return this;
 	}
-	
+
 	public boolean containsWidget(Widget widget) {
 		return containsWidget(widget.getId());
 	}
-	
+
 	public boolean containsWidget(UUID id) {
 		return getWidget(id) != null;
 	}
-	
+
 	public Widget getWidget(UUID id) {
 		for (Widget w : widgets.keySet()) {
 			if (w.getId().equals(id)) {
@@ -131,7 +134,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 		}
 		return null;
 	}
-	
+
 	public boolean updateWidget(Widget widget) {
 		if (widgets.containsKey(widget)) {
 			Plugin Plugin = widgets.get(widget);
@@ -217,10 +220,10 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 		Widget[] list = new Widget[widgets.size()];
 		Set<Widget> allwidgets = new HashSet<Widget>();
 		allwidgets.addAll(widgets.keySet());
-		if(recursive) {
-			for(Widget w:widgets.keySet()) {
-				if(w instanceof Screen) {
-					allwidgets.addAll(((Screen)w).getAttachedWidgetsAsSet(true));
+		if (recursive) {
+			for (Widget w : widgets.keySet()) {
+				if (w instanceof Screen) {
+					allwidgets.addAll(((Screen) w).getAttachedWidgetsAsSet(true));
 				}
 			}
 		}
@@ -231,10 +234,10 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 	public Set<Widget> getAttachedWidgetsAsSet(boolean recursive) {
 		Set<Widget> allwidgets = new HashSet<Widget>();
 		allwidgets.addAll(widgets.keySet());
-		if(recursive) {
-			for(Widget w:widgets.keySet()) {
-				if(w instanceof Screen) {
-					allwidgets.addAll(((Screen)w).getAttachedWidgetsAsSet(true));
+		if (recursive) {
+			for (Widget w : widgets.keySet()) {
+				if (w instanceof Screen) {
+					allwidgets.addAll(((Screen) w).getAttachedWidgetsAsSet(true));
 				}
 			}
 		}

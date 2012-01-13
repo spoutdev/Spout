@@ -32,14 +32,36 @@ import org.spout.api.ClientOnly;
 
 public class GenericCheckBox extends GenericButton implements CheckBox {
 
-	boolean checked = false;
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
+	private boolean checked = false;
 
 	public GenericCheckBox() {
-		super();
 	}
 
 	public GenericCheckBox(String text) {
 		super(text);
+	}
+
+	public GenericCheckBox(int width, int height) {
+		super(width, height);
+	}
+
+	public GenericCheckBox(int width, int height, String text) {
+		super(width, height, text);
+	}
+
+	public GenericCheckBox(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public GenericCheckBox(int X, int Y, int width, int height, String text) {
+		super(X, Y, width, height, text);
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override

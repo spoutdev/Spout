@@ -26,24 +26,30 @@
 package org.spout.api.gui;
 
 public class GenericListView extends GenericListWidget implements ListWidget {
-	
+
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
 	private AbstractListModel model = null;
 	private int selected = -1;
-	
+
 	public GenericListView(AbstractListModel model) {
 		setModel(model);
 	}
 
 	public void setModel(AbstractListModel model) {
-		if(this.model != null) this.model.removeView(this);
+		if (this.model != null) {
+			this.model.removeView(this);
+		}
 		this.model = model;
-		if(this.model != null) this.model.addView(this);
+		if (this.model != null) {
+			this.model.addView(this);
+		}
 	}
-	
+
 	public AbstractListModel getModel() {
 		return model;
 	}
-	
+
 	@Override
 	public int getSize() {
 		return model.getSize();
@@ -52,7 +58,7 @@ public class GenericListView extends GenericListWidget implements ListWidget {
 	@Override
 	public ListWidgetItem[] getItems() {
 		ListWidgetItem items[] = new ListWidgetItem[model.getSize()];
-		for(int i = 0; i < model.getSize(); i++) {
+		for (int i = 0; i < model.getSize(); i++) {
 			items[i] = model.getItem(i);
 		}
 		return items;
@@ -63,56 +69,70 @@ public class GenericListView extends GenericListWidget implements ListWidget {
 		return model.getItem(n);
 	}
 
+	@Override
 	public ListWidget addItem(ListWidgetItem item) {
 		return this;
 	}
 
+	@Override
 	public boolean removeItem(ListWidgetItem item) {
 		return false;
 	}
 
+	@Override
 	public void clear() {
 	}
 
+	@Override
 	public ListWidgetItem getSelectedItem() {
-		if(getSelectedRow() < 0 || getSelectedRow() > getSize()) return null;
+		if (getSelectedRow() < 0 || getSelectedRow() > getSize()) {
+			return null;
+		}
 		return model.getItem(getSelectedRow());
 	}
 
+	@Override
 	public int getSelectedRow() {
 		return selected;
 	}
 
+	@Override
 	public ListWidget setSelection(int n) {
-		if(n < -1) {
+		if (n < -1) {
 			n = -1;
 		}
-		if(n >= model.getSize()) {
+		if (n >= model.getSize()) {
 			n = model.getSize() - 1;
 		}
 		selected = n;
-		if(n != -1) {
+		if (n != -1) {
 			ensureVisible(getItemRect(n));
 		}
-		
+
 		return this;
 	}
 
+	@Override
 	public ListWidget clearSelection() {
 		selected = -1;
 		return this;
 	}
 
+	@Override
 	public boolean isSelected(int n) {
 		return n == selected;
 	}
 
+	@Override
 	public boolean isSelected(ListWidgetItem item) {
 		return item == getSelectedItem();
 	}
 
+	@Override
 	public ListWidget shiftSelection(int n) {
-		if(selected + n < 0) n = 0;
+		if (selected + n < 0) {
+			n = 0;
+		}
 		setSelection(selected + n);
 		return this;
 	}
@@ -121,14 +141,18 @@ public class GenericListView extends GenericListWidget implements ListWidget {
 	public void onSelected(int item, boolean doubleClick) {
 		model.onSelected(item, doubleClick);
 	}
-	
+
 	public void sizeChanged() {
 		cachedTotalHeight = -1;
-		if(selected + 1 > model.getSize()) {
+		if (selected + 1 > model.getSize()) {
 			selected = model.getSize() - 1;
 			setScrollPosition(Orientation.VERTICAL, getMaximumScrollPosition(Orientation.VERTICAL));
 		}
 		autoDirty();
 	}
 
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID;
+	}
 }

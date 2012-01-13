@@ -41,7 +41,6 @@ public class GenericTextProcessor implements TextProcessor {
 	protected static final char CHAR_NEWLINE = '\n';
 	protected static final String STR_SPACE = String.valueOf(CHAR_SPACE);
 	protected static final String STR_NEWLINE = String.valueOf(CHAR_NEWLINE);
-
 	protected int charLimit = 16;
 	protected int lineLimit = 1;
 	protected int width = 0;
@@ -77,14 +76,16 @@ public class GenericTextProcessor implements TextProcessor {
 	}
 
 	protected boolean cursorLeft() {
-		if (cursor > 0)
+		if (cursor > 0) {
 			--cursor;
+		}
 		return true;
 	}
 
 	protected boolean cursorRight() {
-		if (cursor < textBuffer.length())
+		if (cursor < textBuffer.length()) {
 			++cursor;
+		}
 		return true;
 	}
 
@@ -109,12 +110,15 @@ public class GenericTextProcessor implements TextProcessor {
 	}
 
 	protected int getCursorLine() {
-		for (int i = 0; i < lineBreaks.size(); ++i)
-			if (cursor < lineBreaks.get(i))
+		for (int i = 0; i < lineBreaks.size(); ++i) {
+			if (cursor < lineBreaks.get(i)) {
 				return i;
+			}
+		}
 
-		if (cursor == textBuffer.length() && getCharAt(cursor - 1) == CHAR_NEWLINE)
+		if (cursor == textBuffer.length() && getCharAt(cursor - 1) == CHAR_NEWLINE) {
 			return lineBreaks.size();
+		}
 		return Math.max(0, lineBreaks.size() - 1);
 	}
 
@@ -130,10 +134,12 @@ public class GenericTextProcessor implements TextProcessor {
 
 	protected int getNextWordPosition(int offset) {
 		int i = textBuffer.indexOf(STR_SPACE, offset) + 1;
-		if (i == 0)
+		if (i == 0) {
 			i = textBuffer.indexOf(STR_NEWLINE, offset) + 1;
-		if (i == 0)
+		}
+		if (i == 0) {
 			i = textBuffer.length();
+		}
 		return i;
 	}
 
@@ -232,8 +238,9 @@ public class GenericTextProcessor implements TextProcessor {
 	public void setText(String str) {
 		clear();
 		if (str.length() > 0) {
-			if (charLimit > 0 && str.length() > charLimit)
+			if (charLimit > 0 && str.length() > charLimit) {
 				str = str.substring(0, charLimit);
+			}
 
 			textBuffer.append(str);
 			cursor = str.length();
@@ -268,8 +275,7 @@ public class GenericTextProcessor implements TextProcessor {
 				lineWidth = 0;
 				lineBreaks.add(position);
 				continue;
-			}
-			// allow one whitespace not to be handled as part of the previous word (word-wrapping)
+			} // allow one whitespace not to be handled as part of the previous word (word-wrapping)
 			else if (!previousSpace && word.equals(STR_SPACE)) {
 				lineWidth += spaceCharWidth;
 				previousSpace = true;
@@ -279,21 +285,22 @@ public class GenericTextProcessor implements TextProcessor {
 			// split very long words
 			if (wordWidth > width) {
 				int i = word.length();
-				while (i > 0 && wordWidth > width)
+				while (i > 0 && wordWidth > width) {
 					wordWidth -= font.getTextWidth(String.valueOf(word.charAt(--i)));
+				}
 				position = position - word.length() + i;
 				lineBreaks.add(position);
 				lineWidth = 0;
 				word = word.substring(i);
 				skipIterator = true;
-			}
-			// check if this word would exceed the max-width of the line
+			} // check if this word would exceed the max-width of the line
 			else if (lineWidth + wordWidth > width) {
 				if (lineBreaks.size() + 1 < lineLimit) {
 					lineBreaks.add(position - word.length());
 					lineWidth = wordWidth;
-				} else
+				} else {
 					return false;
+				}
 			} else {
 				lineWidth += wordWidth;
 			}
@@ -366,23 +373,26 @@ public class GenericTextProcessor implements TextProcessor {
 			return false;
 		}
 		if (keyId == Keyboard.KEY_DELETE.getKeyCode()) {
-			if (ctrl)
+			if (ctrl) {
 				return delete(cursor, getNextWordPosition(cursor), cursor);
-			else
+			} else {
 				return deleteChar();
+			}
 		}
 		if (keyId == Keyboard.KEY_LEFT.getKeyCode()) {
-			if (ctrl)
+			if (ctrl) {
 				cursor = getPreviousWordPosition(cursor - 1);
-			else
+			} else {
 				cursorLeft();
+			}
 			return false;
 		}
 		if (keyId == Keyboard.KEY_RIGHT.getKeyCode()) {
-			if (ctrl)
+			if (ctrl) {
 				cursor = getNextWordPosition(cursor + 1);
-			else
+			} else {
 				cursorRight();
+			}
 			return false;
 		}
 		if (keyId == Keyboard.KEY_UP.getKeyCode()) {

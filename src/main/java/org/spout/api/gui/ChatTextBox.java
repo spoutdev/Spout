@@ -34,7 +34,7 @@ import java.io.IOException;
  *
  * This provides extra abilities above the default version.
  */
-public class ChatTextBox extends GenericWidget implements Widget {
+public class ChatTextBox extends AbstractWidget implements Widget {
 
 	protected int visibleLines = 10;
 	protected int visibleChatLines = 20;

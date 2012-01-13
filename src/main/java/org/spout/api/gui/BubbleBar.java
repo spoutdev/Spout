@@ -33,7 +33,7 @@ import org.spout.api.ClientOnly;
 /**
  * The Spout implementation of the default Bubble Bar.
  */
-public class BubbleBar extends GenericWidget implements Widget {
+public class BubbleBar extends AbstractWidget implements Widget {
 
 	private int icons = 10;
 	private int iconOffset = 8;

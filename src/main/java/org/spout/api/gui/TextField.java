@@ -142,21 +142,6 @@ public interface TextField extends Control {
 	public TextField setPasswordField(boolean password);
 
 	/**
-	 * Determines if this text field is focused
-	 * @return focused
-	 */
-	public boolean isFocused();
-
-	/**
-	 * Sets whether this text field shall obtain focus.
-	 * Make sure only one text field gets the focus at a time.
-	 * @param focus
-	 * @return textfield
-	 */
-	@Override
-	public TextField setFocus(boolean focus);
-
-	/**
 	 * Fires when this text field is typed into on the screen.
 	 * This event will also be sent to the screen listener.
 	 * @param event

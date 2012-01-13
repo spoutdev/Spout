@@ -33,21 +33,41 @@ import java.util.logging.Logger;
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
 
-public abstract class GenericScreen extends GenericContainer implements Screen {
+public abstract class AbstractScreen extends GenericContainer implements Screen {
 
+	/** Current version for serialisation and packet handling.*/
+	private static final long serialVersionUID = 0L;
 	private int playerId = -1;
 	private boolean bg = true;
 
-	public GenericScreen() {
+	public AbstractScreen() {
 	}
 
-	public GenericScreen(int playerId) {
+	public AbstractScreen(int playerId) {
+		this.playerId = playerId;
+	}
+
+	public AbstractScreen(int width, int height) {
+		super(width, height);
+	}
+
+	public AbstractScreen(int width, int height, int playerId) {
+		super(width, height);
+		this.playerId = playerId;
+	}
+
+	public AbstractScreen(int X, int Y, int width, int height) {
+		super(X, Y, width, height);
+	}
+
+	public AbstractScreen(int X, int Y, int width, int height, int playerId) {
+		super(X, Y, width, height);
 		this.playerId = playerId;
 	}
 
 	@Override
 	public int getVersion() {
-		return super.getVersion() + 0;
+		return super.getVersion() + (int) serialVersionUID;
 	}
 
 	@Override
@@ -72,8 +92,8 @@ public abstract class GenericScreen extends GenericContainer implements Screen {
 						widget.setX(widget.getX());
 						widget.setHeight(widget.getHeight());
 					}
-					if (!widget.getType().isServerOnly()) {
-						player.sendPacket(new PacketWidget(widget, getId()));
+					if (!widget.getType().isNetworkEnabled()) {
+//						player.sendPacket(new PacketWidget(widget, getId()));
 					}
 					widget.setDirty(false);
 				}
