@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.Validate;
+
 /**
  * This implements a SimpleStore that is stored in memory. It is not persisted
  * between restarts.
@@ -97,6 +99,9 @@ public class MemoryStore<T> implements SimpleStore<T> {
 	}
 
 	public synchronized T set(String key, T value) {
+		Validate.notNull(key);
+		Validate.notNull(value);
+		
 		T oldValue = map.put(key, value);
 		if (oldValue != null) {
 			reverseMap.remove(oldValue);

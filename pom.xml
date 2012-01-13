@@ -121,7 +121,19 @@
 			<version>4.10</version>
 			<type>jar</type>
 			<scope>test</scope>
+			<exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
 		</dependency>
+		<dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
