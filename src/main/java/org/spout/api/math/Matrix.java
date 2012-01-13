@@ -60,7 +60,16 @@ public class Matrix {
 			}
 		}
 	}
-
+	/**
+	 * Creates a new matrix from the given dimension and given data in column major order
+	 * @param dim
+	 * @param dat
+	 */
+	public Matrix(int dim, float[] dat){
+		this.dimension = dim;
+		this.data = dat.clone();
+	}
+	
 	public int getDimension() {
 		return dimension;
 	}
@@ -208,9 +217,9 @@ public class Matrix {
 	 */
 	public static Matrix translate(Vector3 vector) {
 		Matrix res = createIdentity();
-		res.set(0, 3, vector.getX());
-		res.set(1, 3, vector.getY());
-		res.set(2, 3, vector.getZ());
+		res.set(3, 0, vector.getX());
+		res.set(3, 1, vector.getY());
+		res.set(3, 2, vector.getZ());
 		return res;
 	}
 

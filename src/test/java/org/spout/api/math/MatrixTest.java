@@ -117,11 +117,11 @@ public class MatrixTest {
 		mat.set(2, 2, -f.getZ());
 	
 		Matrix trans = Matrix.translate(center.multiply(-1));	
-		mat = Matrix.multiply(trans, mat);
-		id = new double[][] { {-0.7071068f , 0.0f , 0.7071068f , -5.0f},
+		mat = Matrix.multiply(mat, trans);
+		id = new double[][] { {-0.7071068f , 0.0f , 0.7071068f , 0.0f},
 				{0.0f , 1.0000001f , 0.0f , 0.0f},
-				{-0.7071068f , 0.0f , -0.7071068f, -5.0f},
-				{0.0f , 0.0f , 0.0f , 1.0f}
+				{-0.7071068f , 0.0f , -0.7071068f, 0.0f},
+				{-5.0f , 0.0f , -5.0f , 1.0f}
 			};
 		compareMatrixToArray(mat, id);
 		
@@ -162,10 +162,10 @@ public class MatrixTest {
 	@Test
 	public void testTranslate() {
 		Vector3 a = new Vector3(-1,2,4);
-		double[][] id = { { 1, 0, 0, -1},
-				{ 0, 1, 0, 2},
-				{ 0, 0, 1, 4},
-				{ 0, 0, 0, 1}
+		double[][] id = { { 1, 0, 0, 0},
+				{ 0, 1, 0, 0},
+				{ 0, 0, 1, 0},
+				{ -1, 2, 4, 1}
 		};
 		Matrix m = Matrix.translate(a);
 		
