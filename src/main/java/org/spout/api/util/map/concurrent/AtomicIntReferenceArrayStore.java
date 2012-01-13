@@ -69,7 +69,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 */
 	public final boolean isReserved(int id) {
 		id = id & 0x0000FFFF;
-		return (id & reservedMask) == id;
+		return (id & reservedMask) == reservedMask;
 	}
 
 	/**
@@ -173,7 +173,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 			throw new IllegalArgumentException("The EMPTY singleton may not be passed as auxilary data");
 		}
 		entries.incrementAndGet();
-
+		
 		while (true) {
 			if (needsResize()) {
 				resizeArrays();
@@ -184,6 +184,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			try {
+				if (auxArray.get()[testIndex] != EMPTY) {
+					continue;
+				}
 				int idAndData = (((int)id) << 16) | (data & 0xFFFF);
 				intArray.get()[testIndex] = idAndData;
 				auxArray.get()[testIndex] = auxData;
@@ -205,7 +208,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 		while (true) {
 			int prevSeq = seqArray.get().getAndSet(index, DatatableSequenceNumber.UNSTABLE);
 			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
-				return false;
+				continue;
 			}
 			try {
 				T current = auxArray.get()[index];

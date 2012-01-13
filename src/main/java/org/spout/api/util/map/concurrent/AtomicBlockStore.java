@@ -8,7 +8,7 @@ import org.spout.api.datatable.DatatableSequenceNumber;
  * Each block can either store a short id, or a short id, a short data 
  * value and a reference to a &lt;T&gt; object.
  */
-public class AtomicBlockStore<T extends BlockLinkable> {
+public class AtomicBlockStore<T> {
 	
 	private final int side;
 	private final int shift;
@@ -16,7 +16,6 @@ public class AtomicBlockStore<T extends BlockLinkable> {
 	private final AtomicShortArray blockIds;
 	private final AtomicIntReferenceArrayStore<T> auxStore;
 	
-	// TODO - add BlockLinkable
 	public AtomicBlockStore(int shift) {
 		this.side = 1 << shift;
 		this.shift = shift;
@@ -159,18 +158,18 @@ public class AtomicBlockStore<T extends BlockLinkable> {
 			int seq = getSequence(x, y, z);
 			short blockId = blockIds.get(index);
 			if (auxStore.isReserved(blockId)) {
-				fullData.id = auxStore.getId(blockId);
-				fullData.data = auxStore.getData(blockId);
-				fullData.auxData = auxStore.getAuxData(blockId);
+				fullData.setId(auxStore.getId(blockId));
+				fullData.setData(auxStore.getData(blockId));
+				fullData.setAuxData(auxStore.getAuxData(blockId));
 				int seq2 = getSequence(x, y, z);
 				if (seq == seq2) {
 					return fullData;
 				}
 			} else {
-				fullData.id = blockId;
-				fullData.data = 0;
-				fullData.auxData = null;
-				return null;
+				fullData.setId(blockId);
+				fullData.setData((short)0);
+				fullData.setAuxData(null);
+				return fullData;
 			}
 		}
 	}
@@ -186,7 +185,7 @@ public class AtomicBlockStore<T extends BlockLinkable> {
 	 * @param fullState the new state of the Block
 	 */
 	public final void setBlock(int x, int y, int z, BlockFullState<T> fullState) {
-		setBlock(x, y, z, fullState.id, fullState.data, fullState.auxData);
+		setBlock(x, y, z, fullState.getId(), fullState.getData(), fullState.getAuxData());
 	}
 	
 	/**
@@ -203,7 +202,6 @@ public class AtomicBlockStore<T extends BlockLinkable> {
 	 */
 	public final void setBlock(int x, int y, int z, short id, short data, T auxData) {
 		int index = getIndex(x, y, z);
-		
 		while (true) {
 			short oldBlockId = blockIds.get(index);
 			boolean oldReserved = auxStore.isReserved(oldBlockId);
@@ -228,7 +226,8 @@ public class AtomicBlockStore<T extends BlockLinkable> {
 				if (oldReserved) {
 					if (!auxStore.remove(oldBlockId)) {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-					}				}
+					}				
+				}
 				return;
 			}
 		}
@@ -311,7 +310,7 @@ public class AtomicBlockStore<T extends BlockLinkable> {
 	 * @return true if the block was set
 	 */
 	public final boolean compareAndSetBlock(int x, int y, int z, BlockFullState<T> expect, BlockFullState<T> newValue) {
-		return compareAndSetBlock(x, y, z, expect.id, expect.data, expect.auxData, newValue.id, newValue.data, newValue.auxData);
+		return compareAndSetBlock(x, y, z, expect.getId(), expect.getData(), expect.getAuxData(), newValue.getId(), newValue.getData(), newValue.getAuxData());
 	}
 
 	

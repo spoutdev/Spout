@@ -3,7 +3,7 @@ package org.spout.api.datatable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Gets a unique sequence number of Datatable updates.
+ * Gets a unique sequence number for Datatable updates.
  * 
  * If a record has the same sequence number before and a read, then the read can be considered to have completed correctly.
  */
