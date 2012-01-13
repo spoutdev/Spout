@@ -67,7 +67,8 @@ public class Matrix {
 	 */
 	public Matrix(int dim, float[] dat){
 		this.dimension = dim;
-		this.data = dat.clone();
+		this.data = new float[dim*dim];
+		System.arraycopy(dat, 0, this.data, 0, dim * dim);
 	}
 	
 	public int getDimension() {
@@ -345,6 +346,8 @@ public class Matrix {
 	 * @return
 	 */
 	public static float[] toArray(Matrix m){
-		return m.data.clone();
+		float[] ret = new float[m.dimension * m.dimension];
+		System.arraycopy(m.data, 0, ret, 0, m.dimension * m.dimension);
+		return ret;
 	}
 }
