@@ -25,7 +25,7 @@
  */
 package org.spout.server.entity;
 
-import java.io.Externalizable;
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.collision.model.CollisionModel;
@@ -244,26 +244,27 @@ public class SpoutEntity implements Entity {
 	
 	@Override
 	public void setData(String key, int value) {
-		map.set(new SpoutDatatableInt(map.getKey(key), value));
-		
+		int ikey = map.getKey(key);
+		map.set(ikey, new SpoutDatatableInt(ikey, value));		
 	}
 
 	@Override
 	public void setData(String key, float value) {
-		map.set(new SpoutDatatableFloat(map.getKey(key), value));
-		
+		int ikey = map.getKey(key);
+		map.set(ikey, new SpoutDatatableFloat(ikey, value));		
 	}
 
 	@Override
 	public void setData(String key, boolean value) {
-		map.set(new SpoutDatatableBool(map.getKey(key), value));
+		int ikey = map.getKey(key);
+		map.set(ikey, new SpoutDatatableBool(ikey, value));
 		
 	}
 
 	@Override
-	public void setData(String key, Externalizable value) {
-		map.set(new SpoutDatatableObject(map.getKey(key), value));
-		
+	public void setData(String key, Serializable value) {
+		int ikey = map.getKey(key);
+		map.set(ikey, new SpoutDatatableObject(ikey, value));		
 	}
 
 	@Override
@@ -276,8 +277,7 @@ public class SpoutEntity implements Entity {
 		public final EntityManager entityManager;
 		
 		public TransformAndManager() {
-			this.transform = null;
-			this.entityManager = null;
+			this(null, null);
 		}
 		
 		public TransformAndManager(Transform transform, EntityManager entityManager) {
