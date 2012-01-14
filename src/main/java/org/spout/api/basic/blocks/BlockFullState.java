@@ -1,6 +1,6 @@
 package org.spout.api.basic.blocks;
 
-public class BlockFullState<T> {
+public class BlockFullState<T> implements Cloneable {
 
 	private short id;
 	private short data;
@@ -41,6 +41,29 @@ public class BlockFullState<T> {
 	
 	public String toString() {
 		return this.getClass().getSimpleName() + "{" + id + ", " + data + ", " + auxData + "}";
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		} else if (!(o instanceof BlockFullState)) {
+			return false;
+		} else {
+			@SuppressWarnings("unchecked")
+			BlockFullState<T> fullState = (BlockFullState<T>)o;
+			
+			return (fullState.id == id && fullState.data == data && fullState.auxData.equals(auxData));
+		}
+	}
+	
+	/**
+	 * Gets a shallow copy of the BlockFullState, the auxiliary data is not cloned.
+	 * 
+	 * @return the shallow clone
+	 */
+	public BlockFullState<T> shallowClone() {
+		return new BlockFullState<T>(id, data, auxData);
 	}
 	
 }

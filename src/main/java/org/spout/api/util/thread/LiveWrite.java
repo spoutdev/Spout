@@ -23,24 +23,12 @@
  * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable;
+package org.spout.api.util.thread;
 
-import java.io.Serializable;
+public @interface LiveWrite {
+	public String author() default "SpoutDev";
 
-/**
- * Indicates that the implementing object has a Datatable associated with it
- * 
- *
- */
-public interface Datatable extends Serializable {
-	public void setData(String key, int value);
-	
-	public void setData(String key, float value);
-	
-	public void setData(String key, boolean value);
-	
-	public void setData(String key, Serializable value);
-	
-	public DatatableTuple getData(String key);
-	
+	public String version() default "1.0";
+
+	public String shortDescription() default "Indicates that this method updates the value of an object immediately.  " + "This may have adverse performance implications as it requires thread synchronisation with the managing thread."; 
 }

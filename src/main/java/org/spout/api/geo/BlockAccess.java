@@ -25,39 +25,56 @@
  */
 package org.spout.api.geo;
 
+import org.spout.api.basic.blocks.BlockFullState;
+import org.spout.api.datatable.Datatable;
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.LiveWrite;
 
 public interface BlockAccess {
 	
 	/**
-	 * Sets the block at (x, y, z) to the given material type and returns the snapshot value
+	 * Sets the block at (x, y, z) to the given material type.
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param material
-	 * @return the block's material from the snapshot
 	 */
-	@SnapshotRead
-	@DelayedWrite
-	public BlockMaterial setBlockMaterial(int x, int y, int z, BlockMaterial material);
+	@LiveWrite
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material);
 	
 	/**
-	 * Sets the id for the block at (x, y, z) to the given id and returns the snapshot value
-	 * 
-	 * For ids greater than 255, the id must represent a value custom id
+	 * Sets the id for the block at (x, y, z) to the given id.<br>
+	 * <br>
+	 * This method will clear the block's data and any auxiliary data.<br>
+	 * <br>
+	 * For ids greater than 255, the id must represent a valid custom id.<br>
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @return the block's id from the snapshot
 	 */
-	@SnapshotRead
-	@DelayedWrite
-	public short setBlockId(int x, int y, int z, short id);
+	@LiveWrite
+	public void setBlockId(int x, int y, int z, short id);
+	
+
+	/**
+	 * Sets the id for the block at (x, y, z) to the given id.<br>
+	 * <br>
+	 * This method will clear the block's auxiliary data.<br>
+	 * <br>
+	 * For ids greater than 255, the id must represent a valid custom id.<br>
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param id
+	 */
+	@LiveWrite
+	public void setBlockIdAndData(int x, int y, int z, short id, short data);
 	
 	/**
 	 * Gets the snapshot material for the block at (x, y, z)
@@ -67,7 +84,7 @@ public interface BlockAccess {
 	 * @param z the z coordinate
 	 * @return the block's material from the snapshot
 	 */
-	@SnapshotRead
+	@LiveRead
 	public BlockMaterial getBlockMaterial(int x, int y, int z);
 
 	/**
@@ -78,30 +95,54 @@ public interface BlockAccess {
 	 * @param z the z coordinate
 	 * @return the block's material from the snapshot
 	 */
-	@SnapshotRead
+	@LiveRead
 	public short getBlockId(int x, int y, int z);
 
 	/**
-	 * Gets the snapshot data for the block at (x, y, z)
+	 * Gets the data for the block at (x, y, z)
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @return the block's data from the snapshot
 	 */
-	@SnapshotRead
+	@LiveRead
 	public short getBlockData(int x, int y, int z);
 
 	/**
-	 * Sets the snapshot data for the block at (x, y, z) to the given data and returns the snapshot value.
+	 * Sets the snapshot data for the block at (x, y, z) to the given data, but only if the current block state matches the given state.
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param data to set at the block
-	 * @return the block's data from the snapshot
+	 * @return true on success
 	 */
-	@SnapshotRead
-	@DelayedWrite
-	public short setBlockData(int x, int y, int z, short data);
+	@LiveWrite
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data);
+	
+	/**
+	 * Adds a key, value pair to the auxiliary data for the block, but only if the current block state matches the given state.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param data to set at the block
+	 * @return true on success
+	 */
+	@LiveWrite
+	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData);
+	
+	/**
+	 * Removes a key, value pair from the auxiliary data for the block, but only if the current block state matches the given state.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param data to set at the block
+	 * @return true on success
+	 */
+	@LiveWrite
+	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData);
+
 }

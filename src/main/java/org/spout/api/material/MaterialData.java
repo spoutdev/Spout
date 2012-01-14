@@ -26,6 +26,8 @@
 package org.spout.api.material;
 
 import java.util.HashMap;
+
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.util.map.TIntPairObjectHashMap;
 
 public class MaterialData {
@@ -63,6 +65,21 @@ public class MaterialData {
 	 * @return material or null if none found
 	 */
 	public static Material getMaterial(short id, short data) {
+		return getMaterial(id, data, null);
+	}
+	
+	/**
+	 * Gets the material from the given id and data and auxiliary data
+	 *
+	 * If a non-zero data value is given for a material with no subtypes, the
+	 * material at the id and data value of zero will be returned instead.
+	 *
+	 * @param id to get
+	 * @param data to get
+	 * @return material or null if none found
+	 */
+	public static Material getMaterial(short id, short data, DatatableMap auxData) {
+		// TODO - look at the aux data ?
 		Material mat = idLookup.get(id, data);
 		if (mat != null) {
 			return mat;
@@ -88,6 +105,18 @@ public class MaterialData {
 	 * @return block, or null if none found
 	 */
 	public static BlockMaterial getBlock(short id, short data) {
+		return getBlock(id, data, null);
+	}
+	
+	/**
+	 * Gets the block at the given id and data and auxiliary data, or null if none found
+	 *
+	 * @param id to get
+	 * @param data to get
+	 * @return block, or null if none found
+	 */
+	public static BlockMaterial getBlock(short id, short data, DatatableMap auxData) {
+		// TODO - look at the aux data ?
 		Material mat = getMaterial(id, data);
 		if (mat instanceof BlockMaterial) {
 			return (BlockMaterial) mat;

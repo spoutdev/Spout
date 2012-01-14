@@ -341,6 +341,22 @@ public class AtomicBlockStore<T> {
 	public boolean needsCompression() {
 		return ((auxStore.getEntries() << 3) / 3) <= auxStore.getSize();
 	}
+	
+	/**
+	 * Gets a short array containing the block ids in the store.<br>
+	 * <br>
+	 * If the store is updated while this snapshot is being taken, data tearing could occur.
+	 * 
+	 * @return the array
+	 */
+	public short[] getBlockIdArray() {
+		int length = blockIds.length();
+		short[] array = new short[length];
+		for (int i = 0; i < length; i++) {
+			array[i] = blockIds.get(i);
+		}
+		return array;
+	}
 
 	/**
 	 * Compresses the auxiliary store.<br>
