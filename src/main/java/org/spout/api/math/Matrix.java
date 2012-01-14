@@ -347,4 +347,84 @@ public class Matrix {
 	public static float[] toArray(Matrix m){
 		return m.data.clone();
 	}
+	/**
+	 * Creates a lookat matrix with the given eye point.
+	 * @param eye The location of the camera
+	 * @param at The location that the camera is looking at
+	 * @param up The direction that corrisponds to Up
+	 * @return A rotational transform that corrisponds to a camera looking at the given values
+	 */
+	public static Matrix createLookAt(Vector3 eye, Vector3 at, Vector3 up){
+		Vector3 f = at.subtract(eye).normalize();
+		up = up.normalize();
+
+		Vector3 s = f.cross(up).normalize();
+		Vector3 u = s.cross(f).normalize();
+
+
+		Matrix mat = new Matrix(4);
+
+		mat.set(0, 0, s.getX());
+		mat.set(1, 0, s.getY());
+		mat.set(2, 0, s.getZ());
+			
+		mat.set(0, 1, u.getX());
+		mat.set(1, 1, u.getY());
+		mat.set(2, 1, u.getZ());
+
+		mat.set(0, 2, -f.getX());
+		mat.set(1, 2, -f.getY());
+		mat.set(2, 2, -f.getZ());
+
+		Matrix trans = Matrix.translate(eye.multiply(-1));
+		mat = Matrix.multiply(trans, mat);
+		return mat;		
+	}
+	/**
+	 * Creates a perspective projection matrix with the given (x) FOV, aspect, near and far planes
+	 * @param fov The Field of View in the x direction
+	 * @param aspect The aspect ratio, usually width/height
+	 * @param znear The near plane.  Cannot be 0
+	 * @param zfar the far plane. zfar cannot equal znear
+	 * @return A perspective projection matrix built from the given values
+	 */
+	public static Matrix createPerspective(float fov, float aspect, float znear, float zfar) {
+		float ymax, xmax;
+		ymax = znear * (float)Math.tan((fov * Math.PI) / 360.0);
+		xmax = ymax * aspect;
+		return createOrthographic(xmax, -xmax, ymax, -ymax, znear, zfar);
+	}
+	/**
+	 * Creates an orthographic viewing fustrum built from the provided values
+	 * @param right the right most plane of the viewing fustrum
+	 * @param left the left most plane of the viewing fustrum
+	 * @param top the top plane of the viewing fustrum
+	 * @param bottom the bottom plane of the viewing fustrum
+	 * @param near the near plane of the viewing fustrum
+	 * @param far the far plane of the viewing fustrum
+	 * @return A viewing fustrum build from the provided values
+	 */
+	public static Matrix createOrthographic(float right, float left, float top, float bottom, float near, float far){
+		Matrix ortho = new Matrix();
+		float temp, temp2, temp3, temp4;
+		temp = 2.0f * near;
+		temp2 = right - left;
+		temp3 = top - bottom;
+		temp4 = far - near;
+
+		ortho.set(0, 0, temp / temp2);
+		ortho.set(1, 1, temp / temp3);
+
+		ortho.set(0, 2, (right+left) / temp2);
+		ortho.set(1, 2, (top + bottom) / temp3);
+		ortho.set(2, 2, (-far - near) / temp4);
+		ortho.set(2, 3, -1);
+
+		ortho.set(3, 2, (-temp * far) / temp4);
+		ortho.set(3, 3, 0);
+
+
+		return ortho;
+
+	}
 }

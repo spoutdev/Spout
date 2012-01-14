@@ -31,6 +31,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.inventory.Inventory;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -143,4 +144,28 @@ public interface Entity extends Datatable {
 	 */
 	@SnapshotRead
 	public boolean isDead();
+
+	/**
+	 * Returns the inventory of the entity
+	 *
+	 * @return inventory
+	 */
+	@SnapshotRead
+	public Inventory getInventory();
+
+	/**
+	 * Returns the size of an entity's inventory
+	 *
+	 * @return inventorysize
+	 */
+	@SnapshotRead
+	public int getInventorySize();
+
+	/**
+	 * Sets the size of an entity's inventory
+	 *
+	 * @return
+	 */
+	@DelayedWrite
+	public void setInventorySize(int size);
 }
