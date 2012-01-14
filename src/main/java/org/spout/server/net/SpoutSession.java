@@ -200,6 +200,7 @@ public final class SpoutSession implements Session {
 					handler.handle(this, player, message);
 				} catch (Exception e) {
 					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + this.getPlayer().getName());
+					e.printStackTrace();
 					disconnect("Message handler exception for " + message.getClass().getSimpleName());
 				}
 			}
