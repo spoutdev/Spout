@@ -1,5 +1,7 @@
 package org.spout.api.util.map.concurrent;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.DatatableSequenceNumber;
 
@@ -14,7 +16,8 @@ public class AtomicBlockStore<T> {
 	private final int shift;
 	private final int doubleShift;
 	private final AtomicShortArray blockIds;
-	private final AtomicIntReferenceArrayStore<T> auxStore;
+	private AtomicIntReferenceArrayStore<T> auxStore;
+	private final AtomicBoolean compressing = new AtomicBoolean(false);
 	
 	public AtomicBlockStore(int shift) {
 		this.side = 1 << shift;
@@ -33,8 +36,11 @@ public class AtomicBlockStore<T> {
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a single short record
 	 */
 	public final int getSequence(int x, int y, int z) {
+		checkCompressing();
 		int index = getIndex(x, y, z);
 		while (true) {
+			checkCompressing();
+
 			int blockId = blockIds.get(index);
 			if (!auxStore.isReserved(blockId)) {
 				return DatatableSequenceNumber.ATOMIC;
@@ -60,6 +66,8 @@ public class AtomicBlockStore<T> {
 	public final int getBlockId(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		while (true) {
+			checkCompressing();
+
 			int seq = getSequence(x, y, z);
 			short blockId = blockIds.get(index);
 			if (auxStore.isReserved(blockId)) {
@@ -87,6 +95,8 @@ public class AtomicBlockStore<T> {
 	public final int getData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		while (true) {
+			checkCompressing();
+
 			int seq = getSequence(x, y, z);
 			short blockId = blockIds.get(index);
 			if (auxStore.isReserved(blockId)) {
@@ -114,6 +124,8 @@ public class AtomicBlockStore<T> {
 	public final T getAuxData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		while (true) {
+			checkCompressing();
+
 			int seq = getSequence(x, y, z);
 			short blockId = blockIds.get(index);
 			if (auxStore.isReserved(blockId)) {
@@ -155,6 +167,8 @@ public class AtomicBlockStore<T> {
 		}
 		int index = getIndex(x, y, z);
 		while (true) {
+			checkCompressing();
+
 			int seq = getSequence(x, y, z);
 			short blockId = blockIds.get(index);
 			if (auxStore.isReserved(blockId)) {
@@ -203,6 +217,8 @@ public class AtomicBlockStore<T> {
 	public final void setBlock(int x, int y, int z, short id, short data, T auxData) {
 		int index = getIndex(x, y, z);
 		while (true) {
+			checkCompressing();
+
 			short oldBlockId = blockIds.get(index);
 			boolean oldReserved = auxStore.isReserved(oldBlockId);
 			if (data == 0 && auxData == null && !auxStore.isReserved(id)) {
@@ -251,6 +267,8 @@ public class AtomicBlockStore<T> {
 		int index = getIndex(x, y, z);
 		
 		while (true) {
+			checkCompressing();
+
 			short oldBlockId = blockIds.get(index);
 			boolean oldReserved = auxStore.isReserved(oldBlockId);
 			
@@ -312,10 +330,43 @@ public class AtomicBlockStore<T> {
 	public final boolean compareAndSetBlock(int x, int y, int z, BlockFullState<T> expect, BlockFullState<T> newValue) {
 		return compareAndSetBlock(x, y, z, expect.getId(), expect.getData(), expect.getAuxData(), newValue.getId(), newValue.getData(), newValue.getAuxData());
 	}
-
 	
-	private final int getIndex(int x, int y, int z) {
-		return (x << doubleShift) + (z << shift) + y;
+	/**
+	 * Gets if the store would benefit from compression.<br>
+	 * <br>
+	 * If this method is called when the store is being accessed by another thread, it may give spurious results.
+	 * 
+	 * @return true if compression would reduce the store size
+	 */
+	public boolean needsCompression() {
+		return ((auxStore.getEntries() << 3) / 3) <= auxStore.getSize();
+	}
+
+	/**
+	 * Compresses the auxiliary store.<br>
+	 * <br>
+	 * This method should only be called when the store is guaranteed not to be accessed from any other thread.<br>
+	 */
+	public void compress() {
+		if (!compressing.compareAndSet(false, true)) {
+			throw new IllegalStateException("Compression started while compression was in progress");
+		}
+		int length = side * side * side;
+		AtomicIntReferenceArrayStore<T> newAuxStore = new AtomicIntReferenceArrayStore<T>(side * side * side);
+		for (int i = 0; i < length; i++) {
+			short blockId = blockIds.get(i);
+			if (auxStore.isReserved(blockId)) {
+				short storedId = auxStore.getId(blockId);
+				short storedData = auxStore.getData(blockId);
+				T storedAuxData = auxStore.getAuxData(blockId);
+				int newIndex = newAuxStore.add(storedId, storedData, storedAuxData);
+				if (!blockIds.compareAndSet(i, blockId, (short)newIndex)) {
+					throw new IllegalStateException("Unstable block id data during compression step");
+				}
+			}
+		}
+		auxStore = newAuxStore;
+		compressing.set(false);
 	}
 	
 	/**
@@ -324,6 +375,7 @@ public class AtomicBlockStore<T> {
 	 * @return the size of the arrays
 	 */
 	public final int getSize() {
+		checkCompressing();
 		return auxStore.getSize();
 	}
 
@@ -333,7 +385,18 @@ public class AtomicBlockStore<T> {
 	 * @return the size of the arrays
 	 */
 	public final int getEntries() {
+		checkCompressing();
 		return auxStore.getEntries();
+	}
+	
+	private final int getIndex(int x, int y, int z) {
+		return (x << doubleShift) + (z << shift) + y;
+	}
+	
+	private final void checkCompressing() {
+		if (compressing.get()) {
+			throw new IllegalStateException("Attempting to access block store during compression phase");
+		}
 	}
 
 }

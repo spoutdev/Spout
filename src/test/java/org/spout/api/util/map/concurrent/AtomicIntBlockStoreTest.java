@@ -24,6 +24,8 @@ public class AtomicIntBlockStoreTest {
 		
 		Random rand = new Random();
 		
+		System.out.println("-- Filling store with random data --");
+
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				for (int y = 0; y < 16; y++) {
@@ -35,18 +37,15 @@ public class AtomicIntBlockStoreTest {
 			}
 		}
 		
-		System.out.println("Starting check - pass 1");
+		System.out.println();
+		System.out.println("-- Starting check - pass 1 --");
+
+		checkStoreValues();
+		
+		System.out.println();
+		System.out.println("-- Starting random access --");
 
 		BlockFullState<Integer> fullData = new BlockFullState<Integer>();
-		for (int x = 0; x < 16; x++) {
-			for (int z = 0; z < 16; z++) {
-				for (int y = 0; y < 16; y++) {
-					check(x, y, z, fullData);
-				}
-			}
-		}
-		
-		System.out.println("Starting random access");
 
 		for (int i = 0; i < 32768; i++) {
 			short id = (short)(rand.nextInt());
@@ -63,32 +62,47 @@ public class AtomicIntBlockStoreTest {
 			check(x, y, z, fullData);
 		}
 		
-		System.out.println("Starting check - pass 2");
+		System.out.println();
+		System.out.println("-- Starting check - pass 2 --");
 		
-		for (int x = 15; x >= 0; x--) {
-			for (int y = 15; y >= 0; y--) {
-				for (int z = 15; z >= 0; z--) {
-					check(x, y, z, fullData);
-				}
-			}
-		}
+		checkStoreValues();
 		
-		int entries = 0;
-		for (int x = 15; x >= 0; x--) {
-			for (int y = 15; y >= 0; y--) {
-				for (int z = 15; z >= 0; z--) {
-					fullData = store.getFullData(x, y, z, null);
-					if (fullData.getAuxData() != null || fullData.getData() != 0 || (fullData.getId() & 0xC000) == 0xC000 ) {
-						entries++;
+		checkStoreLeaks();
+
+		System.out.println();
+		System.out.println("-- Starting element removal test --");
+		
+		for (int pass = 0; pass < 10; pass++) {
+			System.out.println("Removing 1/3 of the entries");
+			for (int x = 15; x >= 0; x--) {
+				for (int y = 15; y >= 0; y--) {
+					for (int z = 15; z >= 0; z--) {
+						if (rand.nextInt(3) == 0) {
+							set(x, y, z, 0, 0, null);
+						}
 					}
 				}
 			}
+			checkStoreValues();
+			
+			checkStoreLeaks();
+			
+			if (store.needsCompression()) {
+				System.out.println("Compressing store");
+				int size = store.getSize();
+				store.compress();
+				int newSize = store.getSize();
+				System.out.println("Size change: " + size + "->" + newSize);
+				assertTrue("Compression didn't reduce the store size when needsCompression returned true.", size > newSize);
+				checkStoreValues();
+				
+				checkStoreLeaks();
+			} else {
+				System.out.println("Compression is not needed");
+			}
+			
+			checkStoreCompressed();
 		}
-		int actualEntries = store.getEntries();
-		
-		assertTrue("Memory leak in the store, expected " + entries + " entries but got " + actualEntries + " entries", entries == actualEntries);
-
-		System.out.println("Store length: " + store.getSize());
 		
 	}
 	
@@ -161,9 +175,54 @@ public class AtomicIntBlockStoreTest {
 		if (arraySize != storeLength) {
 			arraySize = storeLength;
 			System.out.println("Store length changed to " + storeLength + ", entries = " + store.getEntries());
+			System.out.println();
 		}
 		
 	}
 	
+	private void checkStoreLeaks() {
+		BlockFullState<Integer> fullData = new BlockFullState<Integer>();
+
+		int entries = 0;
+		for (int x = 15; x >= 0; x--) {
+			for (int y = 15; y >= 0; y--) {
+				for (int z = 15; z >= 0; z--) {
+					fullData = store.getFullData(x, y, z, null);
+					if (fullData.getAuxData() != null || fullData.getData() != 0 || (fullData.getId() & 0xC000) == 0xC000 ) {
+						entries++;
+					}
+				}
+			}
+		}
+		int actualEntries = store.getEntries();
+		
+		System.out.println("Memory leak test");
+		System.out.println("Expected array usage: " + store.getEntries() + "/" + store.getSize());
+		System.out.println("Actual array usage:   " + store.getEntries() + "/" + store.getSize());
+		System.out.println();
+		assertTrue("Memory leak in the store, expected " + entries + " entries but got " + actualEntries + " entries", entries == actualEntries);
+
+	}
+
+	private void checkStoreValues() {		
+		BlockFullState<Integer> fullData = new BlockFullState<Integer>();
+		for (int x = 0; x < 16; x++) {
+			for (int z = 0; z < 16; z++) {
+				for (int y = 0; y < 16; y++) {
+					check(x, y, z, fullData);
+				}
+			}
+		}
+		System.out.println("Value check test passed");
+		System.out.println();
+	}
+	
+	private void checkStoreCompressed() {
+		double loadFactor = store.getEntries() / (double)store.getSize(); 
+		System.out.println("Load factor test: " + store.getEntries() + "/" + store.getSize() + " (0.37 < " + loadFactor + " < 0.76)");
+		System.out.println();
+		// Technically the range is 0.375 to 0.75, but this covers rounding error
+		assertTrue("Load factor out of range after compression " + loadFactor, loadFactor > 0.37 && loadFactor < 0.76);
+	}
 
 }
