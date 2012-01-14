@@ -38,6 +38,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.MemoryStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -264,12 +265,48 @@ public class SpoutEntity implements Entity {
 	@Override
 	public void setData(String key, Serializable value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableObject(ikey, value));		
+		map.set(ikey, new SpoutDatatableObject(ikey, value));
 	}
 
 	@Override
 	public DatatableTuple getData(String key) {
 		return map.get(key);
+	}
+
+	private int inventorySize;
+	private Inventory inventory;
+
+	@Override
+	public int getInventorySize() {
+		return inventorySize;
+	}
+
+	@Override
+	public void setInventorySize(int newsize) {
+		if(inventorySize == newsize) return;
+		inventorySize = newsize;
+		if(getInventory().getSize() != inventorySize) {
+			inventory = null;
+			setData("inventory", null);
+		}
+	}
+
+
+	@Override
+	public Inventory getInventory() {
+		if(getInventorySize() <= 0) {
+			return null;
+		}
+		if(inventory == null) {
+			SpoutDatatableObject obj = (SpoutDatatableObject)getData("inventory");
+			if(obj == null) {
+				inventory = new Inventory(getInventorySize());
+				setData("inventory", inventory);
+			} else {
+				inventory = (Inventory)obj.get();
+			}
+		}
+		return inventory;
 	}
 	
 	private static class TransformAndManager {

@@ -195,14 +195,15 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Block getBlock(int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return null;
+		return new SpoutBlock(this, x, y, z, getChunkFromBlock(x, y, z).getBlockMaterial(x, y, z));
 	}
 
 	@Override
 	public Block getBlock(Point point) {
-		// TODO Auto-generated method stub
-		return null;
+		int x = (int) Math.floor(point.getX());
+		int y = (int) Math.floor(point.getY());
+		int z = (int) Math.floor(point.getZ());
+		return getBlock(x, y, z);
 	}
 
 	@Override
