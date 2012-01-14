@@ -255,15 +255,15 @@ public class AtomicBlockStore<T> {
 			boolean oldReserved = auxStore.isReserved(oldBlockId);
 			
 			if (!oldReserved) {
-				if (blockIds.get(index) != expectId) {
+				if (blockIds.get(index) != expectId || expectData != 0 || expectAuxData != null) {
 					return false;
 				}
 			} else {
-				int seq1 = auxStore.getSequence(index);
-				short oldId = auxStore.getId(index);
-				short oldData = auxStore.getData(index);
-				T oldAuxData = auxStore.getAuxData(index);
-				int seq2 = auxStore.getSequence(index);
+				int seq1 = auxStore.getSequence(oldBlockId);
+				short oldId = auxStore.getId(oldBlockId);
+				short oldData = auxStore.getData(oldBlockId);
+				T oldAuxData = auxStore.getAuxData(oldBlockId);
+				int seq2 = auxStore.getSequence(oldBlockId);
 				if (seq1 != seq2) {
 					continue;
 				}
@@ -316,6 +316,24 @@ public class AtomicBlockStore<T> {
 	
 	private final int getIndex(int x, int y, int z) {
 		return (x << doubleShift) + (z << shift) + y;
+	}
+	
+	/**
+	 * Gets the size of the internal arrays
+	 * 
+	 * @return the size of the arrays
+	 */
+	public final int getSize() {
+		return auxStore.getSize();
+	}
+
+	/**
+	 * Gets the number of entries in the store
+	 * 
+	 * @return the size of the arrays
+	 */
+	public final int getEntries() {
+		return auxStore.getEntries();
 	}
 
 }

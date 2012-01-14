@@ -340,6 +340,24 @@ public final class AtomicIntReferenceArrayStore<T> {
 			}
 		}
 	}
+	
+	/**
+	 * Gets the size of the internal arrays
+	 * 
+	 * @return the size of the arrays
+	 */
+	public final int getSize() {
+		return length.get();
+	}
+	
+	/**
+	 * Gets the number of entries in the store
+	 * 
+	 * @return the size of the arrays
+	 */
+	public final int getEntries() {
+		return entries.get();
+	}
 
 	/**
 	 * Indicates if the array needs resizing.  An array is considered to need resizing if it is more than 50% full.
@@ -351,7 +369,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 	// TODO - add timer that allows for resize downwards
 	//      - would need a map to remap the indexes to a lower range though
 	private final boolean needsResize() {
-		return length.get() < maxLength && entries.get() >= (length.get() >> 1);
+		int lengthThreshold = length.get();
+		lengthThreshold -= lengthThreshold >> 2;
+		return length.get() < maxLength && entries.get() >= lengthThreshold;
 	}
 	
 }
