@@ -31,6 +31,9 @@ import java.util.UUID;
 import org.spout.api.Game;
 import org.spout.api.Server;
 import org.spout.api.Spout;
+import org.spout.api.basic.blocks.BlockFullState;
+import org.spout.api.datatable.Datatable;
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
@@ -378,13 +381,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public BlockMaterial setBlockMaterial(int x, int y, int z, BlockMaterial material) {
-		return getChunkFromBlock(x, y, z).setBlockMaterial(x & 0xF, y & 0xF, z & 0xF, material);
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material) {
+		getChunkFromBlock(x, y, z).setBlockMaterial(x & 0xF, y & 0xF, z & 0xF, material);
 	}
 
 	@Override
-	public short setBlockId(int x, int y, int z, short id) {
-		return getChunkFromBlock(x, y, z).setBlockId(x & 0xF, y & 0xF, z & 0xF, id);
+	public void setBlockId(int x, int y, int z, short id) {
+		getChunkFromBlock(x, y, z).setBlockId(x & 0xF, y & 0xF, z & 0xF, id);
 	}
 
 	@Override
@@ -401,12 +404,27 @@ public class SpoutWorld extends AsyncManager implements World {
 	public short getBlockData(int x, int y, int z) {
 		return getChunkFromBlock(x, y, z).getBlockData(x & 0xF, y & 0xF, z & 0xF);
 	}
-
+	
 	@Override
-	public short setBlockData(int x, int y, int z, short data) {
-		return getChunkFromBlock(x, y, z).setBlockData(x & 0xF, y & 0xF, z & 0xF, data);
+	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData){
+		return getChunkFromBlock(x, y, z).compareAndPut(x, y, z, expect, key, auxData);
 	}
 
+	@Override
+	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
+		return getChunkFromBlock(x, y, z).compareAndRemove(x, y, z, expect, key, auxData);
+	}
+	
+	@Override
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data) {
+		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
+	}
+	
+	@Override
+	public void setBlockIdAndData(int x, int y, int z, short id, short data) {
+		getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data);
+	}
+	
 	@Override
 	public Transform getSpawnPoint() {
 		return this.spawnLocation.get();

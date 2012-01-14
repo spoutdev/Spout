@@ -34,14 +34,20 @@ import java.io.OutputStream;
 
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.DatatableTuple;
+import org.spout.api.io.store.MemoryStore;
 import org.spout.api.util.StringMap;
 
 public class SpoutDatatableMap implements DatatableMap {
-	final StringMap stringmap;
+	private final static StringMap rootStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
+	private final StringMap stringmap;
 	TSynchronizedIntObjectMap<DatatableTuple> map = new TSynchronizedIntObjectMap<DatatableTuple>(new TIntObjectHashMap<DatatableTuple>());
 
-	public SpoutDatatableMap(StringMap stringmap) {
-		this.stringmap = stringmap;
+	public static StringMap getStringMap() {
+		return rootStringMap;
+	}
+	
+	public SpoutDatatableMap() {
+		this.stringmap = rootStringMap;
 	}
 
 	@Override

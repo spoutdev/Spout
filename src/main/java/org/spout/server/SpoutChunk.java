@@ -25,16 +25,14 @@
  */
 package org.spout.server;
 
-import gnu.trove.TCollections;
-import gnu.trove.map.hash.TShortObjectHashMap;
-import gnu.trove.map.hash.TShortShortHashMap;
-
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
+import org.spout.api.basic.blocks.BlockFullState;
+import org.spout.api.datatable.Datatable;
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.Populator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -43,34 +41,17 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
-import org.spout.api.util.map.TNibbleTripleObjectHashMap;
-import org.spout.api.util.map.TNibbleTripleShortHashMap;
+import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
-import org.spout.server.util.thread.snapshotable.SnapshotableShortArray;
 
 public class SpoutChunk extends Chunk {
 
 	/**
-	 * Internal representation of block ids.
+	 * Storage for block ids, data and auxiliary data.  
+	 * For blocks with data = 0 and auxiliary data = null, the block is stored as a short.
 	 */
-	private SnapshotableShortArray blockIds;
-	
-	/**
-	 * Represents primitive block data
-	 */
-	private TNibbleTripleShortHashMap blockData;
-	
-	/**
-	 * Represents complex block data 
-	 */
-	@SuppressWarnings("unused")
-	private TNibbleTripleObjectHashMap<Serializable> complexData;
-
-	/**
-	 * The snapshot manager for the region that this chunk is located in.
-	 */
-	private final SnapshotManager snapshotManager = new SnapshotManager();
+	private AtomicBlockStore<DatatableMap> blockStore;
 	
 	/**
 	 * Indicates that the chunk should be saved if unloaded
@@ -92,72 +73,98 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final HashSet<Player> observers = new HashSet<Player>();
 	
-	public SpoutChunk(World world, Region region, float x, float y, float z, short[] blockIds) {
+	/**
+	 * Snapshot Manager
+	 */
+	private final SnapshotManager snapshotManager = new SnapshotManager();
+	
+	/**
+	 * The mask that should be applied to the x, y and z coords
+	 */
+	private final int coordMask;
+	
+	public SpoutChunk(World world, Region region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
+		coordMask = Chunk.CHUNK_SIZE - 1;
 		this.parentRegion = region;
-		if (blockIds != null) {
-			this.blockIds = new SnapshotableShortArray(snapshotManager, blockIds);
-		}
-		else {
-			this.blockIds = new SnapshotableShortArray(snapshotManager, new short[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE]);
-		}
+		this.blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS);
 		this.populated = new SnapshotableBoolean(snapshotManager, false);
-		
-		blockData = new TNibbleTripleShortHashMap(TCollections.synchronizedMap(new TShortShortHashMap()));
-		complexData = new TNibbleTripleObjectHashMap<Serializable>(TCollections.synchronizedMap(new TShortObjectHashMap<Serializable>()));
+		int i = 0;
+		for (int xx = 0; xx < Chunk.CHUNK_SIZE; xx++) {
+			for (int zz = 0; zz < Chunk.CHUNK_SIZE; zz++) {
+				for (int yy = 0; yy < Chunk.CHUNK_SIZE; yy++) {
+					blockStore.setBlock(xx, yy, zz, initial[i++], (short)0, null);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material) {
+		checkChunkLoaded();
+		setBlockIdAndData(x, y, z, (short) material.getId(), (short) material.getData());
+	}
+
+	@Override
+	public void setBlockId(int x, int y, int z, short id) {
+		checkChunkLoaded();
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, (short)0, null);
 	}
 	
-	public SpoutChunk(World world, Region region, float x, float y, float z) {
-		this(world, region, x, y, z, null);
-	}
-
 	@Override
-	public BlockMaterial setBlockMaterial(int x, int y, int z, BlockMaterial material) {
+	public void setBlockIdAndData(int x, int y, int z, short id, short data) {
 		checkChunkLoaded();
-		setBlockId(x, y, z, (short) material.getId());
-		setBlockData(x, y, z, (short) material.getData());
-		return getBlockMaterial(x, y, z);
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
 	}
-
-	@Override
-	public short setBlockId(int x, int y, int z, short id) {
-		checkChunkLoaded();
-		return blockIds.set((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF, id);
-	}
-
+	
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		short id = getBlockId(x, y, z);
-		short data = getBlockData(x, y, z);
-		return MaterialData.getBlock(id, data);
+		BlockFullState<DatatableMap> fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
+		short id = fullState.getId();
+		short data = fullState.getData();
+		DatatableMap auxData = fullState.getAuxData();
+		return MaterialData.getBlock(id, data, auxData);
 	}
 
 	@Override
 	public short getBlockId(int x, int y, int z) {
 		checkChunkLoaded();
-		return blockIds.get((x & 0xF) << 8 | (z & 0xF) << 4 | y & 0xF);
+		return (short)blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask);
 	}
 
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		checkChunkLoaded();
-		if (blockData.containsKey((byte)x, (byte)y, (byte)z)) {
-			return blockData.get((byte)x, (byte)y, (byte)z);
-		}
-		return (short)0;
+		return (short)blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
+	}
+	
+	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData){
+		throw new UnsupportedOperationException("TBD");
 	}
 
 	@Override
-	public short setBlockData(int x, int y, int z, short data) {
-		checkChunkLoaded();
-		if (data == 0) {
-			return blockData.remove((byte)x, (byte)y, (byte)z);
-		}
-		return blockData.put((byte)x, (byte)y, (byte)z, data);
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data) {
+		throw new UnsupportedOperationException("TBD");
+		//return blockStore.compareAndSetData(x & coordMask, y & coordMask, z & coordMask, expect, data);
 	}
-
+	
+	@Override
+	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
+		throw new UnsupportedOperationException("TBD");
+		/*while (true) {
+			BlockFullState<DatatableMap> fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
+			if (!fullState.equals(expect)) {
+				return false;
+			}
+			BlockFullState<DatatableMap> newFullState = fullState.shallowClone();
+			if (newFullState.getAuxData() == null) {
+				newFullState.setAuxData(new SpoutDatatableMap());
+			}
+		}*/
+	}
+	
 	@Override
 	public void unload(boolean save) {
 		checkChunkLoaded();
@@ -248,7 +255,7 @@ public class SpoutChunk extends Chunk {
 		int x = getX() << Chunk.CHUNK_SIZE_BITS;
 		int y = getY() << Chunk.CHUNK_SIZE_BITS;
 		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
-		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, this.blockIds.getLive());
+		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, blockStore.getBlockIdArray());
 		
 		return snapshot;
 	}
@@ -280,9 +287,7 @@ public class SpoutChunk extends Chunk {
 	
 	public void setUnloaded() {
 		saveState.set(SaveState.UNLOADED);
-		blockIds = null;
-		blockData = null;
-		complexData = null;
+		blockStore = null;
 	}
 	
 	private void checkChunkLoaded() {

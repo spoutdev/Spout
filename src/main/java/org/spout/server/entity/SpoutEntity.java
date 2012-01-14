@@ -74,7 +74,7 @@ public class SpoutEntity implements Entity {
 		transformAndManager = new TransformAndManager(transform, this.server.getEntityManager());
 		this.controller = controller;
 		transformAndManagerLive.set(transformAndManager.copy());
-		this.map = new SpoutDatatableMap(this.server.getEntityManager().getStringMap());
+		this.map = new SpoutDatatableMap();
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
