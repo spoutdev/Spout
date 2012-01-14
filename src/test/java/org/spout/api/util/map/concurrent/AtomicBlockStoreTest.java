@@ -7,7 +7,7 @@ import java.util.Random;
 import org.junit.Test;
 import org.spout.api.basic.blocks.BlockFullState;
 
-public class AtomicIntBlockStoreTest {
+public class AtomicBlockStoreTest {
 
 	private final static int MAX_SIZE = 4096;
 
