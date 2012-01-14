@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.util.StringMap;
-import org.spout.server.datatable.value.SpoutDatatableObject;
 
 public class SpoutDatatableMap implements DatatableMap {
 	final StringMap stringmap;
@@ -47,8 +46,17 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	@Override
 	public void set(DatatableTuple value) {
-		map.put(value.hashCode(), value);
-
+		set(value.hashCode(), value);
+	}
+	
+	@Override
+	public void set(String key, DatatableTuple value){
+		set(stringmap.register(key), value);
+	}
+	
+	@Override
+	public void set(int key, DatatableTuple value){
+		map.put(key, value);
 	}
 
 	public int getKey(String key) {
