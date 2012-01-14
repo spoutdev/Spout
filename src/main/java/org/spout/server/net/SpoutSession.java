@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Game;
+import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.player.Player;
@@ -195,7 +196,12 @@ public final class SpoutSession implements Session {
 		while ((message = messageQueue.poll()) != null) {
 			MessageHandler<Message> handler = (MessageHandler<Message>) this.protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
-				handler.handle(this, player, message);
+				try {
+					handler.handle(this, player, message);
+				} catch (Exception e) {
+					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + this.getPlayer().getName());
+					disconnect("Message handler exception for " + message.getClass().getSimpleName());
+				}
 			}
 			timeoutCounter = 0;
 		}
