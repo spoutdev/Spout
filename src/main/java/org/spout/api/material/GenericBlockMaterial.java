@@ -74,4 +74,8 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 	public void onWorldRender() {
 		// TODO Auto-generated method stub
 	}
+
+	public boolean isLiquid() {
+		return false;
+	}
 }

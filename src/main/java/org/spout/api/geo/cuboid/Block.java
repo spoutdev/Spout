@@ -90,7 +90,7 @@ public abstract class Block extends Cube {
 	 * @param y the x coordinate
 	 * @param z the x coordinate
 	 * @param material
-	 * @return the block's material from the snapshot
+	 * @return the block's material id from the snapshot
 	 */
 	@SnapshotRead
 	public abstract short getBlockId();
@@ -118,8 +118,8 @@ public abstract class Block extends Cube {
 	 * @param y the x coordinate
 	 * @param z the x coordinate
 	 * @param material
-	 * @return the block's material from the snapshot
+	 * @return the block's material id from the snapshot
 	 */
 	@LiveRead
-	public abstract BlockMaterial getLiveBlockId();
+	public abstract short getLiveBlockId();
 }
