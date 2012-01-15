@@ -32,20 +32,24 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.player.Player;
+import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
+import org.spout.server.player.SpoutPlayer;
 import org.spout.server.util.TripleInt;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
@@ -423,6 +427,42 @@ public class SpoutRegion extends Region{
 	
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
+		
+		Blockm blockTemp = new SpoutBlockm(this.getWorld(), 0, 0, 0);
+		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
+			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
+				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
+					Chunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						SpoutChunk spoutChunk = (SpoutChunk)chunk;
+						if (spoutChunk.isDirty()) {
+							for (Player player : spoutChunk.getObservers()) {
+								NetworkSynchronizer synchronizer = ((SpoutPlayer)player).getNetworkSynchronizer();
+								if (!spoutChunk.isDirtyOverflow()) {
+									Blockm block = blockTemp;
+									for (int i = 0; true; i++) {
+										block = spoutChunk.getDirtyBlock(i, block);
+										if (block == null) {
+											break;
+										} else {
+											try {
+												synchronizer.updateBlock(spoutChunk, block);
+											} catch (Exception e) {
+												Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
+												e.printStackTrace();
+											}
+										}
+									}
+								} else {
+									synchronizer.sendChunk(spoutChunk);
+								}
+							}
+							spoutChunk.resetDirtyArrays();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings( {"rawtypes", "unchecked"})

@@ -25,7 +25,7 @@
  */
 package org.spout.server;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -35,6 +35,7 @@ import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.Populator;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
@@ -71,7 +72,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of all players who are observing this chunk
 	 */
-	private final HashSet<Player> observers = new HashSet<Player>();
+	private final LinkedHashSet<Player> observers = new LinkedHashSet<Player>();
 	
 	/**
 	 * Snapshot Manager
@@ -278,6 +279,26 @@ public class SpoutChunk extends Chunk {
 		} else {
 			return false;
 		}
+	}
+	
+	public Iterable<Player> getObservers() {
+		return observers;
+	}
+	
+	public boolean isDirty() {
+		return blockStore.isDirty();
+	}
+	
+	public boolean isDirtyOverflow() {
+		return blockStore.isDirtyOverflow();
+	}
+	
+	public Blockm getDirtyBlock(int i, Blockm blockm) {
+		return blockStore.getDirtyBlock(i, blockm);
+	}
+	
+	public void resetDirtyArrays() {
+		blockStore.resetDirtyArrays();
 	}
 	
 	@Override
