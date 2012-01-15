@@ -25,7 +25,9 @@
  */
 package org.spout.server;
 
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -72,7 +74,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of all players who are observing this chunk
 	 */
-	private final LinkedHashSet<Player> observers = new LinkedHashSet<Player>();
+	private final Set<Player> observers = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
 	
 	/**
 	 * Snapshot Manager
@@ -250,7 +252,6 @@ public class SpoutChunk extends Chunk {
 		// TODO
 	}
 	
-	// TODO - use CuboidBuffer internally ?
 	public CuboidShortBuffer getBlockCuboidBufferLive() {
 		checkChunkLoaded();
 		int x = getX() << Chunk.CHUNK_SIZE_BITS;
@@ -272,7 +273,7 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		boolean success = observers.remove(player);
 		if (success) {
-			if (observers.size() == 0) {
+			if (observers.isEmpty()) {
 				this.unload(true);
 			}
 			return true;
