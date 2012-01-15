@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -13,16 +14,18 @@ import org.spout.api.player.Player;
 
 public class NetworkSynchronizer {
 	
-	protected Player owner;
+	protected final Player owner;
 	protected Entity entity;
+	protected final Session session;
 	
 	public NetworkSynchronizer(Player owner) {
-		this.owner = owner;
+		this(owner, null);
 	}
 	
 	public NetworkSynchronizer(Player owner, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
+		this.session = owner.getSession();
 	}
 	
 	private final static int TARGET_SIZE = 5 * Chunk.CHUNK_SIZE;
@@ -213,7 +216,7 @@ public class NetworkSynchronizer {
 	 * 
 	 * @param c the chunk
 	 */
-	protected void sendChunk(Chunk c){
+	public void sendChunk(Chunk c){
 		//TODO: Implement Spout Protocol
 	}
 	
@@ -267,6 +270,17 @@ public class NetworkSynchronizer {
 	 */
 	protected void worldChanged(World world){
 		//TODO: Implement Spout Protocol
+	}
+	
+	/**
+	 * Called when a block in a chunk that the player is observing changes.<br>
+	 * <br>
+	 * Note: The coordinates of the block are chunk relative and the world field is undefined.
+	 * 
+	 * @param chunk the chunk
+	 * @param block the block
+	 */
+	public void updateBlock(Chunk chunk, Block block) {
 	}
 	
 }

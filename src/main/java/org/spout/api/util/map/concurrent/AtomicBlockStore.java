@@ -1,9 +1,11 @@
 package org.spout.api.util.map.concurrent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.DatatableSequenceNumber;
+import org.spout.api.geo.cuboid.Blockm;
 
 /**
  * This store stores block data for each chunk.  
@@ -18,13 +20,24 @@ public class AtomicBlockStore<T> {
 	private final AtomicShortArray blockIds;
 	private AtomicIntReferenceArrayStore<T> auxStore;
 	private final AtomicBoolean compressing = new AtomicBoolean(false);
+	private final byte[] dirtyX;
+	private final byte[] dirtyY;
+	private final byte[] dirtyZ;
+	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
 	
 	public AtomicBlockStore(int shift) {
+		this(shift, 10);
+	}
+	
+	public AtomicBlockStore(int shift, int dirtySize) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
 		blockIds = new AtomicShortArray(side * side * side);
 		auxStore = new AtomicIntReferenceArrayStore<T>(side * side * side);
+		dirtyX = new byte[dirtySize];
+		dirtyY = new byte[dirtySize];
+		dirtyZ = new byte[dirtySize];
 	}
 	
 	/**
@@ -230,6 +243,7 @@ public class AtomicBlockStore<T> {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
 					}
 				}
+				markDirty(x, y, z);
 				return;
 			} else {
 				int newIndex = auxStore.add(id, data, auxData);
@@ -244,6 +258,7 @@ public class AtomicBlockStore<T> {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
 					}				
 				}
+				markDirty(x, y, z);
 				return;
 			}
 		}
@@ -299,6 +314,7 @@ public class AtomicBlockStore<T> {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
 					}
 				}
+				markDirty(x, y, z);
 				return true;
 			} else {
 				int newIndex = auxStore.add(newId, newData, newAuxData);
@@ -311,7 +327,9 @@ public class AtomicBlockStore<T> {
 				if (oldReserved) {
 					if (!auxStore.remove(oldBlockId)) {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-					}				}
+					}				
+				}
+				markDirty(x, y, z);
 				return true;
 			}
 		}
@@ -363,7 +381,7 @@ public class AtomicBlockStore<T> {
 	 * <br>
 	 * This method should only be called when the store is guaranteed not to be accessed from any other thread.<br>
 	 */
-	public void compress() {
+	public final void compress() {
 		if (!compressing.compareAndSet(false, true)) {
 			throw new IllegalStateException("Compression started while compression was in progress");
 		}
@@ -405,8 +423,72 @@ public class AtomicBlockStore<T> {
 		return auxStore.getEntries();
 	}
 	
+	/**
+	 * Gets if the dirty array has overflowed since the last reset.<br>
+	 * <br>
+	 * @return true if there was an overflow
+	 */
+	public boolean isDirtyOverflow() {
+		return dirtyBlocks.get() >= dirtyX.length;
+	}
+	
+	/**
+	 * Gets if the store has been modified since the last reset of the dirty arrays
+	 * 
+	 * @return true if the store is dirty
+	 */
+	public boolean isDirty() {
+		return dirtyBlocks.get() > 0;
+	}
+	
+	/**
+	 * Resets the dirty arrays
+	 */
+	public void resetDirtyArrays() {
+		dirtyBlocks.set(0);
+	}
+	
+	/**
+	 * Gets the position of the dirty block at a given index.<br>
+	 * <br>
+	 * If there is no block at that index, then the method return null.<br>
+	 * <br>
+	 * Note: the x, y and z values returned are the chunk coordinates, 
+	 * not the world coordinates and the method has no effect on the world field of the block.<br>
+	 * @param i
+	 * @param block
+	 * @return
+	 */
+	public Blockm getDirtyBlock(int i, Blockm block) {
+		if (i >= dirtyBlocks.get()) {
+			return null;
+		}
+		block.setX(dirtyX[i] & 0xFF);
+		block.setY(dirtyY[i] & 0xFF);
+		block.setZ(dirtyZ[i] & 0xFF);
+		return block;
+	}
+	
 	private final int getIndex(int x, int y, int z) {
 		return (x << doubleShift) + (z << shift) + y;
+	}
+	
+	/**
+	 * Marks a block as dirty.<br>
+	 * <br>
+	 * Updates for dirty blocks will be sent at the end of the tick.<br>
+	 * 
+	 * @param x the x coordinate of the dirty block
+	 * @param y the y coordinate of the dirty block
+	 * @param z the z coordinate of the dirty block
+	 */
+	public void markDirty(int x, int y, int z) {
+		int index = dirtyBlocks.getAndIncrement();
+		if (index < dirtyX.length) {
+			dirtyX[index] = (byte)x;
+			dirtyY[index] = (byte)y;
+			dirtyZ[index] = (byte)z;
+		}
 	}
 	
 	private final void checkCompressing() {
