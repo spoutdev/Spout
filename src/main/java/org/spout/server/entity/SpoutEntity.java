@@ -330,4 +330,12 @@ public class SpoutEntity implements Entity {
 			return new TransformAndManager(transform != null ? transform.copy() : null, entityManager);
 		}
 	}
+
+	
+	@Override
+	public void onSync() {
+		//Forward to controller for now, but we may want to do some sync logic here for the entitiy.
+		controller.onSync();
+		
+	}
 }
