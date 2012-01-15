@@ -26,8 +26,8 @@
 package org.spout.api.event;
 
 /**
- * The source of an event. It may be a plugin, the world, the server, or a
- * specific entity.
+ * The source of an event. It may be a plugin, the world, the server, a specific
+ * player, or a specific entity.
  */
 public interface EventSource {
 

@@ -29,11 +29,12 @@ import java.net.InetAddress;
 
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.EventSource;
 import org.spout.api.protocol.Session;
 import org.spout.api.data.DataSubject;
 import org.spout.api.permissions.PermissionsSubject;
 
-public interface Player extends CommandSource, PermissionsSubject, DataSubject {
+public interface Player extends CommandSource, PermissionsSubject, DataSubject, EventSource {
 	
 	/**
 	 * Gets the player's name. This method is thread-safe.

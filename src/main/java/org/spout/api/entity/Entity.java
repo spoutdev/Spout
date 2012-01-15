@@ -27,6 +27,7 @@ package org.spout.api.entity;
 
 import org.spout.api.collision.model.CollisionModel;
 import org.spout.api.datatable.Datatable;
+import org.spout.api.event.EventSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -40,7 +41,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Datatable {
+public interface Entity extends Datatable, EventSource {
 	
 	public int getId();
 	
