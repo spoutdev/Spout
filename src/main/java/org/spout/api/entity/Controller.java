@@ -50,6 +50,14 @@ public abstract class Controller {
 	 */
 	public abstract void onTick(float dt);
 	
+	
+	/**
+	 * Called when this controller is being synced with the client.
+	 */
+	public void onSync(){
+		
+	}
+	
 	/**
 	 * Called just before a snapshot update.  
 	 * 

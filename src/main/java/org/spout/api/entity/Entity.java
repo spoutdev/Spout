@@ -83,6 +83,10 @@ public interface Entity extends Datatable {
 	
 	
 	/**
+	 * Called when the entity is set to be sent to clients
+	 */
+	public void onSync();
+	/**
 	 * Returns true if this entity's controller is the provided controller
 	 * 
 	 * @param clazz 
