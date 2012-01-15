@@ -43,6 +43,7 @@ import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.PlayerProtocol;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.server.SpoutServer;
 import org.spout.server.player.SpoutPlayer;
 import org.jboss.netty.channel.Channel;
@@ -100,18 +101,20 @@ public final class SpoutSession implements Session {
 	 * The random long used for client-server handshake
 	 */
 
-	private String sessionId = Long.toString(random.nextLong(), 16).trim();
+	private final String sessionId = Long.toString(random.nextLong(), 16).trim();
 
 	/**
 	 * The protocol for this session
 	 */
-	private AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(Protocol.bootstrap);
+	private final AtomicReference<Protocol> protocol;
 
 	/**
 	 * Stores the last block placement message to work around a bug in the
 	 * vanilla client where duplicate packets are sent.
 	 */
 	//private BlockPlacementMessage previousPlacement;
+	
+	private final BootstrapProtocol bootstrapProtocol;
 
 	/**
 	 * Creates a new session.
@@ -119,9 +122,11 @@ public final class SpoutSession implements Session {
 	 * @param server The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutSession(SpoutServer server, Channel channel) {
+	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol) {
 		this.server = server;
 		this.channel = channel;
+		this.protocol = new AtomicReference<Protocol>(bootstrapProtocol);
+		this.bootstrapProtocol = bootstrapProtocol;
 	}
 
 	/**
@@ -222,7 +227,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Disconnects the session with the specified reason. This causes a
-	 * {@link KickMessage} to be sent. When it has been delivered, the channel
+	 * kick packet to be sent. When it has been delivered, the channel
 	 * is closed.
 	 *
 	 * @param reason The reason for disconnection.
@@ -233,7 +238,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Disconnects the session with the specified reason. This causes a
-	 * {@link KickMessage} to be sent. When it has been delivered, the channel
+	 * kick packet to be sent. When it has been delivered, the channel
 	 * is closed.
 	 *
 	 * @param reason The reason for disconnection.
@@ -327,7 +332,7 @@ public final class SpoutSession implements Session {
 
 	@Override
 	public void setProtocol(Protocol protocol) {
-		if (!this.protocol.compareAndSet(Protocol.bootstrap, protocol)) {
+		if (!this.protocol.compareAndSet(bootstrapProtocol, protocol)) {
 			throw new IllegalArgumentException("The protocol may only be set once per session");
 		} else {
 			server.getLogger().info("Setting protocol to " + protocol.getName());
@@ -336,7 +341,8 @@ public final class SpoutSession implements Session {
 
 	@Override
 	public PlayerProtocol getPlayerProtocol() {
-		return protocol.get().getPlayerProtocol();
+		Protocol protocol = this.protocol.get();
+		return protocol == null ? null : protocol.getPlayerProtocol();
 	}
 
 	public Game getGame() {

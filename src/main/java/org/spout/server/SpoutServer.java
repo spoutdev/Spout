@@ -27,6 +27,8 @@ package org.spout.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -45,7 +49,7 @@ import java.util.logging.Logger;
 import org.spout.api.ChatColor;
 import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.basic.blocks.SpoutBlocks;
+import org.spout.api.SpoutRuntimeException;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandException;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -74,6 +78,7 @@ import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.config.Configuration;
 import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
@@ -221,6 +226,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
 	
+	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
+	
 	/**
 	 * Cached copy of the server configuration, can be used instead of re-parsing the config file for each access
 	 */
@@ -239,17 +246,6 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		SpoutServer server = new SpoutServer();
 		server.start();
-		
-		int port = 25565;
-		String[] split = server.getAddress().split(":");
-		if (split.length > 1) {
-			try {
-				port = Integer.parseInt(split[1]);
-			}
-			catch (NumberFormatException e) { }
-		}
-
-		server.bind(new InetSocketAddress(split[0], port));
 
 	}
 
@@ -279,6 +275,10 @@ public class SpoutServer extends AsyncManager implements Server {
 		//At least one plugin should have registered a default world generator, if not, end now.
 		if (this.getDefaultGenerator() == null) {
 			throw new RuntimeException("Failed to detect any default world generator. A plugin must set it during enabling.");
+		}
+
+		if (this.bootstrapProtocols.size() == 0) {
+			getLogger().warning("No bootstrap protocols registered! Clients will not be able to connect to the server.");
 		}
 
 		getEventManager().registerEvents(new InternalEventListener(this), this);
@@ -446,9 +446,40 @@ public class SpoutServer extends AsyncManager implements Server {
 	 *
 	 * @param address The addresss.
 	 */
-	public void bind(SocketAddress address) {
-		logger.log(Level.INFO, "Binding to address: {0}...", address);
+	public boolean bind(SocketAddress address, BootstrapProtocol protocol) {
+		if (protocol == null) {
+			throw new IllegalArgumentException("Protocol cannot be null");
+		}
+		if (bootstrapProtocols.containsKey(address)) return false;
+		bootstrapProtocols.put(address, protocol);
 		group.add(bootstrap.bind(address));
+		logger.log(Level.INFO, "Binding to address: {0}...", address);
+		return true;
+	}
+
+	@Override
+	public BootstrapProtocol getBootstrapProtocol(SocketAddress socketAddress) {
+		BootstrapProtocol proto = bootstrapProtocols.get(socketAddress);
+		if (proto == null) {
+			for (Map.Entry<SocketAddress, BootstrapProtocol> entry : bootstrapProtocols.entrySet()) {
+				if (entry.getKey() instanceof InetSocketAddress && socketAddress instanceof InetSocketAddress) {
+					InetSocketAddress key = (InetSocketAddress)entry.getKey(), given = (InetSocketAddress)socketAddress;
+					if (key.getPort() == given.getPort() &&
+							((key.getAddress().getHostAddress().equals("0.0.0.0")
+								&& given.getAddress() instanceof Inet4Address)
+							|| (given.getAddress() instanceof Inet6Address
+								&& key.getAddress().getHostAddress().equals("::")))) { // TODO: Make sure IPV6 works
+						proto = entry.getValue();
+						break;
+					}
+				}
+			}
+		}
+		
+		if (proto == null) {
+			throw new SpoutRuntimeException("No protocol for bound address!");
+		}
+		return proto;
 	}
 
 	@Override
@@ -801,7 +832,8 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public Session newSession(Channel channel) {
-		return new SpoutSession(this, channel);
+		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
+		return new SpoutSession(this, channel, protocol);
 	}
 
 	@Override
@@ -839,7 +871,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		for (Player player : getOnlinePlayers()) {
 			player.kick(message);
 		}
-		
+
 		getPluginManager().clearPlugins();
 
 		// And finally kill the console
@@ -847,6 +879,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		scheduler.stop();
 
 		group.close();
+		bootstrapProtocols.clear();
 		bootstrap.getFactory().releaseExternalResources();
 	}
 
@@ -1018,5 +1051,5 @@ public class SpoutServer extends AsyncManager implements Server {
 		return null;
 	}
 	
-	
+
 }
