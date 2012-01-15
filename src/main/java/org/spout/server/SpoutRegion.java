@@ -423,6 +423,20 @@ public class SpoutRegion extends Region{
 		} finally {
 			isPopulatingChunks = false;
 		}
+
+		// Compress at most 1 chunk per tick per region
+		boolean chunkCompressed = false;
+		
+		for (int dx = 0; dx < Region.REGION_SIZE && !chunkCompressed; dx++) {
+			for (int dy = 0; dy < Region.REGION_SIZE && !chunkCompressed; dy++) {
+				for (int dz = 0; dz < Region.REGION_SIZE && !chunkCompressed; dz++) {
+					Chunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						chunkCompressed |= ((SpoutChunk)chunk).compressIfRequired();
+					}
+				}
+			}
+		}
 	}
 	
 	public void preSnapshotRun() throws InterruptedException {

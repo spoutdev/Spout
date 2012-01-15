@@ -285,6 +285,15 @@ public class SpoutChunk extends Chunk {
 		return observers;
 	}
 	
+	public boolean compressIfRequired() {
+		if (blockStore.needsCompression()) {
+			blockStore.compress();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public boolean isDirty() {
 		return blockStore.isDirty();
 	}
