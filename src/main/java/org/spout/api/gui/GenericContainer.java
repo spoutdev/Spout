@@ -339,8 +339,9 @@ public class GenericContainer extends AbstractBlock implements Container {
 				newheight = availableHeight;
 			} else {
 				for (Widget widget : visibleChildren) {
-					int horiz = widget.getMarginLeft() + widget.getMarginRight();
-					int vert = widget.getMarginTop() + widget.getMarginBottom();
+					Box margin = widget.getMargin();
+					int horiz = margin.getLeft() + margin.getRight();
+					int vert = margin.getTop() + margin.getBottom();
 					if (widget.isFixed()) {
 						horiz += widget.getWidth();
 						vert += widget.getHeight();
@@ -390,8 +391,9 @@ public class GenericContainer extends AbstractBlock implements Container {
 			totalheight = totalwidth = 0;
 			// Resize any non-fixed widgets
 			for (Widget widget : visibleChildren) {
-				int vMargin = widget.getMarginTop() + widget.getMarginBottom();
-				int hMargin = widget.getMarginLeft() + widget.getMarginRight();
+				Box margin = widget.getMargin();
+				int vMargin = margin.getTop() + margin.getBottom();
+				int hMargin = margin.getLeft() + margin.getRight();
 				if (!widget.isFixed()) {
 					if (auto) {
 						widget.setHeight(Math.max(widget.getMinHeight(), Math.min(newheight - (this.type == ContainerType.VERTICAL ? 0 : vMargin), widget.getMaxHeight())));
@@ -427,15 +429,16 @@ public class GenericContainer extends AbstractBlock implements Container {
 			}
 			// Move all children into the correct position
 			for (Widget widget : visibleChildren) {
-				int realtop = top + widget.getMarginTop();
-				int realleft = left + widget.getMarginLeft();
+				Box margin = widget.getMargin();
+				int realtop = top + margin.getTop();
+				int realleft = left + margin.getLeft();
 				if (widget.getY() != realtop || widget.getX() != realleft) {
 					widget.setY(realtop).setX(realleft);
 				}
 				if (type == ContainerType.VERTICAL) {
-					top += widget.getHeight() + widget.getMarginTop() + widget.getMarginBottom();
+					top += widget.getHeight() + margin.getTop() + margin.getBottom();
 				} else if (type == ContainerType.HORIZONTAL) {
-					left += widget.getWidth() + widget.getMarginLeft() + widget.getMarginRight();
+					left += widget.getWidth() + margin.getLeft() + margin.getRight();
 				}
 			}
 			recalculating = false;
@@ -505,8 +508,9 @@ public class GenericContainer extends AbstractBlock implements Container {
 					if (widget instanceof Container) { // Trickle down to children
 						((Container) widget).updateSize();
 					}
-					minhoriz = maxhoriz = widget.getMarginLeft() + widget.getMarginRight();
-					minvert = maxvert = widget.getMarginTop() + widget.getMarginBottom();
+					Box margin = widget.getMargin();
+					minhoriz = maxhoriz = margin.getLeft() + margin.getRight();
+					minvert = maxvert = margin.getTop() + margin.getBottom();
 					if (widget.isFixed()) {
 						minhoriz += widget.getWidth();
 						maxhoriz += widget.getWidth();

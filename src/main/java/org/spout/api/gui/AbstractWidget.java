@@ -34,6 +34,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.util.Color;
 
 public abstract class AbstractWidget /*extends AbstractEventSource*/ implements Widget {
+
 	/** Name of the default plugin when none is set. */
 	public static final String PLUGIN = "Spoutcraft";
 	/** Current version for serialisation and packet handling.*/
@@ -51,15 +52,12 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	private String tooltip = "";
 	private String plugin = PLUGIN;
 	private WidgetAnchor anchor = WidgetAnchor.SCALE;
+	private Overflow overflow = Overflow.VISIBLE;
 	// Layout
 	private Container parent = null;
 	private boolean fixed = false;
-	/** Margin is inside the drawing box, but outside the dimensions. */
-	private int marginTop = 0, marginRight = 0, marginBottom = 0, marginLeft = 0;
-	/** Padding is outside the drawing box, and outside the dimensions. */
-	private int paddingTop = 0, paddingRight = 0, paddingBottom = 0, paddingLeft = 0;
-	/** Border is between margin and padding, and has a colour highlight. */
-	private int borderTop = 0, borderRight = 0, borderBottom = 0, borderLeft = 0, borderTopColor = 0, borderRightColor = 0, borderBottomColor = 0, borderLeftColor = 0;
+	private final Box margin, padding;
+	private final BoxColor border;
 	private int minWidth = 0, maxWidth = 427, minHeight = 0, maxHeight = 240;
 	private boolean autoDirty = true;
 	private Display display = Display.INLINE;
@@ -71,27 +69,30 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	private float animValue = 1f;
 	private short animCount = 0;
 	private short animTicks = 20;
-	private static final byte ANIM_REPEAT = (1<<0);
-	private static final byte ANIM_RESET = (1<<1);
-	private static final byte ANIM_RUNNING = (1<<2);
-	private static final byte ANIM_STOPPING = (1<<3);
+	private static final byte ANIM_REPEAT = (1 << 0);
+	private static final byte ANIM_RESET = (1 << 1);
+	private static final byte ANIM_RUNNING = (1 << 2);
+	private static final byte ANIM_STOPPING = (1 << 3);
 	private byte animFlags = 0;
 	private transient int animTick = 0; // Current tick
 	private transient int animFrame = 0; // Current frame
 
 	public AbstractWidget() {
+		margin = new WidgetBox(this);
+		padding = new WidgetBox(this);
+		border = new WidgetBoxColor(this);
 	}
 
 	public AbstractWidget(int width, int height) {
+		this();
 		this.width = width;
 		this.height = height;
 	}
 
 	public AbstractWidget(int X, int Y, int width, int height) {
+		this(width, height);
 		this.x = X;
 		this.y = Y;
-		this.width = width;
-		this.height = height;
 	}
 
 	@Override
@@ -422,288 +423,244 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 		return position;
 	}
 
-	@Override
-	public Widget setMargin(int marginAll) {
-		return setMargin(marginAll, marginAll, marginAll, marginAll);
-	}
-
-	@Override
-	public Widget setMargin(int marginTopBottom, int marginLeftRight) {
-		return setMargin(marginTopBottom, marginLeftRight, marginTopBottom, marginLeftRight);
-	}
-
-	@Override
-	public Widget setMargin(int marginTop, int marginLeftRight, int marginBottom) {
-		return setMargin(marginTop, marginLeftRight, marginBottom, marginLeftRight);
-	}
-
-	@Override
-	public Widget setMargin(int marginTop, int marginRight, int marginBottom, int marginLeft) {
-		if (getMarginTop() != marginTop || getMarginRight() != marginRight || getMarginBottom() != marginBottom || getMarginLeft() != marginLeft) {
-			this.marginTop = marginTop;
-			this.marginRight = marginRight;
-			this.marginBottom = marginBottom;
-			this.marginLeft = marginLeft;
-			updateSize();
+	public Widget setOverflow(Overflow overflow) {
+		if (getOverflow() != overflow) {
+			this.overflow = overflow;
 			autoDirty();
 		}
 		return this;
 	}
 
+	public Overflow getOverflow() {
+		return overflow;
+	}
+
 	@Override
-	public Widget setMarginTop(int marginTop) {
-		if (getMarginTop() != marginTop) {
-			this.marginTop = marginTop;
-			updateSize();
-			autoDirty();
+	public Box getMargin() {
+		return margin;
+	}
+
+	@Override
+	public Box getPadding() {
+		return padding;
+	}
+
+	@Override
+	public BoxColor getBorder() {
+		return border;
+	}
+
+	private final class WidgetBox implements Widget.Box {
+
+		/** The widget we're related to. */
+		private Widget parent;
+		/** Margin is inside the drawing box, but outside the dimensions. */
+		private int top = 0, right = 0, bottom = 0, left = 0;
+
+		WidgetBox(Widget parent) {
+			this.parent = parent;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setMarginRight(int marginRight) {
-		if (getMarginRight() != marginRight) {
-			this.marginRight = marginRight;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget set(int all) {
+			return set(all, all, all, all);
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setMarginBottom(int marginBottom) {
-		if (getMarginBottom() != marginBottom) {
-			this.marginBottom = marginBottom;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget set(int topBottom, int leftRight) {
+			return set(topBottom, leftRight, topBottom, leftRight);
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setMarginLeft(int marginLeft) {
-		if (getMarginLeft() != marginLeft) {
-			this.marginLeft = marginLeft;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget set(int top, int leftRight, int bottom) {
+			return set(top, leftRight, bottom, leftRight);
 		}
-		return this;
-	}
 
-	@Override
-	public int getMarginTop() {
-		return marginTop;
-	}
-
-	@Override
-	public int getMarginRight() {
-		return marginRight;
-	}
-
-	@Override
-	public int getMarginBottom() {
-		return marginBottom;
-	}
-
-	@Override
-	public int getMarginLeft() {
-		return marginLeft;
-	}
-
-	@Override
-	public Widget setPadding(int paddingAll) {
-		return setPadding(paddingAll, paddingAll, paddingAll, paddingAll);
-	}
-
-	@Override
-	public Widget setPadding(int paddingTopBottom, int paddingLeftRight) {
-		return setPadding(paddingTopBottom, paddingLeftRight, paddingTopBottom, paddingLeftRight);
-	}
-
-	@Override
-	public Widget setPadding(int paddingTop, int paddingLeftRight, int paddingBottom) {
-		return setPadding(paddingTop, paddingLeftRight, paddingBottom, paddingLeftRight);
-	}
-
-	@Override
-	public Widget setPadding(int paddingTop, int paddingRight, int paddingBottom, int paddingLeft) {
-		if (getPaddingTop() != paddingTop || getPaddingRight() != paddingRight || getPaddingBottom() != paddingBottom || getPaddingLeft() != paddingLeft) {
-			this.paddingTop = paddingTop;
-			this.paddingRight = paddingRight;
-			this.paddingBottom = paddingBottom;
-			this.paddingLeft = paddingLeft;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget set(int top, int right, int bottom, int left) {
+			setTop(top);
+			setRight(right);
+			setBottom(bottom);
+			setLeft(left);
+			return parent;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setPaddingTop(int paddingTop) {
-		if (getPaddingTop() != paddingTop) {
-			this.paddingTop = paddingTop;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget setTop(int top) {
+			if (getTop() != top) {
+				this.top = top;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setPaddingRight(int paddingRight) {
-		if (getPaddingRight() != paddingRight) {
-			this.paddingRight = paddingRight;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget setRight(int right) {
+			if (getRight() != right) {
+				this.right = right;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setPaddingBottom(int paddingBottom) {
-		if (getPaddingBottom() != paddingBottom) {
-			this.paddingBottom = paddingBottom;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget setBottom(int bottom) {
+			if (getBottom() != bottom) {
+				this.bottom = bottom;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setPaddingLeft(int paddingLeft) {
-		if (getPaddingLeft() != paddingLeft) {
-			this.paddingLeft = paddingLeft;
-			updateSize();
-			autoDirty();
+		@Override
+		public Widget setLeft(int left) {
+			if (getLeft() != left) {
+				this.left = left;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
 		}
-		return this;
-	}
 
-	@Override
-	public int getPaddingTop() {
-		return paddingTop;
-	}
-
-	@Override
-	public int getPaddingRight() {
-		return paddingRight;
-	}
-
-	@Override
-	public int getPaddingBottom() {
-		return paddingBottom;
-	}
-
-	@Override
-	public int getPaddingLeft() {
-		return paddingLeft;
-	}
-
-	@Override
-	public Widget setBorder(int borderAll, Color color) {
-		return setBorder(borderAll, borderAll, borderAll, borderAll, color);
-	}
-
-	@Override
-	public Widget setBorder(int borderTopBottom, int borderLeftRight, Color color) {
-		return setBorder(borderTopBottom, borderLeftRight, borderTopBottom, borderLeftRight, color);
-	}
-
-	@Override
-	public Widget setBorder(int borderTop, int borderLeftRight, int borderBottom, Color color) {
-		return setBorder(borderTop, borderLeftRight, borderBottom, borderLeftRight, color);
-	}
-
-	@Override
-	public Widget setBorder(int borderTop, int borderRight, int borderBottom, int borderLeft, Color color) {
-		setBorderTop(borderTop, color);
-		setBorderRight(borderRight, color);
-		setBorderBottom(borderBottom, color);
-		setBorderLeft(borderLeft, color);
-		return this;
-	}
-
-	@Override
-	public Widget setBorderTop(int borderTop, Color color) {
-		if (getBorderTop() != borderTop || !getBorderTopColor().equals(color)) {
-			this.borderTop = borderTop;
-			this.borderTopColor = color.toInt();
-			updateSize();
-			autoDirty();
+		@Override
+		public int getTop() {
+			return top;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setBorderRight(int borderRight, Color color) {
-		if (getBorderRight() != borderRight || !getBorderRightColor().equals(color)) {
-			this.borderRight = borderRight;
-			this.borderRightColor = color.toInt();
-			updateSize();
-			autoDirty();
+		@Override
+		public int getRight() {
+			return right;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setBorderBottom(int borderBottom, Color color) {
-		if (getBorderBottom() != borderBottom || !getBorderBottomColor().equals(color)) {
-			this.borderBottom = borderBottom;
-			this.borderBottomColor = color.toInt();
-			updateSize();
-			autoDirty();
+		@Override
+		public int getBottom() {
+			return bottom;
 		}
-		return this;
-	}
 
-	@Override
-	public Widget setBorderLeft(int borderLeft, Color color) {
-		if (getBorderLeft() != borderLeft || !getBorderLeftColor().equals(color)) {
-			this.borderLeft = borderLeft;
-			this.borderLeftColor = color.toInt();
-			updateSize();
-			autoDirty();
+		@Override
+		public int getLeft() {
+			return left;
 		}
-		return this;
 	}
 
-	@Override
-	public int getBorderTop() {
-		return borderTop;
-	}
+	private final class WidgetBoxColor implements Widget.BoxColor {
 
-	@Override
-	public Color getBorderTopColor() {
-		return new Color(borderTopColor);
-	}
+		/** The widget we're related to. */
+		private Widget parent;
+		/** Margin is inside the drawing box, but outside the dimensions. */
+		private int top = 0, right = 0, bottom = 0, left = 0;
+		private int topColor = 0, rightColor = 0, bottomColor = 0, leftColor = 0;
 
-	@Override
-	public int getBorderRight() {
-		return borderRight;
-	}
+		WidgetBoxColor(Widget parent) {
+			this.parent = parent;
+		}
 
-	@Override
-	public Color getBorderRightColor() {
-		return new Color(borderRightColor);
-	}
+		@Override
+		public Widget set(int all, Color color) {
+			return set(all, all, all, all, color);
+		}
 
-	@Override
-	public int getBorderBottom() {
-		return borderBottom;
-	}
+		@Override
+		public Widget set(int topBottom, int leftRight, Color color) {
+			return set(topBottom, leftRight, topBottom, leftRight, color);
+		}
 
-	@Override
-	public Color getBorderBottomColor() {
-		return new Color(borderBottomColor);
-	}
+		@Override
+		public Widget set(int top, int leftRight, int bottom, Color color) {
+			return set(top, leftRight, bottom, leftRight, color);
+		}
 
-	@Override
-	public int getBorderLeft() {
-		return borderLeft;
-	}
+		@Override
+		public Widget set(int top, int right, int bottom, int left, Color color) {
+			setTop(top, color);
+			setRight(top, color);
+			setBottom(top, color);
+			setLeft(top, color);
+			return parent;
+		}
 
-	@Override
-	public Color getBorderLeftColor() {
-		return new Color(borderLeftColor);
+		@Override
+		public Widget setTop(int top, Color color) {
+			if (getTop() != top || !getTopColor().equals(color)) {
+				this.top = top;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
+		}
+
+		@Override
+		public Widget setRight(int right, Color color) {
+			if (getRight() != right || !getRightColor().equals(color)) {
+				this.right = right;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
+		}
+
+		@Override
+		public Widget setBottom(int bottom, Color color) {
+			if (getBottom() != bottom || !getBottomColor().equals(color)) {
+				this.bottom = bottom;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
+		}
+
+		@Override
+		public Widget setLeft(int left, Color color) {
+			if (getLeft() != left || !getLeftColor().equals(color)) {
+				this.left = left;
+				updateSize();
+				autoDirty();
+			}
+			return parent;
+		}
+
+		@Override
+		public int getTop() {
+			return top;
+		}
+
+		@Override
+		public Color getTopColor() {
+			return new Color(topColor);
+		}
+
+		@Override
+		public int getRight() {
+			return right;
+		}
+
+		@Override
+		public Color getRightColor() {
+			return new Color(rightColor);
+		}
+
+		@Override
+		public int getBottom() {
+			return bottom;
+		}
+
+		@Override
+		public Color getBottomColor() {
+			return new Color(bottomColor);
+		}
+
+		@Override
+		public int getLeft() {
+			return left;
+		}
+
+		@Override
+		public Color getLeftColor() {
+			return new Color(leftColor);
+		}
 	}
 
 	@Override
@@ -774,7 +731,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	public Widget copy() {
 		try {
 			Widget copy = getType().getWidgetClass().newInstance();
-			copy	.setX(getX()) // Easier reading
+			copy.setX(getX()) // Easier reading
 					.setY(getY()) //
 					.setWidth(getWidth()) //
 					.setHeight(getHeight()) //
@@ -782,7 +739,6 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 					.setPriority(getPriority()) //
 					.setTooltip(getTooltip()) //
 					.setAnchor(getAnchor()) //
-					.setMargin(getMarginTop(), getMarginRight(), getMarginBottom(), getMarginLeft()) //
 					.setMinWidth(getMinWidth()) //
 					.setMaxWidth(getMaxWidth()) //
 					.setMinHeight(getMinHeight()) //
@@ -790,6 +746,8 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 					.setFixed(isFixed()) //
 					.setAutoDirty(isAutoDirty()) //
 					.animate(animType, animValue, animCount, animTicks, (animFlags & ANIM_REPEAT) != 0, (animFlags & ANIM_RESET) != 0);
+			Box m = getMargin();
+			copy.getMargin().set(m.getTop(), m.getRight(), m.getBottom(), m.getLeft());
 			return copy;
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to create a copy of " + getClass() + ". Does it have a valid widget type?");
@@ -799,7 +757,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	@Override
 	public Widget updateSize() {
 		if (hasParent()) {
-			getParent().updateSize();
+			getParent().deferSize();
 		}
 		return this;
 	}

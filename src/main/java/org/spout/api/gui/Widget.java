@@ -395,350 +395,260 @@ public interface Widget {
 	public Position getPosition();
 
 	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginAll
-	 * @return
+	 * Get the margin used by this widget. Margin is the outermost part of the
+	 * layout box, and will collapse with other margins.
+	 * @return margin
 	 */
-	public Widget setMargin(int marginAll);
+	public Box getMargin();
 
 	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginTopBottom
-	 * @param marginLeftRight
-	 * @return
+	 * Get the padding used by this widget. Padding is the innermost part of the
+	 * layout box, inside the border and margin.
+	 * @return padding
 	 */
-	public Widget setMargin(int marginTopBottom, int marginLeftRight);
+	public Box getPadding();
 
 	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginTop
-	 * @param marginLeftRight
-	 * @param marginBottom
-	 * @return
+	 * Get the border used for this widget. Border is between the Padding and
+	 * the Margin, and has a colour associated with it.
+	 * @return 
 	 */
-	public Widget setMargin(int marginTop, int marginLeftRight, int marginBottom);
+	public BoxColor getBorder();
 
 	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginTop
-	 * @param marginRight
-	 * @param marginBottom
-	 * @param marginLeft
-	 * @return
+	 * A box outside the widget dimensions, used by Margins and Padding.
 	 */
-	public Widget setMargin(int marginTop, int marginRight, int marginBottom, int marginLeft);
+	public interface Box {
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param all edges
+		 * @return widget
+		 */
+		public Widget set(int all);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param topBottom edges
+		 * @param leftRight edges
+		 * @return widget
+		 */
+		public Widget set(int topBottom, int leftRight);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param top edge
+		 * @param leftRight edges
+		 * @param bottom edge
+		 * @return widget
+		 */
+		public Widget set(int top, int leftRight, int bottom);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param top edge
+		 * @param right edge
+		 * @param bottom edge
+		 * @param left edge
+		 * @return widget
+		 */
+		public Widget set(int top, int right, int bottom, int left);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param top edge
+		 * @return widget
+		 */
+		public Widget setTop(int top);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param right edge
+		 * @return widget
+		 */
+		public Widget setRight(int right);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param bottom edge
+		 * @return widget
+		 */
+		public Widget setBottom(int bottom);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param left edge
+		 * @return widget
+		 */
+		public Widget setLeft(int left);
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getTop();
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getRight();
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getBottom();
+
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getLeft();
+	}
 
 	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginLeft
-	 * @return
+	 * A colored box outside the widget dimensions, used for Border.
 	 */
-	public Widget setMarginTop(int marginTop);
+	public interface BoxColor {
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginLeft
-	 * @return
-	 */
-	public Widget setMarginRight(int marginRight);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param all edges
+		 * @return widget
+		 */
+		public Widget set(int all, Color color);
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginLeft
-	 * @return
-	 */
-	public Widget setMarginBottom(int marginBottom);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param topBottom edges
+		 * @param leftRight edges
+		 * @return widget
+		 */
+		public Widget set(int topBottom, int leftRight, Color color);
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param marginLeft
-	 * @return
-	 */
-	public Widget setMarginLeft(int marginLeft);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param top edge
+		 * @param leftRight edges
+		 * @param bottom edge
+		 * @return widget
+		 */
+		public Widget set(int top, int leftRight, int bottom, Color color);
 
-	/**
-	 * Container Layout - Get the margin used for container layout
-	 *
-	 * @return
-	 */
-	public int getMarginTop();
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param top edge
+		 * @param right edge
+		 * @param bottom edge
+		 * @param left edge
+		 * @return widget
+		 */
+		public Widget set(int top, int right, int bottom, int left, Color color);
 
-	/**
-	 * Container Layout - Get the margin used for container layout
-	 *
-	 * @return
-	 */
-	public int getMarginRight();
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param top edge
+		 * @return widget
+		 */
+		public Widget setTop(int top, Color color);
 
-	/**
-	 * Container Layout - Get the margin used for container layout
-	 *
-	 * @return
-	 */
-	public int getMarginBottom();
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param right edge
+		 * @return widget
+		 */
+		public Widget setRight(int right, Color color);
 
-	/**
-	 * Container Layout - Get the margin used for container layout
-	 *
-	 * @return
-	 */
-	public int getMarginLeft();
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param bottom edge
+		 * @return widget
+		 */
+		public Widget setBottom(int bottom, Color color);
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingAll
-	 * @return
-	 */
-	public Widget setPadding(int paddingAll);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @param left edge
+		 * @return widget
+		 */
+		public Widget setLeft(int left, Color color);
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingTopBottom
-	 * @param paddingLeftRight
-	 * @return
-	 */
-	public Widget setPadding(int paddingTopBottom, int paddingLeftRight);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getTop();
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingTop
-	 * @param paddingLeftRight
-	 * @param paddingBottom
-	 * @return
-	 */
-	public Widget setPadding(int paddingTop, int paddingLeftRight, int paddingBottom);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge color
+		 */
+		public Color getTopColor();
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingTop
-	 * @param paddingRight
-	 * @param paddingBottom
-	 * @param paddingLeft
-	 * @return
-	 */
-	public Widget setPadding(int paddingTop, int paddingRight, int paddingBottom, int paddingLeft);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getRight();
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingLeft
-	 * @return
-	 */
-	public Widget setPaddingTop(int paddingTop);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge color
+		 */
+		public Color getRightColor();
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingLeft
-	 * @return
-	 */
-	public Widget setPaddingRight(int paddingRight);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getBottom();
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingLeft
-	 * @return
-	 */
-	public Widget setPaddingBottom(int paddingBottom);
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge color
+		 */
+		public Color getBottomColor();
 
-	/**
-	 * Container Layout - Padding to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param paddingLeft
-	 * @return
-	 */
-	public Widget setPaddingLeft(int paddingLeft);
-
-	/**
-	 * Container Layout - Get the padding used for container layout
-	 *
-	 * @return
-	 */
-	public int getPaddingTop();
-
-	/**
-	 * Container Layout - Get the padding used for container layout
-	 *
-	 * @return
-	 */
-	public int getPaddingRight();
-
-	/**
-	 * Container Layout - Get the padding used for container layout
-	 *
-	 * @return
-	 */
-	public int getPaddingBottom();
-
-	/**
-	 * Container Layout - Get the padding used for container layout
-	 *
-	 * @return
-	 */
-	public int getPaddingLeft();
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderAll
-	 * @return
-	 */
-	public Widget setBorder(int borderAll, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderTopBottom
-	 * @param borderLeftRight
-	 * @return
-	 */
-	public Widget setBorder(int borderTopBottom, int borderLeftRight, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderTop
-	 * @param borderLeftRight
-	 * @param borderBottom
-	 * @return
-	 */
-	public Widget setBorder(int borderTop, int borderLeftRight, int borderBottom, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderTop
-	 * @param borderRight
-	 * @param borderBottom
-	 * @param borderLeft
-	 * @return
-	 */
-	public Widget setBorder(int borderTop, int borderRight, int borderBottom, int borderLeft, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderLeft
-	 * @return
-	 */
-	public Widget setBorderTop(int borderTop, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderLeft
-	 * @return
-	 */
-	public Widget setBorderRight(int borderRight, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderLeft
-	 * @return
-	 */
-	public Widget setBorderBottom(int borderBottom, Color color);
-
-	/**
-	 * Container Layout - Border to use for automatic container layout - not
-	 * included in dimensions
-	 *
-	 * @param borderLeft
-	 * @return
-	 */
-	public Widget setBorderLeft(int borderLeft, Color color);
-
-	/**
-	 * Container Layout - Get the border used for container layout
-	 *
-	 * @return
-	 */
-	public int getBorderTop();
-
-	/**
-	 * Container Layout - Get the border color used for container layout
-	 *
-	 * @return
-	 */
-	public Color getBorderTopColor();
-
-	/**
-	 * Container Layout - Get the border used for container layout
-	 *
-	 * @return
-	 */
-	public int getBorderRight();
-
-	/**
-	 * Container Layout - Get the border color used for container layout
-	 *
-	 * @return
-	 */
-	public Color getBorderRightColor();
-
-	/**
-	 * Container Layout - Get the border used for container layout
-	 *
-	 * @return
-	 */
-	public int getBorderBottom();
-
-	/**
-	 * Container Layout - Get the border color used for container layout
-	 *
-	 * @return
-	 */
-	public Color getBorderBottomColor();
-
-	/**
-	 * Container Layout - Get the border used for container layout
-	 *
-	 * @return
-	 */
-	public int getBorderLeft();
-
-	/**
-	 * Container Layout - Get the border color used for container layout
-	 *
-	 * @return
-	 */
-	public Color getBorderLeftColor();
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge
+		 */
+		public int getLeft();
+		/**
+		 * Spacing to use for automatic container layout, not included in
+		 * widget dimensions.
+		 * @return edge color
+		 */
+		public Color getLeftColor();
+	}
 
 	/**
 	 * Container Layout - Set the minimum width for this widget
