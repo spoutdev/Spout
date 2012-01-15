@@ -28,11 +28,12 @@ package org.spout.api.player;
 import java.net.InetAddress;
 
 import org.spout.api.command.CommandSource;
+import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventSource;
-import org.spout.api.protocol.Session;
-import org.spout.api.data.DataSubject;
 import org.spout.api.permissions.PermissionsSubject;
+import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.Session;
 
 public interface Player extends CommandSource, PermissionsSubject, DataSubject, EventSource {
 	
@@ -73,6 +74,15 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @return the entity, or null if the player is offline
 	 */
 	public Entity getEntity();
+	
+	/**
+	 * Sets the NetworkSynchronizer associated with this player.<br>
+	 * <br>
+	 * This can only be called once per player login.
+	 * 
+	 * @param synchronizer the synchronizer
+	 */
+	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
 	
 	/**
 	 * Gets the session associated with the Player.
