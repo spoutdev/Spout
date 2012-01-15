@@ -82,7 +82,7 @@ public class GenericPopup extends AbstractScreen implements PopupScreen {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.PopupScreen;
+		return WidgetType.POPUP;
 	}
 
 	@Override

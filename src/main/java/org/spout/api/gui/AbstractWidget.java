@@ -31,6 +31,7 @@ import java.io.IOException;
 import javax.xml.bind.TypeConstraintException;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.util.Color;
 
 public abstract class AbstractWidget /*extends AbstractEventSource*/ implements Widget {
 	/** Name of the default plugin when none is set. */
@@ -40,7 +41,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	/** Used for generating unique ids, numbers below 16 are reserved for static widgets. */
 	private static int lastId = 0xf;
 	/** Position. */
-	private int X = 0, Y = 0;
+	private int x = 0, y = 0;
 	/** Dimensions. */
 	private int width = 50, height = 50;
 	private boolean visible = true;
@@ -53,7 +54,12 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	// Layout
 	private Container parent = null;
 	private boolean fixed = false;
+	/** Margin is inside the drawing box, but outside the dimensions. */
 	private int marginTop = 0, marginRight = 0, marginBottom = 0, marginLeft = 0;
+	/** Padding is outside the drawing box, and outside the dimensions. */
+	private int paddingTop = 0, paddingRight = 0, paddingBottom = 0, paddingLeft = 0;
+	/** Border is between margin and padding, and has a colour highlight. */
+	private int borderTop = 0, borderRight = 0, borderBottom = 0, borderLeft = 0, borderTopColor = 0, borderRightColor = 0, borderBottomColor = 0, borderLeftColor = 0;
 	private int minWidth = 0, maxWidth = 427, minHeight = 0, maxHeight = 240;
 	private boolean autoDirty = true;
 	private Display display = Display.INLINE;
@@ -82,8 +88,8 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	}
 
 	public AbstractWidget(int X, int Y, int width, int height) {
-		this.X = X;
-		this.Y = Y;
+		this.x = X;
+		this.y = Y;
 		this.width = width;
 		this.height = height;
 	}
@@ -168,7 +174,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 		output.writeByte(getAnchor().getId()); // 16 + 1 = 17
 		output.writeBoolean(isVisible()); // 17 + 1 = 18
 		output.writeByte(priority); // 18 + 1 = 19
-		output.writeInt(getId()); // 22 + 4 = 26
+		output.writeInt(getUID()); // 22 + 4 = 26
 		PacketUtil.writeString(output, getTooltip()); // String
 		PacketUtil.writeString(output, plugin != null ? plugin : PLUGIN); // String
 		output.writeByte(animType.getId()); // 38 + 1 = 39
@@ -193,7 +199,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	 * static widget ids.
 	 * @param id to use
 	 */
-	protected void setId(int id) {
+	protected void setUID(int id) {
 		if (id >= 0xf) {
 			throw new UnsupportedOperationException("Static widget ids need to be under 16.");
 		}
@@ -201,7 +207,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	}
 
 	@Override
-	final public int getId() {
+	final public int getUID() {
 		if (id == -1) {
 			id = lastId++;
 		}
@@ -258,19 +264,19 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 
 	@Override
 	public int getX() {
-		return X;
+		return x;
 	}
 
 	@Override
 	public int getY() {
-		return Y;
+		return y;
 	}
 
 	@Override
 	public Widget setX(int pos) {
 		hasPosition = true;
 		if (getX() != pos) {
-			X = pos;
+			x = pos;
 			autoDirty();
 		}
 		return this;
@@ -280,7 +286,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	public Widget setY(int pos) {
 		hasPosition = true;
 		if (getY() != pos) {
-			Y = pos;
+			y = pos;
 			autoDirty();
 		}
 		return this;
@@ -318,7 +324,7 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 
 	@Override
 	public int hashCode() {
-		return getId();
+		return getUID();
 	}
 
 	@Override
@@ -502,6 +508,202 @@ public abstract class AbstractWidget /*extends AbstractEventSource*/ implements 
 	@Override
 	public int getMarginLeft() {
 		return marginLeft;
+	}
+
+	@Override
+	public Widget setPadding(int paddingAll) {
+		return setPadding(paddingAll, paddingAll, paddingAll, paddingAll);
+	}
+
+	@Override
+	public Widget setPadding(int paddingTopBottom, int paddingLeftRight) {
+		return setPadding(paddingTopBottom, paddingLeftRight, paddingTopBottom, paddingLeftRight);
+	}
+
+	@Override
+	public Widget setPadding(int paddingTop, int paddingLeftRight, int paddingBottom) {
+		return setPadding(paddingTop, paddingLeftRight, paddingBottom, paddingLeftRight);
+	}
+
+	@Override
+	public Widget setPadding(int paddingTop, int paddingRight, int paddingBottom, int paddingLeft) {
+		if (getPaddingTop() != paddingTop || getPaddingRight() != paddingRight || getPaddingBottom() != paddingBottom || getPaddingLeft() != paddingLeft) {
+			this.paddingTop = paddingTop;
+			this.paddingRight = paddingRight;
+			this.paddingBottom = paddingBottom;
+			this.paddingLeft = paddingLeft;
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setPaddingTop(int paddingTop) {
+		if (getPaddingTop() != paddingTop) {
+			this.paddingTop = paddingTop;
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setPaddingRight(int paddingRight) {
+		if (getPaddingRight() != paddingRight) {
+			this.paddingRight = paddingRight;
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setPaddingBottom(int paddingBottom) {
+		if (getPaddingBottom() != paddingBottom) {
+			this.paddingBottom = paddingBottom;
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setPaddingLeft(int paddingLeft) {
+		if (getPaddingLeft() != paddingLeft) {
+			this.paddingLeft = paddingLeft;
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public int getPaddingTop() {
+		return paddingTop;
+	}
+
+	@Override
+	public int getPaddingRight() {
+		return paddingRight;
+	}
+
+	@Override
+	public int getPaddingBottom() {
+		return paddingBottom;
+	}
+
+	@Override
+	public int getPaddingLeft() {
+		return paddingLeft;
+	}
+
+	@Override
+	public Widget setBorder(int borderAll, Color color) {
+		return setBorder(borderAll, borderAll, borderAll, borderAll, color);
+	}
+
+	@Override
+	public Widget setBorder(int borderTopBottom, int borderLeftRight, Color color) {
+		return setBorder(borderTopBottom, borderLeftRight, borderTopBottom, borderLeftRight, color);
+	}
+
+	@Override
+	public Widget setBorder(int borderTop, int borderLeftRight, int borderBottom, Color color) {
+		return setBorder(borderTop, borderLeftRight, borderBottom, borderLeftRight, color);
+	}
+
+	@Override
+	public Widget setBorder(int borderTop, int borderRight, int borderBottom, int borderLeft, Color color) {
+		setBorderTop(borderTop, color);
+		setBorderRight(borderRight, color);
+		setBorderBottom(borderBottom, color);
+		setBorderLeft(borderLeft, color);
+		return this;
+	}
+
+	@Override
+	public Widget setBorderTop(int borderTop, Color color) {
+		if (getBorderTop() != borderTop || !getBorderTopColor().equals(color)) {
+			this.borderTop = borderTop;
+			this.borderTopColor = color.toInt();
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setBorderRight(int borderRight, Color color) {
+		if (getBorderRight() != borderRight || !getBorderRightColor().equals(color)) {
+			this.borderRight = borderRight;
+			this.borderRightColor = color.toInt();
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setBorderBottom(int borderBottom, Color color) {
+		if (getBorderBottom() != borderBottom || !getBorderBottomColor().equals(color)) {
+			this.borderBottom = borderBottom;
+			this.borderBottomColor = color.toInt();
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public Widget setBorderLeft(int borderLeft, Color color) {
+		if (getBorderLeft() != borderLeft || !getBorderLeftColor().equals(color)) {
+			this.borderLeft = borderLeft;
+			this.borderLeftColor = color.toInt();
+			updateSize();
+			autoDirty();
+		}
+		return this;
+	}
+
+	@Override
+	public int getBorderTop() {
+		return borderTop;
+	}
+
+	@Override
+	public Color getBorderTopColor() {
+		return new Color(borderTopColor);
+	}
+
+	@Override
+	public int getBorderRight() {
+		return borderRight;
+	}
+
+	@Override
+	public Color getBorderRightColor() {
+		return new Color(borderRightColor);
+	}
+
+	@Override
+	public int getBorderBottom() {
+		return borderBottom;
+	}
+
+	@Override
+	public Color getBorderBottomColor() {
+		return new Color(borderBottomColor);
+	}
+
+	@Override
+	public int getBorderLeft() {
+		return borderLeft;
+	}
+
+	@Override
+	public Color getBorderLeftColor() {
+		return new Color(borderLeftColor);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class GenericListWidget extends GenericScrollable implements ListWidget {
 	protected int cachedTotalHeight = -1;
 
 	public WidgetType getType() {
-		return WidgetType.ListWidget;
+		return WidgetType.LISTWIDGET;
 	}
 
 	public ListWidgetItem[] getItems() {

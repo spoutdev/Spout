@@ -49,7 +49,7 @@ public class GenericPolygon extends AbstractInline implements Polygon {
 	}
 
 	public WidgetType getType() {
-		return WidgetType.Polygon;
+		return WidgetType.POLYGON;
 	}
 
 	public void render() {

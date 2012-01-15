@@ -87,7 +87,7 @@ public class GenericRadioButton extends GenericButton implements RadioButton {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.RadioButton;
+		return WidgetType.RADIOBUTTON;
 	}
 
 	@Override

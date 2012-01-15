@@ -127,7 +127,7 @@ public class GenericGradient extends AbstractInline implements Gradient {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.Gradient;
+		return WidgetType.GRADIENT;
 	}
 
 	@Override

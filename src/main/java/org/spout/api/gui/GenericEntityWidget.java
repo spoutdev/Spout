@@ -63,7 +63,7 @@ public class GenericEntityWidget extends AbstractInline implements EntityWidget 
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.EntityWidget;
+		return WidgetType.ENTITYWIDGET;
 	}
 
 	@Override

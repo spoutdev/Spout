@@ -169,7 +169,7 @@ public class GenericContainer extends AbstractBlock implements Container {
 
 	@Override
 	public boolean containsChild(Widget widget) {
-		return containsChild(widget.getId());
+		return containsChild(widget.getUID());
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class GenericContainer extends AbstractBlock implements Container {
 	public Widget getChild(int id, boolean deep) {
 		// Check direct children first for speed
 		for (Widget child : children) {
-			if (child.getId() == id) {
+			if (child.getUID() == id) {
 				return child;
 			}
 		}
@@ -227,7 +227,7 @@ public class GenericContainer extends AbstractBlock implements Container {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.Container;
+		return WidgetType.CONTAINER;
 	}
 
 	@Override

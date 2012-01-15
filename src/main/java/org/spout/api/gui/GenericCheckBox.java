@@ -83,7 +83,7 @@ public class GenericCheckBox extends GenericButton implements CheckBox {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.CheckBox;
+		return WidgetType.CHECKBOX;
 	}
 
 	@Override

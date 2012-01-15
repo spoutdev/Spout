@@ -155,7 +155,7 @@ public class GenericItemWidget extends AbstractInline implements ItemWidget {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.ItemWidget;
+		return WidgetType.ITEMWIDGET;
 	}
 
 	@Override

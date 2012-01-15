@@ -72,7 +72,7 @@ public class GenericTexture extends AbstractInline implements Texture {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.Texture;
+		return WidgetType.TEXTURE;
 	}
 
 	@Override

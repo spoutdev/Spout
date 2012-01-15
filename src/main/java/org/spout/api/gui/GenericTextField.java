@@ -212,7 +212,7 @@ public class GenericTextField extends AbstractControl implements TextField {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.TextField;
+		return WidgetType.TEXTFIELD;
 	}
 
 	@Override

@@ -90,7 +90,7 @@ public class GenericSlider extends AbstractControl implements Slider {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.Slider;
+		return WidgetType.SLIDER;
 	}
 
 	@Override

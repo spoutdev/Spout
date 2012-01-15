@@ -62,7 +62,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 	}
 
 	public WidgetType getType() {
-		return WidgetType.ScrollArea;
+		return WidgetType.SCROLLAREA;
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 	}
 
 	public boolean containsWidget(Widget widget) {
-		return containsWidget(widget.getId());
+		return containsWidget(widget.getUID());
 	}
 
 	public boolean containsWidget(UUID id) {
@@ -128,7 +128,7 @@ public class GenericScrollArea extends GenericScrollable implements ScrollArea {
 
 	public Widget getWidget(UUID id) {
 		for (Widget w : widgets.keySet()) {
-			if (w.getId().equals(id)) {
+			if (w.getUID().equals(id)) {
 				return w;
 			}
 		}

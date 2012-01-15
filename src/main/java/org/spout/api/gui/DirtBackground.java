@@ -28,7 +28,7 @@ package org.spout.api.gui;
 public class DirtBackground extends AbstractWidget{
 
 	public WidgetType getType() {
-		return WidgetType.DirtBackground;
+		return WidgetType.DIRTBACKGROUND;
 	}
 
 	public void render() {

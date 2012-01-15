@@ -31,73 +31,76 @@ import java.io.IOException;
 import org.spout.api.ClientOnly;
 
 /**
- * The Spout implementation of the default Bubble Bar.
+ * The Spout implementation of the default Health Bar.
  */
-public class BubbleBar extends AbstractWidget implements Widget {
+public class VanillaHealthBar extends AbstractWidget {
 
 	private int icons = 10;
 	private int iconOffset = 8;
+	private float dangerPercent = 20f;
 
 	/**
 	 * Package-private constructor.
 	 */
-	BubbleBar() {
+	VanillaHealthBar() {
 		setDirty(false);
-		setId(1);
-		setX(427 / 2 + 82); // 295
-		setY(191);
+		setUID(4);
+		setX(427 / 2 - 91); //122
+		setY(201);
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
 		setAnchor(WidgetAnchor.BOTTOM_CENTER);
 	}
 
 	@Override
 	public int getNumBytes() {
-		return super.getNumBytes() + 8;
+		return super.getNumBytes() + 12;
 	}
 
 	@Override
 	public void readData(DataInputStream input) throws IOException {
 		super.readData(input);
-		setMaxNumBubbles(input.readInt());
+		setMaxNumHearts(input.readInt());
 		setIconOffset(input.readInt());
+		setDangerPercent(input.readFloat());
 	}
 
 	@Override
 	public void writeData(DataOutputStream output) throws IOException {
 		super.writeData(output);
-		output.writeInt(getMaxNumBubbles());
+		output.writeInt(getMaxNumHearts());
 		output.writeInt(getIconOffset());
+		output.writeFloat(getDangerPercent());
 	}
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.BubbleBar;
+		return WidgetType.HEALTHBAR;
 	}
 
 	/**
-	 * Gets the maximum number of bubbles displayed on the HUD.
+	 * Gets the maximum number of hearts displayed on the HUD.
 	 * 
-	 * Air is scaled to fit the number of bubbles appropriately.
-	 * @return bubbles displayed
+	 * Health is scaled to fit the number of hearts appropriately.
+	 * @return hearts displayed
 	 */
-	public int getMaxNumBubbles() {
+	public int getMaxNumHearts() {
 		return icons;
 	}
 
 	/**
-	 * Sets the maximum number of bubbles displayed on the HUD.
+	 * Sets the maximum number of hearts displayed on the HUD.
 	 * 
-	 * Air is scaled to fit the number of bubbles appropriately.
-	 * @param bubbles to display
+	 * Health is scaled to fit the number of hearts appropriately.
+	 * @param hearts to display
 	 * @return this
 	 */
-	public BubbleBar setMaxNumBubbles(int bubbles) {
-		this.icons = bubbles;
+	public VanillaHealthBar setMaxNumHearts(int hearts) {
+		this.icons = hearts;
 		return this;
 	}
 
 	/**
-	 * Gets the number of pixels each bubbles is offset when drawing the next bubble.
+	 * Gets the number of pixels each heart is offset when drawing the next heart.
 	 * @return pixel offset
 	 */
 	public int getIconOffset() {
@@ -105,12 +108,34 @@ public class BubbleBar extends AbstractWidget implements Widget {
 	}
 
 	/**
-	 * Sets the number of pixels each bubbles is offset when drawing the next bubble.
+	 * Sets the number of pixels each heart is offset when drawing the next heart.
 	 * @param offset when drawing hearts
 	 * @return this
 	 */
-	public BubbleBar setIconOffset(int offset) {
+	public VanillaHealthBar setIconOffset(int offset) {
 		iconOffset = offset;
+		return this;
+	}
+
+	/**
+	 * Gets the percent of health a player needs to fall to or below in order for the hearts to begin blinking.
+	 * 
+	 * Valid percents are between zero and one hundred, inclusive.
+	 * @return danger percent
+	 */
+	public float getDangerPercent() {
+		return dangerPercent;
+	}
+
+	/**
+	 * Sets the percent of health a player needs to fall to or below in order for the hearts to begin blinking.
+	 * 
+	 * Valid percents are between zero and one hundred, inclusive.
+	 * @param percent
+	 * @return this
+	 */
+	public VanillaHealthBar setDangerPercent(float percent) {
+		dangerPercent = percent;
 		return this;
 	}
 

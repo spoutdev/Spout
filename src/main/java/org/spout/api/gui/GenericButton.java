@@ -146,7 +146,7 @@ public class GenericButton extends AbstractControl implements Button {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.Button;
+		return WidgetType.BUTTON;
 	}
 
 	@Override

@@ -72,7 +72,7 @@ public class GenericLabel extends AbstractInline implements Label {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.Label;
+		return WidgetType.LABEL;
 	}
 
 	@Override

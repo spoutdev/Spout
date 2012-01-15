@@ -29,13 +29,13 @@ import org.spout.api.player.Player;
 
 public class InGameScreen extends AbstractScreen implements InGameHUD {
 
-	private final ArmorBar armor = new ArmorBar();
-	private final BubbleBar bubble = new BubbleBar();
+	private final VanillaArmorBar armor = new VanillaArmorBar();
+	private final VanillaBubbleBar bubble = new VanillaBubbleBar();
 	private final ChatBar chat = new ChatBar();
 	private final ChatTextBox chatText = new ChatTextBox();
-	private final ExpBar exp = new ExpBar();
-	private final HealthBar health = new HealthBar();
-	private final HungerBar hunger = new HungerBar();
+	private final VanillaExpBar exp = new VanillaExpBar();
+	private final VanillaHealthBar health = new VanillaHealthBar();
+	private final VanillaHungerBar hunger = new VanillaHungerBar();
 	private PopupScreen activePopup = null;
 
 	public InGameScreen(int playerId) {
@@ -50,8 +50,8 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 		if (player != null && player.isSpoutCraftEnabled()) {
 			if (getActivePopup() != null) {
 				if (getActivePopup().isDirty()) {
-					if (!getActivePopup().getType().isServerOnly()) {
-						player.sendPacket(new PacketWidget(getActivePopup(), getId()));
+					if (!getActivePopup().getType().isNetworkEnabled()) {
+						player.sendPacket(new PacketWidget(getActivePopup(), getUID()));
 					}
 					getActivePopup().setDirty(false);
 				}
@@ -71,10 +71,10 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 
 	@Override
 	public InGameScreen removeChild(Widget child) {
-		if (child instanceof HealthBar) {
+		if (child instanceof VanillaHealthBar) {
 			throw new UnsupportedOperationException("Cannot remove the health bar. Use setVisible(false) to hide it instead");
 		}
-		if (child instanceof BubbleBar) {
+		if (child instanceof VanillaBubbleBar) {
 			throw new UnsupportedOperationException("Cannot remove the bubble bar. Use setVisible(false) to hide it instead");
 		}
 		if (child instanceof ChatTextBox) {
@@ -83,13 +83,13 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 		if (child instanceof ChatBar) {
 			throw new UnsupportedOperationException("Cannot remove the chat bar. Use setVisible(false) to hide it instead");
 		}
-		if (child instanceof ArmorBar) {
+		if (child instanceof VanillaArmorBar) {
 			throw new UnsupportedOperationException("Cannot remove the armor bar. Use setVisible(false) to hide it instead");
 		}
-		if (child instanceof HungerBar) {
+		if (child instanceof VanillaHungerBar) {
 			throw new UnsupportedOperationException("Cannot remove the hunger bar. Use setVisible(false) to hide it instead");
 		}
-		if (child instanceof ExpBar) {
+		if (child instanceof VanillaExpBar) {
 			throw new UnsupportedOperationException("Cannot remove the exp bar. Use setVisible(false) to hide it instead");
 		}
 		super.removeChild(child);
@@ -107,12 +107,12 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	@Override
-	public HealthBar getHealthBar() {
+	public VanillaHealthBar getHealthBar() {
 		return health;
 	}
 
 	@Override
-	public BubbleBar getBubbleBar() {
+	public VanillaBubbleBar getBubbleBar() {
 		return bubble;
 	}
 
@@ -127,17 +127,17 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	@Override
-	public ArmorBar getArmorBar() {
+	public VanillaArmorBar getArmorBar() {
 		return armor;
 	}
 
 	@Override
-	public HungerBar getHungerBar() {
+	public VanillaHungerBar getHungerBar() {
 		return hunger;
 	}
 
 	@Override
-	public ExpBar getExpBar() {
+	public VanillaExpBar getExpBar() {
 		return exp;
 	}
 
@@ -181,7 +181,7 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.InGameScreen;
+		return WidgetType.INGAMESCREEN;
 	}
 
 	public void clearPopup() {
@@ -189,13 +189,13 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	public static boolean isCustomWidget(Widget widget) {
-		return widget instanceof ArmorBar
-				|| widget instanceof BubbleBar
+		return widget instanceof VanillaArmorBar
+				|| widget instanceof VanillaBubbleBar
 				|| widget instanceof ChatBar
 				|| widget instanceof ChatTextBox
-				|| widget instanceof ExpBar
-				|| widget instanceof HealthBar
-				|| widget instanceof HungerBar;
+				|| widget instanceof VanillaExpBar
+				|| widget instanceof VanillaHealthBar
+				|| widget instanceof VanillaHungerBar;
 	}
 
 	@Override

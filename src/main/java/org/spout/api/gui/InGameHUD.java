@@ -37,7 +37,7 @@ public interface InGameHUD extends Screen {
 	 * Gets the armor bar associated with this HUD
 	 * @return armor bar
 	 */
-	public ArmorBar getArmorBar();
+	public VanillaArmorBar getArmorBar();
 
 	/**
 	 * Gets the chat text box associated with this HUD
@@ -55,25 +55,25 @@ public interface InGameHUD extends Screen {
 	 * Gets the underwater bubble bar associated with this HUD
 	 * @return bubble bar
 	 */
-	public BubbleBar getBubbleBar();
+	public VanillaBubbleBar getBubbleBar();
 
 	/**
 	 * Gets the health bar associated with this HUD
 	 * @return health bar
 	 */
-	public HealthBar getHealthBar();
+	public VanillaHealthBar getHealthBar();
 
 	/**
 	 * Gets the hunger bar associated with this HUD
 	 * @return hunger bar
 	 */
-	public HungerBar getHungerBar();
+	public VanillaHungerBar getHungerBar();
 
 	/**
 	 * Gets the exp bar associated with this HUD
 	 * @return exp bar
 	 */
-	public ExpBar getExpBar();
+	public VanillaExpBar getExpBar();
 
 	/**
 	 * Attachs a popup screen and brings it to the front of the screen

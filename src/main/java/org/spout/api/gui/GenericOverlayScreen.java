@@ -40,7 +40,7 @@ public class GenericOverlayScreen extends AbstractScreen implements OverlayScree
 	
 	@Override
 	public WidgetType getType() {
-		return WidgetType.OverlayScreen;
+		return WidgetType.OVERLAYSCREEN;
 	}
 
 	@Override

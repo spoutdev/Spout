@@ -45,13 +45,13 @@ public class ChatTextBox extends AbstractWidget implements Widget {
 	 */
 	ChatTextBox() {
 		setDirty(false);
-		setId(3);
+		setUID(3);
 		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
 	}
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.ChatTextBox;
+		return WidgetType.CHATTEXTBOX;
 	}
 
 	@Override

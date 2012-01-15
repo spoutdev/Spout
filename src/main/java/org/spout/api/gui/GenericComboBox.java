@@ -125,7 +125,7 @@ public class GenericComboBox extends GenericButton implements ComboBox {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.ComboBox;
+		return WidgetType.COMBOBOX;
 	}
 
 	@Override

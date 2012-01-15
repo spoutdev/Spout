@@ -46,7 +46,7 @@ public class ChatBar extends AbstractWidget implements Widget {
 	 */
 	ChatBar() {
 		setDirty(false);
-		setId(2);
+		setUID(2);
 		setX(2);
 		setY(-2);
 		setWidth(425);
@@ -77,7 +77,7 @@ public class ChatBar extends AbstractWidget implements Widget {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.ChatBar;
+		return WidgetType.CHATBAR;
 	}
 
 	/**

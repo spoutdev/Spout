@@ -33,7 +33,7 @@ import org.spout.api.ClientOnly;
 /**
  * The Spout implementation of the default Armor Bar.
  */
-public class ArmorBar extends AbstractWidget {
+public class VanillaArmorBar extends AbstractWidget {
 
 	private int icons = 10;
 	private boolean alwaysVisible = false;
@@ -42,13 +42,11 @@ public class ArmorBar extends AbstractWidget {
 	/**
 	 * Package-private constructor.
 	 */
-	ArmorBar() {
-		setDirty(false);
-		setId(0);
-		setX(427 / 2 - 91); //122
-		setY(191);
-		setWidth(getWidth()); // Don't know the default - ignored, but prevents warnings...
+	VanillaArmorBar() {
+		super(427 / 2 - 91, 191, 80, 8);
 		setAnchor(WidgetAnchor.BOTTOM_CENTER);
+		setUID(0);
+		setDirty(false);
 	}
 
 	@Override
@@ -74,7 +72,7 @@ public class ArmorBar extends AbstractWidget {
 
 	@Override
 	public WidgetType getType() {
-		return WidgetType.ArmorBar;
+		return WidgetType.ARMORBAR;
 	}
 
 	/**
@@ -94,7 +92,7 @@ public class ArmorBar extends AbstractWidget {
 	 * @param shields to display
 	 * @return this
 	 */
-	public ArmorBar setMaxNumShields(int icons) {
+	public VanillaArmorBar setMaxNumShields(int icons) {
 		this.icons = icons;
 		return this;
 	}
@@ -112,7 +110,7 @@ public class ArmorBar extends AbstractWidget {
 	 * @param visible
 	 * @return this
 	 */
-	public ArmorBar setAlwaysVisible(boolean visible) {
+	public VanillaArmorBar setAlwaysVisible(boolean visible) {
 		alwaysVisible = visible;
 		return this;
 	}
@@ -130,7 +128,7 @@ public class ArmorBar extends AbstractWidget {
 	 * @param offset when drawing shields
 	 * @return this
 	 */
-	public ArmorBar setIconOffset(int offset) {
+	public VanillaArmorBar setIconOffset(int offset) {
 		iconOffset = offset;
 		return this;
 	}
