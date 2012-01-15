@@ -27,8 +27,8 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 import org.spout.api.Commons;
-import org.spout.api.protocol.bootstrap.BootstrapCodecLookupService;
-import org.spout.api.protocol.bootstrap.msg.BootstrapIdentificationMessage;
+import org.spout.api.Spout;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -37,14 +37,12 @@ import org.jboss.netty.handler.codec.replay.VoidEnum;
 
 /**
  * A {@link ReplayingDecoder} which decodes {@link ChannelBuffer}s into
- * Common {@link org.spout.unchecked.server.msg.Message}s.
+ * Common {@link org.spout.api.protocol.Message}s.
  */
 public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
-	
-	private final CodecLookupService bootstrapCodecLookup = new BootstrapCodecLookupService();
-	private volatile CodecLookupService codecLookup = bootstrapCodecLookup;
+	private volatile CodecLookupService codecLookup = null;
 	private int previousOpcode = -1;
-	private boolean configListen = true;
+    private volatile BootstrapProtocol bootstrapProtocol;
 	private final CommonHandler handler;
 	private final CommonEncoder encoder;
 	
@@ -55,14 +53,27 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
-		int opcode = buf.getShort(buf.readerIndex());
-		
+        if (codecLookup == null) {
+			System.out.println("Setting codec lookup service");
+            bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
+			System.out.println("Bootstrap protocol is: " + bootstrapProtocol);
+            codecLookup = bootstrapProtocol.getCodecLookupService();
+			System.out.println("Codec lookup service is: " + codecLookup);
+        }
+
+		int opcode = buf.getByte(buf.readerIndex());
+
 		MessageCodec<?> codec = codecLookup.find(opcode);
+
+		if (codec == null) {
+			opcode = buf.getShort(buf.readerIndex());
+			codec = codecLookup.findExpanded(opcode);
+		}
 		
 		if (codec == null) {
 			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
 		}
-		
+
 		if (codec.isExpanded()) {
 			buf.readShort();
 		} else {
@@ -70,26 +81,23 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		}
 
 		previousOpcode = opcode;
-		
-		Object message = codec.decode(buf);
-		
-		if (configListen) {
-			if (Commons.isSpout) {
-				if (message instanceof BootstrapIdentificationMessage) {
-					BootstrapIdentificationMessage idMessage = (BootstrapIdentificationMessage)message;
 
-					long id = idMessage.getSeed();
+		Message message = codec.decode(buf);
+		
+		if (bootstrapProtocol != null && Commons.isSpout) {
+			//TODO: Why is this never printed??????
+			System.out.println("Checking for protocol definition");
+			long id = bootstrapProtocol.detectProtocolDefinition(message);
+			if (id != -1L) {
+				Protocol protocol = Protocol.getProtocol(id);
 
-					Protocol protocol = Protocol.getProtocol(id);
-					
-					if (protocol != null) {
-						codecLookup = protocol.getCodecLookupService();
-						encoder.setProtocol(protocol);
-						handler.setProtocol(protocol);
-						configListen = true;
-					} else {
-						throw new IllegalStateException("No protocol associated with an id of " + id);
-					}
+				if (protocol != null) {
+					codecLookup = protocol.getCodecLookupService();
+					encoder.setProtocol(protocol);
+					handler.setProtocol(protocol);
+					bootstrapProtocol = null;
+				} else {
+					throw new IllegalStateException("No protocol associated with an id of " + id);
 				}
 			}
 		}

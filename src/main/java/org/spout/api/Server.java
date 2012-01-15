@@ -26,10 +26,12 @@
 package org.spout.api;
 
 import java.io.File;
+import java.net.SocketAddress;
 import java.util.Collection;
 
 import org.spout.api.geo.World;
 import org.spout.api.player.Player;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 
@@ -198,5 +200,13 @@ public interface Server extends Game {
 	 * @return allow flight
 	 */
 	public boolean allowFlight();
+
+	/**
+	 * Binds the server to a certain address
+	 * @param address The address to bind to.
+	 * @param bootstrapProtocol The bootstrap protocol to use for connections to this binding
+	 * @return true if successful
+	 */
+	public boolean bind(SocketAddress address, BootstrapProtocol bootstrapProtocol);
 	
 }

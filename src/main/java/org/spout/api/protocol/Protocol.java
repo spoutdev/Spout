@@ -27,10 +27,6 @@ package org.spout.api.protocol;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.spout.api.protocol.bootstrap.BootstrapCodecLookupService;
-import org.spout.api.protocol.bootstrap.BootstrapHandlerLookupService;
-import org.spout.api.protocol.bootstrap.NullPlayerProtocol;
-
 public class Protocol {
 	
 	private static final ConcurrentHashMap<Long,Protocol> map = new ConcurrentHashMap<Long,Protocol>();
@@ -39,8 +35,6 @@ public class Protocol {
 	private final HandlerLookupService handlerLookup;
 	private final PlayerProtocol playerProtocol;
 	private final String name;
-	
-	public static final Protocol bootstrap = new Protocol("bootstrap", new BootstrapCodecLookupService(), new BootstrapHandlerLookupService(), new NullPlayerProtocol());
 	
 	public Protocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, PlayerProtocol playerProtocol) {
 		this.codecLookup = codecLookup;

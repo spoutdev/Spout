@@ -27,26 +27,28 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 
-import org.spout.api.protocol.bootstrap.BootstrapCodecLookupService;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.spout.api.Spout;
 
 /**
  * A {@link OneToOneEncoder} which encodes Minecraft {@link Message}s into
  * {@link ChannelBuffer}s.
  */
 public class CommonEncoder extends OneToOneEncoder {
-	
-	private final CodecLookupService bootstrapCodecLookup = new BootstrapCodecLookupService();
-	private volatile CodecLookupService codecLookup = bootstrapCodecLookup;
-	
+
+	private volatile CodecLookupService codecLookup = null;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
+			if (codecLookup == null) {
+				codecLookup = Spout.getGame().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
+			}
 			Message message = (Message) msg;
 
 			Class<? extends Message> clazz = message.getClass();
@@ -57,8 +59,12 @@ public class CommonEncoder extends OneToOneEncoder {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
 
-			ChannelBuffer opcodeBuf = ChannelBuffers.buffer(1);
-			opcodeBuf.writeByte(codec.getOpcode());
+			ChannelBuffer opcodeBuf = ChannelBuffers.buffer(codec.isExpanded() ? 2 : 1);
+			if (codec.isExpanded()) {
+				opcodeBuf.writeShort(codec.getOpcode());
+			} else {
+				opcodeBuf.writeByte(codec.getOpcode());
+			}
 
 			return ChannelBuffers.wrappedBuffer(opcodeBuf, codec.encode(message));
 		}

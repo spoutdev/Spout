@@ -26,6 +26,7 @@
 package org.spout.api;
 
 import java.io.File;
+import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.Scheduler;
@@ -398,4 +400,11 @@ public interface Game extends Named, EventSource {
 	 * @return recipe that was removed
 	 */
 	public Recipe removeRecipe(Plugin plugin, String recipe);
+
+    /**
+     * Returns the bootstrap protocol for {@code address}
+     * @param address The address
+     * @return The protocol
+     */
+    public BootstrapProtocol getBootstrapProtocol(SocketAddress address);
 }
