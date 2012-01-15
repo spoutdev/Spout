@@ -31,8 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.entity.Controller;
+import org.spout.api.entity.PlayerController;
+import org.spout.api.player.Player;
+import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
 import org.spout.server.datatable.SpoutDatatableMap;
+import org.spout.server.player.SpoutPlayer;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashSet;
@@ -172,6 +176,10 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			Controller controller = e.getController();
 			if (controller != null) {
 				controller.preSnapshot();
+				if (controller instanceof PlayerController) {
+					Player p = ((PlayerController)controller).getPlayer();
+					((SpoutPlayer)p).getNetworkSynchronizer().preSnapshot();;
+				}
 			}
 		}		
 	}

@@ -43,6 +43,7 @@ import org.spout.api.io.store.MemoryStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
+import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 import org.spout.server.SpoutRegion;
 import org.spout.server.SpoutServer;
@@ -51,6 +52,7 @@ import org.spout.server.datatable.value.SpoutDatatableBool;
 import org.spout.server.datatable.value.SpoutDatatableFloat;
 import org.spout.server.datatable.value.SpoutDatatableInt;
 import org.spout.server.datatable.value.SpoutDatatableObject;
+import org.spout.server.player.SpoutPlayer;
 
 public class SpoutEntity implements Entity {
 	public final static int NOTSPAWNEDID = -1;
@@ -178,7 +180,9 @@ public class SpoutEntity implements Entity {
 	 * @param dt milliseconds since the last tick
 	 */
 	public void onTick(float dt) {
-		if (controller != null) controller.onTick(dt);
+		if (controller != null) {
+			controller.onTick(dt);
+		}
 	}
 	
 	@Override
@@ -208,6 +212,10 @@ public class SpoutEntity implements Entity {
 				} else {
 					if (live.transform == null && controller != null) {
 						controller.onDeath();
+						if (controller instanceof PlayerController) {
+							Player p = ((PlayerController)controller).getPlayer();
+							((SpoutPlayer)p).getNetworkSynchronizer().onDeath();
+						}
 					}
 				}
 			}
@@ -336,6 +344,6 @@ public class SpoutEntity implements Entity {
 	public void onSync() {
 		//Forward to controller for now, but we may want to do some sync logic here for the entitiy.
 		controller.onSync();
-		
+		//TODO - this might not be needed, if it is, it needs to send to the network synchronizer for players
 	}
 }

@@ -42,6 +42,7 @@ import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
@@ -56,6 +57,8 @@ public class SpoutPlayer implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<String>();
 	private final AtomicReference<Entity> entityLive = new AtomicReference<Entity>();
 	private Entity entity;
+	private final AtomicReference<NetworkSynchronizer> synchronizerLive = new AtomicReference<NetworkSynchronizer>();
+	private NetworkSynchronizer synchronizer;
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
@@ -111,6 +114,10 @@ public class SpoutPlayer implements Player {
 	public boolean isOnline() {
 		return online;
 	}
+	
+	public boolean isOnlineLive() {
+		return onlineLive.get();
+	}
 
 	@Override
 	@SnapshotRead
@@ -124,6 +131,7 @@ public class SpoutPlayer implements Player {
 			entityLive.get().kill();
 			sessionLive.set(null);
 			entityLive.set(null);
+			synchronizerLive.set(null);
 			return true;
 		} else {
 			return false;
@@ -137,7 +145,7 @@ public class SpoutPlayer implements Player {
 			entityLive.set(entity);
 			return true;
 		} else {
-			return true;
+			return false;
 		}
 	}
 
@@ -207,6 +215,7 @@ public class SpoutPlayer implements Player {
 		session = sessionLive.get();
 		online = onlineLive.get();
 		entity = entityLive.get();
+		synchronizer = synchronizerLive.get();
 	}
 
 	@Override
@@ -347,5 +356,23 @@ public class SpoutPlayer implements Player {
 
 	public void kick(String reason) {
 		session.disconnect(reason);
+	}
+
+	@Override
+	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
+		if (synchronizer == null && !this.onlineLive.get()) {
+			this.synchronizerLive.set(null);
+		} else if (!this.synchronizerLive.compareAndSet(null, synchronizer)) {
+			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
+		}
+	}
+	
+	public NetworkSynchronizer getNetworkSynchronizer() {
+		NetworkSynchronizer s = synchronizer;
+		if (s == null) {
+			return synchronizerLive.get();
+		} else {
+			return s;
+		}
 	}
 }
