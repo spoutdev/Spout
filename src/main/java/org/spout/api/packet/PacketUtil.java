@@ -85,9 +85,9 @@ public abstract class PacketUtil {
 		try {
 			byte flags = 0x0;
 
-			if (color.getRedF() == -1F) {
+			if (color.equals(Color.invalid)) {
 				flags |= FLAG_COLORINVALID;
-			} else if (color.getRedF() == -2F) {
+			} else if (color.equals(Color.override)) {
 				flags |= FLAG_COLOROVERRIDE;
 			}
 
@@ -104,10 +104,10 @@ public abstract class PacketUtil {
 			int argb = input.readInt();
 
 			if ((flags & FLAG_COLORINVALID) > 0) {
-				return Color.invalid();
+				return Color.invalid;
 			}
 			if ((flags & FLAG_COLOROVERRIDE) > 0) {
-				return Color.override();
+				return Color.override;
 			}
 
 			return new Color(argb);
