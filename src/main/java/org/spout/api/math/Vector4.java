@@ -1,3 +1,28 @@
+/*
+ * This file is part of SpoutAPI (http://www.spout.org/).
+ *
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
 package org.spout.api.math;
 
 /**
@@ -7,7 +32,6 @@ package org.spout.api.math;
  * new Vector4.
  */
 public class Vector4 implements Comparable<Vector4> {
-
 	/**
 	 * Represents the Zero vector (0, 0, 0, 0)
 	 */
@@ -32,7 +56,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * Represents a unit vector in the W direction (0, 0, 1, 1)
 	 */
 	public final static Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
-	
+
 	protected float x;
 	protected float y;
 	protected float z;
@@ -79,8 +103,8 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Constructs and initializes a Vector4 from an old Vector4
-	 * 
-	 * @param o 
+	 *
+	 * @param o
 	 */
 	public Vector4(Vector4 o) {
 		this(o.x, o.y, o.z, o.w);
@@ -110,7 +134,7 @@ public class Vector4 implements Comparable<Vector4> {
 	public float getY() {
 		return y;
 	}
-	
+
 	/**
 	 * Gets the Z coordinate
 	 *
@@ -141,12 +165,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 add(float x, float y, float z, float w) {
 		return Vector4.add(this, new Vector4(x, y, z, w));
@@ -154,12 +178,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 add(double x, double y, double z, double w) {
 		return Vector4.add(this, new Vector4(x, y, z, w));
@@ -167,12 +191,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 add(int x, int y, int z, int w) {
 		return Vector4.add(this, new Vector4(x, y, z, w));
@@ -190,12 +214,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 subtract(float x, float y, float z, float w) {
 		return Vector4.subtract(this, new Vector4(x, y, z, w));
@@ -203,12 +227,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 subtract(double x, double y, double z, double w) {
 		return Vector4.subtract(this, new Vector4(x, y, z, w));
@@ -216,12 +240,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 subtract(int x, int y, int z, int w) {
 		return Vector4.subtract(this, new Vector4(x, y, z, w));
@@ -239,12 +263,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 multiply(float x, float y, float z, float w) {
 		return Vector4.multiply(this, new Vector4(x, y, z, w));
@@ -252,12 +276,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 multiply(double x, double y, double z, double w) {
 		return Vector4.multiply(this, new Vector4(x, y, z, w));
@@ -265,12 +289,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 multiply(int x, int y, int z, int w) {
 		return Vector4.multiply(this, new Vector4(x, y, z, w));
@@ -278,9 +302,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Multiplies a Vector4 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector4 multiply(float val) {
 		return Vector4.multiply(this, new Vector4(val, val, val, val));
@@ -288,9 +312,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Multiplies a Vector4 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector4 multiply(double val) {
 		return Vector4.multiply(this, new Vector4(val, val, val, val));
@@ -298,9 +322,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Multiplies a Vector4 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector4 multiply(int val) {
 		return Vector4.multiply(this, new Vector4(val, val, val, val));
@@ -318,12 +342,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 divide(float x, float y, float z, float w) {
 		return Vector4.divide(this, new Vector4(x, y, z, w));
@@ -331,12 +355,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 divide(double x, double y, double z, double w) {
 		return Vector4.divide(this, new Vector4(x, y, z, w));
@@ -344,12 +368,12 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @return 
+	 * @return
 	 */
 	public Vector4 divide(int x, int y, int z, int w) {
 		return Vector4.divide(this, new Vector4(x, y, z, w));
@@ -357,9 +381,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Divides a Vector4 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector4 divide(float val) {
 		return Vector4.divide(this, new Vector4(val, val, val, val));
@@ -367,9 +391,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Divides a Vector4 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector4 divide(double val) {
 		return Vector4.divide(this, new Vector4(val, val, val, val));
@@ -377,9 +401,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Divides a Vector4 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector4 divide(int val) {
 		return Vector4.divide(this, new Vector4(val, val, val, val));
@@ -399,8 +423,8 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Returns a Vector3 object with the x, y, z values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector3 toVector3() {
 		return Vector4.toVector3(this);
@@ -409,18 +433,18 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Returns a Vector3m object with the x, y, z values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector3m toVector3m() {
 		return Vector4.toVector3m(this);
 	}
-	
+
 	/**
 	 * Returns a Vector2 object with the x, y values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector2 toVector2() {
 		return Vector4.toVector2(this);
@@ -429,38 +453,38 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Returns a Vector2m object with the x, y values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector2m toVector2m() {
 		return Vector4.toVector2m(this);
 	}
 
 	/**
-	 * Rounds the values of this Vector4 up to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the values of this Vector4 up to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector4 ceil() {
 		return Vector4.ceil(this);
 	}
 
 	/**
-	 * Rounds the values of this Vector4 down to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the values of this Vector4 down to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector4 floor() {
 		return Vector4.floor(this);
 	}
 
 	/**
-	 * Rounds the values of this Vector4 to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the values of this Vector4 to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector4 round() {
 		return Vector4.round(this);
@@ -469,8 +493,8 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Sets the values of this Vector4 to their
 	 * absolute value.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector4 abs() {
 		return Vector4.abs(this);
@@ -478,9 +502,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Gets the distance between this Vector4 and a given Vector4.
-	 * 
+	 *
 	 * @param a
-	 * @return 
+	 * @return
 	 */
 	public double distance(Vector4 a) {
 		return Vector4.distance(a, this);
@@ -488,9 +512,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Raises the values of this Vector4 to the given power.
-	 * 
+	 *
 	 * @param power
-	 * @return 
+	 * @return
 	 */
 	public Vector4 pow(double power) {
 		return Vector4.pow(this, power);
@@ -567,7 +591,7 @@ public class Vector4 implements Comparable<Vector4> {
 		hash = 53 * hash + Float.floatToIntBits(this.w);
 		return hash;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
@@ -614,7 +638,7 @@ public class Vector4 implements Comparable<Vector4> {
 	public static Vector4 add(Vector4 a, Vector4 b) {
 		return new Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
 	}
-	
+
 	/**
 	 * Subtracts one Vector4 from the other Vector4
 	 *
@@ -663,8 +687,8 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Returns a Vector3 object with the x, y, z values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public static Vector3 toVector3(Vector4 o) {
 		return new Vector3(o.x, o.y, o.z);
@@ -673,18 +697,18 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Returns a Vector3m object with the x, y, z values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public static Vector3m toVector3m(Vector4 o) {
 		return new Vector3m(o.x, o.y, o.z);
 	}
-	
+
 	/**
 	 * Returns a Vector2 object with the x, y values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public static Vector2 toVector2(Vector4 o) {
 		return new Vector2(o.x, o.y);
@@ -693,41 +717,41 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Returns a Vector2m object with the x, y values
 	 * from this Vector4 object.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public static Vector2m toVector2m(Vector4 o) {
 		return new Vector2m(o.x, o.y);
 	}
 
 	/**
-	 * Rounds the values of the given Vector4 up to 
-	 * the nearest integer value. 
-	 * 
+	 * Rounds the values of the given Vector4 up to
+	 * the nearest integer value.
+	 *
 	 * @param o Vector4 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 ceil(Vector4 o) {
 		return new Vector4(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z), Math.ceil(o.w));
 	}
 
 	/**
-	 * Rounds the values of the given Vector4 down to 
-	 * the nearest integer value. 
-	 * 
+	 * Rounds the values of the given Vector4 down to
+	 * the nearest integer value.
+	 *
 	 * @param o Vector4 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 floor(Vector4 o) {
 		return new Vector4(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z), Math.floor(o.w));
 	}
 
 	/**
-	 * Rounds the values of the given Vector4 to 
-	 * the nearest integer value. 
-	 * 
+	 * Rounds the values of the given Vector4 to
+	 * the nearest integer value.
+	 *
 	 * @param o Vector4 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 round(Vector4 o) {
 		return new Vector4(Math.round(o.x), Math.round(o.y), Math.round(o.z), Math.round(o.w));
@@ -736,9 +760,9 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Sets the values of the given Vector4 to their
 	 * absolute value.
-	 * 
+	 *
 	 * @param o Vector4 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 abs(Vector4 o) {
 		return new Vector4(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z), Math.abs(o.w));
@@ -746,10 +770,10 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Returns a Vector4 containing the smallest values.
-	 * 
+	 *
 	 * @param o1
 	 * @param o2
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 min(Vector4 o1, Vector4 o2) {
 		return new Vector4(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z), Math.min(o1.w, o2.w));
@@ -757,10 +781,10 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Returns a Vector4 containing the largest values.
-	 * 
+	 *
 	 * @param o1
 	 * @param o2
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 max(Vector4 o1, Vector4 o2) {
 		return new Vector4(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z), Math.max(o1.w, o2.w));
@@ -768,9 +792,9 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Returns a Vector4 with random values (between 0 and 1)
-	 * 
+	 *
 	 * @param o
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 rand() {
 		double[] rands = new double[4];
@@ -797,11 +821,11 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Gets the distance between two Vector4. 
-	 * 
+	 * Gets the distance between two Vector4.
+	 *
 	 * @param a
 	 * @param b
-	 * @return 
+	 * @return
 	 */
 	public static double distance(Vector4 a, Vector4 b) {
 		double xyzDist = Vector3.distance(a.toVector3(), b.toVector3());
@@ -810,10 +834,10 @@ public class Vector4 implements Comparable<Vector4> {
 
 	/**
 	 * Raises the values of a Vector4 to the given power.
-	 * 
+	 *
 	 * @param o
 	 * @param power
-	 * @return 
+	 * @return
 	 */
 	public static Vector4 pow(Vector4 o, double power) {
 		return new Vector4(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power), Math.pow(o.w, power));

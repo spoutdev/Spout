@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.protocol;
@@ -45,7 +45,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
     private volatile BootstrapProtocol bootstrapProtocol;
 	private final CommonHandler handler;
 	private final CommonEncoder encoder;
-	
+
 	public CommonDecoder(CommonHandler handler, CommonEncoder encoder) {
 		this.encoder = encoder;
 		this.handler = handler;
@@ -69,7 +69,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 			opcode = buf.getShort(buf.readerIndex());
 			codec = codecLookup.findExpanded(opcode);
 		}
-		
+
 		if (codec == null) {
 			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
 		}
@@ -83,7 +83,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		previousOpcode = opcode;
 
 		Message message = codec.decode(buf);
-		
+
 		if (bootstrapProtocol != null && Commons.isSpout) {
 			//TODO: Why is this never printed??????
 			System.out.println("Checking for protocol definition");
@@ -101,8 +101,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 				}
 			}
 		}
-			
+
 		return message;
 	}
-	
 }

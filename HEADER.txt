@@ -23,22 +23,3 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.bootstrap;
-
-import org.spout.api.protocol.CodecLookupService;
-import org.spout.api.protocol.HandlerLookupService;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.bootstrap.NullPlayerProtocol;
-
-/**
- *
- * @author zml2008
- */
-public abstract class BootstrapProtocol extends Protocol {
-	public BootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
-		super(name, codecLookup, handlerLookup, new NullPlayerProtocol());
-	}
-
-	public abstract long detectProtocolDefinition(Message message);
-}

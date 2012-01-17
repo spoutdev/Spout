@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,28 +18,28 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
 
 /**
- * Represents a rotation around a unit 4d circle. 
- * 
- * 
+ * Represents a rotation around a unit 4d circle.
+ *
+ *
  */
 public class Quaternion {
 	float x,y,z,w;
-	
+
 	/**
 	 * Represents no rotation
 	 */
 	public static Quaternion identity = new Quaternion(0,0,0,1);
-	
+
 	/**
-	 * Constructs a new Quaternion with the given xyzw 
+	 * Constructs a new Quaternion with the given xyzw
 	 * NOTE: This represents a Unit Vector in 4d space.  Do not use unless you know what you are doing.
 	 * If you want to create a normal rotation, use the angle/axis override.
 	 * @param x
@@ -103,7 +103,7 @@ public class Quaternion {
 		return Quaternion.lengthSquared(this);
 	}
 	/**
-	 * Returns the length of the quaternion. 
+	 * Returns the length of the quaternion.
 	 * Note: This uses square root, so is slowish
 	 * @return
 	 */
@@ -136,22 +136,22 @@ public class Quaternion {
 	}
 	/**
 	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 * 
+	 *
 	 * vect.X = Rotation about the X axis (Roll)
 	 * vect.Y = Rotation about the Y axis (Yaw)
 	 * vect.Z = Rotation about the Z axis (Pitch)
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
 	public Vector3 getAxisAngles(){
 		return Quaternion.getAxisAngles(this);
 	}
-	
+
 	public String toString(){
 		return getClass().getSimpleName() + "{"+x+","+y+","+z+","+w+"}";
 	}
-	
+
 	/**
 	 * Returns the length squared of the given Quaternion
 	 * @param a
@@ -186,16 +186,16 @@ public class Quaternion {
 	 */
 	public static Quaternion multiply(Quaternion a, Quaternion b){
 		float x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
-		
-		
+
+
 		float y = a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z;
-		
-		
+
+
 		float z = a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x;
-		
-		
+
+
 		float w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
-		
+
 		return new Quaternion(x,y,z,w);
 	}
 	/**
@@ -210,11 +210,11 @@ public class Quaternion {
 	}
 	/**
 	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 * 
+	 *
 	 * vect.X = Rotation about the X axis (Roll)
 	 * vect.Y = Rotation about the Y axis (Yaw)
 	 * vect.Z = Rotation about the Z axis (Pitch)
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -225,10 +225,7 @@ public class Quaternion {
 		float pitch = -1 * (float)Math.toDegrees(Math.asin(2 * (a.getX() * a.getZ() - a.getW() * a.getY())));
 		//Our left and right are swapped from this calculation, so we need to subtract the angle from 180.
 		float roll = 180 - (float)Math.toDegrees(Math.atan2(2 * ( a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW())));
-		
+
 		return new Vector3(roll, pitch, yaw);
 	}
-	
-	
-	
 }

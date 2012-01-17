@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.command;
@@ -41,9 +41,7 @@ import org.spout.api.util.Named;
  * Game.getCommandRoot().sub(&quot;preferredname&quot;).alias(&quot;alias1&quot;, &quot;alias2&quot;).help(&quot;This is the main command for MyPlugin&quot;).executor(myExecutor).sub(&quot;subcommand&quot;).help(&quot;This is a sub command of main command&quot;).executor(myExecutor).closeSub().closeSub();
  * </pre>
  */
-
 public interface Command extends RawCommandExecutor{
-
 	/**
 	 * Creates a command and adds it as a sub-command to the active Command.
 	 *
@@ -79,7 +77,7 @@ public interface Command extends RawCommandExecutor{
 	 * @return the new active command or null if the stack was empty
 	 */
 	public Command closeSubCommand();
-	
+
 	/**
 	 * Adds an alias to the active Command.
 	 *

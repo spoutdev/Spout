@@ -1,7 +1,31 @@
+/*
+ * This file is part of SpoutAPI (http://www.spout.org/).
+ *
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
 package org.spout.api.math;
 
 public class Vector4m extends Vector4 {
-
 	public Vector4m() {
 	}
 
@@ -38,7 +62,7 @@ public class Vector4m extends Vector4 {
 	public void setY(float y) {
 		this.y = y;
 	}
-	
+
 	/**
 	 * Sets the Z coordinate
 	 *
@@ -74,12 +98,12 @@ public class Vector4m extends Vector4 {
 		w -= that.w;
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the values of this Vector4 up to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the values of this Vector4 up to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector4 ceil() {
 		x = (float) Math.ceil(x);
@@ -88,12 +112,12 @@ public class Vector4m extends Vector4 {
 		w = (float) Math.ceil(w);
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the values of this Vector4 down to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the values of this Vector4 down to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector4 floor() {
 		x = (float) Math.floor(x);
@@ -102,12 +126,12 @@ public class Vector4m extends Vector4 {
 		w = (float) Math.floor(w);
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the values of this Vector4 to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the values of this Vector4 to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector4 round() {
 		x = Math.round(x);
@@ -116,12 +140,12 @@ public class Vector4m extends Vector4 {
 		w = Math.round(w);
 		return this;
 	}
-	
+
 	/**
 	 * Sets the values of this Vector4 to their
 	 * absolute value.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector4 abs() {
 		x = Math.abs(x);

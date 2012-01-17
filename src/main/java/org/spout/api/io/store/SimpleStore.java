@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.io.store;
@@ -35,14 +35,12 @@ import java.util.Set;
  * It is used to store maps that map Strings to classes of type T
  *
  * Subclasses can implement backing to the file system.
- * 
+ *
  * Implementing classes must be synchronized
  *
  * This is a two-way map, so each value only maps back to one key
  */
-
 public interface SimpleStore<T> {
-
 	/**
 	 * Save the map to the persistence system associated with the store.
 	 *
@@ -126,12 +124,11 @@ public interface SimpleStore<T> {
 	 * @return returns the old value associated with the key
 	 */
 	public T set(String key, T value);
-	
+
 	/**
 	 * Sets the value associated with a key, but only if neither the key or value are in use
 	 *
 	 * @return true if the key/value pair was set
 	 */
 	public boolean setIfAbsent(String key, T value);
-
 }

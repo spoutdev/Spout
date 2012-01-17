@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.map.concurrent;
@@ -48,15 +48,14 @@ import org.spout.api.math.MathHelper;
 
 /**
  * This is a synchronised version of the Trove LongObjectHashMap.
- * 
+ *
  * Read/write locks are used to synchronise access.
- * 
+ *
  * By default, it creates 16 sub-maps and there is a separate read/write lock for each submap.
  *
  * @param <V> the value type
  */
 public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
-	
 	private final int mapCount;
 	private final int mapMask;
 	private final int hashScramble;
@@ -71,29 +70,29 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	public TSyncLongObjectHashMap() {
 		this(16);
 	}
-	
+
 	/**
 	 * Creates a synchronised map based on the Trove long object map
-	 *  
+	 *
 	 * @param mapCount the number of sub-maps
 	 */
 	public TSyncLongObjectHashMap(int mapCount) {
 		this(mapCount, 32);
 	}
-	
+
 	/**
 	 * Creates a synchronised map based on the Trove long object map
-	 *  
+	 *
 	 * @param mapCount the number of sub-maps
 	 * @param initialCapacity the initial capacity of the map
 	 */
 	public TSyncLongObjectHashMap(int mapCount, int initialCapacity) {
 		this(mapCount, initialCapacity, 0.5F);
 	}
-	
+
 	/**
 	 * Creates a synchronised map based on the Trove long object map
-	 *  
+	 *
 	 * @param mapCount the number of sub-maps
 	 * @param initialCapacity the initial capacity of the map
 	 * @param loadFactor the load factor for the map
@@ -101,10 +100,10 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	public TSyncLongObjectHashMap(int mapCount, int initialCapacity, float loadFactor) {
 		this(mapCount, initialCapacity, loadFactor, Constants.DEFAULT_LONG_NO_ENTRY_VALUE);
 	}
-	
+
 	/**
 	 * Creates a synchronised map based on the Trove long object map
-	 *  
+	 *
 	 * @param mapCount the number of sub-maps
 	 * @param initialCapacity the initial capacity of the map
 	 * @param loadFactor the load factor for the map
@@ -127,13 +126,13 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 		this.no_entry_key = noEntryKey;
 	}
-	
+
 	public void clear() {
 		for (int m = 0; m < mapCount; m++) {
 			clear(m);
 		}
 	}
-	
+
 	private void clear (int m) {
 		Lock lock = lockArray[m].writeLock();
 		lock.lock();
@@ -164,7 +163,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 		return false;
 	}
-	
+
 	private boolean containsValue(int m, Object value) {
 		Lock lock = lockArray[m].readLock();
 		lock.lock();
@@ -262,7 +261,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			lock.unlock();
 		}
 	}
-	
+
 	// TODO - these two methods could be easily implemented
 	public void putAll(Map<? extends Long, ? extends V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
@@ -301,7 +300,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			lock.unlock();
 		}
 	}
-	
+
 	public boolean remove(long key, V value) {
 		if (value == null) {
 			throw new IllegalArgumentException("Cannot remove null values");
@@ -322,8 +321,8 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			lock.unlock();
 		}
 	}
-	
-	
+
+
 	public boolean retainEntries(TLongObjectProcedure<? super V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
@@ -333,7 +332,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	}
 
 	public void transformValues(TObjectFunction<V, V> arg0) {
-		throw new UnsupportedOperationException("This operation is not supported");		
+		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
 	public Collection<V> valueCollection() {
@@ -388,11 +387,10 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			}
 		}
 	}
-	
+
 	private int mapHash(long key) {
 		int intKey = (int)((key >> 32) ^ key);
-		
+
 		return ((0x7FFFFFFF & intKey) % hashScramble) & mapMask;
 	}
-
 }

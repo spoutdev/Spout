@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.config;
@@ -52,10 +52,10 @@ import org.yaml.snakeyaml.representer.Representer;
  * a file and call its load() method. For specifying node paths in the
  * various get*() methods, they support SK's path notation, allowing you to
  * select child nodes by delimiting node names with periods.
- * 
+ *
  * <p>
  * For example, given the following configuration file:</p>
- * 
+ *
  * <pre>members:
  *	 - Hollie
  *	 - Jason
@@ -70,14 +70,14 @@ import org.yaml.snakeyaml.representer.Representer;
  *	 cool: false
  *	 eats:
  *		 babies: true</pre>
- * 
+ *
  * <p>Calling code could access sturmeh's baby eating state by using
  * <code>getBoolean("sturmeh.eats.babies", false)</code>. For lists, there are
  * methods such as <code>getStringList</code> that will return a type safe list.
- * 
+ *
  * <p>This class is currently incomplete. It is not yet possible to get a node.
  * </p>
- * 
+ *
  * @author sk89q
  */
 public class Configuration extends ConfigurationNode {
@@ -129,37 +129,37 @@ public class Configuration extends ConfigurationNode {
 	/**
 	 * Set the header for the file as a series of lines that are terminated
 	 * by a new line sequence.
-	 * 
+	 *
 	 * @param headerLines header lines to prepend
 	 */
 	public void setHeader(String ... headerLines)  {
 		StringBuilder header = new StringBuilder();
-		
+
 		for (String line : headerLines) {
 			if (header.length() > 0) {
 				header.append("\r\n");
 			}
 			header.append(line);
 		}
-		
+
 		setHeader(header.toString());
 	}
-	
+
 	/**
 	 * Set the header for the file. A header can be provided to prepend the
-	 * YAML data output on configuration save. The header is 
+	 * YAML data output on configuration save. The header is
 	 * printed raw and so must be manually commented if used. A new line will
 	 * be appended after the header, however, if a header is provided.
-	 * 
+	 *
 	 * @param header header to prepend
 	 */
 	public void setHeader(String header) {
 		this.header = header;
 	}
-	
+
 	/**
 	 * Return the set header.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getHeader() {
@@ -167,8 +167,8 @@ public class Configuration extends ConfigurationNode {
 	}
 
 	/**
-	 * Saves the configuration to disk. All errors are clobbered. 
-	 * 
+	 * Saves the configuration to disk. All errors are clobbered.
+	 *
 	 * @param header header to prepend
 	 * @return true if it was successful
 	 */
@@ -225,7 +225,6 @@ public class Configuration extends ConfigurationNode {
 }
 
 class EmptyNullRepresenter extends Representer {
-
 	public EmptyNullRepresenter() {
 		super();
 		this.nullRepresenter = new EmptyRepresentNull();

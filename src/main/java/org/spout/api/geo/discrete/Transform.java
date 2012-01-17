@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.geo.discrete;
@@ -30,22 +30,22 @@ import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector3m;
 
-public class Transform {	
+public class Transform {
 	private final Pointm position = new Pointm();
 	private final Quaternionm rotation = new Quaternionm();
-	private final Vector3m scale = new Vector3m();	
-	
+	private final Vector3m scale = new Vector3m();
+
 	private Transform parent = null;
-	
+
 	public Transform() {
 	}
-	
+
 	public Transform(Point position, Quaternion rotation, Vector3 scale) {
 		setPosition(position);
 		setRotation(rotation);
 		setScale(scale);
 	}
-	
+
 	public Pointm getPosition() {
 		return position;
 	}
@@ -70,7 +70,7 @@ public class Transform {
 	public void setParent(Transform parent) {
 		this.parent = parent;
 	}
-	
+
 	public Transform createSum(Transform t){
 		Transform r = new Transform();
 		r.setPosition(position.add(t.getPosition()));
@@ -78,13 +78,13 @@ public class Transform {
 		r.setScale(scale.add(t.getScale()));
 		return r;
 	}
-	
+
 	public Transform getAbsolutePosition(){
 		if(parent == null) return this;
 		return this.createSum(parent.getAbsolutePosition());
-		
+
 	}
-	
+
 	public Transform copy(){
 		Transform t = new Transform();
 		t.setPosition(new Point(this.position));
@@ -92,7 +92,7 @@ public class Transform {
 		t.setScale(new Vector3m(this.scale));
 		return t;
 	}
-	
+
 	public String toString() {
 		return getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
 	}

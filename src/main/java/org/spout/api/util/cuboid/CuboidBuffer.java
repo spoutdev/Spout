@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.cuboid;
@@ -50,7 +50,6 @@ import org.spout.api.math.Vector3;
  * TODO is this the best package to put this?
  */
 public abstract class CuboidBuffer {
-
 	private final World world;
 
 	private final int sizeX;
@@ -60,7 +59,7 @@ public abstract class CuboidBuffer {
 	private final int baseX;
 	private final int baseY;
 	private final int baseZ;
-	
+
 	// Note: These values are not actually within the cuboid
 	//       The cuboid goes from baseX to baseX + sizeX - 1
 	//       top* = base* + size*
@@ -82,7 +81,7 @@ public abstract class CuboidBuffer {
 		this.baseX = baseX;
 		this.baseY = baseY;
 		this.baseZ = baseZ;
-		
+
 		this.topX = baseX + sizeX;
 		this.topY = baseY + sizeY;
 		this.topZ = baseZ + sizeZ;
@@ -155,7 +154,7 @@ public abstract class CuboidBuffer {
 			}
 		}
 	}
-	
+
 	protected int getIndex(int x, int y, int z) {
 		if (x < baseX || x >= topX || y < baseY || y >= topY || z < baseZ || z >= topZ) {
 			return -1;
@@ -163,7 +162,7 @@ public abstract class CuboidBuffer {
 			return ((y - baseY) * Yinc) + ((x - baseX) * Xinc) + ((z - baseZ) * Zinc);
 		}
 	}
-	
+
 	protected CuboidBufferCopyRun getCopyRun(CuboidBuffer other) {
 		return new CuboidBufferCopyRun(this, other);
 	}
@@ -171,7 +170,7 @@ public abstract class CuboidBuffer {
 	public abstract void copyElement(int thisIndex, int sourceIndex, int runLength);
 
 	public abstract void setSource(CuboidBuffer source);
-	
+
 	public String toString() {
 		return this.getClass().getSimpleName() + "{Buffer Size=" + (sizeX * sizeY * sizeZ) + ", Base=(" + world.getName() + ", " + baseX +", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " +
 				"Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
