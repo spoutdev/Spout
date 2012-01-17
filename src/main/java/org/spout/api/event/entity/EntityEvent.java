@@ -34,6 +34,10 @@ import org.spout.api.event.Event;
 public abstract class EntityEvent extends Event {
 	private Entity entity;
 
+	public EntityEvent(Entity e){
+		this.entity = e;
+	}
+	
 	public Entity getEntity() {
 		return entity;
 	}

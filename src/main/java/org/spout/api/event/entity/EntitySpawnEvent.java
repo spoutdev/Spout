@@ -25,6 +25,7 @@
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.discrete.Point;
@@ -36,6 +37,11 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
 	private Point point;
+
+	public EntitySpawnEvent(Entity e, Point point) {
+		super(e);
+		this.point = point;
+	}
 
 	/**
 	 * Gets the location in which spawning will take place.
