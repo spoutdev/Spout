@@ -299,6 +299,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
+	/**
+	 * Spawns an entity into the world.  Fires off a cancellable EntitySpawnEvent
+	 */
 	public void spawnEntity(Entity e) {
 		if (e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		SpoutRegion region = (SpoutRegion) e.getRegion();

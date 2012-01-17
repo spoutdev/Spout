@@ -30,8 +30,10 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Spout;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.PlayerController;
+import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
@@ -152,6 +154,11 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @param entity The entity.
 	 */
 	public void deallocate(SpoutEntity entity) {
+		EntityDespawnEvent event = new EntityDespawnEvent(entity);
+		Spout.getGame().getEventManager().callEvent(event);
+		if(event.isCancelled()){
+			return;
+		}
 		entities.remove(entity.getId());
 		Controller controller = entity.getController();
 		if (controller != null) {
