@@ -57,6 +57,12 @@ public class Vector3m extends Vector3 {
 	public void setX(float x) {
 		this.x = x;
 	}
+	
+	public void set(Vector3 vector) {
+		this.x = vector.getX();
+		this.y = vector.getY();
+		this.z = vector.getZ();
+	}
 
 	/**
 	 * Adds two vectors

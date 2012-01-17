@@ -26,42 +26,43 @@
 package org.spout.api.geo.discrete;
 
 import org.spout.api.math.Quaternion;
+import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector3m;
 
 public class Transform {	
-	Point position;
-	Quaternion rotation;
-	Vector3m scale;	
+	private final Pointm position = new Pointm();
+	private final Quaternionm rotation = new Quaternionm();
+	private final Vector3m scale = new Vector3m();	
 	
-	Transform parent = null;
+	private Transform parent = null;
 	
 	public Transform() {
 	}
 	
 	public Transform(Point position, Quaternion rotation, Vector3 scale) {
-		this.position = new Point(position);
-		this.rotation = new Quaternion(rotation);
-		this.scale = new Vector3m(scale);
+		setPosition(position);
+		setRotation(rotation);
+		setScale(scale);
 	}
 	
-	public Point getPosition() {
+	public Pointm getPosition() {
 		return position;
 	}
 	public void setPosition(Point position) {
-		this.position = position;
+		this.position.set(position);
 	}
-	public Quaternion getRotation() {
+	public Quaternionm getRotation() {
 		return rotation;
 	}
 	public void setRotation(Quaternion rotation) {
-		this.rotation = rotation;
+		this.rotation.set(rotation);
 	}
 	public Vector3m getScale() {
 		return scale;
 	}
-	public void setScale(Vector3m scale) {
-		this.scale = scale;
+	public void setScale(Vector3 scale) {
+		this.scale.set(scale);
 	}
 	public Transform getParent() {
 		return parent;
@@ -70,17 +71,17 @@ public class Transform {
 		this.parent = parent;
 	}
 	
-	public Transform add(Transform t){
+	public Transform createSum(Transform t){
 		Transform r = new Transform();
-		r.position = position.add(t.getPosition());
-		r.rotation = rotation.multiply(t.getRotation());
-		r.scale = (Vector3m) scale.add(t.getScale());
+		r.setPosition(position.add(t.getPosition()));
+		r.setRotation(rotation.multiply(t.getRotation()));
+		r.setScale(scale.add(t.getScale()));
 		return r;
 	}
 	
 	public Transform getAbsolutePosition(){
 		if(parent == null) return this;
-		return this.add(parent.getAbsolutePosition());
+		return this.createSum(parent.getAbsolutePosition());
 		
 	}
 	

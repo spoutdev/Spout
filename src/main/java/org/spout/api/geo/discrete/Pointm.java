@@ -32,6 +32,10 @@ import org.spout.api.geo.World;
  */
 
 public class Pointm extends Point {
+	
+	public Pointm() {
+		super(null, 0, 0, 0);
+	}
 
 	public Pointm(World world, float x, float y, float z) {
 		super(world, x, y, z);
@@ -72,7 +76,7 @@ public class Pointm extends Point {
 	/**
 	 * Sets this point equal to another point
 	 */
-	public void setPoint(Point point) {
+	public void set(Point point) {
 		this.world = point.world;
 		this.x = point.getX();
 		this.y = point.getY();
