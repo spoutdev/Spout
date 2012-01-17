@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,20 +18,19 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
 
 /**
- * Represents a rotation around a unit 4d circle. 
- * 
- * 
+ * Represents a rotation around a unit 4d circle.
+ *
+ *
  */
 public class Quaternionm extends Quaternion {
-	
 	/**
 	 * Constructs a new Quaternion and sets the components equal to the identity
 	 */
@@ -40,7 +39,7 @@ public class Quaternionm extends Quaternion {
 	}
 
 	/**
-	 * Constructs a new Quaternion with the given xyzw 
+	 * Constructs a new Quaternion with the given xyzw
 	 * NOTE: This represents a Unit Vector in 4d space.  Do not use unless you know what you are doing.
 	 * If you want to create a normal rotation, use the angle/axis override.
 	 * @param x
@@ -67,7 +66,7 @@ public class Quaternionm extends Quaternion {
 	}
 	/**
 	 * Sets the X component of the quaternion
-	 * 
+	 *
 	 * @param x
 	 */
 	public void setX(float x) {
@@ -75,7 +74,7 @@ public class Quaternionm extends Quaternion {
 	}
 	/**
 	 * Sets the Y component of the quaternion
-	 * 
+	 *
 	 * @param y
 	 */
 	public void setY(float y) {
@@ -83,7 +82,7 @@ public class Quaternionm extends Quaternion {
 	}
 	/**
 	 * Sets the Z component of the quaternion
-	 * 
+	 *
 	 * @param z
 	 */
 	public void setZ(float z) {
@@ -91,16 +90,16 @@ public class Quaternionm extends Quaternion {
 	}
 	/**
 	 * Sets the W component of the quaternion
-	 * 
+	 *
 	 * @param w
 	 */
 	public void setW(float w) {
 		this.w = w;
 	}
-	
+
 	/**
 	 * Sets the value of the Quaternion
-	 * 
+	 *
 	 * @param quaternion
 	 */
 	public void set(Quaternion quaternion) {
@@ -109,5 +108,4 @@ public class Quaternionm extends Quaternion {
 		this.z = quaternion.getZ();
 		this.w = quaternion.getW();
 	}
-	
 }

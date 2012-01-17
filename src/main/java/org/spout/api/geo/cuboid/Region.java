@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.geo.cuboid;
@@ -39,12 +39,11 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
  */
 public abstract class Region extends Cube {
-	
 	/**
 	 * Number of chunks on a side of a region
 	 */
 	public static final int REGION_SIZE = 16;
-	
+
 	/**
 	 * Number of bits in {@link #REGION_SIZE}
 	 */
@@ -58,10 +57,10 @@ public abstract class Region extends Cube {
 	public Region(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE);
 	}
-	
+
 	/**
 	 * Gets the chunk at (x, y, z).
-	 * 
+	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
 	 * @param z the chunk z coordinate
@@ -69,10 +68,10 @@ public abstract class Region extends Cube {
 	 */
 	@LiveRead
 	public abstract Chunk getChunk(int x, int y, int z);
-	
+
 	/**
 	 * Gets the chunk at (x, y, z).
-	 * 
+	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
 	 * @param z the chunk z coordinate
@@ -81,8 +80,8 @@ public abstract class Region extends Cube {
 	 */
 	@LiveRead
 	public abstract Chunk getChunk(int x, int y, int z, boolean load);
-	
-	
+
+
 	/**
 	 * True if the region has a loaded chunk at the (x, y, z).
 	 * @param x the chunk x coordinate
@@ -92,20 +91,20 @@ public abstract class Region extends Cube {
 	 */
 	@LiveRead
 	public abstract boolean hasChunk(int x, int y, int z);
-	
+
 	/**
 	 * Queues a chunk for saving at the next available opportunity.
-	 * 
+	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
 	 * @param z the chunk z coordinate
 	 */
 	@DelayedWrite
 	public abstract void saveChunk(int x, int y, int z);
-	
+
 	/**
-	 * Unloads a chunk, and queues it for saving, if requested. 
-	 * 
+	 * Unloads a chunk, and queues it for saving, if requested.
+	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
 	 * @param z the chunk z coordinate
@@ -113,21 +112,21 @@ public abstract class Region extends Cube {
 	 */
 	@DelayedWrite
 	public abstract void unloadChunk(int x, int y, int z, boolean save);
-	
+
 	/**
 	 * Queues all chunks for saving at the next available opportunity.
 	 */
 	@DelayedWrite
 	public abstract void save();
-	
+
 	/**
 	 * Performs the nessecary tasks to unload this region from the world, and all associated chunks.
-	 * 
+	 *
 	 * @param save whether to save the region and associated data.
 	 */
 	@DelayedWrite
 	public abstract void unload(boolean save);
-	
+
 	/**
 	 * Gets all entities with the specified type.
 	 *
@@ -137,7 +136,7 @@ public abstract class Region extends Cube {
 	 */
 	@SnapshotRead
 	public abstract Collection<Entity> getAll(Class<? extends Controller> type);
-	
+
 	/**
 	 * Gets all entities.
 	 *
@@ -145,7 +144,7 @@ public abstract class Region extends Cube {
 	 */
 	@SnapshotRead
 	public abstract Collection<Entity> getAll();
-	
+
 	/**
 	 * Gets an entity by its id.
 	 *

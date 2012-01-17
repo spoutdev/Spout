@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.io.store;
@@ -37,9 +37,7 @@ import org.apache.commons.lang3.Validate;
  * This implements a SimpleStore that is stored in memory. It is not persisted
  * between restarts.
  */
-
 public class MemoryStore<T> implements SimpleStore<T> {
-
 	private final Map<String, T> map;
 	private final Map<T, String> reverseMap;
 
@@ -101,7 +99,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 	public synchronized T set(String key, T value) {
 		Validate.notNull(key);
 		Validate.notNull(value);
-		
+
 		T oldValue = map.put(key, value);
 		if (oldValue != null) {
 			reverseMap.remove(oldValue);
@@ -109,7 +107,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		reverseMap.put(value, key);
 		return oldValue;
 	}
-	
+
 	public synchronized boolean setIfAbsent(String key, T value) {
 		if (map.get(key) != null || reverseMap.get(value) != null) {
 			return false;
@@ -118,5 +116,4 @@ public class MemoryStore<T> implements SimpleStore<T> {
 			return true;
 		}
 	}
-
 }

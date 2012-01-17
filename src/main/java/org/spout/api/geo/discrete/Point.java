@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.geo.discrete;
@@ -31,9 +31,7 @@ import org.spout.api.math.Vector3;
 /**
  * Represents a position in a World
  */
-
 public class Point extends Vector3 {
-
 	protected World world;
 
 	public Point(Point point) {
@@ -49,7 +47,7 @@ public class Point extends Vector3 {
 		super(x, y, z);
 		this.world = world;
 	}
-	
+
 	public Point add(Point other){
 		if(this.world != other.world) throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		return new Point(Vector3.add((Vector3)this, (Vector3)other), this.world);
@@ -57,14 +55,14 @@ public class Point extends Vector3 {
 	public Point add(Vector3 other){
 		return new Point(Vector3.add((Vector3)this, other), this.world);
 	}
-	
+
 	/**
 	 * Gets the Manhattan distance between two points.
-	 * 
-	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds. 
-	 * 
+	 *
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 *
 	 * Otherwise, it returns the Mahattan distance.
-	 * 
+	 *
 	 */
 	public double getMahattanDistance(Point other) {
 		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
@@ -72,12 +70,12 @@ public class Point extends Vector3 {
 		}
 		return Math.abs(x - other.x) + Math.abs(y - other.y) + Math.abs(z - other.z);
 	}
-	
+
 	/**
 	 * Gets the largest distance between two points, when projected onto one of the axes.
-	 * 
-	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds. 
-	 * 
+	 *
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 *
 	 * Otherwise, it returns the max distance.
 	 */
 	public double getMaxDistance(Point other) {
@@ -86,7 +84,7 @@ public class Point extends Vector3 {
 		}
 		return Math.max(Math.abs(x - other.x), Math.max(Math.abs(y - other.y), Math.abs(z - other.z)));
 	}
-	
+
 	/**
 	 * Gets the world this point is locate in
 	 *
@@ -95,37 +93,36 @@ public class Point extends Vector3 {
 	public World getWorld() {
 		return world;
 	}
-	
+
 	public int hashCode() {
 		int hash = (int)world.getUID().getLeastSignificantBits();
 		hash += (hash << 5) + (int)world.getUID().getMostSignificantBits();
-		
+
 		int xx = (int)(x * 1024);
 		int yy = (int)(y * 1024);
 		int zz = (int)(z * 1024);
-		
+
 		hash += (hash << 5) + xx;
 		hash += (hash << 5) + yy;
 		hash += (hash << 5) + zz;
 		return hash;
 	}
-	
+
 	public boolean equals(Object obj) {
-		
+
 		if (obj == null) {
 			return false;
 		} else if (!(obj instanceof Point)) {
 			return false;
 		} else {
 			Point point = (Point)obj;
-			
+
 			return point.world.equals(world) && point.x == x && point.y == y && point.z == z;
 		}
-		
+
 	}
-	
+
 	public String toString() {
 		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
 	}
-
 }

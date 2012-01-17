@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.scheduler;
@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 import org.spout.api.plugin.Plugin;
 
 public interface Scheduler {
-
 	/**
 	 * Schedules a once off task to occur after a delay This task will be
 	 * executed by the main server thread
@@ -72,12 +71,12 @@ public interface Scheduler {
 	/**
 	 * Calls a method on the main thread and returns a Future object This task
 	 * will be executed by the main server thread <br/>
-	 * 
+	 *
 	 * <b>Note:</b> The Future.get() methods must NOT be called from the main
 	 * thread<br/>
 	 * <b>Note 2:</b> There is at least an average of 10ms latency until the
 	 * isDone() method returns true<br/>
-	 * 
+	 *
 	 * @return Future Future object related to the task
 	 */
 	public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> task);
@@ -112,10 +111,10 @@ public interface Scheduler {
 	 * @return Active workers
 	 */
 	public List<Task> getPendingTasks();
-	
+
 	/**
 	 * Gets the snapshot lock.  This lock can be used by async threads to readlock stable snapshot data.
-	 * 
+	 *
 	 * @return the snapshot lock
 	 */
 	public SnapshotLock getSnapshotLock();

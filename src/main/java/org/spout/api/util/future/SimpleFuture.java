@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.future;
@@ -34,39 +34,38 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implementation of a Future object that can store one result.
- * 
+ *
  * This Future is intended for transferring of a result from a source thread to a receiver thread.
- * 
+ *
  * It should only be reused by the calling thread.
  */
 
 public class SimpleFuture<T> implements Future<T> {
-
 	private final AtomicBoolean done = new AtomicBoolean(false);
 	private final AtomicReference<T> result = new AtomicReference<T>();
 	private final AtomicInteger waiting = new AtomicInteger(0);
-	
+
 	public SimpleFuture() {
 	}
-	
+
 	public SimpleFuture(T result) {
 		set(result);
 	}
-	
+
 	/**
 	 * Gets the waiting monitor for this Future.
-	 * 
+	 *
 	 * The monitor is notified when the future is set.
-	 * 
+	 *
 	 * @returns the monitor
 	 */
 	public Object getMonitor() {
 		return waiting;
 	}
-	
+
 	/**
 	 * Waits until the future's monitor is notified.
-	 * 
+	 *
 	 * The monitor is notified when the future is set.
 	 */
 	public void waitForMonitor() throws InterruptedException {
@@ -94,12 +93,12 @@ public class SimpleFuture<T> implements Future<T> {
 	}
 
 	/**
-	 * Sets the result.  
-	 * 
+	 * Sets the result.
+	 *
 	 * This method should only be called by the thread responsible for answering the future.
-	 * 
+	 *
 	 * Calling this method from more than 1 thread is not threadsafe.
-	 * 
+	 *
 	 * @param the result for the Future
 	 */
 	public void set(T result) {
@@ -116,18 +115,18 @@ public class SimpleFuture<T> implements Future<T> {
 
 	/**
 	 * Gets the result and waits if required.
-	 * 
+	 *
 	 * The get methods for this class should only be called by a dedicated read thread
-	 * 
+	 *
 	 * Calling this method from multiple threads is not threadsafe
-	 * 
+	 *
 	 * @return returns the result
 	 */
 
 	public T get() throws InterruptedException {
 		T result = null;
 		while (true) {
-			if (!done.getAndSet(false)) { 
+			if (!done.getAndSet(false)) {
 				waitForMonitor();
 			} else {
 				result = this.result.getAndSet(null);
@@ -138,11 +137,11 @@ public class SimpleFuture<T> implements Future<T> {
 
 	/**
 	 * Gets the result and waits, up to the timeout, if required.
-	 * 
-	 * The get methods for this class should only be called from a single read thread.  
-	 * 
+	 *
+	 * The get methods for this class should only be called from a single read thread.
+	 *
 	 * Calling this method from multiple threads is not threadsafe
-	 * 
+	 *
 	 * @return returns the result
 	 */
 
@@ -151,18 +150,18 @@ public class SimpleFuture<T> implements Future<T> {
 			return get();
 		} else {
 			long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, units);
-			
+
 			if (timeoutMillis == 0) {
 				timeoutMillis = 1;
 			}
 
 			long currentTime = System.currentTimeMillis();
 			long endTime = currentTime + timeoutMillis;
-			
+
 			T result = null;
-			
+
 			while (endTime > currentTime) {
-				if (!done.getAndSet(false)) { 
+				if (!done.getAndSet(false)) {
 					synchronized(waiting) {
 						waiting.incrementAndGet();
 						try {
@@ -202,5 +201,4 @@ public class SimpleFuture<T> implements Future<T> {
 	public boolean isDone() {
 		return done.get();
 	}
-
 }

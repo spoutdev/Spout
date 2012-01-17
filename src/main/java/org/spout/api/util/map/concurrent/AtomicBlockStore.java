@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.map.concurrent;
@@ -33,12 +33,11 @@ import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.geo.cuboid.Blockm;
 
 /**
- * This store stores block data for each chunk.  
- * Each block can either store a short id, or a short id, a short data 
+ * This store stores block data for each chunk.
+ * Each block can either store a short id, or a short id, a short data
  * value and a reference to a &lt;T&gt; object.
  */
 public class AtomicBlockStore<T> {
-	
 	private final int side;
 	private final int shift;
 	private final int doubleShift;
@@ -49,11 +48,11 @@ public class AtomicBlockStore<T> {
 	private final byte[] dirtyY;
 	private final byte[] dirtyZ;
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
-	
+
 	public AtomicBlockStore(int shift) {
 		this(shift, 10);
 	}
-	
+
 	public AtomicBlockStore(int shift, int dirtySize) {
 		this.side = 1 << shift;
 		this.shift = shift;
@@ -64,10 +63,10 @@ public class AtomicBlockStore<T> {
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
 	}
-	
+
 	/**
 	 * Gets the sequence number associated with a block location.<br>
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -90,12 +89,12 @@ public class AtomicBlockStore<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the block id for a block at a particular location.<br>
 	 * <br>
 	 * Block ids range from 0 to 65535.
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -119,12 +118,12 @@ public class AtomicBlockStore<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the block data for a block at a particular location.<br>
 	 * <br>
 	 * Block data ranges from 0 to 65535.
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -148,12 +147,12 @@ public class AtomicBlockStore<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the block auxiliary data for a block at a particular location.<br>
 	 * <br>
 	 * Block data ranges from 0 to 65535.
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -177,7 +176,7 @@ public class AtomicBlockStore<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Atomically gets the full set of data associated with the block.<br>
 	 * <br>
@@ -225,12 +224,12 @@ public class AtomicBlockStore<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored as a single short.<br>
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -239,12 +238,12 @@ public class AtomicBlockStore<T> {
 	public final void setBlock(int x, int y, int z, BlockFullState<T> fullState) {
 		setBlock(x, y, z, fullState.getId(), fullState.getData(), fullState.getAuxData());
 	}
-	
+
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored as a single short.<br>
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -281,17 +280,17 @@ public class AtomicBlockStore<T> {
 				if (oldReserved) {
 					if (!auxStore.remove(oldBlockId)) {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-					}				
+					}
 				}
 				markDirty(x, y, z);
 				return;
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z), if the current data matches the expected data.<br>
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -305,13 +304,13 @@ public class AtomicBlockStore<T> {
 	 */
 	public final boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, T expectAuxData, short newId, short newData, T newAuxData) {
 		int index = getIndex(x, y, z);
-		
+
 		while (true) {
 			checkCompressing();
 
 			short oldBlockId = blockIds.get(index);
 			boolean oldReserved = auxStore.isReserved(oldBlockId);
-			
+
 			if (!oldReserved) {
 				if (blockIds.get(index) != expectId || expectData != 0 || expectAuxData != null) {
 					return false;
@@ -329,7 +328,7 @@ public class AtomicBlockStore<T> {
 					return false;
 				}
 			}
-			
+
 			if (newData == 0 && newAuxData == null && !auxStore.isReserved(newId)) {
 				if (!blockIds.compareAndSet(index, oldBlockId, newId)) {
 					continue;
@@ -352,14 +351,14 @@ public class AtomicBlockStore<T> {
 				if (oldReserved) {
 					if (!auxStore.remove(oldBlockId)) {
 						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-					}				
+					}
 				}
 				markDirty(x, y, z);
 				return true;
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z), if the current data matches the expected data.<br>
 	 * <br>
@@ -373,23 +372,23 @@ public class AtomicBlockStore<T> {
 	public final boolean compareAndSetBlock(int x, int y, int z, BlockFullState<T> expect, BlockFullState<T> newValue) {
 		return compareAndSetBlock(x, y, z, expect.getId(), expect.getData(), expect.getAuxData(), newValue.getId(), newValue.getData(), newValue.getAuxData());
 	}
-	
+
 	/**
 	 * Gets if the store would benefit from compression.<br>
 	 * <br>
 	 * If this method is called when the store is being accessed by another thread, it may give spurious results.
-	 * 
+	 *
 	 * @return true if compression would reduce the store size
 	 */
 	public boolean needsCompression() {
 		return ((auxStore.getEntries() << 3) / 3) < auxStore.getSize();
 	}
-	
+
 	/**
 	 * Gets a short array containing the block ids in the store.<br>
 	 * <br>
 	 * If the store is updated while this snapshot is being taken, data tearing could occur.
-	 * 
+	 *
 	 * @return the array
 	 */
 	public short[] getBlockIdArray() {
@@ -427,10 +426,10 @@ public class AtomicBlockStore<T> {
 		auxStore = newAuxStore;
 		compressing.set(false);
 	}
-	
+
 	/**
 	 * Gets the size of the internal arrays
-	 * 
+	 *
 	 * @return the size of the arrays
 	 */
 	public final int getSize() {
@@ -440,14 +439,14 @@ public class AtomicBlockStore<T> {
 
 	/**
 	 * Gets the number of entries in the store
-	 * 
+	 *
 	 * @return the size of the arrays
 	 */
 	public final int getEntries() {
 		checkCompressing();
 		return auxStore.getEntries();
 	}
-	
+
 	/**
 	 * Gets if the dirty array has overflowed since the last reset.<br>
 	 * <br>
@@ -456,29 +455,29 @@ public class AtomicBlockStore<T> {
 	public boolean isDirtyOverflow() {
 		return dirtyBlocks.get() >= dirtyX.length;
 	}
-	
+
 	/**
 	 * Gets if the store has been modified since the last reset of the dirty arrays
-	 * 
+	 *
 	 * @return true if the store is dirty
 	 */
 	public boolean isDirty() {
 		return dirtyBlocks.get() > 0;
 	}
-	
+
 	/**
 	 * Resets the dirty arrays
 	 */
 	public void resetDirtyArrays() {
 		dirtyBlocks.set(0);
 	}
-	
+
 	/**
 	 * Gets the position of the dirty block at a given index.<br>
 	 * <br>
 	 * If there is no block at that index, then the method return null.<br>
 	 * <br>
-	 * Note: the x, y and z values returned are the chunk coordinates, 
+	 * Note: the x, y and z values returned are the chunk coordinates,
 	 * not the world coordinates and the method has no effect on the world field of the block.<br>
 	 * @param i
 	 * @param block
@@ -493,16 +492,16 @@ public class AtomicBlockStore<T> {
 		block.setZ(dirtyZ[i] & 0xFF);
 		return block;
 	}
-	
+
 	private final int getIndex(int x, int y, int z) {
 		return (x << doubleShift) + (z << shift) + y;
 	}
-	
+
 	/**
 	 * Marks a block as dirty.<br>
 	 * <br>
 	 * Updates for dirty blocks will be sent at the end of the tick.<br>
-	 * 
+	 *
 	 * @param x the x coordinate of the dirty block
 	 * @param y the y coordinate of the dirty block
 	 * @param z the z coordinate of the dirty block
@@ -515,11 +514,10 @@ public class AtomicBlockStore<T> {
 			dirtyZ[index] = (byte)z;
 		}
 	}
-	
+
 	private final void checkCompressing() {
 		if (compressing.get()) {
 			throw new IllegalStateException("Attempting to access block store during compression phase");
 		}
 	}
-
 }

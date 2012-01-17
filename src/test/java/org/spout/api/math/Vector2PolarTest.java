@@ -1,3 +1,28 @@
+/*
+ * This file is part of SpoutAPI (http://www.spout.org/).
+ *
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
 package org.spout.api.math;
 
 import static org.junit.Assert.*;
@@ -7,7 +32,6 @@ import org.junit.Test;
  * @author yetanotherx
  */
 public class Vector2PolarTest {
-
 	public static final double eps = 0.001;
 
 	private void doAssertDouble(String message, double expect, double got) {
@@ -26,7 +50,7 @@ public class Vector2PolarTest {
 		doAssertDouble(0, Vector2Polar.ZERO.r);
 		doAssertDouble(0, Vector2Polar.ZERO.theta);
 	}
-	
+
 	@Test
 	public void testRealAngle() {
 		doAssertDouble(0, Vector2Polar.getRealAngle(0));
@@ -68,7 +92,7 @@ public class Vector2PolarTest {
 	public void testAddVector2Polar() {
 		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar b = new Vector2Polar(2, Math.PI * (2.0/3.0) );
-		
+
 		Vector2Polar c = a.add(b);
 
 		doAssertDouble("x.r does not equal Math.sqrt(3)", Math.sqrt(3), c.r);
@@ -106,7 +130,7 @@ public class Vector2PolarTest {
 	public void testSubtractVector2Polar() {
 		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar b = new Vector2Polar(2, Math.PI * (2.0/3.0) );
-		
+
 		Vector2Polar c = a.subtract(b);
 
 		doAssertDouble("x.r does not equal Math.sqrt(7)", Math.sqrt(7), c.r);
@@ -206,7 +230,7 @@ public class Vector2PolarTest {
 	public void testDivideFloat() {
 		Vector2Polar a = new Vector2Polar(4, -1);
 		Vector2Polar b = a.divide(2f, 6f);
-		
+
 		doAssertDouble("b.r does not equal 2", 2, b.r);
 		doAssertDouble("b.theta does not equal -7", Vector2Polar.getRealAngle(-7), b.theta);
 
@@ -220,7 +244,7 @@ public class Vector2PolarTest {
 	public void testDivideDouble() {
 		Vector2Polar a = new Vector2Polar(4, -1);
 		Vector2Polar b = a.divide(2d, 6d);
-		
+
 		doAssertDouble("b.r does not equal 2", 2, b.r);
 		doAssertDouble("b.theta does not equal -7", Vector2Polar.getRealAngle(-7), b.theta);
 
@@ -234,7 +258,7 @@ public class Vector2PolarTest {
 	public void testDivideInt() {
 		Vector2Polar a = new Vector2Polar(4, -1);
 		Vector2Polar b = a.divide(2, 6);
-		
+
 		doAssertDouble("b.r does not equal 2", 2, b.r);
 		doAssertDouble("b.theta does not equal -7", Vector2Polar.getRealAngle(-7), b.theta);
 

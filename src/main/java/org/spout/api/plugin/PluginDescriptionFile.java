@@ -1,14 +1,14 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * In addition, 180 days after any changes are published, you can use the 
+ * In addition, 180 days after any changes are published, you can use the
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.  
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license, 
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.plugin;
@@ -35,7 +35,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 public class PluginDescriptionFile {
-
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
 
 	private String name;
@@ -112,7 +111,7 @@ public class PluginDescriptionFile {
 		} catch (ClassCastException ex) {
 			throw new InvalidDescriptionFileException(ex, "The field 'platform' is of the wrong type in the plugin.yml!");
 		}
-		
+
 		this.fullname = new StringBuilder().append(name).append(" v").append(version).toString();
 
 		if (map.containsKey("author")) {
@@ -180,7 +179,7 @@ public class PluginDescriptionFile {
 		}
 
 	}
-	
+
 	/**
 	 * Returns the plugin's name
 	 * @return name
@@ -212,7 +211,7 @@ public class PluginDescriptionFile {
 	public String getAuthor() {
 		return author;
 	}
-	
+
 	/**
 	 * Returns the plugin's authors
 	 * @return authors
@@ -228,7 +227,7 @@ public class PluginDescriptionFile {
 	public String getWebsite() {
 		return website;
 	}
-	
+
 	/**
 	 * Returns false if the plugin wants to be exempt from a reload
 	 * @return reload
@@ -236,7 +235,7 @@ public class PluginDescriptionFile {
 	public boolean allowsReload() {
 		return reload;
 	}
-	
+
 	/**
 	 * Returns the plugin's platform
 	 * @return platform
@@ -280,11 +279,10 @@ public class PluginDescriptionFile {
 	/**
 	 * Returns the plugin's fullname
 	 * The fullname is formatted as follows: [name] v[version]
-	 * 
+	 *
 	 * @return
 	 */
 	public String getFullName() {
 		return fullname;
 	}
-
 }

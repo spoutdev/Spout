@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,14 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
 
 public class Vector3m extends Vector3 {
-
 	public Vector3m() {
 	}
 
@@ -57,7 +56,7 @@ public class Vector3m extends Vector3 {
 	public void setX(float x) {
 		this.x = x;
 	}
-	
+
 	public void set(Vector3 vector) {
 		this.x = vector.getX();
 		this.y = vector.getY();
@@ -120,12 +119,12 @@ public class Vector3m extends Vector3 {
 
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 up to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 up to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector3 ceil() {
 		x = (float) Math.ceil(x);
@@ -133,12 +132,12 @@ public class Vector3m extends Vector3 {
 		z = (float) Math.ceil(z);
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 down to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 down to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector3 floor() {
 		x = (float) Math.floor(x);
@@ -146,12 +145,12 @@ public class Vector3m extends Vector3 {
 		z = (float) Math.floor(z);
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 to
+	 * the nearest integer value.
+	 *
+	 * @return
 	 */
 	public Vector3 round() {
 		x = Math.round(x);
@@ -159,12 +158,12 @@ public class Vector3m extends Vector3 {
 		z = Math.round(z);
 		return this;
 	}
-	
+
 	/**
 	 * Sets the X, Y, and Z values of this Vector3 to their
 	 * absolute value.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public Vector3 abs() {
 		x = Math.abs(x);

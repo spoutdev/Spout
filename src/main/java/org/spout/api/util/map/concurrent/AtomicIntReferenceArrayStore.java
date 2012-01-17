@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.map.concurrent;
@@ -45,7 +45,6 @@ import org.spout.api.math.MathHelper;
  * @param <T> the type of the Object in the {int, &lt;T&gt;} pair
  */
 public final class AtomicIntReferenceArrayStore<T> {
-
 	@SuppressWarnings("unchecked")
 	private final T EMPTY = (T)new Object();
 
@@ -62,11 +61,11 @@ public final class AtomicIntReferenceArrayStore<T> {
 	public AtomicIntReferenceArrayStore(int maxEntries) {
 		this(maxEntries, 0.49);
 	}
-	
+
 	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor) {
 		this(maxEntries, loadFactor, 0);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor, int initialSize) {
 		this.maxLength = MathHelper.roundUpPow2((int)(maxEntries / loadFactor));
@@ -119,12 +118,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 			return value;
 		}
 	}
-	
+
 	/**
 	 * Gets the sequence number associated with the element at a given index.
-	 * 
+	 *
 	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.
-	 * 
+	 *
 	 * @param index the index
 	 * @return the sequence number
 	 */
@@ -198,7 +197,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 			throw new IllegalArgumentException("The EMPTY singleton may not be passed as auxilary data");
 		}
 		entries.incrementAndGet();
-		
+
 		while (true) {
 			if (needsResize()) {
 				resizeArrays();
@@ -251,7 +250,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	/**
 	 * Resizes the arrays, if required.
-	 * 
+	 *
 	 * The array length is doubled if needsResize returns true.
 	 */
 	private void resizeArrays() {
@@ -286,7 +285,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				return;
 			}
 
-			// 
+			//
 			int[] newIntArray = new int[newLength];
 			@SuppressWarnings("unchecked")
 			T[] newAuxArray = (T[])new Object[newLength];
@@ -334,7 +333,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	/**
 	 * Converts an internal index to an external index.
-	 * 
+	 *
 	 * @param internal the internal index
 	 * @return the equivalent external index
 	 */
@@ -344,7 +343,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	/**
 	 * Converts an external index to an internal index.
-	 * 
+	 *
 	 * @param external the external index
 	 * @return the equivalent internal index
 	 */
@@ -354,7 +353,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	/**
 	 * Fills an auxiliary array with all empty objects.
-	 * 
+	 *
 	 * @param array the array to fill
 	 */
 	private final void emptyFill(T[] array, AtomicIntegerArray iArray) {
@@ -365,19 +364,19 @@ public final class AtomicIntReferenceArrayStore<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the size of the internal arrays
-	 * 
+	 *
 	 * @return the size of the arrays
 	 */
 	public final int getSize() {
 		return length.get();
 	}
-	
+
 	/**
 	 * Gets the number of entries in the store
-	 * 
+	 *
 	 * @return the size of the arrays
 	 */
 	public final int getEntries() {
@@ -386,9 +385,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	/**
 	 * Indicates if the array needs resizing.  An array is considered to need resizing if it is more than 50% full.
-	 * 
+	 *
 	 * Once an array has a length of the maximum length, it is never considered in need to resizing.
-	 * 
+	 *
 	 * @return true if the array needs to be resized
 	 */
 	// TODO - add timer that allows for resize downwards
@@ -398,5 +397,4 @@ public final class AtomicIntReferenceArrayStore<T> {
 		lengthThreshold -= lengthThreshold >> 2;
 		return length.get() < maxLength && entries.get() >= lengthThreshold;
 	}
-	
 }
