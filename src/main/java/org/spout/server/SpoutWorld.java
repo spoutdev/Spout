@@ -36,6 +36,7 @@ import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
@@ -302,6 +303,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		SpoutRegion region = (SpoutRegion) e.getRegion();
 		region.allocate((SpoutEntity) e);
+		Spout.getGame().getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransform().getPosition()));
 	}
 
 	@Override
