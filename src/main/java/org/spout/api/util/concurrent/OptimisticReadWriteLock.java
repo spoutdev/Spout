@@ -28,18 +28,13 @@ package org.spout.api.util.concurrent;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Implements an optimistic lock
+ * Implements an optimistic lock.<br>
  */
 public class OptimisticReadWriteLock {
 
-	private final AtomicInteger waiting = new AtomicInteger(0);	
+	private int waiting = 0;	
 	private final AtomicInteger sequence = new AtomicInteger(0);
 	public final static int UNSTABLE = 1;
-
-	/*
-	 * Timeout in ns until spin locks switch to standard lock
-	 */
-	private final static int SPIN_TIMEOUT = 1000;
 
 	/**
 	 * Attempts to read lock the lock.
@@ -61,27 +56,18 @@ public class OptimisticReadWriteLock {
 		if ((seq = tryReadLock()) != UNSTABLE) {
 			return seq;
 		} else {
-			long startTime = System.nanoTime();
-			long currentTime = System.nanoTime();
-			while (currentTime - startTime < SPIN_TIMEOUT) {
-				if ((seq = tryReadLock()) != UNSTABLE) {
-					return seq;
-				}
-				currentTime = System.nanoTime();
-			}
-			waiting.incrementAndGet();
-			try {
-				synchronized(this) {
+			synchronized(this) {
+				waiting++;
+				try {
 					while (true) {
-						seq = sequence.get();
 						if ((seq = tryReadLock()) != UNSTABLE) {
 							return seq;
 						}
 						wait();
 					}
+				} finally {
+					waiting--;
 				}
-			} finally {
-				waiting.decrementAndGet();
 			}
 		}
 	}
@@ -118,34 +104,26 @@ public class OptimisticReadWriteLock {
 		if ((seq = tryWriteLock()) != UNSTABLE) {
 			return seq;
 		} else {
-			long startTime = System.nanoTime();
-			long currentTime = System.nanoTime();
-			while (currentTime - startTime < SPIN_TIMEOUT) {
-				if ((seq = tryWriteLock()) != UNSTABLE) {
-					return seq;
-				}
-				currentTime = System.nanoTime();
-			}
-			waiting.incrementAndGet();
-			try {
-				synchronized(this) {
+			synchronized(this) {
+				waiting++;
+				try {
 					while (true) {
 						if ((seq = tryWriteLock()) != UNSTABLE) {
 							return seq;
 						}
 						wait();
 					}
+				} finally {
+					waiting--;
 				}
-			} finally {
-				waiting.decrementAndGet();
-			}	
+			}
 		}
 	}
 
 	/**
 	 * Unlocks the lock after writing.
 	 * 
- 	 * @param sequence the sequence number when the lock was write locked
+	 * @param sequence the sequence number when the lock was write locked
 	 */
 	public void writeUnlock(int sequence) {
 		try {
@@ -153,11 +131,12 @@ public class OptimisticReadWriteLock {
 				throw new IllegalStateException("Write unlock called when the write lock was not active");
 			}
 		} finally {
-			if (waiting.get() > 0) {
-				synchronized(this) {
+			synchronized(this) {
+				if (waiting > 0) {
 					notifyAll();
 				}
 			}
 		}
 	}
+
 }
