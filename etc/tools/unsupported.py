@@ -18,7 +18,7 @@ def rglob(dir, pattern):
     return result
 
 for file in rglob("src/main/java", ".+\\.java"):
-    cfile = file[len("src/main/java/org/getspout/server/"):len(file)-5].replace("/", ".").replace("\\", ".")
+    cfile = file[len("src/main/java/org/spout/server/"):len(file)-5].replace("/", ".").replace("\\", ".")
     function = 'unknown'
     for line in open(file):
         if re.match(" *public", line):

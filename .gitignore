@@ -1,6 +1,8 @@
 # Compiled source #
 ###################
 bin
+lib
+out
 target
 *.com
 *.class
@@ -54,3 +56,4 @@ build.xml
 # IntelliJ IDEA files #
 #######################
 .idea
+.iml

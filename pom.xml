@@ -1,8 +1,8 @@
 <!--
 	Maven build file for Spout
 
-	Copyright (c) 2011 SpoutDev <http://www.getspout.org>
-	Spout is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
+	Copyright (c) 2011-2012 SpoutDev <http://www.spout.org>
+	Spout is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3, but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
 
 	Glowstone Copyright (c) 2011 Tad Hardesty
 	Lightstone Copyright (c) 2010-2011 Graham Edgecombe
@@ -16,20 +16,19 @@
 	<artifactId>spout</artifactId>
 	<version>dev-SNAPSHOT</version>
 	<name>Spout</name>
-	<url>http://www.getspout.org</url>
+	<url>http://www.spout.org</url>
 	<description>Spout is an open-source implementation of the Minecraft server software written in Java, originally forked from the Glowstone project.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<minecraft.version>1.0.1</minecraft.version>
 		<build.number>Unknown</build.number>
 	</properties>
 
 	<!-- License -->
 	<licenses>
 		<license>
-			<name>GNU LESSER GENERAL PUBLIC LICENSE Version 3</name>
-			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<name>SpoutDev License Version 1</name>
+			<url>http://www.spout.org/SpoutDevLicenseV1.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -44,20 +43,20 @@
 	<!-- Continuous integration -->
 	<ciManagement>
 		<system>jenkins</system>
-		<url>http://ci.getspout.org</url>
+		<url>http://ci.spout.org</url>
 	</ciManagement>
 
 	<!-- Repository locations -->
 	<repositories>
 		<repository>
 			<id>spout-repo</id>
-			<url>http://repo.getspout.org</url>
+			<url>http://repo.spout.org</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spout-plugins</id>
-			<url>http://repo.getspout.org</url>
+			<url>http://repo.spout.org</url>
 		</pluginRepository>
 	</pluginRepositories>
 
@@ -67,35 +66,30 @@
 			<groupId>org.spout</groupId>
 			<artifactId>spoutapi</artifactId>
 			<version>dev-SNAPSHOT</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
 			<version>1.0</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.grahamedgecombe.jterminal</groupId>
 			<artifactId>jterminal</artifactId>
 			<version>1.0.1</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.7.2</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.18</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -156,7 +150,7 @@
 						</manifestEntries>
 						<manifestSections>
 							<manifestSection>
-								<name>org/getspout/server/</name>
+								<name>org/spout/server/</name>
 								<manifestEntries>
 									<Sealed>true</Sealed>
 								</manifestEntries>
