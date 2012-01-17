@@ -25,6 +25,7 @@
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.discrete.Point;
@@ -33,6 +34,11 @@ import org.spout.api.geo.discrete.Point;
  * Holds information for entity movement events
  */
 public class EntityMoveEvent extends EntityEvent implements Cancellable {
+	public EntityMoveEvent(Entity e) {
+		super(e);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static HandlerList handlers = new HandlerList();
 
 	private Point from;

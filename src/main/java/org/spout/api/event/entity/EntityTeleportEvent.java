@@ -25,12 +25,18 @@
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
 
 /**
  * Called when a player is teleported.
  */
 public class EntityTeleportEvent extends EntityMoveEvent {
+	public EntityTeleportEvent(Entity e) {
+		super(e);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static HandlerList handlers = new HandlerList();
 
 	@Override

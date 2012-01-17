@@ -25,6 +25,7 @@
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
 
 /**
@@ -33,6 +34,11 @@ import org.spout.api.event.HandlerList;
  *
  */
 public class EntityDespawnEvent extends EntityEvent {
+	public EntityDespawnEvent(Entity e) {
+		super(e);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static HandlerList handlers = new HandlerList();
 
 	public HandlerList getHandlers() {

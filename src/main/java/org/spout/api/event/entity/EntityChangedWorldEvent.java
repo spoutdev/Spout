@@ -25,6 +25,7 @@
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 
@@ -32,6 +33,11 @@ import org.spout.api.geo.World;
  * Called when an entity changes its world.
  */
 public class EntityChangedWorldEvent extends EntityEvent {
+	public EntityChangedWorldEvent(Entity e) {
+		super(e);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static HandlerList handlers = new HandlerList();
 
 	private World from;

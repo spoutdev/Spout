@@ -34,6 +34,11 @@ import org.spout.api.event.HandlerList;
  *
  */
 public class EntityInteractEvent extends EntityEvent {
+	public EntityInteractEvent(Entity e) {
+		super(e);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static HandlerList handlers = new HandlerList();
 	Entity interacted;
 
