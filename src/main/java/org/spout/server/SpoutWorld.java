@@ -303,7 +303,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		SpoutRegion region = (SpoutRegion) e.getRegion();
 		region.allocate((SpoutEntity) e);
-		Spout.getGame().getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransform().getPosition()));
+		EntitySpawnEvent event = new EntitySpawnEvent(e, e.getTransform().getPosition());
+		Spout.getGame().getEventManager().callEvent(event);
+		if(event.isCancelled()){
+			region.deallocate((SpoutEntity)e);
+		}
 	}
 
 	@Override
