@@ -564,6 +564,8 @@ public class Vector3 implements Comparable<Vector3> {
 		return false;
 	}
 
+	// TODO - all the methods below need to use .getX(), .getY() etc, for all "other" vectors.
+	
 	/**
 	 * Generates a unique hash code for this set of values
 	 * @return

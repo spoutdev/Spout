@@ -25,17 +25,25 @@
  */
 package org.spout.api.geo.discrete;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.spout.api.geo.World;
+import org.spout.api.math.AtomicQuaternion;
+import org.spout.api.math.AtomicVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector3m;
+import org.spout.api.util.concurrent.AtomicLinkable;
+import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
-public class Transform {
-	private final Pointm position = new Pointm();
-	private final Quaternionm rotation = new Quaternionm();
-	private final Vector3m scale = new Vector3m();
+public class Transform implements AtomicLinkable {
+	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
+	private final AtomicPoint position = new AtomicPoint(lock);
+	private final AtomicQuaternion rotation = new AtomicQuaternion(lock);
+	private final AtomicVector3 scale = new AtomicVector3(lock);
 
-	private Transform parent = null;
+	private final AtomicReference<Transform> parent = null;
 
 	public Transform() {
 	}
@@ -65,12 +73,61 @@ public class Transform {
 		this.scale.set(scale);
 	}
 	public Transform getParent() {
-		return parent;
+		while (true) {
+			int seq = lock.readLock();
+			Transform result = null;
+			try {
+				result = parent.get();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
 	}
+	
 	public void setParent(Transform parent) {
-		this.parent = parent;
+		int seq = lock.writeLock();
+		try {
+			this.parent.set(parent);
+		} finally {
+			lock.writeUnlock(seq);
+		}
 	}
 
+	public void set(Transform transform) {
+		int seq = lock.writeLock();
+		try {
+			while (true) {
+				int seq2 = transform.getLock().readLock();
+				this.position.directSet(transform.getPosition());
+				this.rotation.directSet(transform.getRotation());
+				this.scale.directSet(transform.getScale());
+				if (transform.getLock().readUnlock(seq2)) {
+					return;
+				}
+			}
+		} finally {
+			lock.writeUnlock(seq);
+		}
+	}
+	
+	/**
+	 * Atomically sets this point to the given components
+	 * 
+	 * @param point
+	 */
+	public void set(Point p, Quaternion r, Vector3 s) {
+		int seq = lock.writeLock();
+		try {
+			position.directSet(p);
+			rotation.directSet(r);
+			scale.directSet(s);
+		} finally {
+			lock.writeUnlock(seq);
+		}
+	}
+	
 	public Transform createSum(Transform t){
 		Transform r = new Transform();
 		r.setPosition(position.add(t.getPosition()));
@@ -81,7 +138,7 @@ public class Transform {
 
 	public Transform getAbsolutePosition(){
 		if(parent == null) return this;
-		return this.createSum(parent.getAbsolutePosition());
+		return this.createSum(parent.get().getAbsolutePosition());
 
 	}
 
@@ -95,5 +152,9 @@ public class Transform {
 
 	public String toString() {
 		return getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
+	}
+
+	public OptimisticReadWriteLock getLock() {
+		return lock;
 	}
 }

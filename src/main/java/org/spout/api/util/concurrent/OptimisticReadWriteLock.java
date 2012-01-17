@@ -49,21 +49,28 @@ public class OptimisticReadWriteLock {
 	 * Read locks the lock, and waits if necessary.
 	 *
 	 * @return the sequence number
-	 * @throws InterruptedException if the thread is interrupted while waiting
 	 */
-	public int readLock() throws InterruptedException {
+	public int readLock() {
 		int seq;
 		if ((seq = tryReadLock()) != UNSTABLE) {
 			return seq;
 		} else {
 			synchronized(this) {
+				boolean interrupted = false;
 				waiting++;
 				try {
 					while (true) {
 						if ((seq = tryReadLock()) != UNSTABLE) {
+							if (interrupted) {
+								Thread.currentThread().interrupt();
+							}
 							return seq;
 						}
-						wait();
+						try {
+							wait();
+						} catch (InterruptedException ie) {
+							interrupted = true;
+						}
 					}
 				} finally {
 					waiting--;
@@ -96,22 +103,28 @@ public class OptimisticReadWriteLock {
 
 	/**
 	 * Write locks the lock, and waits if necessary.
-	 *
-	 * @throws InterruptedException if the thread is interrupted while waiting
 	 */
-	public int writeLock() throws InterruptedException {
+	public int writeLock() {
 		int seq;
 		if ((seq = tryWriteLock()) != UNSTABLE) {
 			return seq;
 		} else {
 			synchronized(this) {
+				boolean interrupted = false;
 				waiting++;
 				try {
 					while (true) {
 						if ((seq = tryWriteLock()) != UNSTABLE) {
+							if (interrupted) {
+								Thread.currentThread().interrupt();
+							}
 							return seq;
 						}
-						wait();
+						try {
+							wait();
+						} catch (InterruptedException ie) {
+							interrupted = true;
+						}
 					}
 				} finally {
 					waiting--;

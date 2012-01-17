@@ -30,85 +30,76 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class OptimisticReadWriteLockTest {
-	
+
 	private final int LENGTH = 1000000;
-	
+
 	private OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
-	
+
 	int seqRead;
 	int seqWrite;
-	
+
 	@Test
 	public void testLock() {
-		
-		long startTime = System.nanoTime();
-		
-		for (int i = 0; i < LENGTH; i++) {
-			try {
-				int seq = lock.writeLock();
-				lock.writeUnlock(seq);
-			} catch (InterruptedException e) {
-				
-			}
-		}
-		
-		long endTime = System.nanoTime();
-		
-		System.out.println("Time for " + LENGTH + " write lock/unlocks was " + (endTime - startTime) + "ns");
-		
-		try {
 
-			readLock();
-			
-			writeLock();
-			
-			readUnlock(false);
-			
-			tryWriteLock();
-			
-			writeUnlock();
-			
-			writeLock();
-			
-			tryReadLock();
-			
-			writeUnlock();
-			
-			readLock();
-			
-			writeLock();
-			
-			writeUnlock();
-			
-			readUnlock(false);
-			
-			readLock();
-			
-			readUnlock(true);
-			
-		} catch (InterruptedException e) {
-			assertTrue("Test interrupted", false);
+		long startTime = System.nanoTime();
+
+		for (int i = 0; i < LENGTH; i++) {
+			int seq = lock.writeLock();
+			lock.writeUnlock(seq);
 		}
-		
+
+		long endTime = System.nanoTime();
+
+		System.out.println("Time for " + LENGTH + " write lock/unlocks was " + (endTime - startTime) + "ns");
+
+
+		readLock();
+
+		writeLock();
+
+		readUnlock(false);
+
+		tryWriteLock();
+
+		writeUnlock();
+
+		writeLock();
+
+		tryReadLock();
+
+		writeUnlock();
+
+		readLock();
+
+		writeLock();
+
+		writeUnlock();
+
+		readUnlock(false);
+
+		readLock();
+
+		readUnlock(true);
+
 	}
-	
-	private void readLock() throws InterruptedException {
+
+	private void readLock() {
 		System.out.println("Read locking lock");
 		seqRead = lock.readLock();
 		assertTrue("Read lock unsuccessful when write lock inactive", seqRead != OptimisticReadWriteLock.UNSTABLE);
 		System.out.println("- Read lock successful");
 		System.out.println();
 	}
-	
-	private void tryReadLock() throws InterruptedException {
+
+	private void tryReadLock() {
 		System.out.println("Trying to read locking lock");
 		int s = lock.tryReadLock();
 		assertTrue("Read lock successful when write lock active", s == OptimisticReadWriteLock.UNSTABLE);
 		System.out.println("- Try read lock failed (as expected)");
 		System.out.println();
 	}
-	
-	private void readUnlock(boolean successExpected) throws InterruptedException {
+
+	private void readUnlock(boolean successExpected) {
 		System.out.println("Read unlocking lock");
 		boolean success = lock.readUnlock(seqRead);
 		if (successExpected) {
@@ -119,21 +110,21 @@ public class OptimisticReadWriteLockTest {
 		System.out.println("- Read unlock success: " + success + " (as expected)");
 		System.out.println();
 	}
-	
-	private void writeLock() throws InterruptedException {
+
+	private void writeLock() {
 		System.out.println("Write locking lock");
 		seqWrite = lock.writeLock();
 		assertTrue("Write lock unsuccessful, which should not be possible", seqWrite != OptimisticReadWriteLock.UNSTABLE);
 		System.out.println("- Write lock successful");
 		System.out.println();
 	}
-	
-	private void writeUnlock() throws InterruptedException {
+
+	private void writeUnlock() {
 		System.out.println("Write unlocking lock");
 		lock.writeUnlock(seqWrite);
 		System.out.println();
 	}	
-	private void tryWriteLock() throws InterruptedException {
+	private void tryWriteLock() {
 		System.out.println("Trying to write lock");
 		int w = lock.tryWriteLock();
 		assertTrue("Write lock successful when write lock already active", w == OptimisticReadWriteLock.UNSTABLE);
