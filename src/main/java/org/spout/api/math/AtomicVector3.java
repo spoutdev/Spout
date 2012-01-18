@@ -25,19 +25,15 @@
  */
 package org.spout.api.math;
 
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.AtomicPoint;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.util.concurrent.AtomicLinkable;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
-public class AtomicVector3 extends Vector3m implements AtomicLinkable {
+public class AtomicVector3 extends Vector3m {
 	
 	private final OptimisticReadWriteLock lock;
 	
 	public AtomicVector3(OptimisticReadWriteLock lock) {
 		super();
-		this.lock = getLock(lock);
+		this.lock = handleNull(lock);
 	}
 
 	@Override
@@ -87,6 +83,19 @@ public class AtomicVector3 extends Vector3m implements AtomicLinkable {
 	 */
 	public void directSet(Vector3 vector) {
 		super.set(vector);
+	}
+	
+	/**
+	 * Sets the value of the Vector3 without any synchronisation
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void directSet(float x, float y, float z) {
+		super.setX(x);
+		super.setY(y);
+		super.setZ(z);
 	}
 
 	/**
@@ -219,7 +228,7 @@ public class AtomicVector3 extends Vector3m implements AtomicLinkable {
 		}
 	}
 	
-	private OptimisticReadWriteLock getLock(OptimisticReadWriteLock lock) {
+	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {
 			return new OptimisticReadWriteLock();
 		} else {
@@ -227,7 +236,7 @@ public class AtomicVector3 extends Vector3m implements AtomicLinkable {
 		}
 	}
 
-	public OptimisticReadWriteLock getLock() {
+	private OptimisticReadWriteLock getLock() {
 		return lock;
 	}
 }

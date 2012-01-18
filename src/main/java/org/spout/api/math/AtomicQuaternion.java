@@ -25,7 +25,6 @@
  */
 package org.spout.api.math;
 
-import org.spout.api.util.concurrent.AtomicLinkable;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 /**
@@ -33,7 +32,7 @@ import org.spout.api.util.concurrent.OptimisticReadWriteLock;
  *
  *
  */
-public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
+public class AtomicQuaternion extends Quaternionm {
 	
 	private final OptimisticReadWriteLock lock;
 	
@@ -42,7 +41,7 @@ public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
 	 */
 	public AtomicQuaternion(OptimisticReadWriteLock lock) {
 		super();
-		this.lock = getLock(lock);
+		this.lock = handleNull(lock);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
 	 */
 	public AtomicQuaternion(OptimisticReadWriteLock lock, float x, float y, float z, float w){
 		super(x, y, z, w);
-		this.lock = getLock(lock);
+		this.lock = handleNull(lock);
 	}
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an arbatrary axis
@@ -65,14 +64,14 @@ public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
 	 */
 	public AtomicQuaternion(OptimisticReadWriteLock lock, float angle, Vector3 axis){
 		super(angle, axis);
-		this.lock = getLock(lock);
+		this.lock = handleNull(lock);
 	}
 	/**
 	 *  Copy Constructor
 	 */
 	public AtomicQuaternion(OptimisticReadWriteLock lock, AtomicQuaternion rotation) {
 		super(rotation);
-		this.lock = getLock(lock);
+		this.lock = handleNull(lock);
 	}
 
 	@Override
@@ -132,6 +131,21 @@ public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
 	 */
 	public void directSet(Quaternion quaternion) {
 		super.set(quaternion);
+	}
+	
+	/**
+	 * Sets the value of the quaternion without any synchronisation
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
+	public void directSet(float x, float y, float z, float w) {
+		super.setX(x);
+		super.setY(y);
+		super.setZ(z);
+		super.setW(w);
 	}
 	
 	/**
@@ -240,7 +254,7 @@ public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
 		}
 	}
 	
-	private OptimisticReadWriteLock getLock(OptimisticReadWriteLock lock) {
+	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {
 			return new OptimisticReadWriteLock();
 		} else {
@@ -248,7 +262,7 @@ public class AtomicQuaternion extends Quaternionm implements AtomicLinkable {
 		}
 	}
 
-	public OptimisticReadWriteLock getLock() {
+	private OptimisticReadWriteLock getLock() {
 		return lock;
 	}
 }

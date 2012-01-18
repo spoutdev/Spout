@@ -26,20 +26,18 @@
 package org.spout.api.geo.discrete;
 
 import org.spout.api.geo.World;
-import org.spout.api.math.Quaternion;
-import org.spout.api.util.concurrent.AtomicLinkable;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 /**
  * Represents a mutable position in a World
  */
-public class AtomicPoint extends Pointm implements AtomicLinkable {
+public class AtomicPoint extends Pointm {
 
 	private final OptimisticReadWriteLock lock;
 
 	public AtomicPoint(OptimisticReadWriteLock lock) {
 		super();
-		this.lock = getLock(lock);
+		this.lock = handleNull(lock);
 	}
 
 	@Override
@@ -85,10 +83,25 @@ public class AtomicPoint extends Pointm implements AtomicLinkable {
 	/**
 	 * Sets the value of the Point without any synchronisation
 	 * 
-	 * @param quaternion
+	 * @param point
 	 */
 	public void directSet(Point point) {
 		super.set(point);
+	}
+	
+	/**
+	 * Sets the value of the Point without any synchronisation
+	 * 
+	 * @param world
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void directSet(World world, float x, float y, float z) {
+		super.setWorld(world);
+		super.setX(x);
+		super.setY(y);
+		super.setZ(z);
 	}
 	
 	@Override
@@ -281,7 +294,7 @@ public class AtomicPoint extends Pointm implements AtomicLinkable {
 		}
 	}
 
-	private OptimisticReadWriteLock getLock(OptimisticReadWriteLock lock) {
+	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {
 			return new OptimisticReadWriteLock();
 		} else {
@@ -289,10 +302,7 @@ public class AtomicPoint extends Pointm implements AtomicLinkable {
 		}
 	}
 
-	public OptimisticReadWriteLock getLock() {
+	private OptimisticReadWriteLock getLock() {
 		return lock;
 	}
-
-
-
 }

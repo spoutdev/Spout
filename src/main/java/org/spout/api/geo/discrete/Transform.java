@@ -34,10 +34,9 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector3m;
-import org.spout.api.util.concurrent.AtomicLinkable;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
-public class Transform implements AtomicLinkable {
+public class Transform {
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final AtomicPoint position = new AtomicPoint(lock);
 	private final AtomicQuaternion rotation = new AtomicQuaternion(lock);
@@ -95,7 +94,15 @@ public class Transform implements AtomicLinkable {
 		}
 	}
 
+	/**
+	 * Atomically sets the value of this transform to the value of another transform
+	 * 
+	 * @param transform the other transform
+	 */
 	public void set(Transform transform) {
+		if (lock == transform.getLock()) {
+			throw new IllegalArgumentException("Attemping to set a transform to another transform with the same lock");
+		}
 		int seq = lock.writeLock();
 		try {
 			while (true) {
@@ -107,6 +114,32 @@ public class Transform implements AtomicLinkable {
 					return;
 				}
 			}
+		} finally {
+			lock.writeUnlock(seq);
+		}
+	}
+	
+	/**
+	 * Atomically sets the value of this transform.
+	 * 
+	 * @param world the world
+	 * @param px the x coordinate of the position
+	 * @param py the y coordinate of the position
+	 * @param pz the z coordinate of the position
+	 * @param rx the x coordinate of the quaternion
+	 * @param ry the y coordinate of the quaternion
+	 * @param rz the z coordinate of the quaternion
+	 * @param rw the w coordinate of the quaternion
+	 * @param sx the x coordinate of the scale
+	 * @param sy the y coordinate of the scale
+	 * @param sz the z coordinate of the scale
+	 */
+	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
+		int seq = lock.writeLock();
+		try {
+			this.position.directSet(world, px, py, pz);
+			this.rotation.directSet(rx, ry, rz, rw);
+			this.scale.directSet(sx, sy, sz);
 		} finally {
 			lock.writeUnlock(seq);
 		}
@@ -154,7 +187,7 @@ public class Transform implements AtomicLinkable {
 		return getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
 	}
 
-	public OptimisticReadWriteLock getLock() {
+	private OptimisticReadWriteLock getLock() {
 		return lock;
 	}
 }
