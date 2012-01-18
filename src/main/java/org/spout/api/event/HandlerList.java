@@ -76,7 +76,9 @@ public class HandlerList {
 
 	public static void unregisterAll() {
 		for (HandlerList h : alllists) {
-			h.handlerslots.clear();
+			for (List<ListenerRegistration> regs : h.handlerslots.values()) {
+				regs.clear();
+			}
 			h.baked = false;
 		}
 	}

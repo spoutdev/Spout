@@ -36,7 +36,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventHandler {
-	Class<? extends Event> event();
 
 	Order order() default Order.DEFAULT;
 }

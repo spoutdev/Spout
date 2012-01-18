@@ -101,7 +101,7 @@ public class SimpleEventManager implements EventManager {
 			clazz.getDeclaredMethod("getHandlerList");
 			return clazz;
 		} catch (NoSuchMethodException e) {
-			if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && clazz.getSuperclass().isAssignableFrom(Event.class)) {
+			if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && Event.class.isAssignableFrom(clazz.getSuperclass())) {
 				return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
 			} else {
 				throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName());
@@ -124,15 +124,18 @@ public class SimpleEventManager implements EventManager {
 				continue;
 			}
 			final Class<?> checkClass = method.getParameterTypes()[0];
-			if (!checkClass.isAssignableFrom(eh.event()) || method.getParameterTypes().length != 1) {
+			Class<? extends Event> eventClass;
+			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
 				Spout.getGame().getLogger().severe("Wrong method arguments used for event type registered");
 				continue;
+			} else {
+				eventClass = checkClass.asSubclass(Event.class);
 			}
 			method.setAccessible(true);
-			Set<ListenerRegistration> eventSet = ret.get(eh.event());
+			Set<ListenerRegistration> eventSet = ret.get(eventClass);
 			if (eventSet == null) {
 				eventSet = new HashSet<ListenerRegistration>();
-				ret.put(eh.event(), eventSet);
+				ret.put(eventClass, eventSet);
 			}
 			eventSet.add(new ListenerRegistration(new EventExecutor() {
 

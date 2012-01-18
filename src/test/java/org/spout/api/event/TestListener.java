@@ -28,7 +28,7 @@ package org.spout.api.event;
 public class TestListener implements Listener {
 	private boolean hasBeenCalled = false;
 
-	@EventHandler(event = TestEvent.class, order = Order.DEFAULT)
+	@EventHandler(order = Order.DEFAULT)
 	public void onTestEvent(TestEvent event) {
 		hasBeenCalled = true;
 	}
