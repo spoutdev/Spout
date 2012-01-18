@@ -78,7 +78,7 @@ public class MessagingCommands {
 	@Command(aliases = "me", usage = "<message>", desc = "Sends a narrative message to the other players", min = 1, max = -1)
 	@CommandPermissions("vanilla.command.me")
 	public void me(CommandContext args, CommandSource source) throws CommandException {
-		String message = args.getString(0);
+		String message = args.getJoinedString(0);
 		if (source instanceof Player) {
 			Spout.getGame().broadcastMessage("* " + source.getName() + " " + message);
 		} else {
