@@ -42,7 +42,7 @@ public class InternalEventListener implements Listener {
 		this.server = server;
 	}
 
-	@EventHandler(event = PlayerConnectEvent.class, order = Order.MONITOR)
+	@EventHandler(order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if(event.isCancelled()) return;
 		//Create the player
@@ -55,7 +55,7 @@ public class InternalEventListener implements Listener {
 		}
 	}
 
-	@EventHandler(event = PlayerJoinEvent.class, order = Order.LATEST)
+	@EventHandler(order = Order.LATEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SpoutPlayer p = (SpoutPlayer)event.getPlayer();
 
