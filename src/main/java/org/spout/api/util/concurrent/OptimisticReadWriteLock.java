@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class OptimisticReadWriteLock {
 
-	private int waiting = 0;	
+	private final AtomicInteger waiting = new AtomicInteger(0);	
 	private final AtomicInteger sequence = new AtomicInteger(0);
 	public final static int UNSTABLE = 1;
 
@@ -57,7 +57,7 @@ public class OptimisticReadWriteLock {
 		} else {
 			synchronized(this) {
 				boolean interrupted = false;
-				waiting++;
+				waiting.incrementAndGet();
 				try {
 					while (true) {
 						if ((seq = tryReadLock()) != UNSTABLE) {
@@ -73,7 +73,7 @@ public class OptimisticReadWriteLock {
 						}
 					}
 				} finally {
-					waiting--;
+					waiting.decrementAndGet();
 				}
 			}
 		}
@@ -88,7 +88,7 @@ public class OptimisticReadWriteLock {
 	 * @return true if the sequence number has not changed and the lock is not in the UNSTABLE state
 	 */
 	public boolean readUnlock(int sequence) {
-		int seq = this.sequence.get();
+		int seq = this.sequence.getAndAdd(0);
 		return seq != UNSTABLE && seq == sequence;
 	}
 
@@ -111,7 +111,7 @@ public class OptimisticReadWriteLock {
 		} else {
 			synchronized(this) {
 				boolean interrupted = false;
-				waiting++;
+				waiting.incrementAndGet();
 				try {
 					while (true) {
 						if ((seq = tryWriteLock()) != UNSTABLE) {
@@ -127,7 +127,7 @@ public class OptimisticReadWriteLock {
 						}
 					}
 				} finally {
-					waiting--;
+					waiting.decrementAndGet();
 				}
 			}
 		}
@@ -144,8 +144,8 @@ public class OptimisticReadWriteLock {
 				throw new IllegalStateException("Write unlock called when the write lock was not active");
 			}
 		} finally {
-			synchronized(this) {
-				if (waiting > 0) {
+			if (waiting.getAndAdd(0) > 0) {
+				synchronized(this) {
 					notifyAll();
 				}
 			}

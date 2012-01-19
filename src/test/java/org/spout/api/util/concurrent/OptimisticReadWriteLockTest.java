@@ -92,7 +92,7 @@ public class OptimisticReadWriteLockTest {
 	}
 
 	private void tryReadLock() {
-		System.out.println("Trying to read locking lock");
+		System.out.println("Trying to read lock");
 		int s = lock.tryReadLock();
 		assertTrue("Read lock successful when write lock active", s == OptimisticReadWriteLock.UNSTABLE);
 		System.out.println("- Try read lock failed (as expected)");
