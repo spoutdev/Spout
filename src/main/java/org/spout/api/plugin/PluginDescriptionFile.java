@@ -82,6 +82,10 @@ public class PluginDescriptionFile {
 			if (!this.name.matches("^[A-Za-z0-9 _.-]+$")) {
 				throw new InvalidDescriptionFileException("The field 'name' in plugin.yml contains invalid characters.");
 			}
+
+			if (!this.name.toLowerCase().contains("spout")) {
+				throw new InvalidDescriptionFileException(new StringBuilder().append("The plugin '").append(name).append("' has Spout in the name. This is not allowed.").toString());
+			}
 		} catch (NullPointerException ex) {
 			throw new InvalidDescriptionFileException(ex, "The field 'name' is not defined in the plugin.yml!");
 		} catch (ClassCastException ex) {
@@ -90,6 +94,17 @@ public class PluginDescriptionFile {
 
 		try {
 			this.main = (String) map.get("main");
+
+			if (main.startsWith("org.spout")) {
+				throw new InvalidDescriptionFileException("The use of the namespace 'org.spout' is not permitted.");
+			} else if (main.startsWith("org.spout")) {
+				throw new InvalidDescriptionFileException("The use of the namespace 'org.getspout' is not permitted.");
+			} else if (main.startsWith("org.spoutcraft")) {
+				throw new InvalidDescriptionFileException("The use of the namespace 'org.spoutcraft' is not permitted.");
+			} else if (main.startsWith("in.spout")) {
+				throw new InvalidDescriptionFileException("The use of the namespace 'in.spout' is not permitted.");
+			}
+
 		} catch (NullPointerException ex) {
 			throw new InvalidDescriptionFileException(ex, "The field 'main' is not defined in the plugin.yml!");
 		} catch (ClassCastException ex) {
