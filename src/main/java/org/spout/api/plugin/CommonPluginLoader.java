@@ -55,8 +55,7 @@ public class CommonPluginLoader implements PluginLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final Map<String, CommonClassLoader> loaders = new HashMap<String, CommonClassLoader>();
 
-	public CommonPluginLoader(final Game game,
-			final CommonSecurityManager manager, final double key) {
+	public CommonPluginLoader(final Game game, final CommonSecurityManager manager, final double key) {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;
