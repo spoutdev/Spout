@@ -95,14 +95,18 @@ public class PluginDescriptionFile {
 		try {
 			this.main = (String) map.get("main");
 
-			if (main.startsWith("org.spout")) {
-				throw new InvalidDescriptionFileException("The use of the namespace 'org.spout' is not permitted.");
-			} else if (main.startsWith("org.spout")) {
-				throw new InvalidDescriptionFileException("The use of the namespace 'org.getspout' is not permitted.");
-			} else if (main.startsWith("org.spoutcraft")) {
-				throw new InvalidDescriptionFileException("The use of the namespace 'org.spoutcraft' is not permitted.");
-			} else if (main.startsWith("in.spout")) {
-				throw new InvalidDescriptionFileException("The use of the namespace 'in.spout' is not permitted.");
+			if (main.toLowerCase().startsWith("org.spout")) {
+				if (!isOfficialPlugin(main))
+					throw new InvalidDescriptionFileException("The use of the namespace 'org.spout' is not permitted.");
+			} else if (main.toLowerCase().startsWith("org.spout")) {
+				if (!isOfficialPlugin(main))
+					throw new InvalidDescriptionFileException("The use of the namespace 'org.getspout' is not permitted.");
+			} else if (main.toLowerCase().startsWith("org.spoutcraft")) {
+				if (!isOfficialPlugin(main))
+					throw new InvalidDescriptionFileException("The use of the namespace 'org.spoutcraft' is not permitted.");
+			} else if (main.toLowerCase().startsWith("in.spout")) {
+				if (!isOfficialPlugin(main))
+					throw new InvalidDescriptionFileException("The use of the namespace 'in.spout' is not permitted.");
 			}
 
 		} catch (NullPointerException ex) {
@@ -193,6 +197,15 @@ public class PluginDescriptionFile {
 			}
 		}
 
+	}
+	
+	/**
+	 * Returns true if the plugin is an Official Spout Plugin
+	 * @param namespace
+	 * @return true if an official plugin
+	 */
+	private boolean isOfficialPlugin(String namespace) {
+		return namespace.equalsIgnoreCase("org.spout.vanilla.vanillaplugin");
 	}
 
 	/**
