@@ -75,7 +75,7 @@ public class CommonPluginLoader implements PluginLoader {
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
-				loaders.put(name, (CommonClassLoader)cp.getClassLoader());
+				loaders.put(name, (CommonClassLoader) cp.getClassLoader());
 			}
 
 			try {
@@ -85,7 +85,7 @@ public class CommonPluginLoader implements PluginLoader {
 				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
-			//TODO call PluginEnableEvent
+			// TODO call PluginEnableEvent
 		}
 	}
 
@@ -98,7 +98,7 @@ public class CommonPluginLoader implements PluginLoader {
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
-				loaders.put(name, (CommonClassLoader)cp.getClassLoader());
+				loaders.put(name, (CommonClassLoader) cp.getClassLoader());
 			}
 
 			try {
@@ -108,12 +108,12 @@ public class CommonPluginLoader implements PluginLoader {
 				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(e.getMessage()).toString(), e);
 			}
 
-			//TODO call PluginDisableEvent
+			// TODO call PluginDisableEvent
 		}
 
 	}
 
-	public Plugin loadPlugin(File paramFile) throws InvalidPluginException,	InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
+	public Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		return loadPlugin(paramFile, false);
 	}
 
@@ -159,7 +159,6 @@ public class CommonPluginLoader implements PluginLoader {
 
 		File dataFolder = new File(paramFile.getParentFile(), desc.getName());
 
-
 		List<String> depends = desc.getDepends();
 		if (depends == null) {
 			depends = new ArrayList<String>();
@@ -195,7 +194,7 @@ public class CommonPluginLoader implements PluginLoader {
 			URL[] urls = new URL[1];
 			urls[0] = paramFile.toURI().toURL();
 
-			loader = game.getPlatform() == Platform.CLIENT ? new ClientClassLoader(this, urls, getClass().getClassLoader()) :  new CommonClassLoader(this, urls, getClass().getClassLoader());
+			loader = game.getPlatform() == Platform.CLIENT ? new ClientClassLoader(this, urls, getClass().getClassLoader()) : new CommonClassLoader(this, urls, getClass().getClassLoader());
 			Class<?> main = Class.forName(desc.getMain(), true, loader);
 			Class<? extends CommonPlugin> plugin = main.asSubclass(CommonPlugin.class);
 

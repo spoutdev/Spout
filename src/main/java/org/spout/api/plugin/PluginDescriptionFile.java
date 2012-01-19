@@ -83,7 +83,7 @@ public class PluginDescriptionFile {
 				throw new InvalidDescriptionFileException("The field 'name' in plugin.yml contains invalid characters.");
 			}
 
-			if (!this.name.toLowerCase().contains("spout")) {
+			if (this.name.toLowerCase().contains("spout")) {
 				throw new InvalidDescriptionFileException(new StringBuilder().append("The plugin '").append(name).append("' has Spout in the name. This is not allowed.").toString());
 			}
 		} catch (NullPointerException ex) {

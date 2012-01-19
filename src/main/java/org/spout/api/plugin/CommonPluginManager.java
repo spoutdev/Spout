@@ -68,14 +68,14 @@ public class CommonPluginManager implements PluginManager {
 		PluginLoader instance = null;
 
 		try {
-			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Game.class, CommonSecurityManager.class, double.class});
+			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] { Game.class, CommonSecurityManager.class, double.class });
 
-			instance = constructor.newInstance(new Object[] {game, manager, key});
+			instance = constructor.newInstance(new Object[] { game, manager, key });
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error registering plugin loader!", e);
 		}
 
-		synchronized(this) {
+		synchronized (this) {
 			for (Pattern pattern : instance.getPatterns()) {
 				loaders.put(pattern, instance);
 			}
@@ -150,11 +150,11 @@ public class CommonPluginManager implements PluginManager {
 		boolean failed = false;
 		boolean lastPass = false;
 
-		while(!failed || lastPass) {
+		while (!failed || lastPass) {
 			failed = true;
 			Iterator<File> iterator = files.iterator();
 
-			while(iterator.hasNext()) {
+			while (iterator.hasNext()) {
 				File file = iterator.next();
 				Plugin plugin = null;
 
@@ -204,11 +204,11 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public void clearPlugins() {
-		synchronized(this) {
+		synchronized (this) {
 			disablePlugins();
 			plugins.clear();
 			names.clear();
-			//HandlerList.unregisterAll();
+			// HandlerList.unregisterAll();
 		}
 	}
 
@@ -244,7 +244,7 @@ public class CommonPluginManager implements PluginManager {
 
 	private void safelyLog(Level level, String message, Throwable ex) {
 		boolean relock = false;
-		if (manager.isLocked()){
+		if (manager.isLocked()) {
 			relock = true;
 			manager.unlock(key);
 		}
