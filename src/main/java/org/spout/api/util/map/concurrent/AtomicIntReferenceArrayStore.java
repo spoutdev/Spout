@@ -424,7 +424,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * 
 	 * @return true if interrupted during the wait
 	 */
-	private boolean atomicWait() {
+	private final boolean atomicWait() {
 		waiting.incrementAndGet();
 		try {
 			synchronized(this) {
@@ -443,7 +443,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	/**
 	 * Notifies all waiting threads
 	 */
-	private void atomicNotify() {
+	private final void atomicNotify() {
 		if (waiting.getAndAdd(0) > 0) {
 			synchronized(this) {
 				notifyAll();

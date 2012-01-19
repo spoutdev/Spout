@@ -48,6 +48,8 @@ public class AtomicBlockStore<T> {
 	private final byte[] dirtyY;
 	private final byte[] dirtyZ;
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
+	private final AtomicInteger waiting = new AtomicInteger(0);
+	private final int SPINS = 10;
 
 	public AtomicBlockStore(int shift) {
 		this(shift, 10);
@@ -75,17 +77,28 @@ public class AtomicBlockStore<T> {
 	public final int getSequence(int x, int y, int z) {
 		checkCompressing();
 		int index = getIndex(x, y, z);
-		while (true) {
-			checkCompressing();
-
-			int blockId = blockIds.get(index);
-			if (!auxStore.isReserved(blockId)) {
-				return DatatableSequenceNumber.ATOMIC;
-			} else {
-				int sequence = auxStore.getSequence(blockId);
-				if (sequence != DatatableSequenceNumber.UNSTABLE) {
-					return sequence;
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
 				}
+				checkCompressing();
+
+				int blockId = blockIds.get(index);
+				if (!auxStore.isReserved(blockId)) {
+					return DatatableSequenceNumber.ATOMIC;
+				} else {
+					int sequence = auxStore.getSequence(blockId);
+					if (sequence != DatatableSequenceNumber.UNSTABLE) {
+						return sequence;
+					}
+				}
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -102,19 +115,30 @@ public class AtomicBlockStore<T> {
 	 */
 	public final int getBlockId(int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		while (true) {
-			checkCompressing();
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
+				}
+				checkCompressing();
 
-			int seq = getSequence(x, y, z);
-			short blockId = blockIds.get(index);
-			if (auxStore.isReserved(blockId)) {
-				blockId = auxStore.getId(blockId);
-				int seq2 = getSequence(x, y, z);
-				if (seq == seq2) {
+				int seq = getSequence(x, y, z);
+				short blockId = blockIds.get(index);
+				if (auxStore.isReserved(blockId)) {
+					blockId = auxStore.getId(blockId);
+					int seq2 = getSequence(x, y, z);
+					if (seq == seq2) {
+						return blockId & 0x0000FFFF;
+					}
+				} else {
 					return blockId & 0x0000FFFF;
 				}
-			} else {
-				return blockId & 0x0000FFFF;
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -131,19 +155,30 @@ public class AtomicBlockStore<T> {
 	 */
 	public final int getData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		while (true) {
-			checkCompressing();
-
-			int seq = getSequence(x, y, z);
-			short blockId = blockIds.get(index);
-			if (auxStore.isReserved(blockId)) {
-				blockId = auxStore.getData(blockId);
-				int seq2 = getSequence(x, y, z);
-				if (seq == seq2) {
-					return blockId & 0x0000FFFF;
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
 				}
-			} else {
-				return 0;
+				checkCompressing();
+
+				int seq = getSequence(x, y, z);
+				short blockId = blockIds.get(index);
+				if (auxStore.isReserved(blockId)) {
+					blockId = auxStore.getData(blockId);
+					int seq2 = getSequence(x, y, z);
+					if (seq == seq2) {
+						return blockId & 0x0000FFFF;
+					}
+				} else {
+					return 0;
+				}
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -160,19 +195,30 @@ public class AtomicBlockStore<T> {
 	 */
 	public final T getAuxData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		while (true) {
-			checkCompressing();
-
-			int seq = getSequence(x, y, z);
-			short blockId = blockIds.get(index);
-			if (auxStore.isReserved(blockId)) {
-				T auxData = auxStore.getAuxData(blockId);
-				int seq2 = getSequence(x, y, z);
-				if (seq == seq2) {
-					return auxData;
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
 				}
-			} else {
-				return null;
+				checkCompressing();
+
+				int seq = getSequence(x, y, z);
+				short blockId = blockIds.get(index);
+				if (auxStore.isReserved(blockId)) {
+					T auxData = auxStore.getAuxData(blockId);
+					int seq2 = getSequence(x, y, z);
+					if (seq == seq2) {
+						return auxData;
+					}
+				} else {
+					return null;
+				}
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -203,24 +249,35 @@ public class AtomicBlockStore<T> {
 			fullData = new BlockFullState<T>();
 		}
 		int index = getIndex(x, y, z);
-		while (true) {
-			checkCompressing();
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
+				}
+				checkCompressing();
 
-			int seq = getSequence(x, y, z);
-			short blockId = blockIds.get(index);
-			if (auxStore.isReserved(blockId)) {
-				fullData.setId(auxStore.getId(blockId));
-				fullData.setData(auxStore.getData(blockId));
-				fullData.setAuxData(auxStore.getAuxData(blockId));
-				int seq2 = getSequence(x, y, z);
-				if (seq == seq2) {
+				int seq = getSequence(x, y, z);
+				short blockId = blockIds.get(index);
+				if (auxStore.isReserved(blockId)) {
+					fullData.setId(auxStore.getId(blockId));
+					fullData.setData(auxStore.getData(blockId));
+					fullData.setAuxData(auxStore.getAuxData(blockId));
+					int seq2 = getSequence(x, y, z);
+					if (seq == seq2) {
+						return fullData;
+					}
+				} else {
+					fullData.setId(blockId);
+					fullData.setData((short)0);
+					fullData.setAuxData(null);
 					return fullData;
 				}
-			} else {
-				fullData.setId(blockId);
-				fullData.setData((short)0);
-				fullData.setAuxData(null);
-				return fullData;
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -253,37 +310,49 @@ public class AtomicBlockStore<T> {
 	 */
 	public final void setBlock(int x, int y, int z, short id, short data, T auxData) {
 		int index = getIndex(x, y, z);
-		while (true) {
-			checkCompressing();
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
+				}
+				checkCompressing();
 
-			short oldBlockId = blockIds.get(index);
-			boolean oldReserved = auxStore.isReserved(oldBlockId);
-			if (data == 0 && auxData == null && !auxStore.isReserved(id)) {
-				if (!blockIds.compareAndSet(index, oldBlockId, id)) {
-					continue;
-				}
-				if (oldReserved) {
-					if (!auxStore.remove(oldBlockId)) {
-						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+				short oldBlockId = blockIds.get(index);
+				boolean oldReserved = auxStore.isReserved(oldBlockId);
+				if (data == 0 && auxData == null && !auxStore.isReserved(id)) {
+					if (!blockIds.compareAndSet(index, oldBlockId, id)) {
+						continue;
 					}
-				}
-				markDirty(x, y, z);
-				return;
-			} else {
-				int newIndex = auxStore.add(id, data, auxData);
-				if (!blockIds.compareAndSet(index, oldBlockId, (short)newIndex)) {
-					if (auxStore.remove(newIndex)) {
-						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+					if (oldReserved) {
+						if (!auxStore.remove(oldBlockId)) {
+							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+						}
 					}
-					continue;
-				}
-				if (oldReserved) {
-					if (!auxStore.remove(oldBlockId)) {
-						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+					return;
+				} else {
+					int newIndex = auxStore.add(id, data, auxData);
+					if (!blockIds.compareAndSet(index, oldBlockId, (short)newIndex)) {
+						if (auxStore.remove(newIndex)) {
+							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+						}
+						continue;
 					}
+					if (oldReserved) {
+						if (!auxStore.remove(oldBlockId)) {
+							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+						}
+					}
+					return;
 				}
-				markDirty(x, y, z);
-				return;
+
+			}
+		} finally {
+			markDirty(x, y, z);
+			atomicNotify();
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -304,57 +373,68 @@ public class AtomicBlockStore<T> {
 	 */
 	public final boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, T expectAuxData, short newId, short newData, T newAuxData) {
 		int index = getIndex(x, y, z);
-
-		while (true) {
-			checkCompressing();
-
-			short oldBlockId = blockIds.get(index);
-			boolean oldReserved = auxStore.isReserved(oldBlockId);
-
-			if (!oldReserved) {
-				if (blockIds.get(index) != expectId || expectData != 0 || expectAuxData != null) {
-					return false;
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
 				}
-			} else {
-				int seq1 = auxStore.getSequence(oldBlockId);
-				short oldId = auxStore.getId(oldBlockId);
-				short oldData = auxStore.getData(oldBlockId);
-				T oldAuxData = auxStore.getAuxData(oldBlockId);
-				int seq2 = auxStore.getSequence(oldBlockId);
-				if (seq1 != seq2) {
-					continue;
-				}
-				if (oldId != expectId || oldData != expectData || oldAuxData != expectAuxData) {
-					return false;
-				}
-			}
+				checkCompressing();
 
-			if (newData == 0 && newAuxData == null && !auxStore.isReserved(newId)) {
-				if (!blockIds.compareAndSet(index, oldBlockId, newId)) {
-					continue;
-				}
-				if (oldReserved) {
-					if (!auxStore.remove(oldBlockId)) {
-						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+				short oldBlockId = blockIds.get(index);
+				boolean oldReserved = auxStore.isReserved(oldBlockId);
+
+				if (!oldReserved) {
+					if (blockIds.get(index) != expectId || expectData != 0 || expectAuxData != null) {
+						return false;
+					}
+				} else {
+					int seq1 = auxStore.getSequence(oldBlockId);
+					short oldId = auxStore.getId(oldBlockId);
+					short oldData = auxStore.getData(oldBlockId);
+					T oldAuxData = auxStore.getAuxData(oldBlockId);
+					int seq2 = auxStore.getSequence(oldBlockId);
+					if (seq1 != seq2) {
+						continue;
+					}
+					if (oldId != expectId || oldData != expectData || oldAuxData != expectAuxData) {
+						return false;
 					}
 				}
-				markDirty(x, y, z);
-				return true;
-			} else {
-				int newIndex = auxStore.add(newId, newData, newAuxData);
-				if (!blockIds.compareAndSet(index, oldBlockId, (short)newIndex)) {
-					if (!auxStore.remove(newIndex)) {
-						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+
+				if (newData == 0 && newAuxData == null && !auxStore.isReserved(newId)) {
+					if (!blockIds.compareAndSet(index, oldBlockId, newId)) {
+						continue;
 					}
-					continue;
-				}
-				if (oldReserved) {
-					if (!auxStore.remove(oldBlockId)) {
-						throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+					if (oldReserved) {
+						if (!auxStore.remove(oldBlockId)) {
+							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+						}
 					}
+					markDirty(x, y, z);
+					return true;
+				} else {
+					int newIndex = auxStore.add(newId, newData, newAuxData);
+					if (!blockIds.compareAndSet(index, oldBlockId, (short)newIndex)) {
+						if (!auxStore.remove(newIndex)) {
+							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+						}
+						continue;
+					}
+					if (oldReserved) {
+						if (!auxStore.remove(oldBlockId)) {
+							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
+						}
+					}
+					markDirty(x, y, z);
+					return true;
 				}
-				markDirty(x, y, z);
-				return true;
+			} 
+		} finally {
+			atomicNotify();
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -518,6 +598,38 @@ public class AtomicBlockStore<T> {
 	private final void checkCompressing() {
 		if (compressing.get()) {
 			throw new IllegalStateException("Attempting to access block store during compression phase");
+		}
+	}
+	
+	/**
+	 * Waits until a notify
+	 * 
+	 * @return true if interrupted during the wait
+	 */
+	private final boolean atomicWait() {
+		waiting.incrementAndGet();
+		try {
+			synchronized(this) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					return true;
+				}
+			}
+		} finally {
+			waiting.decrementAndGet();
+		}
+		return true;
+	}
+	
+	/**
+	 * Notifies all waiting threads
+	 */
+	private final void atomicNotify() {
+		if (waiting.getAndAdd(0) > 0) {
+			synchronized(this) {
+				notifyAll();
+			}
 		}
 	}
 }
