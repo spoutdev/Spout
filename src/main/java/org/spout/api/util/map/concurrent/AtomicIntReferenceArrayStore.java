@@ -112,7 +112,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			int value = intArray.get()[index];
-			if (seqArray.get().get(index) != initialSequence) {
+			if (seqArray.get().getAndAdd(index, 0) != initialSequence) {
 				continue;
 			}
 			return value;
@@ -128,7 +128,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the sequence number
 	 */
 	public int getSequence(int index) {
-		return this.seqArray.get().get(toInternal(index));
+		return this.seqArray.get().getAndAdd(toInternal(index), 0);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			T auxData = auxArray.get()[index];
-			if (seqArray.get().get(index) != initialSequence) {
+			if (seqArray.get().getAndAdd(index, 0) != initialSequence) {
 				continue;
 			}
 			return auxData;
