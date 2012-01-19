@@ -47,6 +47,8 @@ import org.spout.api.math.MathHelper;
 public final class AtomicIntReferenceArrayStore<T> {
 	@SuppressWarnings("unchecked")
 	private final T EMPTY = (T)new Object();
+	
+	private final int SPINS = 10;
 
 	private final int maxLength;
 	private AtomicInteger length = new AtomicInteger(0);
@@ -57,6 +59,8 @@ public final class AtomicIntReferenceArrayStore<T> {
 	private AtomicReference<AtomicIntegerArray> seqArray;
 	private AtomicReference<T[]> auxArray;
 	private AtomicReference<int[]> intArray;
+
+	private AtomicInteger waiting = new AtomicInteger(0);
 
 	public AtomicIntReferenceArrayStore(int maxEntries) {
 		this(maxEntries, 0.49);
@@ -106,7 +110,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 */
 	public final int getInt(int index) {
 		index = toInternal(index);
+		int spins = 0;
+		boolean interrupted = false;
 		while (true) {
+			if ((spins++) > SPINS) {
+				interrupted |= atomicWait();
+			}
 			int initialSequence = seqArray.get().get(index);
 			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
 				continue;
@@ -114,6 +123,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 			int value = intArray.get()[index];
 			if (seqArray.get().getAndAdd(index, 0) != initialSequence) {
 				continue;
+			}
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 			return value;
 		}
@@ -169,7 +181,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 */
 	public final T getAuxData(int index) {
 		index = toInternal(index);
+		int spins = 0;
+		boolean interrupted = false;
 		while (true) {
+			if ((spins++) > SPINS) {
+				interrupted |= atomicWait();
+			}
 			int initialSequence = seqArray.get().get(index);
 			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
 				continue;
@@ -177,6 +194,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 			T auxData = auxArray.get()[index];
 			if (seqArray.get().getAndAdd(index, 0) != initialSequence) {
 				continue;
+			}
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 			return auxData;
 		}
@@ -217,6 +237,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				return toExternal(testIndex);
 			} finally {
 				seqArray.get().set(testIndex, DatatableSequenceNumber.get());
+				atomicNotify();
 			}
 		}
 	}
@@ -244,6 +265,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				return true;
 			} finally {
 				seqArray.get().set(index, DatatableSequenceNumber.get());
+				atomicNotify();
 			}
 		}
 	}
@@ -326,6 +348,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
 				}
 			}
+			atomicNotify();
 		}
 
 
@@ -390,11 +413,41 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 *
 	 * @return true if the array needs to be resized
 	 */
-	// TODO - add timer that allows for resize downwards
-	//      - would need a map to remap the indexes to a lower range though
 	private final boolean needsResize() {
 		int lengthThreshold = length.get();
 		lengthThreshold -= lengthThreshold >> 2;
 		return length.get() < maxLength && entries.get() >= lengthThreshold;
+	}
+
+	/**
+	 * Waits until a notify
+	 * 
+	 * @return true if interrupted during the wait
+	 */
+	private boolean atomicWait() {
+		waiting.incrementAndGet();
+		try {
+			synchronized(this) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					return true;
+				}
+			}
+		} finally {
+			waiting.decrementAndGet();
+		}
+		return true;
+	}
+	
+	/**
+	 * Notifies all waiting threads
+	 */
+	private void atomicNotify() {
+		if (waiting.getAndAdd(0) > 0) {
+			synchronized(this) {
+				notifyAll();
+			}
+		}
 	}
 }
