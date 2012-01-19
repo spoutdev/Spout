@@ -98,7 +98,7 @@ public class PluginDescriptionFile {
 			if (main.toLowerCase().startsWith("org.spout")) {
 				if (!isOfficialPlugin(main))
 					throw new InvalidDescriptionFileException("The use of the namespace 'org.spout' is not permitted.");
-			} else if (main.toLowerCase().startsWith("org.spout")) {
+			} else if (main.toLowerCase().startsWith("org.getspout")) {
 				if (!isOfficialPlugin(main))
 					throw new InvalidDescriptionFileException("The use of the namespace 'org.getspout' is not permitted.");
 			} else if (main.toLowerCase().startsWith("org.spoutcraft")) {
