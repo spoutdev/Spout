@@ -40,6 +40,7 @@ public abstract class CommonPlugin implements Plugin {
 	private File dataFolder;
 	private File file;
 	private boolean enabled;
+	private Logger logger;
 
 	@UnsafeMethod
 	public abstract void onEnable();
@@ -68,7 +69,7 @@ public abstract class CommonPlugin implements Plugin {
 	}
 
 	public final Logger getLogger() {
-		return game.getLogger();
+		return logger;
 	}
 
 	public final PluginDescriptionFile getDescription() {
@@ -82,6 +83,7 @@ public abstract class CommonPlugin implements Plugin {
 		this.pluginLoader = commonsPluginLoader;
 		this.dataFolder = dataFolder;
 		this.file = paramFile;
+		this.logger = new PluginLogger(this);
 	}
 
 	public final ClassLoader getClassLoader() {
