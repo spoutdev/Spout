@@ -43,7 +43,7 @@ public class Transform {
 	private final AtomicQuaternion rotation = new AtomicQuaternion(lock);
 	private final AtomicVector3 scale = new AtomicVector3(lock);
 
-	private final AtomicReference<Transform> parent = null;
+	private final AtomicReference<Transform> parent = new AtomicReference<Transform>();
 
 	public Transform() {
 	}
