@@ -28,7 +28,7 @@ package org.spout.api.util.concurrent;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Implements an optimistic lock.<br>
+ * Implements a non-reentrant optimistic lock.<br>
  */
 public class OptimisticReadWriteLock {
 
@@ -88,8 +88,11 @@ public class OptimisticReadWriteLock {
 	 * @return true if the sequence number has not changed and the lock is not in the UNSTABLE state
 	 */
 	public boolean readUnlock(int sequence) {
-		int seq = this.sequence.getAndAdd(0);
-		return seq != UNSTABLE && seq == sequence;
+		if (sequence == UNSTABLE) {
+			throw new IllegalArgumentException("UNSTABLE sequence number passed to readUnlock");
+		} else {
+			return this.sequence.compareAndSet(sequence, sequence);
+		}
 	}
 
 	/**
@@ -144,7 +147,7 @@ public class OptimisticReadWriteLock {
 				throw new IllegalStateException("Write unlock called when the write lock was not active");
 			}
 		} finally {
-			if (waiting.getAndAdd(0) > 0) {
+			if (!waiting.compareAndSet(0, 0)) {
 				synchronized(this) {
 					notifyAll();
 				}
