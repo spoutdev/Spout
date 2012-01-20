@@ -184,6 +184,7 @@ public class Transform {
 	 * @param t the transform
 	 * @return the new transform
 	 */
+	@Threadsafe
 	public Transform createSum(Transform t){
 		Transform r = new Transform();
 		while (true) {
@@ -198,12 +199,19 @@ public class Transform {
 		}
 	}
 
+	/**
+	 * Creates a Transform that is a snapshot of the absolute position of this transform
+	 * 
+	 * @return the snapshot
+	 */
+	@Threadsafe
 	public Transform getAbsolutePosition(){
 		while (true) {
 			int seq = lock.readLock();
 			if(parent == null) {
+				Transform r = copy();
 				if (lock.readUnlock(seq)) {
-					return this;
+					return r;
 				}
 			} else {
 				Transform r = this.createSum(parent.get().getAbsolutePosition());
@@ -214,6 +222,12 @@ public class Transform {
 		}
 	}
 
+	/**
+	 * Creates a Transform that is a copy of this transform
+	 * 
+	 * @return the snapshot
+	 */
+	@Threadsafe
 	public Transform copy(){
 		Transform t = new Transform();
 		while (true) {
@@ -228,6 +242,12 @@ public class Transform {
 		}
 	}
 
+	/**
+	 * Gets a String representation of this transform
+	 * 
+	 * @return the string
+	 */
+	@Threadsafe
 	public String toString() {
 		while (true) {
 			int seq = lock.readLock();
@@ -238,6 +258,7 @@ public class Transform {
 		}
 	}
 
+	@Threadsafe
 	private OptimisticReadWriteLock getLock() {
 		return lock;
 	}
