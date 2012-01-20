@@ -40,6 +40,11 @@ public class AtomicPoint extends Pointm {
 		this.lock = handleNull(lock);
 	}
 
+	/**
+	 * Atomically sets the world for this Point
+	 * 
+	 * @param world
+	 */
 	@Override
 	public void setWorld(World world) {
 		int seq = lock.writeLock();
@@ -50,6 +55,11 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 
+	/**
+	 * Atomically sets the x coordinate for this Point
+	 * 
+	 * @param x
+	 */
 	@Override
 	public void setX(float x) {
 		int seq = lock.writeLock();
@@ -60,6 +70,11 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 
+	/**
+	 * Atomically sets the y coordinate for this point
+	 * 
+	 * @param y
+	 */
 	@Override
 	public void setY(float y) {
 		int seq = lock.writeLock();
@@ -70,6 +85,11 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 
+	/**
+	 * Atomically sets the z coordinate for this point
+	 * 
+	 * @param z
+	 */
 	@Override
 	public void setZ(float z) {
 		int seq = lock.writeLock();
@@ -160,8 +180,12 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 
-	// Reads
-
+	/**
+	 * Atomically gets the x coordinate of this Point
+	 * 
+	 * @return
+	 */
+	@Override
 	public float getX() {
 		while (true) {
 			int seq = lock.readLock();
@@ -176,6 +200,11 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 
+	/**
+	 * Atomically gets the y coordinate of this Point
+	 * 
+	 * @return
+	 */
 	public float getY() {
 		while (true) {
 			int seq = lock.readLock();
@@ -190,6 +219,11 @@ public class AtomicPoint extends Pointm {
 		}	
 	}
 
+	/**
+	 * Atomically gets the z coordinate of this Point
+	 * 
+	 * @return
+	 */
 	public float getZ() {
 		while (true) {
 			int seq = lock.readLock();
@@ -204,6 +238,11 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 	
+	/**
+	 * Atomically gets the world of this Point
+	 * 
+	 * @return
+	 */
 	@Override
 	public World getWorld() {
 		while (true) {
@@ -233,6 +272,20 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
+	
+	public double getMahattanDistance(AtomicPoint other) {
+		while (true) {
+			int seq = other.getLock().readLock();
+			double result = 0;
+			try {
+				getMahattanDistance((Point)other);
+			} finally {
+				if (other.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
 
 	@Override
 	public double getMaxDistance(Point other) {
@@ -243,6 +296,20 @@ public class AtomicPoint extends Pointm {
 				result = super.getMaxDistance(other);
 			} finally {
 				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public double getMaxDistance(AtomicPoint other) {
+		while (true) {
+			int seq = other.getLock().readLock();
+			double result = 0;
+			try {
+				result = getMaxDistance((Point)other);
+			} finally {
+				if (other.getLock().readUnlock(seq)) {
 					return result;
 				}
 			}
