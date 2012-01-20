@@ -63,13 +63,13 @@ public class AtomicIntReferenceArrayStoreTest {
 
 		for (int i = 0; i < MAX_SIZE; i++) {
 			int currentIndex = index[i];
-			int initialSequence = store.getSequence(currentIndex, true);
+			int initialSequence = store.getSequence(currentIndex);
 			assertTrue("Record read at index has wrong short data", store.getData(currentIndex) == data[i]);
 			assertTrue("Record read at index has wrong short is", store.getId(currentIndex) == ids[i]);
 			assertTrue("Record read at index has wrong aux data", store.getAuxData(currentIndex) == auxData[i]);
-			assertTrue("Record sequence number changed without write", store.getSequence(currentIndex, false) == initialSequence);
+			assertTrue("Record sequence number changed without write", store.testSequence(currentIndex, initialSequence));
 			store.remove(currentIndex);
-			assertTrue("Record sequence number didn't change after a removal", store.getSequence(currentIndex, false) != initialSequence);
+			assertTrue("Record sequence number didn't change after a removal", !store.testSequence(currentIndex, initialSequence));
 		}
 
 	}

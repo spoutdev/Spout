@@ -121,7 +121,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			int value = intArray.get()[index];
-			if (seqArray.get().getAndAdd(index, 0) != initialSequence) {
+			if (!seqArray.get().compareAndSet(index, initialSequence, initialSequence)) {
 				continue;
 			}
 			if (interrupted) {
@@ -136,20 +136,26 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * <br>
 	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.<br>
 	 * <br> 
-	 * If soft is true, this method counts as a volatile read.  Otherwise, it is both a volatile read and a write.<br>
-	 * <br>
-	 * Soft reads should only be used for the first of the 2 step process for confirming that data hasn't changed.
+	 * This method should NOT be used to test if a sequence number has changed.  Use testSequence(int index, int sequence) instead.
 	 * 
 	 * @param index the index
-	 * @param soft
 	 * @return the sequence number
 	 */
-	public int getSequence(int index, boolean soft) {
-		if (soft) {
-			return this.seqArray.get().get(toInternal(index));
-		} else {
-			return this.seqArray.get().getAndAdd(toInternal(index), 0);
-		}
+	public int getSequence(int index) {
+		return this.seqArray.get().get(toInternal(index));
+	}
+	
+	/**
+	 * Tests if the sequence number has changed for a particular index.<br>
+	 * <br>
+	 * This method counts as both a volatile read and write, which is required for confirming that no change has occurred in another thread.
+	 * 
+	 * @param index the index
+	 * @param expected the expected sequence number
+	 * @return true if the sequence number matches expected
+	 */
+	public boolean testSequence(int index, int expected) {
+		return seqArray.get().compareAndSet(index, expected, expected);
 	}
 
 	/**
@@ -201,7 +207,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			T auxData = auxArray.get()[index];
-			if (seqArray.get().getAndAdd(index, 0) != initialSequence) {
+			if (!seqArray.get().compareAndSet(index, initialSequence, initialSequence)) {
 				continue;
 			}
 			if (interrupted) {
@@ -453,7 +459,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * Notifies all waiting threads
 	 */
 	private final void atomicNotify() {
-		if (waiting.getAndAdd(0) > 0) {
+		if (!waiting.compareAndSet(0, 0)) {
 			synchronized(this) {
 				notifyAll();
 			}

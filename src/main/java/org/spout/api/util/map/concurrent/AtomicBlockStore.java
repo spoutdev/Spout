@@ -76,10 +76,9 @@ public class AtomicBlockStore<T> {
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param soft true to softly get the sequence number
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a single short record
 	 */
-	public final int getSequence(int x, int y, int z, boolean soft) {
+	public final int getSequence(int x, int y, int z) {
 		checkCompressing();
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -95,10 +94,50 @@ public class AtomicBlockStore<T> {
 				if (!auxStore.isReserved(blockId)) {
 					return DatatableSequenceNumber.ATOMIC;
 				} else {
-					int sequence = auxStore.getSequence(blockId, soft);
+					int sequence = auxStore.getSequence(blockId);
 					if (sequence != DatatableSequenceNumber.UNSTABLE) {
 						return sequence;
 					}
+				}
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+	
+	/**
+	 * Tests if a the sequence number associated with a particular block location has not changed.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param expected the expected sequence number
+	 * @return true if the sequence number has not changed and expected is not DatatableSequenceNumber.ATOMIC
+	 */
+	public final boolean testSequence(int x, int y, int z, int expected) {
+		
+		if (expected == DatatableSequenceNumber.ATOMIC) {
+			return false;
+		}
+
+		checkCompressing();
+		int index = getIndex(x, y, z);
+		int spins = 0;
+		boolean interrupted = false;
+		try {
+			while (true) {
+				if ((spins++) > SPINS) {
+					interrupted |= atomicWait();
+				}
+				checkCompressing();
+
+				int blockId = blockIds.get(index);
+				if (!auxStore.isReserved(blockId)) {
+					return false;
+				} else {
+					return auxStore.testSequence(index, expected);
 				}
 			}
 		} finally {
@@ -129,12 +168,11 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z, true);
+				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					blockId = auxStore.getId(blockId);
-					int seq2 = getSequence(x, y, z, false);
-					if (seq == seq2) {
+					if (testSequence(x, y, z, seq)) {
 						return blockId & 0x0000FFFF;
 					}
 				} else {
@@ -169,12 +207,11 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z, true);
+				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					blockId = auxStore.getData(blockId);
-					int seq2 = getSequence(x, y, z, false);
-					if (seq == seq2) {
+					if (testSequence(x, y, z, seq)) {
 						return blockId & 0x0000FFFF;
 					}
 				} else {
@@ -209,12 +246,11 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z, true);
+				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					T auxData = auxStore.getAuxData(blockId);
-					int seq2 = getSequence(x, y, z, false);
-					if (seq == seq2) {
+					if (testSequence(x, y, z, seq)) {
 						return auxData;
 					}
 				} else {
@@ -263,14 +299,13 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z, true);
+				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					fullData.setId(auxStore.getId(blockId));
 					fullData.setData(auxStore.getData(blockId));
 					fullData.setAuxData(auxStore.getAuxData(blockId));
-					int seq2 = getSequence(x, y, z, false);
-					if (seq == seq2) {
+					if (testSequence(x, y, z, seq)) {
 						return fullData;
 					}
 				} else {
@@ -395,12 +430,11 @@ public class AtomicBlockStore<T> {
 						return false;
 					}
 				} else {
-					int seq1 = auxStore.getSequence(oldBlockId, true);
+					int seq = auxStore.getSequence(oldBlockId);
 					short oldId = auxStore.getId(oldBlockId);
 					short oldData = auxStore.getData(oldBlockId);
 					T oldAuxData = auxStore.getAuxData(oldBlockId);
-					int seq2 = auxStore.getSequence(oldBlockId, false);
-					if (seq1 != seq2) {
+					if (!testSequence(x, y, z, seq)) {
 						continue;
 					}
 					if (oldId != expectId || oldData != expectData || oldAuxData != expectAuxData) {
