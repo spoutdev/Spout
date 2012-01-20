@@ -35,6 +35,7 @@ import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector3m;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
+import org.spout.api.util.thread.Threadsafe;
 
 public class Transform {
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
@@ -53,24 +54,31 @@ public class Transform {
 		setScale(scale);
 	}
 
-	public Pointm getPosition() {
+	public AtomicPoint getPosition() {
 		return position;
 	}
 	public void setPosition(Point position) {
 		this.position.set(position);
 	}
-	public Quaternionm getRotation() {
+	public AtomicQuaternion getRotation() {
 		return rotation;
 	}
 	public void setRotation(Quaternion rotation) {
 		this.rotation.set(rotation);
 	}
-	public Vector3m getScale() {
+	public AtomicVector3 getScale() {
 		return scale;
 	}
 	public void setScale(Vector3 scale) {
 		this.scale.set(scale);
 	}
+	
+	/**
+	 * Atomically gets the parent of this Transform
+	 * 
+	 * @return the parent
+	 */
+	@Threadsafe
 	public Transform getParent() {
 		while (true) {
 			int seq = lock.readLock();
@@ -85,6 +93,12 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Atomically Sets the parent of this transform
+	 * 
+	 * @param parent
+	 */
+	@Threadsafe
 	public void setParent(Transform parent) {
 		int seq = lock.writeLock();
 		try {
@@ -99,6 +113,7 @@ public class Transform {
 	 * 
 	 * @param transform the other transform
 	 */
+	@Threadsafe
 	public void set(Transform transform) {
 		if (lock == transform.getLock()) {
 			throw new IllegalArgumentException("Attemping to set a transform to another transform with the same lock");
@@ -134,6 +149,7 @@ public class Transform {
 	 * @param sy the y coordinate of the scale
 	 * @param sz the z coordinate of the scale
 	 */
+	@Threadsafe
 	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
 		int seq = lock.writeLock();
 		try {
@@ -150,6 +166,7 @@ public class Transform {
 	 * 
 	 * @param point
 	 */
+	@Threadsafe
 	public void set(Point p, Quaternion r, Vector3 s) {
 		int seq = lock.writeLock();
 		try {
@@ -161,30 +178,64 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Creates a Transform that is the sum of this transform and the given transform
+	 * 
+	 * @param t the transform
+	 * @return the new transform
+	 */
 	public Transform createSum(Transform t){
 		Transform r = new Transform();
-		r.setPosition(position.add(t.getPosition()));
-		r.setRotation(rotation.multiply(t.getRotation()));
-		r.setScale(scale.add(t.getScale()));
-		return r;
+		while (true) {
+			int seq = lock.readLock();
+			r.setPosition(position.add(t.getPosition()));
+			r.setRotation(rotation.multiply(t.getRotation()));
+			r.setScale(scale.add(t.getScale()));
+			r.setParent(parent.get());
+			if (lock.readUnlock(seq)) {
+				return r;
+			}
+		}
 	}
 
 	public Transform getAbsolutePosition(){
-		if(parent == null) return this;
-		return this.createSum(parent.get().getAbsolutePosition());
-
+		while (true) {
+			int seq = lock.readLock();
+			if(parent == null) {
+				if (lock.readUnlock(seq)) {
+					return this;
+				}
+			} else {
+				Transform r = this.createSum(parent.get().getAbsolutePosition());
+				if (lock.readUnlock(seq)) {
+					return r;
+				}
+			}
+		}
 	}
 
 	public Transform copy(){
 		Transform t = new Transform();
-		t.setPosition(new Point(this.position));
-		t.setRotation(new Quaternion(this.rotation));
-		t.setScale(new Vector3m(this.scale));
-		return t;
+		while (true) {
+			int seq = lock.readLock();
+			t.setPosition(this.position);
+			t.setRotation(this.rotation);
+			t.setScale(this.scale);
+			t.setParent(this.parent.get());
+			if (lock.readUnlock(seq)) {
+				return t;
+			}
+		}
 	}
 
 	public String toString() {
-		return getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
+		while (true) {
+			int seq = lock.readLock();
+			String s = getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
+			if (lock.readUnlock(seq)) {
+				return s;
+			}
+		}
 	}
 
 	private OptimisticReadWriteLock getLock() {

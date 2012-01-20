@@ -155,7 +155,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return true if the sequence number matches expected
 	 */
 	public boolean testSequence(int index, int expected) {
-		return seqArray.get().compareAndSet(index, expected, expected);
+		return seqArray.get().compareAndSet(toInternal(index), expected, expected);
 	}
 
 	/**

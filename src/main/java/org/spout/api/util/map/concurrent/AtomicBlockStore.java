@@ -137,7 +137,7 @@ public class AtomicBlockStore<T> {
 				if (!auxStore.isReserved(blockId)) {
 					return false;
 				} else {
-					return auxStore.testSequence(index, expected);
+					return auxStore.testSequence(blockId, expected);
 				}
 			}
 		} finally {
