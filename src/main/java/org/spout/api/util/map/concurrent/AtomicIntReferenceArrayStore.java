@@ -132,15 +132,24 @@ public final class AtomicIntReferenceArrayStore<T> {
 	}
 
 	/**
-	 * Gets the sequence number associated with the element at a given index.
-	 *
-	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.
-	 *
+	 * Gets the sequence number associated with the element at a given index.<br>
+	 * <br>
+	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.<br>
+	 * <br> 
+	 * If soft is true, this method counts as a volatile read.  Otherwise, it is both a volatile read and a write.<br>
+	 * <br>
+	 * Soft reads should only be used for the first of the 2 step process for confirming that data hasn't changed.
+	 * 
 	 * @param index the index
+	 * @param soft
 	 * @return the sequence number
 	 */
-	public int getSequence(int index) {
-		return this.seqArray.get().getAndAdd(toInternal(index), 0);
+	public int getSequence(int index, boolean soft) {
+		if (soft) {
+			return this.seqArray.get().get(toInternal(index));
+		} else {
+			return this.seqArray.get().getAndAdd(toInternal(index), 0);
+		}
 	}
 
 	/**

@@ -68,13 +68,18 @@ public class AtomicBlockStore<T> {
 
 	/**
 	 * Gets the sequence number associated with a block location.<br>
+	 * <br>
+	 * If soft is true, this method counts as a volatile read.  Otherwise, it is both a volatile read and a volatile write.<br>
+	 * <br>
+	 * Soft reads should only be used for the first of the 2 step process for confirming that data hasn't changed.
 	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
+	 * @param soft true to softly get the sequence number
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a single short record
 	 */
-	public final int getSequence(int x, int y, int z) {
+	public final int getSequence(int x, int y, int z, boolean soft) {
 		checkCompressing();
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -90,7 +95,7 @@ public class AtomicBlockStore<T> {
 				if (!auxStore.isReserved(blockId)) {
 					return DatatableSequenceNumber.ATOMIC;
 				} else {
-					int sequence = auxStore.getSequence(blockId);
+					int sequence = auxStore.getSequence(blockId, soft);
 					if (sequence != DatatableSequenceNumber.UNSTABLE) {
 						return sequence;
 					}
@@ -124,11 +129,11 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z);
+				int seq = getSequence(x, y, z, true);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					blockId = auxStore.getId(blockId);
-					int seq2 = getSequence(x, y, z);
+					int seq2 = getSequence(x, y, z, false);
 					if (seq == seq2) {
 						return blockId & 0x0000FFFF;
 					}
@@ -164,11 +169,11 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z);
+				int seq = getSequence(x, y, z, true);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					blockId = auxStore.getData(blockId);
-					int seq2 = getSequence(x, y, z);
+					int seq2 = getSequence(x, y, z, false);
 					if (seq == seq2) {
 						return blockId & 0x0000FFFF;
 					}
@@ -204,11 +209,11 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z);
+				int seq = getSequence(x, y, z, true);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					T auxData = auxStore.getAuxData(blockId);
-					int seq2 = getSequence(x, y, z);
+					int seq2 = getSequence(x, y, z, false);
 					if (seq == seq2) {
 						return auxData;
 					}
@@ -258,13 +263,13 @@ public class AtomicBlockStore<T> {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z);
+				int seq = getSequence(x, y, z, true);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					fullData.setId(auxStore.getId(blockId));
 					fullData.setData(auxStore.getData(blockId));
 					fullData.setAuxData(auxStore.getAuxData(blockId));
-					int seq2 = getSequence(x, y, z);
+					int seq2 = getSequence(x, y, z, false);
 					if (seq == seq2) {
 						return fullData;
 					}
@@ -390,11 +395,11 @@ public class AtomicBlockStore<T> {
 						return false;
 					}
 				} else {
-					int seq1 = auxStore.getSequence(oldBlockId);
+					int seq1 = auxStore.getSequence(oldBlockId, true);
 					short oldId = auxStore.getId(oldBlockId);
 					short oldData = auxStore.getData(oldBlockId);
 					T oldAuxData = auxStore.getAuxData(oldBlockId);
-					int seq2 = auxStore.getSequence(oldBlockId);
+					int seq2 = auxStore.getSequence(oldBlockId, false);
 					if (seq1 != seq2) {
 						continue;
 					}
