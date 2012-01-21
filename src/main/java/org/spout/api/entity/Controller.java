@@ -98,7 +98,7 @@ public abstract class Controller {
 		} else if (old == null) {
 			return true;
 		} else {
-			return Math.abs(old.getPosition().getManhattanDistance(current.getPosition())) > 4D;
+			return Math.abs(old.getPosition().getManhattanDistance(current.getPosition())) >= 3.9D;
 		}
 	}
 

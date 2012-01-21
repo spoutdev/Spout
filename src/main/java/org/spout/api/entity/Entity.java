@@ -44,8 +44,28 @@ import org.spout.api.util.thread.SnapshotRead;
 public interface Entity extends Datatable, EventSource {
 	public int getId();
 
-	// TODO - should these be main thread only ?
+	/**
+	 * Gets the controller for the entity
+	 * 
+	 * @return the controller
+	 */
+	@SnapshotRead
 	public Controller getController() ;
+	
+	/**
+	 * Gets the live version controller for the entity
+	 * 
+	 * @return the controller
+	 */
+	@LiveRead
+	public Controller getLiveController() ;
+	
+	/**
+	 * Sets the controller for the entity
+	 * 
+	 * @param controller
+	 */
+	@DelayedWrite
 	public void setController(Controller controller);
 
 	/**
@@ -116,6 +136,15 @@ public interface Entity extends Datatable, EventSource {
 	 */
 	@SnapshotRead
 	public Region getRegion();
+	
+	/**
+	 * Gets the region the entity is associated and managed with, or null if unspawned.
+	 *
+	 * @return region
+	 */
+	@LiveRead
+	public Region getRegionLive();
+
 
 	/**
 	 * Gets the world the entity is associated with, or null if unspawned.
