@@ -56,6 +56,8 @@ import org.spout.server.datatable.value.SpoutDatatableObject;
 import org.spout.server.player.SpoutPlayer;
 
 public class SpoutEntity implements Entity {
+	private static final long serialVersionUID = 1L;
+	
 	public final static int NOTSPAWNEDID = -1;
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
@@ -66,6 +68,7 @@ public class SpoutEntity implements Entity {
 	private EntityManager entityManager;
 	private EntityManager entityManagerLive;
 	private Controller controller;
+	private Controller controllerLive;
 	private final SpoutServer server;
 	
 	public int id = NOTSPAWNEDID;
@@ -80,6 +83,7 @@ public class SpoutEntity implements Entity {
 		this.transform.set(transform);
 		setTransform(transform);
 		this.controller = controller;
+		this.controllerLive = controller;
 		this.map = new SpoutDatatableMap();
 	}
 
@@ -106,38 +110,35 @@ public class SpoutEntity implements Entity {
 		}
 	}
 	
-	public Controller getController() {
+	@Override
+	public Controller getLiveController() {
 		while (true) {
 			int seq = lock.readLock();
-			Controller controller = this.controller;
+			Controller controller = this.controllerLive;
 			if (lock.readUnlock(seq)) {
 				return controller;
 			}
 		}
 	}
+	
+	@Override
+	public Controller getController() {
+		return controller;
+	}
 
 	
-	// TODO - when is this supposed to be called?
+	@Override
 	public void setController(Controller controller) {
 		controller.attachToEntity(this);
-		Region region = getRegionLive();
-			//remove this controller from the region tracking
-		if (region != null) {
-			((SpoutRegion)region).deallocate(this);
-		}
 		int seq = lock.writeLock();
 		try {
-			this.controller = controller;
+			this.controllerLive = controller;
 		} finally {
 			lock.writeUnlock(seq);
 		}
-		//add new controller to the region tracking
-		if (region != null) {
-			((SpoutRegion)region).allocate(this);
-		}
 		controller.onAttached();
 	}
-
+	
 	@Override
 	public Transform getTransform() {
 		return transform;
@@ -257,13 +258,8 @@ public class SpoutEntity implements Entity {
 	public void finalizeRun() {
 		Region regionLive = getRegionLive();
 		Region region = getRegion();
-		if (entityManagerLive != null) {
-			if(region == null || entityManagerLive != ((SpoutRegion)region).getEntityManager()) {
-				entityManagerLive.allocate(this);
-			}
-		}
 		if (entityManager != null) {
-			if (regionLive == null || entityManager != ((SpoutRegion)regionLive).getEntityManager()) {
+			if (regionLive == null || entityManager != ((SpoutRegion)regionLive).getEntityManager() || controller != controllerLive) {
 				entityManager.deallocate(this);
 				if (entityManagerLive == null) {
 					controller.onDeath();
@@ -272,6 +268,11 @@ public class SpoutEntity implements Entity {
 						((SpoutPlayer)p).getNetworkSynchronizer().onDeath();
 					}
 				}
+			}
+		}
+		if (entityManagerLive != null) {
+			if(region == null || entityManagerLive != ((SpoutRegion)region).getEntityManager() || controller != controllerLive) {
+				entityManagerLive.allocate(this);
 			}
 		}
 	}
@@ -301,7 +302,7 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	// TODO - add to SpoutAPI and override
+	@Override
 	public Region getRegionLive() {
 		while (true) {
 			int seq = lock.readLock();
