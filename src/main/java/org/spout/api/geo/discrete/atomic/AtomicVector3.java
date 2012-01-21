@@ -23,8 +23,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.math;
+package org.spout.api.geo.discrete.atomic;
 
+import org.spout.api.math.Matrix;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector2;
+import org.spout.api.math.Vector2m;
+import org.spout.api.math.Vector3;
+import org.spout.api.math.Vector3m;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 public class AtomicVector3 extends Vector3m {
@@ -721,15 +727,14 @@ public class AtomicVector3 extends Vector3m {
 		}
 	}
 	
-	// TODO - need to make this work atomically
 	public Vector3 transform(AtomicQuaternion other) {
 		while (true) {
-			int seq = lock.readLock();
+			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = transform(other);
+				result = transform((Quaternion)other);
 			} finally {
-				if (lock.readUnlock(seq)) {
+				if (other.getLock().readUnlock(seq)) {
 					return result;
 				}
 			}
@@ -817,7 +822,7 @@ public class AtomicVector3 extends Vector3m {
 		}
 	}
 
-	private OptimisticReadWriteLock getLock() {
+	protected OptimisticReadWriteLock getLock() {
 		return lock;
 	}
 }

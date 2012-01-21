@@ -37,8 +37,8 @@ import java.util.List;
 import javassist.Modifier;
 
 import org.junit.Test;
-import org.spout.api.geo.discrete.AtomicPoint;
-import org.spout.api.math.AtomicVector3;
+import org.spout.api.geo.discrete.atomic.AtomicPoint;
+import org.spout.api.geo.discrete.atomic.AtomicVector3;
 
 public class AtomicOverridesTest {
 
@@ -46,7 +46,7 @@ public class AtomicOverridesTest {
 	public void testOverride() {
 
 		assertTrue(fullyOverridesSuperclass(AtomicVector3.class));
-		//assertTrue(fullyOverridesSuperclass(AtomicPoint.class));
+		assertTrue(fullyOverridesSuperclass(AtomicPoint.class));
 		
 	}
 	

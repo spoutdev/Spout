@@ -25,7 +25,7 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.geo.discrete.Transform;
+import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 

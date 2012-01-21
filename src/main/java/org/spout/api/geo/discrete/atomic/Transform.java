@@ -23,13 +23,12 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.geo.discrete;
+package org.spout.api.geo.discrete.atomic;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.geo.World;
-import org.spout.api.math.AtomicQuaternion;
-import org.spout.api.math.AtomicVector3;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
@@ -259,7 +258,7 @@ public class Transform {
 	}
 
 	@Threadsafe
-	private OptimisticReadWriteLock getLock() {
+	protected OptimisticReadWriteLock getLock() {
 		return lock;
 	}
 }

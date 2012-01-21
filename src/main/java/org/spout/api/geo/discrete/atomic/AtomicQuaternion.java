@@ -23,8 +23,11 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.math;
+package org.spout.api.geo.discrete.atomic;
 
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Quaternionm;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 /**
@@ -262,7 +265,7 @@ public class AtomicQuaternion extends Quaternionm {
 		}
 	}
 
-	private OptimisticReadWriteLock getLock() {
+	protected OptimisticReadWriteLock getLock() {
 		return lock;
 	}
 }

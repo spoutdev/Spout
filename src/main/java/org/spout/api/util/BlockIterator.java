@@ -29,8 +29,8 @@ import java.util.Iterator;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.geo.discrete.Pointm;
+import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3m;
 
