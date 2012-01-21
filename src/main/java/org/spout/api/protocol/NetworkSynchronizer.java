@@ -105,7 +105,7 @@ public class NetworkSynchronizer {
 		if (liveTransform != null) {
 			Point currentPosition = liveTransform.getPosition();
 
-			if (currentPosition.getMahattanDistance(lastChunkCheck) > (Chunk.CHUNK_SIZE >> 1)) {
+			if (currentPosition.getManhattanDistance(lastChunkCheck) > (Chunk.CHUNK_SIZE >> 1)) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 			}
@@ -199,7 +199,7 @@ public class NetworkSynchronizer {
 		Point playerChunkBase = Chunk.pointToBase(currentPosition);
 
 		for (Point p : initializedChunks) {
-			if (p.getMahattanDistance(playerChunkBase) > blockViewDistance) {
+			if (p.getManhattanDistance(playerChunkBase) > blockViewDistance) {
 				chunkFreeQueue.add(p);
 			}
 		}
@@ -213,7 +213,7 @@ public class NetworkSynchronizer {
 			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
 				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
 					Point base = new Point(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
-					double distance = base.getMahattanDistance(playerChunkBase);
+					double distance = base.getManhattanDistance(playerChunkBase);
 					if (distance <= blockViewDistance) {
 						if (!activeChunks.contains(base)) {
 							if (distance <= TARGET_SIZE) {

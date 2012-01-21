@@ -61,10 +61,10 @@ public class Point extends Vector3 {
 	 *
 	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
 	 *
-	 * Otherwise, it returns the Mahattan distance.
+	 * Otherwise, it returns the Manhattan distance.
 	 *
 	 */
-	public double getMahattanDistance(Point other) {
+	public double getManhattanDistance(Point other) {
 		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
 			return Double.MAX_VALUE;
 		}

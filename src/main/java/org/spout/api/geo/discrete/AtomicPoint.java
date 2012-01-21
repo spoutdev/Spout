@@ -259,12 +259,12 @@ public class AtomicPoint extends Pointm {
 	}
 
 	@Override
-	public double getMahattanDistance(Point other) {
+	public double getManhattanDistance(Point other) {
 		while (true) {
 			int seq = lock.readLock();
 			double result = 0;
 			try {
-				result = super.getMahattanDistance(other);
+				result = super.getManhattanDistance(other);
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return result;
@@ -273,12 +273,12 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 	
-	public double getMahattanDistance(AtomicPoint other) {
+	public double getManhattanDistance(AtomicPoint other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			double result = 0;
 			try {
-				getMahattanDistance((Point)other);
+				getManhattanDistance((Point)other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
