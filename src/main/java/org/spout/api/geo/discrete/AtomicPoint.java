@@ -286,7 +286,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-
+	
 	@Override
 	public double getMaxDistance(Point other) {
 		while (true) {
@@ -372,4 +372,6 @@ public class AtomicPoint extends Pointm {
 	private OptimisticReadWriteLock getLock() {
 		return lock;
 	}
+	
+	// Overrides for Vector3
 }

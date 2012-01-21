@@ -199,21 +199,6 @@ public class AtomicVector3 extends Vector3m {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		while (true) {
-			int seq = lock.readLock();
-			boolean equals = false;
-			try {
-				equals = super.equals(obj);
-			} finally {
-				if (lock.readUnlock(seq)) {
-					return equals;
-				}
-			}
-		}
-	}
-
-	@Override
 	public String toString() {
 		while (true) {
 			int seq = lock.readLock();
@@ -225,6 +210,602 @@ public class AtomicVector3 extends Vector3m {
 					return string;
 				}
 			}	
+		}
+	}
+	
+	// Read methods
+	
+	@Override
+	public float dot(Vector3 other) {
+		while (true) {
+			int seq = lock.readLock();
+			float result = 0;
+			try {
+				result = super.dot(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 cross(Vector3 other) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.cross(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public Vector3 cross(AtomicVector3 other) {
+		while (true) {
+			int seq = other.getLock().readLock();
+			Vector3 result = null;
+			try {
+				result = cross((Vector3)other);
+			} finally {
+				if (other.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 add(Vector3 other) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.add(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public Vector3 add(AtomicVector3 other) {
+		while (true) {
+			int seq = other.getLock().readLock();
+			Vector3 result = null;
+			try {
+				result = add((Vector3)other);
+			} finally {
+				if (other.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 subtract(Vector3 other) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.subtract(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public Vector3 subtract(AtomicVector3 other) {
+		while (true) {
+			int seq = other.getLock().readLock();
+			Vector3 result = null;
+			try {
+				result = subtract((Vector3)other);
+			} finally {
+				if (other.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 ceil() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.ceil();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 floor() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.floor();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 round() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.round();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 abs() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.abs();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 normalize() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.normalize();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector2 toVector2() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector2 result = null;
+			try {
+				result = super.toVector2();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector2m toVector2m() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector2m result = null;
+			try {
+				result = super.toVector2m();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public float[] toArray() {
+		while (true) {
+			int seq = lock.readLock();
+			float[] result = null;
+			try {
+				result = super.toArray();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public double distance(Vector3 other) {
+		while (true) {
+			int seq = lock.readLock();
+			double result = 0;
+			try {
+				result = super.distance(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public double distance(AtomicVector3 other) {
+		while (true) {
+			int seq = lock.readLock();
+			double result = 0;
+			try {
+				result = distance((AtomicVector3)other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public float lengthSquared() {
+		while (true) {
+			int seq = lock.readLock();
+			float result = 0;
+			try {
+				result = super.lengthSquared();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public float length() {
+		while (true) {
+			int seq = lock.readLock();
+			float result = 0;
+			try {
+				result = super.length();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public float fastLength() {
+		while (true) {
+			int seq = lock.readLock();
+			float result = 0;
+			try {
+				result = super.fastLength();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 pow(double pow) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.pow(pow);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 multiply(double scale) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.multiply(scale);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 multiply(float scale) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.multiply(scale);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 multiply(int scale) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.multiply(scale);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 multiply(double x, double y, double z) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.multiply(x, y, z);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 multiply(float x, float y, float z) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.multiply(x, y, z);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 multiply(int x, int y, int z) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.multiply(x, y, z);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 divide(double scale) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.divide(scale);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 divide(float scale) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.divide(scale);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 divide(int scale) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.divide(scale);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 divide(double x, double y, double z) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.divide(x, y, z);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 divide(float x, float y, float z) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.divide(x, y, z);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 divide(int x, int y, int z) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.divide(x, y, z);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 transform(Quaternion other) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.transform(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	// TODO - need to make this work atomically
+	public Vector3 transform(AtomicQuaternion other) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = transform(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 transform(Matrix other) {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.transform(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public int compareTo(Vector3 o) {
+		while (true) {
+			int seq = lock.readLock();
+			int result = 0;
+			try {
+				result = super.compareTo(o);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public int compareTo(AtomicVector3 o) {
+		while (true) {
+			int seq = o.getLock().readLock();
+			int result = 0;
+			try {
+				result = compareTo((AtomicVector3)o);
+			} finally {
+				if (o.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		while (true) {
+			int seq = lock.readLock();
+			boolean result = false;
+			try {
+				result = super.equals(o);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public boolean equals(AtomicVector3 obj) {
+		while (true) {
+			int seq = obj.getLock().readLock();
+			boolean equals = false;
+			try {
+				equals = equals((AtomicVector3)obj);
+			} finally {
+				if (obj.getLock().readUnlock(seq)) {
+					return equals;
+				}
+			}
 		}
 	}
 	
