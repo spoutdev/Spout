@@ -95,16 +95,16 @@ public class PluginDescriptionFile {
 		try {
 			this.main = (String) map.get("main");
 
-			if (main.toLowerCase().startsWith("org.spout")) {
+			if (main.toLowerCase().startsWith("org.spout.")) {
 				if (!isOfficialPlugin(main))
 					throw new InvalidDescriptionFileException("The use of the namespace 'org.spout' is not permitted.");
-			} else if (main.toLowerCase().startsWith("org.getspout")) {
+			} else if (main.toLowerCase().startsWith("org.getspout.")) {
 				if (!isOfficialPlugin(main))
 					throw new InvalidDescriptionFileException("The use of the namespace 'org.getspout' is not permitted.");
-			} else if (main.toLowerCase().startsWith("org.spoutcraft")) {
+			} else if (main.toLowerCase().startsWith("org.spoutcraft.")) {
 				if (!isOfficialPlugin(main))
 					throw new InvalidDescriptionFileException("The use of the namespace 'org.spoutcraft' is not permitted.");
-			} else if (main.toLowerCase().startsWith("in.spout")) {
+			} else if (main.toLowerCase().startsWith("in.spout.")) {
 				if (!isOfficialPlugin(main))
 					throw new InvalidDescriptionFileException("The use of the namespace 'in.spout' is not permitted.");
 			}
