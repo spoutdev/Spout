@@ -146,4 +146,10 @@ public class SpoutTask implements Task {
 
 		return running;
 	}
+	
+	public String toString() {
+		Plugin owner = this.getOwner();
+		String ownerName = owner == null ? "null" : owner.getDescription().getName();
+		return this.getClass().getSimpleName() + "{" + this.getTaskId() + ", " + ownerName + "}";
+	}
 }

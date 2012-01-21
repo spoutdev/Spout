@@ -26,7 +26,6 @@
 package org.spout.server.entity;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.collision.model.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
@@ -37,7 +36,8 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
+import org.spout.api.geo.discrete.atomic.AtomicPoint;
+import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.MemoryStore;
 import org.spout.api.math.Quaternion;
@@ -45,6 +45,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.server.SpoutRegion;
 import org.spout.server.SpoutServer;
 import org.spout.server.datatable.SpoutDatatableMap;
@@ -59,8 +60,11 @@ public class SpoutEntity implements Entity {
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	
-	private TransformAndManager transformAndManager;
-	private final AtomicReference<TransformAndManager> transformAndManagerLive = new AtomicReference<TransformAndManager>();
+	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
+	private final Transform transform = new Transform();
+	private final Transform transformLive = new Transform();
+	private EntityManager entityManager;
+	private EntityManager entityManagerLive;
 	private Controller controller;
 	private final SpoutServer server;
 	
@@ -73,9 +77,9 @@ public class SpoutEntity implements Entity {
 	
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
 		this.server = server;
-		transformAndManager = new TransformAndManager(transform, this.server.getEntityManager());
+		this.transform.set(transform);
+		setTransform(transform);
 		this.controller = controller;
-		transformAndManagerLive.set(transformAndManager.copy());
 		this.map = new SpoutDatatableMap();
 	}
 
@@ -84,26 +88,49 @@ public class SpoutEntity implements Entity {
 	}
 
 	public int getId() {
-		return id;
+		while (true) {
+			int seq = lock.readLock();
+			int id = this.id;
+			if (lock.readUnlock(seq)) {
+				return id;
+			}
+		}
 	}
 
 	public void setId(int id) {
-		this.id = id;
+		int seq = lock.writeLock();
+		try {
+			this.id = id;
+		} finally {
+			lock.writeUnlock(seq);
+		}
 	}
 	
 	public Controller getController() {
-		return controller;
+		while (true) {
+			int seq = lock.readLock();
+			Controller controller = this.controller;
+			if (lock.readUnlock(seq)) {
+				return controller;
+			}
+		}
 	}
 
 	
+	// TODO - when is this supposed to be called?
 	public void setController(Controller controller) {
 		controller.attachToEntity(this);
-		Region region = getRegion();
-		//remove this controller from the region tracking
+		Region region = getRegionLive();
+			//remove this controller from the region tracking
 		if (region != null) {
 			((SpoutRegion)region).deallocate(this);
 		}
-		this.controller = controller;
+		int seq = lock.writeLock();
+		try {
+			this.controller = controller;
+		} finally {
+			lock.writeUnlock(seq);
+		}
 		//add new controller to the region tracking
 		if (region != null) {
 			((SpoutRegion)region).allocate(this);
@@ -113,64 +140,91 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public Transform getTransform() {
-		return transformAndManager.transform;
+		return transform;
 	}
 	
 	@Override
 	public Transform getLiveTransform() {
-		return transformAndManagerLive.get().transform;
+		return transformLive;
 	}
 
 	@Override
 	public void setTransform(Transform transform) {
-		//boolean success = false;
+		
+		int seq = lock.writeLock();
+		try {
+			while (true) {
+				int seqRead = transform.readLock();
+				Point newPosition = transform.getPosition();
 
-		//while (!success) {
-			
-			// TODO - code to handle world level entity managers
-			
-			Point newPosition = transform.getPosition();
-			Region newRegion = newPosition.getWorld().getRegion(newPosition);
-			
-			// TODO - entity moved into unloaded chunk - what happens for normal entities
-			if (newRegion == null && this.getController() instanceof PlayerController) {
-				newRegion = newPosition.getWorld().getRegion(newPosition, true);
+				Region newRegion = newPosition.getWorld().getRegion(newPosition);
+
+				// TODO - entity moved into unloaded chunk - what happens for normal entities?
+				if (newRegion == null && this.getController() instanceof PlayerController) {
+					newRegion = newPosition.getWorld().getRegion(newPosition, true);
+				}
+				EntityManager newEntityManager = ((SpoutRegion)newRegion).getEntityManager();
+
+				transformLive.set(transform);
+				entityManagerLive = newEntityManager;
+				if (transform.readUnlock(seqRead)) {
+					return;
+				}
 			}
-			EntityManager newEntityManager = ((SpoutRegion)newRegion).getEntityManager();
-			
-			TransformAndManager newTM = new TransformAndManager(transform, newEntityManager);
-			
-			transformAndManagerLive.set(newTM);
-			
-		//}
+
+		} finally {
+			lock.writeUnlock(seq);
+		}
 		
 	}
 	
 	public boolean kill() {
-		TransformAndManager oldTM = transformAndManagerLive.getAndSet(new TransformAndManager(null, null));
-		return oldTM.transform == null && oldTM.entityManager == null;
+		int seq = lock.writeLock();
+		try {
+			while (true) {
+				int seqRead = transformLive.readLock();
+				AtomicPoint p = transformLive.getPosition();
+				boolean alive = p.getWorld() != null;
+				if (transformLive.readUnlock(seqRead)) {
+					p.set(null, 0F, 0F, 0F);
+					return alive;
+				}
+			}
+		} finally {
+			lock.writeUnlock(seq);
+		}
 	}
 	
 	public boolean isDead() {
-		return transformAndManager.transform == null && transformAndManager.entityManager == null;
+		while (true) {
+			int seq = transformLive.readLock();
+			boolean dead = id != NOTSPAWNEDID && transformLive.getPosition().getWorld() == null;
+			if (transformLive.readUnlock(seq)) {
+				return dead;
+			}
+		}
 	}
 	
+	// TODO - needs to be made thread safe
 	@Override
 	public void setModel(Model model) {
 		this.model = model;
 	}
 
+	// TODO - needs to be made thread safe
 	@Override
 	public Model getModel() {
 		return model;
 	}
 
+	// TODO - needs to be made thread safe
 	@Override
 	public void setCollision(CollisionModel model) {
 		this.collision = model;
 
 	}
 
+	// TODO - needs to be made thread safe
 	@Override
 	public CollisionModel getCollision() {
 		return collision;
@@ -201,21 +255,21 @@ public class SpoutEntity implements Entity {
 	}
 	
 	public void finalizeRun() {
-		TransformAndManager live = transformAndManagerLive.get();
-		if (live == null || transformAndManager == null || live.entityManager != transformAndManager.entityManager) {
-			if (transformAndManager != null && transformAndManager.entityManager != null) {
-				transformAndManager.entityManager.deallocate(this);
+		Region regionLive = getRegionLive();
+		Region region = getRegion();
+		if (entityManagerLive != null) {
+			if(region == null || entityManagerLive != ((SpoutRegion)region).getEntityManager()) {
+				entityManagerLive.allocate(this);
 			}
-			if (live != null) {
-				if (live.entityManager != null) {
-					live.entityManager.allocate(this);
-				} else {
-					if (live.transform == null && controller != null) {
-						controller.onDeath();
-						if (controller instanceof PlayerController) {
-							Player p = ((PlayerController)controller).getPlayer();
-							((SpoutPlayer)p).getNetworkSynchronizer().onDeath();
-						}
+		}
+		if (entityManager != null) {
+			if (regionLive == null || entityManager != ((SpoutRegion)regionLive).getEntityManager()) {
+				entityManager.deallocate(this);
+				if (entityManagerLive == null) {
+					controller.onDeath();
+					if (controller instanceof PlayerController) {
+						Player p = ((PlayerController)controller).getPlayer();
+						((SpoutPlayer)p).getNetworkSynchronizer().onDeath();
 					}
 				}
 			}
@@ -223,26 +277,50 @@ public class SpoutEntity implements Entity {
 	}
 	
 	public void copyToSnapshot() {
-		transformAndManager = transformAndManagerLive.get();
+		transform.set(transformLive);
+		if (entityManager != entityManagerLive) {
+			entityManager = entityManagerLive;
+		}
 	}
 	
 
 	@Override
 	public Chunk getChunk() {
-		Point position = transformAndManager.transform.getPosition();
+		Point position = transform.getPosition();
 		return position.getWorld().getChunk(position, true);
 	}
 
 	@Override
 	public Region getRegion() {
-		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld().getRegion(position, true);
+		Point position = transform.getPosition();
+		World world = position.getWorld();
+		if (world == null) {
+			return null;
+		} else {
+			return world.getRegion(position, true);
+		}
+	}
+
+	// TODO - add to SpoutAPI and override
+	public Region getRegionLive() {
+		while (true) {
+			int seq = lock.readLock();
+			Point position = transformLive.getPosition();
+			World world = position.getWorld();
+			if (world == null && lock.readUnlock(seq)) {
+				return null;
+			} else {
+				Region r = world.getRegion(position, true);
+				if (lock.readUnlock(seq)) {
+					return r;
+				}
+			}
+		}
 	}
 	
 	@Override
 	public World getWorld() {
-		Point position = transformAndManager.transform.getPosition();
-		return position.getWorld();
+		return transform.getPosition().getWorld();
 	}
 
 	@Override
@@ -250,7 +328,7 @@ public class SpoutEntity implements Entity {
 		return clazz.isAssignableFrom(this.getController().getClass());
 	}
 
-	
+	// TODO - datatable and atomics
 	@Override
 	public void setData(String key, int value) {
 		int ikey = map.getKey(key);
@@ -316,29 +394,6 @@ public class SpoutEntity implements Entity {
 		}
 		return inventory;
 	}
-	
-	private static class TransformAndManager {
-		public final Transform transform;
-		public final EntityManager entityManager;
-		
-		public TransformAndManager() {
-			this(null, null);
-		}
-		
-		public TransformAndManager(Transform transform, EntityManager entityManager) {
-			if (transform != null) {
-				this.transform = transform.copy();
-			} else {
-				this.transform = null;
-			}
-			this.entityManager = entityManager;
-		}
-		
-		public TransformAndManager copy() {
-			return new TransformAndManager(transform != null ? transform.copy() : null, entityManager);
-		}
-	}
-
 	
 	@Override
 	public void onSync() {

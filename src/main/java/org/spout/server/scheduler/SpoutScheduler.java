@@ -306,16 +306,16 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
-
+		
 		List<AsyncExecutor> executors = asyncExecutors.get();
 
 		int stage = 0;
 		boolean allStagesComplete = false;
 
 		boolean joined = false;
-
+		
 		while (!allStagesComplete) {
-
+			
 			allStagesComplete = true;
 
 			for (AsyncExecutor e : executors) {
@@ -342,7 +342,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			stage++;
 		}
-
+		
 		copySnapshot(executors);
 		
 		return true;
@@ -365,7 +365,7 @@ public final class SpoutScheduler implements Scheduler {
 				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 			}
 		}
-
+		
 		lockSnapshotLock();
 
 		try {
