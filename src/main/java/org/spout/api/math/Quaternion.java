@@ -31,7 +31,7 @@ package org.spout.api.math;
  *
  */
 public class Quaternion {
-	float x,y,z,w;
+	protected float x,y,z,w;
 
 	/**
 	 * Represents no rotation

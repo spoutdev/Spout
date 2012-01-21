@@ -257,6 +257,184 @@ public class AtomicQuaternion extends Quaternionm {
 		}
 	}
 	
+	@Override
+	public float lengthSquared() {
+		while (true) {
+			int seq = lock.readLock();
+			float result = 0;
+			try {
+				result = super.lengthSquared();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public float length() {
+		while (true) {
+			int seq = lock.readLock();
+			float result = 0;
+			try {
+				result = super.length();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Vector3 getAxisAngles() {
+		while (true) {
+			int seq = lock.readLock();
+			Vector3 result = null;
+			try {
+				result = super.getAxisAngles();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Quaternion rotate(float angle, Vector3 axis) {
+		while (true) {
+			int seq = lock.readLock();
+			Quaternion result = null;
+			try {
+				result = super.rotate(angle, axis);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public Quaternion rotate(float angle, AtomicVector3 axis) {
+		while (true) {
+			int seq = axis.getLock().readLock();
+			Quaternion result = null;
+			try {
+				result = rotate(angle, (Vector3)axis);
+			} finally {
+				if (axis.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Quaternion normalize() {
+		while (true) {
+			int seq = lock.readLock();
+			Quaternion result = null;
+			try {
+				result = super.normalize();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Quaternion multiply(Quaternion o) {
+		while (true) {
+			int seq = lock.readLock();
+			Quaternion result = null;
+			try {
+				result = super.multiply(o);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public Quaternion multiply(AtomicQuaternion o) {
+		while (true) {
+			int seq = o.getLock().readLock();
+			Quaternion result = null;
+			try {
+				result = multiply((Quaternion)o);
+			} finally {
+				if (o.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public String toString() {
+		while (true) {
+			int seq = lock.readLock();
+			String result = null;
+			try {
+				result = super.toString();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		while (true) {
+			int seq = lock.readLock();
+			boolean result = false;
+			try {
+				result = super.equals(o);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	public boolean equals(AtomicQuaternion o) {
+		while (true) {
+			int seq = o.getLock().readLock();
+			boolean result = false;
+			try {
+				result = equals((Object)o);
+			} finally {
+				if (o.getLock().readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
+	@Override
+	// TODO - should this even support hash code?
+	public int hashCode() {
+		while (true) {
+			int seq = lock.readLock();
+			int result = 0;
+			try {
+				result = super.hashCode();
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+	
 	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {
 			return new OptimisticReadWriteLock();

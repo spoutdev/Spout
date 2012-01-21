@@ -38,6 +38,7 @@ import javassist.Modifier;
 
 import org.junit.Test;
 import org.spout.api.geo.discrete.atomic.AtomicPoint;
+import org.spout.api.geo.discrete.atomic.AtomicQuaternion;
 import org.spout.api.geo.discrete.atomic.AtomicVector3;
 
 public class AtomicOverridesTest {
@@ -47,6 +48,7 @@ public class AtomicOverridesTest {
 
 		assertTrue(fullyOverridesSuperclass(AtomicVector3.class));
 		assertTrue(fullyOverridesSuperclass(AtomicPoint.class));
+		assertTrue(fullyOverridesSuperclass(AtomicQuaternion.class));
 		
 	}
 	
@@ -105,10 +107,10 @@ public class AtomicOverridesTest {
 					if (!Modifier.isFinal(m.getModifiers())) {
 						allMethods.add(m);
 					} else {
-						System.out.println(m + " is a final method");
+						//System.out.println(m + " is a final method");
 					}
 				} else {
-					System.out.println(m + " is a static method");
+					//System.out.println(m + " is a static method");
 				}
 			}
 		}
@@ -128,10 +130,10 @@ public class AtomicOverridesTest {
 				if (!Modifier.isFinal(m.getModifiers())) {
 					allMethods.add(m);
 				} else {
-					System.out.println(m + " is a final method");
+					//System.out.println(m + " is a final method");
 				}
 			} else {
-				System.out.println(m + " is a static method");
+				//System.out.println(m + " is a static method");
 			}
 		}
 		
