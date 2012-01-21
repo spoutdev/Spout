@@ -261,4 +261,23 @@ public class Transform {
 	protected OptimisticReadWriteLock getLock() {
 		return lock;
 	}
+	
+	/**
+	 * Optimistically Read locks the Transform
+	 * 
+	 * @return the sequence number
+	 */
+	public int readLock() {
+		return lock.readLock();
+	}
+	
+	/**
+	 * Unlocks the optimistic read lock
+	 * 
+	 * @param sequence the sequence number returned by readLock()
+	 * @return true if the Transform hasn't changed
+	 */
+	public boolean readUnlock(int sequence) {
+		return lock.readUnlock(sequence);
+	}
 }
