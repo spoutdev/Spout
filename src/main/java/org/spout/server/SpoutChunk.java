@@ -45,6 +45,7 @@ import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
 
@@ -75,6 +76,12 @@ public class SpoutChunk extends Chunk {
 	 * A set of all players who are observing this chunk
 	 */
 	private final Set<Player> observers = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
+	
+	/**
+	 * A set of entities contained in the chunk
+	 */
+	// TODO - maybe switch to weak references, but the entities should unload with the chunk
+	private final Set<SpoutEntity> entities = Collections.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
 	
 	/**
 	 * Snapshot Manager
@@ -386,6 +393,14 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean isPopulated() {
 		return populated.get();
+	}
+	
+	public boolean addEntity(SpoutEntity entity) {
+		return entities.add(entity);
+	}
+	
+	public boolean removeEntity(SpoutEntity entity) {
+		return entities.remove(entity);
 	}
 
 }

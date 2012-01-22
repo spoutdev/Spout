@@ -46,6 +46,7 @@ import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
+import org.spout.server.SpoutChunk;
 import org.spout.server.SpoutRegion;
 import org.spout.server.SpoutServer;
 import org.spout.server.datatable.SpoutDatatableMap;
@@ -70,6 +71,8 @@ public class SpoutEntity implements Entity {
 	private Controller controller;
 	private Controller controllerLive;
 	private final SpoutServer server;
+	private Chunk chunk;
+	private Chunk chunkLive;
 	
 	public int id = NOTSPAWNEDID;
 	
@@ -158,8 +161,9 @@ public class SpoutEntity implements Entity {
 				int seqRead = transform.readLock();
 				Point newPosition = transform.getPosition();
 
-				Region newRegion = newPosition.getWorld().getRegion(newPosition);
-
+				chunkLive = newPosition.getWorld().getChunk(newPosition);
+				Region newRegion = chunkLive.getRegion();
+				
 				// TODO - entity moved into unloaded chunk - what happens for normal entities?
 				if (newRegion == null && this.getController() instanceof PlayerController) {
 					newRegion = newPosition.getWorld().getRegion(newPosition, true);
@@ -275,10 +279,19 @@ public class SpoutEntity implements Entity {
 				entityManagerLive.allocate(this);
 			}
 		}
+		if (chunkLive != chunk) {
+			if (chunkLive != null) {
+				((SpoutChunk)chunkLive).addEntity(this);
+			}
+			if (chunk != null) {
+				((SpoutChunk)chunk).removeEntity(this);
+			}
+		}
 	}
 	
 	public void copyToSnapshot() {
 		transform.set(transformLive);
+		chunk = chunkLive;
 		if (entityManager != entityManagerLive) {
 			entityManager = entityManagerLive;
 		}
