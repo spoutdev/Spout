@@ -28,13 +28,13 @@ package org.spout.api.protocol;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.player.Player;
 
@@ -59,7 +59,7 @@ public class NetworkSynchronizer {
 	private final int viewDistance = 5;
 	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
 
-	private Point lastChunkCheck;
+	private Pointm lastChunkCheck = new Pointm();
 
 	// Base points used so as not to load chunks unnecessarily
 	private Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
@@ -79,6 +79,7 @@ public class NetworkSynchronizer {
 		this.entity = entity;
 	}
 
+	// TODO - is this only called during finalize ?
 	public void onDeath() {
 		for (Point p : initializedChunks) {
 			freeChunk(p);
@@ -101,17 +102,16 @@ public class NetworkSynchronizer {
 			return;
 		}
 
-		// TODO - teleport smoothing
-
+		// TODO teleport smoothing
+		
 		Transform lastTransform = entity.getTransform();
 		Transform liveTransform = entity.getLiveTransform();
 
 		if (liveTransform != null) {
 			Point currentPosition = liveTransform.getPosition();
-
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > (Chunk.CHUNK_SIZE >> 1)) {
 				checkChunkUpdates(currentPosition);
-				lastChunkCheck = currentPosition;
+				lastChunkCheck.set(currentPosition);
 			}
 
 			if (first || lastTransform == null || lastTransform.getPosition().getWorld() != liveTransform.getPosition().getWorld()) {
@@ -121,9 +121,7 @@ public class NetworkSynchronizer {
 		}
 
 		for (Point p : chunkFreeQueue) {
-			if (initializedChunks.remove(p)) {
-				freeChunk(p);
-				activeChunks.remove(p);
+			if (initializedChunks.contains(p)) {
 				Chunk c = p.getWorld().getChunk(p, false);
 				if (c != null) {
 					removeObserver(c);
@@ -131,21 +129,33 @@ public class NetworkSynchronizer {
 			}
 		}
 
-		chunkFreeQueue.clear();
-
 		for (Point p : chunkInitQueue) {
-			if (initializedChunks.add(p)) {
+			if (!initializedChunks.contains(p)) {
 				Chunk c = p.getWorld().getChunk(p, true);
-				initChunk(p);
 				addObserver(c);
 			}
 		}
 
-		chunkInitQueue.clear();
-
 	}
 	
 	public void preSnapshot() {
+		
+		for (Point p : chunkFreeQueue) {
+			if (initializedChunks.remove(p)) {
+				freeChunk(p);
+				activeChunks.remove(p);
+			}
+		}
+
+		chunkFreeQueue.clear();
+
+		for (Point p : chunkInitQueue) {
+			if (initializedChunks.add(p)) {
+				initChunk(p);
+			}
+		}
+
+		chunkInitQueue.clear();
 
 		int chunksSent = 0;
 
