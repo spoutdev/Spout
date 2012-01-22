@@ -26,6 +26,7 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
@@ -33,7 +34,7 @@ import org.spout.api.event.HandlerList;
  * This is the opposite of Spawn
  *
  */
-public class EntityDespawnEvent extends EntityEvent {
+public class EntityDespawnEvent extends EntityEvent implements Cancellable {
 	public EntityDespawnEvent(Entity e) {
 		super(e);
 		// TODO Auto-generated constructor stub
@@ -41,12 +42,13 @@ public class EntityDespawnEvent extends EntityEvent {
 
 	private static HandlerList handlers = new HandlerList();
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
+	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
+	}
+
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 
 	public static HandlerList getHandlerList() {

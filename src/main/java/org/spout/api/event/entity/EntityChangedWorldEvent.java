@@ -26,13 +26,14 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 
 /**
  * Called when an entity changes its world.
  */
-public class EntityChangedWorldEvent extends EntityEvent {
+public class EntityChangedWorldEvent extends EntityEvent implements Cancellable {
 	public EntityChangedWorldEvent(Entity e) {
 		super(e);
 		// TODO Auto-generated constructor stub
@@ -44,6 +45,11 @@ public class EntityChangedWorldEvent extends EntityEvent {
 
 	public World getFrom() {
 		return from;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 	@Override

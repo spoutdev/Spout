@@ -30,19 +30,29 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity is teleported.
+ * Called when an entity gains health.
  */
-public class EntityTeleportEvent extends EntityMoveEvent implements Cancellable {
-	public EntityTeleportEvent(Entity e) {
+public class EntityHealthChangedEvent extends EntityEvent implements Cancellable {
+	public EntityHealthChangedEvent(Entity e) {
 		super(e);
 		// TODO Auto-generated constructor stub
 	}
 
 	private static HandlerList handlers = new HandlerList();
 
+	private int amount;
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
 	@Override
 	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
+		this.cancelled = cancelled;
 	}
 
 	@Override
