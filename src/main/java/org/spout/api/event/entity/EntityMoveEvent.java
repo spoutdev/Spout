@@ -82,13 +82,13 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	}
 
 	@Override
-	public HandlerList getHandlers() {
-		return handlers;
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
 	}
 
 	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 
 	public static HandlerList getHandlerList() {

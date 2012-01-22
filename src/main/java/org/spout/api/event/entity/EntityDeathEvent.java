@@ -25,24 +25,47 @@
  */
 package org.spout.api.event.entity;
 
+import java.util.List;
+
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.inventory.ItemStack;
 
 /**
- * Called when an entity is teleported.
+ * Called when an entity dies.
  */
-public class EntityTeleportEvent extends EntityMoveEvent implements Cancellable {
-	public EntityTeleportEvent(Entity e) {
+public class EntityDeathEvent extends EntityEvent implements Cancellable {
+	public EntityDeathEvent(Entity e) {
 		super(e);
 		// TODO Auto-generated constructor stub
 	}
 
 	private static HandlerList handlers = new HandlerList();
 
+	private List<ItemStack> drops;
+
+	/**
+	 * The drops to drop.
+	 *
+	 * @return The drops to drop.
+	 */
+	public List<ItemStack> getDrops() {
+		return drops;
+	}
+
+	/**
+	 * Sets the drops to drop.
+	 *
+	 * @param drops The drops to set.
+	 */
+	public void setDrops(List<ItemStack> drops) {
+		this.drops = drops;
+	}
+
 	@Override
 	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
+		this.cancelled = cancelled;
 	}
 
 	@Override

@@ -26,21 +26,21 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
  * Called when an entity interacts with an Entity
- *
- *
  */
-public class EntityInteractEvent extends EntityEvent {
+public class EntityInteractEvent extends EntityEvent implements Cancellable {
 	public EntityInteractEvent(Entity e) {
 		super(e);
 		// TODO Auto-generated constructor stub
 	}
 
 	private static HandlerList handlers = new HandlerList();
-	Entity interacted;
+
+	private Entity interacted;
 
 	public Entity getInteractedWith(){
 		return interacted;
@@ -50,8 +50,12 @@ public class EntityInteractEvent extends EntityEvent {
 		this.interacted = e;
 	}
 
-	public HandlerList getHandlers() {
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
 
+	public HandlerList getHandlers() {
 		return handlers;
 	}
 }

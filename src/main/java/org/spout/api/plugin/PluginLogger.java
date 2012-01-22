@@ -42,8 +42,7 @@ public class PluginLogger extends Logger {
 
 	@Override
 	public void log(LogRecord logRecord) {
-		logRecord.setMessage(name + logRecord.getMessage());
+		logRecord.setMessage("[" + name + "] " + logRecord.getMessage());
 		super.log(logRecord);
 	}
-
 }
