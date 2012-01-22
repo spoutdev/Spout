@@ -26,8 +26,10 @@
 package org.spout.server;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -80,9 +82,10 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of entities contained in the chunk
 	 */
-	// TODO - maybe switch to weak references, but the entities should unload with the chunk
 	private final Set<SpoutEntity> entities = Collections.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
-	
+	private final ConcurrentLinkedQueue<SpoutEntity> addedEntities = new ConcurrentLinkedQueue<SpoutEntity>();
+	private final ConcurrentLinkedQueue<SpoutEntity> removedEntities = new ConcurrentLinkedQueue<SpoutEntity>();
+
 	/**
 	 * Snapshot Manager
 	 */
@@ -272,7 +275,11 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean addObserver(Player player) {
 		checkChunkLoaded();
-		return observers.add(player);
+		if(observers.add(player)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -396,11 +403,36 @@ public class SpoutChunk extends Chunk {
 	}
 	
 	public boolean addEntity(SpoutEntity entity) {
-		return entities.add(entity);
+		checkChunkLoaded();
+		if (entities.add(entity)) {
+			addedEntities.add(entity);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean removeEntity(SpoutEntity entity) {
-		return entities.remove(entity);
+		checkChunkLoaded();
+		if (entities.remove(entity)) {
+			removedEntities.add(entity);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public Iterator<SpoutEntity> getAddedEntities() {
+		return addedEntities.iterator();
+	}
+	
+	public Iterator<SpoutEntity> getRemovedEntities() {
+		return addedEntities.iterator();
+	}
+	
+	public void clearAddedRemovedEntities() {
+		addedEntities.clear();
+		removedEntities.clear();
 	}
 
 }

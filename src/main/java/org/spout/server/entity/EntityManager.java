@@ -131,7 +131,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		int currentId = entity.getId();
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
-			getRawAll(entity.getController().getClass()).add(entity);
+			getRawAll(entity.getLiveController().getClass()).add(entity);
 			return currentId;
 		} else {
 			int id = nextId.getAndIncrement();
@@ -140,7 +140,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			}
 			entities.put(id, entity);
 			entity.setId(id);
-			Controller controller = entity.getController();
+			Controller controller = entity.getLiveController();
 			if (controller != null) {
 				getRawAll(controller.getClass()).add(entity);
 			}
@@ -175,6 +175,17 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		// Entity removal and additions happen here
 		for (SpoutEntity e : entities.get().values()) {
 			e.finalizeRun();
+			Controller controller = e.getController();
+			if (controller != null) {
+				controller.finalizeTick();
+				if (controller instanceof PlayerController) {
+					Player p = ((PlayerController)controller).getPlayer();
+					NetworkSynchronizer n = ((SpoutPlayer)p).getNetworkSynchronizer();
+					if (n != null) {
+						n.finalizeTick();
+					}
+				}
+			}
 		}
 	}
 	
@@ -185,7 +196,10 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 				controller.preSnapshot();
 				if (controller instanceof PlayerController) {
 					Player p = ((PlayerController)controller).getPlayer();
-					((SpoutPlayer)p).getNetworkSynchronizer().preSnapshot();;
+					NetworkSynchronizer n = ((SpoutPlayer)p).getNetworkSynchronizer();
+					if (n != null) {
+						n.preSnapshot();;
+					}
 				}
 			}
 		}		

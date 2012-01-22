@@ -192,6 +192,7 @@ public class SpoutEntity implements Entity {
 				boolean alive = p.getWorld() != null;
 				if (transformLive.readUnlock(seqRead)) {
 					p.set(null, 0F, 0F, 0F);
+					entityManagerLive = null;
 					return alive;
 				}
 			}
@@ -260,10 +261,8 @@ public class SpoutEntity implements Entity {
 	}
 	
 	public void finalizeRun() {
-		Region regionLive = getRegionLive();
-		Region region = getRegion();
 		if (entityManager != null) {
-			if (regionLive == null || entityManager != ((SpoutRegion)regionLive).getEntityManager() || controller != controllerLive) {
+			if (entityManager != entityManagerLive || controller != controllerLive) {
 				entityManager.deallocate(this);
 				if (entityManagerLive == null) {
 					controller.onDeath();
@@ -275,7 +274,7 @@ public class SpoutEntity implements Entity {
 			}
 		}
 		if (entityManagerLive != null) {
-			if(region == null || entityManagerLive != ((SpoutRegion)region).getEntityManager() || controller != controllerLive) {
+			if(entityManager != entityManagerLive || controller != controllerLive) {
 				entityManagerLive.allocate(this);
 			}
 		}
@@ -295,6 +294,7 @@ public class SpoutEntity implements Entity {
 		if (entityManager != entityManagerLive) {
 			entityManager = entityManagerLive;
 		}
+		controller = controllerLive;
 	}
 	
 
