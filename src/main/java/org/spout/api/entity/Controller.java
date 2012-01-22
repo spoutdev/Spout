@@ -69,6 +69,13 @@ public abstract class Controller {
 	 */
 	public void preSnapshot() {
 	}
+	
+	/**
+	 * Called just before the pre-snapshot stage.<br>
+	 * This stage can make changes but they should be checked to make sure they are non-conflicting.
+	 */
+	public void finalizeTick() {
+	}
 
 	/**
 	 * Checks if this entity has moved this cycle.

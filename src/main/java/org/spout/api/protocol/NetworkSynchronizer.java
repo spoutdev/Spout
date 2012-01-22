@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
@@ -91,8 +92,11 @@ public class NetworkSynchronizer {
 		entity = null;
 	}
 
-	public void preSnapshot() {
-
+	/**
+	 * Called just before the pre-snapshot stage.<br>
+	 * This stage can make changes but they should be checked to make sure they are non-conflicting.
+	 */
+	public void finalizeTick() {
 		if (entity == null) {
 			return;
 		}
@@ -139,6 +143,10 @@ public class NetworkSynchronizer {
 
 		chunkInitQueue.clear();
 
+	}
+	
+	public void preSnapshot() {
+
 		int chunksSent = 0;
 
 		Iterator<Point> i;
@@ -163,7 +171,8 @@ public class NetworkSynchronizer {
 			chunksSent++;
 		}
 
-		if (teleported) {
+		if (teleported && entity != null) {
+			Transform liveTransform = entity.getLiveTransform();
 			sendPosition(liveTransform);
 			first = false;
 			teleported = false;
