@@ -142,6 +142,10 @@ public class NetworkSynchronizer {
 		
 		for (Point p : chunkFreeQueue) {
 			if (initializedChunks.remove(p)) {
+				Chunk c = p.getWorld().getChunk(p, true);
+				for (Entity e : c.getEntities()) {
+					destroyEntity(e);
+				}
 				freeChunk(p);
 				activeChunks.remove(p);
 			}
@@ -151,6 +155,10 @@ public class NetworkSynchronizer {
 
 		for (Point p : chunkInitQueue) {
 			if (initializedChunks.add(p)) {
+				Chunk c = p.getWorld().getChunk(p, true);
+				for (Entity e : c.getLiveEntities()) {
+					spawnEntity(e);
+				}
 				initChunk(p);
 			}
 		}
@@ -324,5 +332,23 @@ public class NetworkSynchronizer {
 	 * @param block the block
 	 */
 	public void updateBlock(Chunk chunk, Block block) {
+	}
+	
+	/**
+	 * Instructs the client to spawn the entity
+	 * 
+	 * @param e the entity
+	 */
+	public void spawnEntity(Entity e) {
+		
+	}
+	
+	/**
+	 * Instructs the client to destroy the entity
+	 * 
+	 * @param e the entity
+	 */
+	public void destroyEntity(Entity e) {
+		
 	}
 }

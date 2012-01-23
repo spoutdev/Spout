@@ -25,6 +25,7 @@
  */
 package org.spout.api.geo.cuboid;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.BlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -32,6 +33,7 @@ import org.spout.api.player.Player;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.SnapshotRead;
 
 /**
  * Represents a cube containing 16x16x16 Blocks
@@ -132,4 +134,38 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * @return if the chunk is populated.
 	 */
 	public abstract boolean isPopulated();
+	
+	/**
+	 * Gets the entities that have entered the chunk since the last snapshot.<br>
+	 * <br>
+	 * Note: It is possible for an entity to appear more than once in the list and to appear in both the added and removed lists
+	 * 
+	 * @return the added entities
+	 */
+	public abstract Iterable<Entity>  getAddedEntities();
+	
+	/**
+	 * Gets the entities that have left the chunk since the last snapshot.<br>
+	 * <br>
+	 * Note: It is possible for an entity to appear more than once in the list and to appear in both the added and removed lists
+	 * 
+	 * @return the removed entities
+	 */
+	public abstract Iterable<Entity> getRemovedEntities();
+	
+	/**
+	 * Gets the entities in the chunk at the last snapshot
+	 * 
+	 * @return the entities
+	 */
+	@SnapshotRead
+	public abstract Iterable<Entity>  getEntities();
+	
+	/**
+	 * Gets the entities currently in the chunk
+	 * 
+	 * @return the entities
+	 */
+	@LiveRead
+	public abstract Iterable<Entity>  getLiveEntities();
 }
