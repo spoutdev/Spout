@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.Datatable;
@@ -114,19 +115,38 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material) {
-		checkChunkLoaded();
-		setBlockIdAndData(x, y, z, (short) material.getId(), (short) material.getData());
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
+		setBlockMaterial(x, y, z, material, true, source);
 	}
 
 	@Override
-	public void setBlockId(int x, int y, int z, short id) {
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
+		if (material == null) throw new NullPointerException("Material can not be null");
+		if (source == null) throw new NullPointerException("Source can not be null");
+		checkChunkLoaded();
+		setBlockIdAndData(x, y, z, (short) material.getId(), (short) material.getData(), updatePhysics, source);
+	}
+
+	@Override
+	public void setBlockId(int x, int y, int z, short id, Source source) {
+		setBlockId(x, y, z, id, true, source);
+	}
+	
+	@Override
+	public void setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
+		if (source == null) throw new NullPointerException("Source can not be null");
 		checkChunkLoaded();
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, (short)0, null);
 	}
 	
 	@Override
-	public void setBlockIdAndData(int x, int y, int z, short id, short data) {
+	public void setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
+		setBlockIdAndData(x, y, z, id, data, source);
+	}
+	
+	@Override
+	public void setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
+		if (source == null) throw new NullPointerException("Source can not be null");
 		checkChunkLoaded();
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
 	}
