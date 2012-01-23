@@ -26,7 +26,6 @@
 package org.spout.server;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -37,6 +36,7 @@ import org.spout.api.Spout;
 import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
+import org.spout.api.entity.Entity;
 import org.spout.api.generator.Populator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
@@ -50,6 +50,7 @@ import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
+import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashSet;
 
 public class SpoutChunk extends Chunk {
 
@@ -73,6 +74,11 @@ public class SpoutChunk extends Chunk {
 	 * Holds if the chunk is populated
 	 */
 	private SnapshotableBoolean populated;
+
+	/**
+	 * Snapshot Manager
+	 */
+	private final SnapshotManager snapshotManager = new SnapshotManager();
 	
 	/**
 	 * A set of all players who are observing this chunk
@@ -82,15 +88,10 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of entities contained in the chunk
 	 */
-	private final Set<SpoutEntity> entities = Collections.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
-	private final ConcurrentLinkedQueue<SpoutEntity> addedEntities = new ConcurrentLinkedQueue<SpoutEntity>();
-	private final ConcurrentLinkedQueue<SpoutEntity> removedEntities = new ConcurrentLinkedQueue<SpoutEntity>();
+	private final SnapshotableConcurrentHashSet<Entity> entities = new SnapshotableConcurrentHashSet<Entity>(snapshotManager);
+	private final ConcurrentLinkedQueue<Entity> addedEntities = new ConcurrentLinkedQueue<Entity>();
+	private final ConcurrentLinkedQueue<Entity> removedEntities = new ConcurrentLinkedQueue<Entity>();
 
-	/**
-	 * Snapshot Manager
-	 */
-	private final SnapshotManager snapshotManager = new SnapshotManager();
-	
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
@@ -255,6 +256,8 @@ public class SpoutChunk extends Chunk {
 	
 	public void copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
+		addedEntities.clear();
+		removedEntities.clear();
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
@@ -422,17 +425,20 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 	
-	public Iterator<SpoutEntity> getAddedEntities() {
-		return addedEntities.iterator();
+	public Iterable<Entity>  getAddedEntities() {
+		return addedEntities;
 	}
 	
-	public Iterator<SpoutEntity> getRemovedEntities() {
-		return addedEntities.iterator();
+	public Iterable<Entity> getRemovedEntities() {
+		return addedEntities;
 	}
 	
-	public void clearAddedRemovedEntities() {
-		addedEntities.clear();
-		removedEntities.clear();
+	public Iterable<Entity>  getEntities() {
+		return entities.get();
+	}
+	
+	public Iterable<Entity>  getLiveEntities() {
+		return entities.getLive();
 	}
 
 }
