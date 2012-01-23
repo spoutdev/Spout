@@ -25,6 +25,7 @@
  */
 package org.spout.api.geo;
 
+import org.spout.api.Source;
 import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
@@ -40,9 +41,26 @@ public interface BlockAccess {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param material
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword.
+	 * @param source of the change
+	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material);
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source);
+	
+	/**
+	 * Sets the block at (x, y, z) to the given material type.
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param material
+	 * @param source of the change
+	 * @throws NullPointerException
+	 */
+	@LiveWrite
+	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source);
+
 
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -55,9 +73,29 @@ public interface BlockAccess {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword.
+	 * @param source of the change
+	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockId(int x, int y, int z, short id);
+	public void setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source);
+	
+	/**
+	 * Sets the id for the block at (x, y, z) to the given id.<br>
+	 * <br>
+	 * This method will clear the block's data and any auxiliary data.<br>
+	 * <br>
+	 * For ids greater than 255, the id must represent a valid custom id.<br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param id
+	 * @param source of the change
+	 * @throws NullPointerException
+	 */
+	@LiveWrite
+	public void setBlockId(int x, int y, int z, short id, Source source);
 
 
 	/**
@@ -71,9 +109,29 @@ public interface BlockAccess {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword.
+	 * @param source of the change
+	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockIdAndData(int x, int y, int z, short id, short data);
+	public void setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source);
+	
+	/**
+	 * Sets the id for the block at (x, y, z) to the given id.<br>
+	 * <br>
+	 * This method will clear the block's auxiliary data.<br>
+	 * <br>
+	 * For ids greater than 255, the id must represent a valid custom id.<br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param id
+	 * @param source of the change
+	 * @throws NullPointerException
+	 */
+	@LiveWrite
+	public void setBlockIdAndData(int x, int y, int z, short id, short data, Source source);
 
 	/**
 	 * Gets the snapshot material for the block at (x, y, z)

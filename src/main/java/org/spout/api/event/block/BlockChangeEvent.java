@@ -25,15 +25,16 @@
  */
 package org.spout.api.event.block;
 
-import org.spout.api.event.EventSource;
+import org.spout.api.Source;
+import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockSnapshot;
 
 /**
  * Called when a block changes its state.
  */
-public abstract class BlockChangeEvent extends BlockEvent {
-	public BlockChangeEvent(Block block, EventSource source) {
+public class BlockChangeEvent extends BlockEvent {
+	public BlockChangeEvent(Block block, Source source) {
 		super(block, source);
 	}
 
@@ -60,5 +61,11 @@ public abstract class BlockChangeEvent extends BlockEvent {
 	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

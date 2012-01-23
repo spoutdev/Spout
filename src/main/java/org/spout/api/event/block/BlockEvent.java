@@ -25,15 +25,15 @@
  */
 package org.spout.api.event.block;
 
+import org.spout.api.Source;
 import org.spout.api.event.Event;
-import org.spout.api.event.EventSource;
 import org.spout.api.geo.cuboid.Block;
 
 public abstract class BlockEvent extends Event {
 	private final Block block;
-	private final EventSource source;
+	private final Source source;
 
-	protected BlockEvent(Block block, EventSource source) {
+	protected BlockEvent(Block block, Source source) {
 		this.block = block;
 		this.source = source;
 	}
@@ -52,7 +52,7 @@ public abstract class BlockEvent extends Event {
 	 *
 	 * @return the event source
 	 */
-	public EventSource getSource() {
+	public Source getSource() {
 		return source;
 	}
 }

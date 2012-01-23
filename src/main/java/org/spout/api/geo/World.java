@@ -28,10 +28,10 @@ package org.spout.api.geo;
 import java.util.Set;
 import java.util.UUID;
 
+import org.spout.api.Source;
 import org.spout.api.Game;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.EventSource;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -45,7 +45,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends EventSource, BlockAccess {
+public interface World extends Source, BlockAccess {
 	/**
 	 * Gets the name of the world
 	 *
@@ -63,7 +63,7 @@ public interface World extends EventSource, BlockAccess {
 	public long getAge();
 
 	/**
-	 * Gets a Block representing a particular location in the world
+	 * Gets a {@link Block} representing a particular location in the world
 	 *
 	 * @return the Block
 	 */
@@ -71,7 +71,7 @@ public interface World extends EventSource, BlockAccess {
 	public Block getBlock(int x, int y, int z);
 
 	/**
-	 * Gets a Block representing a particular point in the world
+	 * Gets a {@link Block} representing a particular point in the world
 	 *
 	 * @param point The point
 	 * @return the Block
@@ -89,7 +89,7 @@ public interface World extends EventSource, BlockAccess {
 	public UUID getUID();
 
 	/**
-	 * Gets the region at region coordinates (x, y, z)
+	 * Gets the {@link Region} at region coordinates (x, y, z)
 	 *
 	 * @param x the region x coordinate
 	 * @param y the region y coordinate
@@ -100,7 +100,7 @@ public interface World extends EventSource, BlockAccess {
 	public Region getRegion(int x, int y, int z);
 
 	/**
-	 * Gets the region at region coordinates (x, y, z)
+	 * Gets the {@link Region} at region coordinates (x, y, z)
 	 *
 	 * @param x the region x coordinate
 	 * @param y the region y coordinate
@@ -112,7 +112,7 @@ public interface World extends EventSource, BlockAccess {
 	public Region getRegion(int x, int y, int z, boolean load);
 
 	/**
-	 * Gets the region at block position
+	 * Gets the {@link Region} at block position
 	 *
 	 * @param point in the world
 	 * @return the region
@@ -121,7 +121,7 @@ public interface World extends EventSource, BlockAccess {
 	public Region getRegion(Point point);
 
 	/**
-	 * Gets the region at block position
+	 * Gets the {@link Region} at block position
 	 *
 	 * @param point in the world
 	 * @param load true if the region should be loaded/generated
@@ -131,7 +131,7 @@ public interface World extends EventSource, BlockAccess {
 	public Region getRegion(Point point, boolean load);
 
 	/**
-	 * Gets the chunk at chunk coordinates (x, y, z)
+	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
 	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
@@ -142,7 +142,7 @@ public interface World extends EventSource, BlockAccess {
 	public Chunk getChunk(int x, int y, int z);
 
 	/**
-	 * Gets the chunk at block position
+	 * Gets the {@link Chunk} at block position
 	 *
 	 * @param point in the world
 	 * @return the chunk
@@ -151,7 +151,7 @@ public interface World extends EventSource, BlockAccess {
 	public Chunk getChunk(Point point);
 
 	/**
-	 * Gets the chunk at block position
+	 * Gets the {@link Chunk} at block position
 	 *
 	 * @param point in the world
 	 * @param load true if the region should be loaded/generated
@@ -161,7 +161,7 @@ public interface World extends EventSource, BlockAccess {
 	public Chunk getChunk(Point point, boolean load);
 
 	/**
-	 * Gets the chunk at chunk coordinates (x, y, z)
+	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
 	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
@@ -219,16 +219,16 @@ public interface World extends EventSource, BlockAccess {
 	public long getSeed();
 
 	/**
-	 * Gets the generator responsible for generating new chunks for this world
+	 * Gets the {@link WorldGenerator} responsible for generating new chunks for this world
 	 *
 	 * @return generator
 	 */
 	public WorldGenerator getGenerator();
 
 	/**
-	 * Gets the server associated with this world
+	 * Gets the game associated with this world
 	 *
-	 * @return the server
+	 * @return the game
 	 */
 	public Game getGame();
 

@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.EventManager;
-import org.spout.api.event.EventSource;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.inventory.Recipe;
@@ -56,7 +55,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
  */
-public interface Game extends Named, EventSource {
+public interface Game extends Named {
 	/**
 	 * Gets the name of this game's implementation
 	 *
