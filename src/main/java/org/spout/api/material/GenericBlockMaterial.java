@@ -89,7 +89,6 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 		return false;
 	}
 
-	@Override
 	public void onUpdate(World world, int x, int y, int z) {
 		
 	}
