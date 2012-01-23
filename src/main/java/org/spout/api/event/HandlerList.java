@@ -40,7 +40,7 @@ public class HandlerList {
 	 * Handler array. This field being an array is the key to this system's
 	 * speed.
 	 */
-	private ListenerRegistration[][] handlers = new ListenerRegistration[Order.values().length][];
+	private ListenerRegistration[] handlers = null;
 
 	/**
 	 * Dynamic handler lists. These are changed using register() and
@@ -48,15 +48,6 @@ public class HandlerList {
 	 * they have changed.
 	 */
 	private final EnumMap<Order, ArrayList<ListenerRegistration>> handlerslots;
-
-	/**
-	 * Whether the current HandlerList has been fully baked. When this is set to
-	 * false, the Map<Order, List<RegisteredListener>> will be baked to
-	 * RegisteredListener[][] next time the event is called.
-	 *
-	 * @see
-	 */
-	private boolean baked = false;
 
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
@@ -79,7 +70,7 @@ public class HandlerList {
 			for (List<ListenerRegistration> regs : h.handlerslots.values()) {
 				regs.clear();
 			}
-			h.baked = false;
+			h.handlers = null;
 		}
 	}
 
@@ -110,7 +101,7 @@ public class HandlerList {
 		if (handlerslots.get(listener.getOrder()).contains(listener)) {
 			throw new IllegalStateException("This listener is already registered to priority " + listener.getOrder().toString());
 		}
-		baked = false;
+		handlers = null;
 		handlerslots.get(listener.getOrder()).add(listener);
 	}
 
@@ -127,7 +118,7 @@ public class HandlerList {
 	 */
 	public void unregister(ListenerRegistration listener) {
 		if (handlerslots.get(listener.getOrder()).contains(listener)) {
-			baked = false;
+			handlers = null;
 			handlerslots.get(listener.getOrder()).remove(listener);
 		}
 	}
@@ -143,7 +134,7 @@ public class HandlerList {
 			}
 		}
 		if (changed) {
-			baked = false;
+			handlers = null;
 		}
 	}
 
@@ -151,16 +142,21 @@ public class HandlerList {
 	 * Bake HashMap and ArrayLists to 2d array - does nothing if not necessary
 	 */
 	public void bake() {
-		if (baked) {
+		if (handlers != null) {
 			return; // don't re-bake when still valid
 		}
+		List<ListenerRegistration> entries = new ArrayList<ListenerRegistration>();
 		for (Entry<Order, ArrayList<ListenerRegistration>> entry : handlerslots.entrySet()) {
-			handlers[entry.getKey().getIndex()] = entry.getValue().toArray(new ListenerRegistration[entry.getValue().size()]);
+			entries.addAll(entry.getValue());
 		}
-		baked = true;
+		handlers = entries.toArray(new ListenerRegistration[entries.size()]);
 	}
 
-	public ListenerRegistration[][] getRegisteredListeners() {
+	public ListenerRegistration[] getRegisteredListeners() {
+		if (handlers == null) {
+			bake();
+		}
+
 		return handlers;
 	}
 

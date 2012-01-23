@@ -46,19 +46,16 @@ public class SimpleEventManager implements EventManager {
 
 	public <T extends Event> T callEvent(T event) {
 		HandlerList handlers = event.getHandlers();
-		handlers.bake();
-		ListenerRegistration[][] listeners = handlers.getRegisteredListeners();
+		ListenerRegistration[] listeners = handlers.getRegisteredListeners();
 
 		if (listeners != null) {
-			for (ListenerRegistration[] listener : listeners) {
-				for (ListenerRegistration registration : listener) {
-					try {
-						if (!event.isCancelled() || registration.getOrder().ignoresCancelled()) {
-							registration.getExecutor().execute(event);
-						}
-					} catch (Throwable ex) {
-						Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + registration.getOwner().getClass().getName(), ex);
+			for (ListenerRegistration listener : listeners) {
+				try {
+					if (!event.isCancelled() || listener.getOrder().ignoresCancelled()) {
+						listener.getExecutor().execute(event);
 					}
+				} catch (Throwable ex) {
+					Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
 				}
 			}
 		}
