@@ -25,6 +25,8 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.geo.World;
+
 public class GenericBlockMaterial extends GenericItemMaterial implements BlockMaterial {
 	private float hardness = 0F;
 	private float friction = 0F;
@@ -85,5 +87,10 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 
 	public boolean isLiquid() {
 		return false;
+	}
+
+	@Override
+	public void onUpdate(World world, int x, int y, int z) {
+		
 	}
 }

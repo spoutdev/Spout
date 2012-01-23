@@ -26,13 +26,20 @@
 package org.spout.api.material;
 
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.util.map.TIntPairObjectHashMap;
 
 public class MaterialData {
+	private final static ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	private final static TIntPairObjectHashMap<Material> idLookup = new TIntPairObjectHashMap<Material>(1000);
 	private final static HashMap<String, Material> nameLookup = new HashMap<String, Material>(1000);
+	
+	/**
+	 * Performs quick lookup of materials based on only their id.
+	 */
+	private final static Material[] quickMaterialLookup = new Material[1000];
 
 	/**
 	 * Registers a material with the material lookup service
@@ -40,8 +47,15 @@ public class MaterialData {
 	 * @param item to add
 	 */
 	public static void registerMaterial(Material mat) {
-		idLookup.put(mat.getId(), mat.getData(), mat);
-		nameLookup.put(mat.getName().toLowerCase(), mat);
+		lock.writeLock().lock();
+		try {
+			idLookup.put(mat.getId(), mat.getData(), mat);
+			nameLookup.put(mat.getName().toLowerCase(), mat);
+			quickMaterialLookup[mat.getId()] = mat;
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	/**
@@ -80,11 +94,20 @@ public class MaterialData {
 	 */
 	public static Material getMaterial(short id, short data, DatatableMap auxData) {
 		// TODO - look at the aux data ?
-		Material mat = idLookup.get(id, data);
-		if (mat != null) {
-			return mat;
+		lock.readLock().lock();
+		try {
+			if (data == 0) {
+				return quickMaterialLookup[id];
+			}
+			Material mat = idLookup.get(id, data);
+			if (mat != null) {
+				return mat;
+			}
+			return quickMaterialLookup[id];
 		}
-		return idLookup.get(id, 0);
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -155,7 +178,13 @@ public class MaterialData {
 	 * @return a list of all materials
 	 */
 	public static Material[] getMaterials() {
-		return idLookup.values();
+		lock.readLock().lock();
+		try {
+			return idLookup.values();
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -165,6 +194,12 @@ public class MaterialData {
 	 * @return material, or null if none found
 	 */
 	public static Material getMaterial(String name) {
-		return nameLookup.get(name.toLowerCase());
+		lock.readLock().lock();
+		try {
+			return nameLookup.get(name.toLowerCase());
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 }

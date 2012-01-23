@@ -25,6 +25,8 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.geo.World;
+
 public interface BlockMaterial extends ItemMaterial {
 	public void onWorldRender();
 
@@ -43,4 +45,13 @@ public interface BlockMaterial extends ItemMaterial {
 	public int getLightLevel();
 
 	public BlockMaterial setLightLevel(int level);
+	
+	/**
+	 * Called when a block adjacent to this material is changed.
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 */
+	public void onUpdate(World world, int x, int y, int z);
 }
