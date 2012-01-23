@@ -40,6 +40,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.SnapshotLock;
 import org.spout.api.scheduler.Task;
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.server.SpoutServer;
@@ -183,6 +184,8 @@ public final class SpoutScheduler implements Scheduler {
 
 			asyncExecutors.copySnapshot();
 
+			TickStage.setStage(TickStage.TICKSTART);
+			
 			// Halt all executors, except the Server
 
 			for (AsyncExecutor e : asyncExecutors.get()) {
@@ -272,6 +275,8 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	private boolean tick(long delta) throws InterruptedException {
 		
+		TickStage.setStage(TickStage.TICKSTART);
+		
 		asyncExecutors.copySnapshot();
 
 		// Bring in new tasks this tick.
@@ -314,7 +319,15 @@ public final class SpoutScheduler implements Scheduler {
 
 		boolean joined = false;
 		
+		TickStage.setStage(TickStage.STAGE1);
+		
 		while (!allStagesComplete) {
+			
+			if (stage == 0) {
+				TickStage.setStage(TickStage.STAGE1);
+			} else {
+				TickStage.setStage(TickStage.STAGE2P);
+			}
 			
 			allStagesComplete = true;
 
@@ -349,6 +362,8 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
+		TickStage.setStage(TickStage.FINALIZE);
+		
 		for (AsyncExecutor e : executors) {
 			if (!e.finalizeTick()) {
 				throw new IllegalStateException("Attempt made to finalize a tick before snapshot copy while the previous operation was still active");
@@ -367,6 +382,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		
 		lockSnapshotLock();
+		TickStage.setStage(TickStage.PRESNAPSHOT);
 
 		try {
 			
@@ -387,6 +403,8 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 			
+			TickStage.setStage(TickStage.SNAPSHOT);
+
 			for (AsyncExecutor e : executors) {
 				if (!e.copySnapshot()) {
 					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
