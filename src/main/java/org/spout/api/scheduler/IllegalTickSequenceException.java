@@ -5,8 +5,8 @@ public class IllegalTickSequenceException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public IllegalTickSequenceException(int allowedStages, int actualStage) {
-		super("Method called during (" + TickStages.getAllStages(actualStage) + 
-				") when only (" + TickStages.getAllStages(allowedStages) + ") were allowed");
+		super("Method called during (" + TickStage.getAllStages(actualStage) + 
+				") when only (" + TickStage.getAllStages(allowedStages) + ") were allowed");
 	}
 	
 	

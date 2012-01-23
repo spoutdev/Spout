@@ -5,7 +5,7 @@ package org.spout.api.scheduler;
  * <br>
  * The exact bit fields used are subject to change
  */
-public class TickStages {
+public class TickStage {
 	
 	/**
 	 * All tasks submitted to the main thread are executed during TICKSTART.<br>
@@ -77,15 +77,15 @@ public class TickStages {
 		return sb.toString();
 	}
 	
-	private int stage;
+	private static int stage;
 	
 	/**
 	 * Sets the current stage.  This is not synchronised, so should only be called during the stable period between stages.
 	 * 
 	 * @param stage the stage
 	 */
-	public void setStage(int stage) {
-		this.stage = stage;
+	public static void setStage(int stage) {
+		TickStage.stage = stage;
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class TickStages {
 	 * 
 	 * @param allowedStages the OR of all the allowed stages
 	 */
-	public void checkStage(int allowedStages) {
+	public static void checkStage(int allowedStages) {
 		if ((stage & allowedStages) == 0) {
 			throw new IllegalTickSequenceException(allowedStages, stage);
 		}
