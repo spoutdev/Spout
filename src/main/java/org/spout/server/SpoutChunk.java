@@ -124,7 +124,24 @@ public class SpoutChunk extends Chunk {
 		if (material == null) throw new NullPointerException("Material can not be null");
 		if (source == null) throw new NullPointerException("Source can not be null");
 		checkChunkLoaded();
-		setBlockIdAndData(x, y, z, (short) material.getId(), (short) material.getData(), updatePhysics, source);
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), material.getData(), null);
+		
+		//do neighbor updates
+		if (updatePhysics) {
+			World world = parentRegion.getWorld();
+			
+			//South and North
+			material.onUpdate(world, x + 1, y, z);
+			material.onUpdate(world, x - 1, y, z);
+			
+			//West and East
+			material.onUpdate(world, x, y, z + 1);
+			material.onUpdate(world, x + 1, y, z - 1);
+			
+			//Above and Below
+			material.onUpdate(world, x, y + 1, z);
+			material.onUpdate(world, x, y - 1, z);
+		}
 	}
 
 	@Override
@@ -134,9 +151,7 @@ public class SpoutChunk extends Chunk {
 	
 	@Override
 	public void setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		if (source == null) throw new NullPointerException("Source can not be null");
-		checkChunkLoaded();
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, (short)0, null);
+		setBlockMaterial(x, y, z, MaterialData.getBlock(id), updatePhysics, source);
 	}
 	
 	@Override
@@ -146,9 +161,7 @@ public class SpoutChunk extends Chunk {
 	
 	@Override
 	public void setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
-		if (source == null) throw new NullPointerException("Source can not be null");
-		checkChunkLoaded();
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
+		setBlockMaterial(x, y, z, MaterialData.getBlock(id, data), updatePhysics, source);
 	}
 	
 	@Override
