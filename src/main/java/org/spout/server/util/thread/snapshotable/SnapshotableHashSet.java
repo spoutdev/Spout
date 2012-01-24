@@ -28,23 +28,32 @@ package org.spout.server.util.thread.snapshotable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.util.thread.DelayedWrite;
+import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 
 /**
  * A snapshotable class for HashSets
  */
 public class SnapshotableHashSet<T> implements Snapshotable {
-	private ConcurrentLinkedQueue<SnapshotUpdate<T>> pendingUpdates = new ConcurrentLinkedQueue<SnapshotUpdate<T>>();
+	private final Set<T> snapshot = new HashSet<T>();
+	private final Set<T> unmodifySnapshot = Collections.unmodifiableSet(snapshot);
+	private final Set<T> live = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
+	private final Set<T> unmodifyLive = Collections.unmodifiableSet(live);
+	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
 
-	private HashSet<T> snapshot;
+	public SnapshotableHashSet(SnapshotManager manager) {
+		this(manager, null);
+	}
 
 	public SnapshotableHashSet(SnapshotManager manager, HashSet<T> initial) {
-		snapshot = new HashSet<T>();
-		for (T o : initial) {
-			add(o);
+		if (initial != null) {
+			for (T o : initial) {
+				add(o);
+			}
 		}
 		manager.add(this);
 	}
@@ -53,10 +62,16 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	 * Adds an object to the list
 	 *
 	 * @param next
+	 * @return true if the object was successfully added
 	 */
 	@DelayedWrite
-	public void add(T object) {
-		pendingUpdates.add(new SnapshotUpdate<T>(object, true));
+	@LiveRead
+	public boolean add(T object) {
+		boolean success = live.add(object);
+		if (success) {
+			dirty.add(object);
+		}
+		return success;
 	}
 
 	/**
@@ -65,8 +80,12 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	 * @param next
 	 */
 	@DelayedWrite
-	public void remove(T object) {
-		pendingUpdates.add(new SnapshotUpdate<T>(object, false));
+	public boolean remove(T object) {
+		boolean success = live.remove(object);
+		if (success) {
+			dirty.add(object);
+		}
+		return success;
 	}
 
 	/**
@@ -76,29 +95,39 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	 */
 	@SnapshotRead
 	public Set<T> get() {
-		return Collections.unmodifiableSet(snapshot);
+		return unmodifySnapshot;
+	}
+	
+	/**
+	 * Gets the live value
+	 * 
+	 * @return the live set
+	 */
+	public Set<T> getLive() {
+		return unmodifyLive;
+	}
+	
+	/**
+	 * Tests if the set is empty
+	 * 
+	 * @return true if the set is empty
+	 */
+	public boolean isEmptyLive() {
+		return live.isEmpty();
 	}
 
 	/**
 	 * Copies the next values to the snapshot
 	 */
 	public void copySnapshot() {
-		SnapshotUpdate<T> update;
-		while ((update = pendingUpdates.poll()) != null) {
-			processUpdate(update);
-		}
-	}
-
-	private void processUpdate(SnapshotUpdate<T> update) {
-		if (update.isIndexed()) {
-			throw new IllegalStateException("Hash sets do not support indexed operation");
-		} else {
-			if (update.isAdd()) {
-				snapshot.add(update.getObject());
+		for (T o : dirty) {
+			if (live.contains(o)) {
+				snapshot.add(o);
 			} else {
-				snapshot.remove(update.getObject());
+				snapshot.remove(o);
 			}
 		}
+		dirty.clear();
 	}
 
 }

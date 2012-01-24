@@ -73,6 +73,7 @@ public class SpoutEntity implements Entity {
 	private final SpoutServer server;
 	private Chunk chunk;
 	private Chunk chunkLive;
+	private boolean justSpawned = true;
 	
 	public int id = NOTSPAWNEDID;
 	
@@ -201,7 +202,8 @@ public class SpoutEntity implements Entity {
 		}
 	}
 	
-	public boolean isDead() {
+	@Override
+	public boolean isDeadLive() {
 		while (true) {
 			int seq = transformLive.readLock();
 			boolean dead = id != NOTSPAWNEDID && transformLive.getPosition().getWorld() == null;
@@ -209,6 +211,12 @@ public class SpoutEntity implements Entity {
 				return dead;
 			}
 		}
+	}
+	
+	@Override
+	public boolean isDead() {
+		boolean dead = id != NOTSPAWNEDID && transformLive.getPosition().getWorld() == null;
+		return dead;
 	}
 	
 	// TODO - needs to be made thread safe
@@ -295,12 +303,19 @@ public class SpoutEntity implements Entity {
 			entityManager = entityManagerLive;
 		}
 		controller = controllerLive;
+		justSpawned = false;
 	}
 	
 
 	@Override
 	public Chunk getChunk() {
 		Point position = transform.getPosition();
+		return position.getWorld().getChunk(position, true);
+	}
+	
+	@Override
+	public Chunk getChunkLive() {
+		Point position = transformLive.getPosition();
 		return position.getWorld().getChunk(position, true);
 	}
 
@@ -415,4 +430,9 @@ public class SpoutEntity implements Entity {
 		controller.onSync();
 		//TODO - this might not be needed, if it is, it needs to send to the network synchronizer for players
 	}
+	
+	public boolean justSpawned() {
+		return justSpawned;
+	}
+	
 }

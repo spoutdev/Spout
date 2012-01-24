@@ -367,6 +367,7 @@ public class SpoutPlayer implements Player {
 		}
 	}
 	
+	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		NetworkSynchronizer s = synchronizer;
 		if (s == null) {

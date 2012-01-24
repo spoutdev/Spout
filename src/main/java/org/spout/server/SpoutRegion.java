@@ -452,7 +452,7 @@ public class SpoutRegion extends Region{
 					if (chunk != null) {
 						SpoutChunk spoutChunk = (SpoutChunk)chunk;
 						if (spoutChunk.isDirty()) {
-							for (Player player : spoutChunk.getObservers()) {
+							for (Player player : spoutChunk.getObserversLive()) {
 								NetworkSynchronizer synchronizer = ((SpoutPlayer)player).getNetworkSynchronizer();
 								if (!spoutChunk.isDirtyOverflow()) {
 									Blockm block = blockTemp;
@@ -475,6 +475,7 @@ public class SpoutRegion extends Region{
 							}
 							spoutChunk.resetDirtyArrays();
 						}
+						spoutChunk.preSnapshot();
 					}
 				}
 			}

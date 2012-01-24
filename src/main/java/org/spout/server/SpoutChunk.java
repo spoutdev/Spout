@@ -25,10 +25,8 @@
  */
 package org.spout.server;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -46,12 +44,14 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
+import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
-import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashSet;
+import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
 
@@ -84,14 +84,12 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of all players who are observing this chunk
 	 */
-	private final Set<Player> observers = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
+	private final SnapshotableHashSet<Player> observers = new SnapshotableHashSet<Player>(snapshotManager);
 	
 	/**
 	 * A set of entities contained in the chunk
 	 */
-	private final SnapshotableConcurrentHashSet<Entity> entities = new SnapshotableConcurrentHashSet<Entity>(snapshotManager);
-	private final ConcurrentLinkedQueue<Entity> addedEntities = new ConcurrentLinkedQueue<Entity>();
-	private final ConcurrentLinkedQueue<Entity> removedEntities = new ConcurrentLinkedQueue<Entity>();
+	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
 
 	/**
 	 * The mask that should be applied to the x, y and z coords
@@ -289,8 +287,6 @@ public class SpoutChunk extends Chunk {
 	
 	public void copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
-		addedEntities.clear();
-		removedEntities.clear();
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
@@ -311,6 +307,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean addObserver(Player player) {
 		checkChunkLoaded();
+		TickStage.checkStage(TickStage.FINALIZE);
 		if(observers.add(player)) {
 			return true;
 		} else {
@@ -321,9 +318,10 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean removeObserver(Player player) {
 		checkChunkLoaded();
+		TickStage.checkStage(TickStage.FINALIZE);
 		boolean success = observers.remove(player);
 		if (success) {
-			if (observers.isEmpty()) {
+			if (observers.isEmptyLive()) {
 				this.unload(true);
 			}
 			return true;
@@ -332,8 +330,12 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 	
-	public Iterable<Player> getObservers() {
-		return observers;
+	public Set<Player> getObserversLive() {
+		return observers.getLive();
+	}
+	
+	public Set<Player> getObservers() {
+		return observers.get();
 	}
 	
 	public boolean compressIfRequired() {
@@ -440,38 +442,118 @@ public class SpoutChunk extends Chunk {
 	
 	public boolean addEntity(SpoutEntity entity) {
 		checkChunkLoaded();
-		if (entities.add(entity)) {
-			addedEntities.add(entity);
-			return true;
-		} else {
-			return false;
-		}
+		TickStage.checkStage(TickStage.FINALIZE);
+		return entities.add(entity);
 	}
 	
 	public boolean removeEntity(SpoutEntity entity) {
 		checkChunkLoaded();
-		if (entities.remove(entity)) {
-			removedEntities.add(entity);
-			return true;
-		} else {
-			return false;
-		}
+		TickStage.checkStage(TickStage.FINALIZE);
+		return entities.remove(entity);
 	}
 	
-	public Iterable<Entity>  getAddedEntities() {
-		return addedEntities;
-	}
-	
-	public Iterable<Entity> getRemovedEntities() {
-		return addedEntities;
-	}
-	
-	public Iterable<Entity>  getEntities() {
+	public Set<Entity> getEntities() {
 		return entities.get();
 	}
 	
-	public Iterable<Entity>  getLiveEntities() {
+	public Set<Entity> getLiveEntities() {
 		return entities.getLive();
 	}
+	
+	public void preSnapshot() {
+		Set<Player> observerSnapshot = observers.get();
+		Set<Player> observerLive = observers.getLive();
+		
+		Set<Entity> entitiesSnapshot = entities.get();
+		Set<Entity> entitiesLive = entities.getLive();
+		
+		// If a player stops observing a chunk
+		// Destroy all entities that were in the chunk
+		for (Player p : observerSnapshot) {
+			if (!observerLive.contains(p)) {
+				for (Entity e : entitiesSnapshot) {
+					if (p.getEntity() != e) {
+						NetworkSynchronizer n = p.getNetworkSynchronizer();
+						if (n != null) {
+							n.destroyEntity(e);
+						}	
+					}
+				}
+			}
+		}
 
+		// If a player starts observing a chunk
+		// Spawn all entities that were in the chunk
+		for (Player p : observerLive) {
+			if (!observerSnapshot.contains(p)) {
+				for (Entity e : entitiesSnapshot) {
+					if (p.getEntity() != e) {
+						NetworkSynchronizer n = p.getNetworkSynchronizer();
+						if (n != null) {
+							n.spawnEntity(e);
+						}	
+					}
+				}
+			}
+		}
+		
+		// If an entity left the chunk
+		// Destroy if the player is not observing the new chunk
+		for (Entity e : entitiesSnapshot) {
+			if (!entitiesLive.contains(e)) {
+				SpoutChunk newChunk = ((SpoutChunk)e.getChunkLive());
+				for (Player p : observerLive) {
+					if (!newChunk.observers.getLive().contains(p)) {
+						if (p.getEntity() != e) {
+							NetworkSynchronizer n = p.getNetworkSynchronizer();
+							if (n != null) {
+								n.destroyEntity(e);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// If an entity entered the chunk
+		// Spawn if the player was not observing the old chunk
+		for (Entity e : entitiesLive) {
+			boolean justSpawned = ((SpoutEntity)e).justSpawned();
+			if (!entitiesSnapshot.contains(e) || ((SpoutEntity)e).justSpawned()) {
+				SpoutChunk oldChunk = ((SpoutChunk)e.getChunk());
+				for (Player p : observerLive) {
+					if (!oldChunk.observers.get().contains(p) || justSpawned) {
+						if (p.getEntity() != e) {
+							NetworkSynchronizer n = p.getNetworkSynchronizer();
+							if (n != null) {
+								n.spawnEntity(e);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// Update all entities that are in the chunk
+		for (Entity e : entitiesLive) {
+			for (Player p : observerLive) {
+				if (p.getEntity() != e) {
+					NetworkSynchronizer n = p.getNetworkSynchronizer();
+					if (n != null) {
+						n.syncEntity(e);
+					}
+				}
+			}
+		}
+	}
+
+	private String listObservers(Set<Player> players) {
+		StringBuilder sb = new StringBuilder("{ ");
+		for (Player p : players) {
+			sb.append(p.getName() + " ");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+	
 }
