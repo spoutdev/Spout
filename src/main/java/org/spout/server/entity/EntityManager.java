@@ -198,7 +198,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 					Player p = ((PlayerController)controller).getPlayer();
 					NetworkSynchronizer n = ((SpoutPlayer)p).getNetworkSynchronizer();
 					if (n != null) {
-						n.preSnapshot();;
+						n.preSnapshot();
 					}
 				}
 			}

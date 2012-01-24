@@ -150,18 +150,17 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
-	public void chat(String message) {
-		PlayerChatEvent event = Spout.getGame().getEventManager().callEvent(new PlayerChatEvent(this, message));
-		message = event.getMessage();
-		if (event.isCancelled()) {
-			return;
-		}
+	public void chat(final String message) {
 		if (message.startsWith("/")) {
 			Spout.getGame().processCommand(this, message.substring(1));
 		} else {
+			PlayerChatEvent event = Spout.getGame().getEventManager().callEvent(new PlayerChatEvent(this, message));
+			if (event.isCancelled()) {
+				return;
+			}
 			String formattedMessage;
 			try {
-				formattedMessage = String.format(event.getFormat(), getName(), message);
+				formattedMessage = String.format(event.getFormat(), getName(), event.getMessage());
 			} catch (Throwable t) {
 				return;
 			}
