@@ -25,6 +25,8 @@
  */
 package org.spout.api.geo.cuboid;
 
+import java.util.Set;
+
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.BlockAccess;
 import org.spout.api.geo.World;
@@ -136,30 +138,12 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	public abstract boolean isPopulated();
 	
 	/**
-	 * Gets the entities that have entered the chunk since the last snapshot.<br>
-	 * <br>
-	 * Note: It is possible for an entity to appear more than once in the list and to appear in both the added and removed lists
-	 * 
-	 * @return the added entities
-	 */
-	public abstract Iterable<Entity>  getAddedEntities();
-	
-	/**
-	 * Gets the entities that have left the chunk since the last snapshot.<br>
-	 * <br>
-	 * Note: It is possible for an entity to appear more than once in the list and to appear in both the added and removed lists
-	 * 
-	 * @return the removed entities
-	 */
-	public abstract Iterable<Entity> getRemovedEntities();
-	
-	/**
 	 * Gets the entities in the chunk at the last snapshot
 	 * 
 	 * @return the entities
 	 */
 	@SnapshotRead
-	public abstract Iterable<Entity>  getEntities();
+	public abstract Set<Entity>  getEntities();
 	
 	/**
 	 * Gets the entities currently in the chunk
@@ -167,5 +151,5 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * @return the entities
 	 */
 	@LiveRead
-	public abstract Iterable<Entity>  getLiveEntities();
+	public abstract Set<Entity>  getLiveEntities();
 }

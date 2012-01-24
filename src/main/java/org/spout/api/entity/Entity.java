@@ -128,6 +128,14 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public Chunk getChunk();
+	
+	/**
+	 * Gets the chunk the entity resides in, or null if unspawned.
+	 *
+	 * @return chunk
+	 */
+	@LiveRead
+	public Chunk getChunkLive();
 
 	/**
 	 * Gets the region the entity is associated and managed with, or null if unspawned.
@@ -177,6 +185,14 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public boolean isDead();
+	
+	/**
+	 * True if the entity is dead.
+	 *
+	 * @return dead
+	 */
+	@LiveRead
+	public boolean isDeadLive();
 
 	/**
 	 * Returns the inventory of the entity

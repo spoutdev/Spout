@@ -82,6 +82,13 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @param synchronizer the synchronizer
 	 */
 	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
+	
+	/**
+	 * Gets the NetworkSynchronizer associated with this player.<br>
+	 *
+	 * @return the synchronizer
+	 */
+	public NetworkSynchronizer getNetworkSynchronizer();
 
 	/**
 	 * Gets the session associated with the Player.

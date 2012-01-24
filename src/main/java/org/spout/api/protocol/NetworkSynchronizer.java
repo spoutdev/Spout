@@ -37,6 +37,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.player.Player;
+import org.spout.api.scheduler.TickStage;
 
 public class NetworkSynchronizer {
 	protected final Player owner;
@@ -70,6 +71,7 @@ public class NetworkSynchronizer {
 	private Set<Point> initializedChunks = new LinkedHashSet<Point>();
 	private Set<Point> activeChunks = new LinkedHashSet<Point>();
 
+	private boolean death = false;
 	private boolean first = true;
 	private volatile boolean teleported = false;
 
@@ -79,18 +81,15 @@ public class NetworkSynchronizer {
 		this.entity = entity;
 	}
 
-	// TODO - is this only called during finalize ?
 	public void onDeath() {
+		death = true;
+		entity = null;
 		for (Point p : initializedChunks) {
-			freeChunk(p);
-			activeChunks.remove(p);
 			Chunk c = p.getWorld().getChunk(p, false);
 			if (c != null) {
 				removeObserver(c);
 			}
 		}
-		initializedChunks.clear();
-		entity = null;
 	}
 
 	/**
@@ -139,61 +138,61 @@ public class NetworkSynchronizer {
 	}
 	
 	public void preSnapshot() {
-		
-		for (Point p : chunkFreeQueue) {
-			if (initializedChunks.remove(p)) {
-				Chunk c = p.getWorld().getChunk(p, true);
-				for (Entity e : c.getEntities()) {
-					destroyEntity(e);
-				}
+
+		if (death) {
+			death = false;
+			for (Point p : initializedChunks) {
 				freeChunk(p);
-				activeChunks.remove(p);
 			}
-		}
+		} else {
 
-		chunkFreeQueue.clear();
-
-		for (Point p : chunkInitQueue) {
-			if (initializedChunks.add(p)) {
-				Chunk c = p.getWorld().getChunk(p, true);
-				for (Entity e : c.getLiveEntities()) {
-					spawnEntity(e);
+			for (Point p : chunkFreeQueue) {
+				if (initializedChunks.remove(p)) {
+					freeChunk(p);
+					activeChunks.remove(p);
 				}
-				initChunk(p);
 			}
-		}
 
-		chunkInitQueue.clear();
+			chunkFreeQueue.clear();
 
-		int chunksSent = 0;
+			for (Point p : chunkInitQueue) {
+				if (initializedChunks.add(p)) {
+					initChunk(p);
+				}
+			}
 
-		Iterator<Point> i;
+			chunkInitQueue.clear();
 
-		i = priorityChunkSendQueue.iterator();
-		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			Point p = i.next();
-			Chunk c = p.getWorld().getChunk(p, true);
-			sendChunk(c);
-			activeChunks.add(p);
-			i.remove();
-			chunksSent++;
-		}
+			int chunksSent = 0;
 
-		i = chunkSendQueue.iterator();
-		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			Point p = i.next();
-			Chunk c = p.getWorld().getChunk(p, true);
-			sendChunk(c);
-			activeChunks.add(p);
-			i.remove();
-			chunksSent++;
-		}
+			Iterator<Point> i;
 
-		if (teleported && entity != null) {
-			Transform liveTransform = entity.getLiveTransform();
-			sendPosition(liveTransform);
-			first = false;
-			teleported = false;
+			i = priorityChunkSendQueue.iterator();
+			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
+				Point p = i.next();
+				Chunk c = p.getWorld().getChunk(p, true);
+				sendChunk(c);
+				activeChunks.add(p);
+				i.remove();
+				chunksSent++;
+			}
+
+			i = chunkSendQueue.iterator();
+			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
+				Point p = i.next();
+				Chunk c = p.getWorld().getChunk(p, true);
+				sendChunk(c);
+				activeChunks.add(p);
+				i.remove();
+				chunksSent++;
+			}
+
+			if (teleported && entity != null) {
+				Transform liveTransform = entity.getLiveTransform();
+				sendPosition(liveTransform);
+				first = false;
+				teleported = false;
+			}
 		}
 
 	}
@@ -340,7 +339,7 @@ public class NetworkSynchronizer {
 	 * @param e the entity
 	 */
 	public void spawnEntity(Entity e) {
-		
+		System.out.println("Spawning: " + owner.getName() + ":" + e + ":" + e.getTransform().getPosition());
 	}
 	
 	/**
@@ -349,6 +348,15 @@ public class NetworkSynchronizer {
 	 * @param e the entity
 	 */
 	public void destroyEntity(Entity e) {
-		
+		System.out.println("Destroying: " + owner.getName() + ":" + e + ":" + e.getTransform().getPosition());
+	}
+	
+	/**
+	 * Instructs the client to destroy the entity
+	 * 
+	 * @param e the entity
+	 */
+	public void syncEntity(Entity e) {
+		//System.out.println("Syncing: " + e + ":" + e.getTransform().getPosition());
 	}
 }
