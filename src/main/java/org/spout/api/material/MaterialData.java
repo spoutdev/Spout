@@ -36,10 +36,12 @@ public class MaterialData {
 	private final static TIntPairObjectHashMap<Material> idLookup = new TIntPairObjectHashMap<Material>(1000);
 	private final static HashMap<String, Material> nameLookup = new HashMap<String, Material>(1000);
 	
+	private final static int MAX_SIZE = 1 << 16 - 1 << 13;
+	
 	/**
 	 * Performs quick lookup of materials based on only their id.
 	 */
-	private final static Material[] quickMaterialLookup = new Material[1000];
+	private static Material[] quickMaterialLookup = new Material[1000];
 
 	/**
 	 * Registers a material with the material lookup service
@@ -49,12 +51,25 @@ public class MaterialData {
 	public static void registerMaterial(Material mat) {
 		lock.writeLock().lock();
 		try {
-			idLookup.put(mat.getId(), mat.getData(), mat);
+			int id = mat.getId();
+			idLookup.put(id, mat.getData(), mat);
 			nameLookup.put(mat.getName().toLowerCase(), mat);
-			quickMaterialLookup[mat.getId()] = mat;
+			expandQuickLookups(id);
+			quickMaterialLookup[id] = mat;
 		}
 		finally {
 			lock.writeLock().unlock();
+		}
+	}
+	
+	private static void expandQuickLookups(int id) {
+		if (id > quickMaterialLookup.length){
+			int newSize = Math.min(MAX_SIZE,id * 3 / 2);
+			Material[] expanded = new Material[newSize];
+			for (int i = 0; i < quickMaterialLookup.length; i++) {
+				expanded[i] = quickMaterialLookup[i];
+			}
+			quickMaterialLookup = expanded;
 		}
 	}
 

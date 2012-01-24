@@ -28,9 +28,10 @@ package org.spout.api.plugin;
 import java.util.logging.Logger;
 
 import org.spout.api.Game;
+import org.spout.api.Source;
 import org.spout.api.generator.WorldGenerator;
 
-public interface Plugin {
+public interface Plugin extends Source{
 	/**
 	 * Called when the plugin is enabled
 	 */
