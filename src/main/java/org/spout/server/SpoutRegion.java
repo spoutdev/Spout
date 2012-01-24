@@ -89,7 +89,7 @@ public class SpoutRegion extends Region{
 	/**
 	 * Holds all not populated chunks
 	 */
-	protected Set<Chunk> nonPopulatedChunks = new HashSet<Chunk>();
+	protected Set<Chunk> nonPopulatedChunks = Collections.newSetFromMap(new ConcurrentHashMap<Chunk,Boolean>());
 	
 	private boolean isPopulatingChunks = false;
 	
