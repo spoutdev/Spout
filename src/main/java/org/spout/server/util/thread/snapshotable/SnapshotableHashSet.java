@@ -25,12 +25,15 @@
  */
 package org.spout.server.util.thread.snapshotable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -44,6 +47,10 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	private final Set<T> live = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
 	private final Set<T> unmodifyLive = Collections.unmodifiableSet(live);
 	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
+	private final ArrayList<T> dirtyList = new ArrayList<T>();
+	private final HashSet<T> dirtyListTemp = new HashSet<T>();
+	private final List<T> unmodifyDirty = Collections.unmodifiableList(dirtyList);
+	private boolean dirtyListGenerated = false;
 
 	public SnapshotableHashSet(SnapshotManager manager) {
 		this(manager, null);
@@ -108,6 +115,27 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	}
 	
 	/**
+	 * Creates a list of elements that have been changed since the last snapshot copy.<br>
+	 * <br>
+	 * This method may only be called during the pre-snapshot stage and the list only remains valid during that stage.
+	 * 
+	 * @return the list of elements that have been updated
+	 */
+	public List<T> getDirtyList() {
+		TickStage.checkStage(TickStage.PRESNAPSHOT);
+		if (!dirtyListGenerated) {
+			for (T o : dirty) {
+				if (dirtyListTemp.add(o)) {
+					dirtyList.add(o);
+				}
+			}
+			dirtyListTemp.clear();
+			dirtyListGenerated = true;
+		}
+		return unmodifyDirty;
+	}
+	
+	/**
 	 * Tests if the set is empty
 	 * 
 	 * @return true if the set is empty
@@ -128,6 +156,8 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 			}
 		}
 		dirty.clear();
+		dirtyList.clear();
+		dirtyListGenerated = false;
 	}
 
 }

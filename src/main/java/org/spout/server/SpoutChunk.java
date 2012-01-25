@@ -25,7 +25,7 @@
  */
 package org.spout.server;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -468,10 +468,14 @@ public class SpoutChunk extends Chunk {
 		Set<Entity> entitiesSnapshot = entities.get();
 		Set<Entity> entitiesLive = entities.getLive();
 		
+		// Changed means entered/left the chunk
+		List<Entity> changedEntities = entities.getDirtyList();
+		List<Player> changedPlayer = observers.getDirtyList();
+		
 		// If a player stops observing a chunk
 		// Destroy all entities that were in the chunk
-		for (Player p : observerSnapshot) {
-			if (!observerLive.contains(p)) {
+		for (Player p : changedPlayer) {
+			if (observerSnapshot.contains(p) && !observerLive.contains(p)) {
 				for (Entity e : entitiesSnapshot) {
 					if (p.getEntity() != e) {
 						NetworkSynchronizer n = p.getNetworkSynchronizer();
@@ -485,8 +489,8 @@ public class SpoutChunk extends Chunk {
 
 		// If a player starts observing a chunk
 		// Spawn all entities that were in the chunk
-		for (Player p : observerLive) {
-			if (!observerSnapshot.contains(p)) {
+		for (Player p : changedPlayer) {
+			if (!observerSnapshot.contains(p) && observerLive.contains(p)) {
 				for (Entity e : entitiesSnapshot) {
 					if (p.getEntity() != e) {
 						NetworkSynchronizer n = p.getNetworkSynchronizer();
@@ -500,8 +504,8 @@ public class SpoutChunk extends Chunk {
 		
 		// If an entity left the chunk
 		// Destroy if the player is not observing the new chunk
-		for (Entity e : entitiesSnapshot) {
-			if (!entitiesLive.contains(e)) {
+		for (Entity e : changedEntities) {
+			if (entitiesSnapshot.contains(e) && !entitiesLive.contains(e)) {
 				SpoutChunk newChunk = ((SpoutChunk)e.getChunkLive());
 				for (Player p : observerLive) {
 					if (newChunk == null || !newChunk.observers.getLive().contains(p)) {
@@ -518,9 +522,9 @@ public class SpoutChunk extends Chunk {
 		
 		// If an entity entered the chunk
 		// Spawn if the player was not observing the old chunk
-		for (Entity e : entitiesLive) {
+		for (Entity e : changedEntities) {
 			boolean justSpawned = ((SpoutEntity)e).justSpawned();
-			if (!entitiesSnapshot.contains(e) || ((SpoutEntity)e).justSpawned()) {
+			if ((!entitiesSnapshot.contains(e) || ((SpoutEntity)e).justSpawned()) && entitiesLive.contains(e)) {
 				SpoutChunk oldChunk = ((SpoutChunk)e.getChunk());
 				for (Player p : observerLive) {
 					if (justSpawned || oldChunk == null || !oldChunk.observers.get().contains(p)) {
