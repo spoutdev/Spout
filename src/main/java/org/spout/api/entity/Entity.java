@@ -217,4 +217,30 @@ public interface Entity extends Datatable, Source {
 	 */
 	@DelayedWrite
 	public void setInventorySize(int size);
+	
+	/**
+	 * Sets the maximum distance at which the entity can be seen.<br>
+	 * <br>
+	 * The actual view distance used by the server may not be exactly the value that is set.
+	 * 
+	 * @param distance the distance in blocks at which the entity can be seen
+	 */
+	@DelayedWrite
+	public void setViewDistance(int distance);
+	
+	/**
+	 * Gets the maximum distance at which the entity can be seen.<br>
+	 * 
+	 * @return the distance in blocks at which the entity can be seen
+	 */
+	@LiveRead
+	public int getViewDistanceLive();
+	
+	/**
+	 * Gets the maximum distance at which the entity can be seen.<br>
+	 * 
+	 * @return the distance in blocks at which the entity can be seen
+	 */
+	@SnapshotRead
+	public int getViewDistance();
 }
