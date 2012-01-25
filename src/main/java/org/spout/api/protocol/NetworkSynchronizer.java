@@ -199,7 +199,7 @@ public class NetworkSynchronizer {
 
 	private void addObserver(Chunk c) {
 		observed.add(c);
-		c.addObserver(owner);
+		c.refreshObserver(owner);
 	}
 
 	private void removeObserver(Chunk c) {

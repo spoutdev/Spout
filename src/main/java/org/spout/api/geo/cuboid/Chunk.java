@@ -85,13 +85,13 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	public abstract CuboidShortBuffer getBlockCuboidBufferLive();
 
 	/**
-	 * Register a player as observing the chunk.
+	 * Refresh the distance between a player and the chunk, and adds the player as an observer if not previously observing.
 	 *
 	 * @param player the player
 	 * @return false if the player was already observing the chunk
 	 */
 	@DelayedWrite
-	public abstract boolean addObserver(Player player);
+	public abstract boolean refreshObserver(Player player);
 
 	/**
 	 * De-register a player as observing the chunk.
