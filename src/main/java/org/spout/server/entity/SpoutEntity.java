@@ -26,6 +26,7 @@
 package org.spout.server.entity;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.collision.model.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
@@ -75,6 +76,8 @@ public class SpoutEntity implements Entity {
 	private Chunk chunk;
 	private Chunk chunkLive;
 	private boolean justSpawned = true;
+	private final AtomicInteger viewDistanceLive = new AtomicInteger();
+	private int viewDistance;
 	
 	public int id = NOTSPAWNEDID;
 	
@@ -83,13 +86,19 @@ public class SpoutEntity implements Entity {
 	
 	SpoutDatatableMap map;
 	
-	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
+	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.server = server;
 		this.transform.set(transform);
 		setTransform(transform);
 		this.controller = controller;
 		this.controllerLive = controller;
 		this.map = new SpoutDatatableMap();
+		this.viewDistanceLive.set(viewDistance);
+		this.viewDistance = viewDistance;
+	}
+	
+	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
+		this(server, transform, controller, 64);
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
@@ -309,6 +318,7 @@ public class SpoutEntity implements Entity {
 		}
 		controller = controllerLive;
 		justSpawned = false;
+		viewDistance = viewDistanceLive.get();
 	}
 	
 
@@ -464,6 +474,25 @@ public class SpoutEntity implements Entity {
 	
 	public boolean justSpawned() {
 		return justSpawned;
+	}
+
+	@Override
+	public void setViewDistance(int distance) {
+		this.viewDistanceLive.set(distance);
+	}
+
+	@Override
+	public int getViewDistanceLive() {
+		return this.viewDistanceLive.get();
+	}
+
+	@Override
+	public int getViewDistance() {
+		return this.viewDistance;
+	}
+	
+	public boolean viewDistanceChanged() {
+		return viewDistance != viewDistanceLive.get();
 	}
 	
 }
