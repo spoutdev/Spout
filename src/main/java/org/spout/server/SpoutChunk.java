@@ -306,7 +306,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean addObserver(Player player) {
+	public boolean refreshObserver(Player player) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		if(observers.add(player)) {
