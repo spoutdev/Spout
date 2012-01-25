@@ -60,6 +60,7 @@ public class SpoutEntity implements Entity {
 	private static final long serialVersionUID = 1L;
 	
 	public final static int NOTSPAWNEDID = -1;
+	private final static Transform DEAD = new Transform(new Point(null, 0, 0, 0), new Quaternion(0F, 0F, 0F, 0F), new Vector3(0, 0, 0));
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	
@@ -162,6 +163,13 @@ public class SpoutEntity implements Entity {
 				int seqRead = transform.readLock();
 				Point newPosition = transform.getPosition();
 
+				World world = newPosition.getWorld();
+				if (world == null) {
+					chunkLive = null;
+					transformLive.set(DEAD);
+					entityManagerLive = null;
+					return;
+				}
 				chunkLive = newPosition.getWorld().getChunk(newPosition);
 				Region newRegion = chunkLive.getRegion();
 				
@@ -184,22 +192,19 @@ public class SpoutEntity implements Entity {
 		
 	}
 	
+	// TODO - make actually atomic, rather than just threadsafe
 	public boolean kill() {
 		int seq = lock.writeLock();
+		boolean alive = true;
 		try {
-			while (true) {
-				int seqRead = transformLive.readLock();
-				AtomicPoint p = transformLive.getPosition();
-				boolean alive = p.getWorld() != null;
-				if (transformLive.readUnlock(seqRead)) {
-					p.set(null, 0F, 0F, 0F);
-					entityManagerLive = null;
-					return alive;
-				}
-			}
+			AtomicPoint p = transformLive.getPosition();
+			alive = p.getWorld() != null;
+			transformLive.set(DEAD);
 		} finally {
 			lock.writeUnlock(seq);
 		}
+		setTransform(DEAD);
+		return alive;
 	}
 	
 	@Override
@@ -309,14 +314,40 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public Chunk getChunk() {
-		Point position = transform.getPosition();
-		return position.getWorld().getChunk(position, true);
+		while (true) {
+			int seq = lock.readLock();
+			Point position = transform.getPosition();
+			World w = position.getWorld();
+			if (w == null) {
+				if (lock.readUnlock(seq)) {
+					return null;
+				}
+			} else {
+				Chunk c = w.getChunk(position, true);
+				if (lock.readUnlock(seq)) {
+					return c;
+				}
+			}
+		}
 	}
 	
 	@Override
 	public Chunk getChunkLive() {
-		Point position = transformLive.getPosition();
-		return position.getWorld().getChunk(position, true);
+		while (true) {
+			int seq = lock.readLock();
+			Point position = transformLive.getPosition();
+			World w = position.getWorld();
+			if (w == null) {
+				if (lock.readUnlock(seq)) {
+					return null;
+				}
+			} else {
+				Chunk c = w.getChunk(position, true);
+				if (lock.readUnlock(seq)) {
+					return c;
+				}
+			}
+		}
 	}
 
 	@Override

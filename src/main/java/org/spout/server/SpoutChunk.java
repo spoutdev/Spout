@@ -89,6 +89,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of entities contained in the chunk
 	 */
+	// Hash set should return "dirty" list
 	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
 
 	/**
@@ -503,7 +504,7 @@ public class SpoutChunk extends Chunk {
 			if (!entitiesLive.contains(e)) {
 				SpoutChunk newChunk = ((SpoutChunk)e.getChunkLive());
 				for (Player p : observerLive) {
-					if (!newChunk.observers.getLive().contains(p)) {
+					if (newChunk == null || !newChunk.observers.getLive().contains(p)) {
 						if (p.getEntity() != e) {
 							NetworkSynchronizer n = p.getNetworkSynchronizer();
 							if (n != null) {
@@ -522,7 +523,7 @@ public class SpoutChunk extends Chunk {
 			if (!entitiesSnapshot.contains(e) || ((SpoutEntity)e).justSpawned()) {
 				SpoutChunk oldChunk = ((SpoutChunk)e.getChunk());
 				for (Player p : observerLive) {
-					if (!oldChunk.observers.get().contains(p) || justSpawned) {
+					if (justSpawned || oldChunk == null || !oldChunk.observers.get().contains(p)) {
 						if (p.getEntity() != e) {
 							NetworkSynchronizer n = p.getNetworkSynchronizer();
 							if (n != null) {
