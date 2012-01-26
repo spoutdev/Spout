@@ -1050,6 +1050,16 @@ public class SpoutServer extends AsyncManager implements Server {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean isServer() {
+		return true;
+	}
+
+	@Override
+	public boolean isClient() {
+		return false;
+	}
 	
 
 }
