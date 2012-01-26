@@ -25,6 +25,7 @@
  */
 package org.spout.api.plugin;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import org.spout.api.Game;
@@ -98,4 +99,8 @@ public interface Plugin extends Source{
 	 * @return world generator
 	 */
 	public WorldGenerator getWorldGenerator(String world, String generator);
+	
+	public File getDataFolder();
+	
+	public File getFile();
 }
