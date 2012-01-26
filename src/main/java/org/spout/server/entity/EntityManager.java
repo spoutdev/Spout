@@ -40,8 +40,8 @@ import org.spout.api.util.StringMap;
 import org.spout.server.datatable.SpoutDatatableMap;
 import org.spout.server.player.SpoutPlayer;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
-import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashMap;
-import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentHashSet;
+import org.spout.server.util.thread.snapshotable.SnapshotableHashMap;
+import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
 
 /**
  * A class which manages all of the entities within a world.
@@ -56,12 +56,12 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	/**
 	 * A map of all the entity ids to the corresponding entities.
 	 */
-	private final SnapshotableConcurrentHashMap<Integer, SpoutEntity> entities = new SnapshotableConcurrentHashMap<Integer, SpoutEntity>(snapshotManager, null);
+	private final SnapshotableHashMap<Integer, SpoutEntity> entities = new SnapshotableHashMap<Integer, SpoutEntity>(snapshotManager);
 
 	/**
 	 * A map of entity types to a set containing all entities of that type.
 	 */
-	private final ConcurrentHashMap<Class<? extends Controller>, SnapshotableConcurrentHashSet<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, SnapshotableConcurrentHashSet<SpoutEntity>>();
+	private final ConcurrentHashMap<Class<? extends Controller>, SnapshotableHashSet<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, SnapshotableHashSet<SpoutEntity>>();
 
 	/**
 	 * The next id to check.
@@ -70,11 +70,11 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	
 	private final StringMap entityMap = SpoutDatatableMap.getStringMap();
 
-	private SnapshotableConcurrentHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
-		SnapshotableConcurrentHashSet<SpoutEntity> set = groupedEntities.get(type);
+	private SnapshotableHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
+		SnapshotableHashSet<SpoutEntity> set = groupedEntities.get(type);
 		if (set == null) {
-			set = new SnapshotableConcurrentHashSet<SpoutEntity>(snapshotManager);
-			SnapshotableConcurrentHashSet<SpoutEntity> currentSet = groupedEntities.putIfAbsent(type, set);
+			set = new SnapshotableHashSet<SpoutEntity>(snapshotManager);
+			SnapshotableHashSet<SpoutEntity> currentSet = groupedEntities.putIfAbsent(type, set);
 			if (currentSet != null) {
 				set = currentSet;
 			}

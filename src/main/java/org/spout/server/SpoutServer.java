@@ -46,6 +46,13 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.spout.api.ChatColor;
 import org.spout.api.Server;
 import org.spout.api.Spout;
@@ -92,16 +99,8 @@ import org.spout.server.scheduler.SpoutScheduler;
 import org.spout.server.util.thread.AsyncManager;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
-import org.spout.server.util.thread.snapshotable.SnapshotableConcurrentLinkedHashMap;
+import org.spout.server.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableReference;
-
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 public class SpoutServer extends AsyncManager implements Server {
 
@@ -133,7 +132,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	/**
 	 * Online player list
 	 */
-	private final SnapshotableConcurrentLinkedHashMap<String, Player> players = new SnapshotableConcurrentLinkedHashMap<String, Player>(snapshotManager, null);
+	private final SnapshotableLinkedHashMap<String, Player> players = new SnapshotableLinkedHashMap<String, Player>(snapshotManager);
 
 	/**
 	 * The security manager
@@ -212,7 +211,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	/**
 	 * loaded plugins
 	 */
-	private SnapshotableConcurrentLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableConcurrentLinkedHashMap<String, SpoutWorld>(snapshotManager, null);
+	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
 
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 
@@ -561,7 +560,12 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public World getWorld(String name) {
-		return loadedWorlds.getValue(name);
+		World world = loadedWorlds.get().get(name);
+		if (world == null) {
+			return loadedWorlds.getLive().get(name);
+		} else {
+			return world;
+		}
 	}
 
 	@Override
@@ -679,7 +683,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public boolean unloadWorld(String name, boolean save) {
-		return unloadWorld(loadedWorlds.getValue(name), save);
+		return unloadWorld(loadedWorlds.getLive().get(name), save);
 	}
 
 	@Override

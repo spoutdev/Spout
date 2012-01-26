@@ -43,7 +43,7 @@ import org.spout.server.util.TripleInt;
  *
  * Removals from the Map occur at the next snapshot update.
  */
-public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
+public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	private final TInt21TripleObjectHashMap<V> live;
 	private final ConcurrentHashMap<TripleInt, Boolean> dirtyMap;
@@ -52,7 +52,7 @@ public class SnapshotableConcurrentTripleIntHashMap<V> implements Snapshotable {
 	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableSnapshot;
 	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableLive;
 
-	public SnapshotableConcurrentTripleIntHashMap(SnapshotManager manager) {
+	public SnapshotableTripleIntHashMap(SnapshotManager manager) {
 		live = new TInt21TripleObjectHashMap<V>();
 		snapshot = new TInt21TripleObjectHashMap<V>();
 		unmutableSnapshot = new TUnmodifiableInt21TripleObjectHashMap<V>(snapshot);
