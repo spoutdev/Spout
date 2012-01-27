@@ -401,23 +401,23 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z , material, true, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z , material, true, source);
 	}
 	
 	@Override
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
-		getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, updatePhysics, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, updatePhysics, source);
 	}
 
 	@Override
-	public void setBlockId(int x, int y, int z, short id, Source source) {
-		getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, true, source);
+	public boolean setBlockId(int x, int y, int z, short id, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, true, source);
 	}
 	
 	@Override
-	public void setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, updatePhysics, source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, updatePhysics, source);
 	}
 
 	@Override
@@ -451,13 +451,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 	
 	@Override
-	public void setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
-		getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, true, source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, true, source);
 	}
 	
 	@Override
-	public void setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
-		getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, updatePhysics, source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, updatePhysics, source);
 	}
 	
 	@Override
@@ -505,5 +505,18 @@ public class SpoutWorld extends AsyncManager implements World {
 			entities.addAll(region.getAll(type));
 		}
 		return entities;
+	}
+	
+	public void addPlayer(Player player) {
+		players.add(player);
+	}
+	
+	public void removePlayer(Player player) {
+		players.remove(player);
+	}
+
+	@Override
+	public Set<Player> getPlayers() {
+		return Collections.unmodifiableSet(players);
 	}
 }

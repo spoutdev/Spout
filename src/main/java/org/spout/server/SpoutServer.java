@@ -979,8 +979,10 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (player == null) {
 			throw new IllegalStateException("Attempting to set session to null player, which shouldn't be possible");
 		} else {
-			newEntity.getTransform().getPosition().getWorld().spawnEntity(newEntity);
+			World world = newEntity.getTransform().getPosition().getWorld();
+			world.spawnEntity(newEntity);
 			session.setPlayer(player);
+			((SpoutWorld)world).addPlayer(player);
 		}
 		return player;
 	}

@@ -114,12 +114,12 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		setBlockMaterial(x, y, z, material, true, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
+		return setBlockMaterial(x, y, z, material, true, source);
 	}
 
 	@Override
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
 		if (material == null) throw new NullPointerException("Material can not be null");
 		if (source == null) throw new NullPointerException("Source can not be null");
 		checkChunkLoaded();
@@ -141,26 +141,27 @@ public class SpoutChunk extends Chunk {
 			material.onUpdate(world, x, y + 1, z);
 			material.onUpdate(world, x, y - 1, z);
 		}
+		return true;
 	}
 
 	@Override
-	public void setBlockId(int x, int y, int z, short id, Source source) {
-		setBlockId(x, y, z, id, true, source);
+	public boolean setBlockId(int x, int y, int z, short id, Source source) {
+		return setBlockId(x, y, z, id, true, source);
 	}
 	
 	@Override
-	public void setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		setBlockMaterial(x, y, z, MaterialData.getBlock(id), updatePhysics, source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
+		return setBlockMaterial(x, y, z, MaterialData.getBlock(id), updatePhysics, source);
 	}
 	
 	@Override
-	public void setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
-		setBlockIdAndData(x, y, z, id, data, source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
+		return setBlockIdAndData(x, y, z, id, data, source);
 	}
 	
 	@Override
-	public void setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
-		setBlockMaterial(x, y, z, MaterialData.getBlock(id, data), updatePhysics, source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
+		return setBlockMaterial(x, y, z, MaterialData.getBlock(id, data), updatePhysics, source);
 	}
 	
 	@Override

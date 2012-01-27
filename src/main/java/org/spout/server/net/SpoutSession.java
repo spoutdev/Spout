@@ -45,6 +45,7 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.server.SpoutServer;
+import org.spout.server.SpoutWorld;
 import org.spout.server.player.SpoutPlayer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -212,7 +213,7 @@ public final class SpoutSession implements Session {
 			timeoutCounter = 0;
 		}
 		if (timeoutCounter >= TIMEOUT_TICKS) {
-			disconnect("Timed out");
+			disconnect("Timed out", true);
 		}
 	}
 
@@ -313,6 +314,7 @@ public final class SpoutSession implements Session {
 			if (broadcastQuit && text != null) {
 				server.broadcastMessage(text);
 			}
+			((SpoutWorld)player.getEntity().getWorld()).removePlayer(player);
 			((SpoutPlayer)player).disconnect();
 			player = null; // in case we are disposed twice
 		}
