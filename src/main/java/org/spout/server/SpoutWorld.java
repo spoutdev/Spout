@@ -25,8 +25,11 @@
  */
 package org.spout.server;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.spout.api.Game;
 import org.spout.api.Server;
@@ -46,6 +49,8 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.MathHelper;
+import org.spout.api.player.Player;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.AsyncManager;
@@ -165,6 +170,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
+	
+	/**
+	 * A set of all players currently connected to this world
+	 */
+	private final Set<Player> players = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
 
 	// TODO need world that loads from disk
 	// TODO set up number of stages ?
@@ -205,9 +215,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Block getBlock(Point point) {
-		int x = (int) Math.floor(point.getX());
-		int y = (int) Math.floor(point.getY());
-		int z = (int) Math.floor(point.getZ());
+		int x = (int) MathHelper.floor(point.getX());
+		int y = (int) MathHelper.floor(point.getY());
+		int z = (int) MathHelper.floor(point.getZ());
 		return getBlock(x, y, z);
 	}
 
@@ -224,9 +234,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Region getRegion(Point point) {
-		int x = (int) Math.floor(point.getX());
-		int y = (int) Math.floor(point.getY());
-		int z = (int) Math.floor(point.getZ());
+		int x = (int) MathHelper.floor(point.getX());
+		int y = (int) MathHelper.floor(point.getY());
+		int z = (int) MathHelper.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z);
 	}
 
@@ -237,9 +247,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Region getRegion(Point point, boolean load) {
-		int x = (int) Math.floor(point.getX());
-		int y = (int) Math.floor(point.getY());
-		int z = (int) Math.floor(point.getZ());
+		int x = (int) MathHelper.floor(point.getX());
+		int y = (int) MathHelper.floor(point.getY());
+		int z = (int) MathHelper.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z, load);
 	}
 
