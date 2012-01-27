@@ -37,7 +37,7 @@ public class PluginLogger extends Logger {
 		super(plugin.getClass().getCanonicalName(), null);
 		setLevel(Level.ALL);
 		setParent(plugin.getGame().getLogger());
-	    tag = "[" + plugin.getDescription().getName() + "] ";
+		tag = "[" + plugin.getDescription().getName() + "] ";
 	}
 
 	@Override
