@@ -46,7 +46,7 @@ public interface BlockAccess {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source);
 	
 	/**
 	 * Sets the block at (x, y, z) to the given material type.
@@ -59,7 +59,7 @@ public interface BlockAccess {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source);
 
 
 	/**
@@ -78,7 +78,7 @@ public interface BlockAccess {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source);
 	
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -95,7 +95,7 @@ public interface BlockAccess {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockId(int x, int y, int z, short id, Source source);
+	public boolean setBlockId(int x, int y, int z, short id, Source source);
 
 
 	/**
@@ -114,7 +114,7 @@ public interface BlockAccess {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source);
 	
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -131,7 +131,7 @@ public interface BlockAccess {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockIdAndData(int x, int y, int z, short id, short data, Source source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source);
 
 	/**
 	 * Gets the snapshot material for the block at (x, y, z)
