@@ -38,11 +38,6 @@ public class MathHelper {
 	 */
 	public static final float FLT_EPSILON = Float.intBitsToFloat(0x34000000);
 
-	/**
-	 * A "close to zero" float epsilon value for use
-	 */
-	public static final float ZERO_TOLERANCE = 0.0001f;
-
 	public static final double PI = Math.PI;
 
 	public static final double SQUARED_PI = PI * PI;
@@ -232,6 +227,18 @@ public class MathHelper {
 	private final static double atan_a = 0.280872d;
 
 	// Integer Maths
+	
+	public static int floor(double x) {
+		int y = (int)x;
+		if (x < y) return y - 1;
+		return y;
+	}
+	
+	public static int floor(float x) {
+		int y = (int)x;
+		if (x < y) return y - 1;
+		return y;
+	}
 
 	/**
 	 * Rounds an integer up to the next power of 2.
