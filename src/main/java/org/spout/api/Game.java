@@ -406,14 +406,4 @@ public interface Game extends Named {
 	 */
 	public BootstrapProtocol getBootstrapProtocol(SocketAddress address);
 	
-	/**
-	 * Returns true if the Game context is the Server
-	 * @return
-	 */
-	public boolean isServer();
-	/**
-	 * Returns true if the Game context is the Client
-	 * @return
-	 */
-	public boolean isClient();
 }
