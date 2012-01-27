@@ -31,18 +31,18 @@ import java.util.logging.Logger;
 
 public class PluginLogger extends Logger {
 
-	private final String name;
+	private final String tag;
 
 	protected PluginLogger(Plugin plugin) {
 		super(plugin.getClass().getCanonicalName(), null);
 		setLevel(Level.ALL);
 		setParent(plugin.getGame().getLogger());
-	    name = plugin.getDescription().getName() + ": ";
+	    tag = "[" + plugin.getDescription().getName() + "] ";
 	}
 
 	@Override
 	public void log(LogRecord logRecord) {
-		logRecord.setMessage("[" + name + "] " + logRecord.getMessage());
+		logRecord.setMessage(tag + logRecord.getMessage());
 		super.log(logRecord);
 	}
 }
