@@ -1057,15 +1057,4 @@ public class SpoutServer extends AsyncManager implements Server {
 		return null;
 	}
 
-	@Override
-	public boolean isServer() {
-		return true;
-	}
-
-	@Override
-	public boolean isClient() {
-		return false;
-	}
-	
-
 }
