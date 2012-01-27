@@ -90,9 +90,6 @@ public class GenericContainer extends AbstractBlock implements Container {
 				this.children.add(index, child);
 			}
 			child.setParent(this);
-			child.shiftXPos(super.getX());
-			child.shiftYPos(super.getY());
-			child.setAnchor(super.getAnchor());
 			deferSize();
 			deferLayout();
 		}
@@ -205,67 +202,8 @@ public class GenericContainer extends AbstractBlock implements Container {
 	}
 
 	@Override
-	public Container setPriority(byte priority) {
-		byte old = getPriority();
-		super.setPriority(priority);
-		for (Widget widget : children) {
-			if (widget.getPriority() == old) {
-				widget.setPriority(priority);
-			}
-		}
-		return this;
-	}
-
-	@Override
-	public Container setAnchor(WidgetAnchor anchor) {
-		super.setAnchor(anchor);
-		for (Widget widget : children) {
-			widget.setAnchor(anchor);
-		}
-		return this;
-	}
-
-	@Override
 	public WidgetType getType() {
 		return WidgetType.CONTAINER;
-	}
-
-	@Override
-	public Widget setX(int pos) {
-		int delta = pos - super.getX();
-		super.setX(pos);
-		for (Widget widget : children) {
-			widget.shiftXPos(delta);
-		}
-		return this;
-	}
-
-	@Override
-	public Widget setY(int pos) {
-		int delta = pos - super.getY();
-		super.setY(pos);
-		for (Widget widget : children) {
-			widget.shiftYPos(delta);
-		}
-		return this;
-	}
-
-	@Override
-	public Container setHeight(int height) {
-		if (super.getHeight() != height) {
-			super.setHeight(height);
-			deferLayout();
-		}
-		return this;
-	}
-
-	@Override
-	public Container setWidth(int width) {
-		if (super.getWidth() != width) {
-			super.setWidth(width);
-			deferLayout();
-		}
-		return this;
 	}
 
 	@Override
@@ -469,26 +407,6 @@ public class GenericContainer extends AbstractBlock implements Container {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public int getMinWidth() {
-		return Math.max(super.getMinWidth(), minWidthCalc);
-	}
-
-	@Override
-	public int getMaxWidth() {
-		return Math.min(super.getMaxWidth(), maxWidthCalc);
-	}
-
-	@Override
-	public int getMinHeight() {
-		return Math.max(super.getMinHeight(), minHeightCalc);
-	}
-
-	@Override
-	public int getMaxHeight() {
-		return Math.min(super.getMaxHeight(), maxHeightCalc);
 	}
 
 	@Override

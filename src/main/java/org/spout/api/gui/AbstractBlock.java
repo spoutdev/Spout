@@ -31,17 +31,22 @@ package org.spout.api.gui;
  */
 public abstract class AbstractBlock extends AbstractWidget {
 
+	public AbstractBlock(final AbstractBlock from) {
+		super(from);
+	}
+
 	public AbstractBlock() {
-		super.setDisplay(Display.BLOCK);
+		super();
+		super.setAttr(WidgetAttr.DISPLAY, WidgetAttr.Display.BLOCK);
 	}
 
-	public AbstractBlock(int width, int height) {
+	public AbstractBlock(final int width, final int height) {
 		super(width, height);
-		super.setDisplay(Display.BLOCK);
+		super.setAttr(WidgetAttr.DISPLAY, WidgetAttr.Display.BLOCK);
 	}
 
-	public AbstractBlock(int X, int Y, int width, int height) {
-		super(X, Y, width, height);
-		super.setDisplay(Display.BLOCK);
+	public AbstractBlock(final int left, final int top, final int width, final int height) {
+		super(left, top, width, height);
+		super.setAttr(WidgetAttr.DISPLAY, WidgetAttr.Display.BLOCK);
 	}
 }

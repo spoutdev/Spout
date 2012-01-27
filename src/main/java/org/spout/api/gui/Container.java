@@ -50,7 +50,7 @@ public interface Container extends Widget {
 	 * @param child the widget to add
 	 * @return this
 	 */
-	public Container addChild(Widget child);
+	Container addChild(Widget child);
 
 	/**
 	 * Adds a single widget to a container.
@@ -58,69 +58,69 @@ public interface Container extends Widget {
 	 * @param child the widget to add
 	 * @return this
 	 */
-	public Container insertChild(int index, Widget child);
+	Container insertChild(int index, Widget child);
 
 	/**
 	 * Adds a list of children to a container.
 	 * @param children The widgets to add
 	 * @return this
 	 */
-	public Container addChildren(Widget... children);
+	Container addChildren(Widget... children);
 
 	/**
 	 * Removes a single widget from this container.
 	 * @param child the widget to add
 	 * @return this
 	 */
-	public Container removeChild(Widget child);
+	Container removeChild(Widget child);
 
 	/**
 	 * Removes a list of widget from this container.
 	 * @param children the widgets to remove
 	 * @return this
 	 */
-	public Container removeChildren(Widget... children);
+	Container removeChildren(Widget... children);
 
 	/**
 	 * Remove all widgets owned by a plugin.
 	 * @param plugin owning widgets to remove
 	 * @return this
 	 */
-	public Container removeChildren(Plugin plugin);
+	Container removeChildren(Plugin plugin);
 
 	/**
 	 * Get a list of widgets inside this container.
 	 * @return all direct children
 	 */
-	public Widget[] getChildren();
+	Widget[] getChildren();
 
 	/**
 	 * Get a list of all widgets inside this container.
 	 * @param deep direct descendents or not
 	 * @return list of widgets
 	 */
-	public Widget[] getChildren(boolean deep);
+	Widget[] getChildren(boolean deep);
 
 	/**
 	 * Check if a container contains a widget.
 	 * @param widget to check
 	 * @return if it is a direct child
 	 */
-	public boolean containsChild(Widget widget);
+	boolean containsChild(Widget widget);
 
 	/**
 	 * Check if a container contains a widget by widget id.
 	 * @param id to check
 	 * @return if it is a direct child
 	 */
-	public boolean containsChild(int id);
+	boolean containsChild(int id);
 
 	/**
 	 * Get a child by widget id.
 	 * @param id to find
 	 * @return widget or null
 	 */
-	public Widget getChild(int id);
+	Widget getChild(int id);
 
 	/**
 	 * Get a direct child by widget id.
@@ -130,20 +130,20 @@ public interface Container extends Widget {
 	 * @param deep perform a deep search
 	 * @return widget or null
 	 */
-	public Widget getChild(int id, boolean deep);
+	Widget getChild(int id, boolean deep);
 
 	/**
 	 * Set the automatic layout type for children, triggered by setWidth() or setHeight()
 	 * @param type ContainerType.VERTICAL, .HORIZONTAL or .OVERLAY
 	 * @return this
 	 */
-	public Container setLayout(ContainerType type);
+	Container setLayout(ContainerType type);
 
 	/**
 	 * Get the automatic layout type for children
 	 * @return the type of container
 	 */
-	public ContainerType getLayout();
+	ContainerType getLayout();
 
 	/**
 	 * Force the container to re-layout all non-fixed children.
@@ -152,7 +152,7 @@ public interface Container extends Widget {
 	 * This will re-position and resize all child elements.
 	 * @return this
 	 */
-	public Container updateLayout();
+	Container updateLayout();
 
 	/**
 	 * Automatically call updateLayout during the next onTick.
@@ -160,7 +160,7 @@ public interface Container extends Widget {
 	 * NOTE: Subclasses should ensure they don't prevent Container.onTick() from running.
 	 * @return this
 	 */
-	public Container deferLayout();
+	Container deferLayout();
 
 	/**
 	 * Automatically call updateSize during the next onTick.
@@ -168,43 +168,43 @@ public interface Container extends Widget {
 	 * NOTE: Subclasses should ensure they don't prevent Container.onTick() from running.
 	 * @return this
 	 */
-	public Container deferSize();
+	Container deferSize();
 
 	/**
 	 * Set the contents alignment.
 	 * @return this
 	 */
-	public Container setAlign(WidgetAnchor anchor);
+	Container setAlign(WidgetAnchor anchor);
 
 	/**
 	 * Get the contents alignment.
 	 * @return
 	 */
-	public WidgetAnchor getAlign();
+	WidgetAnchor getAlign();
 
 	/**
 	 * Reverse the drawing order (right to left or bottom to top).
 	 * @param reverse Set to reverse direction
 	 * @return
 	 */
-	public Container setReverse(boolean reverse);
+	Container setReverse(boolean reverse);
 
 	/**
 	 * If this is drawing in reverse order.
 	 * @return
 	 */
-	public boolean getReverse();
+	boolean getReverse();
 
 	/**
-	 * Determines if children expand to fill width and height
+	 * Determines if children expand to fill width and height.
 	 * @param auto
 	 * @return this
 	 */
-	public Container setAuto(boolean auto);
+	Container setAuto(boolean auto);
 
 	/**
-	 * True if the children will expand to fill width and height
+	 * True if the children will expand to fill width and height.
 	 * @return
 	 */
-	public boolean isAuto();
+	boolean isAuto();
 }

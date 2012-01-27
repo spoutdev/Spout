@@ -25,9 +25,7 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.player.Player;
-
-public class InGameScreen extends AbstractScreen implements InGameHUD {
+public class InGameScreen extends GenericScreen implements InGameHUD {
 
 	private final VanillaArmorBar armor = new VanillaArmorBar();
 	private final VanillaBubbleBar bubble = new VanillaBubbleBar();
@@ -36,7 +34,7 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	private final VanillaExpBar exp = new VanillaExpBar();
 	private final VanillaHealthBar health = new VanillaHealthBar();
 	private final VanillaHungerBar hunger = new VanillaHungerBar();
-	private PopupScreen activePopup = null;
+	private Popup activePopup = null;
 
 	public InGameScreen(int playerId) {
 		super(playerId);
@@ -44,24 +42,7 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	@Override
-	public void onTick() {
-		super.onTick();
-		Player player = getPlayer();
-		if (player != null && player.isSpoutCraftEnabled()) {
-			if (getActivePopup() != null) {
-				if (getActivePopup().isDirty()) {
-					if (!getActivePopup().getType().isNetworkEnabled()) {
-						player.sendPacket(new PacketWidget(getActivePopup(), getUID()));
-					}
-					getActivePopup().setDirty(false);
-				}
-				getActivePopup().onTick();
-			}
-		}
-	}
-
-	@Override
-	public Screen insertChild(int index, Widget child) {
+	public Screen insertChild(final int index, final Widget child) {
 		if (child instanceof Control) {
 			throw new UnsupportedOperationException("Unsupported widget type");
 		}
@@ -70,7 +51,7 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	@Override
-	public InGameScreen removeChild(Widget child) {
+	public InGameScreen removeChild(final Widget child) {
 		if (child instanceof VanillaHealthBar) {
 			throw new UnsupportedOperationException("Cannot remove the health bar. Use setVisible(false) to hide it instead");
 		}
@@ -97,86 +78,38 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	@Override
-	public int getHeight() {
-		return 240;
-	}
-
-	@Override
-	public int getWidth() {
-		return 427;
-	}
-
-	@Override
-	public VanillaHealthBar getHealthBar() {
+	public final VanillaHealthBar getHealthBar() {
 		return health;
 	}
 
 	@Override
-	public VanillaBubbleBar getBubbleBar() {
+	public final VanillaBubbleBar getBubbleBar() {
 		return bubble;
 	}
 
 	@Override
-	public ChatBar getChatBar() {
+	public final ChatBar getChatBar() {
 		return chat;
 	}
 
 	@Override
-	public ChatTextBox getChatTextBox() {
+	public final ChatTextBox getChatTextBox() {
 		return chatText;
 	}
 
 	@Override
-	public VanillaArmorBar getArmorBar() {
+	public final VanillaArmorBar getArmorBar() {
 		return armor;
 	}
 
 	@Override
-	public VanillaHungerBar getHungerBar() {
+	public final VanillaHungerBar getHungerBar() {
 		return hunger;
 	}
 
 	@Override
-	public VanillaExpBar getExpBar() {
+	public final VanillaExpBar getExpBar() {
 		return exp;
-	}
-
-	@Override
-	public PopupScreen getActivePopup() {
-		return activePopup;
-	}
-
-	@Override
-	public boolean attachPopupScreen(PopupScreen screen) {
-		if (getActivePopup() == null) {
-			ScreenOpenEvent event = new ScreenOpenEvent(SpoutManager.getPlayerFromId(playerId), screen, ScreenType.CUSTOM_SCREEN);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			if (event.isCancelled()) {
-				return false;
-			}
-			activePopup = screen;
-			screen.setDirty(true);
-			screen.setScreen(this);
-			((GenericPopup) screen).playerId = this.playerId;
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean closePopup() {
-		if (getActivePopup() == null) {
-			return false;
-		}
-		Player player = getPlayer();
-		ScreenCloseEvent event = new ScreenCloseEvent(player, getActivePopup(), ScreenType.CUSTOM_SCREEN);
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
-			return false;
-		}
-		player.sendPacket(new PacketScreenAction(ScreenAction.Close, ScreenType.CUSTOM_SCREEN));
-		activePopup = null;
-		return true;
 	}
 
 	@Override
@@ -184,11 +117,7 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 		return WidgetType.INGAMESCREEN;
 	}
 
-	public void clearPopup() {
-		activePopup = null;
-	}
-
-	public static boolean isCustomWidget(Widget widget) {
+	public static boolean isCustomWidget(final Widget widget) {
 		return widget instanceof VanillaArmorBar
 				|| widget instanceof VanillaBubbleBar
 				|| widget instanceof ChatBar
@@ -204,7 +133,7 @@ public class InGameScreen extends AbstractScreen implements InGameHUD {
 	}
 
 	@Override
-	public void toggleSurvivalHUD(boolean toggle) {
+	public void toggleSurvivalHUD(final boolean toggle) {
 		armor.setVisible(toggle);
 		bubble.setVisible(toggle);
 		exp.setVisible(toggle);

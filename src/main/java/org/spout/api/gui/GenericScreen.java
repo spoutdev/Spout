@@ -33,34 +33,34 @@ import java.util.logging.Logger;
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
 
-public abstract class AbstractScreen extends GenericContainer implements Screen {
+public class GenericScreen extends GenericContainer implements Screen {
 
 	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 0L;
 	private int playerId = -1;
 	private boolean bg = true;
 
-	public AbstractScreen() {
+	public GenericScreen() {
 	}
 
-	public AbstractScreen(int playerId) {
+	public GenericScreen(int playerId) {
 		this.playerId = playerId;
 	}
 
-	public AbstractScreen(int width, int height) {
+	public GenericScreen(int width, int height) {
 		super(width, height);
 	}
 
-	public AbstractScreen(int width, int height, int playerId) {
+	public GenericScreen(int width, int height, int playerId) {
 		super(width, height);
 		this.playerId = playerId;
 	}
 
-	public AbstractScreen(int X, int Y, int width, int height) {
+	public GenericScreen(int X, int Y, int width, int height) {
 		super(X, Y, width, height);
 	}
 
-	public AbstractScreen(int X, int Y, int width, int height, int playerId) {
+	public GenericScreen(int X, int Y, int width, int height, int playerId) {
 		super(X, Y, width, height);
 		this.playerId = playerId;
 	}

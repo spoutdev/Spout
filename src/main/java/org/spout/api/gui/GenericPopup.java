@@ -30,21 +30,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import org.spout.api.ClientOnly;
 
-public class GenericPopup extends AbstractScreen implements PopupScreen {
+public class GenericPopup extends GenericContainer implements Popup {
 
 	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 0L;
 	private boolean transparent = false;
 
 	public GenericPopup() {
+		setPosition(Position.ABSOLUTE);
 	}
 
 	public GenericPopup(int width, int height) {
 		super(width, height);
+		setPosition(Position.ABSOLUTE);
 	}
 
 	public GenericPopup(int X, int Y, int width, int height) {
 		super(X, Y, width, height);
+		setPosition(Position.ABSOLUTE);
 	}
 
 	@Override
@@ -75,7 +78,7 @@ public class GenericPopup extends AbstractScreen implements PopupScreen {
 	}
 
 	@Override
-	public PopupScreen setTransparent(boolean value) {
+	public Popup setTransparent(boolean value) {
 		this.transparent = value;
 		return this;
 	}
@@ -91,11 +94,6 @@ public class GenericPopup extends AbstractScreen implements PopupScreen {
 			return ((InGameScreen) getScreen()).closePopup();
 		}
 		return false;
-	}
-
-	@Override
-	public ScreenType getScreenType() {
-		return ScreenType.CUSTOM_SCREEN;
 	}
 
 	@Override

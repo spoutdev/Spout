@@ -60,7 +60,6 @@ public final class WidgetType {
 			GRADIENT = new WidgetType(GenericGradient.class, 13),
 			CONTAINER = new WidgetType(GenericGradient.class, 14),
 			ENTITYWIDGET = new WidgetType(GenericEntityWidget.class, 15),
-			OVERLAYSCREEN = new WidgetType(GenericOverlayScreen.class, 16),
 			HUNGERBAR = new WidgetType(VanillaHungerBar.class, 17),
 			EXPBAR = new WidgetType(VanillaExpBar.class, 18),
 			CHECKBOX = new WidgetType(GenericCheckBox.class, 19),
@@ -81,7 +80,7 @@ public final class WidgetType {
 	 * @param widget the widget class
 	 * @param id of internal class or NETWORK_WIDGET or CUSTOM_WIDGET
 	 */
-	private WidgetType(Class<? extends Widget> widget, int id) {
+	private WidgetType(final Class<? extends Widget> widget, final int id) {
 		widgetClass = widget;
 		this.id = id;
 		LOOKUP.add(this);
@@ -91,7 +90,7 @@ public final class WidgetType {
 	 * Get the widget id.
 	 * @return the id
 	 */
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -99,7 +98,7 @@ public final class WidgetType {
 	 * Get the widget class.
 	 * @return the class
 	 */
-	public final Class<? extends Widget> getWidgetClass() {
+	public Class<? extends Widget> getWidgetClass() {
 		return widgetClass;
 	}
 
@@ -107,7 +106,7 @@ public final class WidgetType {
 	 * Check if the widget is network enabled.
 	 * @return if network enabled
 	 */
-	public final boolean isNetworkEnabled() {
+	public boolean isNetworkEnabled() {
 		return id >= 0 || id == NETWORK_WIDGET;
 	}
 
@@ -118,7 +117,7 @@ public final class WidgetType {
 	 * @param widget the widget class
 	 * @return the WidgetType
 	 */
-	public static WidgetType addType(Class<? extends Widget> widget) {
+	public static WidgetType addType(final Class<? extends Widget> widget) {
 		return addType(widget, false);
 	}
 
@@ -130,7 +129,7 @@ public final class WidgetType {
 	 * @param network if it is network enabled
 	 * @return the WidgetType
 	 */
-	public static WidgetType addType(Class<? extends Widget> widget, boolean network) {
+	public static WidgetType addType(final Class<? extends Widget> widget, final boolean network) {
 		WidgetType type = getType(widget);
 		if (type == null) {
 			type = new WidgetType(widget, network ? NETWORK_WIDGET : CUSTOM_WIDGET);
@@ -143,7 +142,7 @@ public final class WidgetType {
 	 * @param widget the widget class
 	 * @return the WidgetType or null
 	 */
-	public static WidgetType getType(Class<? extends Widget> widget) {
+	public static WidgetType getType(final Class<? extends Widget> widget) {
 		for (WidgetType type : LOOKUP) {
 			if (type.widgetClass.equals(widget)) {
 				return type;

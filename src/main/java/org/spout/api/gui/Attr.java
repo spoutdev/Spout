@@ -25,32 +25,23 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.ClientOnly;
+/**
+ * Should only be implemented by Enum attribute maps.
+ * Used to check the correct types are being supplied to AbstractAttr.
+ */
+public interface Attr {
 
-public class GenericOverlayScreen extends AbstractScreen implements OverlayScreen {
+	/**
+	 * Get the allowed types for an attribute.
+	 * By default attributes should accept Integer, however Boolean, String
+	 * and Enum are also common types.
+	 * @return the allowed class
+	 */
+	Class getType();
 
-	/** Current version for serialisation and packet handling.*/
-	private static final long serialVersionUID = 0L;
-	private ScreenType screenType;
-	
-	public GenericOverlayScreen(int entityId, ScreenType type) {
-		super(entityId);
-		screenType = type;
-	}
-	
-	@Override
-	public WidgetType getType() {
-		return WidgetType.OVERLAYSCREEN;
-	}
-
-	@Override
-	public ScreenType getScreenType() {
-		return screenType;
-	}
-
-	@Override
-	@ClientOnly
-	public void render() {
-//		Spoutcraft.getClient().getRenderDelegate().render(this);
-	}
+	/**
+	 * Get the default value for an attribute (if set).
+	 * @return the default value or null
+	 */
+	Object getDefault();
 }

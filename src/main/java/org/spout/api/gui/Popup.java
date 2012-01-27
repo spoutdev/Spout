@@ -32,7 +32,7 @@ package org.spout.api.gui;
  * Optionally the background of the popup can be darkened to make it more
  * obvious that it is a popup.
  */
-public interface PopupScreen extends Screen {
+public interface Popup {
 
 	/**
 	 * Is true if the popup screen has no transparency layer
@@ -45,7 +45,7 @@ public interface PopupScreen extends Screen {
 	 * @param value to set
 	 * @return popupscreen
 	 */
-	public PopupScreen setTransparent(boolean value);
+	public Popup setTransparent(boolean value);
 
 	/**
 	 * Closes the screen. Functionally equivelent to InGameHUD.closePopup()

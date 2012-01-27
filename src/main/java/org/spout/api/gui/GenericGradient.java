@@ -152,11 +152,6 @@ public class GenericGradient extends AbstractInline implements Gradient {
 	}
 
 	@Override
-	public Gradient copy() {
-		return ((Gradient) super.copy()).setTopColor(getTopColor()).setBottomColor(getBottomColor());
-	}
-
-	@Override
 	public Gradient setOrientation(Orientation axis) {
 		if (getOrientation() != axis) {
 			this.axis = axis;

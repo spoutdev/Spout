@@ -34,70 +34,50 @@ package org.spout.api.gui;
 public interface InGameHUD extends Screen {
 
 	/**
-	 * Gets the armor bar associated with this HUD
+	 * Gets the armor bar associated with this HUD.
 	 * @return armor bar
 	 */
-	public VanillaArmorBar getArmorBar();
+	VanillaArmorBar getArmorBar();
 
 	/**
-	 * Gets the chat text box associated with this HUD
+	 * Gets the chat text box associated with this HUD.
 	 * @return chat text box
 	 */
-	public ChatTextBox getChatTextBox();
+	ChatTextBox getChatTextBox();
 
 	/**
-	 * Gets the chat text bar associated with this HUD
+	 * Gets the chat text bar associated with this HUD.
 	 * @return chat bar
 	 */
-	public ChatBar getChatBar();
+	ChatBar getChatBar();
 
 	/**
-	 * Gets the underwater bubble bar associated with this HUD
+	 * Gets the underwater bubble bar associated with this HUD.
 	 * @return bubble bar
 	 */
-	public VanillaBubbleBar getBubbleBar();
+	VanillaBubbleBar getBubbleBar();
 
 	/**
-	 * Gets the health bar associated with this HUD
+	 * Gets the health bar associated with this HUD.
 	 * @return health bar
 	 */
-	public VanillaHealthBar getHealthBar();
+	VanillaHealthBar getHealthBar();
 
 	/**
-	 * Gets the hunger bar associated with this HUD
+	 * Gets the hunger bar associated with this HUD.
 	 * @return hunger bar
 	 */
-	public VanillaHungerBar getHungerBar();
+	VanillaHungerBar getHungerBar();
 
 	/**
-	 * Gets the exp bar associated with this HUD
+	 * Gets the exp bar associated with this HUD.
 	 * @return exp bar
 	 */
-	public VanillaExpBar getExpBar();
+	VanillaExpBar getExpBar();
 
 	/**
-	 * Attachs a popup screen and brings it to the front of the screen
-	 * @param screen to pop up
-	 * @return true if the popup screen was attached, false if there was already a popup launched
-	 */
-	public boolean attachPopupScreen(PopupScreen screen);
-
-	/**
-	 * Gets the active popup screen for this player, or null if none available
-	 * @return the active popup
-	 */
-	public PopupScreen getActivePopup();
-
-	/**
-	 * Closes the popup screen, or returns false on failure
-	 * @return true if a popup screen was closed
-	 */
-	public boolean closePopup();
-
-	/**
-	 * Ease of use method setting all the survival mode HUD elements to setVisible(toggle);
-	 *
+	 * Ease of use method setting all the survival mode HUD elements to setVisible(toggle).
 	 * @param toggle true or false
 	 */
-	public void toggleSurvivalHUD(boolean toggle);
+	void toggleSurvivalHUD(boolean toggle);
 }

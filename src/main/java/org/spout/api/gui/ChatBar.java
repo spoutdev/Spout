@@ -28,6 +28,7 @@ package org.spout.api.gui;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.spout.api.gui.WidgetAttr.Position;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.util.Color;
 
@@ -47,11 +48,11 @@ public class ChatBar extends AbstractWidget implements Widget {
 	ChatBar() {
 		setDirty(false);
 		setUID(2);
-		setX(2);
-		setY(-2);
-		setWidth(425);
-		setHeight(12);
-		setAnchor(WidgetAnchor.BOTTOM_LEFT);
+		setAttr(WidgetAttr.POSITION, Position.ABSOLUTE);
+		setAttr(WidgetAttr.LEFT, 2);
+		setAttr(WidgetAttr.BOTTOM, 2);
+		setAttr(WidgetAttr.WIDTH, 425);
+		setAttr(WidgetAttr.HEIGHT, 12);
 	}
 
 	@Override

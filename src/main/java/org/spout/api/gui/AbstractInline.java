@@ -31,17 +31,22 @@ package org.spout.api.gui;
  */
 public abstract class AbstractInline extends AbstractWidget {
 
+	public AbstractInline(final AbstractInline from) {
+		super(from);
+	}
+
 	public AbstractInline() {
-		super.setDisplay(Display.INLINE);
+		super();
+		super.setAttr(WidgetAttr.DISPLAY, WidgetAttr.Display.INLINE);
 	}
 
-	public AbstractInline(int width, int height) {
+	public AbstractInline(final int width, final int height) {
 		super(width, height);
-		super.setDisplay(Display.INLINE);
+		super.setAttr(WidgetAttr.DISPLAY, WidgetAttr.Display.INLINE);
 	}
 
-	public AbstractInline(int X, int Y, int width, int height) {
-		super(X, Y, width, height);
-		super.setDisplay(Display.INLINE);
+	public AbstractInline(final int left, final int top, final int width, final int height) {
+		super(left, top, width, height);
+		super.setAttr(WidgetAttr.DISPLAY, WidgetAttr.Display.INLINE);
 	}
 }
