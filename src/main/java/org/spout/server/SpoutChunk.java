@@ -135,7 +135,7 @@ public class SpoutChunk extends Chunk {
 			
 			//West and East
 			material.onUpdate(world, x, y, z + 1);
-			material.onUpdate(world, x + 1, y, z - 1);
+			material.onUpdate(world, x, y, z - 1);
 			
 			//Above and Below
 			material.onUpdate(world, x, y + 1, z);

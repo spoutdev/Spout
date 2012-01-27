@@ -70,8 +70,8 @@ public class SpoutEntity implements Entity {
 	private final Transform transformLive = new Transform();
 	private EntityManager entityManager;
 	private EntityManager entityManagerLive;
-	private Controller controller;
-	private Controller controllerLive;
+	private Controller controller = null;
+	private Controller controllerLive = null;
 	private final SpoutServer server;
 	private Chunk chunk;
 	private Chunk chunkLive;
@@ -90,8 +90,10 @@ public class SpoutEntity implements Entity {
 		this.server = server;
 		this.transform.set(transform);
 		setTransform(transform);
-		this.controller = controller;
-		this.controllerLive = controller;
+		if (controller != null) {
+			this.controller = controller;
+			setController(controller);
+		}
 		this.map = new SpoutDatatableMap();
 		this.viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
