@@ -25,8 +25,6 @@
  */
 package org.spout.server;
 
-import gnu.trove.iterator.TIntIterator;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -125,7 +123,7 @@ public class SpoutRegion extends Region{
 		this.source = source;
 		this.blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
 		this.blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
-		this.manager = new SpoutRegionManager(this, 1, new ThreadAsyncExecutor(), world.getServer());
+		this.manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(), world.getServer());
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
@@ -234,6 +232,7 @@ public class SpoutRegion extends Region{
 	 * Queues a Chunk for saving
 	 */
 	@DelayedWrite
+	@Override
 	public void saveChunk(int x, int y, int z) {
 		Chunk c = getChunk(x, y, z, false);
 		if (c != null) {
@@ -245,6 +244,7 @@ public class SpoutRegion extends Region{
 	 * Queues all chunks for saving
 	 */
 	@DelayedWrite
+	@Override
 	public void save() {
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
@@ -274,6 +274,7 @@ public class SpoutRegion extends Region{
 		markForSaveUnload();
 	}
 
+	@Override
 	public void unloadChunk(int x, int y, int z, boolean save) {
 		Chunk c = getChunk(x, y, z, false);
 		if (c != null) {
@@ -392,13 +393,16 @@ public class SpoutRegion extends Region{
 				}
 				
 				World world = getWorld();
-				TIntIterator i = queuedPhysicsUpdates.iterator();
+				
+				// get queued coords and clear the queue so physics updated can queue new updates
+				int[] queued = queuedPhysicsUpdates.toArray();
+				queuedPhysicsUpdates.clear();
 				System.out.println("Processing " + queuedPhysicsUpdates.size() + " physic updates");
-				while(i.hasNext()) {
-					int key = i.next();
+
+				for (int key : queued) {
 					int x = TByteTripleHashSet.key1(key);
-					int y = TByteTripleHashSet.key1(key);
-					int z = TByteTripleHashSet.key1(key);
+					int y = TByteTripleHashSet.key2(key);
+					int z = TByteTripleHashSet.key3(key);
 					//switch region block coords (0-255) to a chunk index
 					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
 					System.out.println("Doing physics update for " + chunk + ", (" + x + ", " + y + ", " + z + ")");
@@ -410,7 +414,6 @@ public class SpoutRegion extends Region{
 							material.onUpdate(world, x + (this.x << blockShifts), y + (this.y << blockShifts), z + (this.z << blockShifts));
 						}
 					}
-					i.remove();
 				}
 				
 				break;
@@ -524,15 +527,18 @@ public class SpoutRegion extends Region{
 	}
 
 	@SuppressWarnings( {"rawtypes", "unchecked"})
+	@Override
 	public Collection<Entity> getAll(Class<? extends Controller> type) {
 		return (Collection<Entity>) (Collection) entityManager.getAll(type);
 	}
 
 	@SuppressWarnings( {"rawtypes", "unchecked"})
+	@Override
 	public Collection<Entity> getAll() {
 		return (Collection<Entity>) (Collection) entityManager.getAll();
 	}
 
+	@Override
 	public SpoutEntity getEntity(int id) {
 		return entityManager.getEntity(id);
 	}
