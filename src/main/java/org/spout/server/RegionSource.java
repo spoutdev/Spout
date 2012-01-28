@@ -62,7 +62,7 @@ public class RegionSource implements Iterable<Region>{
 	 * @return region, if it is loaded and exists
 	 */
 	@SnapshotRead
-	public Region getRegionFromBlock(int x, int y, int z) {
+	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
 		return getRegionFromBlock(x, y, z, false);
 	}
 
@@ -76,7 +76,7 @@ public class RegionSource implements Iterable<Region>{
 	 * @return region, if it is loaded and exists
 	 */
 	@LiveRead
-	public Region getRegionFromBlock(int x, int y, int z, boolean load) {
+	public SpoutRegion getRegionFromBlock(int x, int y, int z, boolean load) {
 		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
 		return getRegion(x >> shifts, y >> shifts, z >> shifts, load);
 	}
@@ -113,7 +113,7 @@ public class RegionSource implements Iterable<Region>{
 	 * @return region, if it is loaded and exists
 	 */
 	@LiveRead
-	public Region getRegion(int x, int y, int z) {
+	public SpoutRegion getRegion(int x, int y, int z) {
 		return getRegion(x, y, z, false);
 	}
 	
@@ -129,7 +129,7 @@ public class RegionSource implements Iterable<Region>{
 	 * @return region
 	 */
 	@LiveRead
-	public Region getRegion(int x, int y, int z, boolean load) {
+	public SpoutRegion getRegion(int x, int y, int z, boolean load) {
 		return getRegion(x, y, z, load, false);
 	}
 
@@ -146,14 +146,14 @@ public class RegionSource implements Iterable<Region>{
 	 * @return region
 	 */
 	@LiveRead
-	public Region getRegion(int x, int y, int z, boolean load, boolean generate) {
-		Region region = loadedRegions.get(x, y, z);
+	public SpoutRegion getRegion(int x, int y, int z, boolean load, boolean generate) {
+		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
 		if (region != null || !load) {
 			return region;
 		} else {
 			region = new SpoutRegion(world, x, y, z, this);
-			Region current = loadedRegions.putIfAbsent(x, y, z, region);
+			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 			if (current != null) {
 				return current;

@@ -69,7 +69,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * The parent region that manages this chunk
 	 */
-	private final Region parentRegion;
+	private final SpoutRegion parentRegion;
 	
 	/**
 	 * Holds if the chunk is populated
@@ -97,7 +97,7 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final int coordMask;
 	
-	public SpoutChunk(World world, Region region, float x, float y, float z, short[] initial) {
+	public SpoutChunk(World world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		this.parentRegion = region;
@@ -115,53 +115,52 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		return setBlockMaterial(x, y, z, material, true, source);
+		if (material == null) throw new NullPointerException("Material can not be null");
+		return setBlockIdAndData(x, y, z, material.getId(), (short)0, true, source);
 	}
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
 		if (material == null) throw new NullPointerException("Material can not be null");
-		if (source == null) throw new NullPointerException("Source can not be null");
-		checkChunkLoaded();
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), material.getData(), null);
-		
-		//do neighbor updates
-		if (updatePhysics) {
-			World world = parentRegion.getWorld();
-			
-			//South and North
-			material.onUpdate(world, x + 1, y, z);
-			material.onUpdate(world, x - 1, y, z);
-			
-			//West and East
-			material.onUpdate(world, x, y, z + 1);
-			material.onUpdate(world, x, y, z - 1);
-			
-			//Above and Below
-			material.onUpdate(world, x, y + 1, z);
-			material.onUpdate(world, x, y - 1, z);
-		}
-		return true;
+		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), updatePhysics, source);
 	}
 
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, Source source) {
-		return setBlockId(x, y, z, id, true, source);
+		return setBlockIdAndData(x, y, z, id, (short)0, true, source);
 	}
 	
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		return setBlockMaterial(x, y, z, MaterialData.getBlock(id), updatePhysics, source);
+		return setBlockIdAndData(x, y, z, id, (short)0, updatePhysics, source);
 	}
 	
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
-		return setBlockIdAndData(x, y, z, id, data, source);
+		return setBlockIdAndData(x, y, z, id, data, true, source);
 	}
 	
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
-		return setBlockMaterial(x, y, z, MaterialData.getBlock(id, data), updatePhysics, source);
+		if (source == null) throw new NullPointerException("Source can not be null");
+		checkChunkLoaded();
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
+		
+		//do neighbor updates
+		if (updatePhysics) {
+			//South and North
+			updatePhysics(x + 1, y, z);
+			updatePhysics(x - 1, y, z);
+			
+			//West and East
+			updatePhysics(x, y, z + 1);
+			updatePhysics(x, y, z - 1);
+			
+			//Above and Below
+			updatePhysics(x, y + 1, z);
+			updatePhysics(x, y - 1, z);
+		}
+		return true;
 	}
 	
 	@Override
@@ -187,6 +186,13 @@ public class SpoutChunk extends Chunk {
 		return (short)blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
 	}
 	
+	@Override
+	public void updatePhysics(int x, int y, int z) {
+		checkChunkLoaded();
+		parentRegion.queuePhysicsUpdate(x, y, z);
+	}
+	
+	@Override
 	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData){
 		throw new UnsupportedOperationException("TBD");
 	}
