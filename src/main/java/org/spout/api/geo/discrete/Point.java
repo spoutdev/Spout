@@ -55,6 +55,36 @@ public class Point extends Vector3 {
 	public Point add(Vector3 other){
 		return new Point(Vector3.add((Vector3)this, other), this.world);
 	}
+	
+	/**
+	 * Gets the square of the distance between two points.
+	 *
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 *
+	 * Otherwise, it returns the Manhattan distance.
+	 *
+	 */
+	public double getSquaredDistance(Point other) {
+		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
+			return Double.MAX_VALUE;
+		}
+		double dx = x - other.x;
+		double dy = y - other.y;
+		double dz = z - other.z;
+		return dx * dx + dy * dy + dz * dz;
+	}
+	
+	/**
+	 * Gets the distance between two points.
+	 *
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 *
+	 * Otherwise, it returns the Manhattan distance.
+	 *
+	 */
+	public double getDistance(Point other) {
+		return Math.sqrt(getSquaredDistance(other));
+	}
 
 	/**
 	 * Gets the Manhattan distance between two points.

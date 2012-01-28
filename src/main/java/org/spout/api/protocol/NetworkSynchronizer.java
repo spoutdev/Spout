@@ -339,7 +339,6 @@ public class NetworkSynchronizer {
 	 * @param e the entity
 	 */
 	public void spawnEntity(Entity e) {
-		System.out.println("Spawning: " + owner.getName() + ":" + e + ":" + e.getTransform().getPosition());
 	}
 	
 	/**
@@ -348,7 +347,6 @@ public class NetworkSynchronizer {
 	 * @param e the entity
 	 */
 	public void destroyEntity(Entity e) {
-		System.out.println("Destroying: " + owner.getName() + ":" + e + ":" + e.getTransform().getPosition());
 	}
 	
 	/**
