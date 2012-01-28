@@ -165,6 +165,15 @@ public interface BlockAccess {
 	 */
 	@LiveRead
 	public short getBlockData(int x, int y, int z);
+	
+	/**
+	 * Forces a physics update for the block at the (x, y, z)
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 */
+	public void updatePhysics(int x, int y, int z);
 
 	/**
 	 * Sets the snapshot data for the block at (x, y, z) to the given data, but only if the current block state matches the given state.
