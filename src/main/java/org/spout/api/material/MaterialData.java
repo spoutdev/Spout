@@ -111,6 +111,9 @@ public class MaterialData {
 		// TODO - look at the aux data ?
 		lock.readLock().lock();
 		try {
+			if (id < 0 || id > quickMaterialLookup.length) {
+				return null;
+			}
 			if (data == 0) {
 				return quickMaterialLookup[id];
 			}
