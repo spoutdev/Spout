@@ -42,7 +42,7 @@ import org.jboss.netty.handler.codec.replay.VoidEnum;
 public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	private volatile CodecLookupService codecLookup = null;
 	private int previousOpcode = -1;
-    private volatile BootstrapProtocol bootstrapProtocol;
+	private volatile BootstrapProtocol bootstrapProtocol;
 	private final CommonHandler handler;
 	private final CommonEncoder encoder;
 
@@ -53,23 +53,17 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
-        if (codecLookup == null) {
+		if (codecLookup == null) {
 			System.out.println("Setting codec lookup service");
-            bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
+			bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
 			System.out.println("Bootstrap protocol is: " + bootstrapProtocol);
-            codecLookup = bootstrapProtocol.getCodecLookupService();
+			codecLookup = bootstrapProtocol.getCodecLookupService();
 			System.out.println("Codec lookup service is: " + codecLookup);
-        }
-
-		int opcode = buf.getByte(buf.readerIndex());
-
-		MessageCodec<?> codec = codecLookup.find(opcode);
-
-		if (codec == null) {
-			opcode = buf.getShort(buf.readerIndex());
-			codec = codecLookup.findExpanded(opcode);
 		}
 
+		int opcode = buf.getShort(buf.readerIndex());
+
+		MessageCodec<?> codec = codecLookup.find(opcode);
 		if (codec == null) {
 			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
 		}

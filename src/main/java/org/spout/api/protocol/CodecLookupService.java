@@ -75,7 +75,7 @@ public abstract class CodecLookupService {
 	 * @param opcode The opcode.
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
-	public MessageCodec<?> find(int opcode) {
+	private MessageCodec<?> findNotchian(int opcode) {
 		if (opcode < 0 || opcode >= opcodeTable.length) {
 			return null;
 		} else {
@@ -83,14 +83,15 @@ public abstract class CodecLookupService {
 		}
 	}
 
-	public MessageCodec<?> findExpanded(int opcode) {
-		MessageCodec<?> codec = find(opcode >> 8);
+	public MessageCodec<?> find(int opcode) {
+		MessageCodec<?> codec = findNotchian(opcode >> 8);
 
 		if (codec != null) {
 			return codec;
-		} else {
+		} else if (opcode > -1 && opcode < expandedOpcodeTable.length) {
 			return expandedOpcodeTable[opcode];
 		}
+		return null;
 	}
 
 	/**
