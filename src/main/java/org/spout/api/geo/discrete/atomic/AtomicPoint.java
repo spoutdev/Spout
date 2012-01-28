@@ -279,6 +279,36 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
+
+	@Override
+	public double getSquaredDistance(Point other) {
+		while (true) {
+			int seq = lock.readLock();
+			double result = 0;
+			try {
+				result = super.getSquaredDistance(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
+
+	@Override
+	public double getDistance(Point other) {
+		while (true) {
+			int seq = lock.readLock();
+			double result = 0;
+			try {
+				result = super.getDistance(other);
+			} finally {
+				if (lock.readUnlock(seq)) {
+					return result;
+				}
+			}
+		}
+	}
 	
 	public double getManhattanDistance(AtomicPoint other) {
 		while (true) {
