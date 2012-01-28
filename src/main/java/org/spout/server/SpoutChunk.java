@@ -26,6 +26,7 @@
 package org.spout.server;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -51,6 +52,7 @@ import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
+import org.spout.server.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
@@ -84,7 +86,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of all players who are observing this chunk
 	 */
-	private final SnapshotableHashSet<Player> observers = new SnapshotableHashSet<Player>(snapshotManager);
+	private final SnapshotableHashMap<Player, Integer> observers = new SnapshotableHashMap<Player, Integer>(snapshotManager);
 	
 	/**
 	 * A set of entities contained in the chunk
@@ -316,7 +318,9 @@ public class SpoutChunk extends Chunk {
 	public boolean refreshObserver(Player player) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
-		if(observers.add(player)) {
+		int distance = (int)player.getEntity().getChunkLive().getBase().getDistance(this.getBase());
+		Integer oldDistance = observers.put(player, distance);
+		if(oldDistance == null) {
 			return true;
 		} else {
 			return false;
@@ -327,8 +331,8 @@ public class SpoutChunk extends Chunk {
 	public boolean removeObserver(Player player) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
-		boolean success = observers.remove(player);
-		if (success) {
+		Integer oldDistance = observers.remove(player);
+		if (oldDistance != null) {
 			if (observers.isEmptyLive()) {
 				this.unload(true);
 			}
@@ -339,11 +343,11 @@ public class SpoutChunk extends Chunk {
 	}
 	
 	public Set<Player> getObserversLive() {
-		return observers.getLive();
+		return observers.getLive().keySet();
 	}
 	
 	public Set<Player> getObservers() {
-		return observers.get();
+		return observers.get().keySet();
 	}
 	
 	public boolean compressIfRequired() {
@@ -468,9 +472,12 @@ public class SpoutChunk extends Chunk {
 		return entities.getLive();
 	}
 	
+	// Handles network updates for all entities that were
+	// - in the chunk at the last snapshot
+	// - were not in a chunk at the last snapshot and are now in this chunk
 	public void preSnapshot() {
-		Set<Player> observerSnapshot = observers.get();
-		Set<Player> observerLive = observers.getLive();
+		Map<Player, Integer> observerSnapshot = observers.get();
+		Map<Player, Integer> observerLive = observers.getLive();
 		
 		Set<Entity> entitiesSnapshot = entities.get();
 		Set<Entity> entitiesLive = entities.getLive();
@@ -478,81 +485,102 @@ public class SpoutChunk extends Chunk {
 		// Changed means entered/left the chunk
 		List<Entity> changedEntities = entities.getDirtyList();
 		List<Player> changedPlayer = observers.getDirtyList();
-		
-		// If a player stops observing a chunk
-		// Destroy all entities that were in the chunk
-		for (Player p : changedPlayer) {
-			if (observerSnapshot.contains(p) && !observerLive.contains(p)) {
+
+		if (entitiesSnapshot.size() > 0) {
+			for (Player p : changedPlayer) {
+				Integer playerDistanceOld = observerSnapshot.get(p);
+				if (playerDistanceOld == null) {
+					playerDistanceOld = Integer.MAX_VALUE;
+				}
+				Integer playerDistanceNew = observerLive.get(p);
+				if (playerDistanceNew == null) {
+					playerDistanceNew = Integer.MAX_VALUE;
+				}
+				NetworkSynchronizer n = p.getNetworkSynchronizer();
 				for (Entity e : entitiesSnapshot) {
-					if (p.getEntity() != e) {
-						NetworkSynchronizer n = p.getNetworkSynchronizer();
-						if (n != null) {
-							n.destroyEntity(e);
-						}	
+					if (p.getEntity().equals(e)) {
+						continue;
 					}
+					Integer entityViewDistanceOld = e.getViewDistance();
+					Integer entityViewDistanceNew = e.getViewDistanceLive();
+
+					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
+						n.destroyEntity(e);
+					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
+						n.spawnEntity(e);
+					}
+				}
+			}
+		}
+		
+		for (Entity e : changedEntities) {
+			SpoutChunk oldChunk = ((SpoutChunk)e.getChunk());
+			if (((SpoutEntity)e).justSpawned()) {
+				oldChunk = null;
+			}
+			SpoutChunk newChunk = ((SpoutChunk)e.getChunkLive());
+			if (!(oldChunk != null && oldChunk.equals(this)) && !(((SpoutEntity)e).justSpawned())) {
+				continue;
+			}
+			for (Player p : observerLive.keySet()) {
+				if (p.getEntity().equals(e)) {
+					continue;
+				}
+				Integer playerDistanceOld;
+				if (oldChunk == null) {
+					playerDistanceOld = Integer.MAX_VALUE;
+				} else {
+					playerDistanceOld = oldChunk.observers.getLive().get(p);
+					if (playerDistanceOld == null) {
+						playerDistanceOld = Integer.MAX_VALUE;
+					}
+				}
+				Integer playerDistanceNew;
+				if (newChunk == null) {
+					playerDistanceNew = Integer.MAX_VALUE;
+				} else {
+					playerDistanceNew = newChunk.observers.getLive().get(p);
+					if (playerDistanceNew == null) {
+						playerDistanceNew = Integer.MAX_VALUE;
+					}
+				}
+				Integer entityViewDistanceOld = e.getViewDistance();
+				Integer entityViewDistanceNew = e.getViewDistanceLive();
+				
+				NetworkSynchronizer n = p.getNetworkSynchronizer();
+				
+				if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
+					n.destroyEntity(e);
+				} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
+					n.spawnEntity(e);
 				}
 			}
 		}
 
-		// If a player starts observing a chunk
-		// Spawn all entities that were in the chunk
-		for (Player p : changedPlayer) {
-			if (!observerSnapshot.contains(p) && observerLive.contains(p)) {
-				for (Entity e : entitiesSnapshot) {
-					if (p.getEntity() != e) {
-						NetworkSynchronizer n = p.getNetworkSynchronizer();
-						if (n != null) {
-							n.spawnEntity(e);
-						}	
-					}
-				}
-			}
-		}
-		
-		// If an entity left the chunk
-		// Destroy if the player is not observing the new chunk
-		for (Entity e : changedEntities) {
-			if (entitiesSnapshot.contains(e) && !entitiesLive.contains(e)) {
-				SpoutChunk newChunk = ((SpoutChunk)e.getChunkLive());
-				for (Player p : observerLive) {
-					if (newChunk == null || !newChunk.observers.getLive().contains(p)) {
-						if (p.getEntity() != e) {
-							NetworkSynchronizer n = p.getNetworkSynchronizer();
-							if (n != null) {
-								n.destroyEntity(e);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		// If an entity entered the chunk
-		// Spawn if the player was not observing the old chunk
-		for (Entity e : changedEntities) {
-			boolean justSpawned = ((SpoutEntity)e).justSpawned();
-			if ((!entitiesSnapshot.contains(e) || ((SpoutEntity)e).justSpawned()) && entitiesLive.contains(e)) {
-				SpoutChunk oldChunk = ((SpoutChunk)e.getChunk());
-				for (Player p : observerLive) {
-					if (justSpawned || oldChunk == null || !oldChunk.observers.get().contains(p)) {
-						if (p.getEntity() != e) {
-							NetworkSynchronizer n = p.getNetworkSynchronizer();
-							if (n != null) {
-								n.spawnEntity(e);
-							}
-						}
-					}
-				}
-			}
-		}
-		
 		// Update all entities that are in the chunk
-		for (Entity e : entitiesLive) {
-			for (Player p : observerLive) {
-				if (p.getEntity() != e) {
-					NetworkSynchronizer n = p.getNetworkSynchronizer();
-					if (n != null) {
-						n.syncEntity(e);
+		// TODO - should have sorting based on view distance
+		for (Map.Entry<Player, Integer> entry : observerLive.entrySet()) {
+			Player p = entry.getKey();
+			NetworkSynchronizer n = p.getNetworkSynchronizer();
+			if (n != null) {
+				int playerDistance = entry.getValue();
+				Entity playerEntity = p.getEntity();
+				for (Entity e : entitiesSnapshot) {
+					if (playerEntity != e) {
+						if (playerDistance <= e.getViewDistance()) {
+							n.syncEntity(e);
+						}
+					}
+				}
+				for (Entity e : changedEntities) {
+					if (entitiesSnapshot.contains(e)) {
+						continue;
+					} else if (((SpoutEntity)e).justSpawned()) {
+						if (playerEntity != e) {
+							if (playerDistance <= e.getViewDistance()) {
+								n.syncEntity(e);
+							}
+						}
 					}
 				}
 			}
