@@ -37,7 +37,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.player.Player;
-import org.spout.api.scheduler.TickStage;
 
 public class NetworkSynchronizer {
 	protected final Player owner;
@@ -60,16 +59,16 @@ public class NetworkSynchronizer {
 	private final int viewDistance = 5;
 	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
 
-	private Pointm lastChunkCheck = new Pointm();
+	private final Pointm lastChunkCheck = new Pointm();
 
 	// Base points used so as not to load chunks unnecessarily
-	private Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
-	private Set<Point> priorityChunkSendQueue = new LinkedHashSet<Point>();
-	private Set<Point> chunkSendQueue = new LinkedHashSet<Point>();
-	private Set<Point> chunkFreeQueue = new LinkedHashSet<Point>();
+	private final Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
+	private final Set<Point> priorityChunkSendQueue = new LinkedHashSet<Point>();
+	private final Set<Point> chunkSendQueue = new LinkedHashSet<Point>();
+	private final Set<Point> chunkFreeQueue = new LinkedHashSet<Point>();
 
-	private Set<Point> initializedChunks = new LinkedHashSet<Point>();
-	private Set<Point> activeChunks = new LinkedHashSet<Point>();
+	private final Set<Point> initializedChunks = new LinkedHashSet<Point>();
+	private final Set<Point> activeChunks = new LinkedHashSet<Point>();
 
 	private boolean death = false;
 	private boolean first = true;
@@ -359,7 +358,7 @@ public class NetworkSynchronizer {
 	}
 	
 	/**
-	 * Instructs the client to destroy the entity
+	 * Instructs the client to update the entities state and position
 	 * 
 	 * @param e the entity
 	 */
