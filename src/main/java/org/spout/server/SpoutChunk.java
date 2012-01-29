@@ -150,6 +150,8 @@ public class SpoutChunk extends Chunk {
 		
 		//do neighbor updates
 		if (updatePhysics) {
+			updatePhysics(x, y, z);
+			
 			//South and North
 			updatePhysics(x + 1, y, z);
 			updatePhysics(x - 1, y, z);
