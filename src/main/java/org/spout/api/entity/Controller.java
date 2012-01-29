@@ -25,11 +25,29 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.geo.discrete.atomic.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.api.io.store.MemoryStore;
+import org.spout.api.protocol.EntityProtocol;
+import org.spout.api.protocol.EntityProtocolStore;
+import org.spout.api.util.StringMap;
 
 public abstract class Controller {
+	
+	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
+	
+	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
+	
+	public EntityProtocol getEntityProtocol(int protocolId) {
+		return entityProtocolStore.getEntityProtocol(protocolId);
+	}
+	
+	public static void setEntityProtocol(int protocolId, EntityProtocol protocol) {
+		entityProtocolStore.setEntityProtocol(protocolId, protocol);
+	}
+	
+	public static int getProtocolId(String protocolName) {
+		return protocolMap.register(protocolName);
+	}
+	
 	protected Entity parent;
 	public void attachToEntity(Entity e){
 		this.parent = e;
