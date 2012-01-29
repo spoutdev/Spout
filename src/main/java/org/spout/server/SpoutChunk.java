@@ -568,6 +568,10 @@ public class SpoutChunk extends Chunk {
 				for (Entity e : entitiesSnapshot) {
 					if (playerEntity != e) {
 						if (playerDistance <= e.getViewDistance()) {
+							if (e.getController() != e.getLiveController()) {
+								n.destroyEntity(e);
+								n.spawnEntity(e);
+							}
 							n.syncEntity(e);
 						}
 					}
@@ -578,6 +582,10 @@ public class SpoutChunk extends Chunk {
 					} else if (((SpoutEntity)e).justSpawned()) {
 						if (playerEntity != e) {
 							if (playerDistance <= e.getViewDistance()) {
+								if (e.getController() != e.getLiveController()) {
+									n.destroyEntity(e);
+									n.spawnEntity(e);
+								}
 								n.syncEntity(e);
 							}
 						}

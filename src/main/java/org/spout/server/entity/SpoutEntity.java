@@ -141,7 +141,6 @@ public class SpoutEntity implements Entity {
 	public Controller getController() {
 		return controller;
 	}
-
 	
 	@Override
 	public void setController(Controller controller) {
