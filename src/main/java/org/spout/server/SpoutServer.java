@@ -106,7 +106,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	private volatile int maxPlayers = 20;
 
-	private volatile String primaryAddress = "localhost";
+	private volatile String primaryAddress = "0.0.0.0";
 
 	private volatile String[] allAddresses;
 
@@ -380,7 +380,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		try {
 			String address = config.getString("address");
 			if (address == null) {
-				config.setProperty("address", "localhost:25565");
+				config.setProperty("address", "0.0.0.0:25565");
 				save = true;
 			}
 			else {
