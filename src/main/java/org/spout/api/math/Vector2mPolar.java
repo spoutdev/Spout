@@ -44,6 +44,11 @@ public class Vector2mPolar extends Vector2Polar {
 	public Vector2mPolar(float r, float theta) {
 		super(r, theta);
 	}
+	
+	public void set(Vector2Polar vector) {
+		r = vector.getR();
+		theta = vector.getTheta();
+	}
 
 	/**
 	 * Sets the length of the vector
@@ -61,4 +66,54 @@ public class Vector2mPolar extends Vector2Polar {
 	public void setTheta(float theta) {
 		this.theta = Vector2Polar.getRealAngle(theta);
 	}
+
+	@Override
+	public Vector2Polar add(Vector2Polar that) {
+		set(super.add(that));
+		return this;
+	}
+
+	@Override
+	public Vector2Polar ceil() {
+		set(super.ceil());
+		return this;
+	}
+
+	@Override
+	public Vector2Polar cross() {
+		set(super.cross());
+		return this;
+	}
+
+	@Override
+	public Vector2Polar divide(Vector2Polar that) {
+		set(super.divide(that));
+		return this;
+	}
+
+	@Override
+	public Vector2Polar floor() {
+		set(super.floor());
+		return this;
+	}
+
+	@Override
+	public Vector2Polar multiply(Vector2Polar that) {
+		set(super.multiply(that));
+		return this;
+	}
+
+	@Override
+	public Vector2Polar round() {
+		set(super.round());
+		return this;
+	}
+
+	@Override
+	public Vector2Polar subtract(Vector2Polar that) {
+		set(super.subtract(that));
+		return this;
+	}
+	
+	
 }

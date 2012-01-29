@@ -108,4 +108,24 @@ public class Quaternionm extends Quaternion {
 		this.z = quaternion.getZ();
 		this.w = quaternion.getW();
 	}
+
+	@Override
+	public Quaternion multiply(Quaternion o) {
+		set(super.multiply(o));
+		return this;
+	}
+
+	@Override
+	public Quaternion normalize() {
+		set(super.normalize());
+		return this;
+	}
+
+	@Override
+	public Quaternion rotate(float angle, Vector3 axis) {
+		set(super.rotate(angle, axis));
+		return this;
+	}
+
+
 }

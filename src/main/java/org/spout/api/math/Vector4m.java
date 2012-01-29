@@ -45,6 +45,13 @@ public class Vector4m extends Vector4 {
 		super(x, y, z, w);
 	}
 
+	public void set(Vector4 vector) {
+		this.x = vector.getX();
+		this.y = vector.getY();
+		this.z = vector.getZ();
+		this.w = vector.getW();
+	}
+
 	/**
 	 * Sets the X coordinate
 	 *
@@ -83,19 +90,13 @@ public class Vector4m extends Vector4 {
 
 	@Override
 	public Vector4 add(Vector4 that) {
-		x += that.x;
-		y += that.y;
-		z += that.z;
-		w += that.w;
+		set(super.add(that));
 		return this;
 	}
 
 	@Override
 	public Vector4 subtract(Vector4 that) {
-		x -= that.x;
-		y -= that.y;
-		z -= that.z;
-		w -= that.w;
+		set(super.subtract(that));
 		return this;
 	}
 
@@ -105,11 +106,9 @@ public class Vector4m extends Vector4 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector4 ceil() {
-		x = (float) Math.ceil(x);
-		y = (float) Math.ceil(y);
-		z = (float) Math.ceil(z);
-		w = (float) Math.ceil(w);
+		set(super.ceil());
 		return this;
 	}
 
@@ -119,11 +118,9 @@ public class Vector4m extends Vector4 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector4 floor() {
-		x = (float) Math.floor(x);
-		y = (float) Math.floor(y);
-		z = (float) Math.floor(z);
-		w = (float) Math.floor(w);
+		set(super.floor());
 		return this;
 	}
 
@@ -133,11 +130,9 @@ public class Vector4m extends Vector4 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector4 round() {
-		x = Math.round(x);
-		y = Math.round(y);
-		z = Math.round(z);
-		w = Math.round(w);
+		set(super.round());
 		return this;
 	}
 
@@ -147,21 +142,56 @@ public class Vector4m extends Vector4 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector4 abs() {
-		x = Math.abs(x);
-		y = Math.abs(y);
-		z = Math.abs(z);
-		w = Math.abs(w);
+		set(super.abs());
 		return this;
 	}
 
+	/**
+	 * Divides the given Vector4 from this Vector4
+	 *
+	 * @param that The Vector4 to divide
+	 * @return the new Vector4
+	 */
+	@Override
+	public Vector4 divide(Vector4 that) {
+		set(super.divide(that));
+		return this;
+	}
+
+	/**
+	 * Multiplies this Vector4 to the value of the Vector4 argument
+	 *
+	 * @param that The Vector4 to multiply
+	 * @return the new Vector4
+	 */
+	@Override
+	public Vector4 multiply(Vector4 that) {
+		set(super.multiply(that));
+		return this;
+	}
+
+	/**
+	 * Raises the values of this Vector4 to the given power.
+	 *
+	 * @param power
+	 * @return
+	 */
+	@Override
+	public Vector4 pow(double power) {
+		set(super.pow(power));
+		return this;
+	}
+
+	/**
+	 * Returns this Vector4 where the length is equal to 1
+	 *
+	 * @return This Vector4 with length 1
+	 */
 	@Override
 	public Vector4 normalize() {
-		float length = this.length();
-		x *= 1 / length;
-		y *= 1 / length;
-		z *= 1 / length;
-		w *= 1 / length;
+		set(super.normalize());
 		return this;
 	}
 }

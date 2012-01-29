@@ -45,6 +45,11 @@ public class Vector2m extends Vector2 {
 		super(x, y);
 	}
 
+	public void set(Vector2 vector) {
+		this.x = vector.getX();
+		this.y = vector.getY();
+	}
+
 	/**
 	 * Sets the X coordinate
 	 *
@@ -65,24 +70,20 @@ public class Vector2m extends Vector2 {
 
 	@Override
 	public Vector2 add(Vector2 that) {
-		x += that.x;
-		y += that.y;
+		set(super.add(that));
 		return this;
 	}
 
 	@Override
 	public Vector2 subtract(Vector2 that) {
-		x -= that.x;
-		y -= that.y;
+		set(super.subtract(that));
 		return this;
 	}
 
 
 	@Override
 	public Vector2 cross() {
-		float tmp = y;
-		y = -x;
-		x = tmp;
+		set(super.cross());
 		return this;
 	}
 
@@ -92,9 +93,9 @@ public class Vector2m extends Vector2 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector2 ceil() {
-		x = (float) Math.ceil(x);
-		y = (float) Math.ceil(y);
+		set(super.ceil());
 		return this;
 	}
 
@@ -104,9 +105,9 @@ public class Vector2m extends Vector2 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector2 floor() {
-		x = (float) Math.floor(x);
-		y = (float) Math.floor(y);
+		set(super.floor());
 		return this;
 	}
 
@@ -116,9 +117,9 @@ public class Vector2m extends Vector2 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector2 round() {
-		x = Math.round(x);
-		y = Math.round(y);
+		set(super.round());
 		return this;
 	}
 
@@ -128,17 +129,56 @@ public class Vector2m extends Vector2 {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector2 abs() {
-		x = Math.abs(x);
-		y = Math.abs(y);
+		set(super.abs());
 		return this;
 	}
 
+	/**
+	 * Returns this Vector2 where the length is equal to 1
+	 *
+	 * @return This Vector2 with length 1
+	 */
 	@Override
 	public Vector2 normalize() {
-		float length = this.length();
-		x *= 1 / length;
-		y *= 1 / length;
+		set(super.normalize());
+		return this;
+	}
+
+	/**
+	 * Divides the given Vector2 from this Vector2
+	 *
+	 * @param that The Vector2 to divide
+	 * @return the new Vector2
+	 */
+	@Override
+	public Vector2 divide(Vector2 that) {
+		set(super.divide(that));
+		return this;
+	}
+
+	/**
+	 * Multiplies this Vector2 to the value of the Vector2 argument
+	 *
+	 * @param that The Vector2 to multiply
+	 * @return the new Vector2
+	 */
+	@Override
+	public Vector2 multiply(Vector2 that) {
+		set(super.multiply(that));
+		return this;
+	}
+
+	/**
+	 * Raises the X and Y values of this Vector2 to the given power
+	 * 
+	 * @param power
+	 * @return 
+	 */
+	@Override
+	public Vector2 pow(double power) {
+		set(super.pow(power));
 		return this;
 	}
 }
