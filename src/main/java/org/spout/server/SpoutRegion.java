@@ -50,7 +50,6 @@ import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
-import org.spout.api.util.set.concurrent.TSyncByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.server.entity.EntityManager;
@@ -107,7 +106,7 @@ public class SpoutRegion extends Region{
 	 * (0 + x * 256, 0 + y * 256, 0 + z * 256)), where (x, y, z) are the region coordinates.
 	 */
 	//TODO thresholds?
-	private TByteTripleHashSet queuedPhysicsUpdates = new TSyncByteTripleHashSet();
+	private final TByteTripleHashSet queuedPhysicsUpdates = new TByteTripleHashSet();
 	
 	private final int blockCoordMask;
 	
@@ -125,7 +124,7 @@ public class SpoutRegion extends Region{
 		this.source = source;
 		this.blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
 		this.blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
-		this.manager = new SpoutRegionManager(this, 1, new ThreadAsyncExecutor(), world.getServer());
+		this.manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(), world.getServer());
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
@@ -377,6 +376,28 @@ public class SpoutRegion extends Region{
 						e.printStackTrace();
 					}
 				}
+				
+				World world = getWorld();
+				int[] updates;
+				synchronized(queuedPhysicsUpdates) {
+					updates = queuedPhysicsUpdates.toArray();
+					queuedPhysicsUpdates.clear();
+				}
+				for (int key : updates) {
+					int x = TByteTripleHashSet.key1(key);
+					int y = TByteTripleHashSet.key2(key);
+					int z = TByteTripleHashSet.key3(key);
+					//switch region block coords (0-255) to a chunk index
+					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
+					if (chunk != null) {
+						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
+						if (material.hasPhysics()) {
+							//switch region block coords (0-255) to world block coords
+							material.onUpdate(world, x + (this.x << blockShifts), y + (this.y << blockShifts), z + (this.z << blockShifts));
+						}
+					}
+				}
+				
 				break;
 			}
 			case 1: {
@@ -390,29 +411,6 @@ public class SpoutRegion extends Region{
 						e.printStackTrace();
 					}
 				}
-				
-				World world = getWorld();
-				TIntIterator i = queuedPhysicsUpdates.iterator();
-				System.out.println("Processing " + queuedPhysicsUpdates.size() + " physic updates");
-				while(i.hasNext()) {
-					int key = i.next();
-					int x = TByteTripleHashSet.key1(key);
-					int y = TByteTripleHashSet.key1(key);
-					int z = TByteTripleHashSet.key1(key);
-					//switch region block coords (0-255) to a chunk index
-					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
-					System.out.println("Doing physics update for " + chunk + ", (" + x + ", " + y + ", " + z + ")");
-					if (chunk != null) {
-						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
-						System.out.println("Doing physics update for " + chunk + " at (" + (x + (this.x << blockShifts)) + ", " + (y + (this.y << blockShifts)) + ", " + (z + (this.z << blockShifts)) + "). Has physics: " + material.hasPhysics());
-						if (material.hasPhysics()) {
-							//switch region block coords (0-255) to world block coords
-							material.onUpdate(world, x + (this.x << blockShifts), y + (this.y << blockShifts), z + (this.z << blockShifts));
-						}
-					}
-					i.remove();
-				}
-				
 				break;
 			}
 			default: {
@@ -578,6 +576,8 @@ public class SpoutRegion extends Region{
 	 * @param z, the block z coordinate
 	 */
 	public void queuePhysicsUpdate(int x, int y, int z) {
-		queuedPhysicsUpdates.add(x & blockCoordMask, y & blockCoordMask, z & blockCoordMask);
+		synchronized(queuedPhysicsUpdates) {
+			queuedPhysicsUpdates.add(x & blockCoordMask, y & blockCoordMask, z & blockCoordMask);
+		}
 	}
 }
