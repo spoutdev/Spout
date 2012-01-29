@@ -525,7 +525,8 @@ public class SpoutChunk extends Chunk {
 				continue;
 			}
 			for (Player p : observerLive.keySet()) {
-				if (p.getEntity().equals(e)) {
+				Entity playerEntity = p.getEntity();
+				if (playerEntity == null || p.getEntity().equals(e)) {
 					continue;
 				}
 				Integer playerDistanceOld;
