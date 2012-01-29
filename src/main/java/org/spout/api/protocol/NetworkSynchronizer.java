@@ -256,6 +256,15 @@ public class NetworkSynchronizer {
 			}
 		}
 	}
+	
+	/**
+	 * Gets the entity protocol manager
+	 * 
+	 * @return the entity protocol manager
+	 */
+	public EntityProtocol getEntityProtocol() {
+		throw new IllegalStateException("No entity protocol available for core class");
+	}
 
 	/**
 	 * Sends a chunk to the client.
@@ -355,6 +364,5 @@ public class NetworkSynchronizer {
 	 * @param e the entity
 	 */
 	public void syncEntity(Entity e) {
-		//System.out.println("Syncing: " + e + ":" + e.getTransform().getPosition());
 	}
 }
