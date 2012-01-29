@@ -118,7 +118,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
 		if (material == null) throw new NullPointerException("Material can not be null");
-		return setBlockIdAndData(x, y, z, material.getId(), (short)0, true, source);
+		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), true, source);
 	}
 
 	@Override
