@@ -209,7 +209,7 @@ public class Quaternion {
 		return multiply(new Quaternion(angle, axis), a);
 	}
 	/**
-	 * Returns the angles about each axis of this quaternion stored in a Vector3
+	 * Returns the angles, in degrees, about each axis of this quaternion stored in a Vector3
 	 *
 	 * vect.X = Rotation about the X axis (Roll)
 	 * vect.Y = Rotation about the Y axis (Yaw)
