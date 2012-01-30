@@ -134,7 +134,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 add(float x, float y) {
-		return Vector2.add(this, new Vector2(x, y));
+		return add(new Vector2(x, y));
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 add(double x, double y) {
-		return Vector2.add(this, new Vector2(x, y));
+		return add(new Vector2(x, y));
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 add(int x, int y) {
-		return Vector2.add(this, new Vector2(x, y));
+		return add(new Vector2(x, y));
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 subtract(float x, float y) {
-		return Vector2.subtract(this, new Vector2(x, y));
+		return subtract(new Vector2(x, y));
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 subtract(double x, double y) {
-		return Vector2.subtract(this, new Vector2(x, y));
+		return subtract(new Vector2(x, y));
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 subtract(int x, int y) {
-		return Vector2.subtract(this, new Vector2(x, y));
+		return subtract(new Vector2(x, y));
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 multiply(float x, float y) {
-		return Vector2.multiply(this, new Vector2(x, y));
+		return multiply(new Vector2(x, y));
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 multiply(double x, double y) {
-		return Vector2.multiply(this, new Vector2(x, y));
+		return multiply(new Vector2(x, y));
 	}
 
 	/**
@@ -242,7 +242,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 multiply(int x, int y) {
-		return Vector2.multiply(this, new Vector2(x, y));
+		return multiply(new Vector2(x, y));
 	}
 
 	/**
@@ -252,7 +252,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 multiply(float val) {
-		return Vector2.multiply(this, new Vector2(val, val));
+		return multiply(new Vector2(val, val));
 	}
 
 	/**
@@ -262,7 +262,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 multiply(double val) {
-		return Vector2.multiply(this, new Vector2(val, val));
+		return multiply(new Vector2(val, val));
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 multiply(int val) {
-		return Vector2.multiply(this, new Vector2(val, val));
+		return multiply(new Vector2(val, val));
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 divide(float x, float y) {
-		return Vector2.divide(this, new Vector2(x, y));
+		return divide(new Vector2(x, y));
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 divide(double x, double y) {
-		return Vector2.divide(this, new Vector2(x, y));
+		return divide(new Vector2(x, y));
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 divide(int x, int y) {
-		return Vector2.divide(this, new Vector2(x, y));
+		return divide(new Vector2(x, y));
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 divide(float val) {
-		return Vector2.divide(this, new Vector2(val, val));
+		return divide(new Vector2(val, val));
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 divide(double val) {
-		return Vector2.divide(this, new Vector2(val, val));
+		return divide(new Vector2(val, val));
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public Vector2 divide(int val) {
-		return Vector2.divide(this, new Vector2(val, val));
+		return divide(new Vector2(val, val));
 	}
 
 
@@ -552,8 +552,8 @@ public class Vector2 implements Comparable<Vector2> {
 	@Override
 	public int hashCode() {
 		int hash = 5;
-		hash = 59 * hash + Float.floatToIntBits(this.x);
-		hash = 59 * hash + Float.floatToIntBits(this.y);
+		hash = 59 * hash + Float.floatToIntBits(x);
+		hash = 59 * hash + Float.floatToIntBits(y);
 		return hash;
 	}
 
@@ -671,7 +671,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector3 toVector3(Vector2 o) {
-		return new Vector3(o.x, 0, o.y);
+		return new Vector3(o.getX(), 0, o.getY());
 	}
 
 	/**
@@ -683,7 +683,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector3m toVector3m(Vector2 o) {
-		return new Vector3m(o.x, 0, o.y);
+		return new Vector3m(o.getX(), 0, o.getY());
 	}
 
 	/**
@@ -694,7 +694,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2Polar toVector2Polar(Vector2 o) {
-		return new Vector2Polar(o.length(), Math.atan2(o.y, o.x));
+		return new Vector2Polar(o.length(), Math.atan2(o.getY(), o.getX()));
 	}
 
 	/**
@@ -707,7 +707,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector3 toVector3(Vector2 o, float y) {
-		return new Vector3(o.x, y, o.y);
+		return new Vector3(o.getX(), y, o.getY());
 	}
 
 	/**
@@ -720,7 +720,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector3m toVector3m(Vector2 o, float y) {
-		return new Vector3m(o.x, y, o.y);
+		return new Vector3m(o.getX(), y, o.getY());
 	}
 
 	/**
@@ -730,7 +730,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2 cross(Vector2 o) {
-		return new Vector2(o.y, -o.x);
+		return new Vector2(o.getY(), -o.getX());
 	}
 
 	/**
@@ -741,7 +741,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 ceil(Vector2 o) {
-		return new Vector2(Math.ceil(o.x), Math.ceil(o.y));
+		return new Vector2(Math.ceil(o.getX()), Math.ceil(o.getY()));
 	}
 
 	/**
@@ -752,7 +752,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 floor(Vector2 o) {
-		return new Vector2(Math.floor(o.x), Math.floor(o.y));
+		return new Vector2(Math.floor(o.getX()), Math.floor(o.getY()));
 	}
 
 	/**
@@ -763,7 +763,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 round(Vector2 o) {
-		return new Vector2(Math.round(o.x), Math.round(o.y));
+		return new Vector2(Math.round(o.getX()), Math.round(o.getY()));
 	}
 
 	/**
@@ -774,7 +774,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 abs(Vector2 o) {
-		return new Vector2(Math.abs(o.x), Math.abs(o.y));
+		return new Vector2(Math.abs(o.getX()), Math.abs(o.getY()));
 	}
 
 	/**
@@ -785,7 +785,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 min(Vector2 o1, Vector2 o2) {
-		return new Vector2(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y));
+		return new Vector2(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()));
 	}
 
 	/**
@@ -796,7 +796,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 max(Vector2 o1, Vector2 o2) {
-		return new Vector2(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y));
+		return new Vector2(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()));
 	}
 
 	/**
@@ -839,7 +839,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 */
 	public static double distance(Vector2 a, Vector2 b) {
 		Vector2 tempVector = Vector2.pow(Vector2.subtract(a, b), 2);
-		return Math.sqrt(tempVector.x + tempVector.y);
+		return Math.sqrt(tempVector.getX() + tempVector.getY());
 	}
 
 	/**
@@ -850,7 +850,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return
 	 */
 	public static Vector2 pow(Vector2 o, double power) {
-		return new Vector2(Math.pow(o.x, power), Math.pow(o.y, power));
+		return new Vector2(Math.pow(o.getX(), power), Math.pow(o.getY(), power));
 	}
 
 	/**

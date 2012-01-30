@@ -148,6 +148,7 @@ public class Quaternion {
 		return Quaternion.getAxisAngles(this);
 	}
 
+	@Override
 	public String toString(){
 		return getClass().getSimpleName() + "{"+x+","+y+","+z+","+w+"}";
 	}

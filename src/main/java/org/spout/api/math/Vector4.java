@@ -141,7 +141,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return The Z coordinate
 	 */
 	public float getZ() {
-		return x;
+		return z;
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 add(float x, float y, float z, float w) {
-		return Vector4.add(this, new Vector4(x, y, z, w));
+		return add(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 add(double x, double y, double z, double w) {
-		return Vector4.add(this, new Vector4(x, y, z, w));
+		return add(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 add(int x, int y, int z, int w) {
-		return Vector4.add(this, new Vector4(x, y, z, w));
+		return add(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 subtract(float x, float y, float z, float w) {
-		return Vector4.subtract(this, new Vector4(x, y, z, w));
+		return subtract(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -235,7 +235,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 subtract(double x, double y, double z, double w) {
-		return Vector4.subtract(this, new Vector4(x, y, z, w));
+		return subtract(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 subtract(int x, int y, int z, int w) {
-		return Vector4.subtract(this, new Vector4(x, y, z, w));
+		return subtract(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 multiply(float x, float y, float z, float w) {
-		return Vector4.multiply(this, new Vector4(x, y, z, w));
+		return multiply(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -284,7 +284,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 multiply(double x, double y, double z, double w) {
-		return Vector4.multiply(this, new Vector4(x, y, z, w));
+		return multiply(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 multiply(int x, int y, int z, int w) {
-		return Vector4.multiply(this, new Vector4(x, y, z, w));
+		return multiply(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -307,7 +307,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 multiply(float val) {
-		return Vector4.multiply(this, new Vector4(val, val, val, val));
+		return multiply(new Vector4(val, val, val, val));
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 multiply(double val) {
-		return Vector4.multiply(this, new Vector4(val, val, val, val));
+		return multiply(new Vector4(val, val, val, val));
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 multiply(int val) {
-		return Vector4.multiply(this, new Vector4(val, val, val, val));
+		return multiply(new Vector4(val, val, val, val));
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 divide(float x, float y, float z, float w) {
-		return Vector4.divide(this, new Vector4(x, y, z, w));
+		return divide(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -363,7 +363,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 divide(double x, double y, double z, double w) {
-		return Vector4.divide(this, new Vector4(x, y, z, w));
+		return divide(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 divide(int x, int y, int z, int w) {
-		return Vector4.divide(this, new Vector4(x, y, z, w));
+		return divide(new Vector4(x, y, z, w));
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 divide(float val) {
-		return Vector4.divide(this, new Vector4(val, val, val, val));
+		return divide(new Vector4(val, val, val, val));
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 divide(double val) {
-		return Vector4.divide(this, new Vector4(val, val, val, val));
+		return divide(new Vector4(val, val, val, val));
 	}
 
 	/**
@@ -406,7 +406,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public Vector4 divide(int val) {
-		return Vector4.divide(this, new Vector4(val, val, val, val));
+		return divide(new Vector4(val, val, val, val));
 	}
 
 	/**

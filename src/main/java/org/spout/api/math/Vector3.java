@@ -148,7 +148,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		return Vector3.add(this, new Vector3(x, y, z));
+		return add(new Vector3(x, y, z));
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 add(double x, double y, double z) {
-		return Vector3.add(this, new Vector3(x, y, z));
+		return add(new Vector3(x, y, z));
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 add(int x, int y, int z) {
-		return Vector3.add(this, new Vector3(x, y, z));
+		return add(new Vector3(x, y, z));
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		return Vector3.subtract(this, new Vector3(x, y, z));
+		return subtract(new Vector3(x, y, z));
 	}
 
 	/**
@@ -206,7 +206,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 subtract(double x, double y, double z) {
-		return Vector3.subtract(this, new Vector3(x, y, z));
+		return subtract(new Vector3(x, y, z));
 	}
 
 	/**
@@ -218,7 +218,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 subtract(int x, int y, int z) {
-		return Vector3.subtract(this, new Vector3(x, y, z));
+		return subtract(new Vector3(x, y, z));
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 multiply(float x, float y, float z) {
-		return Vector3.multiply(this, new Vector3(x, y, z));
+		return multiply(new Vector3(x, y, z));
 	}
 
 	/**
@@ -252,7 +252,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 multiply(double x, double y, double z) {
-		return Vector3.multiply(this, new Vector3(x, y, z));
+		return multiply(new Vector3(x, y, z));
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 multiply(int x, int y, int z) {
-		return Vector3.multiply(this, new Vector3(x, y, z));
+		return multiply(new Vector3(x, y, z));
 	}
 
 	/**
@@ -274,7 +274,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 multiply(float val) {
-		return Vector3.multiply(this, new Vector3(val, val, val));
+		return multiply(new Vector3(val, val, val));
 	}
 
 	/**
@@ -284,7 +284,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 multiply(double val) {
-		return Vector3.multiply(this, new Vector3(val, val, val));
+		return multiply(new Vector3(val, val, val));
 	}
 
 	/**
@@ -294,7 +294,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 multiply(int val) {
-		return Vector3.multiply(this, new Vector3(val, val, val));
+		return multiply(new Vector3(val, val, val));
 	}
 
 	/**
@@ -316,7 +316,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 divide(float x, float y, float z) {
-		return Vector3.divide(this, new Vector3(x, y, z));
+		return divide(new Vector3(x, y, z));
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 divide(double x, double y, double z) {
-		return Vector3.divide(this, new Vector3(x, y, z));
+		return divide(new Vector3(x, y, z));
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 divide(int x, int y, int z) {
-		return Vector3.divide(this, new Vector3(x, y, z));
+		return divide(new Vector3(x, y, z));
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 divide(float val) {
-		return Vector3.divide(this, new Vector3(val, val, val));
+		return divide(new Vector3(val, val, val));
 	}
 
 	/**
@@ -360,7 +360,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 divide(double val) {
-		return Vector3.divide(this, new Vector3(val, val, val));
+		return divide(new Vector3(val, val, val));
 	}
 
 	/**
@@ -370,7 +370,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public Vector3 divide(int val) {
-		return Vector3.divide(this, new Vector3(val, val, val));
+		return divide(new Vector3(val, val, val));
 	}
 
 
@@ -535,6 +535,13 @@ public class Vector3 implements Comparable<Vector3> {
 		return Vector3.transform(this, transformation);
 	}
 
+	/**
+	 * Returns a new vector that is a transformation of this vector around the
+	 * given transformation
+	 *
+	 * @param transformation
+	 * @return
+	 */
 	public Vector3 transform(Quaternion transformation) {
 		return Vector3.transform(this, transformation);
 	}
@@ -549,6 +556,7 @@ public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Checks if two Vector3s are equal
 	 */
+	@Override
 	public boolean equals(Object b) {
 		if (!(b instanceof Vector3)) {
 			return false;
@@ -573,9 +581,9 @@ public class Vector3 implements Comparable<Vector3> {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 37 * hash + Float.floatToIntBits(this.x);
-		hash = 37 * hash + Float.floatToIntBits(this.y);
-		hash = 37 * hash + Float.floatToIntBits(this.z);
+		hash = 37 * hash + Float.floatToIntBits(x);
+		hash = 37 * hash + Float.floatToIntBits(y);
+		hash = 37 * hash + Float.floatToIntBits(z);
 		return hash;
 	}
 
@@ -659,7 +667,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 multiply(Vector3 a, Vector3 b) {
-		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+		return new Vector3(a.getX() * b.getX(), a.getY() * b.getY(), a.getZ() * b.getZ());
 	}
 
 	/**
@@ -670,7 +678,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 divide(Vector3 a, Vector3 b) {
-		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+		return new Vector3(a.getX() / b.getX(), a.getY() / b.getY(), a.getZ() / b.getZ());
 	}
 
 	/**
@@ -704,7 +712,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 ceil(Vector3 o) {
-		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
+		return new Vector3(Math.ceil(o.getX()), Math.ceil(o.getY()), Math.ceil(o.getZ()));
 	}
 
 	/**
@@ -715,7 +723,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 floor(Vector3 o) {
-		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
+		return new Vector3(Math.floor(o.getX()), Math.floor(o.getY()), Math.floor(o.getZ()));
 	}
 
 	/**
@@ -726,7 +734,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 round(Vector3 o) {
-		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
+		return new Vector3(Math.round(o.getX()), Math.round(o.getY()), Math.round(o.getZ()));
 	}
 
 	/**
@@ -737,7 +745,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 abs(Vector3 o) {
-		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
+		return new Vector3(Math.abs(o.getX()), Math.abs(o.getY()), Math.abs(o.getZ()));
 	}
 
 	/**
@@ -748,7 +756,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 min(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
+		return new Vector3(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()), Math.min(o1.getZ(), o2.getZ()));
 	}
 
 	/**
@@ -759,7 +767,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 max(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
+		return new Vector3(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()), Math.max(o1.getZ(), o2.getZ()));
 	}
 
 	/**
@@ -795,7 +803,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 pow(Vector3 o, double power) {
-		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
+		return new Vector3(Math.pow(o.getX(), power), Math.pow(o.getY(), power), Math.pow(o.getZ(), power));
 	}
 
 	/**
@@ -808,7 +816,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector3 o) {
-		return new Vector2(o.x, o.z);
+		return new Vector2(o.getX(), o.getZ());
 	}
 
 	/**
@@ -821,7 +829,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector2m toVector2m(Vector3 o) {
-		return new Vector2m(o.x, o.z);
+		return new Vector2m(o.getX(), o.getZ());
 	}
 
 	/**
