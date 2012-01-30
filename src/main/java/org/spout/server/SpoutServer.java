@@ -273,7 +273,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		
 		//At least one plugin should have registered atleast one world
 		if(this.loadedWorlds.get().size() == 0){
-			throw new IllegalStateException("No Plugin's loaded worlds!  You must install a plugin that creates a world");
+			throw new IllegalStateException("There are no loaded worlds!  You must install a plugin that creates a world");
 		}
 		//If we don't have a default world set, just grab one.
 		if(this.defaultWorld.get() == null){
