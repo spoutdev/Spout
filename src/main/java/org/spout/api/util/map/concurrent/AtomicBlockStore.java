@@ -511,10 +511,63 @@ public class AtomicBlockStore<T> {
 	 * @return the array
 	 */
 	public short[] getBlockIdArray() {
+		return getBlockIdArray(null);
+	}
+	
+	/**
+	 * Copies the block ids in the store into an array.<br>
+	 * <br>
+	 * If the store is updated while this snapshot is being taken, data tearing could occur.<br>
+	 * <br>
+	 * If the array is the wrong length or null, a new array is created.
+	 *
+	 * @param the array to place the data
+	 * @return the array
+	 */
+	public short[] getBlockIdArray(short[] array) {
 		int length = blockIds.length();
-		short[] array = new short[length];
+		if (array == null || array.length != length) {
+			array = new short[length];
+		}
 		for (int i = 0; i < length; i++) {
 			array[i] = blockIds.get(i);
+		}
+		return array;
+	}
+	
+	/**
+	 * Gets a short array containing the block data for the blocks in the store.<br>
+	 * <br>
+	 * If the store is updated while this snapshot is being taken, data tearing could occur.
+	 * 
+	 * @return the array
+	 */
+	public short[] getDataArray() {
+		return getDataArray(null);
+	}
+	
+	/**
+	 * Copies the block data in the store into an array.<br>
+	 * <br>
+	 * If the store is updated while this snapshot is being taken, data tearing could occur.<br>
+	 * <br>
+	 * If the array is the wrong length or null, a new array is created.
+	 *
+	 * @param the array to place the data
+	 * @return the array
+	 */
+	public short[] getDataArray(short[] array) {
+		int length = blockIds.length();
+		if (array == null || array.length != length) {
+			array = new short[length];
+		}
+		for (int i = 0; i < length; i++) {
+			short blockId = blockIds.get(i);
+			if (auxStore.isReserved(blockId)) {
+				array[i] = auxStore.getData(blockId);
+			} else {
+				array[i] = 0;
+			}
 		}
 		return array;
 	}
