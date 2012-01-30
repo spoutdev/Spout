@@ -37,6 +37,7 @@ public class PlayerJoinEvent extends PlayerEvent {
 	public PlayerJoinEvent(Player p) {
 		super(p);
 	}
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

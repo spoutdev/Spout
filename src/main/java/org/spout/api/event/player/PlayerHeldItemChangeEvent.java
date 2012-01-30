@@ -20,35 +20,48 @@
  */
 package org.spout.api.event.player;
 
+import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.player.Player;
 
-public class PlayerHeldItemChangeEvent extends PlayerEvent{
-	
-	private int prevs,news;
+public class PlayerHeldItemChangeEvent extends PlayerEvent implements Cancellable{
 	private static HandlerList handlers = new HandlerList();
-	
-	public PlayerHeldItemChangeEvent(Player p,int oldSlot,int newSlot) {
+
+	private final int oldSlot, newSlot;
+
+	public PlayerHeldItemChangeEvent(Player p, int oldSlot, int newSlot) {
 		super(p);
-		prevs = oldSlot;
-		news = newSlot;
+		this.oldSlot = oldSlot;
+		this.newSlot = newSlot;
 	}
-	
+
+	/**
+	 * Gets the previous slot the player had selected.
+	 * @return The index of the previous slot.
+	 */
+	public int getPreviousSlot() {
+		return oldSlot;
+	}
+
+	/**
+	 * Gets the new slot the player selected.
+	 * @return The index of the new selected slot.
+	 */
+	public int getNewSlot() {
+		return newSlot;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public HandlerList getHandlerList() {
 		return handlers;
 	}
-	
-	public int getPreviousSlot() {
-		return prevs;
-	}
-	
-	public int getNewSlot() {
-		return news;
-	}
-	
 }

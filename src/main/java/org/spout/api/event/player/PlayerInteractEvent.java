@@ -31,14 +31,15 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.player.Player;
 
-/**
- *
- * @author zml2008
- */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
+	private static final HandlerList handlers = new HandlerList();
+
 	private final Point interactedPoint;
+
 	private final ItemStack heldItem;
+
 	private final Action action;
+
 	private final boolean isAir;
 
 	public PlayerInteractEvent(Player p, Point interactedPoint, ItemStack heldItem, Action action, boolean isAir) {
@@ -65,11 +66,10 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 		return isAir;
 	}
 
+	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
 	}
-
-	private static final HandlerList handlers = new HandlerList();
 
 	public HandlerList getHandlers() {
 		return handlers;

@@ -30,17 +30,14 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity is about to be destroyed
- * This is the opposite of Spawn
- *
+ * Called when an entity is about to be destroyed.
  */
 public class EntityDespawnEvent extends EntityEvent implements Cancellable {
+	private static HandlerList handlers = new HandlerList();
+
 	public EntityDespawnEvent(Entity e) {
 		super(e);
-		// TODO Auto-generated constructor stub
 	}
-
-	private static HandlerList handlers = new HandlerList();
 
 	@Override
 	public void setCancelled(boolean cancelled) {

@@ -34,24 +34,28 @@ import org.spout.api.geo.discrete.Point;
  * Called when an entity spawns into the world.
  */
 public class EntitySpawnEvent extends EntityEvent implements Cancellable {
+	private static HandlerList handlers = new HandlerList();
+
+	private Point point;
+
 	public EntitySpawnEvent(Entity e, Point point) {
 		super(e);
 		this.point = point;
 	}
 
-	private static HandlerList handlers = new HandlerList();
-
-	private Point point;
-
 	/**
 	 * Gets the location in which spawning will take place.
 	 *
-	 * @return
+	 * @return The location where spawning will take place.
 	 */
 	public Point getPoint() {
 		return point;
 	}
 
+	/**
+	 * Sets the location in which spawning will take place.
+	 * @param point The new location where spawning will take place.
+	 */
 	public void setPoint(Point point) {
 		this.point = point;
 	}

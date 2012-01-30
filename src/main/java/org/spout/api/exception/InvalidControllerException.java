@@ -23,47 +23,15 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.exception;
 
-import org.spout.api.entity.Entity;
-import org.spout.api.event.Cancellable;
-import org.spout.api.event.HandlerList;
+public class InvalidControllerException extends Exception {
 
-/**
- * Called when an entity interacts with an entity.
- */
-public class EntityInteractEvent extends EntityEvent implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
-
-	private Entity interacted;
-
-	public EntityInteractEvent(Entity e, Entity interacted) {
-		super(e);
-		this.interacted = interacted;
+	public InvalidControllerException() {
+		super("Invalid controller specified for the entity.");
 	}
 
-	/**
-	 * Get the entity being interacted with.
-	 * @return The entity interacted with.
-	 */
-	public Entity getInteractedWith(){
-		return interacted;
-	}
-
-	/**
-	 * Set the entity being interacted with.
-	 * @param e The entity that will be interacted with.
-	 */
-	public void setInteractedWith(Entity e){
-		this.interacted = e;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
-	}
-
-	public HandlerList getHandlers() {
-		return handlers;
+	public InvalidControllerException(String message) {
+		super(message);
 	}
 }

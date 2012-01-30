@@ -28,17 +28,17 @@ package org.spout.api.event.entity;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.geo.discrete.Point;
 
 /**
  * Called when an entity is teleported.
  */
 public class EntityTeleportEvent extends EntityMoveEvent implements Cancellable {
-	public EntityTeleportEvent(Entity e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-
 	private static HandlerList handlers = new HandlerList();
+	
+	public EntityTeleportEvent(Entity e, Point from, Point to) {
+		super(e, from, to);
+	}
 
 	@Override
 	public void setCancelled(boolean cancelled) {
