@@ -47,6 +47,7 @@ public class SpoutBlock extends Block {
 		setBlockMaterial(material);
 	}
 	
+	//TODO: set id at world location too!
 	@Override
 	public BlockMaterial setBlockMaterial(BlockMaterial material) {
 		setBlockId(material.getId());
