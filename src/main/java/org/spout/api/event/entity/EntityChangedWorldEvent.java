@@ -34,17 +34,46 @@ import org.spout.api.geo.World;
  * Called when an entity changes its world.
  */
 public class EntityChangedWorldEvent extends EntityEvent implements Cancellable {
-	public EntityChangedWorldEvent(Entity e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-
 	private static HandlerList handlers = new HandlerList();
 
-	private World from;
+	private World previous, target;
 
-	public World getFrom() {
-		return from;
+	public EntityChangedWorldEvent(Entity e, World previous, World target) {
+		super(e);
+		this.previous = previous;
+		this.target = target;
+	}
+
+	/**
+	 * Gets the world that the entity came from
+	 * @return The world the entity came from.
+	 */
+	public World getPrevious() {
+		return previous;
+	}
+
+	/**
+	 * Sets the world that the entity came from
+	 * @param The world the entity came from.
+	 */
+	public void setPrevious(World previous) {
+		this.previous = previous;
+	}
+
+	/**
+	 * Gets the world that the entity changed to.
+	 * @return The world the entity changed to.
+	 */
+	public World getTarget() {
+		return target;
+	}
+
+	/**
+	 * Sets the world that the entity changed to.
+	 * @param The world the entity changed to.
+	 */
+	public void setTarget(World target) {
+		this.target = target;
 	}
 
 	@Override

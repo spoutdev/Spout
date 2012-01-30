@@ -38,12 +38,19 @@ public abstract class WorldEvent extends Event {
 		this.world = p;
 	}
 
+	/**
+	 * Gets the world associated with this event.
+	 * @return The world associated with the event.
+	 */
 	public World getWorld() {
 		return world;
 	}
 
+	/**
+	 * Sets the world associated with this event.
+	 * @param world The world to be associated with the event.
+	 */
 	public void setWorld(World world) {
 		this.world = world;
 	}
 }
-

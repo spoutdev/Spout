@@ -25,29 +25,59 @@
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.Source;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity gains health.
+ * Called when an entity has a health change.
  */
-public class EntityHealthChangedEvent extends EntityEvent implements Cancellable {
-	public EntityHealthChangedEvent(Entity e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-
+public class EntityHealthChangeEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private int amount;
+	private int change;
 
-	public int getAmount() {
-		return amount;
+	private Source source;
+
+	public EntityHealthChangeEvent(Entity e, Source source, int change) {
+		super(e);
+		this.source = source;
+		this.change = change;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
+	/**
+	 * Gets the source that caused the event.
+	 * @return The source that caused this event.
+	 */
+	public Source getSource() {
+		return source;
+	}
+
+	/**
+	 * Sets the source that caused this event.
+	 * @param source The new source of this event.
+	 */
+	public void setSource(Source source) {
+		this.source = source;
+	}
+
+	/**
+	 * Gets the change in health.
+	 *
+	 * @return The amount of change.
+	 */
+	public int getChange() {
+		return change;
+	}
+
+	/**
+	 * Sets the change in health.
+	 *
+	 * @param damage The amount of change.
+	 */
+	public void setChange(int change) {
+		this.change = change;
 	}
 
 	@Override

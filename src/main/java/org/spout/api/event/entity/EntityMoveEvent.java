@@ -34,48 +34,49 @@ import org.spout.api.geo.discrete.Point;
  * Holds information for entity movement events
  */
 public class EntityMoveEvent extends EntityEvent implements Cancellable {
-	public EntityMoveEvent(Entity e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-
 	private static HandlerList handlers = new HandlerList();
 
 	private Point from;
 
 	private Point to;
 
+	public EntityMoveEvent(Entity e, Point from, Point to) {
+		super(e);
+		this.from = from;
+		this.to = to;
+	}
+
 	/**
-	 * Gets the Point this entity moved from
+	 * Gets the Point this entity moved from.
 	 *
-	 * @return Point the entity moved from
+	 * @return Point the entity moved from.
 	 */
 	public Point getFrom() {
 		return from;
 	}
 
 	/**
-	 * Sets the Point to mark as where the entity moved from
+	 * Sets the Point to mark as where the entity moved from.
 	 *
-	 * @param from New Point to mark as the entitys previous Point
+	 * @param from New Point to mark as the entity's previous Point.
 	 */
 	public void setFrom(Point from) {
 		this.from = from;
 	}
 
 	/**
-	 * Gets the Point this entity moved to
+	 * Gets the Point this entity moved to.
 	 *
-	 * @return Point the entity moved to
+	 * @return Point the entity moved to.
 	 */
 	public Point getTo() {
 		return to;
 	}
 
 	/**
-	 * Sets the Point that this entity will move to
+	 * Sets the Point that this entity will move to.
 	 *
-	 * @param to New Point this entity will move to
+	 * @param to New Point this entity will move to.
 	 */
 	public void setTo(Point to) {
 		this.to = to;

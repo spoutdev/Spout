@@ -37,11 +37,19 @@ public abstract class EntityEvent extends Event {
 	public EntityEvent(Entity e){
 		this.entity = e;
 	}
-	
+
+	/**
+	 * Gets the entity associated with this event.
+	 * @return The entity associated with the event.
+	 */
 	public Entity getEntity() {
 		return entity;
 	}
 
+	/**
+	 * Sets the entity associated with this event.
+	 * @param entity The entity to be associated with this event.
+	 */
 	public void setEntity(Entity entity) {
 		this.entity = entity;
 	}

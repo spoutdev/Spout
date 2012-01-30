@@ -25,6 +25,7 @@
  */
 package org.spout.api.event.entity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
@@ -33,34 +34,25 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.inventory.ItemStack;
 
 /**
- * Called when an entity dies.
+ * Called when an entity is dieing.
  */
 public class EntityDeathEvent extends EntityEvent implements Cancellable {
-	public EntityDeathEvent(Entity e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-
 	private static HandlerList handlers = new HandlerList();
 
-	private List<ItemStack> drops;
+	private final LinkedList<ItemStack> drops;
+
+	public EntityDeathEvent(Entity e) {
+		super(e);
+		drops = new LinkedList<ItemStack>();
+	}
 
 	/**
-	 * The drops to drop.
+	 * Gets the drops to drop.
 	 *
 	 * @return The drops to drop.
 	 */
 	public List<ItemStack> getDrops() {
 		return drops;
-	}
-
-	/**
-	 * Sets the drops to drop.
-	 *
-	 * @param drops The drops to set.
-	 */
-	public void setDrops(List<ItemStack> drops) {
-		this.drops = drops;
 	}
 
 	@Override
