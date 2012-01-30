@@ -41,6 +41,7 @@ import org.spout.api.generator.Populator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialData;
@@ -135,6 +136,16 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
 		return setBlockIdAndData(x, y, z, id, (short)0, updatePhysics, source);
+	}
+	
+	@Override
+	public boolean setBlockData(int x, int y, int z, short data, Source source) {
+		return setBlockData(x, y, z, data, true, source);
+	}
+	
+	@Override
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
+		return setBlockIdAndData(x, y, z, (short)blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask), data, updatePhysics, source);
 	}
 	
 	@Override
@@ -306,14 +317,13 @@ public class SpoutChunk extends Chunk {
 		// TODO
 	}
 	
-	public CuboidShortBuffer getBlockCuboidBufferLive() {
+	public ChunkSnapshot getSnapshot() {
+		return getSnapshot(true);
+	}
+	
+	public ChunkSnapshot getSnapshot(boolean entities) {
 		checkChunkLoaded();
-		int x = getX() << Chunk.CHUNK_SIZE_BITS;
-		int y = getY() << Chunk.CHUNK_SIZE_BITS;
-		int z = getZ() << Chunk.CHUNK_SIZE_BITS;
-		CuboidShortBuffer snapshot = new CuboidShortBuffer(getWorld(), x, y, z, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, blockStore.getBlockIdArray());
-		
-		return snapshot;
+		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), entities);
 	}
 
 	@Override
@@ -412,17 +422,6 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public Region getRegion() {
 		return parentRegion;
-	}
-	
-	public static class ChunkAccessException extends RuntimeException {
-
-		private static final long serialVersionUID = 1L;
-
-		public ChunkAccessException(String message) {
-			super(message);
-		}
-		
-		
 	}
 
 	@Override
@@ -605,6 +604,15 @@ public class SpoutChunk extends Chunk {
 		}
 		sb.append("}");
 		return sb.toString();
+	}
+
+	public static class ChunkAccessException extends RuntimeException {
+
+		private static final long serialVersionUID = 1L;
+
+		public ChunkAccessException(String message) {
+			super(message);
+		}
 	}
 	
 }

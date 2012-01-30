@@ -419,6 +419,16 @@ public class SpoutWorld extends AsyncManager implements World {
 	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, updatePhysics, source);
 	}
+	
+	@Override
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, updatePhysics, source);
+	}
+	
+	@Override
+	public boolean setBlockData(int x, int y, int z, short data, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
+	}
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
