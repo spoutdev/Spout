@@ -272,10 +272,9 @@ public class SpoutServer extends AsyncManager implements Server {
 		enablePlugins();
 		
 		//At least one plugin should have registered a default world generator, if not, end now.
-		if (this.getDefaultGenerator() == null) {
-			throw new RuntimeException("Failed to detect any default world generator. A plugin must set it during enabling.");
+		if(this.loadedWorlds.get().size() == 0){
+			throw new IllegalStateException("No Plugin's loaded worlds!  You must install a plugin that creates a world");
 		}
-
 		if (this.bootstrapProtocols.size() == 0) {
 			getLogger().warning("No bootstrap protocols registered! Clients will not be able to connect to the server.");
 		}
