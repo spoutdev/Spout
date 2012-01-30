@@ -59,6 +59,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.15.0-GA</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.royawesome</groupId>
 			<artifactId>jlibnoise</artifactId>
 			<version>dev-SNAPSHOT</version>
