@@ -75,14 +75,25 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	public abstract void save();
 
 	/**
-	 * Gets a snapshot of the live block id data for the chunk.
+	 * Gets a snapshot of the data for the chunk.
 	 *
 	 * This process may result in tearing if called during potential updates
 	 *
 	 * @return the snapshot
 	 */
 	@LiveRead
-	public abstract CuboidShortBuffer getBlockCuboidBufferLive();
+	public abstract ChunkSnapshot getSnapshot();
+	
+	/**
+	 * Gets a snapshot of the data for the chunk.
+	 *
+	 * This process may result in tearing if called during potential updates
+	 *
+	 * @param entities whether to include entity data in the snapshot
+	 * @return the snapshot
+	 */
+	@LiveRead
+	public abstract ChunkSnapshot getSnapshot(boolean entities);
 
 	/**
 	 * Refresh the distance between a player and the chunk, and adds the player as an observer if not previously observing.

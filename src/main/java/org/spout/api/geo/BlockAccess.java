@@ -30,10 +30,9 @@ import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.LiveWrite;
 
-public interface BlockAccess {
+public interface BlockAccess extends BlockData{
 	/**
 	 * Sets the block at (x, y, z) to the given material type.
 	 *
@@ -41,7 +40,7 @@ public interface BlockAccess {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param material
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword.
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -73,7 +72,7 @@ public interface BlockAccess {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword.
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -109,7 +108,7 @@ public interface BlockAccess {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword.
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -132,40 +131,40 @@ public interface BlockAccess {
 	 */
 	@LiveWrite
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source);
-
-	/**
-	 * Gets the snapshot material for the block at (x, y, z)
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return the block's material from the snapshot
-	 */
-	@LiveRead
-	public BlockMaterial getBlockMaterial(int x, int y, int z);
-
-	/**
-	 * Gets the snapshot id for the block at (x, y, z)
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return the block's material from the snapshot
-	 */
-	@LiveRead
-	public short getBlockId(int x, int y, int z);
-
-	/**
-	 * Gets the data for the block at (x, y, z)
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return the block's data from the snapshot
-	 */
-	@LiveRead
-	public short getBlockData(int x, int y, int z);
 	
+	/**
+	 * Sets the data for the block at (x, y, z) to the given data.<br>
+	 * <br>
+	 * This method will clear the block's auxiliary data.<br>
+	 * <br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param data
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param source of the change
+	 * @throws NullPointerException
+	 */
+	@LiveWrite
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source);
+	
+	/**
+	 * Sets the data for the block at (x, y, z) to the given data.<br>
+	 * <br>
+	 * This method will clear the block's auxiliary data.<br>
+	 * <br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param data
+	 * @param source of the change
+	 * @throws NullPointerException
+	 */
+	@LiveWrite
+	public boolean setBlockData(int x, int y, int z, short data, Source source);
+
 	/**
 	 * Forces a physics update for the block at the (x, y, z)
 	 * 
