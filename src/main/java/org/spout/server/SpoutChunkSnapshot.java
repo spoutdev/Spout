@@ -54,7 +54,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot{
 	
 	private final short[] blockData;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, boolean entities) {
+	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, boolean entities) {
 		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		this.parentRegion = new WeakReference<Region>(chunk.getRegion());
@@ -69,15 +69,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot{
 			this.entities = Collections.emptySet();
 		}
 		this.blockIds = blockIds;
-		//TODO: faster way to do this?
-		blockData = new short[blockIds.length];
-		for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
-			for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
-				for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
-					blockData[x << 8 | z << 4 | y] = chunk.getBlockData(x, y, z);
-				}
-			}
-		}
+		this.blockData = blockData;
 	}
 
 	@Override

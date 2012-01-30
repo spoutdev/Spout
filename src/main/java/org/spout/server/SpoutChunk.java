@@ -48,7 +48,6 @@ import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
@@ -323,7 +322,7 @@ public class SpoutChunk extends Chunk {
 	
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		checkChunkLoaded();
-		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), entities);
+		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), entities);
 	}
 
 	@Override
