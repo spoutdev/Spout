@@ -573,11 +573,8 @@ public class Vector4 implements Comparable<Vector4> {
 		if (!(o instanceof Vector4)) {
 			return false;
 		}
-		if (this == o) {
-			return true;
-		}
-		return compareTo(this, (Vector4) o) == 0;
-	}
+        return this == o || compareTo(this, (Vector4) o) == 0;
+    }
 
 	/**
 	 * Generates a hashcode for this Vector

@@ -38,7 +38,7 @@ public class AtomicBlockStoreTest {
 	private AtomicBlockStore<Integer> store = new AtomicBlockStore<Integer>(4);
 
 	private short[] ids = new short[MAX_SIZE];
-	private short[] data = new short[MAX_SIZE];;
+	private short[] data = new short[MAX_SIZE];
 	private Integer[] auxData = new Integer[MAX_SIZE];
 
 	int arraySize = -1;
@@ -80,7 +80,7 @@ public class AtomicBlockStoreTest {
 			if (rand.nextBoolean()) {
 				set(x, y, z, id, data, auxData);
 			} else {
-				compareAndSet(x, y, z, (short)id, (short)data, auxData, rand.nextBoolean(), rand);
+				compareAndSet(x, y, z, id, data, auxData, rand.nextBoolean(), rand);
 			}
 			check(x, y, z, fullData);
 		}
@@ -160,8 +160,8 @@ public class AtomicBlockStoreTest {
 
 		if (useCorrectExpect) {
 			assertTrue("Compare and set with correct expect was unsuccessful", success);
-			this.ids[index] = (short)id;
-			this.data[index] = (short)data;
+			this.ids[index] = id;
+			this.data[index] = data;
 			this.auxData[index] = auxData;
 		} else {
 			assertTrue("Compare and set with incorrect expect was successful", !success);

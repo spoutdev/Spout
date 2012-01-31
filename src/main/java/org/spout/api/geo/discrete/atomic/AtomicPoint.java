@@ -654,7 +654,7 @@ public class AtomicPoint extends Pointm {
 			int seq = lock.readLock();
 			double result = 0;
 			try {
-				result = distance((AtomicVector3)other);
+				result = distance(other);
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return result;

@@ -40,5 +40,5 @@ public enum CollisionStrategy {
 	/**
 	 * Indicates that the marked Collision Volume is not solid, and that it should not collide with Solid Volumes.
 	 */
-	NOCOLLIDE;
+	NOCOLLIDE
 }

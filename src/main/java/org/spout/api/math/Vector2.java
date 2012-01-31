@@ -539,11 +539,8 @@ public class Vector2 implements Comparable<Vector2> {
 		if (!(o instanceof Vector2)) {
 			return false;
 		}
-		if (this == o) {
-			return true;
-		}
-		return compareTo(this, (Vector2) o) == 0;
-	}
+        return this == o || compareTo(this, (Vector2) o) == 0;
+    }
 
 	/**
 	 * Generates a hashCode for these two values

@@ -566,11 +566,8 @@ public class Vector3 implements Comparable<Vector3> {
 		}
 		Vector3 xT = this;
 		Vector3 yT = (Vector3) b;
-		if (xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ()) {
-			return true;
-		}
-		return false;
-	}
+        return xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ();
+    }
 
 	// TODO - all the methods below need to use .getX(), .getY() etc, for all "other" vectors.
 	

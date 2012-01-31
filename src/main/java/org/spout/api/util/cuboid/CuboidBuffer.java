@@ -137,9 +137,7 @@ public abstract class CuboidBuffer {
 
 		setSource(source);
 
-		if (sourceIndex == -1 || thisIndex == -1) {
-			return;
-		} else {
+		if (!(sourceIndex == -1 || thisIndex == -1)) {
 			for (int x = 0; x < outerRepeats; x++) {
 				int outerSourceIndex = sourceIndex;
 				int outerThisIndex = thisIndex;

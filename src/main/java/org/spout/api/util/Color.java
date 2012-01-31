@@ -144,11 +144,10 @@ public final class Color {
 	@Override
 	public boolean equals(Object other){
 		if(this == other)return true;
-		if(! (this instanceof Color)) return false;
+		if(! (other instanceof Color)) return false;
 		Color o = (Color) other;
-		if(this.red == o.red && this.green == o.green && this.blue == o.blue && this.alpha == o.alpha) return true;
-		return false;
-	}
+        return this.red == o.red && this.green == o.green && this.blue == o.blue && this.alpha == o.alpha;
+    }
 
 	public int toInt() {
 		return (getAlphaI() & 0xFF) << 24 | (getRedI() & 0xFF) << 16 | (getGreenI() & 0xFF) << 8 | getBlueI() & 0xFF;

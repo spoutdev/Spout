@@ -32,5 +32,5 @@ package org.spout.api.plugin;
 public enum Platform {
 	SERVER,
 	CLIENT,
-	BOTH;
+	BOTH
 }

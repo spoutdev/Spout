@@ -228,9 +228,9 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			int position = 0;
 			for (int m = 0; m < mapCount; m++) {
 				long[] mapKeys = mapArray[m].keys();
-				for (int mapPosition = 0; mapPosition < mapKeys.length; mapPosition++) {
-					keys[position++] = mapKeys[mapPosition];
-				}
+                for (long mapKey : mapKeys) {
+                    keys[position++] = mapKey;
+                }
 			}
 			if (position != localSize) {
 				throw new IllegalStateException("Key counter does not match actual total map size");
@@ -373,9 +373,9 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			int position = 0;
 			for (int m = 0; m < mapCount; m++) {
 				V[] mapValues = mapArray[m].values();
-				for (int mapPosition = 0; mapPosition < mapValues.length; mapPosition++) {
-					values[position++] = mapValues[mapPosition];
-				}
+                for (V mapValue : mapValues) {
+                    values[position++] = mapValue;
+                }
 			}
 			if (position != localSize) {
 				throw new IllegalStateException("Key counter does not match actual total map size");

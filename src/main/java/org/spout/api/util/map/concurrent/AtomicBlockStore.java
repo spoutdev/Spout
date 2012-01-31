@@ -127,19 +127,13 @@ public class AtomicBlockStore<T> {
 		int spins = 0;
 		boolean interrupted = false;
 		try {
-			while (true) {
 				if ((spins++) > SPINS) {
 					interrupted |= atomicWait();
 				}
 				checkCompressing();
 
 				int blockId = blockIds.get(index);
-				if (!auxStore.isReserved(blockId)) {
-					return false;
-				} else {
-					return auxStore.testSequence(blockId, expected);
-				}
-			}
+            return auxStore.isReserved(blockId) && auxStore.testSequence(blockId, expected);
 		} finally {
 			if (interrupted) {
 				Thread.currentThread().interrupt();

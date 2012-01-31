@@ -463,7 +463,7 @@ public class AtomicVector3 extends Vector3m {
 			int seq = lock.readLock();
 			double result = 0;
 			try {
-				result = distance((AtomicVector3)other);
+				result = distance(other);
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return result;
@@ -776,7 +776,7 @@ public class AtomicVector3 extends Vector3m {
 			int seq = o.getLock().readLock();
 			int result = 0;
 			try {
-				result = compareTo((AtomicVector3)o);
+				result = compareTo(o);
 			} finally {
 				if (o.getLock().readUnlock(seq)) {
 					return result;
@@ -805,7 +805,7 @@ public class AtomicVector3 extends Vector3m {
 			int seq = obj.getLock().readLock();
 			boolean equals = false;
 			try {
-				equals = equals((AtomicVector3)obj);
+				equals = equals(obj);
 			} finally {
 				if (obj.getLock().readUnlock(seq)) {
 					return equals;

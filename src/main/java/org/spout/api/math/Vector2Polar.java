@@ -681,13 +681,13 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	public static float getRealAngle(float theta) {
 		float out = 0;
 		if (theta < 0) {
-			for (float i = new Float(theta); i <= (twoPi); i = i + twoPi) {
+			for (float i = theta; i <= (twoPi); i = i + twoPi) {
 				out = i;
 			}
 		} else if (theta < twoPi) {
 			return theta;
 		} else {
-			for (float i = new Float(theta); i > 0; i = i - twoPi) {
+			for (float i = theta; i > 0; i = i - twoPi) {
 				out = i;
 			}
 		}

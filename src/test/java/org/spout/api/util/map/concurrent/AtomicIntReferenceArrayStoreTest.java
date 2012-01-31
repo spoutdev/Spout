@@ -39,7 +39,7 @@ public class AtomicIntReferenceArrayStoreTest {
 	private AtomicIntReferenceArrayStore<Integer> store = new AtomicIntReferenceArrayStore<Integer>(MAX_SIZE, 0.5, 0);
 
 	private short[] ids = new short[MAX_SIZE];
-	private short[] data = new short[MAX_SIZE];;
+	private short[] data = new short[MAX_SIZE];
 	private Integer[] auxData = new Integer[MAX_SIZE];
 	private int[] index = new int[MAX_SIZE];
 	@Before

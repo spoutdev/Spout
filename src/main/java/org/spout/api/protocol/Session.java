@@ -116,7 +116,7 @@ public interface Session {
 		/**
 		 * In the game state the session has an associated player.
 		 */
-		GAME;
+		GAME
 	}
 
 	public Game getGame();

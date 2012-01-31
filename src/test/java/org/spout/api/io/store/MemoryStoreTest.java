@@ -176,8 +176,8 @@ public class MemoryStoreTest {
 		assertThat(subject.getKeys(), hasSize(0));
 		assertThat(subject.getEntrySet(), hasSize(0));
 
-		for (int i = 0; i < keys.size(); i++) {
-			assertNull(subject.get(keys.get(i)));
-		}
+        for (String key1 : keys) {
+            assertNull(subject.get(key1));
+        }
 	}
 }

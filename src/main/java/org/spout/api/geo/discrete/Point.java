@@ -50,10 +50,10 @@ public class Point extends Vector3 {
 
 	public Point add(Point other){
 		if(this.world != other.world) throw new IllegalArgumentException("Cannot add two points in seperate worlds");
-		return new Point(Vector3.add((Vector3)this, (Vector3)other), this.world);
+		return new Point(Vector3.add(this, other), this.world);
 	}
 	public Point add(Vector3 other){
-		return new Point(Vector3.add((Vector3)this, other), this.world);
+		return new Point(Vector3.add(this, other), this.world);
 	}
 	
 	/**

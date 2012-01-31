@@ -68,9 +68,7 @@ public class MaterialData {
 		if (id > quickMaterialLookup.length){
 			int newSize = Math.min(MAX_SIZE,id * 3 / 2);
 			Material[] expanded = new Material[newSize];
-			for (int i = 0; i < quickMaterialLookup.length; i++) {
-				expanded[i] = quickMaterialLookup[i];
-			}
+            System.arraycopy(quickMaterialLookup, 0, expanded, 0, quickMaterialLookup.length);
 			quickMaterialLookup = expanded;
 		}
 	}

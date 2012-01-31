@@ -436,8 +436,7 @@ public class CollisionHelper {
 		}
 
 		// Ray intersects all 3 slabs. Return point (q) and intersection t value (tmin)
-		Vector3 q = b.origin.add(b.direction.multiply(tmin));
-		return q;
+		return b.origin.add(b.direction.multiply(tmin));
 	}
 
 	/**

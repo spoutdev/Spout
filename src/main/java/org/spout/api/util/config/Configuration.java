@@ -106,7 +106,7 @@ public class Configuration extends ConfigurationNode {
 		try {
 			in = new BufferedReader(new FileReader(file));
 			String str;
-			StringBuffer buffer = new StringBuffer(10000);
+			StringBuilder buffer = new StringBuilder(10000);
 			while ((str = in.readLine()) != null) {
 				buffer.append(str.replaceAll("\t", "    "));
 				buffer.append('\n');

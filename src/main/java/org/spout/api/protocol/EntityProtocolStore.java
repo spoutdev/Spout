@@ -42,9 +42,7 @@ public class EntityProtocolStore {
 			} 
 			if (id >= protocols.length) {
 				EntityProtocol[] newProtocols = new EntityProtocol[Math.max(protocols.length * 3 / 2, id + 1)];
-				for (int i = 0; i < protocols.length; i++) {
-					newProtocols[i] = protocols[i];
-				}
+                System.arraycopy(protocols, 0, newProtocols, 0, protocols.length);
 				protocols = newProtocols;
 				entityProtocols.set(protocols);
 			}

@@ -38,5 +38,5 @@ public enum LoadOrder {
 	/**
 	 * Loaded at Server/Client startup
 	 */
-	STARTUP;
+	STARTUP
 }

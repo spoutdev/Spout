@@ -85,11 +85,8 @@ public class Segment implements CollisionVolume {
 		if(other instanceof Segment){
 			return intersects((Segment)other);
 		}
-		if(other instanceof Plane){
-			return intersects((Plane)other);
-		}
-		return false;
-	}
+        return other instanceof Plane && intersects((Plane) other);
+    }
 
 
 	public boolean contains(CollisionVolume other) {

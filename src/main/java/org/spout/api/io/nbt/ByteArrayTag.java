@@ -81,9 +81,7 @@ public final class ByteArrayTag extends Tag {
 		} else {
 			int length = byteArray.length;
 			byte[] newArray = new byte[length];
-			for (int i = 0; i < length; i++) {
-				newArray[i] = byteArray[i];
-			}
+            System.arraycopy(byteArray, 0, newArray, 0, length);
 			return newArray;
 		}
 	}
