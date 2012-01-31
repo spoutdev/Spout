@@ -61,7 +61,14 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 			System.out.println("Codec lookup service is: " + codecLookup);
 		}
 
-		int opcode = buf.getShort(buf.readerIndex());
+		int opcode;
+		
+		try {
+			opcode = buf.getUnsignedShort(buf.readerIndex());
+		}
+		catch (Error e) {
+			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
+		}
 
 		MessageCodec<?> codec = codecLookup.find(opcode);
 		if (codec == null) {
