@@ -55,7 +55,9 @@ public class MaterialData {
 			idLookup.put(id, mat.getData(), mat);
 			nameLookup.put(mat.getName().toLowerCase(), mat);
 			expandQuickLookups(id);
-			quickMaterialLookup[id] = mat;
+			if (mat.getData() == 0) {
+				quickMaterialLookup[id] = mat;
+			}
 		}
 		finally {
 			lock.writeLock().unlock();
