@@ -28,10 +28,10 @@ package org.spout.server.command;
 import org.spout.api.ChatColor;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
-import org.spout.api.command.CommandException;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
 import org.spout.server.SpoutServer;
 
@@ -41,7 +41,7 @@ import org.spout.server.SpoutServer;
  */
 public class MessagingCommands {
 	private final SpoutServer server;
-	
+
 	public MessagingCommands(SpoutServer server) {
 		this.server = server;
 	}
