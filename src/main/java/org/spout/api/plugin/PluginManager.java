@@ -28,9 +28,9 @@ package org.spout.api.plugin;
 import java.io.File;
 
 //import org.spout.api.event.Event;
-import org.spout.api.plugin.exceptions.InvalidDescriptionFileException;
-import org.spout.api.plugin.exceptions.InvalidPluginException;
-import org.spout.api.plugin.exceptions.UnknownDependencyException;
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.UnknownDependencyException;
 
 public interface PluginManager {
 	/**

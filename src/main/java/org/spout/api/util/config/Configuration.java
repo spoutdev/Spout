@@ -25,6 +25,7 @@
  */
 package org.spout.api.util.config;
 
+import org.spout.api.exception.ConfigurationException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;

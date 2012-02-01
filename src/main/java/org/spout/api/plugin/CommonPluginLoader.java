@@ -41,10 +41,10 @@ import java.util.regex.Pattern;
 
 import org.spout.api.Game;
 import org.spout.api.UnsafeMethod;
-import org.spout.api.plugin.exceptions.InvalidDescriptionFileException;
-import org.spout.api.plugin.exceptions.InvalidPluginException;
-import org.spout.api.plugin.exceptions.UnknownDependencyException;
-import org.spout.api.plugin.exceptions.UnknownSoftDependencyException;
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.UnknownDependencyException;
+import org.spout.api.exception.UnknownSoftDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginLoader implements PluginLoader {

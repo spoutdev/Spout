@@ -32,10 +32,10 @@ import java.util.List;
 
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
-import org.spout.api.command.CommandException;
+import org.spout.api.exception.CommandException;
 import org.spout.api.command.CommandExecutor;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.WrappedCommandException;
+import org.spout.api.exception.WrappedCommandException;
 
 public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 	private final Object instance;

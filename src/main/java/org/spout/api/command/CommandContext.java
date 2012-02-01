@@ -25,6 +25,7 @@
  */
 package org.spout.api.command;
 
+import org.spout.api.exception.CommandException;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -30,9 +30,10 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-import org.spout.api.plugin.exceptions.InvalidDescriptionFileException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+
+import org.spout.api.exception.InvalidDescriptionFileException;
 
 public class PluginDescriptionFile {
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
@@ -50,6 +51,7 @@ public class PluginDescriptionFile {
 	private List<String> depends;
 	private List<String> softdepends;
 	private String fullname;
+	private String protocol;
 
 	public PluginDescriptionFile(String name, String version, String main, Platform platform) {
 		this.name = name;
@@ -197,8 +199,15 @@ public class PluginDescriptionFile {
 			}
 		}
 
+		if (map.containsKey("protocol")) {
+			try {
+				this.protocol = (String) map.get("protocol");
+			} catch(ClassCastException ex) {
+				throw new InvalidDescriptionFileException(ex, "The field 'protocol' is of the wrong type in the plugin.yml!");
+			}
+		}
 	}
-	
+
 	/**
 	 * Returns true if the plugin is an Official Spout Plugin
 	 * @param namespace
@@ -312,5 +321,14 @@ public class PluginDescriptionFile {
 	 */
 	public String getFullName() {
 		return fullname;
+	}
+
+	/**
+	 * Returns the plugin's protocol.
+	 *
+	 * @return The protocol string contained in the plugin.yml
+	 */
+	public String getProtocol() {
+		return protocol;
 	}
 }

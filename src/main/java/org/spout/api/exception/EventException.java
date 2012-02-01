@@ -23,35 +23,21 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin.exceptions;
+package org.spout.api.exception;
 
-public class UnknownDependencyException extends Exception {
-	private static final long serialVersionUID = -8878118844821666192L;
-	private final Throwable cause;
-	private final String message;
+import org.spout.api.event.*;
 
-	public UnknownDependencyException(Throwable throwable) {
-		this(throwable, "Unknown Dependency");
+@SuppressWarnings("serial")
+public class EventException extends Exception {
+	public EventException(String message) {
+		super(message);
 	}
 
-	public UnknownDependencyException(String message) {
-		this(null, message);
+	public EventException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
-	public UnknownDependencyException(Throwable throwable, String message) {
-		this.cause = null;
-		this.message = message;
-	}
-
-	public UnknownDependencyException() {
-		this(null, "Unknown Dependency");
-	}
-
-	public Throwable getCause() {
-		return this.cause;
-	}
-
-	public String getMessage() {
-		return this.message;
+	public EventException(Throwable cause) {
+		super(cause);
 	}
 }

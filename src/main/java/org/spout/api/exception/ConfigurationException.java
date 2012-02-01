@@ -23,35 +23,21 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin.exceptions;
+package org.spout.api.exception;
 
-public class InvalidPluginException extends Exception {
-	private static final long serialVersionUID = 5907555277800661037L;
-	private final Throwable cause;
-	private final String message;
+/**
+ * Configuration exception.
+ *
+ * @author sk89q
+ */
+public class ConfigurationException extends Exception {
+	private static final long serialVersionUID = -2442886939908724203L;
 
-	public InvalidPluginException(String message, Throwable cause) {
-		this.cause = cause;
-		this.message = message;
+	public ConfigurationException() {
+		super();
 	}
 
-	public InvalidPluginException(Throwable cause) {
-		this(null, cause);
-	}
-
-	public InvalidPluginException(String message) {
-		this(message, null);
-	}
-
-	public InvalidPluginException() {
-		this(null, null);
-	}
-
-	public Throwable getCause() {
-		return this.cause;
-	}
-
-	public String getMessage() {
-		return message;
+	public ConfigurationException(String msg) {
+		super(msg);
 	}
 }

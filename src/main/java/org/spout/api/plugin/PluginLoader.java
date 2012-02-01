@@ -28,9 +28,9 @@ package org.spout.api.plugin;
 import java.io.File;
 import java.util.regex.Pattern;
 
-import org.spout.api.plugin.exceptions.InvalidDescriptionFileException;
-import org.spout.api.plugin.exceptions.InvalidPluginException;
-import org.spout.api.plugin.exceptions.UnknownDependencyException;
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.UnknownDependencyException;
 
 public interface PluginLoader {
 	public abstract Pattern[] getPatterns();

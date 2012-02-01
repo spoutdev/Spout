@@ -23,22 +23,35 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.command;
+package org.spout.api.exception;
 
-import org.spout.api.SpoutException;
+public class InvalidDescriptionFileException extends Exception {
+	private static final long serialVersionUID = 1424408665150176335L;
+	private final Throwable cause;
+	private final String message;
 
-public class CommandException extends SpoutException {
-	private static final long serialVersionUID = 7936404856385100186L;
-
-	public CommandException(String msg) {
-		super(msg);
+	public InvalidDescriptionFileException(Throwable throwable) {
+		this(throwable, "Invalid plugin.yml");
 	}
 
-	public CommandException(String msg, Throwable cause) {
-		super(msg, cause);
+	public InvalidDescriptionFileException(String message) {
+		this(null, message);
 	}
 
-	public CommandException(Throwable cause) {
-		super(cause);
+	public InvalidDescriptionFileException(Throwable throwable, String message) {
+		this.cause = null;
+		this.message = message;
+	}
+
+	public InvalidDescriptionFileException() {
+		this(null, "Invalid plugin.yml");
+	}
+
+	public Throwable getCause() {
+		return this.cause;
+	}
+
+	public String getMessage() {
+		return this.message;
 	}
 }

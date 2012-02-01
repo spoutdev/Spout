@@ -25,6 +25,8 @@
  */
 package org.spout.api.model;
 
+import org.spout.api.exception.BoneNotFoundException;
+
 public class Model {
 	BoneTransform modelRoot = new BoneTransform();
 	Bone root = new Bone("root", modelRoot);

@@ -31,24 +31,25 @@ import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.util.StringMap;
 
 public abstract class Controller {
-	
+
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
-	
+
 	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
-	
+
 	public EntityProtocol getEntityProtocol(int protocolId) {
 		return entityProtocolStore.getEntityProtocol(protocolId);
 	}
-	
+
 	public static void setEntityProtocol(int protocolId, EntityProtocol protocol) {
 		entityProtocolStore.setEntityProtocol(protocolId, protocol);
 	}
-	
+
 	public static int getProtocolId(String protocolName) {
 		return protocolMap.register(protocolName);
 	}
-	
+
 	protected Entity parent;
+
 	public void attachToEntity(Entity e){
 		this.parent = e;
 	}
@@ -87,13 +88,11 @@ public abstract class Controller {
 	 */
 	public void preSnapshot() {
 	}
-	
+
 	/**
 	 * Called just before the pre-snapshot stage.<br>
 	 * This stage can make changes but they should be checked to make sure they are non-conflicting.
 	 */
 	public void finalizeTick() {
 	}
-
-
 }

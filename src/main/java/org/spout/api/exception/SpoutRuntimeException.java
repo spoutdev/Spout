@@ -23,15 +23,23 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin.exceptions;
+package org.spout.api.exception;
 
-public class IllegalPluginAccessException extends RuntimeException {
-	private static final long serialVersionUID = -3181800705877027623L;
+public class SpoutRuntimeException extends RuntimeException {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 6240793608065769585L;
 
-	public IllegalPluginAccessException() {
+	public SpoutRuntimeException(String msg) {
+		super(msg);
 	}
 
-	public IllegalPluginAccessException(String msg) {
-		super(msg);
+	public SpoutRuntimeException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
+
+	public SpoutRuntimeException(Throwable cause) {
+		super(cause);
 	}
 }

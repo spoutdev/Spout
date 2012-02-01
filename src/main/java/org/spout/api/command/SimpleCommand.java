@@ -25,6 +25,10 @@
  */
 package org.spout.api.command;
 
+import org.spout.api.exception.CommandException;
+import org.spout.api.exception.CommandUsageException;
+import org.spout.api.exception.MissingCommandException;
+import org.spout.api.exception.WrappedCommandException;
 import gnu.trove.set.TCharSet;
 import gnu.trove.set.hash.TCharHashSet;
 

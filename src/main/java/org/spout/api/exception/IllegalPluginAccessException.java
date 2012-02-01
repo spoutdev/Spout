@@ -23,23 +23,15 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.command;
+package org.spout.api.exception;
 
-/**
- *
- * This is called when a child command is required but missing or an unknown command is given.
- */
-public class MissingCommandException extends CommandException {
-	private static final long serialVersionUID = 1L;
+public class IllegalPluginAccessException extends RuntimeException {
+	private static final long serialVersionUID = -3181800705877027623L;
 
-	private final String usage;
-
-	public MissingCommandException(String msg, String usage) {
-		super(msg);
-		this.usage = usage;
+	public IllegalPluginAccessException() {
 	}
 
-	public String getUsage() {
-		return usage;
+	public IllegalPluginAccessException(String msg) {
+		super(msg);
 	}
 }

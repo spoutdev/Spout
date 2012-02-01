@@ -25,6 +25,8 @@
  */
 package org.spout.api.event;
 
+import org.spout.api.exception.EventException;
+
 public interface EventExecutor {
 	public void execute(Event event) throws EventException;
 }
