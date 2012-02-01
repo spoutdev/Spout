@@ -28,10 +28,10 @@ package org.spout.server.command;
 import org.spout.api.ChatColor;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
-import org.spout.api.command.CommandException;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
 import org.spout.server.SpoutServer;
 
@@ -44,7 +44,7 @@ public class AdministrationCommands {
 	public AdministrationCommands(SpoutServer server) {
 		this.server = server;
 	}
-	
+
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
 	@CommandPermissions("spout.command.stop")
 	public void stop(CommandContext args, CommandSource source) throws CommandException {
