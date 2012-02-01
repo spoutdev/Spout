@@ -58,11 +58,9 @@ import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.SpoutRuntimeException;
 import org.spout.api.command.Command;
-import org.spout.api.command.CommandException;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.RootCommand;
-import org.spout.api.command.WrappedCommandException;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.spout.api.command.annotated.SimpleInjector;
@@ -70,6 +68,8 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.exception.CommandException;
+import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
@@ -192,17 +192,17 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * A list of all players who can log onto this server, if using a whitelist.
 	 */
 	private List<String> whitelistedPlayers = new ArrayList<String>();
-	
+
 	/**
 	 * A list of all players who can not log onto this server.
 	 */
 	private List<String> bannedPlayers = new ArrayList<String>();
-	
+
 	/**
 	 * A list of all operators.
 	 */
 	private List<String> operators = new ArrayList<String>();
-	
+
 	/**
 	 * A folder that holds all of the world data folders inside of it. By default, it does not exist ('.'), meant for organizational purposes.
 	 */
@@ -224,9 +224,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * The event manager.
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
-	
+
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
-	
+
 	/**
 	 * Cached copy of the server configuration, can be used instead of re-parsing the config file for each access
 	 */
@@ -266,7 +266,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		} catch (Throwable t) {
 			throw new RuntimeException("Failed to parse config", t);
 		}
-		
+
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
@@ -474,7 +474,7 @@ public class SpoutServer extends AsyncManager implements Server {
 				}
 			}
 		}
-		
+
 		if (proto == null) {
 			throw new SpoutRuntimeException("No protocol for bound address!");
 		}
@@ -713,7 +713,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (generator == null) {
 			generator = getGenerator(name);
 		}
-		
+
 		SpoutWorld world = new SpoutWorld(name, this, 0, generator);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
@@ -939,7 +939,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
 	}
-	
+
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
@@ -948,16 +948,16 @@ public class SpoutServer extends AsyncManager implements Server {
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
-	
+
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession session) {
 		Player player = null;
 
 		// The new player needs a corresponding entity
 		Entity newEntity = new SpoutEntity(this, this.getDefaultWorld().getSpawnPoint(), null);
-		
+
 		boolean success = false;
-		
+
 		while (!success) {
 			player = players.getLive().get(playerName);
 
@@ -985,7 +985,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		}
 		return player;
 	}
-	
+
 
 	private Configuration getConfiguration() throws IOException {
 		return getConfiguration(false);
@@ -1038,7 +1038,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		catch (IOException ignore) { }
 		return getDefaultGenerator();
 	}
-	
+
 	@Override
 	public void addRecipe(Recipe recipe) {
 		// TODO Auto-generated method stub
