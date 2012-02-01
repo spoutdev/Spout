@@ -23,21 +23,29 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.config;
+package org.spout.api.exception;
+
+import org.spout.api.command.Command;
 
 /**
- * Configuration exception.
- *
- * @author sk89q
+ * Exception thrown when invalid command usage is given for a command.
  */
-public class ConfigurationException extends Exception {
-	private static final long serialVersionUID = -2442886939908724203L;
+public class CommandUsageException extends CommandException {
+	private static final long serialVersionUID = 5251205509609168547L;
 
-	public ConfigurationException() {
-		super();
+	private final String usage;
+
+	public CommandUsageException(String msg, String usage) {
+		super(msg);
+		this.usage = usage;
 	}
 
-	public ConfigurationException(String msg) {
+	public CommandUsageException(String msg, Command cmd) {
 		super(msg);
+		this.usage = cmd.getUsage(new String[] {cmd.getPreferredName()}, 0);
+	}
+
+	public String getUsage() {
+		return usage;
 	}
 }

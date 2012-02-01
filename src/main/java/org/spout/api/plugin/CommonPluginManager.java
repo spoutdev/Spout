@@ -44,9 +44,9 @@ import org.apache.commons.io.FileUtils;
 import org.spout.api.Game;/*
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;*/
-import org.spout.api.plugin.exceptions.InvalidDescriptionFileException;
-import org.spout.api.plugin.exceptions.InvalidPluginException;
-import org.spout.api.plugin.exceptions.UnknownDependencyException;
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginManager implements PluginManager {

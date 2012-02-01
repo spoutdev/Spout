@@ -25,6 +25,8 @@
  */
 package org.spout.api.command;
 
+import org.spout.api.exception.CommandException;
+
 public interface CommandExecutor {
 	/**
 	 * Processes a command

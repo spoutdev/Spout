@@ -33,7 +33,8 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
-import org.spout.api.plugin.exceptions.IllegalPluginAccessException;
+import org.spout.api.exception.EventException;
+import org.spout.api.exception.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {
 	public <T extends Event> void callDelayedEvent(final T event) {

@@ -23,35 +23,12 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin.exceptions;
+package org.spout.api.exception;
 
-public class InvalidDescriptionFileException extends Exception {
-	private static final long serialVersionUID = 1424408665150176335L;
-	private final Throwable cause;
-	private final String message;
+public class BoneNotFoundException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
 
-	public InvalidDescriptionFileException(Throwable throwable) {
-		this(throwable, "Invalid plugin.yml");
-	}
-
-	public InvalidDescriptionFileException(String message) {
-		this(null, message);
-	}
-
-	public InvalidDescriptionFileException(Throwable throwable, String message) {
-		this.cause = null;
-		this.message = message;
-	}
-
-	public InvalidDescriptionFileException() {
-		this(null, "Invalid plugin.yml");
-	}
-
-	public Throwable getCause() {
-		return this.cause;
-	}
-
-	public String getMessage() {
-		return this.message;
+	public BoneNotFoundException(String m){
+		super(m);
 	}
 }

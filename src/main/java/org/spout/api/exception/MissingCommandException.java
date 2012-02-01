@@ -23,19 +23,23 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event;
+package org.spout.api.exception;
 
-@SuppressWarnings("serial")
-public class EventException extends Exception {
-	public EventException(String message) {
-		super(message);
+/**
+ *
+ * This is called when a child command is required but missing or an unknown command is given.
+ */
+public class MissingCommandException extends CommandException {
+	private static final long serialVersionUID = 1L;
+
+	private final String usage;
+
+	public MissingCommandException(String msg, String usage) {
+		super(msg);
+		this.usage = usage;
 	}
 
-	public EventException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public EventException(Throwable cause) {
-		super(cause);
+	public String getUsage() {
+		return usage;
 	}
 }

@@ -23,23 +23,23 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin.exceptions;
+package org.spout.api.exception;
 
-public class RestrictedClassException extends ClassNotFoundException {
-	private static final long serialVersionUID = -5160321924997334617L;
-	private final String message;
+public class SpoutException extends Exception {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 450854545313111159L;
 
-	public RestrictedClassException(String message) {
-		this.message = message;
+	public SpoutException(String msg) {
+		super(msg);
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
+	public SpoutException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 
-	@Override
-	public String toString() {
-		return super.toString();
+	public SpoutException(Throwable cause) {
+		super(cause);
 	}
 }

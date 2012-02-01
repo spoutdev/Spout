@@ -23,24 +23,22 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin.exceptions;
+package org.spout.api.exception;
 
-public class UnknownSoftDependencyException extends UnknownDependencyException {
-	private static final long serialVersionUID = 3265856380040527690L;
+import org.spout.api.exception.SpoutException;
 
-	public UnknownSoftDependencyException() {
-		this(null, "Unknown Soft Dependency");
+public class CommandException extends SpoutException {
+	private static final long serialVersionUID = 7936404856385100186L;
+
+	public CommandException(String msg) {
+		super(msg);
 	}
 
-	public UnknownSoftDependencyException(Throwable throwable) {
-		this(throwable, "Unknown Soft Dependency");
+	public CommandException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 
-	public UnknownSoftDependencyException(final String message) {
-		this(null, message);
-	}
-
-	public UnknownSoftDependencyException(final Throwable throwable, final String message) {
-		super(throwable, message);
+	public CommandException(Throwable cause) {
+		super(cause);
 	}
 }

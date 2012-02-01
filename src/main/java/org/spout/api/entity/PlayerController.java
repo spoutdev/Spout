@@ -30,7 +30,6 @@ import org.spout.api.player.Player;
 /**
  * Represents a Controller that is controlled by a player
  * An entity is a Player if entity.GetController() instanceof PlayerController == true
- *
  */
 public abstract class PlayerController extends Controller {
 	protected Player owner;

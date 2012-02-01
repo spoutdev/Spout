@@ -25,8 +25,10 @@
  */
 package org.spout.api.exception;
 
-public class InvalidControllerException extends Exception {
-
+/**
+ * Thrown when an invalid controller is trying to be set.
+ */
+public class InvalidControllerException extends RuntimeException {
 	public InvalidControllerException() {
 		super("Invalid controller specified for the entity.");
 	}

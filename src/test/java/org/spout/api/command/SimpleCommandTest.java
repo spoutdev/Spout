@@ -25,16 +25,15 @@
  */
 package org.spout.api.command;
 
-import org.spout.api.event.server.data.RetrieveIntDataEvent;
-import org.spout.api.geo.World;
-import org.spout.api.util.Named;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author zml2008
- */
+import org.spout.api.event.server.data.RetrieveIntDataEvent;
+import org.spout.api.exception.CommandException;
+import org.spout.api.exception.MissingCommandException;
+import org.spout.api.geo.World;
+import org.spout.api.util.Named;
+
 public class SimpleCommandTest implements Named, CommandSource {
 	private SimpleCommand testCommand;
 

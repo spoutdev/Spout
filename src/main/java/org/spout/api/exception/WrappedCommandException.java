@@ -23,23 +23,18 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api;
+package org.spout.api.exception;
 
-public class SpoutRuntimeException extends RuntimeException {
+/**
+ * Thrown to wrap any exceptions caught during execution of a command
+ */
+public class WrappedCommandException extends CommandException {
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 6240793608065769585L;
+	private static final long serialVersionUID = 9124773905653368232L;
 
-	public SpoutRuntimeException(String msg) {
-		super(msg);
-	}
-
-	public SpoutRuntimeException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-
-	public SpoutRuntimeException(Throwable cause) {
+	public WrappedCommandException(Throwable cause) {
 		super(cause);
 	}
 }

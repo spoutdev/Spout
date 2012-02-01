@@ -25,6 +25,8 @@
  */
 package org.spout.api.command;
 
+import org.spout.api.exception.CommandException;
+
 /**
  *
  * @author zml2008

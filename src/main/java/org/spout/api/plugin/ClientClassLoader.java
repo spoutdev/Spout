@@ -27,7 +27,7 @@ package org.spout.api.plugin;
 
 import java.net.URL;
 
-import org.spout.api.plugin.exceptions.RestrictedClassException;
+import org.spout.api.exception.RestrictedClassException;
 
 public class ClientClassLoader extends CommonClassLoader {
 	public ClientClassLoader(CommonPluginLoader loader, URL[] urls, ClassLoader parent) {

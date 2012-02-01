@@ -23,12 +23,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.exception;
 
-public class BoneNotFoundException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+public class UnknownSoftDependencyException extends UnknownDependencyException {
+	private static final long serialVersionUID = 3265856380040527690L;
 
-	public BoneNotFoundException(String m){
-		super(m);
+	public UnknownSoftDependencyException() {
+		this(null, "Unknown Soft Dependency");
+	}
+
+	public UnknownSoftDependencyException(Throwable throwable) {
+		this(throwable, "Unknown Soft Dependency");
+	}
+
+	public UnknownSoftDependencyException(final String message) {
+		this(null, message);
+	}
+
+	public UnknownSoftDependencyException(final Throwable throwable, final String message) {
+		super(throwable, message);
 	}
 }
