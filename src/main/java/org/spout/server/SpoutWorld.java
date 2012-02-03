@@ -396,6 +396,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		return 128;
 	}
 	
+	@Override
 	public Chunk getChunkFromBlock(int x, int y, int z) {
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
 	}
