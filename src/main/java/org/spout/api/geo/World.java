@@ -258,4 +258,6 @@ public interface World extends Source, BlockAccess {
 	public Set<Entity> getAll();
 	
 	public Set<Player> getPlayers();
+
+	Chunk getChunkFromBlock(int x, int y, int z);
 }

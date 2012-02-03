@@ -62,4 +62,14 @@ public interface BlockMaterial extends ItemMaterial {
 	 * @param z coordinate for this material
 	 */
 	public void onUpdate(World world, int x, int y, int z);
+	
+	/**
+	 * Called when this block has been destroyed.
+	 * 
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 */
+	public void onDestroy(World world, int x, int y, int z);
 }
