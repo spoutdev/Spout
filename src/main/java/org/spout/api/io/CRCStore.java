@@ -32,7 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.spout.api.io.store.FlatFileStore;
+import org.spout.api.io.store.simple.FlatFileStore;
 
 public class CRCStore {
 	private static FlatFileStore<String> urlCRCStore;

@@ -28,7 +28,7 @@ package org.spout.api.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.spout.api.io.store.MemoryStore;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.junit.Before;
 import org.junit.Test;
 

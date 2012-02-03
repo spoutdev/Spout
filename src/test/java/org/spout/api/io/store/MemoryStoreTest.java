@@ -34,6 +34,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.io.store.simple.SimpleStore;
 
 import com.google.common.collect.Lists;
 

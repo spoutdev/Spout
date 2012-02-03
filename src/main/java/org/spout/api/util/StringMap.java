@@ -28,7 +28,7 @@ package org.spout.api.util;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.spout.api.io.store.SimpleStore;
+import org.spout.api.io.store.simple.SimpleStore;
 
 /**
  * Represents a map for mapping Strings to unique ids.

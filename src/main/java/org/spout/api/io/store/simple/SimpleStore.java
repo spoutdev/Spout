@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.io.store;
+package org.spout.api.io.store.simple;
 
 import java.util.Collection;
 import java.util.Map.Entry;
