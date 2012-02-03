@@ -25,10 +25,14 @@
  */
 package org.spout.api;
 
+import java.util.logging.Logger;
+
+import org.spout.api.event.EventManager;
+import org.spout.api.plugin.Platform;
+import org.spout.api.scheduler.Scheduler;
+
 /**
  * Represents the Spout core, to get singleton {@link Game} instance
- *
- * @author Cameron
  *
  */
 public final class Spout {
@@ -49,4 +53,27 @@ public final class Spout {
 	public static Game getGame() {
 		return instance;
 	}
+	
+	public static Logger getLogger(){
+		return instance.getLogger();
+	}
+	
+	public static void stop(){
+		instance.stop();
+	}
+	
+	public static EventManager getEventManager(){
+		return instance.getEventManager();
+	}
+	
+	public static Platform getPlatform(){
+		return instance.getPlatform();
+	}
+	
+	public static Scheduler getScheduler(){
+		return instance.getScheduler();
+	}
+	
+	
+	
 }
