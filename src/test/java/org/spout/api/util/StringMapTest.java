@@ -25,7 +25,8 @@
  */
 package org.spout.api.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNull;
 
 import org.spout.api.io.store.simple.MemoryStore;
@@ -35,27 +36,39 @@ import org.junit.Test;
 public class StringMapTest {
 	private StringMap subject;
 	private MemoryStore<Integer> store;
+	private final String firstKey = "firstKey";
+	private final String lastKey = "lastKey";
+	private final int minValue = 0;
+	private final int maxValue = 100;
 
 	@Before
 	public void setUp() {
 		store = new MemoryStore<Integer>();
-		subject = new StringMap(null, store, 0, 100);
+		subject = new StringMap(null, store, minValue, maxValue);
+
+		subject.register(firstKey);
+		for (int i = 0; i < (maxValue - 2); i++) {
+			subject.register("middle" + i);
+		}
+		subject.register(lastKey);
 	}
 
 	@Test
-	public void testKeyRegistries() {
-		// Check that the store is returning null on an unused key
-		assertNull(store.get("key1"));
-
-		// Check if the first registered value is the first possible entry, 0
-		subject.register("key1");
-		assertEquals(store.get("key1").intValue(), 0);
-
-		// Check if registering multiple times and multiple keys does not interfere with previously
-		// registered values.
-		subject.register("key1");
-		subject.register("key2");
-		assertEquals(store.get("key1").intValue(), 0);
-		assertEquals(store.get("key2").intValue(), 1);
+	public void getNonexistingReturnsNull() {
+		assertNull(store.get("unusedKey"));
 	}
+
+	@Test
+	public void firstKeyReturnsMinValue() {
+		assertThat(store.get(firstKey), is(minValue));
+	}
+
+	@Test
+	public void lastKeyReturnsMaxValue() {
+		assertThat(store.get(lastKey), is(maxValue - 1));
+	}
+
+	//TODO: @raphfrk Please write some tests here in the same format for moving between maps.
+	//Stuff like convertTo, convertFrom, and parent map functionality should be in unit tests
+	//Then we will notice immediately should they ever break.
 }
