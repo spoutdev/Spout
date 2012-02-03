@@ -26,33 +26,39 @@
 package org.spout.api.inventory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Inventory implements Serializable {
 	private static final long serialVersionUID = 0L;
-	private ItemStack[] contents;
+	private List<ItemStack> contents;
 	private int currentSlot;
 
 	public Inventory(int size) {
-		contents = new ItemStack[size];
+		contents = new ArrayList<ItemStack>(size);
 		currentSlot = 0;
 	}
 
-	public ItemStack[] getContents() {
+	public List<ItemStack> getContents() {
 		return contents;
 	}
 
 	public ItemStack getItem(int slot) {
-		return contents[slot];
+		return contents.get(slot);
+	}
+	
+	public ItemStack removeItem(int slot) {
+		return contents.remove(slot);
 	}
 
 	public void setItem(ItemStack item, int slot) {
-		contents[slot] = item;
+		contents.set(slot, item);
 	}
 
 	public boolean addItem(ItemStack item) {
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i] == null) {
-				contents[i] = item;
+		for(ItemStack content : contents) {
+			if(content == null) {
+				content = item;
 				return true;
 			}
 		}
@@ -60,7 +66,7 @@ public class Inventory implements Serializable {
 	}
 
 	public int getSize() {
-		return contents.length;
+		return contents.size();
 	}
 
 	public ItemStack getCurrentItem() {
@@ -72,7 +78,11 @@ public class Inventory implements Serializable {
 	}
 
 	public void setCurrentSlot(int slot) {
-		if(slot < 0 || slot >= contents.length) throw new ArrayIndexOutOfBoundsException();
+		if(slot < 0 || slot >= contents.size()) throw new ArrayIndexOutOfBoundsException();
 		currentSlot = slot;
+	}
+	
+	public void clear() {
+		contents.clear();
 	}
 }
