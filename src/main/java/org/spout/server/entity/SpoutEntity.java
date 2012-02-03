@@ -40,7 +40,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.atomic.AtomicPoint;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.inventory.Inventory;
-import org.spout.api.io.store.MemoryStore;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;

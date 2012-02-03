@@ -34,7 +34,7 @@ import java.io.OutputStream;
 
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.DatatableTuple;
-import org.spout.api.io.store.MemoryStore;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 
 public class SpoutDatatableMap implements DatatableMap {
