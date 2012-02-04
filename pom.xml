@@ -14,7 +14,7 @@
 	<version>dev-SNAPSHOT</version>
 	<name>SpoutAPI</name>
 	<url>http://www.spout.org</url>
-	<description>SpoutAPI is the API for the Spout server and framework.</description>
+	<description>SpoutAPI is the API framework for the Spout server and client.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,6 +52,12 @@
 
 	<!-- Dependencies -->
 	<dependencies>
+		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>spoutnbt</artifactId>
+			<version>dev-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
@@ -149,8 +155,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<!-- JAR creation plugin -->
