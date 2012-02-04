@@ -25,6 +25,8 @@
  */
 package org.spout.api.io.nbt;
 
+import java.util.Arrays;
+
 /**
  * The {@code TAG_Byte_Array} tag.
  * @author Graham Edgecombe
@@ -73,6 +75,17 @@ public final class ByteArrayTag extends Tag {
 		byte[] clonedArray = cloneArray(value);
 
 		return new ByteArrayTag(getName(), clonedArray);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof ByteArrayTag)) {
+			return false;
+		}
+		ByteArrayTag tag = (ByteArrayTag) other;
+		return Arrays.equals(value, tag.value) &&
+				getName().equals(tag.getName());
+		
 	}
 
 	private byte[] cloneArray(byte[] byteArray) {

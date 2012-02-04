@@ -88,4 +88,14 @@ public abstract class Tag {
 	 * @return the clone
 	 */
 	public abstract Tag clone();
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Tag)) {
+			return false;
+		}
+		Tag tag = (Tag) other;
+		return getValue().equals(tag.getValue()) &&
+				getName().equals(tag.getName());
+	}
 }
