@@ -355,13 +355,6 @@ public interface Game extends Named {
 	public WorldGenerator getDefaultGenerator();
 
 	/**
-	 * Sets the default world generator for this game. Any worlds without a specific world generator will use this generator.
-	 *
-	 * @param generator to use by default
-	 */
-	public void setDefaultGenerator(WorldGenerator generator);
-
-	/**
 	 * Gets the scheduler
 	 *
 	 * @return the scheduler
