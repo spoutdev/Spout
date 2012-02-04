@@ -56,6 +56,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.spout.api.ChatColor;
 import org.spout.api.Server;
 import org.spout.api.Spout;
+import org.spout.api.basic.generator.EmptyWorldGenerator;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
@@ -127,7 +128,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	/**
 	 * Default world generator
 	 */
-	private WorldGenerator defaultGenerator = null;
+	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 
 	/**
 	 * Online player list
@@ -227,6 +228,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 
+	
 	/**
 	 * Cached copy of the server configuration, can be used instead of re-parsing the config file for each access
 	 */
@@ -920,12 +922,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		return this.defaultGenerator;
 	}
 
-	@Override
-	public void setDefaultGenerator(WorldGenerator generator) {
-		if (generator == null) throw new NullPointerException("Can not set default generator to null!");
-		this.defaultGenerator = generator;
-	}
-
+	
 	public EntityManager getExpectedEntityManager(Point point) {
 		Region region = point.getWorld().getRegion(point);
 		return ((SpoutRegion) region).getEntityManager();
