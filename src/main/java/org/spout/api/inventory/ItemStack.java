@@ -122,7 +122,11 @@ public class ItemStack {
 	 * @return the item stack
 	 */
 	public ItemStack setAuxData(Map<String, Tag> auxData) {
-		this.auxData = Tag.cloneMap(auxData);
+		if (auxData == null) {
+			this.auxData = null;
+		} else {
+			this.auxData = Tag.cloneMap(auxData);
+		}
 		return this;
 	}
 
