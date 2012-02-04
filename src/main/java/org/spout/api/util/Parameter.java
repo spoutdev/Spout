@@ -116,4 +116,15 @@ public class Parameter<T> {
 	public String toString() {
 		return "Parameter{type=" + type + ",index=" + index + ",value=" + value + "}";
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Parameter)) {
+			return false;
+		}
+		Parameter<?> param = (Parameter<?>) other;
+		return type == param.type
+			&& index == param.index
+			&& value.equals(param.value);
+	}
 }
