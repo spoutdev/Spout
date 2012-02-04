@@ -25,6 +25,8 @@
  */
 package org.spout.api.protocol;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,6 +106,10 @@ public abstract class CodecLookupService {
 	@SuppressWarnings("unchecked")
 	public <T extends Message> MessageCodec<T> find(Class<T> clazz) {
 		return (MessageCodec<T>) classTable.get(clazz);
+	}
+	
+	public Collection<MessageCodec<?>> getCodecs() {
+		return Collections.unmodifiableCollection(classTable.values());
 	}
 
 	/**
