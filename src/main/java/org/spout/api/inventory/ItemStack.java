@@ -131,4 +131,31 @@ public class ItemStack {
 		newStack.setAuxData(auxData);
 		return newStack;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof ItemStack)) {
+			return false;
+		}
+		ItemStack stack = (ItemStack) other;
+		return material.equals(stack.material)
+				&& amount == stack.amount
+				&& damage == stack.damage
+				&& potentialNullEquals(auxData, stack.auxData);
+	}
+
+	public static boolean potentialNullEquals(Object a, Object b) {
+		if (a == null && b == null) {
+			return true;
+		} else if (a == null || b == null) {
+			return false;
+		} else {
+			return a.equals(b);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "ItemStack{" + "material=" + material + ",id=" + material.getId() + ",amount=" + amount + ",damage=" + damage + ",auxData=" + auxData + '}';
+	}
 }
