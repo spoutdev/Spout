@@ -34,15 +34,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.io.nbt.CompoundTag;
-import org.spout.api.io.nbt.NBTInputStream;
-import org.spout.api.io.nbt.NBTOutputStream;
-import org.spout.api.io.nbt.Tag;
 import org.spout.api.material.MaterialData;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.Color;
 import org.spout.api.util.Parameter;
+import org.spout.nbt.CompoundTag;
+import org.spout.nbt.Tag;
+import org.spout.nbt.stream.NBTInputStream;
+import org.spout.nbt.stream.NBTOutputStream;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
