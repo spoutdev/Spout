@@ -27,8 +27,9 @@ package org.spout.api.inventory;
 
 import java.util.Map;
 
-import org.spout.api.io.nbt.Tag;
+
 import org.spout.api.material.Material;
+import org.spout.nbt.Tag;
 
 /**
  * Represents a stack of items

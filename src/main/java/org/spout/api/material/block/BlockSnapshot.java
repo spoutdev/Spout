@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.io.nbt.Tag;
 import org.spout.api.material.Material;
+import org.spout.nbt.Tag;
 
 /**
  * Represents an immutable snapshot of the state of a block
