@@ -60,8 +60,7 @@ public class InternalEventListener implements Listener {
 		SpoutPlayer p = (SpoutPlayer)event.getPlayer();
 
 		if(server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
-			//TODO Kick with message
-			p.disconnect();
+			p.kick("Server is full!");
 		}
 
 		server.broadcastMessage(p.getName() + " has Connected");
