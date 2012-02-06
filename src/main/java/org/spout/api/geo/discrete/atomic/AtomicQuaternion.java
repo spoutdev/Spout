@@ -306,12 +306,11 @@ public class AtomicQuaternion extends Quaternionm {
 	public Quaternion rotate(float angle, Vector3 axis) {
 		while (true) {
 			int seq = lock.readLock();
-			Quaternion result = null;
 			try {
-				result = super.rotate(angle, axis);
+				directSet(Quaternion.rotate(this, angle, axis));
 			} finally {
 				if (lock.readUnlock(seq)) {
-					return result;
+					return this;
 				}
 			}
 		}
@@ -320,12 +319,11 @@ public class AtomicQuaternion extends Quaternionm {
 	public Quaternion rotate(float angle, AtomicVector3 axis) {
 		while (true) {
 			int seq = axis.getLock().readLock();
-			Quaternion result = null;
 			try {
-				result = rotate(angle, (Vector3)axis);
+				directSet(Quaternion.rotate(this, angle, axis));
 			} finally {
 				if (axis.getLock().readUnlock(seq)) {
-					return result;
+					return this;
 				}
 			}
 		}
@@ -335,12 +333,11 @@ public class AtomicQuaternion extends Quaternionm {
 	public Quaternion normalize() {
 		while (true) {
 			int seq = lock.readLock();
-			Quaternion result = null;
 			try {
-				result = super.normalize();
+				directSet(Quaternion.normalize(this));
 			} finally {
 				if (lock.readUnlock(seq)) {
-					return result;
+					return this;
 				}
 			}
 		}
@@ -350,12 +347,11 @@ public class AtomicQuaternion extends Quaternionm {
 	public Quaternion multiply(Quaternion o) {
 		while (true) {
 			int seq = lock.readLock();
-			Quaternion result = null;
 			try {
-				result = super.multiply(o);
+				directSet(Quaternion.multiply(this, o));
 			} finally {
 				if (lock.readUnlock(seq)) {
-					return result;
+					return this;
 				}
 			}
 		}
@@ -364,12 +360,11 @@ public class AtomicQuaternion extends Quaternionm {
 	public Quaternion multiply(AtomicQuaternion o) {
 		while (true) {
 			int seq = o.getLock().readLock();
-			Quaternion result = null;
 			try {
-				result = multiply((Quaternion)o);
+				directSet(Quaternion.multiply(this, o));
 			} finally {
 				if (o.getLock().readUnlock(seq)) {
-					return result;
+					return this;
 				}
 			}
 		}
