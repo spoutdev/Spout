@@ -30,9 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Quaternion;
-import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.api.util.thread.Threadsafe;
 
