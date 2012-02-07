@@ -233,6 +233,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * Cached copy of the server configuration, can be used instead of re-parsing the config file for each access
 	 */
 	private Configuration configCache = null;
+	
+	private CommandRegistrationsFactory<Class<?>> commandRegFactory;
 
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
@@ -253,9 +255,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	public void start() {
 		Spout.setGame(this);
 
-		CommandRegistrationsFactory<Class<?>> commandRegFactory =
-				new AnnotatedCommandRegistrationFactory(new SimpleInjector(this),
-						new SimpleAnnotatedCommandExecutorFactory());
+		commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
 
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
@@ -1053,4 +1053,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		return null;
 	}
 
+	@Override
+	public void registerCommands(Class<?> clazz) {
+		this.getRootCommand().addSubCommands(this, clazz, commandRegFactory);
+	}
 }
