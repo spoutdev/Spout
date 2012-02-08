@@ -27,6 +27,7 @@ package org.spout.server;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -453,14 +454,20 @@ public class SpoutChunk extends Chunk {
 		if (isPopulated() && !force) {
 			return;
 		}
+		final Random random = new Random(getWorld().getSeed());
+		random.setSeed(getWorld().getSeed());
+		final long l1 = random.nextLong(), l2 = random.nextLong();
+		random.setSeed(getX() ^ l1 ^ getY() ^ l2 ^ getZ());
+		
 		for (Populator populator : getWorld().getGenerator().getPopulators()) {
 			try {
-				populator.populate(this);
-			} catch (Exception e) {
+				populator.populate(this, random);
+			} catch(Exception e) {
 				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 				e.printStackTrace();
 			}
 		}
+		
 		populated.set(true);
 		if (getRegion() instanceof SpoutRegion) {
 			((SpoutRegion) getRegion()).onChunkPopulated(this);
