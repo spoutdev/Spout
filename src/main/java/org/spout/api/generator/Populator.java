@@ -26,6 +26,7 @@
 package org.spout.api.generator;
 
 import org.spout.api.geo.cuboid.Chunk;
+import java.util.Random;
 
 public interface Populator {
 	/**
@@ -41,7 +42,8 @@ public interface Populator {
 	 *
 	 * This allows the populator to create features that cross chunk boundaries.
 	 *
-	 * @param c the chunk to populate
+	 * @param chunk the chunk to populate
+     * @param random The RNG for this chunk
 	 */
-	public void populate(Chunk c);
+	public void populate(Chunk chunk, Random random);
 }
