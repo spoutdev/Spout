@@ -79,9 +79,11 @@ import org.spout.api.inventory.Recipe;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
+import org.spout.api.plugin.CommonServiceManager;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
@@ -226,6 +228,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
 
+	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
+	
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 
 	
@@ -1051,6 +1055,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	public Recipe removeRecipe(Plugin plugin, String recipe) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public ServiceManager getServiceManager() {
+		return serviceManager;
 	}
 
 }
