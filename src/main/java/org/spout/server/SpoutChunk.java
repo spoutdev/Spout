@@ -39,6 +39,7 @@ import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.Populator;
+import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
@@ -454,10 +455,8 @@ public class SpoutChunk extends Chunk {
 		if (isPopulated() && !force) {
 			return;
 		}
-		final Random random = new Random(getWorld().getSeed());
-		random.setSeed(getWorld().getSeed());
-		final long l1 = random.nextLong(), l2 = random.nextLong();
-		random.setSeed(getX() ^ l1 ^ getY() ^ l2 ^ getZ());
+
+		final Random random = new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42));
 		
 		for (Populator populator : getWorld().getGenerator().getPopulators()) {
 			try {

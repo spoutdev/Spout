@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -242,6 +243,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	private final RecipeManager recipeManager = new CommonRecipeManager();
 
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
+	
+	private final Random random = new Random();
 
 	/**
 	 * Cached copy of the server configuration, can be used instead of
@@ -729,7 +732,7 @@ public class SpoutServer extends AsyncManager implements Server {
 			generator = getGenerator(name);
 		}
 
-		SpoutWorld world = new SpoutWorld(name, this, 0, generator);
+		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 		if (oldWorld != null) {
