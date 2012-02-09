@@ -233,6 +233,7 @@ public class CommonPluginManager implements PluginManager {
 
 			try {
 				plugin.getPluginLoader().disablePlugin(plugin);
+				game.getServiceManager().unregisterAll(plugin);
 			} catch (Exception e) {
 				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
