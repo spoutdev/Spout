@@ -42,6 +42,7 @@ import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
@@ -398,5 +399,12 @@ public interface Game extends Named {
 	 * @return The protocol
 	 */
 	public BootstrapProtocol getBootstrapProtocol(SocketAddress address);
-	
+
+	/**
+	 * Gets the service manager
+	 * 
+	 * @return ServiceManager
+	 */
+	public ServiceManager getServiceManager();
+
 }
