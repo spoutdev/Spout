@@ -30,11 +30,11 @@ import java.util.Random;
 import org.spout.api.geo.World;
 
 public class WorldGeneratorUtils {
-	private final static int hashShift = 19;
-	private final static long hashShiftMask = (1L << hashShift) - 1;
+	private final static int HASH_SHIFT = 19;
+	private final static long HASH_SHIFT_MASK = (1L << HASH_SHIFT) - 1;
 
 	/**
-	 * Seeds a Random for a particular position.
+	 * Returns the particular seed a Random should use for a position
 	 *
 	 * The meaning of the x, y and z coordinates can be determined by the
 	 * generator.
@@ -44,21 +44,20 @@ public class WorldGeneratorUtils {
 	 * The extra seed allows multiple Randoms to be returned for the same
 	 * position for use by populators and different stages of generation.
 	 *
-	 * @param rng the Random
 	 * @param world the World
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param extraSeed the extra seed value
 	 */
-	public void seedRandom(Random rng, World world, int x, int y, int z, int extraSeed) {
+	public static long getSeed(World world, int x, int y, int z, int extraSeed) {
 		long hash = world.getSeed();
-		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + extraSeed;
-		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + x;
-		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + y;
-		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + z;
+		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + extraSeed;
+		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + x;
+		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + y;
+		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + z;
 
-		rng.setSeed(hash);
+		return hash;
 	}
 
 	/**
@@ -77,9 +76,9 @@ public class WorldGeneratorUtils {
 	 * @param extraSeed the extra seed value
 	 * @return the random
 	 */
-	public Random getRandom(World world, int x, int y, int z, int extraSeed) {
+	public static Random getRandom(World world, int x, int y, int z, int extraSeed) {
 		Random rng = new Random();
-		seedRandom(rng, world, x, y, z, extraSeed);
+		rng.setSeed(getSeed(world, x, y, z, extraSeed));
 		return rng;
 	}
 
@@ -104,7 +103,7 @@ public class WorldGeneratorUtils {
 	 * @param extraSeed the extra seed value for the randoms
 	 * @return the random array
 	 */
-	public void seedRandomArray(Random[][][] array, World world, int x, int y, int z, int extraSeed) {
+	public static void seedRandomArray(Random[][][] array, World world, int x, int y, int z, int extraSeed) {
 		// TODO - check this conversion
 		int lz = array.length;
 		int ly = array[0].length;
@@ -117,7 +116,8 @@ public class WorldGeneratorUtils {
 		for (int cx = 0; cx < lx; cx++) {
 			for (int cy = 0; cy < ly; cy++) {
 				for (int cz = 0; cz < lz; cz++) {
-					seedRandom(array[cx][cy][cz], world, x + cx - sizeX, y + cy - sizeY, z + cz - sizeZ, extraSeed);
+					
+					array[cx][cy][cz].setSeed(getSeed(world, x + cx - sizeX, y + cy - sizeY, z + cz - sizeZ, extraSeed));
 				}
 			}
 		}
@@ -137,6 +137,7 @@ public class WorldGeneratorUtils {
 	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ
 	 * + 1)
 	 *
+	 * @param array The array of randoms to seed
 	 * @param world the World containing the Chunk
 	 * @param x the x coordinate for the centre of the array (blockX << 4)
 	 * @param y the y coordinate for the centre of the array (blockY << 4)

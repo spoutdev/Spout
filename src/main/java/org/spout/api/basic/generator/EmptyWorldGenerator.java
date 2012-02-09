@@ -36,6 +36,6 @@ public class EmptyWorldGenerator implements WorldGenerator {
 	}
 
 	public Populator[] getPopulators() {
-		return null;
+		return new Populator[0];
 	}
 }

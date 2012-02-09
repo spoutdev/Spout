@@ -38,6 +38,6 @@ public class FlatWorldGenerator implements WorldGenerator {
 	}
 
 	public Populator[] getPopulators() {
-		return null;
+		return new Populator[0];
 	}
 }
