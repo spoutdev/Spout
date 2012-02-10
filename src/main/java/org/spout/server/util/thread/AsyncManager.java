@@ -42,7 +42,7 @@ public abstract class AsyncManager {
 
 	public AsyncManager(int maxStage, AsyncExecutor executor) {
 		this.executor = executor;
-		this.server = null;
+		server = null;
 		this.maxStage = maxStage;
 		executor.setManager(this);
 	}
@@ -100,7 +100,7 @@ public abstract class AsyncManager {
 	 * Returns a singleton task to the cache
 	 *
 	 * Tasks should be returned to the cache after usage
-	 * 
+	 *
 	 * @param task the enum of the taskß
 	 * @return an instance of task
 	 */
@@ -142,16 +142,18 @@ public abstract class AsyncManager {
 	 * This method is called directly before preSnapshot is called
 	 */
 	public abstract void finalizeRun() throws InterruptedException;
-	
+
 	/**
-	 * This method is called directly before copySnapshotRun and is a MONITOR ONLY stage and no updates should be performed.<br>
+	 * This method is called directly before copySnapshotRun and is a MONITOR
+	 * ONLY stage and no updates should be performed.<br>
 	 * <br>
 	 * It occurs after the finalize stage and before the copy snapshot stage.
 	 */
 	public abstract void preSnapshotRun() throws InterruptedException;
 
 	/**
-	 * This method is called in order to update the snapshot at the end of each tick
+	 * This method is called in order to update the snapshot at the end of each
+	 * tick
 	 */
 	public abstract void copySnapshotRun() throws InterruptedException;
 
@@ -163,7 +165,8 @@ public abstract class AsyncManager {
 	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
 
 	/**
-	 * This method is called when the associated executor is halted and occurs right after the copySnapshotRun() method call.
+	 * This method is called when the associated executor is halted and occurs
+	 * right after the copySnapshotRun() method call.
 	 *
 	 * This method is not called if the executor is halted before being started.
 	 *

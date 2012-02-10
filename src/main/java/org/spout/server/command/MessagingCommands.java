@@ -26,7 +26,6 @@
 package org.spout.server.command;
 
 import org.spout.api.ChatColor;
-import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -50,9 +49,9 @@ public class MessagingCommands {
 	@CommandPermissions("spout.command.say")
 	public void say(CommandContext args, CommandSource source) throws CommandException {
 		String message = args.getJoinedString(0);
-		if(!message.isEmpty()) {
-			if(source instanceof Player) {
-				((Player)source).chat(message);
+		if (!message.isEmpty()) {
+			if (source instanceof Player) {
+				((Player) source).chat(message);
 			} else {
 				server.broadcastMessage("<" + source.getName() + "> " + message);
 			}
@@ -65,7 +64,7 @@ public class MessagingCommands {
 		String playerName = args.getString(0);
 		String message = args.getJoinedString(1);
 		Player player = server.getPlayer(playerName, false);
-		if(player == source) {
+		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {
 			source.sendMessage("To " + ChatColor.BRIGHT_GREEN + player.getName() + ChatColor.WHITE + ": " + message);

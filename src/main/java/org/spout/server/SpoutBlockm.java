@@ -29,13 +29,13 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.material.BlockMaterial;
 
-public class SpoutBlockm extends Blockm{
+public class SpoutBlockm extends Blockm {
 	BlockMaterial material = null;
 
 	public SpoutBlockm(World world, int x, int y, int z) {
 		super(world, x, y, z);
 	}
-	
+
 	public SpoutBlockm(World world, int x, int y, int z, short id) {
 		this(world, x, y, z);
 		setBlockId(id);
@@ -45,7 +45,7 @@ public class SpoutBlockm extends Blockm{
 		this(world, x, y, z);
 		setBlockMaterial(material);
 	}
-	
+
 	//TODO: implement all of these
 	@Override
 	public BlockMaterial setBlockMaterial(BlockMaterial material) {

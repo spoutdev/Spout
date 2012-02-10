@@ -88,4 +88,3 @@ public class SpoutWorker implements Worker, Runnable {
 		shouldContinue = task.pulse();
 	}
 }
-

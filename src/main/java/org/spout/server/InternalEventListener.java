@@ -44,9 +44,11 @@ public class InternalEventListener implements Listener {
 
 	@EventHandler(order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
-		if(event.isCancelled()) return;
+		if (event.isCancelled()) {
+			return;
+		}
 		//Create the player
-		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession)event.getSession());
+		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession());
 
 		if (player != null) {
 			Spout.getGame().getEventManager().callDelayedEvent(new PlayerJoinEvent(player));
@@ -57,9 +59,9 @@ public class InternalEventListener implements Listener {
 
 	@EventHandler(order = Order.LATEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		SpoutPlayer p = (SpoutPlayer)event.getPlayer();
+		SpoutPlayer p = (SpoutPlayer) event.getPlayer();
 
-		if(server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
+		if (server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
 			p.kick("Server is full!");
 		}
 

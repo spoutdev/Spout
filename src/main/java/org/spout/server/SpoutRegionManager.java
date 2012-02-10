@@ -65,7 +65,7 @@ public class SpoutRegionManager extends AsyncManager {
 	public void finalizeRun() throws InterruptedException {
 		parent.finalizeRun();
 	}
-	
+
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		parent.preSnapshotRun();

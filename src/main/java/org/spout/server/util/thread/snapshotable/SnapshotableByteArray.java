@@ -46,12 +46,12 @@ public class SnapshotableByteArray implements Snapshotable {
 	}
 
 	public SnapshotableByteArray(SnapshotManager manager, byte[] initial, int dirtySize) {
-		this.snapshot = new byte[initial.length];
-		this.live = new byte[initial.length];
-		this.dirtyArray = new int[dirtySize];
+		snapshot = new byte[initial.length];
+		live = new byte[initial.length];
+		dirtyArray = new int[dirtySize];
 		for (int i = 0; i < initial.length; i++) {
-			this.snapshot[i] = initial[i];
-			this.live[i] = initial[i];
+			snapshot[i] = initial[i];
+			live[i] = initial[i];
 		}
 	}
 
@@ -106,11 +106,11 @@ public class SnapshotableByteArray implements Snapshotable {
 		if (length <= dirtyArray.length) {
 			for (int i = 0; i < length; i++) {
 				int index = dirtyArray[i];
-				this.snapshot[index] = live[index];
+				snapshot[index] = live[index];
 			}
 		} else {
 			for (int i = 0; i < live.length; i++) {
-				this.snapshot[i] = live[i];
+				snapshot[i] = live[i];
 			}
 		}
 	}

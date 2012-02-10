@@ -37,7 +37,7 @@ import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 
-public class RegionSource implements Iterable<Region>{
+public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
@@ -47,7 +47,7 @@ public class RegionSource implements Iterable<Region>{
 	 * World associated with this region source
 	 */
 	private final SpoutWorld world;
-	
+
 	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
 		loadedRegions = new TSyncInt21TripleObjectHashMap<Region>();
@@ -77,7 +77,7 @@ public class RegionSource implements Iterable<Region>{
 	 */
 	@LiveRead
 	public SpoutRegion getRegionFromBlock(int x, int y, int z, boolean load) {
-		int shifts = (Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS);
+		int shifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
 		return getRegion(x >> shifts, y >> shifts, z >> shifts, load);
 	}
 
@@ -86,9 +86,9 @@ public class RegionSource implements Iterable<Region>{
 		if (!r.getWorld().equals(world)) {
 			return;
 		}
-		
+
 		// TODO - this should probably be in a separate scheduler stage, as it has to fire first
-		
+
 		// removeRegion is called during snapshot copy on the Region thread (when the last chunk is removed)
 		// Needs re-syncing to a safe moment
 		world.getServer().getScheduler().scheduleAsyncDelayedTask(null, new Runnable() {
@@ -116,7 +116,7 @@ public class RegionSource implements Iterable<Region>{
 	public SpoutRegion getRegion(int x, int y, int z) {
 		return getRegion(x, y, z, false);
 	}
-	
+
 	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
 	 *
@@ -125,7 +125,8 @@ public class RegionSource implements Iterable<Region>{
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param load whether to load or generate the region if one does not exist at the coordinates
+	 * @param load whether to load or generate the region if one does not exist
+	 *            at the coordinates
 	 * @return region
 	 */
 	@LiveRead
@@ -141,7 +142,8 @@ public class RegionSource implements Iterable<Region>{
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param load whether to load or generate the region if one does not exist at the coordinates
+	 * @param load whether to load or generate the region if one does not exist
+	 *            at the coordinates
 	 * @param generate all the chunks inside of the region immediately
 	 * @return region
 	 */
@@ -158,7 +160,7 @@ public class RegionSource implements Iterable<Region>{
 			if (current != null) {
 				return current;
 			} else {
-				if (!((SpoutRegion) region).getManager().getExecutor().startExecutor()) {
+				if (!(region).getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
 				return region;
@@ -178,10 +180,10 @@ public class RegionSource implements Iterable<Region>{
 	public boolean hasRegion(int x, int y, int z) {
 		return loadedRegions.get(x, y, z) != null;
 	}
-	
+
 	/**
 	 * Gets an unmodifiable collection of all loaded regions.
-	 * 
+	 *
 	 * @return collection of all regions
 	 */
 	public Collection<Region> getRegions() {

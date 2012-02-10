@@ -74,7 +74,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 		dirty.add(key);
 		return oldValue;
 	}
-	
+
 	/**
 	 * Adds a key/value pair to the map, if no value exists for the key
 	 *
@@ -107,7 +107,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 		}
 		return oldValue;
 	}
-	
+
 	/**
 	 * Removes a key/value pair from the list
 	 *
@@ -134,42 +134,44 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 	public Map<K, V> get() {
 		return unmodifySnapshot;
 	}
-	
+
 	/**
 	 * Gets the live value
-	 * 
+	 *
 	 * @return the live set
 	 */
 	@LiveRead
 	public Map<K, V> getLive() {
 		return unmodifyLive;
 	}
-	
+
 	/**
 	 * Get the values in the map, in order
-	 * 
+	 *
 	 * @return the values
 	 */
 	@SnapshotRead
 	public Collection<V> getValues() {
 		return unmodifyValues;
 	}
-	
+
 	/**
 	 * Get the values in the map, in order
-	 * 
+	 *
 	 * @return the values
 	 */
 	@SnapshotRead
 	public Collection<V> getValuesLive() {
 		throw new UnsupportedOperationException("Iterating over the live values is not possible, since they are not stored LinkedHashSet");
 	}
-	
+
 	/**
-	 * Creates a list of keys that have been changed since the last snapshot copy.<br>
+	 * Creates a list of keys that have been changed since the last snapshot
+	 * copy.<br>
 	 * <br>
-	 * This method may only be called during the pre-snapshot stage and the list only remains valid during that stage.
-	 * 
+	 * This method may only be called during the pre-snapshot stage and the list
+	 * only remains valid during that stage.
+	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<K> getDirtyList() {
@@ -185,10 +187,10 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 		}
 		return unmodifyDirty;
 	}
-	
+
 	/**
 	 * Tests if the set is empty
-	 * 
+	 *
 	 * @return true if the set is empty
 	 */
 	public boolean isEmptyLive() {

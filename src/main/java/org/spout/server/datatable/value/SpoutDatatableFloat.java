@@ -38,7 +38,7 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 
 	public SpoutDatatableFloat(int key, float value) {
 		super(key);
-		this.data = value;
+		data = value;
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 
 	@Override
 	public int asInt() {
-		return (int)data;
+		return (int) data;
 	}
 
 	@Override
@@ -74,12 +74,11 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-		
+
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
-	
 
 	}
 

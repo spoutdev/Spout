@@ -53,6 +53,7 @@ public class StartTickTask extends ManagementRunnable {
 		return this;
 	}
 
+	@Override
 	public Serializable call(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().startTickRun(stage, delta);
 		return null;

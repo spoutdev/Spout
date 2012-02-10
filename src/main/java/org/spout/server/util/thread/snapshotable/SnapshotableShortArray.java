@@ -49,19 +49,19 @@ public class SnapshotableShortArray implements Snapshotable {
 	}
 
 	public SnapshotableShortArray(SnapshotManager manager, short[] initial, int dirtySize) {
-		this.snapshot = new short[initial.length];
-		this.live = new AtomicIntegerArray(initial.length>>1);
+		snapshot = new short[initial.length];
+		live = new AtomicIntegerArray(initial.length >> 1);
 		this.dirtySize = dirtySize;
-		this.dirtyArray = new AtomicIntegerArray(dirtySize);
+		dirtyArray = new AtomicIntegerArray(dirtySize);
 		for (int i = 0; i < initial.length; i++) {
-			this.snapshot[i] = initial[i];
+			snapshot[i] = initial[i];
 			set(i, initial[i]);
 		}
 	}
 
 	/**
 	 * Gets a copy of the snapshot short array
-	 * 
+	 *
 	 * @return copy of the snapshot short array
 	 */
 	public short[] get() {
@@ -70,15 +70,15 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the live short array
-	 * 
+	 *
 	 * @return copy of the live short array
 	 */
 	public short[] getLive() {
 		short[] live = new short[snapshot.length];
 		for (int i = 0; i < this.live.length(); i++) {
 			int value = this.live.get(i);
-			live[(i << 1)] = (short)(value & 0xFFFF);
-			live[(i << 1) + 1] = (short)((value >> 16) & 0xFFFF);
+			live[(i << 1)] = (short) (value & 0xFFFF);
+			live[(i << 1) + 1] = (short) (value >> 16 & 0xFFFF);
 		}
 		return live;
 	}
@@ -159,25 +159,25 @@ public class SnapshotableShortArray implements Snapshotable {
 		if (length <= dirtySize) {
 			for (int i = 0; i < length; i++) {
 				int index = dirtyArray.get(i);
-				this.snapshot[index] = getLive(i);
+				snapshot[index] = getLive(i);
 			}
 		} else {
 			for (int i = 0; i < snapshot.length; i++) {
-				this.snapshot[i] = getLive(i);
+				snapshot[i] = getLive(i);
 			}
 		}
 	}
 
 	private int pack(short zero, short one) {
-		return (one & 0xFFFF) << 16 | (zero & 0xFFFF);
+		return (one & 0xFFFF) << 16 | zero & 0xFFFF;
 	}
 
 	private short unpackZero(int value) {
-		return (short)value;
+		return (short) value;
 	}
 
 	private short unpackOne(int value) {
-		return (short)(value >> 16);
+		return (short) (value >> 16);
 	}
 
 }

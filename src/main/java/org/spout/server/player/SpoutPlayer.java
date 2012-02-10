@@ -65,18 +65,18 @@ public class SpoutPlayer implements Player {
 
 	public SpoutPlayer(String name) {
 		this.name = name;
-		this.displayName.set(name);
+		displayName.set(name);
 		hashcode = name.hashCode();
 	}
 
 	public SpoutPlayer(String name, Entity entity, Session session) {
 		this(name);
-		this.sessionLive.set(session);
+		sessionLive.set(session);
 		this.session = session;
-		this.entityLive.set(entity);
+		entityLive.set(entity);
 		this.entity = entity;
-		this.online = true;
-		this.onlineLive.set(true);
+		online = true;
+		onlineLive.set(true);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class SpoutPlayer implements Player {
 	public boolean isOnline() {
 		return online;
 	}
-	
+
 	public boolean isOnlineLive() {
 		return onlineLive.get();
 	}
@@ -359,13 +359,13 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
-		if (synchronizer == null && !this.onlineLive.get()) {
-			this.synchronizerLive.set(null);
-		} else if (!this.synchronizerLive.compareAndSet(null, synchronizer)) {
+		if (synchronizer == null && !onlineLive.get()) {
+			synchronizerLive.set(null);
+		} else if (!synchronizerLive.compareAndSet(null, synchronizer)) {
 			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
 		}
 	}
-	
+
 	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		NetworkSynchronizer s = synchronizer;

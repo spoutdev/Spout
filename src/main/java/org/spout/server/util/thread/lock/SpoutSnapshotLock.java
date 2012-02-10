@@ -65,7 +65,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	public boolean writeLock(int delay) {
 		boolean success;
 		try {
-			success = lock.writeLock().tryLock((long) delay, TimeUnit.MILLISECONDS);
+			success = lock.writeLock().tryLock(delay, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			success = false;
 		}
@@ -80,7 +80,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 		for (Entry<Plugin, LockInfo> e : entries) {
 			LockInfo info = e.getValue();
-			if (info.locks > 0 && (currentTime - info.oldestLock) > threshold) {
+			if (info.locks > 0 && currentTime - info.oldestLock > threshold) {
 				plugins.add(e.getKey());
 			}
 		}
@@ -132,8 +132,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			this.locks = locks;
 		}
 
-		public final long oldestLock;
-		;
+		public final long oldestLock;;
 		public final int locks;
 	}
 

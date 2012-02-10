@@ -25,9 +25,6 @@
  */
 package org.spout.server.datatable;
 
-import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,6 +34,9 @@ import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 
+import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 public class SpoutDatatableMap implements DatatableMap {
 	private final static StringMap rootStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	private final StringMap stringmap;
@@ -45,23 +45,23 @@ public class SpoutDatatableMap implements DatatableMap {
 	public static StringMap getStringMap() {
 		return rootStringMap;
 	}
-	
+
 	public SpoutDatatableMap() {
-		this.stringmap = rootStringMap;
+		stringmap = rootStringMap;
 	}
 
 	@Override
 	public void set(DatatableTuple value) {
 		set(value.hashCode(), value);
 	}
-	
+
 	@Override
-	public void set(String key, DatatableTuple value){
+	public void set(String key, DatatableTuple value) {
 		set(stringmap.register(key), value);
 	}
-	
+
 	@Override
-	public void set(int key, DatatableTuple value){
+	public void set(int key, DatatableTuple value) {
 		map.put(key, value);
 	}
 
@@ -88,13 +88,12 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-		
 
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
-		
+
 	}
 
 }

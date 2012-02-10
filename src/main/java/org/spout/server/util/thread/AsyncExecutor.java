@@ -77,16 +77,18 @@ public interface AsyncExecutor {
 	public boolean finalizeTick();
 
 	/**
-	 * This is called after finalizeTick stage and before the copy snapshot stage.<br>
+	 * This is called after finalizeTick stage and before the copy snapshot
+	 * stage.<br>
 	 * <br>
-	 * This is intended as a MONITOR only stage and is used for sending network updates.<br>
+	 * This is intended as a MONITOR only stage and is used for sending network
+	 * updates.<br>
 	 * <br>
 	 * All data must remain stable for this stage.
-	 * 
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean preSnapshot();
-	
+
 	/**
 	 * Instructs the executor to copy all updated data to its snapshot
 	 *
@@ -100,15 +102,18 @@ public interface AsyncExecutor {
 	 * The first stage in a tick is stage zero
 	 *
 	 * @param stage the stage number for the tick
-	 * @param delta the time since the last tick in ms (only relevant for stage 0)
+	 * @param delta the time since the last tick in ms (only relevant for stage
+	 *            0)
 	 * @return false if the executor was active
 	 */
 	public boolean startTick(int stage, long delta);
 
 	/**
-	 * Instructs the executor to complete all pending tasks and then throws an InterruptedException.
+	 * Instructs the executor to complete all pending tasks and then throws an
+	 * InterruptedException.
 	 *
-	 * This method is internally called by the executor as a response to the kill() instruction.
+	 * This method is internally called by the executor as a response to the
+	 * kill() instruction.
 	 */
 	public void syncKill() throws InterruptedException;
 
@@ -127,9 +132,11 @@ public interface AsyncExecutor {
 	public void pulseJoin() throws InterruptedException;
 
 	/**
-	 * Puts the current thread to sleep until the current pulse operation has completed
+	 * Puts the current thread to sleep until the current pulse operation has
+	 * completed
 	 *
-	 * @param millis the time in milliseconds to wait before throwing a TimeoutException
+	 * @param millis the time in milliseconds to wait before throwing a
+	 *            TimeoutException
 	 */
 
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException;
@@ -151,14 +158,14 @@ public interface AsyncExecutor {
 	public void enableWake();
 
 	/**
-	 * Starts the executor.  An executor may only be started once.
+	 * Starts the executor. An executor may only be started once.
 	 *
 	 * @return false if the executor was already started
 	 */
 	public boolean startExecutor();
 
 	/**
-	 * Halts the executor.  An executor may only be halted once.
+	 * Halts the executor. An executor may only be halted once.
 	 *
 	 * Halting happens after the next snapshot copy.
 	 *
@@ -167,7 +174,8 @@ public interface AsyncExecutor {
 	public boolean haltExecutor();
 
 	/**
-	 * Checks if the executor should halt.  This is called after every snapshot update.
+	 * Checks if the executor should halt. This is called after every snapshot
+	 * update.
 	 */
 	public void haltCheck() throws InterruptedException;
 }

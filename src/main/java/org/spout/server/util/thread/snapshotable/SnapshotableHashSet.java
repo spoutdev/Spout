@@ -104,21 +104,23 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	public Set<T> get() {
 		return unmodifySnapshot;
 	}
-	
+
 	/**
 	 * Gets the live value
-	 * 
+	 *
 	 * @return the live set
 	 */
 	public Set<T> getLive() {
 		return unmodifyLive;
 	}
-	
+
 	/**
-	 * Creates a list of elements that have been changed since the last snapshot copy.<br>
+	 * Creates a list of elements that have been changed since the last snapshot
+	 * copy.<br>
 	 * <br>
-	 * This method may only be called during the pre-snapshot stage and the list only remains valid during that stage.
-	 * 
+	 * This method may only be called during the pre-snapshot stage and the list
+	 * only remains valid during that stage.
+	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<T> getDirtyList() {
@@ -134,10 +136,10 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 		}
 		return unmodifyDirty;
 	}
-	
+
 	/**
 	 * Tests if the set is empty
-	 * 
+	 *
 	 * @return true if the set is empty
 	 */
 	public boolean isEmptyLive() {

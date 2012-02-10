@@ -58,21 +58,21 @@ import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
 public class SpoutChunk extends Chunk {
 
 	/**
-	 * Storage for block ids, data and auxiliary data.  
-	 * For blocks with data = 0 and auxiliary data = null, the block is stored as a short.
+	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
+	 * and auxiliary data = null, the block is stored as a short.
 	 */
 	private AtomicBlockStore<DatatableMap> blockStore;
-	
+
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
 	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
-	
+
 	/**
 	 * The parent region that manages this chunk
 	 */
 	private final SpoutRegion parentRegion;
-	
+
 	/**
 	 * Holds if the chunk is populated
 	 */
@@ -82,12 +82,12 @@ public class SpoutChunk extends Chunk {
 	 * Snapshot Manager
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-	
+
 	/**
 	 * A set of all players who are observing this chunk
 	 */
 	private final SnapshotableHashMap<Player, Integer> observers = new SnapshotableHashMap<Player, Integer>(snapshotManager);
-	
+
 	/**
 	 * A set of entities contained in the chunk
 	 */
@@ -98,18 +98,18 @@ public class SpoutChunk extends Chunk {
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-	
+
 	public SpoutChunk(World world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
-		this.parentRegion = region;
-		this.blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS);
-		this.populated = new SnapshotableBoolean(snapshotManager, false);
+		parentRegion = region;
+		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS);
+		populated = new SnapshotableBoolean(snapshotManager, false);
 		int i = 0;
 		for (int xx = 0; xx < Chunk.CHUNK_SIZE; xx++) {
 			for (int zz = 0; zz < Chunk.CHUNK_SIZE; zz++) {
 				for (int yy = 0; yy < Chunk.CHUNK_SIZE; yy++) {
-					blockStore.setBlock(xx, yy, zz, initial[i++], (short)0, null);
+					blockStore.setBlock(xx, yy, zz, initial[i++], (short) 0, null);
 				}
 			}
 		}
@@ -117,66 +117,72 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		if (material == null) throw new NullPointerException("Material can not be null");
+		if (material == null) {
+			throw new NullPointerException("Material can not be null");
+		}
 		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), true, source);
 	}
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
-		if (material == null) throw new NullPointerException("Material can not be null");
+		if (material == null) {
+			throw new NullPointerException("Material can not be null");
+		}
 		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), updatePhysics, source);
 	}
 
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, Source source) {
-		return setBlockIdAndData(x, y, z, id, (short)0, true, source);
+		return setBlockIdAndData(x, y, z, id, (short) 0, true, source);
 	}
-	
+
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		return setBlockIdAndData(x, y, z, id, (short)0, updatePhysics, source);
+		return setBlockIdAndData(x, y, z, id, (short) 0, updatePhysics, source);
 	}
-	
+
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, Source source) {
 		return setBlockData(x, y, z, data, true, source);
 	}
-	
+
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
-		return setBlockIdAndData(x, y, z, (short)blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask), data, updatePhysics, source);
+		return setBlockIdAndData(x, y, z, (short) blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask), data, updatePhysics, source);
 	}
-	
+
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
 		return setBlockIdAndData(x, y, z, id, data, true, source);
 	}
-	
+
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
-		if (source == null) throw new NullPointerException("Source can not be null");
+		if (source == null) {
+			throw new NullPointerException("Source can not be null");
+		}
 		checkChunkLoaded();
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
-		
+
 		//do neighbor updates
 		if (updatePhysics) {
 			updatePhysics(x, y, z);
-			
+
 			//South and North
 			updatePhysics(x + 1, y, z);
 			updatePhysics(x - 1, y, z);
-			
+
 			//West and East
 			updatePhysics(x, y, z + 1);
 			updatePhysics(x, y, z - 1);
-			
+
 			//Above and Below
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
 		return true;
 	}
-	
+
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
@@ -190,24 +196,23 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public short getBlockId(int x, int y, int z) {
 		checkChunkLoaded();
-		return (short)blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask);
+		return (short) blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask);
 	}
-
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		checkChunkLoaded();
-		return (short)blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
+		return (short) blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
 	}
-	
+
 	@Override
 	public void updatePhysics(int x, int y, int z) {
 		checkChunkLoaded();
 		parentRegion.queuePhysicsUpdate(x, y, z);
 	}
-	
+
 	@Override
-	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData){
+	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
 		throw new UnsupportedOperationException("TBD");
 	}
 
@@ -216,7 +221,7 @@ public class SpoutChunk extends Chunk {
 		throw new UnsupportedOperationException("TBD");
 		//return blockStore.compareAndSetData(x & coordMask, y & coordMask, z & coordMask, expect, data);
 	}
-	
+
 	@Override
 	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
 		throw new UnsupportedOperationException("TBD");
@@ -231,68 +236,81 @@ public class SpoutChunk extends Chunk {
 			}
 		}*/
 	}
-	
+
 	@Override
 	public void unload(boolean save) {
 		checkChunkLoaded();
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
+
 	public void unloadNoMark(boolean save) {
 		boolean success = false;
 		while (!success) {
 			SaveState state = saveState.get();
 			SaveState nextState;
 			switch (state) {
-			case UNLOAD_SAVE: 
-				nextState = SaveState.UNLOAD_SAVE; break;
-			case UNLOAD: 
-				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
-			case SAVE: 
-				nextState = SaveState.UNLOAD_SAVE; break;
-			case NONE: 
-				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
-			case UNLOADED:
-				nextState = SaveState.UNLOADED; break;
-			default: throw new IllegalStateException("Unknown save state: " + state);
+				case UNLOAD_SAVE:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case UNLOAD:
+					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
+					break;
+				case SAVE:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case NONE:
+					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
+					break;
+				case UNLOADED:
+					nextState = SaveState.UNLOADED;
+					break;
+				default:
+					throw new IllegalStateException("Unknown save state: " + state);
 			}
 			success = saveState.compareAndSet(state, nextState);
 		}
 	}
-	
+
 	@Override
 	public void save() {
 		checkChunkLoaded();
 		saveNoMark();
 		markForSaveUnload();
 	}
-	
+
 	private void markForSaveUnload() {
-		((SpoutRegion)parentRegion).markForSaveUnload(this);
+		(parentRegion).markForSaveUnload(this);
 	}
-	
+
 	public void saveNoMark() {
 		boolean success = false;
 		while (!success) {
 			SaveState state = saveState.get();
 			SaveState nextState;
 			switch (state) {
-				case UNLOAD_SAVE: 
-					nextState = SaveState.UNLOAD_SAVE; break;
-				case UNLOAD: 
-					nextState = SaveState.UNLOAD_SAVE; break;
-				case SAVE: 
-					nextState = SaveState.SAVE; break;
-				case NONE: 
-					nextState = SaveState.SAVE; break;
+				case UNLOAD_SAVE:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case UNLOAD:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case SAVE:
+					nextState = SaveState.SAVE;
+					break;
+				case NONE:
+					nextState = SaveState.SAVE;
+					break;
 				case UNLOADED:
-					nextState = SaveState.UNLOADED; break;
-				default: throw new IllegalStateException("Unknown save state: " + state);
+					nextState = SaveState.UNLOADED;
+					break;
+				default:
+					throw new IllegalStateException("Unknown save state: " + state);
 			}
 			saveState.compareAndSet(state, nextState);
 		}
 	}
-	
+
 	public SaveState getAndResetSaveState() {
 		boolean success = false;
 		SaveState old = null;
@@ -306,7 +324,7 @@ public class SpoutChunk extends Chunk {
 		}
 		return old;
 	}
-	
+
 	public void copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
 	}
@@ -315,11 +333,13 @@ public class SpoutChunk extends Chunk {
 	public void syncSave() {
 		// TODO
 	}
-	
+
+	@Override
 	public ChunkSnapshot getSnapshot() {
 		return getSnapshot(true);
 	}
-	
+
+	@Override
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		checkChunkLoaded();
 		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), entities);
@@ -329,9 +349,9 @@ public class SpoutChunk extends Chunk {
 	public boolean refreshObserver(Player player) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
-		int distance = (int)player.getEntity().getChunkLive().getBase().getDistance(this.getBase());
+		int distance = (int) player.getEntity().getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(player, distance);
-		if(oldDistance == null) {
+		if (oldDistance == null) {
 			return true;
 		} else {
 			return false;
@@ -345,22 +365,22 @@ public class SpoutChunk extends Chunk {
 		Integer oldDistance = observers.remove(player);
 		if (oldDistance != null) {
 			if (observers.isEmptyLive()) {
-				this.unload(true);
+				unload(true);
 			}
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public Set<Player> getObserversLive() {
 		return observers.getLive().keySet();
 	}
-	
+
 	public Set<Player> getObservers() {
 		return observers.get().keySet();
 	}
-	
+
 	public boolean compressIfRequired() {
 		if (blockStore.needsCompression()) {
 			blockStore.compress();
@@ -369,55 +389,55 @@ public class SpoutChunk extends Chunk {
 			return false;
 		}
 	}
-	
+
 	public boolean isDirty() {
 		return blockStore.isDirty();
 	}
-	
+
 	public boolean isDirtyOverflow() {
 		return blockStore.isDirtyOverflow();
 	}
-	
+
 	public Blockm getDirtyBlock(int i, Blockm blockm) {
 		return blockStore.getDirtyBlock(i, blockm);
 	}
-	
+
 	public void resetDirtyArrays() {
 		blockStore.resetDirtyArrays();
 	}
-	
+
 	@Override
 	public boolean isUnloaded() {
 		return saveState.get() == SaveState.UNLOADED;
 	}
-	
+
 	public void setUnloaded() {
 		saveState.set(SaveState.UNLOADED);
 		blockStore = null;
 	}
-	
+
 	private void checkChunkLoaded() {
 		if (saveState.get() == SaveState.UNLOADED) {
 			throw new ChunkAccessException("Chunk has been unloaded");
 		}
 	}
-	
+
 	public static enum SaveState {
 		UNLOAD_SAVE,
 		UNLOAD,
 		SAVE,
 		NONE,
 		UNLOADED;
-		
+
 		public boolean isSave() {
 			return this == SAVE || this == UNLOAD_SAVE;
 		}
-		
+
 		public boolean isUnload() {
 			return this == UNLOAD_SAVE || this == UNLOAD;
 		}
 	}
-	
+
 	@Override
 	public Region getRegion() {
 		return parentRegion;
@@ -430,19 +450,19 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void populate(boolean force) {
-		if(isPopulated() && !force) {
+		if (isPopulated() && !force) {
 			return;
 		}
-		for (Populator populator:getWorld().getGenerator().getPopulators()) {
+		for (Populator populator : getWorld().getGenerator().getPopulators()) {
 			try {
 				populator.populate(this);
-			} catch(Exception e) {
-				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with "+populator.toString());
+			} catch (Exception e) {
+				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 				e.printStackTrace();
 			}
 		}
 		populated.set(true);
-		if(getRegion() instanceof SpoutRegion) {
+		if (getRegion() instanceof SpoutRegion) {
 			((SpoutRegion) getRegion()).onChunkPopulated(this);
 		}
 	}
@@ -451,37 +471,39 @@ public class SpoutChunk extends Chunk {
 	public boolean isPopulated() {
 		return populated.get();
 	}
-	
+
 	public boolean addEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		return entities.add(entity);
 	}
-	
+
 	public boolean removeEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		return entities.remove(entity);
 	}
-	
+
+	@Override
 	public Set<Entity> getEntities() {
 		return entities.get();
 	}
-	
+
+	@Override
 	public Set<Entity> getLiveEntities() {
 		return entities.getLive();
 	}
-	
+
 	// Handles network updates for all entities that were
 	// - in the chunk at the last snapshot
 	// - were not in a chunk at the last snapshot and are now in this chunk
 	public void preSnapshot() {
 		Map<Player, Integer> observerSnapshot = observers.get();
 		Map<Player, Integer> observerLive = observers.getLive();
-		
+
 		Set<Entity> entitiesSnapshot = entities.get();
-		Set<Entity> entitiesLive = entities.getLive();
-		
+		entities.getLive();
+
 		// Changed means entered/left the chunk
 		List<Entity> changedEntities = entities.getDirtyList();
 		List<Player> changedPlayer = observers.getDirtyList();
@@ -512,14 +534,14 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 		}
-		
+
 		for (Entity e : changedEntities) {
-			SpoutChunk oldChunk = ((SpoutChunk)e.getChunk());
-			if (((SpoutEntity)e).justSpawned()) {
+			SpoutChunk oldChunk = (SpoutChunk) e.getChunk();
+			if (((SpoutEntity) e).justSpawned()) {
 				oldChunk = null;
 			}
-			SpoutChunk newChunk = ((SpoutChunk)e.getChunkLive());
-			if (!(oldChunk != null && oldChunk.equals(this)) && !(((SpoutEntity)e).justSpawned())) {
+			SpoutChunk newChunk = (SpoutChunk) e.getChunkLive();
+			if (!(oldChunk != null && oldChunk.equals(this)) && !((SpoutEntity) e).justSpawned()) {
 				continue;
 			}
 			for (Player p : observerLive.keySet()) {
@@ -547,9 +569,9 @@ public class SpoutChunk extends Chunk {
 				}
 				Integer entityViewDistanceOld = e.getViewDistance();
 				Integer entityViewDistanceNew = e.getViewDistanceLive();
-				
+
 				NetworkSynchronizer n = p.getNetworkSynchronizer();
-				
+
 				if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
 					n.destroyEntity(e);
 				} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
@@ -580,7 +602,7 @@ public class SpoutChunk extends Chunk {
 				for (Entity e : changedEntities) {
 					if (entitiesSnapshot.contains(e)) {
 						continue;
-					} else if (((SpoutEntity)e).justSpawned()) {
+					} else if (((SpoutEntity) e).justSpawned()) {
 						if (playerEntity != e) {
 							if (playerDistance <= e.getViewDistance()) {
 								if (e.getController() != e.getLiveController()) {
@@ -596,15 +618,6 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 
-	private String listObservers(Set<Player> players) {
-		StringBuilder sb = new StringBuilder("{ ");
-		for (Player p : players) {
-			sb.append(p.getName() + " ");
-		}
-		sb.append("}");
-		return sb.toString();
-	}
-
 	public static class ChunkAccessException extends RuntimeException {
 
 		private static final long serialVersionUID = 1L;
@@ -613,5 +626,5 @@ public class SpoutChunk extends Chunk {
 			super(message);
 		}
 	}
-	
+
 }

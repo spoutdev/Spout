@@ -38,9 +38,9 @@ public class SpoutDatatableInt extends SpoutDatatableObject {
 
 	public SpoutDatatableInt(int key, int value) {
 		super(key);
-		this.data = value;
+		data = value;
 	}
-	
+
 	@Override
 	public void set(int key, Object value) {
 		throw new IllegalArgumentException("This is an int value, use set(string,int)");
@@ -69,18 +69,16 @@ public class SpoutDatatableInt extends SpoutDatatableObject {
 
 	@Override
 	public boolean asBool() {
-		return (data != 0);
+		return data != 0;
 	}
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-	
-		
+
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
-	
 
 	}
 

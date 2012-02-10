@@ -43,6 +43,7 @@ import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
@@ -105,7 +106,7 @@ public final class ChannelBufferUtils {
 	public static List<Parameter<?>> readParameters(ChannelBuffer buf) {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 
-		for (int b = buf.readUnsignedByte(); b != 127; ) {
+		for (int b = buf.readUnsignedByte(); b != 127;) {
 			int type = (b & 0x0E) >> 5;
 			int index = b & 0x1F;
 
@@ -129,7 +130,7 @@ public final class ChannelBufferUtils {
 					int id = buf.readShort();
 					int count = buf.readByte();
 					short damage = buf.readShort();
-					ItemStack item = new ItemStack(MaterialData.getMaterial((short)id), count, damage);
+					ItemStack item = new ItemStack(MaterialData.getMaterial((short) id), count, damage);
 					parameters.add(new Parameter<ItemStack>(type, index, item));
 					break;
 			}
@@ -144,7 +145,7 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 * it is encoded.
+	 *             it is encoded.
 	 */
 	public static void writeString(ChannelBuffer buf, String str) {
 		int len = str.length();
@@ -164,7 +165,7 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 * it is encoded.
+	 *             it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
 		byte[] bytes = str.getBytes(CHARSET_UTF8);

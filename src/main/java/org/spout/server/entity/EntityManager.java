@@ -67,7 +67,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * The next id to check.
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
-	
+
 	private final StringMap entityMap = SpoutDatatableMap.getStringMap();
 
 	private SnapshotableHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
@@ -156,7 +156,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	public void deallocate(SpoutEntity entity) {
 		EntityDespawnEvent event = new EntityDespawnEvent(entity);
 		Spout.getGame().getEventManager().callEvent(event);
-		if(event.isCancelled()){
+		if (event.isCancelled()) {
 			return;
 		}
 		entities.remove(entity.getId());
@@ -179,8 +179,8 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			if (controller != null) {
 				controller.finalizeTick();
 				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController)controller).getPlayer();
-					NetworkSynchronizer n = ((SpoutPlayer)p).getNetworkSynchronizer();
+					Player p = ((PlayerController) controller).getPlayer();
+					NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
 					if (n != null) {
 						n.finalizeTick();
 					}
@@ -188,21 +188,21 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			}
 		}
 	}
-	
+
 	public void preSnapshotRun() throws InterruptedException {
 		for (SpoutEntity e : entities.get().values()) {
 			Controller controller = e.getController();
 			if (controller != null) {
 				controller.preSnapshot();
 				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController)controller).getPlayer();
-					NetworkSynchronizer n = ((SpoutPlayer)p).getNetworkSynchronizer();
+					Player p = ((PlayerController) controller).getPlayer();
+					NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
 					if (n != null) {
 						n.preSnapshot();
 					}
 				}
 			}
-		}		
+		}
 	}
 
 	/**
@@ -214,11 +214,13 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		}
 		snapshotManager.copyAllSnapshots();
 	}
+
 	/**
 	 * Gets the string map associated with this entity manager
+	 *
 	 * @return
 	 */
-	public StringMap getStringMap(){
+	public StringMap getStringMap() {
 		return entityMap;
 	}
 }

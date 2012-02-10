@@ -67,7 +67,7 @@ public abstract class PulsableThread extends Thread {
 	 * completed
 	 *
 	 * @param millis the time in milliseconds to wait before throwing a
-	 * TimeoutException
+	 *            TimeoutException
 	 */
 
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException {

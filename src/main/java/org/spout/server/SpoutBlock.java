@@ -36,7 +36,7 @@ public class SpoutBlock extends Block {
 	public SpoutBlock(World world, int x, int y, int z) {
 		super(world, x, y, z);
 	}
-	
+
 	public SpoutBlock(World world, int x, int y, int z, short id) {
 		this(world, x, y, z);
 		setBlockId(id);
@@ -46,7 +46,7 @@ public class SpoutBlock extends Block {
 		this(world, x, y, z);
 		setBlockMaterial(material);
 	}
-	
+
 	//TODO: set id at world location too!
 	@Override
 	public BlockMaterial setBlockMaterial(BlockMaterial material) {
@@ -57,7 +57,7 @@ public class SpoutBlock extends Block {
 	@Override
 	public short setBlockId(short id) {
 		BlockMaterial newMat = MaterialData.getBlock(id);
-		if(newMat != null) {
+		if (newMat != null) {
 			material = newMat;
 		}
 		return material != null ? material.getId() : 0;

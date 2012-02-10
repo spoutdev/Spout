@@ -58,34 +58,34 @@ import org.spout.server.util.thread.snapshotable.SnapshotableArrayList;
  * These tasks are executed during a period where none of the auxiliary threads
  * are executing.<br>
  * <br>
- * Each tick consists of a number of stages.  Each stage is 
- * executed in parallel, but the next stage is not started 
- * until all threads have completed the previous stage.<br>
+ * Each tick consists of a number of stages. Each stage is executed in parallel,
+ * but the next stage is not started until all threads have completed the
+ * previous stage.<br>
  * <br>
- * Except for executing queued serial tasks, all threads are run in parallel.  
+ * Except for executing queued serial tasks, all threads are run in parallel.
  * The full sequence is as follows:<br>
  * <ul>
- *  <li>Single Thread
- *  <ul>
- *   <li> <b>Execute queued tasks</b><br>
- *           Tasks that are submitted for execution are executed one at a time.
- *  </ul>
- *  <li>Parallel Threads
- *  <ul>
- *  <li> <b>Stage 1</b><br>
- *          This is the first stage of execution.  Most Events are generated during this stage and the API is fully open for use.
- *  <li> <b>Stage 2</b><br>
- *          During this stage, entity collisions are handled.
- *  <li> <b>Finalize Tick</b><br>
- *          During this stage
- *          - entities are moved between entity managers.
- *          - chunks are populated.
- *          - chunks are compressed if necessary.
- *  <li> <b>Pre-snapshot</b><br>
- *          This is a MONITOR stage, data is stable and no modifications are allowed.
- *  <li> <b>Copy Snapshot</b><br>
- *          During this stage all live values are copied to their stable snapshot.  Data is unstable so no reads are permitted during this stage.
- *  </ul>
+ * <li>Single Thread
+ * <ul>
+ * <li><b>Execute queued tasks</b><br>
+ * Tasks that are submitted for execution are executed one at a time.
+ * </ul>
+ * <li>Parallel Threads
+ * <ul>
+ * <li><b>Stage 1</b><br>
+ * This is the first stage of execution. Most Events are generated during this
+ * stage and the API is fully open for use.
+ * <li><b>Stage 2</b><br>
+ * During this stage, entity collisions are handled.
+ * <li><b>Finalize Tick</b><br>
+ * During this stage - entities are moved between entity managers. - chunks are
+ * populated. - chunks are compressed if necessary.
+ * <li><b>Pre-snapshot</b><br>
+ * This is a MONITOR stage, data is stable and no modifications are allowed.
+ * <li><b>Copy Snapshot</b><br>
+ * During this stage all live values are copied to their stable snapshot. Data
+ * is unstable so no reads are permitted during this stage.
+ * </ul>
  * </ul>
  *
  */
@@ -121,23 +121,23 @@ public final class SpoutScheduler implements Scheduler {
 	private final List<SpoutTask> tasks = new ArrayList<SpoutTask>();
 
 	private final List<SpoutWorker> activeWorkers = Collections.synchronizedList(new ArrayList<SpoutWorker>());
-	
+
 	/**
 	 * A snapshot manager for local snapshot variables
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-	
+
 	/**
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
-	
+
 	private volatile boolean shutdown = false;
-	
+
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
-	
+
 	private final Thread mainThread;
-	
+
 	/**
 	 * Creates a new task scheduler.
 	 */
@@ -154,6 +154,7 @@ public final class SpoutScheduler implements Scheduler {
 			ThreadsafetyManager.setMainThread(this);
 		}
 
+		@Override
 		public void run() {
 			long targetPeriod = PULSE_EVERY;
 			long lastTick = System.currentTimeMillis();
@@ -185,7 +186,7 @@ public final class SpoutScheduler implements Scheduler {
 			asyncExecutors.copySnapshot();
 
 			TickStage.setStage(TickStage.TICKSTART);
-			
+
 			// Halt all executors, except the Server
 
 			for (AsyncExecutor e : asyncExecutors.get()) {
@@ -274,9 +275,9 @@ public final class SpoutScheduler implements Scheduler {
 	 * Adds new tasks and updates existing tasks, removing them if necessary.
 	 */
 	private boolean tick(long delta) throws InterruptedException {
-		
+
 		TickStage.setStage(TickStage.TICKSTART);
-		
+
 		asyncExecutors.copySnapshot();
 
 		// Bring in new tasks this tick.
@@ -296,7 +297,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 
 		// Run the relevant tasks.
-		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext();) {
 			SpoutTask task = it.next();
 			boolean cont = false;
 			try {
@@ -311,24 +312,24 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
-		
+
 		List<AsyncExecutor> executors = asyncExecutors.get();
 
 		int stage = 0;
 		boolean allStagesComplete = false;
 
 		boolean joined = false;
-		
+
 		TickStage.setStage(TickStage.STAGE1);
-		
+
 		while (!allStagesComplete) {
-			
+
 			if (stage == 0) {
 				TickStage.setStage(TickStage.STAGE1);
 			} else {
 				TickStage.setStage(TickStage.STAGE2P);
 			}
-			
+
 			allStagesComplete = true;
 
 			for (AsyncExecutor e : executors) {
@@ -346,7 +347,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			while (!joined) {
 				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
+					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
@@ -355,15 +356,15 @@ public final class SpoutScheduler implements Scheduler {
 
 			stage++;
 		}
-		
+
 		copySnapshot(executors);
-		
+
 		return true;
 	}
 
 	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
 		TickStage.setStage(TickStage.FINALIZE);
-		
+
 		for (AsyncExecutor e : executors) {
 			if (!e.finalizeTick()) {
 				throw new IllegalStateException("Attempt made to finalize a tick before snapshot copy while the previous operation was still active");
@@ -374,18 +375,18 @@ public final class SpoutScheduler implements Scheduler {
 
 		while (!joined) {
 			try {
-				AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
+				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 				joined = true;
 			} catch (TimeoutException e) {
 				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 			}
 		}
-		
+
 		lockSnapshotLock();
 		TickStage.setStage(TickStage.PRESNAPSHOT);
 
 		try {
-			
+
 			for (AsyncExecutor e : executors) {
 				if (!e.preSnapshot()) {
 					throw new IllegalStateException("Attempt made to enter the pre-snapshot stage for a tick while the previous operation was still active");
@@ -396,13 +397,13 @@ public final class SpoutScheduler implements Scheduler {
 
 			while (!joined) {
 				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
+					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 				}
 			}
-			
+
 			TickStage.setStage(TickStage.SNAPSHOT);
 
 			for (AsyncExecutor e : executors) {
@@ -415,7 +416,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			while (!joined) {
 				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (long) (PULSE_EVERY << 4));
+					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
@@ -544,4 +545,3 @@ public final class SpoutScheduler implements Scheduler {
 		return snapshotLock;
 	}
 }
-

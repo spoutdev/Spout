@@ -160,7 +160,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The world's UUID.
 	 */
 	private final UUID uid;
-	
+
 	/**
 	 * The generator responsible for generating chunks in this world.
 	 */
@@ -170,7 +170,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
-	
+
 	/**
 	 * A set of all players currently connected to this world
 	 */
@@ -180,14 +180,14 @@ public class SpoutWorld extends AsyncManager implements World {
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Server server, long seed, WorldGenerator generator) {
 		super(1, new ThreadAsyncExecutor(), server);
-		this.uid = UUID.randomUUID();
+		uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
 		this.name = name;
 		this.generator = generator;
-		this.entityManager = new EntityManager();
-		this.regions = new RegionSource(this, snapshotManager);
-		
+		entityManager = new EntityManager();
+		regions = new RegionSource(this, snapshotManager);
+
 		//load spawn regions
 		for (int dx = -1; dx < 1; dx++) {
 			for (int dy = -1; dy < 1; dy++) {
@@ -215,9 +215,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Block getBlock(Point point) {
-		int x = (int) MathHelper.floor(point.getX());
-		int y = (int) MathHelper.floor(point.getY());
-		int z = (int) MathHelper.floor(point.getZ());
+		int x = MathHelper.floor(point.getX());
+		int y = MathHelper.floor(point.getY());
+		int z = MathHelper.floor(point.getZ());
 		return getBlock(x, y, z);
 	}
 
@@ -234,9 +234,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Region getRegion(Point point) {
-		int x = (int) MathHelper.floor(point.getX());
-		int y = (int) MathHelper.floor(point.getY());
-		int z = (int) MathHelper.floor(point.getZ());
+		int x = MathHelper.floor(point.getX());
+		int y = MathHelper.floor(point.getY());
+		int z = MathHelper.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z);
 	}
 
@@ -247,9 +247,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Region getRegion(Point point, boolean load) {
-		int x = (int) MathHelper.floor(point.getX());
-		int y = (int) MathHelper.floor(point.getY());
-		int z = (int) MathHelper.floor(point.getZ());
+		int x = MathHelper.floor(point.getX());
+		int y = MathHelper.floor(point.getY());
+		int z = MathHelper.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z, load);
 	}
 
@@ -262,11 +262,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Chunk getChunk(int x, int y, int z, boolean load) {
 		Region region = getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, load);
 		if (region != null) {
-			return region.getChunk(x & (Region.REGION_SIZE - 1), y & (Region.REGION_SIZE - 1), z & (Region.REGION_SIZE - 1), load);
+			return region.getChunk(x & Region.REGION_SIZE - 1, y & Region.REGION_SIZE - 1, z & Region.REGION_SIZE - 1, load);
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Chunk getChunk(Point point) {
 		return getChunk(point, true);
@@ -286,11 +286,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		long hash = uid.getMostSignificantBits();
 		hash += (hash << 5) + uid.getLeastSignificantBits();
 
-		return (int) (hash ^ (hash >> 32));
+		return (int) (hash ^ hash >> 32);
 	}
 
 	@Override
-
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -314,13 +313,15 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Spawns an entity into the world.  Fires off a cancellable EntitySpawnEvent
 	 */
 	public void spawnEntity(Entity e) {
-		if (e.isSpawned()) throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
+		if (e.isSpawned()) {
+			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
+		}
 		SpoutRegion region = (SpoutRegion) e.getRegion();
 		region.allocate((SpoutEntity) e);
 		EntitySpawnEvent event = new EntitySpawnEvent(e, e.getTransform().getPosition());
 		Spout.getGame().getEventManager().callEvent(event);
-		if(event.isCancelled()){
-			region.deallocate((SpoutEntity)e);
+		if (event.isCancelled()) {
+			region.deallocate((SpoutEntity) e);
 		}
 	}
 
@@ -348,8 +349,7 @@ public class SpoutWorld extends AsyncManager implements World {
 				for (SpoutEntity ent : entityManager) {
 					try {
 						ent.onTick(dt);
-					}
-					catch (Exception e){
+					} catch (Exception e) {
 						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + ent.toString());
 						e.printStackTrace();
 					}
@@ -361,8 +361,7 @@ public class SpoutWorld extends AsyncManager implements World {
 				for (SpoutEntity ent : entityManager) {
 					try {
 						ent.resolve();
-					}
-					catch (Exception e){
+					} catch (Exception e) {
 						Spout.getGame().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
 						e.printStackTrace();
 					}
@@ -395,7 +394,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		// TODO: Variable world height
 		return 128;
 	}
-	
+
 	@Override
 	public Chunk getChunkFromBlock(int x, int y, int z) {
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
@@ -403,9 +402,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z , material, true, source);
+		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, true, source);
 	}
-	
+
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, updatePhysics, source);
@@ -415,17 +414,17 @@ public class SpoutWorld extends AsyncManager implements World {
 	public boolean setBlockId(int x, int y, int z, short id, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, true, source);
 	}
-	
+
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, updatePhysics, source);
 	}
-	
+
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, updatePhysics, source);
 	}
-	
+
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
@@ -445,9 +444,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	public short getBlockData(int x, int y, int z) {
 		return getChunkFromBlock(x, y, z).getBlockData(x, y, z);
 	}
-	
+
 	@Override
-	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData){
+	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
 		return getChunkFromBlock(x, y, z).compareAndPut(x, y, z, expect, key, auxData);
 	}
 
@@ -455,35 +454,35 @@ public class SpoutWorld extends AsyncManager implements World {
 	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
 		return getChunkFromBlock(x, y, z).compareAndRemove(x, y, z, expect, key, auxData);
 	}
-	
+
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data) {
 		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
 	}
-	
+
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, true, source);
 	}
-	
+
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, updatePhysics, source);
 	}
-	
+
 	@Override
 	public void updatePhysics(int x, int y, int z) {
 		regions.getRegionFromBlock(x, y, z).queuePhysicsUpdate(x, y, z);
 	}
-	
+
 	@Override
 	public Transform getSpawnPoint() {
-		return this.spawnLocation.get();
+		return spawnLocation.get();
 	}
 
 	@Override
 	public void setSpawnPoint(Transform transform) {
-		this.spawnLocation.set(transform.copy());
+		spawnLocation.set(transform.copy());
 	}
 
 	public EntityManager getEntityManager() {
@@ -494,7 +493,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
 	}
-	
+
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
@@ -504,7 +503,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public WorldGenerator getGenerator() {
 		return generator;
 	}
-	
+
 	@Override
 	public HashSet<Entity> getAll() {
 		HashSet<Entity> entities = new HashSet<Entity>();
@@ -513,7 +512,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		return entities;
 	}
-	
+
 	@Override
 	public HashSet<Entity> getAll(Class<? extends Controller> type) {
 		HashSet<Entity> entities = new HashSet<Entity>();
@@ -522,11 +521,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		return entities;
 	}
-	
+
 	public void addPlayer(Player player) {
 		players.add(player);
 	}
-	
+
 	public void removePlayer(Player player) {
 		players.remove(player);
 	}

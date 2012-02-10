@@ -31,14 +31,14 @@ import java.io.OutputStream;
 
 public class SpoutDatatableBool extends SpoutDatatableObject {
 	boolean data;
-	
+
 	public SpoutDatatableBool(int key) {
 		super(key);
 	}
 
 	public SpoutDatatableBool(int key, boolean value) {
 		super(key);
-		this.data = value;
+		data = value;
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 
 	@Override
 	public int asInt() {
-		return (data) ? 1 : 0;
+		return data ? 1 : 0;
 	}
 
 	@Override
@@ -74,13 +74,11 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-		
-		
+
 	}
 
 	@Override
 	public void input(InputStream in) throws IOException {
-		
 
 	}
 }

@@ -128,7 +128,8 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	/**
 	 * Removes a key/value pair from the Map.
 	 *
-	 * This method will have no effect if the key does not map to the given value when the removal is attempted
+	 * This method will have no effect if the key does not map to the given
+	 * value when the removal is attempted
 	 *
 	 * @param x x coordinate
 	 * @param y y coordinate

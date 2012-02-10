@@ -37,7 +37,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialData;
 
-public class SpoutChunkSnapshot extends ChunkSnapshot{
+public class SpoutChunkSnapshot extends ChunkSnapshot {
 	/**
 	 * The parent region that manages this chunk
 	 */
@@ -47,25 +47,24 @@ public class SpoutChunkSnapshot extends ChunkSnapshot{
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-		
+
 	private final Set<WeakReference<Entity>> entities;
-	
+
 	private final short[] blockIds;
-	
+
 	private final short[] blockData;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, boolean entities) {
 		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
 		coordMask = Chunk.CHUNK_SIZE - 1;
-		this.parentRegion = new WeakReference<Region>(chunk.getRegion());
+		parentRegion = new WeakReference<Region>(chunk.getRegion());
 		if (entities) {
 			Set<WeakReference<Entity>> liveEntities = new HashSet<WeakReference<Entity>>();
 			for (Entity e : chunk.getLiveEntities()) {
 				liveEntities.add(new WeakReference<Entity>(e));
 			}
 			this.entities = Collections.unmodifiableSet(liveEntities);
-		}
-		else {
+		} else {
 			this.entities = Collections.emptySet();
 		}
 		this.blockIds = blockIds;
@@ -95,7 +94,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot{
 	@Override
 	public Set<Entity> getEntities() {
 		Set<Entity> entities = new HashSet<Entity>();
-		for (WeakReference<Entity> ref : this.entities){
+		for (WeakReference<Entity> ref : this.entities) {
 			Entity e = ref.get();
 			if (e != null) {
 				entities.add(e);

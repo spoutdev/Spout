@@ -35,6 +35,7 @@ public class PreSnapshotTask extends ManagementRunnable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public Serializable call(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().preSnapshotRun();
 		return null;
