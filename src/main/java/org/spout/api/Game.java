@@ -32,15 +32,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.group.ChannelGroup;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.inventory.Recipe;
+import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.Session;
@@ -51,16 +52,13 @@ import org.spout.api.util.Named;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.group.ChannelGroup;
-
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
  */
 public interface Game extends Named {
 	/**
 	 * Gets the name of this game's implementation
-	 *
+	 * 
 	 * @return name of the implementation
 	 */
 
@@ -68,7 +66,7 @@ public interface Game extends Named {
 
 	/**
 	 * Gets the build version of this game's implementation
-	 *
+	 * 
 	 * @return build version
 	 */
 	public String getVersion();
@@ -76,64 +74,64 @@ public interface Game extends Named {
 	/**
 	 * Returns all player names that have ever played on this Game, whether they
 	 * are online or not.
-	 *
+	 * 
 	 * @return all the player names
 	 */
 	public List<String> getAllPlayers();
 
 	/**
 	 * Gets all players currently online
-	 *
+	 * 
 	 * @return array of all active players
 	 */
 	public Player[] getOnlinePlayers();
 
 	/**
 	 * Gets the maximum number of players this game can host, or -1 if infinite
-	 *
+	 * 
 	 * @return max players
 	 */
 	public int getMaxPlayers();
 
 	/**
 	 * Returns the current IP address.
-	 *
+	 * 
 	 * If this game is a server, this is the address being listened on.
-	 *
+	 * 
 	 * If this game is a client, and connected to a server, this is the address
 	 * connected to.
-	 *
+	 * 
 	 * If neither, this is null.
-	 *
+	 * 
 	 * Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
-	 *
+	 * 
 	 * @return address
 	 */
 	public String getAddress();
 
 	/**
 	 * Returns all IP addresses in use.
-	 *
+	 * 
 	 * If this game is a server, this is the addresses being listened on.
-	 *
+	 * 
 	 * If this game is a client, and connected to a server, this is the address
 	 * connected to.
-	 *
+	 * 
 	 * If neither, this is null.
-	 *
+	 * 
 	 * Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
-	 *
+	 * 
 	 * @return address
 	 */
 	public String[] getAllAddresses();
 
 	/**
 	 * Broadcasts the given message to all players
-	 *
+	 * 
 	 * The implementation of broadcast is identical to iterating over
 	 * {@link #getOnlinePlayers()} and invoking
 	 * {@link Player#sendMessage(String)} for each player.
-	 *
+	 * 
 	 * @param message to send
 	 */
 	public void broadcastMessage(String message);
@@ -141,16 +139,16 @@ public interface Game extends Named {
 	/**
 	 * Gets singleton instance of the plugin manager, used to interact with
 	 * other plugins and register events.
-	 *
+	 * 
 	 * @return plugin manager instance.
 	 */
 	public PluginManager getPluginManager();
 
 	/**
 	 * Gets the logger instance that is used to write to the console.
-	 *
+	 * 
 	 * It should be identical to Logger.getLogger("minecraft");
-	 *
+	 * 
 	 * @return logger
 	 */
 	public Logger getLogger();
@@ -158,7 +156,7 @@ public interface Game extends Named {
 	/**
 	 * Sends a command from the given command source. The command will be
 	 * handled as if the sender has sent it itself.
-	 *
+	 * 
 	 * @param source that is responsible for the command
 	 * @param commandLine text
 	 * @return true if dispatched
@@ -168,18 +166,18 @@ public interface Game extends Named {
 	/**
 	 * Gets the update folder. The update folder is used to safely update
 	 * plugins at the right moment on a plugin load.
-	 *
+	 * 
 	 * The update folder name is relative to the plugins folder.
-	 *
+	 * 
 	 * @return The name of the update folder
 	 */
 	public File getUpdateFolder();
 
 	/**
 	 * Gets the config folder for the game
-	 *
+	 * 
 	 * It's in the server root
-	 *
+	 * 
 	 * @return
 	 */
 	public File getConfigFolder();
@@ -195,7 +193,7 @@ public interface Game extends Named {
 	 * names that start with the given parameter. <br/>
 	 * <br/>
 	 * This method is case-insensitive.
-	 *
+	 * 
 	 * @param name to look up
 	 * @param exact Whether to use exact lookup
 	 * @return Player if found, else null
@@ -204,10 +202,10 @@ public interface Game extends Named {
 
 	/**
 	 * Matches the given username to all players that contain it in their name.
-	 *
+	 * 
 	 * If no matches are found, an empty collection will be returned. The return
 	 * will always be non-null.
-	 *
+	 * 
 	 * @param name to match
 	 * @return Collection of all possible matches
 	 */
@@ -220,10 +218,10 @@ public interface Game extends Named {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
-	 *
+	 * 
 	 * Worlds are added to the list immediately, but removed at the end of a
 	 * tick.
-	 *
+	 * 
 	 * @param name of the world to search for
 	 * @return world if found, else null
 	 */
@@ -237,10 +235,10 @@ public interface Game extends Named {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getUID()}. <br/>
 	 * <br/>
-	 *
+	 * 
 	 * Worlds are added to the list immediately, but removed at the end of a
 	 * tick.
-	 *
+	 * 
 	 * @param uid of the world to search for
 	 * @return world if found, else null
 	 */
@@ -250,10 +248,10 @@ public interface Game extends Named {
 
 	/**
 	 * Gets a List of actively loaded worlds
-	 *
+	 * 
 	 * Worlds are added to the list immediately, but removed at the end of a
 	 * tick.
-	 *
+	 * 
 	 * @return a {@link List} of actively loaded worlds
 	 */
 	@LiveRead
@@ -263,10 +261,10 @@ public interface Game extends Named {
 	/**
 	 * Loads a world with the given name and generator If the world doesn't
 	 * exist on disk, it creates it.
-	 *
+	 * 
 	 * if the world is already loaded, this functions the same as
 	 * {@link #getWorld(String)}
-	 *
+	 * 
 	 * @param name Name of the world
 	 * @param generator World Generator
 	 * @return
@@ -276,10 +274,10 @@ public interface Game extends Named {
 
 	/**
 	 * Initiates a save of the server state, including configuration files.
-	 *
+	 * 
 	 * It will save the state of the world, if specificed, and the state of
 	 * players, if specified.
-	 *
+	 * 
 	 * @param worlds true to save the state of all active worlds
 	 * @param players true to save the state of all active players
 	 */
@@ -287,7 +285,7 @@ public interface Game extends Named {
 
 	/**
 	 * Registers the recipe with the recipe database.
-	 *
+	 * 
 	 * @param recipe to register
 	 * @return true if the recipe was registered, false if there was a conflict
 	 *         with an existing recipe.
@@ -302,18 +300,18 @@ public interface Game extends Named {
 
 	/**
 	 * Gets the folder that contains the world save data.
-	 *
+	 * 
 	 * If the folder is unusued, the file path will be '.'
-	 *
+	 * 
 	 * @return world folder
 	 */
 	public File getWorldFolder();
 
 	/**
 	 * Returns the game's root {@link Command}.
-	 *
+	 * 
 	 * All command registration and execution is performed through here.
-	 *
+	 * 
 	 * @return the {@link Game}'s root {@link Command}
 	 */
 	public Command getRootCommand();
@@ -321,21 +319,21 @@ public interface Game extends Named {
 	/**
 	 * Returns the game's {@link EventManager} Event listener registration and
 	 * calling is handled through this. ß
-	 *
+	 * 
 	 * @return Our EventManager instance
 	 */
 	public EventManager getEventManager();
 
 	/**
 	 * Returns the {@link Platform} that the game is currently running on.
-	 *
+	 * 
 	 * @return current platform type
 	 */
 	public Platform getPlatform();
 
 	/**
 	 * Creates a new Session
-	 *
+	 * 
 	 * @param channel the associated channel
 	 * @return the session
 	 */
@@ -343,14 +341,14 @@ public interface Game extends Named {
 
 	/**
 	 * Gets the network channel group.
-	 *
+	 * 
 	 * @return The {@link ChannelGroup}.
 	 */
 	public ChannelGroup getChannelGroup();
 
 	/**
 	 * Gets the session registry.
-	 *
+	 * 
 	 * @return The {@link SessionRegistry}.
 	 */
 	public SessionRegistry getSessionRegistry();
@@ -358,56 +356,21 @@ public interface Game extends Named {
 	/**
 	 * Gets the default world generator for this game. Specific generators can
 	 * be specified when loading new worlds.
-	 *
+	 * 
 	 * @return default world generator.
 	 */
 	public WorldGenerator getDefaultGenerator();
 
 	/**
 	 * Gets the scheduler
-	 *
+	 * 
 	 * @return the scheduler
 	 */
 	public Scheduler getScheduler();
 
 	/**
-	 * Registers a recipe to this games recipe database, then stores the recipe
-	 * in the associated plugins recipe.yml. If a recipe for that plugin of that
-	 * name already exists, it will update the database and the recipe.yml
-	 *
-	 * @param recipe to register
-	 */
-	public void addRecipe(Recipe recipe);
-
-	/**
-	 * Gets a recipe registered to this games recipe database, based on the
-	 * plugin and name of the recipe.
-	 *
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return the recipe if it's found, otherwise null
-	 */
-	public Recipe getRecipe(Plugin plugin, String recipe);
-
-	/**
-	 * Removes a recipe from the games recipes database, then returns the
-	 * instance of it if you want to back it up.
-	 *
-	 * *WARNING*
-	 * This will also remove the recipe from the plugins recipe.yml!
-	 * It returns a reference to the removed recipe if you want to back it up
-	 * for safe keeping still.
-	 * *WARNING*
-	 *
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return recipe that was removed
-	 */
-	public Recipe removeRecipe(Plugin plugin, String recipe);
-
-	/**
 	 * Returns the bootstrap protocol for {@code address}
-	 *
+	 * 
 	 * @param address The address
 	 * @return The protocol
 	 */
@@ -415,9 +378,15 @@ public interface Game extends Named {
 
 	/**
 	 * Gets the service manager
-	 *
+	 * 
 	 * @return ServiceManager
 	 */
 	public ServiceManager getServiceManager();
 
+	/**
+	 * Gets the recipe manager
+	 * 
+	 * @return RecipeManager
+	 */
+	public RecipeManager getRecipeManager();
 }
