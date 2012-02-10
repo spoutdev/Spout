@@ -50,8 +50,8 @@ public abstract class Controller {
 
 	protected Entity parent;
 
-	public void attachToEntity(Entity e){
-		this.parent = e;
+	public void attachToEntity(Entity e) {
+		parent = e;
 	}
 
 	public abstract void onAttached();
@@ -63,17 +63,17 @@ public abstract class Controller {
 	 */
 	public void onDeath() {
 	}
+
 	/**
 	 *
 	 * @param dt the number of seconds since last update
 	 */
 	public abstract void onTick(float dt);
 
-
 	/**
 	 * Called when this controller is being synced with the client.
 	 */
-	public void onSync(){
+	public void onSync() {
 
 	}
 
@@ -91,7 +91,8 @@ public abstract class Controller {
 
 	/**
 	 * Called just before the pre-snapshot stage.<br>
-	 * This stage can make changes but they should be checked to make sure they are non-conflicting.
+	 * This stage can make changes but they should be checked to make sure they
+	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
 	}

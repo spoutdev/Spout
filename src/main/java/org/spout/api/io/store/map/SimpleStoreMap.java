@@ -1,8 +1,8 @@
 package org.spout.api.io.store.map;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public interface SimpleStoreMap<K, V> {
 	/**
@@ -90,7 +90,8 @@ public interface SimpleStoreMap<K, V> {
 	public V set(K key, V value);
 
 	/**
-	 * Sets the value associated with a key, but only if neither the key or value are in use
+	 * Sets the value associated with a key, but only if neither the key or
+	 * value are in use
 	 *
 	 * @return true if the key/value pair was set
 	 */

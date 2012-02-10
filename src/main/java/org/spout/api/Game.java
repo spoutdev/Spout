@@ -43,13 +43,14 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.util.Named;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
@@ -73,7 +74,8 @@ public interface Game extends Named {
 	public String getVersion();
 
 	/**
-	 * Returns all player names that have ever played on this Game, whether they are online or not.
+	 * Returns all player names that have ever played on this Game, whether they
+	 * are online or not.
 	 *
 	 * @return all the player names
 	 */
@@ -129,8 +131,8 @@ public interface Game extends Named {
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to iterating over
-	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(String)} for
-	 * each player.
+	 * {@link #getOnlinePlayers()} and invoking
+	 * {@link Player#sendMessage(String)} for each player.
 	 *
 	 * @param message to send
 	 */
@@ -177,6 +179,7 @@ public interface Game extends Named {
 	 * Gets the config folder for the game
 	 *
 	 * It's in the server root
+	 *
 	 * @return
 	 */
 	public File getConfigFolder();
@@ -187,9 +190,9 @@ public interface Game extends Named {
 	 * If searching for the exact name, this method will iterate and check for
 	 * exact matches. <br/>
 	 * <br/>
-	 * Otherwise, this method will iterate over over all players and find the closest match
-	 * to the given name, by comparing the length of other player names that
-	 * start with the given parameter. <br/>
+	 * Otherwise, this method will iterate over over all players and find the
+	 * closest match to the given name, by comparing the length of other player
+	 * names that start with the given parameter. <br/>
 	 * <br/>
 	 * This method is case-insensitive.
 	 *
@@ -218,7 +221,8 @@ public interface Game extends Named {
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
 	 *
-	 * Worlds are added to the list immediately, but removed at the end of a tick.
+	 * Worlds are added to the list immediately, but removed at the end of a
+	 * tick.
 	 *
 	 * @param name of the world to search for
 	 * @return world if found, else null
@@ -234,7 +238,8 @@ public interface Game extends Named {
 	 * and checking for a world that matches {@link World#getUID()}. <br/>
 	 * <br/>
 	 *
-	 * Worlds are added to the list immediately, but removed at the end of a tick.
+	 * Worlds are added to the list immediately, but removed at the end of a
+	 * tick.
 	 *
 	 * @param uid of the world to search for
 	 * @return world if found, else null
@@ -246,7 +251,8 @@ public interface Game extends Named {
 	/**
 	 * Gets a List of actively loaded worlds
 	 *
-	 * Worlds are added to the list immediately, but removed at the end of a tick.
+	 * Worlds are added to the list immediately, but removed at the end of a
+	 * tick.
 	 *
 	 * @return a {@link List} of actively loaded worlds
 	 */
@@ -255,10 +261,11 @@ public interface Game extends Named {
 	public Collection<World> getWorlds();
 
 	/**
-	 * Loads a world with the given name and generator
-	 * If the world doesn't exist on disk, it creates it.
+	 * Loads a world with the given name and generator If the world doesn't
+	 * exist on disk, it creates it.
 	 *
-	 * if the world is already loaded, this functions the same as {@link #getWorld(String)}
+	 * if the world is already loaded, this functions the same as
+	 * {@link #getWorld(String)}
 	 *
 	 * @param name Name of the world
 	 * @param generator World Generator
@@ -349,7 +356,8 @@ public interface Game extends Named {
 	public SessionRegistry getSessionRegistry();
 
 	/**
-	 * Gets the default world generator for this game. Specific generators can be specified when loading new worlds.
+	 * Gets the default world generator for this game. Specific generators can
+	 * be specified when loading new worlds.
 	 *
 	 * @return default world generator.
 	 */
@@ -363,15 +371,17 @@ public interface Game extends Named {
 	public Scheduler getScheduler();
 
 	/**
-	 * Registers a recipe to this games recipe database, then stores the recipe in the associated plugins recipe.yml.
-	 * If a recipe for that plugin of that name already exists, it will update the database and the recipe.yml
+	 * Registers a recipe to this games recipe database, then stores the recipe
+	 * in the associated plugins recipe.yml. If a recipe for that plugin of that
+	 * name already exists, it will update the database and the recipe.yml
 	 *
 	 * @param recipe to register
 	 */
 	public void addRecipe(Recipe recipe);
 
 	/**
-	 * Gets a recipe registered to this games recipe database, based on the plugin and name of the recipe.
+	 * Gets a recipe registered to this games recipe database, based on the
+	 * plugin and name of the recipe.
 	 *
 	 * @param plugin that the recipe belongs to
 	 * @param recipe name
@@ -380,11 +390,13 @@ public interface Game extends Named {
 	public Recipe getRecipe(Plugin plugin, String recipe);
 
 	/**
-	 * Removes a recipe from the games recipes database, then returns the instance of it if you want to back it up.
+	 * Removes a recipe from the games recipes database, then returns the
+	 * instance of it if you want to back it up.
 	 *
 	 * *WARNING*
 	 * This will also remove the recipe from the plugins recipe.yml!
-	 * It returns a reference to the removed recipe if you want to back it up for safe keeping still.
+	 * It returns a reference to the removed recipe if you want to back it up
+	 * for safe keeping still.
 	 * *WARNING*
 	 *
 	 * @param plugin that the recipe belongs to
@@ -395,6 +407,7 @@ public interface Game extends Named {
 
 	/**
 	 * Returns the bootstrap protocol for {@code address}
+	 *
 	 * @param address The address
 	 * @return The protocol
 	 */
@@ -402,7 +415,7 @@ public interface Game extends Named {
 
 	/**
 	 * Gets the service manager
-	 * 
+	 *
 	 * @return ServiceManager
 	 */
 	public ServiceManager getServiceManager();

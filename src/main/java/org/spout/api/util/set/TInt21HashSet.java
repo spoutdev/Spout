@@ -30,7 +30,8 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
 /**
- * A hash set that uses three 21bit integers as key, backed by a long trove hashset. 1 bit is wasted.
+ * A hash set that uses three 21bit integers as key, backed by a long trove
+ * hashset. 1 bit is wasted.
  */
 public class TInt21HashSet {
 	protected TLongSet set;
@@ -83,6 +84,6 @@ public class TInt21HashSet {
 	}
 
 	protected static final long key(int x, int y, int z) {
-		return (((long)x) & 0x1FFFFF) << 42 | (((long)z) & 0x1FFFFF) << 21 | ((long)y) & 0x1FFFFF;
+		return ((long) x & 0x1FFFFF) << 42 | ((long) z & 0x1FFFFF) << 21 | (long) y & 0x1FFFFF;
 	}
 }

@@ -44,7 +44,7 @@ public class Vector2mPolar extends Vector2Polar {
 	public Vector2mPolar(float r, float theta) {
 		super(r, theta);
 	}
-	
+
 	public void set(Vector2Polar vector) {
 		r = vector.getR();
 		theta = vector.getTheta();
@@ -61,6 +61,7 @@ public class Vector2mPolar extends Vector2Polar {
 
 	/**
 	 * Sets the angle of the vector
+	 *
 	 * @param theta
 	 */
 	public void setTheta(float theta) {
@@ -114,6 +115,5 @@ public class Vector2mPolar extends Vector2Polar {
 		set(super.subtract(that));
 		return this;
 	}
-	
-	
+
 }

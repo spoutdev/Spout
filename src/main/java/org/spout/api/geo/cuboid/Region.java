@@ -81,9 +81,9 @@ public abstract class Region extends Cube {
 	@LiveRead
 	public abstract Chunk getChunk(int x, int y, int z, boolean load);
 
-
 	/**
 	 * True if the region has a loaded chunk at the (x, y, z).
+	 *
 	 * @param x the chunk x coordinate
 	 * @param y the chunk y coordinate
 	 * @param z the chunk z coordinate
@@ -120,7 +120,8 @@ public abstract class Region extends Cube {
 	public abstract void save();
 
 	/**
-	 * Performs the nessecary tasks to unload this region from the world, and all associated chunks.
+	 * Performs the nessecary tasks to unload this region from the world, and
+	 * all associated chunks.
 	 *
 	 * @param save whether to save the region and associated data.
 	 */

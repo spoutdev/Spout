@@ -25,7 +25,6 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +34,8 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.spout.api.exception.ConfigurationException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -49,34 +50,39 @@ import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * YAML configuration loader. To use this class, construct it with path to
- * a file and call its load() method. For specifying node paths in the
- * various get*() methods, they support SK's path notation, allowing you to
- * select child nodes by delimiting node names with periods.
+ * YAML configuration loader. To use this class, construct it with path to a
+ * file and call its load() method. For specifying node paths in the various
+ * get*() methods, they support SK's path notation, allowing you to select child
+ * nodes by delimiting node names with periods.
  *
  * <p>
- * For example, given the following configuration file:</p>
+ * For example, given the following configuration file:
+ * </p>
  *
- * <pre>members:
- *	 - Hollie
- *	 - Jason
- *	 - Bobo
- *	 - Aya
- *	 - Tetsu
+ * <pre>
+ * members:
+ *  - Hollie
+ *  - Jason
+ *  - Bobo
+ *  - Aya
+ *  - Tetsu
  * worldguard:
- *	 fire:
- *		 spread: false
- *		 blocks: [cloth, rock, glass]
+ *  fire:
+ * 	 spread: false
+ * 	 blocks: [cloth, rock, glass]
  * sturmeh:
- *	 cool: false
- *	 eats:
- *		 babies: true</pre>
+ *  cool: false
+ *  eats:
+ * 	 babies: true
+ * </pre>
  *
- * <p>Calling code could access sturmeh's baby eating state by using
+ * <p>
+ * Calling code could access sturmeh's baby eating state by using
  * <code>getBoolean("sturmeh.eats.babies", false)</code>. For lists, there are
  * methods such as <code>getStringList</code> that will return a type safe list.
  *
- * <p>This class is currently incomplete. It is not yet possible to get a node.
+ * <p>
+ * This class is currently incomplete. It is not yet possible to get a node.
  * </p>
  *
  * @author sk89q
@@ -123,17 +129,18 @@ public class Configuration extends ConfigurationNode {
 				if (in != null) {
 					in.close();
 				}
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 	}
 
 	/**
-	 * Set the header for the file as a series of lines that are terminated
-	 * by a new line sequence.
+	 * Set the header for the file as a series of lines that are terminated by a
+	 * new line sequence.
 	 *
 	 * @param headerLines header lines to prepend
 	 */
-	public void setHeader(String ... headerLines)  {
+	public void setHeader(String... headerLines) {
 		StringBuilder header = new StringBuilder();
 
 		for (String line : headerLines) {
@@ -147,10 +154,10 @@ public class Configuration extends ConfigurationNode {
 	}
 
 	/**
-	 * Set the header for the file. A header can be provided to prepend the
-	 * YAML data output on configuration save. The header is
-	 * printed raw and so must be manually commented if used. A new line will
-	 * be appended after the header, however, if a header is provided.
+	 * Set the header for the file. A header can be provided to prepend the YAML
+	 * data output on configuration save. The header is printed raw and so must
+	 * be manually commented if used. A new line will be appended after the
+	 * header, however, if a header is provided.
 	 *
 	 * @param header header to prepend
 	 */
@@ -191,12 +198,14 @@ public class Configuration extends ConfigurationNode {
 			}
 			yaml.dump(root, writer);
 			return true;
-		} catch (IOException e) {} finally {
+		} catch (IOException e) {
+		} finally {
 			try {
 				if (stream != null) {
 					stream.close();
 				}
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 
 		return false;
@@ -216,8 +225,9 @@ public class Configuration extends ConfigurationNode {
 	}
 
 	/**
-	 * This method returns an empty ConfigurationNode for using as a
-	 * default in methods that select a node from a node list.
+	 * This method returns an empty ConfigurationNode for using as a default in
+	 * methods that select a node from a node list.
+	 *
 	 * @return
 	 */
 	public static ConfigurationNode getEmptyNode() {
@@ -228,7 +238,7 @@ public class Configuration extends ConfigurationNode {
 class EmptyNullRepresenter extends Representer {
 	public EmptyNullRepresenter() {
 		super();
-		this.nullRepresenter = new EmptyRepresentNull();
+		nullRepresenter = new EmptyRepresentNull();
 	}
 
 	protected class EmptyRepresentNull implements Represent {

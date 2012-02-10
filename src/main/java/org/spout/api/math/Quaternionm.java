@@ -39,31 +39,37 @@ public class Quaternionm extends Quaternion {
 	}
 
 	/**
-	 * Constructs a new Quaternion with the given xyzw
-	 * NOTE: This represents a Unit Vector in 4d space.  Do not use unless you know what you are doing.
+	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
+	 * Unit Vector in 4d space. Do not use unless you know what you are doing.
 	 * If you want to create a normal rotation, use the angle/axis override.
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
 	 */
-	public Quaternionm(float x, float y, float z, float w){
+	public Quaternionm(float x, float y, float z, float w) {
 		super(x, y, z, w);
 	}
+
 	/**
-	 * Constructs a new Quaternion that represents a given rotation around an arbatrary axis
+	 * Constructs a new Quaternion that represents a given rotation around an
+	 * arbatrary axis
+	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */
-	public Quaternionm(float angle, Vector3 axis){
+	public Quaternionm(float angle, Vector3 axis) {
 		super(angle, axis);
 	}
+
 	/**
-	 *  Copy Constructor
+	 * Copy Constructor
 	 */
 	public Quaternionm(Quaternionm rotation) {
 		super(rotation);
 	}
+
 	/**
 	 * Sets the X component of the quaternion
 	 *
@@ -72,6 +78,7 @@ public class Quaternionm extends Quaternion {
 	public void setX(float x) {
 		this.x = x;
 	}
+
 	/**
 	 * Sets the Y component of the quaternion
 	 *
@@ -80,6 +87,7 @@ public class Quaternionm extends Quaternion {
 	public void setY(float y) {
 		this.y = y;
 	}
+
 	/**
 	 * Sets the Z component of the quaternion
 	 *
@@ -88,6 +96,7 @@ public class Quaternionm extends Quaternion {
 	public void setZ(float z) {
 		this.z = z;
 	}
+
 	/**
 	 * Sets the W component of the quaternion
 	 *
@@ -103,10 +112,10 @@ public class Quaternionm extends Quaternion {
 	 * @param quaternion
 	 */
 	public void set(Quaternion quaternion) {
-		this.x = quaternion.getX();
-		this.y = quaternion.getY();
-		this.z = quaternion.getZ();
-		this.w = quaternion.getW();
+		x = quaternion.getX();
+		y = quaternion.getY();
+		z = quaternion.getZ();
+		w = quaternion.getW();
 	}
 
 	@Override
@@ -126,6 +135,5 @@ public class Quaternionm extends Quaternion {
 		set(super.rotate(angle, axis));
 		return this;
 	}
-
 
 }

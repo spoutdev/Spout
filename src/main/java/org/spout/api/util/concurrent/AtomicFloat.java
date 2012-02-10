@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * This does not exist in the standard java atomic package
  */
-public class AtomicFloat extends Number implements Serializable{
+public class AtomicFloat extends Number implements Serializable {
 	private static final long serialVersionUID = 1623478887667L;
 
 	private AtomicInteger value = new AtomicInteger();
@@ -56,7 +56,7 @@ public class AtomicFloat extends Number implements Serializable{
 
 	public final void lazySet(float value) {
 		//TODO JDK 1.6?
-		this.set(value);
+		set(value);
 		//this.value.lazySet(Float.floatToRawIntBits(value));
 	}
 
@@ -65,19 +65,19 @@ public class AtomicFloat extends Number implements Serializable{
 	}
 
 	public final boolean compareAndSet(float expect, float newValue) {
-		return this.value.compareAndSet(Float.floatToRawIntBits(expect), Float.floatToRawIntBits(newValue));
+		return value.compareAndSet(Float.floatToRawIntBits(expect), Float.floatToRawIntBits(newValue));
 	}
 
 	public final boolean weakCompareAndSet(float expect, float newValue) {
-		return this.value.weakCompareAndSet(Float.floatToRawIntBits(expect), Float.floatToRawIntBits(newValue));
+		return value.weakCompareAndSet(Float.floatToRawIntBits(expect), Float.floatToRawIntBits(newValue));
 	}
 
 	private final float add(float delta, boolean returnOldValue) {
 		while (true) {
-			int oldIntValue = this.value.get();
+			int oldIntValue = value.get();
 			float oldValue = Float.intBitsToFloat(oldIntValue);
 			float newValue = oldValue + delta;
-			if (this.value.compareAndSet(oldIntValue, Float.floatToRawIntBits(newValue))) {
+			if (value.compareAndSet(oldIntValue, Float.floatToRawIntBits(newValue))) {
 				return returnOldValue ? oldValue : newValue;
 			}
 		}
@@ -92,18 +92,19 @@ public class AtomicFloat extends Number implements Serializable{
 
 	}
 
+	@Override
 	public String toString() {
 		return Float.toString(get());
 	}
 
 	@Override
 	public int intValue() {
-		return (int)get();
+		return (int) get();
 	}
 
 	@Override
 	public long longValue() {
-		return (long)get();
+		return (long) get();
 	}
 
 	@Override
@@ -113,6 +114,6 @@ public class AtomicFloat extends Number implements Serializable{
 
 	@Override
 	public double doubleValue() {
-		return (double)get();
+		return get();
 	}
 }

@@ -35,6 +35,7 @@ import org.spout.api.math.Vector3;
 public interface CollisionVolume {
 	/**
 	 * Checks for Intersection
+	 *
 	 * @param other
 	 * @return
 	 */
@@ -42,6 +43,7 @@ public interface CollisionVolume {
 
 	/**
 	 * Checks for containing
+	 *
 	 * @param other
 	 * @return
 	 */
@@ -73,6 +75,7 @@ public interface CollisionVolume {
 
 	/**
 	 * Defines a sweep test from one start to an end
+	 *
 	 * @param start
 	 * @param end
 	 * @return

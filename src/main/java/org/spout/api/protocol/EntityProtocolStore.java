@@ -5,13 +5,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 /**
- * A store for storing EntityProtocols with fast array based lookup.  
- * Each entity controller type will have a protocol store which contains methods for creating the relevant network messages.
+ * A store for storing EntityProtocols with fast array based lookup. Each entity
+ * controller type will have a protocol store which contains methods for
+ * creating the relevant network messages.
  */
 public class EntityProtocolStore {
-	
+
 	private OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
-	private AtomicReference<EntityProtocol[]> entityProtocols = new  AtomicReference<EntityProtocol[]>();
+	private AtomicReference<EntityProtocol[]> entityProtocols = new AtomicReference<EntityProtocol[]>();
 
 	public EntityProtocol getEntityProtocol(int id) {
 		while (true) {
@@ -28,7 +29,7 @@ public class EntityProtocolStore {
 			}
 		}
 	}
-	
+
 	public void setEntityProtocol(int id, EntityProtocol protocol) {
 		if (id < 0) {
 			throw new IllegalArgumentException("Entity protocols ids must be positive");
@@ -39,10 +40,10 @@ public class EntityProtocolStore {
 			if (protocols == null) {
 				protocols = new EntityProtocol[id + 1];
 				entityProtocols.set(protocols);
-			} 
+			}
 			if (id >= protocols.length) {
 				EntityProtocol[] newProtocols = new EntityProtocol[Math.max(protocols.length * 3 / 2, id + 1)];
-                System.arraycopy(protocols, 0, newProtocols, 0, protocols.length);
+				System.arraycopy(protocols, 0, newProtocols, 0, protocols.length);
 				protocols = newProtocols;
 				entityProtocols.set(protocols);
 			}
@@ -55,5 +56,5 @@ public class EntityProtocolStore {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 }

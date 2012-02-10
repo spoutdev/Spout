@@ -39,13 +39,15 @@ public class CommonSecurityManager extends SecurityManager implements Secure {
 
 	public boolean lock(double key) {
 		boolean old = locked;
-		if (key == this.key)
+		if (key == this.key) {
 			locked = true;
+		}
 		return old;
 	}
 
 	public void unlock(double key) {
-		if (key == this.key)
+		if (key == this.key) {
 			locked = false;
+		}
 	}
 }

@@ -63,6 +63,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Gets the format that will be broadcasted.
+	 *
 	 * @return The message format
 	 */
 	public String getFormat() {
@@ -70,9 +71,9 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Sets the message's format to {@code format}
-	 * Verification is performed to make sure that the string has at least two string
-	 * formatting positions.
+	 * Sets the message's format to {@code format} Verification is performed to
+	 * make sure that the string has at least two string formatting positions.
+	 *
 	 * @param format The format to set.
 	 * @return Whether the format was valid.
 	 */

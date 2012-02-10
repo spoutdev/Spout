@@ -34,7 +34,8 @@ public class MiscCompatibilityUtils {
 	/**
 	 * Equivalent to the Arrays.copyOfRange() method.
 	 *
-	 * The elements at index from to the element at index (to - 1) are copied to a new array.
+	 * The elements at index from to the element at index (to - 1) are copied to
+	 * a new array.
 	 *
 	 * If the to index is out of range, zero or equivalent values are used.
 	 *
@@ -56,9 +57,9 @@ public class MiscCompatibilityUtils {
 		}
 
 		@SuppressWarnings("unchecked")
-		Class<T[]> clazz = (Class<T[]>)original.getClass();
+		Class<T[]> clazz = (Class<T[]>) original.getClass();
 		@SuppressWarnings("unchecked")
-		Class<T> clazzComponent = (Class<T>)clazz.getComponentType();
+		Class<T> clazzComponent = (Class<T>) clazz.getComponentType();
 
 		int length = to - from;
 

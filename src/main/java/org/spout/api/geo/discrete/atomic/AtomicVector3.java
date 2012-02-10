@@ -34,9 +34,9 @@ import org.spout.api.math.Vector3m;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 public class AtomicVector3 extends Vector3m {
-	
+
 	private final OptimisticReadWriteLock lock;
-	
+
 	public AtomicVector3(OptimisticReadWriteLock lock) {
 		super();
 		this.lock = handleNull(lock);
@@ -81,19 +81,19 @@ public class AtomicVector3 extends Vector3m {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	/**
 	 * Sets the value of the Vector3 without any synchronisation
-	 * 
+	 *
 	 * @param vector
 	 */
 	public void directSet(Vector3 vector) {
 		super.set(vector);
 	}
-	
+
 	/**
 	 * Sets the value of the Vector3 without any synchronisation
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -106,7 +106,7 @@ public class AtomicVector3 extends Vector3m {
 
 	/**
 	 * Atomically sets this point to the given values.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -124,7 +124,7 @@ public class AtomicVector3 extends Vector3m {
 
 	/**
 	 * Atomically sets this point to the given point.
-	 * 
+	 *
 	 * @param point
 	 */
 	public void set(AtomicVector3 vector) {
@@ -148,6 +148,7 @@ public class AtomicVector3 extends Vector3m {
 
 	// Reads
 
+	@Override
 	public float getX() {
 		while (true) {
 			int seq = lock.readLock();
@@ -162,6 +163,7 @@ public class AtomicVector3 extends Vector3m {
 		}
 	}
 
+	@Override
 	public float getY() {
 		while (true) {
 			int seq = lock.readLock();
@@ -173,8 +175,10 @@ public class AtomicVector3 extends Vector3m {
 					return result;
 				}
 			}
-		}	}
+		}
+	}
 
+	@Override
 	public float getZ() {
 		while (true) {
 			int seq = lock.readLock();
@@ -215,12 +219,12 @@ public class AtomicVector3 extends Vector3m {
 				if (lock.readUnlock(seq)) {
 					return string;
 				}
-			}	
+			}
 		}
 	}
-	
+
 	// Read methods
-	
+
 	@Override
 	public float dot(Vector3 other) {
 		while (true) {
@@ -235,7 +239,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 cross(Vector3 other) {
 		while (true) {
@@ -250,13 +254,13 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public Vector3 cross(AtomicVector3 other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = cross((Vector3)other);
+				result = cross((Vector3) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -264,7 +268,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 add(Vector3 other) {
 		while (true) {
@@ -279,13 +283,13 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public Vector3 add(AtomicVector3 other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = add((Vector3)other);
+				result = add((Vector3) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -293,7 +297,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 subtract(Vector3 other) {
 		while (true) {
@@ -308,13 +312,13 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public Vector3 subtract(AtomicVector3 other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = subtract((Vector3)other);
+				result = subtract((Vector3) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -322,7 +326,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 ceil() {
 		while (true) {
@@ -337,7 +341,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 floor() {
 		while (true) {
@@ -352,7 +356,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 round() {
 		while (true) {
@@ -367,7 +371,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 abs() {
 		while (true) {
@@ -382,7 +386,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 normalize() {
 		while (true) {
@@ -397,7 +401,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector2 toVector2() {
 		while (true) {
@@ -412,7 +416,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector2m toVector2m() {
 		while (true) {
@@ -427,7 +431,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public float[] toArray() {
 		while (true) {
@@ -442,7 +446,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public double distance(Vector3 other) {
 		while (true) {
@@ -457,7 +461,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public double distance(AtomicVector3 other) {
 		while (true) {
 			int seq = lock.readLock();
@@ -471,7 +475,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public float lengthSquared() {
 		while (true) {
@@ -486,7 +490,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public float length() {
 		while (true) {
@@ -501,7 +505,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public float fastLength() {
 		while (true) {
@@ -516,7 +520,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 pow(double pow) {
 		while (true) {
@@ -531,7 +535,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(double scale) {
 		while (true) {
@@ -546,7 +550,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(float scale) {
 		while (true) {
@@ -561,7 +565,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(int scale) {
 		while (true) {
@@ -576,7 +580,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(double x, double y, double z) {
 		while (true) {
@@ -591,7 +595,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(float x, float y, float z) {
 		while (true) {
@@ -606,7 +610,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(int x, int y, int z) {
 		while (true) {
@@ -621,7 +625,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(double scale) {
 		while (true) {
@@ -636,7 +640,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(float scale) {
 		while (true) {
@@ -651,7 +655,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(int scale) {
 		while (true) {
@@ -666,7 +670,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(double x, double y, double z) {
 		while (true) {
@@ -681,7 +685,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(float x, float y, float z) {
 		while (true) {
@@ -696,7 +700,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(int x, int y, int z) {
 		while (true) {
@@ -711,7 +715,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 transform(Quaternion other) {
 		while (true) {
@@ -726,13 +730,13 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public Vector3 transform(AtomicQuaternion other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = transform((Quaternion)other);
+				result = transform((Quaternion) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -740,7 +744,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 transform(Matrix other) {
 		while (true) {
@@ -755,7 +759,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public int compareTo(Vector3 o) {
 		while (true) {
@@ -770,7 +774,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public int compareTo(AtomicVector3 o) {
 		while (true) {
 			int seq = o.getLock().readLock();
@@ -784,7 +788,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		while (true) {
@@ -799,7 +803,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	public boolean equals(AtomicVector3 obj) {
 		while (true) {
 			int seq = obj.getLock().readLock();
@@ -813,7 +817,7 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
-	
+
 	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {
 			return new OptimisticReadWriteLock();

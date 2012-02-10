@@ -36,11 +36,11 @@ public class ServiceRegisterEvent extends ServiceEvent {
 		super(provider);
 		this.priority = priority;
 	}
-	
+
 	public void setPriority(ServicePriority priority) {
 		this.priority = priority;
 	}
-	
+
 	public ServicePriority getPriority() {
 		return priority;
 	}

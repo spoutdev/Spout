@@ -45,7 +45,7 @@ public enum BlockFace {
 	private BlockFace(int dx, int dy, int dz) {
 		offset = new Vector3(dx, dy, dz);
 	}
-	
+
 	private BlockFace(int dx, int dy, int dz, BlockFace opposite) {
 		offset = new Vector3(dx, dy, dz);
 		this.opposite = opposite;
@@ -55,7 +55,7 @@ public enum BlockFace {
 	public Vector3 getOffset() {
 		return offset;
 	}
-	
+
 	public BlockFace getOpposite() {
 		return opposite;
 	}

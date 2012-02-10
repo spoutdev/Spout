@@ -34,12 +34,13 @@ import org.spout.api.event.Event;
 public abstract class EntityEvent extends Event {
 	private Entity entity;
 
-	public EntityEvent(Entity e){
-		this.entity = e;
+	public EntityEvent(Entity e) {
+		entity = e;
 	}
 
 	/**
 	 * Gets the entity associated with this event.
+	 *
 	 * @return The entity associated with the event.
 	 */
 	public Entity getEntity() {
@@ -48,6 +49,7 @@ public abstract class EntityEvent extends Event {
 
 	/**
 	 * Sets the entity associated with this event.
+	 *
 	 * @param entity The entity to be associated with this event.
 	 */
 	public void setEntity(Entity entity) {

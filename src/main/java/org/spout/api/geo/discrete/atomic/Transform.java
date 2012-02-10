@@ -54,25 +54,30 @@ public class Transform {
 	public AtomicPoint getPosition() {
 		return position;
 	}
+
 	public void setPosition(Point position) {
 		this.position.set(position);
 	}
+
 	public AtomicQuaternion getRotation() {
 		return rotation;
 	}
+
 	public void setRotation(Quaternion rotation) {
 		this.rotation.set(rotation);
 	}
+
 	public AtomicVector3 getScale() {
 		return scale;
 	}
+
 	public void setScale(Vector3 scale) {
 		this.scale.set(scale);
 	}
-	
+
 	/**
 	 * Atomically gets the parent of this Transform
-	 * 
+	 *
 	 * @return the parent
 	 */
 	@Threadsafe
@@ -89,10 +94,10 @@ public class Transform {
 			}
 		}
 	}
-	
+
 	/**
 	 * Atomically Sets the parent of this transform
-	 * 
+	 *
 	 * @param parent
 	 */
 	@Threadsafe
@@ -106,8 +111,9 @@ public class Transform {
 	}
 
 	/**
-	 * Atomically sets the value of this transform to the value of another transform
-	 * 
+	 * Atomically sets the value of this transform to the value of another
+	 * transform
+	 *
 	 * @param transform the other transform
 	 */
 	@Threadsafe
@@ -119,9 +125,9 @@ public class Transform {
 		try {
 			while (true) {
 				int seq2 = transform.getLock().readLock();
-				this.position.directSet(transform.getPosition());
-				this.rotation.directSet(transform.getRotation());
-				this.scale.directSet(transform.getScale());
+				position.directSet(transform.getPosition());
+				rotation.directSet(transform.getRotation());
+				scale.directSet(transform.getScale());
 				if (transform.getLock().readUnlock(seq2)) {
 					return;
 				}
@@ -130,10 +136,10 @@ public class Transform {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	/**
 	 * Atomically sets the value of this transform.
-	 * 
+	 *
 	 * @param world the world
 	 * @param px the x coordinate of the position
 	 * @param py the y coordinate of the position
@@ -150,17 +156,17 @@ public class Transform {
 	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
 		int seq = lock.writeLock();
 		try {
-			this.position.directSet(world, px, py, pz);
-			this.rotation.directSet(rx, ry, rz, rw);
-			this.scale.directSet(sx, sy, sz);
+			position.directSet(world, px, py, pz);
+			rotation.directSet(rx, ry, rz, rw);
+			scale.directSet(sx, sy, sz);
 		} finally {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	/**
 	 * Atomically sets this point to the given components
-	 * 
+	 *
 	 * @param point
 	 */
 	@Threadsafe
@@ -174,15 +180,16 @@ public class Transform {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	/**
-	 * Creates a Transform that is the sum of this transform and the given transform
-	 * 
+	 * Creates a Transform that is the sum of this transform and the given
+	 * transform
+	 *
 	 * @param t the transform
 	 * @return the new transform
 	 */
 	@Threadsafe
-	public Transform createSum(Transform t){
+	public Transform createSum(Transform t) {
 		Transform r = new Transform();
 		while (true) {
 			int seq = lock.readLock();
@@ -197,21 +204,22 @@ public class Transform {
 	}
 
 	/**
-	 * Creates a Transform that is a snapshot of the absolute position of this transform
-	 * 
+	 * Creates a Transform that is a snapshot of the absolute position of this
+	 * transform
+	 *
 	 * @return the snapshot
 	 */
 	@Threadsafe
-	public Transform getAbsolutePosition(){
+	public Transform getAbsolutePosition() {
 		while (true) {
 			int seq = lock.readLock();
-			if(parent == null) {
+			if (parent == null) {
 				Transform r = copy();
 				if (lock.readUnlock(seq)) {
 					return r;
 				}
 			} else {
-				Transform r = this.createSum(parent.get().getAbsolutePosition());
+				Transform r = createSum(parent.get().getAbsolutePosition());
 				if (lock.readUnlock(seq)) {
 					return r;
 				}
@@ -221,18 +229,18 @@ public class Transform {
 
 	/**
 	 * Creates a Transform that is a copy of this transform
-	 * 
+	 *
 	 * @return the snapshot
 	 */
 	@Threadsafe
-	public Transform copy(){
+	public Transform copy() {
 		Transform t = new Transform();
 		while (true) {
 			int seq = lock.readLock();
-			t.setPosition(this.position);
-			t.setRotation(this.rotation);
-			t.setScale(this.scale);
-			t.setParent(this.parent.get());
+			t.setPosition(position);
+			t.setRotation(rotation);
+			t.setScale(scale);
+			t.setParent(parent.get());
 			if (lock.readUnlock(seq)) {
 				return t;
 			}
@@ -241,14 +249,15 @@ public class Transform {
 
 	/**
 	 * Gets a String representation of this transform
-	 * 
+	 *
 	 * @return the string
 	 */
+	@Override
 	@Threadsafe
 	public String toString() {
 		while (true) {
 			int seq = lock.readLock();
-			String s = getClass().getSimpleName()+ "{" + position + ", "+ rotation + ", " + scale + "}";
+			String s = getClass().getSimpleName() + "{" + position + ", " + rotation + ", " + scale + "}";
 			if (lock.readUnlock(seq)) {
 				return s;
 			}
@@ -259,19 +268,19 @@ public class Transform {
 	protected OptimisticReadWriteLock getLock() {
 		return lock;
 	}
-	
+
 	/**
 	 * Optimistically Read locks the Transform
-	 * 
+	 *
 	 * @return the sequence number
 	 */
 	public int readLock() {
 		return lock.readLock();
 	}
-	
+
 	/**
 	 * Unlocks the optimistic read lock
-	 * 
+	 *
 	 * @param sequence the sequence number returned by readLock()
 	 * @return true if the Transform hasn't changed
 	 */

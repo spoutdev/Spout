@@ -34,7 +34,8 @@ import gnu.trove.map.TLongObjectMap;
  */
 public interface TSyncLongObjectMap<V> extends TLongObjectMap<V> {
 	/**
-	 * Removes a key/value pair from the map, but only if the key is mapped to a given value
+	 * Removes a key/value pair from the map, but only if the key is mapped to a
+	 * given value
 	 *
 	 * @param key the key
 	 * @param value the expected value

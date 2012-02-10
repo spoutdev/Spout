@@ -116,7 +116,6 @@ public class Vector3 implements Comparable<Vector3> {
 		this(0, 0, 0);
 	}
 
-
 	public float getX() {
 		return x;
 	}
@@ -373,7 +372,6 @@ public class Vector3 implements Comparable<Vector3> {
 		return divide(new Vector3(val, val, val));
 	}
 
-
 	/**
 	 * Takes the dot product of two vectors
 	 *
@@ -385,10 +383,9 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Returns a Vector2 object using the X and Z values of
-	 * this Vector3. The x of this Vector3 becomes the x
-	 * of the Vector2, and the z of this Vector3 becomes the
-	 * y of the Vector2.
+	 * Returns a Vector2 object using the X and Z values of this Vector3. The x
+	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
+	 * becomes the y of the Vector2.
 	 *
 	 * @return
 	 */
@@ -397,10 +394,9 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Returns a Vector2m object using the X and Z values of
-	 * this Vector3. The x of this Vector3 becomes the x
-	 * of the Vector2, and the z of this Vector3 becomes the
-	 * y of the Vector2m.
+	 * Returns a Vector2m object using the X and Z values of this Vector3. The x
+	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
+	 * becomes the y of the Vector2m.
 	 *
 	 * @return
 	 */
@@ -419,8 +415,8 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 up to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -429,8 +425,8 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 down to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -439,8 +435,8 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -449,8 +445,7 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Sets the X, Y, and Z values of this Vector3 to their
-	 * absolute value.
+	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
 	 *
 	 * @return
 	 */
@@ -566,13 +561,14 @@ public class Vector3 implements Comparable<Vector3> {
 		}
 		Vector3 xT = this;
 		Vector3 yT = (Vector3) b;
-        return xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ();
-    }
+		return xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ();
+	}
 
 	// TODO - all the methods below need to use .getX(), .getY() etc, for all "other" vectors.
-	
+
 	/**
 	 * Generates a unique hash code for this set of values
+	 *
 	 * @return
 	 */
 	@Override
@@ -592,8 +588,7 @@ public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Returns the length of the given vector.
 	 *
-	 * Note: Makes use of Math.sqrt and
-	 * is not cached, so can be slow
+	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
 	 *
 	 * Also known as norm. ||a||
 	 *
@@ -702,8 +697,8 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of the given Vector3 up to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of the given Vector3 up to the nearest
+	 * integer value.
 	 *
 	 * @param o Vector3 to use
 	 * @return
@@ -713,8 +708,8 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of the given Vector3 down to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of the given Vector3 down to the nearest
+	 * integer value.
 	 *
 	 * @param o Vector3 to use
 	 * @return
@@ -724,8 +719,8 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of the given Vector3 to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of the given Vector3 to the nearest integer
+	 * value.
 	 *
 	 * @param o Vector3 to use
 	 * @return
@@ -735,8 +730,7 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Sets the X, Y, and Z values of the given Vector3 to their
-	 * absolute value.
+	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
 	 *
 	 * @param o Vector3 to use
 	 * @return
@@ -774,8 +768,8 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public static Vector3 rand() {
 		double[] rands = new double[3];
-		for( int i = 0; i < 3; i++ ) {
-			rands[i] = (Math.random() * 2) - 1;
+		for (int i = 0; i < 3; i++) {
+			rands[i] = Math.random() * 2 - 1;
 		}
 		return new Vector3(rands[0], rands[1], rands[2]);
 	}
@@ -804,10 +798,9 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Returns a Vector2 object using the X and Z values of
-	 * the given Vector3. The x of the Vector3 becomes the x
-	 * of the Vector2, and the z of this Vector3 becomes the
-	 * y of the Vector2m.
+	 * Returns a Vector2 object using the X and Z values of the given Vector3.
+	 * The x of the Vector3 becomes the x of the Vector2, and the z of this
+	 * Vector3 becomes the y of the Vector2m.
 	 *
 	 * @param o Vector3 object to use
 	 * @return
@@ -817,10 +810,9 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Returns a Vector2m object using the X and Z values of
-	 * the given Vector3. The x of the Vector3 becomes the x
-	 * of the Vector2m, and the z of this Vector3 becomes the
-	 * y of the Vector2m.
+	 * Returns a Vector2m object using the X and Z values of the given Vector3.
+	 * The x of the Vector3 becomes the x of the Vector2m, and the z of this
+	 * Vector3 becomes the y of the Vector2m.
 	 *
 	 * @param o Vector3 object to use
 	 * @return
@@ -836,7 +828,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static float[] toArray(Vector3 a) {
-		return new float[]{a.getX(), a.getY(), a.getZ()};
+		return new float[] {a.getX(), a.getY(), a.getZ()};
 	}
 
 	/**
@@ -854,6 +846,7 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
+	 *
 	 * @param vector
 	 * @param rot
 	 * @return

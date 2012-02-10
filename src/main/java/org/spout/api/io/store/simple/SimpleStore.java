@@ -126,7 +126,8 @@ public interface SimpleStore<T> {
 	public T set(String key, T value);
 
 	/**
-	 * Sets the value associated with a key, but only if neither the key or value are in use
+	 * Sets the value associated with a key, but only if neither the key or
+	 * value are in use
 	 *
 	 * @return true if the key/value pair was set
 	 */

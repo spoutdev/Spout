@@ -32,17 +32,23 @@ package org.spout.api.datatable;
 public interface DatatableMap extends Outputable {
 	/**
 	 * Adds the Datatable Tuple to the map, using hashCode() as the key
+	 *
 	 * @param value
 	 */
 	public void set(DatatableTuple value);
+
 	/**
 	 * Adds the DatatableTuple to the map, using the int as the key
+	 *
 	 * @param key
 	 * @param value
 	 */
 	public void set(int key, DatatableTuple value);
+
 	/**
-	 * Adds the DatatableTuple to the map, using the string key.  This triggers a string lookup
+	 * Adds the DatatableTuple to the map, using the string key. This triggers a
+	 * string lookup
+	 *
 	 * @param key
 	 * @param value
 	 */

@@ -67,16 +67,18 @@ public class BoneTransform {
 		this.parent = parent;
 	}
 
-	private BoneTransform add(BoneTransform other){
+	private BoneTransform add(BoneTransform other) {
 		BoneTransform t = new BoneTransform();
-		t.position = this.position.add(other.position);
-		t.rotation = this.rotation.multiply(other.rotation);
-		t.scale = this.scale.add(other.scale);
+		t.position = position.add(other.position);
+		t.rotation = rotation.multiply(other.rotation);
+		t.scale = scale.add(other.scale);
 		return t;
 	}
 
-	public BoneTransform getAbsolutePosition(){
-		if(parent == null) return this;
-		return this.add(parent.getAbsolutePosition());
+	public BoneTransform getAbsolutePosition() {
+		if (parent == null) {
+			return this;
+		}
+		return add(parent.getAbsolutePosition());
 	}
 }

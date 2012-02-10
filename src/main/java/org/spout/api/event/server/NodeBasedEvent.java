@@ -25,9 +25,10 @@
  */
 package org.spout.api.event.server;
 
-import org.spout.api.event.Event;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.spout.api.event.Event;
 
 /**
  * This event is a parent event for any event that uses nodes.

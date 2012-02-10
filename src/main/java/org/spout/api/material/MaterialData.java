@@ -35,9 +35,9 @@ public class MaterialData {
 	private final static ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	private final static TIntPairObjectHashMap<Material> idLookup = new TIntPairObjectHashMap<Material>(1000);
 	private final static HashMap<String, Material> nameLookup = new HashMap<String, Material>(1000);
-	
+
 	private final static int MAX_SIZE = 1 << 16 - 1 << 13;
-	
+
 	/**
 	 * Performs quick lookup of materials based on only their id.
 	 */
@@ -58,17 +58,16 @@ public class MaterialData {
 			if (mat.getData() == 0) {
 				quickMaterialLookup[id] = mat;
 			}
-		}
-		finally {
+		} finally {
 			lock.writeLock().unlock();
 		}
 	}
-	
+
 	private static void expandQuickLookups(int id) {
-		if (id > quickMaterialLookup.length){
-			int newSize = Math.min(MAX_SIZE,id * 3 / 2);
+		if (id > quickMaterialLookup.length) {
+			int newSize = Math.min(MAX_SIZE, id * 3 / 2);
 			Material[] expanded = new Material[newSize];
-            System.arraycopy(quickMaterialLookup, 0, expanded, 0, quickMaterialLookup.length);
+			System.arraycopy(quickMaterialLookup, 0, expanded, 0, quickMaterialLookup.length);
 			quickMaterialLookup = expanded;
 		}
 	}
@@ -122,8 +121,7 @@ public class MaterialData {
 				return mat;
 			}
 			return quickMaterialLookup[id];
-		}
-		finally {
+		} finally {
 			lock.readLock().unlock();
 		}
 	}
@@ -150,7 +148,8 @@ public class MaterialData {
 	}
 
 	/**
-	 * Gets the block at the given id and data and auxiliary data, or null if none found
+	 * Gets the block at the given id and data and auxiliary data, or null if
+	 * none found
 	 *
 	 * @param id to get
 	 * @param data to get
@@ -172,7 +171,7 @@ public class MaterialData {
 	 * @return item or null if none found
 	 */
 	public static ItemMaterial getItem(short id) {
-		return getItem(id, (short)0);
+		return getItem(id, (short) 0);
 	}
 
 	/**
@@ -199,8 +198,7 @@ public class MaterialData {
 		lock.readLock().lock();
 		try {
 			return idLookup.values();
-		}
-		finally {
+		} finally {
 			lock.readLock().unlock();
 		}
 	}
@@ -215,8 +213,7 @@ public class MaterialData {
 		lock.readLock().lock();
 		try {
 			return nameLookup.get(name.toLowerCase());
-		}
-		finally {
+		} finally {
 			lock.readLock().unlock();
 		}
 	}

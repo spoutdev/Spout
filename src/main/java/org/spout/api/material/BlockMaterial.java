@@ -45,27 +45,28 @@ public interface BlockMaterial extends ItemMaterial {
 	public int getLightLevel();
 
 	public BlockMaterial setLightLevel(int level);
-	
+
 	/**
-	 * True if this block requires physic updates when a neighbor block changes, false if not.
-	 * 
+	 * True if this block requires physic updates when a neighbor block changes,
+	 * false if not.
+	 *
 	 * @return if this block requires physics updates
 	 */
 	public boolean hasPhysics();
-	
+
 	/**
 	 * Called when a block adjacent to this material is changed.
-	 * 
+	 *
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
 	 */
 	public void onUpdate(World world, int x, int y, int z);
-	
+
 	/**
 	 * Called when this block has been destroyed.
-	 * 
+	 *
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material

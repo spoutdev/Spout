@@ -66,6 +66,7 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 		return world == null ? null : world.getName();
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

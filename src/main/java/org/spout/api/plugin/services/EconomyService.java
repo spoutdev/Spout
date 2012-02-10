@@ -45,11 +45,11 @@ public abstract class EconomyService {
 	public double get(Player player) {
 		return get(player.getName());
 	}
-	
+
 	public boolean withdraw(Player player, double amount) {
 		return withdraw(player.getName(), amount);
 	}
-	
+
 	public boolean deposit(Player player, double amount) {
 		return deposit(player.getName(), amount);
 	}

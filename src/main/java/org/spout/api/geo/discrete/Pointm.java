@@ -75,9 +75,9 @@ public class Pointm extends Point {
 	 * Sets this point equal to another point
 	 */
 	public void set(Point point) {
-		this.world = point.world;
-		this.x = point.getX();
-		this.y = point.getY();
-		this.z = point.getZ();
+		world = point.world;
+		x = point.getX();
+		y = point.getY();
+		z = point.getZ();
 	}
 }

@@ -74,7 +74,6 @@ public class BoundingBox implements CollisionVolume {
 		return false;
 	}
 
-
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return containsBoundingBox((BoundingBox) other);

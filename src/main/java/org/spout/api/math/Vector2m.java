@@ -46,8 +46,8 @@ public class Vector2m extends Vector2 {
 	}
 
 	public void set(Vector2 vector) {
-		this.x = vector.getX();
-		this.y = vector.getY();
+		x = vector.getX();
+		y = vector.getY();
 	}
 
 	/**
@@ -80,7 +80,6 @@ public class Vector2m extends Vector2 {
 		return this;
 	}
 
-
 	@Override
 	public Vector2 cross() {
 		set(super.cross());
@@ -88,8 +87,8 @@ public class Vector2m extends Vector2 {
 	}
 
 	/**
-	 * Rounds the X and Y values of this Vector2 up to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of this Vector2 up to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -100,8 +99,8 @@ public class Vector2m extends Vector2 {
 	}
 
 	/**
-	 * Rounds the X and Y values of this Vector2 down to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of this Vector2 down to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -112,8 +111,7 @@ public class Vector2m extends Vector2 {
 	}
 
 	/**
-	 * Rounds the X and Y values of this Vector2 to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of this Vector2 to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -124,8 +122,7 @@ public class Vector2m extends Vector2 {
 	}
 
 	/**
-	 * Sets the X and Y values of this Vector2 to their
-	 * absolute value.
+	 * Sets the X and Y values of this Vector2 to their absolute value.
 	 *
 	 * @return
 	 */
@@ -172,9 +169,9 @@ public class Vector2m extends Vector2 {
 
 	/**
 	 * Raises the X and Y values of this Vector2 to the given power
-	 * 
+	 *
 	 * @param power
-	 * @return 
+	 * @return
 	 */
 	@Override
 	public Vector2 pow(double power) {

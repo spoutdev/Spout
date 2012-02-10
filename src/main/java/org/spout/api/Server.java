@@ -168,7 +168,6 @@ public interface Server extends Game {
 	 */
 	public Collection<Player> getOps();
 
-
 	/**
 	 * Gets the server's configuration directory
 	 *
@@ -184,10 +183,10 @@ public interface Server extends Game {
 	public String getLogFile();
 
 	/**
-	* Gets a list of available commands from the command map.
-	*
-	* @return A list of all commands at the time.
-	*/
+	 * Gets a list of available commands from the command map.
+	 *
+	 * @return A list of all commands at the time.
+	 */
 	public String[] getAllCommands();
 
 	/**
@@ -202,8 +201,10 @@ public interface Server extends Game {
 
 	/**
 	 * Binds the server to a certain address
+	 *
 	 * @param address The address to bind to.
-	 * @param bootstrapProtocol The bootstrap protocol to use for connections to this binding
+	 * @param bootstrapProtocol The bootstrap protocol to use for connections to
+	 *            this binding
 	 * @return true if successful
 	 */
 	public boolean bind(SocketAddress address, BootstrapProtocol bootstrapProtocol);

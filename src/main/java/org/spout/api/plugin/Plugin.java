@@ -32,7 +32,7 @@ import org.spout.api.Game;
 import org.spout.api.Source;
 import org.spout.api.generator.WorldGenerator;
 
-public interface Plugin extends Source{
+public interface Plugin extends Source {
 	/**
 	 * Called when the plugin is enabled
 	 */
@@ -55,13 +55,14 @@ public interface Plugin extends Source{
 
 	/**
 	 * Returns true if the plugins is enabled
+	 *
 	 * @return enabled
 	 */
 	public boolean isEnabled();
 
 	/**
-	 * Changes the enabled state of the plugin
-	 * This should only be called by the plugin's loader
+	 * Changes the enabled state of the plugin This should only be called by the
+	 * plugin's loader
 	 *
 	 * @param enabled
 	 */
@@ -69,24 +70,28 @@ public interface Plugin extends Source{
 
 	/**
 	 * Returns the plugin's loader
+	 *
 	 * @return loader
 	 */
 	public PluginLoader getPluginLoader();
 
 	/**
 	 * Returns the plugin's logger
+	 *
 	 * @return logger
 	 */
 	public Logger getLogger();
 
 	/**
 	 * Returns the plugin's description
+	 *
 	 * @return description
 	 */
 	public PluginDescriptionFile getDescription();
 
 	/**
 	 * Returns the game object
+	 *
 	 * @return game
 	 */
 	public Game getGame();
@@ -99,8 +104,8 @@ public interface Plugin extends Source{
 	 * @return world generator
 	 */
 	public WorldGenerator getWorldGenerator(String world, String generator);
-	
+
 	public File getDataFolder();
-	
+
 	public File getFile();
 }

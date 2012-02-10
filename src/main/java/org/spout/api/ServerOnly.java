@@ -40,6 +40,8 @@ import java.lang.annotation.Target;
 public @interface ServerOnly {
 
 	public String author() default "SpoutDev";
+
 	public String version() default "1.1";
+
 	public String shortDescription() default "Indicates that the function requires the use of the Spout server plugin to have any effect.";
 }

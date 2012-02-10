@@ -32,7 +32,6 @@ import org.spout.api.geo.BlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.player.Player;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -83,7 +82,7 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 */
 	@LiveRead
 	public abstract ChunkSnapshot getSnapshot();
-	
+
 	/**
 	 * Gets a snapshot of the data for the chunk.
 	 *
@@ -96,7 +95,8 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	public abstract ChunkSnapshot getSnapshot(boolean entities);
 
 	/**
-	 * Refresh the distance between a player and the chunk, and adds the player as an observer if not previously observing.
+	 * Refresh the distance between a player and the chunk, and adds the player
+	 * as an observer if not previously observing.
 	 *
 	 * @param player the player
 	 * @return false if the player was already observing the chunk
@@ -121,7 +121,7 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	public abstract Region getRegion();
 
 	public static Point pointToBase(Point p) {
-		return new Point(p.getWorld(), ((int)p.getX()) & BASE_MASK, ((int)p.getY()) & BASE_MASK, ((int)p.getZ()) & BASE_MASK);
+		return new Point(p.getWorld(), (int) p.getX() & BASE_MASK, (int) p.getY() & BASE_MASK, (int) p.getZ() & BASE_MASK);
 	}
 
 	/**
@@ -132,35 +132,40 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	public abstract boolean isUnloaded();
 
 	/**
-	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.
+	 * Populates the chunk with all the Populators attached to the
+	 * WorldGenerator of its world.
 	 */
 	public abstract void populate();
 
 	/**
-	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.
-	 * @param force forces to populate the chunk even if it already has been populated.
+	 * Populates the chunk with all the Populators attached to the
+	 * WorldGenerator of its world.
+	 *
+	 * @param force forces to populate the chunk even if it already has been
+	 *            populated.
 	 */
 	public abstract void populate(boolean force);
 
 	/**
 	 * Gets if this chunk already has been populated.
+	 *
 	 * @return if the chunk is populated.
 	 */
 	public abstract boolean isPopulated();
-	
+
 	/**
 	 * Gets the entities in the chunk at the last snapshot
-	 * 
+	 *
 	 * @return the entities
 	 */
 	@SnapshotRead
-	public abstract Set<Entity>  getEntities();
-	
+	public abstract Set<Entity> getEntities();
+
 	/**
 	 * Gets the entities currently in the chunk
-	 * 
+	 *
 	 * @return the entities
 	 */
 	@LiveRead
-	public abstract Set<Entity>  getLiveEntities();
+	public abstract Set<Entity> getLiveEntities();
 }

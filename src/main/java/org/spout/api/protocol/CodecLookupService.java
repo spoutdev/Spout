@@ -107,7 +107,7 @@ public abstract class CodecLookupService {
 	public <T extends Message> MessageCodec<T> find(Class<T> clazz) {
 		return (MessageCodec<T>) classTable.get(clazz);
 	}
-	
+
 	public Collection<MessageCodec<?>> getCodecs() {
 		return Collections.unmodifiableCollection(classTable.values());
 	}

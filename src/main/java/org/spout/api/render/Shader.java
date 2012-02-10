@@ -1,6 +1,5 @@
 package org.spout.api.render;
 
-
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;

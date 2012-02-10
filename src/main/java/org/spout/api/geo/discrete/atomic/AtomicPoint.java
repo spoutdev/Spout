@@ -49,7 +49,7 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically sets the world for this Point
-	 * 
+	 *
 	 * @param world
 	 */
 	@Override
@@ -64,7 +64,7 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically sets the x coordinate for this Point
-	 * 
+	 *
 	 * @param x
 	 */
 	@Override
@@ -79,7 +79,7 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically sets the y coordinate for this point
-	 * 
+	 *
 	 * @param y
 	 */
 	@Override
@@ -94,7 +94,7 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically sets the z coordinate for this point
-	 * 
+	 *
 	 * @param z
 	 */
 	@Override
@@ -109,16 +109,16 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Sets the value of the Point without any synchronisation
-	 * 
+	 *
 	 * @param point
 	 */
 	public void directSet(Point point) {
 		super.set(point);
 	}
-	
+
 	/**
 	 * Sets the value of the Point without any synchronisation
-	 * 
+	 *
 	 * @param world
 	 * @param x
 	 * @param y
@@ -130,7 +130,7 @@ public class AtomicPoint extends Pointm {
 		super.setY(y);
 		super.setZ(z);
 	}
-	
+
 	@Override
 	public void set(Point point) {
 		int seq = lock.writeLock();
@@ -140,10 +140,10 @@ public class AtomicPoint extends Pointm {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	/**
 	 * Atomically sets this point to the given values.
-	 * 
+	 *
 	 * @param world
 	 * @param x
 	 * @param y
@@ -163,7 +163,7 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically sets this point to the given point.
-	 * 
+	 *
 	 * @param point
 	 */
 	public void set(AtomicPoint point) {
@@ -189,7 +189,7 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically gets the x coordinate of this Point
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -209,9 +209,10 @@ public class AtomicPoint extends Pointm {
 
 	/**
 	 * Atomically gets the y coordinate of this Point
-	 * 
+	 *
 	 * @return
 	 */
+	@Override
 	public float getY() {
 		while (true) {
 			int seq = lock.readLock();
@@ -223,14 +224,15 @@ public class AtomicPoint extends Pointm {
 					return result;
 				}
 			}
-		}	
+		}
 	}
 
 	/**
 	 * Atomically gets the z coordinate of this Point
-	 * 
+	 *
 	 * @return
 	 */
+	@Override
 	public float getZ() {
 		while (true) {
 			int seq = lock.readLock();
@@ -244,10 +246,10 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	/**
 	 * Atomically gets the world of this Point
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -309,13 +311,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public double getManhattanDistance(AtomicPoint other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			double result = 0;
 			try {
-				getManhattanDistance((Point)other);
+				getManhattanDistance((Point) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -323,7 +325,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public double getMaxDistance(Point other) {
 		while (true) {
@@ -338,13 +340,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public double getMaxDistance(AtomicPoint other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			double result = 0;
 			try {
-				result = getMaxDistance((Point)other);
+				result = getMaxDistance((Point) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -394,7 +396,7 @@ public class AtomicPoint extends Pointm {
 				if (lock.readUnlock(seq)) {
 					return string;
 				}
-			}	
+			}
 		}
 	}
 
@@ -409,7 +411,7 @@ public class AtomicPoint extends Pointm {
 	protected OptimisticReadWriteLock getLock() {
 		return lock;
 	}
-	
+
 	// Overrides from Vector3
 
 	@Override
@@ -426,7 +428,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 cross(Vector3 other) {
 		while (true) {
@@ -441,13 +443,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public Vector3 cross(AtomicVector3 other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = cross((Vector3)other);
+				result = cross((Vector3) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -455,7 +457,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Point add(Vector3 other) {
 		while (true) {
@@ -470,13 +472,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public Vector3 add(AtomicVector3 other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = add((Vector3)other);
+				result = add((Vector3) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -484,7 +486,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 subtract(Vector3 other) {
 		while (true) {
@@ -499,13 +501,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public Vector3 subtract(AtomicVector3 other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = subtract((Vector3)other);
+				result = subtract((Vector3) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -513,7 +515,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 ceil() {
 		while (true) {
@@ -528,7 +530,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 floor() {
 		while (true) {
@@ -543,7 +545,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 round() {
 		while (true) {
@@ -558,7 +560,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 abs() {
 		while (true) {
@@ -573,7 +575,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 normalize() {
 		while (true) {
@@ -588,7 +590,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector2 toVector2() {
 		while (true) {
@@ -603,7 +605,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector2m toVector2m() {
 		while (true) {
@@ -618,7 +620,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float[] toArray() {
 		while (true) {
@@ -633,7 +635,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public double distance(Vector3 other) {
 		while (true) {
@@ -648,7 +650,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public double distance(AtomicVector3 other) {
 		while (true) {
 			int seq = lock.readLock();
@@ -662,7 +664,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float lengthSquared() {
 		while (true) {
@@ -677,7 +679,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float length() {
 		while (true) {
@@ -692,7 +694,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float fastLength() {
 		while (true) {
@@ -707,7 +709,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 pow(double pow) {
 		while (true) {
@@ -722,7 +724,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(double scale) {
 		while (true) {
@@ -737,7 +739,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(float scale) {
 		while (true) {
@@ -752,7 +754,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(int scale) {
 		while (true) {
@@ -767,7 +769,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(double x, double y, double z) {
 		while (true) {
@@ -782,7 +784,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(float x, float y, float z) {
 		while (true) {
@@ -797,7 +799,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 multiply(int x, int y, int z) {
 		while (true) {
@@ -812,7 +814,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(double scale) {
 		while (true) {
@@ -827,7 +829,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(float scale) {
 		while (true) {
@@ -842,7 +844,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(int scale) {
 		while (true) {
@@ -857,7 +859,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(double x, double y, double z) {
 		while (true) {
@@ -872,7 +874,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(float x, float y, float z) {
 		while (true) {
@@ -887,7 +889,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 divide(int x, int y, int z) {
 		while (true) {
@@ -902,7 +904,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 transform(Quaternion other) {
 		while (true) {
@@ -917,13 +919,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public Vector3 transform(AtomicQuaternion other) {
 		while (true) {
 			int seq = other.getLock().readLock();
 			Vector3 result = null;
 			try {
-				result = transform((Quaternion)other);
+				result = transform((Quaternion) other);
 			} finally {
 				if (other.getLock().readUnlock(seq)) {
 					return result;
@@ -931,7 +933,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 transform(Matrix other) {
 		while (true) {
@@ -946,7 +948,7 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	@Override
 	public int compareTo(Vector3 o) {
 		while (true) {
@@ -961,13 +963,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public int compareTo(AtomicVector3 o) {
 		while (true) {
 			int seq = o.getLock().readLock();
 			int result = 0;
 			try {
-				result = compareTo((Vector3)o);
+				result = compareTo((Vector3) o);
 			} finally {
 				if (o.getLock().readUnlock(seq)) {
 					return result;
@@ -975,13 +977,13 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-	
+
 	public int compareTo(AtomicPoint o) {
 		while (true) {
 			int seq = o.getLock().readLock();
 			int result = 0;
 			try {
-				result = compareTo((Vector3)o);
+				result = compareTo((Vector3) o);
 			} finally {
 				if (o.getLock().readUnlock(seq)) {
 					return result;

@@ -348,7 +348,6 @@ public class Vector2 implements Comparable<Vector2> {
 		return divide(new Vector2(val, val));
 	}
 
-
 	/**
 	 * Returns this Vector2 dot the Vector2 argument. Dot Product is defined as
 	 * a.x*b.x + a.y*b.y
@@ -361,9 +360,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3 object with a y-value of 0.
-	 * The x of this Vector2 becomes the x of the Vector3,
-	 * the y of this Vector2 becomes the z of the Vector3.
+	 * Returns a Vector3 object with a y-value of 0. The x of this Vector2
+	 * becomes the x of the Vector3, the y of this Vector2 becomes the z of the
+	 * Vector3.
 	 *
 	 * @return
 	 */
@@ -372,9 +371,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3m object with a y-value of 0.
-	 * The x of this Vector2 becomes the x of the Vector3m,
-	 * the y of this Vector2 becomes the z of the Vector3m.
+	 * Returns a Vector3m object with a y-value of 0. The x of this Vector2
+	 * becomes the x of the Vector3m, the y of this Vector2 becomes the z of the
+	 * Vector3m.
 	 *
 	 * @return
 	 */
@@ -383,8 +382,7 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector2Polar object with the same value as
-	 * this Vector2
+	 * Returns a Vector2Polar object with the same value as this Vector2
 	 *
 	 * @return
 	 */
@@ -393,9 +391,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3 object with the given y value.
-	 * The x of this Vector2 becomes the x of the Vector3,
-	 * the y of this Vector2 becomes the z of the Vector3.
+	 * Returns a Vector3 object with the given y value. The x of this Vector2
+	 * becomes the x of the Vector3, the y of this Vector2 becomes the z of the
+	 * Vector3.
 	 *
 	 * @param y Y value to use in the new Vector3.
 	 * @return
@@ -405,9 +403,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3m object with the given y value.
-	 * The x of this Vector2 becomes the x of the Vector3m,
-	 * the y of this Vector2 becomes the z of the Vector3m.
+	 * Returns a Vector3m object with the given y value. The x of this Vector2
+	 * becomes the x of the Vector3m, the y of this Vector2 becomes the z of the
+	 * Vector3m.
 	 *
 	 * @param y Y value to use in the new Vector3m.
 	 * @return
@@ -427,8 +425,8 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Rounds the X and Y values of this Vector2 up to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of this Vector2 up to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -437,8 +435,8 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Rounds the X and Y values of this Vector2 down to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of this Vector2 down to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -447,8 +445,7 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Rounds the X and Y values of this Vector2 to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of this Vector2 to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -457,8 +454,7 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Sets the X and Y values of this Vector2 to their
-	 * absolute value.
+	 * Sets the X and Y values of this Vector2 to their absolute value.
 	 *
 	 * @return
 	 */
@@ -539,11 +535,12 @@ public class Vector2 implements Comparable<Vector2> {
 		if (!(o instanceof Vector2)) {
 			return false;
 		}
-        return this == o || compareTo(this, (Vector2) o) == 0;
-    }
+		return this == o || compareTo(this, (Vector2) o) == 0;
+	}
 
 	/**
 	 * Generates a hashCode for these two values
+	 *
 	 * @return
 	 */
 	@Override
@@ -660,9 +657,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3 object with a y-value of 0.
-	 * The x of the Vector2 becomes the x of the Vector3,
-	 * the y of the Vector2 becomes the z of the Vector3.
+	 * Returns a Vector3 object with a y-value of 0. The x of the Vector2
+	 * becomes the x of the Vector3, the y of the Vector2 becomes the z of the
+	 * Vector3.
 	 *
 	 * @param o Vector2 to use as the x/z values
 	 * @return
@@ -672,9 +669,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3m object with a y-value of 0.
-	 * The x of the Vector2 becomes the x of the Vector3m,
-	 * the y of the Vector2 becomes the z of the Vector3m.
+	 * Returns a Vector3m object with a y-value of 0. The x of the Vector2
+	 * becomes the x of the Vector3m, the y of the Vector2 becomes the z of the
+	 * Vector3m.
 	 *
 	 * @param o Vector2 to use as the x/z values
 	 * @return
@@ -684,8 +681,7 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector2Polar object with the same value as
-	 * the given Vector2
+	 * Returns a Vector2Polar object with the same value as the given Vector2
 	 *
 	 * @param o Vector2 to use
 	 * @return
@@ -695,9 +691,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3 object with the given y-value.
-	 * The x of the Vector2 becomes the x of the Vector3,
-	 * the y of the Vector2 becomes the z of the Vector3.
+	 * Returns a Vector3 object with the given y-value. The x of the Vector2
+	 * becomes the x of the Vector3, the y of the Vector2 becomes the z of the
+	 * Vector3.
 	 *
 	 * @param o Vector2 to use as the x/z values
 	 * @param y Y value of the new Vector3
@@ -708,9 +704,9 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Returns a Vector3m object with the given y-value.
-	 * The x of the Vector2 becomes the x of the Vector3m,
-	 * the y of the Vector2 becomes the z of the Vector3m.
+	 * Returns a Vector3m object with the given y-value. The x of the Vector2
+	 * becomes the x of the Vector3m, the y of the Vector2 becomes the z of the
+	 * Vector3m.
 	 *
 	 * @param o Vector2 to use as the x/z values
 	 * @param y Y value of the new Vector3
@@ -731,8 +727,8 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Rounds the X and Y values of the given Vector2 up to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of the given Vector2 up to the nearest integer
+	 * value.
 	 *
 	 * @param o Vector2 to use
 	 * @return
@@ -742,8 +738,8 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Rounds the X and Y values of the given Vector2 down to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of the given Vector2 down to the nearest
+	 * integer value.
 	 *
 	 * @param o Vector2 to use
 	 * @return
@@ -753,8 +749,8 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Rounds the X and Y values of the given Vector2 to
-	 * the nearest integer value.
+	 * Rounds the X and Y values of the given Vector2 to the nearest integer
+	 * value.
 	 *
 	 * @param o Vector2 to use
 	 * @return
@@ -764,8 +760,7 @@ public class Vector2 implements Comparable<Vector2> {
 	}
 
 	/**
-	 * Sets the X and Y values of the given Vector2 to their
-	 * absolute value.
+	 * Sets the X and Y values of the given Vector2 to their absolute value.
 	 *
 	 * @param o Vector2 to use
 	 * @return
@@ -804,8 +799,8 @@ public class Vector2 implements Comparable<Vector2> {
 	 */
 	public static Vector2 rand() {
 		double[] rands = new double[2];
-		for( int i = 0; i < 2; i++ ) {
-			rands[i] = (Math.random() * 2) - 1;
+		for (int i = 0; i < 2; i++) {
+			rands[i] = Math.random() * 2 - 1;
 		}
 		return new Vector2(rands[0], rands[1]);
 	}
@@ -817,7 +812,7 @@ public class Vector2 implements Comparable<Vector2> {
 	 * @return The array containing the Vector2
 	 */
 	public static float[] toArray(Vector2 a) {
-		return new float[]{a.getX(), a.getY()};
+		return new float[] {a.getX(), a.getY()};
 	}
 
 	/**

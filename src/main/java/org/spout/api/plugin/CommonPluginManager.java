@@ -25,7 +25,6 @@
  */
 package org.spout.api.plugin;
 
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -34,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -41,9 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.spout.api.Game;/*
-import org.spout.api.event.Event;
-import org.spout.api.event.HandlerList;*/
+import org.spout.api.Game;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
@@ -68,7 +66,7 @@ public class CommonPluginManager implements PluginManager {
 		PluginLoader instance = null;
 
 		try {
-			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] { Game.class, CommonSecurityManager.class, double.class });
+			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Game.class, CommonSecurityManager.class, double.class});
 
 			instance = constructor.newInstance(game, manager, key);
 		} catch (Exception e) {
@@ -121,8 +119,9 @@ public class CommonPluginManager implements PluginManager {
 				PluginLoader loader = loaders.get(pattern);
 				result = loader.loadPlugin(paramFile, ignoresoftdepends);
 
-				if (result != null)
+				if (result != null) {
 					break;
+				}
 			}
 		}
 
@@ -131,15 +130,17 @@ public class CommonPluginManager implements PluginManager {
 			names.put(result.getDescription().getName(), result);
 		}
 
-		if (locked)
+		if (locked) {
 			manager.unlock(key);
+		}
 		return result;
 	}
 
 	public synchronized Plugin[] loadPlugins(File paramFile) {
 
-		if (!paramFile.isDirectory())
+		if (!paramFile.isDirectory()) {
 			throw new IllegalArgumentException("File parameter was not a Directory!");
+		}
 
 		if (game.getUpdateFolder() != null) {
 			updateDir = game.getUpdateFolder();
@@ -222,8 +223,9 @@ public class CommonPluginManager implements PluginManager {
 				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while enabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
-			if (!locked)
+			if (!locked) {
 				manager.unlock(key);
+			}
 		}
 	}
 
@@ -238,8 +240,9 @@ public class CommonPluginManager implements PluginManager {
 				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
-			if (!locked)
+			if (!locked) {
 				manager.unlock(key);
+			}
 		}
 	}
 

@@ -41,7 +41,7 @@ import org.spout.api.util.Named;
  * Game.getCommandRoot().sub(&quot;preferredname&quot;).alias(&quot;alias1&quot;, &quot;alias2&quot;).help(&quot;This is the main command for MyPlugin&quot;).executor(myExecutor).sub(&quot;subcommand&quot;).help(&quot;This is a sub command of main command&quot;).executor(myExecutor).closeSub().closeSub();
  * </pre>
  */
-public interface Command extends RawCommandExecutor{
+public interface Command extends RawCommandExecutor {
 	/**
 	 * Creates a command and adds it as a sub-command to the active Command.
 	 *
@@ -238,7 +238,9 @@ public interface Command extends RawCommandExecutor{
 	public Command setParent(Command parent);
 
 	/**
-	 * Sets a raw command executor that overrides Spout's built-in nested command and command flags handling.
+	 * Sets a raw command executor that overrides Spout's built-in nested
+	 * command and command flags handling.
+	 *
 	 * @param rawExecutor The command's raw executor.
 	 * @return The active command
 	 */
@@ -246,7 +248,9 @@ public interface Command extends RawCommandExecutor{
 
 	/**
 	 * Sets the permissions required to use this command.
-	 * @param requireAll Whether to require all of the listed permissions to execute the command.
+	 *
+	 * @param requireAll Whether to require all of the listed permissions to
+	 *            execute the command.
 	 * @param permissions The permissions required
 	 * @return The active command
 	 */
@@ -254,6 +258,7 @@ public interface Command extends RawCommandExecutor{
 
 	/**
 	 * Sets the arg limits for a command.
+	 *
 	 * @param min Minimum arg length. Cannot be less than 0.
 	 * @param max Maximum argument length. -1 for unlimited
 	 * @return The active command

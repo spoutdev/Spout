@@ -34,8 +34,8 @@ public interface Secure {
 	public boolean isLocked();
 
 	/**
-	 * Locks when given the correct key.
-	 * Returns true if it was previously locked
+	 * Locks when given the correct key. Returns true if it was previously
+	 * locked
 	 *
 	 * @param key
 	 * @return true if it was locked

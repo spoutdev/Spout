@@ -39,7 +39,7 @@ public class UnknownDependencyException extends Exception {
 	}
 
 	public UnknownDependencyException(Throwable throwable, String message) {
-		this.cause = null;
+		cause = null;
 		this.message = message;
 	}
 
@@ -47,11 +47,13 @@ public class UnknownDependencyException extends Exception {
 		this(null, "Unknown Dependency");
 	}
 
+	@Override
 	public Throwable getCause() {
-		return this.cause;
+		return cause;
 	}
 
+	@Override
 	public String getMessage() {
-		return this.message;
+		return message;
 	}
 }

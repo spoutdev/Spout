@@ -32,7 +32,8 @@ import gnu.trove.map.hash.TShortShortHashMap;
 import gnu.trove.set.TShortSet;
 
 /**
- * A simplistic map that supports a 3 nibbles (4 bits) for keys, using a trove short short hashmap in the backend.
+ * A simplistic map that supports a 3 nibbles (4 bits) for keys, using a trove
+ * short short hashmap in the backend.
  */
 public class TNibbleTripleShortHashMap {
 	protected TShortShortMap map;
@@ -106,6 +107,6 @@ public class TNibbleTripleShortHashMap {
 	}
 
 	protected static final short key(byte x, byte y, byte z) {
-		return (short) (((x & 0xF) << 8) | ((y & 0xF) << 4) | (z & 0xF));
+		return (short) ((x & 0xF) << 8 | (y & 0xF) << 4 | z & 0xF);
 	}
 }

@@ -58,9 +58,9 @@ public class Vector3m extends Vector3 {
 	}
 
 	public void set(Vector3 vector) {
-		this.x = vector.getX();
-		this.y = vector.getY();
-		this.z = vector.getZ();
+		x = vector.getX();
+		y = vector.getY();
+		z = vector.getZ();
 	}
 
 	/**
@@ -116,9 +116,9 @@ public class Vector3m extends Vector3 {
 	/**
 	 * Calculates and sets a new Vector3 transformed by the transformation
 	 * matrix
-	 * 
+	 *
 	 * @param transformation
-	 * @return 
+	 * @return
 	 */
 	@Override
 	public Vector3 transform(Matrix transformation) {
@@ -128,6 +128,7 @@ public class Vector3m extends Vector3 {
 
 	/**
 	 * Calculates and sets a new Vector3 transformed by the given quaternion
+	 *
 	 * @param vector
 	 * @param rot
 	 * @return
@@ -140,9 +141,9 @@ public class Vector3m extends Vector3 {
 
 	/**
 	 * Raises the X, Y and Z values to the given power
-	 * 
+	 *
 	 * @param power
-	 * @return 
+	 * @return
 	 */
 	@Override
 	public Vector3 pow(double power) {
@@ -163,8 +164,8 @@ public class Vector3m extends Vector3 {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 up to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -175,8 +176,8 @@ public class Vector3m extends Vector3 {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 down to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -187,8 +188,8 @@ public class Vector3m extends Vector3 {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 to
-	 * the nearest integer value.
+	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
+	 * value.
 	 *
 	 * @return
 	 */
@@ -199,8 +200,7 @@ public class Vector3m extends Vector3 {
 	}
 
 	/**
-	 * Sets the X, Y, and Z values of this Vector3 to their
-	 * absolute value.
+	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
 	 *
 	 * @return
 	 */

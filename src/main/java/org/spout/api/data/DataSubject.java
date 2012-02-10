@@ -31,6 +31,7 @@ import org.spout.api.util.Named;
 public interface DataSubject extends Named {
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param node
 	 * @return null if the data is not set
 	 */
@@ -38,6 +39,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param node
 	 * @param defaultValue
 	 * @return null if the data is not set
@@ -46,6 +48,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node for the given world
+	 *
 	 * @param world
 	 * @param node
 	 * @return null if the data is not set
@@ -54,6 +57,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node for the given world
+	 *
 	 * @param world
 	 * @param node
 	 * @param defaultValue
@@ -63,6 +67,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param node
 	 * @return null if the data is not set or the data is not an int
 	 */
@@ -70,6 +75,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param node
 	 * @param defaultValue
 	 * @return null if the data is not set or the data is not an int
@@ -78,6 +84,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets int data from the given node for the given world
+	 *
 	 * @param world
 	 * @param node
 	 * @return null if the data is not set or the data is not an int
@@ -86,6 +93,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param world
 	 * @param node
 	 * @param defaultValue
@@ -95,6 +103,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param node
 	 * @return null if the data is not set or the data is not a string
 	 */
@@ -102,6 +111,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param node
 	 * @param defaultValue
 	 * @return null if the data is not set or the data is not a string
@@ -110,6 +120,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param world
 	 * @param node
 	 * @return null if the data is not set or the data is not a string
@@ -118,6 +129,7 @@ public interface DataSubject extends Named {
 
 	/**
 	 * Gets data from the given node
+	 *
 	 * @param world
 	 * @param node
 	 * @param defaultValue

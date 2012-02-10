@@ -82,9 +82,9 @@ public abstract class CuboidBuffer {
 		this.baseY = baseY;
 		this.baseZ = baseZ;
 
-		this.topX = baseX + sizeX;
-		this.topY = baseY + sizeY;
-		this.topZ = baseZ + sizeZ;
+		topX = baseX + sizeX;
+		topY = baseY + sizeY;
+		topZ = baseZ + sizeZ;
 
 		Xinc = sizeY * sizeZ;
 		Yinc = 1;
@@ -157,7 +157,7 @@ public abstract class CuboidBuffer {
 		if (x < baseX || x >= topX || y < baseY || y >= topY || z < baseZ || z >= topZ) {
 			return -1;
 		} else {
-			return ((y - baseY) * Yinc) + ((x - baseX) * Xinc) + ((z - baseZ) * Zinc);
+			return (y - baseY) * Yinc + (x - baseX) * Xinc + (z - baseZ) * Zinc;
 		}
 	}
 
@@ -169,9 +169,9 @@ public abstract class CuboidBuffer {
 
 	public abstract void setSource(CuboidBuffer source);
 
+	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + "{Buffer Size=" + (sizeX * sizeY * sizeZ) + ", Base=(" + world.getName() + ", " + baseX +", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " +
-				"Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
+		return this.getClass().getSimpleName() + "{Buffer Size=" + sizeX * sizeY * sizeZ + ", Base=(" + world.getName() + ", " + baseX + ", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " + "Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
 	}
 
 	protected static class CuboidBufferCopyRun {

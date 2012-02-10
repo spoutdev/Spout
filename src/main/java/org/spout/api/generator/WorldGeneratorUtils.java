@@ -36,11 +36,13 @@ public class WorldGeneratorUtils {
 	/**
 	 * Seeds a Random for a particular position.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the generator.
+	 * The meaning of the x, y and z coordinates can be determined by the
+	 * generator.
 	 *
 	 * This gives consistent results for world generation.
 	 *
-	 * The extra seed allows multiple Randoms to be returned for the same position for use by populators and different stages of generation.
+	 * The extra seed allows multiple Randoms to be returned for the same
+	 * position for use by populators and different stages of generation.
 	 *
 	 * @param rng the Random
 	 * @param world the World
@@ -51,10 +53,10 @@ public class WorldGeneratorUtils {
 	 */
 	public void seedRandom(Random rng, World world, int x, int y, int z, int extraSeed) {
 		long hash = world.getSeed();
-		hash += (hash << hashShift) + ((hash >> (64 - hashShift)) & hashShiftMask) + extraSeed;
-		hash += (hash << hashShift) + ((hash >> (64 - hashShift)) & hashShiftMask) + x;
-		hash += (hash << hashShift) + ((hash >> (64 - hashShift)) & hashShiftMask) + y;
-		hash += (hash << hashShift) + ((hash >> (64 - hashShift)) & hashShiftMask) + z;
+		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + extraSeed;
+		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + x;
+		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + y;
+		hash += (hash << hashShift) + (hash >> 64 - hashShift & hashShiftMask) + z;
 
 		rng.setSeed(hash);
 	}
@@ -62,9 +64,11 @@ public class WorldGeneratorUtils {
 	/**
 	 * Gets a pre-seeded random for a particular position.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the generator.
+	 * The meaning of the x, y and z coordinates can be determined by the
+	 * generator.
 	 *
-	 * The extra seed allows multiple Randoms to be returned for the same position for use by populators and different stages of generation.
+	 * The extra seed allows multiple Randoms to be returned for the same
+	 * position for use by populators and different stages of generation.
 	 *
 	 * @param world the World
 	 * @param x the x coordinate
@@ -82,13 +86,16 @@ public class WorldGeneratorUtils {
 	/**
 	 * Seeds an array of Randoms for a cuboid of positions.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the generator.
+	 * The meaning of the x, y and z coordinates can be determined by the
+	 * generator.
 	 *
 	 * The indexes for the array are arranged as array[x][y][z].
 	 *
-	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given central position.
+	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given
+	 * central position.
 	 *
-	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ + 1)
+	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ
+	 * + 1)
 	 *
 	 * @param world the World containing the Chunk
 	 * @param x the x coordinate for the centre of the array
@@ -103,9 +110,9 @@ public class WorldGeneratorUtils {
 		int ly = array[0].length;
 		int lx = array[0][0].length;
 
-		int sizeX = (lx - 1) >> 1;
-		int sizeY = (ly - 1) >> 1;
-		int sizeZ = (lz - 1) >> 1;
+		int sizeX = lx - 1 >> 1;
+		int sizeY = ly - 1 >> 1;
+		int sizeZ = lz - 1 >> 1;
 
 		for (int cx = 0; cx < lx; cx++) {
 			for (int cy = 0; cy < ly; cy++) {
@@ -119,13 +126,16 @@ public class WorldGeneratorUtils {
 	/**
 	 * Gets an array of Randoms for a cuboid of positions.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the generator.
+	 * The meaning of the x, y and z coordinates can be determined by the
+	 * generator.
 	 *
 	 * The indexes for the array are arranged as array[x][y][z].
 	 *
-	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given central position.
+	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given
+	 * central position.
 	 *
-	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ + 1)
+	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ
+	 * + 1)
 	 *
 	 * @param world the World containing the Chunk
 	 * @param x the x coordinate for the centre of the array (blockX << 4)
@@ -138,9 +148,9 @@ public class WorldGeneratorUtils {
 	 * @return the random array
 	 */
 	public Random[][][] seedRandomArray(Random[][][] array, World world, int x, int y, int z, int sizeX, int sizeY, int sizeZ, int extraSeed) {
-		int lz = (2 * sizeX) + 1;
-		int ly = (2 * sizeY) + 1;
-		int lx = (2 * sizeZ) + 1;
+		int lz = 2 * sizeX + 1;
+		int ly = 2 * sizeY + 1;
+		int lx = 2 * sizeZ + 1;
 
 		for (int cx = 0; cx < lx; cx++) {
 			for (int cy = 0; cy < ly; cy++) {

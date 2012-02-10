@@ -141,28 +141,30 @@ public final class Color {
 	public String toString() {
 		return "r: " + red + " g: " + green + " b: " + blue + " a: " + alpha;
 	}
+
 	@Override
-	public boolean equals(Object other){
-		if(this == other)return true;
-		if(! (other instanceof Color)) return false;
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (!(other instanceof Color)) {
+			return false;
+		}
 		Color o = (Color) other;
-        return this.red == o.red && this.green == o.green && this.blue == o.blue && this.alpha == o.alpha;
-    }
+		return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;
+	}
 
 	public int toInt() {
 		return (getAlphaI() & 0xFF) << 24 | (getRedI() & 0xFF) << 16 | (getGreenI() & 0xFF) << 8 | getBlueI() & 0xFF;
 	}
-	
-	
+
 	public static final Color Red = new Color(255, 0, 0);
 	public static final Color Green = new Color(0, 255, 0);
 	public static final Color Blue = new Color(0, 0, 255);
 	public static final Color Black = new Color(0, 0, 0);
 	public static final Color White = new Color(255, 255, 255);
-	
-	
-	
+
 	public static final Color invalid = new Color(254, 0, 254, 0);
 	public static final Color override = new Color(253, 0, 253, 0);
-	
+
 }

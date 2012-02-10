@@ -25,11 +25,11 @@
  */
 package org.spout.api.command;
 
-import org.spout.api.exception.CommandException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.spout.api.exception.CommandException;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;

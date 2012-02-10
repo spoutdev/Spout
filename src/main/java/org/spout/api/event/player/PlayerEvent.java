@@ -25,8 +25,8 @@
  */
 package org.spout.api.event.player;
 
-import org.spout.api.player.Player;
 import org.spout.api.event.Event;
+import org.spout.api.player.Player;
 
 /**
  * Represents a player-related event.
@@ -34,8 +34,8 @@ import org.spout.api.event.Event;
 public abstract class PlayerEvent extends Event {
 	protected Player player;
 
-	public PlayerEvent(Player p){
-		this.player = p;
+	public PlayerEvent(Player p) {
+		player = p;
 	}
 
 	public Player getPlayer() {

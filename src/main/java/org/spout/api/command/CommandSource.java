@@ -38,7 +38,9 @@ public interface CommandSource extends PermissionsSubject, DataSubject {
 	public boolean sendMessage(String message);
 
 	/**
-	 * Sends a message to the client without any processing by the server, except to prevent exploits.
+	 * Sends a message to the client without any processing by the server,
+	 * except to prevent exploits.
+	 *
 	 * @param message The message to send
 	 * @return whether the message was sent correctly
 	 */

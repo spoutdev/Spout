@@ -32,9 +32,9 @@ import java.util.List;
 
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
-import org.spout.api.exception.CommandException;
 import org.spout.api.command.CommandExecutor;
 import org.spout.api.command.CommandSource;
+import org.spout.api.exception.CommandException;
 import org.spout.api.exception.WrappedCommandException;
 
 public abstract class AnnotatedCommandExecutor implements CommandExecutor {
@@ -52,7 +52,7 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 			commandArgs.add(args);
 			commandArgs.add(source);
 			commandArgs.addAll(getAdditionalArgs(source, command));
-			method.invoke(instance, (Object[])commandArgs.toArray());
+			method.invoke(instance, commandArgs.toArray());
 		} catch (IllegalAccessException e) {
 			throw new WrappedCommandException(e);
 		} catch (InvocationTargetException e) {

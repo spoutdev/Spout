@@ -29,6 +29,11 @@ package org.spout.api.exception;
  * Thrown when an invalid controller is trying to be set.
  */
 public class InvalidControllerException extends RuntimeException {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2149737368839741299L;
+
 	public InvalidControllerException() {
 		super("Invalid controller specified for the entity.");
 	}

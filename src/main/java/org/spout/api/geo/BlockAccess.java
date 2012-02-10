@@ -32,7 +32,7 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.thread.LiveWrite;
 
-public interface BlockAccess extends BlockData{
+public interface BlockAccess extends BlockData {
 	/**
 	 * Sets the block at (x, y, z) to the given material type.
 	 *
@@ -40,13 +40,14 @@ public interface BlockAccess extends BlockData{
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param material
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics
+	 *            of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source);
-	
+
 	/**
 	 * Sets the block at (x, y, z) to the given material type.
 	 *
@@ -60,7 +61,6 @@ public interface BlockAccess extends BlockData{
 	@LiveWrite
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source);
 
-
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
 	 * <br>
@@ -72,13 +72,14 @@ public interface BlockAccess extends BlockData{
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics
+	 *            of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
 	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source);
-	
+
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
 	 * <br>
@@ -96,7 +97,6 @@ public interface BlockAccess extends BlockData{
 	@LiveWrite
 	public boolean setBlockId(int x, int y, int z, short id, Source source);
 
-
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
 	 * <br>
@@ -108,13 +108,14 @@ public interface BlockAccess extends BlockData{
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics
+	 *            of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source);
-	
+
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
 	 * <br>
@@ -131,7 +132,7 @@ public interface BlockAccess extends BlockData{
 	 */
 	@LiveWrite
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source);
-	
+
 	/**
 	 * Sets the data for the block at (x, y, z) to the given data.<br>
 	 * <br>
@@ -142,13 +143,14 @@ public interface BlockAccess extends BlockData{
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param data
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics
+	 *            of neighbor blocks afterword
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
 	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source);
-	
+
 	/**
 	 * Sets the data for the block at (x, y, z) to the given data.<br>
 	 * <br>
@@ -167,7 +169,7 @@ public interface BlockAccess extends BlockData{
 
 	/**
 	 * Forces a physics update for the block at the (x, y, z)
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -175,7 +177,8 @@ public interface BlockAccess extends BlockData{
 	public void updatePhysics(int x, int y, int z);
 
 	/**
-	 * Sets the snapshot data for the block at (x, y, z) to the given data, but only if the current block state matches the given state.
+	 * Sets the snapshot data for the block at (x, y, z) to the given data, but
+	 * only if the current block state matches the given state.
 	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
@@ -187,7 +190,8 @@ public interface BlockAccess extends BlockData{
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data);
 
 	/**
-	 * Adds a key, value pair to the auxiliary data for the block, but only if the current block state matches the given state.
+	 * Adds a key, value pair to the auxiliary data for the block, but only if
+	 * the current block state matches the given state.
 	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
@@ -199,7 +203,8 @@ public interface BlockAccess extends BlockData{
 	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData);
 
 	/**
-	 * Removes a key, value pair from the auxiliary data for the block, but only if the current block state matches the given state.
+	 * Removes a key, value pair from the auxiliary data for the block, but only
+	 * if the current block state matches the given state.
 	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate

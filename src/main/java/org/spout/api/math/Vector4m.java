@@ -46,10 +46,10 @@ public class Vector4m extends Vector4 {
 	}
 
 	public void set(Vector4 vector) {
-		this.x = vector.getX();
-		this.y = vector.getY();
-		this.z = vector.getZ();
-		this.w = vector.getW();
+		x = vector.getX();
+		y = vector.getY();
+		z = vector.getZ();
+		w = vector.getW();
 	}
 
 	/**
@@ -101,8 +101,7 @@ public class Vector4m extends Vector4 {
 	}
 
 	/**
-	 * Rounds the values of this Vector4 up to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector4 up to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -113,8 +112,7 @@ public class Vector4m extends Vector4 {
 	}
 
 	/**
-	 * Rounds the values of this Vector4 down to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector4 down to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -125,8 +123,7 @@ public class Vector4m extends Vector4 {
 	}
 
 	/**
-	 * Rounds the values of this Vector4 to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector4 to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -137,8 +134,7 @@ public class Vector4m extends Vector4 {
 	}
 
 	/**
-	 * Sets the values of this Vector4 to their
-	 * absolute value.
+	 * Sets the values of this Vector4 to their absolute value.
 	 *
 	 * @return
 	 */

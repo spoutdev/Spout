@@ -26,6 +26,7 @@
 package org.spout.api.protocol;
 
 import java.net.InetSocketAddress;
+
 import org.spout.api.Game;
 
 public interface Session {
@@ -37,7 +38,8 @@ public interface Session {
 	public <T extends Message> void messageReceived(T message);
 
 	/**
-	 * Disposes of this session by destroying the associated player, if there is one.
+	 * Disposes of this session by destroying the associated player, if there is
+	 * one.
 	 *
 	 * @param broadcastQuit true if a quit message should be sent
 	 */
@@ -51,8 +53,8 @@ public interface Session {
 	public void setProtocol(Protocol protocol);
 
 	/**
-	 * Returns the {@link PlayerProtocol} associated with this session.
-	 * Returns bootstrap until another protocol is set.
+	 * Returns the {@link PlayerProtocol} associated with this session. Returns
+	 * bootstrap until another protocol is set.
 	 */
 	public PlayerProtocol getPlayerProtocol();
 

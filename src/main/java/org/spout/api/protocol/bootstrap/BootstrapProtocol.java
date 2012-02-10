@@ -29,7 +29,6 @@ import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.bootstrap.NullPlayerProtocol;
 
 /**
  *

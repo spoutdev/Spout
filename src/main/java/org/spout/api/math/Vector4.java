@@ -421,8 +421,8 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector3 object with the x, y, z values
-	 * from this Vector4 object.
+	 * Returns a Vector3 object with the x, y, z values from this Vector4
+	 * object.
 	 *
 	 * @return
 	 */
@@ -431,8 +431,8 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector3m object with the x, y, z values
-	 * from this Vector4 object.
+	 * Returns a Vector3m object with the x, y, z values from this Vector4
+	 * object.
 	 *
 	 * @return
 	 */
@@ -441,8 +441,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector2 object with the x, y values
-	 * from this Vector4 object.
+	 * Returns a Vector2 object with the x, y values from this Vector4 object.
 	 *
 	 * @return
 	 */
@@ -451,8 +450,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector2m object with the x, y values
-	 * from this Vector4 object.
+	 * Returns a Vector2m object with the x, y values from this Vector4 object.
 	 *
 	 * @return
 	 */
@@ -461,8 +459,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Rounds the values of this Vector4 up to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector4 up to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -471,8 +468,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Rounds the values of this Vector4 down to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector4 down to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -481,8 +477,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Rounds the values of this Vector4 to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector4 to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -491,8 +486,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Sets the values of this Vector4 to their
-	 * absolute value.
+	 * Sets the values of this Vector4 to their absolute value.
 	 *
 	 * @return
 	 */
@@ -573,8 +567,8 @@ public class Vector4 implements Comparable<Vector4> {
 		if (!(o instanceof Vector4)) {
 			return false;
 		}
-        return this == o || compareTo(this, (Vector4) o) == 0;
-    }
+		return this == o || compareTo(this, (Vector4) o) == 0;
+	}
 
 	/**
 	 * Generates a hashcode for this Vector
@@ -582,10 +576,10 @@ public class Vector4 implements Comparable<Vector4> {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 53 * hash + Float.floatToIntBits(this.x);
-		hash = 53 * hash + Float.floatToIntBits(this.y);
-		hash = 53 * hash + Float.floatToIntBits(this.z);
-		hash = 53 * hash + Float.floatToIntBits(this.w);
+		hash = 53 * hash + Float.floatToIntBits(x);
+		hash = 53 * hash + Float.floatToIntBits(y);
+		hash = 53 * hash + Float.floatToIntBits(z);
+		hash = 53 * hash + Float.floatToIntBits(w);
 		return hash;
 	}
 
@@ -682,8 +676,8 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector3 object with the x, y, z values
-	 * from this Vector4 object.
+	 * Returns a Vector3 object with the x, y, z values from this Vector4
+	 * object.
 	 *
 	 * @return
 	 */
@@ -692,8 +686,8 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector3m object with the x, y, z values
-	 * from this Vector4 object.
+	 * Returns a Vector3m object with the x, y, z values from this Vector4
+	 * object.
 	 *
 	 * @return
 	 */
@@ -702,8 +696,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector2 object with the x, y values
-	 * from this Vector4 object.
+	 * Returns a Vector2 object with the x, y values from this Vector4 object.
 	 *
 	 * @return
 	 */
@@ -712,8 +705,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Returns a Vector2m object with the x, y values
-	 * from this Vector4 object.
+	 * Returns a Vector2m object with the x, y values from this Vector4 object.
 	 *
 	 * @return
 	 */
@@ -722,8 +714,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Rounds the values of the given Vector4 up to
-	 * the nearest integer value.
+	 * Rounds the values of the given Vector4 up to the nearest integer value.
 	 *
 	 * @param o Vector4 to use
 	 * @return
@@ -733,8 +724,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Rounds the values of the given Vector4 down to
-	 * the nearest integer value.
+	 * Rounds the values of the given Vector4 down to the nearest integer value.
 	 *
 	 * @param o Vector4 to use
 	 * @return
@@ -744,8 +734,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Rounds the values of the given Vector4 to
-	 * the nearest integer value.
+	 * Rounds the values of the given Vector4 to the nearest integer value.
 	 *
 	 * @param o Vector4 to use
 	 * @return
@@ -755,8 +744,7 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
-	 * Sets the values of the given Vector4 to their
-	 * absolute value.
+	 * Sets the values of the given Vector4 to their absolute value.
 	 *
 	 * @param o Vector4 to use
 	 * @return
@@ -795,8 +783,8 @@ public class Vector4 implements Comparable<Vector4> {
 	 */
 	public static Vector4 rand() {
 		double[] rands = new double[4];
-		for( int i = 0; i < 4; i++ ) {
-			rands[i] = (Math.random() * 2) - 1;
+		for (int i = 0; i < 4; i++) {
+			rands[i] = Math.random() * 2 - 1;
 		}
 		return new Vector4(rands[0], rands[1], rands[2], rands[3]);
 	}
@@ -807,7 +795,7 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return The array containing the Vector4
 	 */
 	public static float[] toArray(Vector4 a) {
-		return new float[]{a.x, a.y, a.z, a.w};
+		return new float[] {a.x, a.y, a.z, a.w};
 	}
 
 	/**

@@ -71,6 +71,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 		super.setCancelled(cancelled);
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

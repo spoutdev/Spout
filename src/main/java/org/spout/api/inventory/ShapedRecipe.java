@@ -44,8 +44,8 @@ public class ShapedRecipe implements Recipe {
 		this.plugin = plugin;
 		this.name = name;
 		this.result = result;
-		this.ingredients = new HashMap<Character, Material>();
-		this.rows = new ArrayList<ArrayList<Character>>();
+		ingredients = new HashMap<Character, Material>();
+		rows = new ArrayList<ArrayList<Character>>();
 	}
 
 	public ItemStack getResult() {

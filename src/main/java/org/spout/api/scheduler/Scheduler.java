@@ -99,21 +99,24 @@ public interface Scheduler {
 	/**
 	 * Returns a list of all active workers.
 	 *
-	 * This list contains asynch tasks that are being executed by separate threads.
+	 * This list contains asynch tasks that are being executed by separate
+	 * threads.
 	 *
 	 * @return Active workers
 	 */
 	public List<Worker> getActiveWorkers();
 
 	/**
-	 * Returns a list of all pending tasks. The ordering of the tasks is not related to their order of execution.
+	 * Returns a list of all pending tasks. The ordering of the tasks is not
+	 * related to their order of execution.
 	 *
 	 * @return Active workers
 	 */
 	public List<Task> getPendingTasks();
 
 	/**
-	 * Gets the snapshot lock.  This lock can be used by async threads to readlock stable snapshot data.
+	 * Gets the snapshot lock. This lock can be used by async threads to
+	 * readlock stable snapshot data.
 	 *
 	 * @return the snapshot lock
 	 */

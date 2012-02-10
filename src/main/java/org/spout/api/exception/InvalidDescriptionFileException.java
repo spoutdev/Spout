@@ -39,7 +39,7 @@ public class InvalidDescriptionFileException extends Exception {
 	}
 
 	public InvalidDescriptionFileException(Throwable throwable, String message) {
-		this.cause = null;
+		cause = null;
 		this.message = message;
 	}
 
@@ -47,11 +47,13 @@ public class InvalidDescriptionFileException extends Exception {
 		this(null, "Invalid plugin.yml");
 	}
 
+	@Override
 	public Throwable getCause() {
-		return this.cause;
+		return cause;
 	}
 
+	@Override
 	public String getMessage() {
-		return this.message;
+		return message;
 	}
 }

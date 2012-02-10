@@ -25,7 +25,6 @@
  */
 package org.spout.api.exception;
 
-import org.spout.api.exception.SpoutException;
 
 public class CommandException extends SpoutException {
 	private static final long serialVersionUID = 7936404856385100186L;

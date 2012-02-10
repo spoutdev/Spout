@@ -65,7 +65,8 @@ public class BlockSnapshot {
 	}
 
 	/**
-	 * Gets the auxiliary data associated with the block at the time of the snapshot
+	 * Gets the auxiliary data associated with the block at the time of the
+	 * snapshot
 	 *
 	 * @return the auxiliary data, or null if there was no auxiliary data
 	 */

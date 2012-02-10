@@ -28,8 +28,8 @@ package org.spout.api.command.annotated;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.spout.api.util.Named;
 import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.util.Named;
 
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
 	/**
@@ -65,12 +65,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 				success = false;
 				continue;
 			}
-			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0])
-			.addAlias(command.aliases())
-			.addFlags(command.flags())
-			.setUsage(command.usage())
-			.setHelp(command.desc())
-			.setArgBounds(command.min(), command.max());
+			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]).addAlias(command.aliases()).addFlags(command.flags()).setUsage(command.usage()).setHelp(command.desc()).setArgBounds(command.min(), command.max());
 
 			if (method.isAnnotationPresent(CommandPermissions.class)) {
 				CommandPermissions perms = method.getAnnotation(CommandPermissions.class);

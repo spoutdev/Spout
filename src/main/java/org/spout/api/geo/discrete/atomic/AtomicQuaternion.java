@@ -36,9 +36,9 @@ import org.spout.api.util.concurrent.OptimisticReadWriteLock;
  *
  */
 public class AtomicQuaternion extends Quaternionm {
-	
+
 	private final OptimisticReadWriteLock lock;
-	
+
 	/**
 	 * Constructs a new Quaternion and sets the components equal to the identity
 	 */
@@ -48,29 +48,34 @@ public class AtomicQuaternion extends Quaternionm {
 	}
 
 	/**
-	 * Constructs a new Quaternion with the given xyzw
-	 * NOTE: This represents a Unit Vector in 4d space.  Do not use unless you know what you are doing.
+	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
+	 * Unit Vector in 4d space. Do not use unless you know what you are doing.
 	 * If you want to create a normal rotation, use the angle/axis override.
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
 	 */
-	public AtomicQuaternion(OptimisticReadWriteLock lock, float x, float y, float z, float w){
+	public AtomicQuaternion(OptimisticReadWriteLock lock, float x, float y, float z, float w) {
 		super(x, y, z, w);
 		this.lock = handleNull(lock);
 	}
+
 	/**
-	 * Constructs a new Quaternion that represents a given rotation around an arbatrary axis
+	 * Constructs a new Quaternion that represents a given rotation around an
+	 * arbatrary axis
+	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */
-	public AtomicQuaternion(OptimisticReadWriteLock lock, float angle, Vector3 axis){
+	public AtomicQuaternion(OptimisticReadWriteLock lock, float angle, Vector3 axis) {
 		super(angle, axis);
 		this.lock = handleNull(lock);
 	}
+
 	/**
-	 *  Copy Constructor
+	 * Copy Constructor
 	 */
 	public AtomicQuaternion(OptimisticReadWriteLock lock, AtomicQuaternion rotation) {
 		super(rotation);
@@ -116,7 +121,7 @@ public class AtomicQuaternion extends Quaternionm {
 			lock.writeUnlock(seq);
 		}
 	}
-		
+
 	@Override
 	public void set(Quaternion quaternion) {
 		int seq = lock.writeLock();
@@ -129,16 +134,16 @@ public class AtomicQuaternion extends Quaternionm {
 
 	/**
 	 * Sets the value of the quaternion without any synchronisation
-	 * 
+	 *
 	 * @param quaternion
 	 */
 	public void directSet(Quaternion quaternion) {
 		super.set(quaternion);
 	}
-	
+
 	/**
 	 * Sets the value of the quaternion without any synchronisation
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -150,10 +155,10 @@ public class AtomicQuaternion extends Quaternionm {
 		super.setZ(z);
 		super.setW(w);
 	}
-	
+
 	/**
 	 * Atomically sets this quaternion to the given values.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -170,10 +175,10 @@ public class AtomicQuaternion extends Quaternionm {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	/**
 	 * Atomically sets this point to the given point.
-	 * 
+	 *
 	 * @param point
 	 */
 	public void set(AtomicQuaternion quaternion) {
@@ -196,8 +201,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
-	
+
 	@Override
 	public float getX() {
 		while (true) {
@@ -225,7 +229,8 @@ public class AtomicQuaternion extends Quaternionm {
 					return result;
 				}
 			}
-		}	}
+		}
+	}
 
 	@Override
 	public float getZ() {
@@ -241,7 +246,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float getW() {
 		while (true) {
@@ -256,7 +261,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float lengthSquared() {
 		while (true) {
@@ -271,7 +276,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public float length() {
 		while (true) {
@@ -286,7 +291,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Vector3 getAxisAngles() {
 		while (true) {
@@ -301,7 +306,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Quaternion rotate(float angle, Vector3 axis) {
 		while (true) {
@@ -315,7 +320,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	public Quaternion rotate(float angle, AtomicVector3 axis) {
 		while (true) {
 			int seq = axis.getLock().readLock();
@@ -328,7 +333,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Quaternion normalize() {
 		while (true) {
@@ -342,7 +347,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public Quaternion multiply(Quaternion o) {
 		while (true) {
@@ -356,7 +361,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	public Quaternion multiply(AtomicQuaternion o) {
 		while (true) {
 			int seq = o.getLock().readLock();
@@ -369,7 +374,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		while (true) {
@@ -384,7 +389,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		while (true) {
@@ -399,13 +404,13 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	public boolean equals(AtomicQuaternion o) {
 		while (true) {
 			int seq = o.getLock().readLock();
 			boolean result = false;
 			try {
-				result = equals((Object)o);
+				result = equals((Object) o);
 			} finally {
 				if (o.getLock().readUnlock(seq)) {
 					return result;
@@ -413,7 +418,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	@Override
 	// TODO - should this even support hash code?
 	public int hashCode() {
@@ -429,7 +434,7 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
-	
+
 	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {
 			return new OptimisticReadWriteLock();

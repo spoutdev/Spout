@@ -27,7 +27,6 @@ package org.spout.api.plugin;
 
 import java.io.File;
 
-//import org.spout.api.event.Event;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
@@ -79,12 +78,14 @@ public interface PluginManager {
 
 	/**
 	 * Enables the plugin
+	 *
 	 * @param plugin
 	 */
 	public abstract void enablePlugin(Plugin plugin);
 
 	/**
 	 * Disables the plugin
+	 *
 	 * @param plugin
 	 */
 	public abstract void disablePlugin(Plugin plugin);

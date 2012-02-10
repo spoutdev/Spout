@@ -77,13 +77,13 @@ public abstract class CommonPlugin implements Plugin {
 	}
 
 	public final void initialize(CommonPluginLoader commonsPluginLoader, Game game, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
-		this.description = desc;
-		this.classLoader = loader;
+		description = desc;
+		classLoader = loader;
 		this.game = game;
-		this.pluginLoader = commonsPluginLoader;
+		pluginLoader = commonsPluginLoader;
 		this.dataFolder = dataFolder;
-		this.file = paramFile;
-		this.logger = new PluginLogger(this);
+		file = paramFile;
+		logger = new PluginLogger(this);
 	}
 
 	public final ClassLoader getClassLoader() {

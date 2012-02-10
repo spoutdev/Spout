@@ -160,7 +160,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 getDirectionVector(float pitch, float yaw) {
-		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate((new Quaternion(pitch, Vector3.UNIT_Z)).multiply(new Quaternion(yaw, Vector3.UNIT_Y))));
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(new Quaternion(pitch, Vector3.UNIT_Z).multiply(new Quaternion(yaw, Vector3.UNIT_Y))));
 	}
 
 	/**
@@ -227,16 +227,20 @@ public class MathHelper {
 	private final static double atan_a = 0.280872d;
 
 	// Integer Maths
-	
+
 	public static int floor(double x) {
-		int y = (int)x;
-		if (x < y) return y - 1;
+		int y = (int) x;
+		if (x < y) {
+			return y - 1;
+		}
 		return y;
 	}
-	
+
 	public static int floor(float x) {
-		int y = (int)x;
-		if (x < y) return y - 1;
+		int y = (int) x;
+		if (x < y) {
+			return y - 1;
+		}
 		return y;
 	}
 

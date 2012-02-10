@@ -28,8 +28,8 @@ package org.spout.api.geo;
 import java.util.Set;
 import java.util.UUID;
 
-import org.spout.api.Source;
 import org.spout.api.Game;
+import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
@@ -56,7 +56,8 @@ public interface World extends Source, BlockAccess {
 	public String getName();
 
 	/**
-	 * Gets the age of the world in ms. This count cannot be modified, and increments on every tick
+	 * Gets the age of the world in ms. This count cannot be modified, and
+	 * increments on every tick
 	 *
 	 * @return the world's age in ms
 	 */
@@ -176,21 +177,27 @@ public interface World extends Source, BlockAccess {
 	/**
 	 * Create a new Entity for initialization
 	 *
-	 * This does not add the Entity to the server.  You must call {@link #spawnEntity(Entity)} to simulate the Entity in the world
+	 * This does not add the Entity to the server. You must call
+	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
+	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The controller that will be attached to the Entity
 	 * @return
 	 */
 	public Entity createEntity(Point point, Controller controller);
+
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
+	 *
 	 * @param e
 	 */
 	public void spawnEntity(Entity e);
 
 	/**
-	 * Creates and Spawns an entity at the given point and with the given Controller
-	 * This is the same as {@link #createEntity()} and {@link #spawnEntity(Entity)} together.
+	 * Creates and Spawns an entity at the given point and with the given
+	 * Controller This is the same as {@link #createEntity()} and
+	 * {@link #spawnEntity(Entity)} together.
+	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The controller that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
@@ -212,7 +219,7 @@ public interface World extends Source, BlockAccess {
 	public void setSpawnPoint(Transform transform);
 
 	/**
-	 * Gets the world's seed.  This value is immutable and set at world creation
+	 * Gets the world's seed. This value is immutable and set at world creation
 	 *
 	 * @return the seed
 	 */
@@ -220,7 +227,8 @@ public interface World extends Source, BlockAccess {
 	public long getSeed();
 
 	/**
-	 * Gets the {@link WorldGenerator} responsible for generating new chunks for this world
+	 * Gets the {@link WorldGenerator} responsible for generating new chunks for
+	 * this world
 	 *
 	 * @return generator
 	 */
@@ -235,6 +243,7 @@ public interface World extends Source, BlockAccess {
 
 	/**
 	 * Gets the height of this world in blocks.
+	 *
 	 * @return The height of this world in blocks
 	 */
 	public int getHeight();
@@ -256,7 +265,7 @@ public interface World extends Source, BlockAccess {
 	 */
 	@SnapshotRead
 	public Set<Entity> getAll();
-	
+
 	public Set<Player> getPlayers();
 
 	Chunk getChunkFromBlock(int x, int y, int z);

@@ -77,7 +77,7 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 	}
 
 	public BlockMaterial setLightLevel(int level) {
-		this.lightLevel = level;
+		lightLevel = level;
 		return this;
 	}
 
@@ -88,16 +88,16 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 	public boolean isLiquid() {
 		return false;
 	}
-	
+
 	public boolean hasPhysics() {
 		return false;
 	}
 
 	public void onUpdate(World world, int x, int y, int z) {
-		
+
 	}
-	
+
 	public void onDestroy(World world, int x, int y, int z) {
-		
+
 	}
 }

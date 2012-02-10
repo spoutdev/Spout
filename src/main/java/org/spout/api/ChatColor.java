@@ -31,8 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * An enum of color names mapped to their equivalents in the notchian FontRenderer.
- * Names are from  <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
+ * An enum of color names mapped to their equivalents in the notchian
+ * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
 public enum ChatColor {
 	BLACK(0x0),
@@ -72,7 +72,9 @@ public enum ChatColor {
 	}
 
 	public static ChatColor byName(String name) {
-		if (name == null) return null;
+		if (name == null) {
+			return null;
+		}
 		Matcher matcher = matchPatern.matcher(name);
 		if (matcher.matches()) {
 			int code;

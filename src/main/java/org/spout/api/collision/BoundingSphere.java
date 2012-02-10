@@ -100,6 +100,7 @@ public class BoundingSphere implements CollisionVolume {
 		return CollisionHelper.contains(this, b);
 	}
 
+	@Override
 	public String toString() {
 		return "BoundingSphere{" + "center=" + center + ", radius=" + radius + '}';
 	}
@@ -114,8 +115,8 @@ public class BoundingSphere implements CollisionVolume {
 		if (other instanceof Segment) {
 			return intersects((Segment) other);
 		}
-        return other instanceof Plane && intersects((Plane) other);
-    }
+		return other instanceof Plane && intersects((Plane) other);
+	}
 
 	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
 		// TODO Auto-generated method stub

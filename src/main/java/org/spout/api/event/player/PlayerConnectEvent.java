@@ -35,7 +35,7 @@ public class PlayerConnectEvent extends Event {
 	private final Session s;
 	private final String playerName;
 
-	public PlayerConnectEvent(Session s, String playerName){
+	public PlayerConnectEvent(Session s, String playerName) {
 		this.s = s;
 		this.playerName = playerName;
 	}

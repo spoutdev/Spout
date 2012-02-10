@@ -29,12 +29,13 @@ import org.spout.api.util.set.TByteTripleHashSet;
 
 import gnu.trove.TCollections;
 import gnu.trove.set.hash.TIntHashSet;
+
 /**
  * A synchronized version of the {@link TByteTripleHashSet}.
  *
  * This set is backed by a read/write lock synchronised set.
  */
-public class TSyncByteTripleHashSet extends TByteTripleHashSet{
+public class TSyncByteTripleHashSet extends TByteTripleHashSet {
 	public TSyncByteTripleHashSet() {
 		super(TCollections.synchronizedSet(new TIntHashSet()));
 	}

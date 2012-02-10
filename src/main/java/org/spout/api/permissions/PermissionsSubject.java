@@ -36,6 +36,7 @@ import org.spout.api.util.Named;
 public interface PermissionsSubject extends Named {
 	/**
 	 * Gets whether or not the Player has a given permission
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -43,6 +44,7 @@ public interface PermissionsSubject extends Named {
 
 	/**
 	 * Gets whether or not the Player has a given permission in a World
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -50,6 +52,7 @@ public interface PermissionsSubject extends Named {
 
 	/**
 	 * Gets whether or not the Player is in a given group
+	 *
 	 * @param group
 	 * @return
 	 */
@@ -57,12 +60,14 @@ public interface PermissionsSubject extends Named {
 
 	/**
 	 * Gets the groups this player is in
+	 *
 	 * @return
 	 */
 	public String[] getGroups();
 
 	/**
 	 * Returns whether or not this subject is a group itself
+	 *
 	 * @return
 	 */
 	public boolean isGroup();

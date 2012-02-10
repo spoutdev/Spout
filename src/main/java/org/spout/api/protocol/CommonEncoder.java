@@ -27,12 +27,13 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 
+import org.spout.api.Spout;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-import org.spout.api.Spout;
 
 /**
  * A {@link OneToOneEncoder} which encodes Minecraft {@link Message}s into

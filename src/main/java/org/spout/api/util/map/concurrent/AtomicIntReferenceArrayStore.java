@@ -37,17 +37,24 @@ import org.spout.api.math.MathHelper;
  * <br>
  * When an element is added, it is stored at an index decided by the store.<br>
  * <br>
- * The arrays used to store the elements are dynamically resized as more elements are added.<br>
+ * The arrays used to store the elements are dynamically resized as more
+ * elements are added.<br>
  * <br>
- * The number of elements added to the store may temporarily exceed the max value, but only if a removal is performed shortly afterwards.  The store will spin lock until the number of elements is brought below the limit, so the period of the violation should be short.<br>
+ * The number of elements added to the store may temporarily exceed the max
+ * value, but only if a removal is performed shortly afterwards. The store will
+ * spin lock until the number of elements is brought below the limit, so the
+ * period of the violation should be short.<br>
  * <br>
- * A method is provided to test if an index is a reserved index, based on the maximum lengths of the arrays.  Only reserved indexes are used as element indexes.<br>
+ * A method is provided to test if an index is a reserved index, based on the
+ * maximum lengths of the arrays. Only reserved indexes are used as element
+ * indexes.<br>
+ *
  * @param <T> the type of the Object in the {int, &lt;T&gt;} pair
  */
 public final class AtomicIntReferenceArrayStore<T> {
 	@SuppressWarnings("unchecked")
-	private final T EMPTY = (T)new Object();
-	
+	private final T EMPTY = (T) new Object();
+
 	private final int SPINS = 10;
 
 	private final int maxLength;
@@ -72,14 +79,14 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	@SuppressWarnings("unchecked")
 	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor, int initialSize) {
-		this.maxLength = MathHelper.roundUpPow2((int)(maxEntries / loadFactor));
-		this.reservedMask = (-MathHelper.roundUpPow2(maxLength)) & 0xFFFF;
+		this.maxLength = MathHelper.roundUpPow2((int) (maxEntries / loadFactor));
+		this.reservedMask = -MathHelper.roundUpPow2(maxLength) & 0xFFFF;
 
 		this.length.set(MathHelper.roundUpPow2(initialSize));
 		this.entries.set(0);
 
 		intArray = new AtomicReference<int[]>(new int[this.length.get()]);
-		auxArray = new AtomicReference<T[]>((T[])new Object[this.length.get()]);
+		auxArray = new AtomicReference<T[]>((T[]) new Object[this.length.get()]);
 		seqArray = new AtomicReference<AtomicIntegerArray>(new AtomicIntegerArray(this.length.get()));
 		emptyFill(auxArray.get(), seqArray.get());
 	}
@@ -87,11 +94,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 	/**
 	 * Indicates if the given short should be reserved.<br>
 	 * <br>
-	 * Only ids where isReverved(id) returns true will be returned by the add(...) method.<br>
+	 * Only ids where isReverved(id) returns true will be returned by the
+	 * add(...) method.<br>
 	 * <br>
-	 * Ids from (65536 - length) to 65535 are reserved.
-	 * <br>
+	 * Ids from (65536 - length) to 65535 are reserved. <br>
 	 * The top 2 bytes of the id are ignored.<br>
+	 *
 	 * @param id
 	 * @return true if the id is reserved
 	 */
@@ -103,8 +111,10 @@ public final class AtomicIntReferenceArrayStore<T> {
 	/**
 	 * Gets the int value stored at a given index.<br>
 	 * <br>
-	 * If there is no int stored at the index, then the return value is undefined.<br>
+	 * If there is no int stored at the index, then the return value is
+	 * undefined.<br>
 	 * <br>
+	 *
 	 * @param index the index
 	 * @return the int value
 	 */
@@ -113,7 +123,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 		int spins = 0;
 		boolean interrupted = false;
 		while (true) {
-			if ((spins++) > SPINS) {
+			if (spins++ > SPINS) {
 				interrupted |= atomicWait();
 			}
 			int initialSequence = seqArray.get().get(index);
@@ -134,22 +144,25 @@ public final class AtomicIntReferenceArrayStore<T> {
 	/**
 	 * Gets the sequence number associated with the element at a given index.<br>
 	 * <br>
-	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.<br>
-	 * <br> 
-	 * This method should NOT be used to test if a sequence number has changed.  Use testSequence(int index, int sequence) instead.
-	 * 
+	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the
+	 * record is unstable.<br>
+	 * <br>
+	 * This method should NOT be used to test if a sequence number has changed.
+	 * Use testSequence(int index, int sequence) instead.
+	 *
 	 * @param index the index
 	 * @return the sequence number
 	 */
 	public int getSequence(int index) {
 		return this.seqArray.get().get(toInternal(index));
 	}
-	
+
 	/**
 	 * Tests if the sequence number has changed for a particular index.<br>
 	 * <br>
-	 * This method counts as both a volatile read and write, which is required for confirming that no change has occurred in another thread.
-	 * 
+	 * This method counts as both a volatile read and write, which is required
+	 * for confirming that no change has occurred in another thread.
+	 *
 	 * @param index the index
 	 * @param expected the expected sequence number
 	 * @return true if the sequence number matches expected
@@ -161,36 +174,43 @@ public final class AtomicIntReferenceArrayStore<T> {
 	/**
 	 * Gets the id value stored at a given index.<br>
 	 * <br>
-	 * If there is no int stored at the index, then the return value is undefined.<br>
+	 * If there is no int stored at the index, then the return value is
+	 * undefined.<br>
 	 * <br>
+	 *
 	 * @param index the index
 	 * @return the int value
 	 */
 	public final short getId(int index) {
-		return (short)(getInt(index) >> 16);
+		return (short) (getInt(index) >> 16);
 	}
 
 	/**
 	 * Gets the data value stored at a given index.<br>
 	 * <br>
-	 * If there is no int stored at the index, then the return value is undefined.<br>
+	 * If there is no int stored at the index, then the return value is
+	 * undefined.<br>
 	 * <br>
+	 *
 	 * @param index the index
 	 * @return the int value
 	 */
 	public final short getData(int index) {
-		return (short)(getInt(index));
+		return (short) getInt(index);
 	}
 
 	/**
 	 * Gets the auxiliary data at a given index.<br>
 	 * <br>
-	 * If there is no data (int or auxiliary data) stored at the index, then the return value is the EMPTY object.<br>
+	 * If there is no data (int or auxiliary data) stored at the index, then the
+	 * return value is the EMPTY object.<br>
 	 * <br>
-	 * If there is no auxiliary data, but there is int data, then the method returns null.<br>
+	 * If there is no auxiliary data, but there is int data, then the method
+	 * returns null.<br>
 	 * <br>
 	 * This EMPTY object is NOT a valid &lt;T&gt; object.<br>
 	 * <br>
+	 *
 	 * @param index the index
 	 * @return the auxiliary data object, null, or EMPTY
 	 */
@@ -199,7 +219,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 		int spins = 0;
 		boolean interrupted = false;
 		while (true) {
-			if ((spins++) > SPINS) {
+			if (spins++ > SPINS) {
 				interrupted |= atomicWait();
 			}
 			int initialSequence = seqArray.get().get(index);
@@ -218,10 +238,13 @@ public final class AtomicIntReferenceArrayStore<T> {
 	}
 
 	/**
-	 * Adds an entry to the store.  The auxData parameter should be set to null to indicate no auxiliary data.<br>
+	 * Adds an entry to the store. The auxData parameter should be set to null
+	 * to indicate no auxiliary data.<br>
 	 * <br>
-	 * The index that is returned is guaranteed to be one of the reserved indexes.<br>
+	 * The index that is returned is guaranteed to be one of the reserved
+	 * indexes.<br>
 	 * <br>
+	 *
 	 * @param id the id
 	 * @param data the data
 	 * @param auxData the auxiliary data
@@ -237,7 +260,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 			if (needsResize()) {
 				resizeArrays();
 			}
-			int testIndex = scan.getAndIncrement() & (length.get() - 1);
+			int testIndex = scan.getAndIncrement() & length.get() - 1;
 			int prevSeq = seqArray.get().getAndSet(testIndex, DatatableSequenceNumber.UNSTABLE);
 			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
 				continue;
@@ -246,7 +269,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				if (auxArray.get()[testIndex] != EMPTY) {
 					continue;
 				}
-				int idAndData = (((int)id) << 16) | (data & 0xFFFF);
+				int idAndData = id << 16 | data & 0xFFFF;
 				intArray.get()[testIndex] = idAndData;
 				auxArray.get()[testIndex] = auxData;
 				return toExternal(testIndex);
@@ -258,8 +281,10 @@ public final class AtomicIntReferenceArrayStore<T> {
 	}
 
 	/**
-	 * Removes the array elements at the given index.  The array should not be empty at the index in question.<br>
+	 * Removes the array elements at the given index. The array should not be
+	 * empty at the index in question.<br>
 	 * <br>
+	 *
 	 * @param index the index
 	 */
 	public boolean remove(int index) {
@@ -325,7 +350,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 			//
 			int[] newIntArray = new int[newLength];
 			@SuppressWarnings("unchecked")
-			T[] newAuxArray = (T[])new Object[newLength];
+			T[] newAuxArray = (T[]) new Object[newLength];
 			AtomicIntegerArray newSeqArray = new AtomicIntegerArray(newLength);
 			emptyFill(newAuxArray, null);
 
@@ -366,7 +391,6 @@ public final class AtomicIntReferenceArrayStore<T> {
 			atomicNotify();
 		}
 
-
 	}
 
 	/**
@@ -386,7 +410,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @return the equivalent internal index
 	 */
 	private final int toInternal(int external) {
-		return (external & (~reservedMask)) & 0xFFFF;
+		return external & ~reservedMask & 0xFFFF;
 	}
 
 	/**
@@ -422,9 +446,11 @@ public final class AtomicIntReferenceArrayStore<T> {
 	}
 
 	/**
-	 * Indicates if the array needs resizing.  An array is considered to need resizing if it is more than 50% full.
+	 * Indicates if the array needs resizing. An array is considered to need
+	 * resizing if it is more than 50% full.
 	 *
-	 * Once an array has a length of the maximum length, it is never considered in need to resizing.
+	 * Once an array has a length of the maximum length, it is never considered
+	 * in need to resizing.
 	 *
 	 * @return true if the array needs to be resized
 	 */
@@ -436,13 +462,13 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 	/**
 	 * Waits until a notify
-	 * 
+	 *
 	 * @return true if interrupted during the wait
 	 */
 	private final boolean atomicWait() {
 		waiting.incrementAndGet();
 		try {
-			synchronized(this) {
+			synchronized (this) {
 				try {
 					wait();
 				} catch (InterruptedException e) {
@@ -454,13 +480,13 @@ public final class AtomicIntReferenceArrayStore<T> {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Notifies all waiting threads
 	 */
 	private final void atomicNotify() {
 		if (!waiting.compareAndSet(0, 0)) {
-			synchronized(this) {
+			synchronized (this) {
 				notifyAll();
 			}
 		}

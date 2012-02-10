@@ -25,7 +25,6 @@
  */
 package org.spout.api.plugin;
 
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +32,7 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -59,7 +59,7 @@ public class CommonPluginLoader implements PluginLoader {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;
-		patterns = new Pattern[] { Pattern.compile("\\.jar$") };
+		patterns = new Pattern[] {Pattern.compile("\\.jar$")};
 	}
 
 	public Pattern[] getPatterns() {
@@ -68,8 +68,9 @@ public class CommonPluginLoader implements PluginLoader {
 
 	@UnsafeMethod
 	public void enablePlugin(Plugin paramPlugin) {
-		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass()))
+		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass())) {
 			throw new IllegalArgumentException("Cannot enable plugin with this PluginLoader as it is of the wrong type!");
+		}
 		if (!paramPlugin.isEnabled()) {
 			CommonPlugin cp = (CommonPlugin) paramPlugin;
 			String name = cp.getDescription().getName();
@@ -91,8 +92,9 @@ public class CommonPluginLoader implements PluginLoader {
 
 	@UnsafeMethod
 	public void disablePlugin(Plugin paramPlugin) {
-		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass()))
+		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass())) {
 			throw new IllegalArgumentException("Cannot disable plugin with this PluginLoader as it is of the wrong type!");
+		}
 		if (paramPlugin.isEnabled()) {
 			CommonPlugin cp = (CommonPlugin) paramPlugin;
 			String name = cp.getDescription().getName();
@@ -121,8 +123,9 @@ public class CommonPluginLoader implements PluginLoader {
 		CommonPlugin result = null;
 		PluginDescriptionFile desc = null;
 
-		if (!paramFile.exists())
+		if (!paramFile.exists()) {
 			throw new InvalidPluginException(new StringBuilder().append(paramFile.getName()).append(" does not exist!").toString());
+		}
 
 		JarFile jar = null;
 		InputStream in = null;
@@ -130,11 +133,13 @@ public class CommonPluginLoader implements PluginLoader {
 			jar = new JarFile(paramFile);
 			JarEntry entry = jar.getJarEntry("spoutplugin.yml");
 
-			if (entry == null)
+			if (entry == null) {
 				entry = jar.getJarEntry("plugin.yml");
+			}
 
-			if (entry == null)
+			if (entry == null) {
 				throw new InvalidPluginException("Jar has no plugin.yml or spoutplugin.yml!");
+			}
 
 			in = jar.getInputStream(entry);
 			desc = new PluginDescriptionFile(in);
@@ -206,8 +211,9 @@ public class CommonPluginLoader implements PluginLoader {
 
 			result.initialize(this, game, desc, dataFolder, paramFile, loader);
 
-			if (!locked)
+			if (!locked) {
 				manager.unlock(key);
+			}
 		} catch (Exception e) {
 			throw new InvalidPluginException(e);
 		}

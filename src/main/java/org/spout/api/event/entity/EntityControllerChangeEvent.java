@@ -15,7 +15,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 
 	private Controller newController;
 
-	public EntityControllerChangeEvent (Entity e, Source source, Controller newController) {
+	public EntityControllerChangeEvent(Entity e, Source source, Controller newController) {
 		super(e);
 		this.source = source;
 		this.newController = newController;
@@ -23,6 +23,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 
 	/**
 	 * Gets the source of this event.
+	 *
 	 * @return An Source that is the source of the event.
 	 */
 	public Source getSource() {
@@ -31,6 +32,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 
 	/**
 	 * Sets the source of this event.
+	 *
 	 * @param source The source of this event.
 	 */
 	public void setSource(Source source) {
@@ -39,6 +41,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 
 	/**
 	 * Gets the new controller of the entity.
+	 *
 	 * @return The new controller.
 	 */
 	public Controller getNewController() {
@@ -47,6 +50,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 
 	/**
 	 * Sets the new controller of the entity.
+	 *
 	 * @param newController The new controller of the entity.
 	 */
 	public void setNetController(Controller newController) {

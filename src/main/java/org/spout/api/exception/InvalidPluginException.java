@@ -47,10 +47,12 @@ public class InvalidPluginException extends Exception {
 		this(null, null);
 	}
 
+	@Override
 	public Throwable getCause() {
-		return this.cause;
+		return cause;
 	}
 
+	@Override
 	public String getMessage() {
 		return message;
 	}

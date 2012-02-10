@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.spout.api.Spout;
@@ -40,7 +40,7 @@ import org.spout.api.event.server.ServiceUnregisterEvent;
 
 /**
  * A common service manager.
- * 
+ *
  */
 public class CommonServiceManager implements ServiceManager {
 
@@ -61,11 +61,12 @@ public class CommonServiceManager implements ServiceManager {
 		return serviceManager;
 	}
 
-	private CommonServiceManager() {}
+	private CommonServiceManager() {
+	}
 
 	/**
 	 * Register a provider of a service.
-	 * 
+	 *
 	 * @param <T> Provider
 	 * @param service service class
 	 * @param provider provider to register
@@ -76,7 +77,7 @@ public class CommonServiceManager implements ServiceManager {
 
 		synchronized (providers) {
 			List<ServiceProvider<?>> registered = providers.get(service);
-			
+
 			if (registered == null) {
 				registered = new ArrayList<ServiceProvider<?>>();
 				providers.put(service, registered);
@@ -93,7 +94,7 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister all the providers registered by a particular plugin.
-	 * 
+	 *
 	 * @param plugin
 	 */
 	public void unregisterAll(Plugin plugin) {
@@ -130,8 +131,8 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister a particular provider for a particular service.
-	 * 
-	 * @param service 
+	 *
+	 * @param service
 	 * @param provider
 	 */
 	public void unregister(Class<?> service, Object provider) {
@@ -174,13 +175,12 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister a particular provider.
-	 * 
+	 *
 	 * @param provider
 	 */
 	public void unregister(Object provider) {
 		synchronized (providers) {
-			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it =
-					providers.entrySet().iterator();
+			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
 
 			try {
 				while (it.hasNext()) {
@@ -213,7 +213,7 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Queries for a provider. This may return if no provider has been
 	 * registered for a service. The highest priority provider is returned.
-	 * 
+	 *
 	 * @param <T>
 	 * @param service
 	 * @return provider or null
@@ -233,9 +233,9 @@ public class CommonServiceManager implements ServiceManager {
 	}
 
 	/**
-	 * Queries for a provider registration. This may return if no provider
-	 * has been registered for a service.
-	 * 
+	 * Queries for a provider registration. This may return if no provider has
+	 * been registered for a service.
+	 *
 	 * @param <T>
 	 * @param service
 	 * @return provider registration or null
@@ -256,7 +256,7 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Get registrations of providers for a plugin.
-	 * 
+	 *
 	 * @param plugin
 	 * @return provider registration or null
 	 */
@@ -279,7 +279,7 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Get registrations of providers for a service. The returned list is
 	 * unmodifiable.
-	 * 
+	 *
 	 * @param <T>
 	 * @param service
 	 * @return list of registrations
@@ -306,7 +306,7 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Get a list of known services. A service is known if it has registered
 	 * providers for it.
-	 * 
+	 *
 	 * @return list of known services
 	 */
 	public Collection<Class<?>> getKnownServices() {
@@ -316,8 +316,8 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Returns whether a provider has been registered for a service. Do not
 	 * check this first only to call <code>load(service)</code> later, as that
-	 * would be a non-thread safe situation. 
-	 * 
+	 * would be a non-thread safe situation.
+	 *
 	 * @param <T> service
 	 * @param service service to check
 	 * @return whether there has been a registered provider

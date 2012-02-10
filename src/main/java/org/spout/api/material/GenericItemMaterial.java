@@ -37,7 +37,7 @@ public class GenericItemMaterial implements ItemMaterial {
 
 	public GenericItemMaterial(String name, int id, int data, boolean subtypes) {
 		this.name = name;
-		this.displayName = name;
+		displayName = name;
 		this.id = (short) id;
 		this.data = (short) data;
 		this.subtypes = subtypes;

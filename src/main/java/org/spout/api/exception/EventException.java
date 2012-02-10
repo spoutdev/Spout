@@ -25,7 +25,6 @@
  */
 package org.spout.api.exception;
 
-import org.spout.api.event.*;
 
 @SuppressWarnings("serial")
 public class EventException extends Exception {

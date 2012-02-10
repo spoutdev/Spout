@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class OptimisticReadWriteLock {
 
-	private final AtomicInteger waiting = new AtomicInteger(0);	
+	private final AtomicInteger waiting = new AtomicInteger(0);
 	private final AtomicInteger sequence = new AtomicInteger(0);
 	public final static int UNSTABLE = 1;
 
@@ -55,7 +55,7 @@ public class OptimisticReadWriteLock {
 		if ((seq = tryReadLock()) != UNSTABLE) {
 			return seq;
 		} else {
-			synchronized(this) {
+			synchronized (this) {
 				boolean interrupted = false;
 				waiting.incrementAndGet();
 				try {
@@ -80,12 +80,13 @@ public class OptimisticReadWriteLock {
 	}
 
 	/**
-	 * Unlocks the lock after reading and returns true if no changes were made during the read.  This
-	 * method has no effect on the lock and only indicates if a write operation occurred while the read
-	 * lock was locked.
+	 * Unlocks the lock after reading and returns true if no changes were made
+	 * during the read. This method has no effect on the lock and only indicates
+	 * if a write operation occurred while the read lock was locked.
 	 *
 	 * @param sequence the sequence number when the lock was read locked
-	 * @return true if the sequence number has not changed and the lock is not in the UNSTABLE state
+	 * @return true if the sequence number has not changed and the lock is not
+	 *         in the UNSTABLE state
 	 */
 	public boolean readUnlock(int sequence) {
 		if (sequence == UNSTABLE) {
@@ -98,7 +99,8 @@ public class OptimisticReadWriteLock {
 	/**
 	 * Attempts to write lock the lock.
 	 *
-	 * @return the old sequence number, or OptimisticReadWriteLock.UNSTABLE on fail
+	 * @return the old sequence number, or OptimisticReadWriteLock.UNSTABLE on
+	 *         fail
 	 */
 	public int tryWriteLock() {
 		return sequence.getAndSet(UNSTABLE);
@@ -112,7 +114,7 @@ public class OptimisticReadWriteLock {
 		if ((seq = tryWriteLock()) != UNSTABLE) {
 			return seq;
 		} else {
-			synchronized(this) {
+			synchronized (this) {
 				boolean interrupted = false;
 				waiting.incrementAndGet();
 				try {
@@ -138,7 +140,7 @@ public class OptimisticReadWriteLock {
 
 	/**
 	 * Unlocks the lock after writing.
-	 * 
+	 *
 	 * @param sequence the sequence number when the lock was write locked
 	 */
 	public void writeUnlock(int sequence) {
@@ -148,7 +150,7 @@ public class OptimisticReadWriteLock {
 			}
 		} finally {
 			if (!waiting.compareAndSet(0, 0)) {
-				synchronized(this) {
+				synchronized (this) {
 					notifyAll();
 				}
 			}

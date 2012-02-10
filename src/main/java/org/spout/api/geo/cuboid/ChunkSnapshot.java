@@ -1,6 +1,6 @@
 /*
  * This file is part of SpoutAPI (http://www.getspout.org/).
- * 
+ *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,9 +43,9 @@ public abstract class ChunkSnapshot extends Cube implements BlockData {
 	public ChunkSnapshot(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE);
 	}
-	
+
 	public abstract short[] getBlockIds();
-	
+
 	public abstract short[] getBlockData();
 
 	/**
@@ -54,10 +54,10 @@ public abstract class ChunkSnapshot extends Cube implements BlockData {
 	 * @return
 	 */
 	public abstract Region getRegion();
-	
+
 	/**
 	 * Gets the entities in the chunk at the last snapshot
-	 * 
+	 *
 	 * @return the entities
 	 */
 	@SnapshotRead

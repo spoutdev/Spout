@@ -53,27 +53,25 @@ public final class Spout {
 	public static Game getGame() {
 		return instance;
 	}
-	
-	public static Logger getLogger(){
+
+	public static Logger getLogger() {
 		return instance.getLogger();
 	}
-	
-	public static void stop(){
+
+	public static void stop() {
 		instance.stop();
 	}
-	
-	public static EventManager getEventManager(){
+
+	public static EventManager getEventManager() {
 		return instance.getEventManager();
 	}
-	
-	public static Platform getPlatform(){
+
+	public static Platform getPlatform() {
 		return instance.getPlatform();
 	}
-	
-	public static Scheduler getScheduler(){
+
+	public static Scheduler getScheduler() {
 		return instance.getScheduler();
 	}
-	
-	
-	
+
 }

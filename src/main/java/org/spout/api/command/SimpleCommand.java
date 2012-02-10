@@ -25,13 +25,6 @@
  */
 package org.spout.api.command;
 
-import org.spout.api.exception.CommandException;
-import org.spout.api.exception.CommandUsageException;
-import org.spout.api.exception.MissingCommandException;
-import org.spout.api.exception.WrappedCommandException;
-import gnu.trove.set.TCharSet;
-import gnu.trove.set.hash.TCharHashSet;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,9 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.spout.api.exception.CommandException;
+import org.spout.api.exception.CommandUsageException;
+import org.spout.api.exception.MissingCommandException;
+import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.util.MiscCompatibilityUtils;
 import org.spout.api.util.Named;
 import org.spout.api.util.StringUtil;
+
+import gnu.trove.set.TCharSet;
+import gnu.trove.set.hash.TCharHashSet;
 
 public class SimpleCommand implements Command {
 	protected final Map<String, Command> children = new HashMap<String, Command>();
@@ -149,7 +149,7 @@ public class SimpleCommand implements Command {
 
 	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		if (rawExecutor != null && rawExecutor != this) {
-			rawExecutor.execute(source,  args, baseIndex, fuzzyLookup);
+			rawExecutor.execute(source, args, baseIndex, fuzzyLookup);
 			return;
 		}
 
@@ -358,13 +358,15 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command setPermissions(boolean requireAll, String... permissions) {
-		this.requireAllPermissions = requireAll;
+		requireAllPermissions = requireAll;
 		this.permissions = permissions;
 		return this;
 	}
 
 	public boolean hasPermission(CommandSource sender) {
-		if (permissions == null || permissions.length < 1) return true;
+		if (permissions == null || permissions.length < 1) {
+			return true;
+		}
 		boolean success = requireAllPermissions;
 		for (String perm : permissions) {
 			if (requireAllPermissions) {

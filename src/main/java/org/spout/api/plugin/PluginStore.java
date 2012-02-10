@@ -40,6 +40,7 @@ public interface PluginStore {
 
 	public abstract class DownloadEventDelegate {
 		public abstract void onDownloadFinished(Plugin addon);
+
 		public abstract void onDownloadFailure(Exception e, int databaseId, String name);
 	}
 }

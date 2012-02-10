@@ -33,6 +33,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface DelayedWrite {
 	public String author() default "SpoutDev";
+
 	public String version() default "1.0";
+
 	public String shortDescription() default "Indicates that this method submits an update for writing.  The changes will be incorporated into the next snapshot.  Snapshots are taken at the end of every tick.";
 }

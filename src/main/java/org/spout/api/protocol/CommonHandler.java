@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 import java.util.logging.Level;
 
 import org.spout.api.Server;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;

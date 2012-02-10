@@ -27,7 +27,6 @@ package org.spout.api.inventory;
 
 import java.util.Map;
 
-
 import org.spout.api.material.Material;
 import org.spout.nbt.Tag;
 
@@ -41,7 +40,8 @@ public class ItemStack {
 	private Map<String, Tag> auxData;
 
 	/**
-	 * Creates a new ItemStack from the specified Material of the specified amount
+	 * Creates a new ItemStack from the specified Material of the specified
+	 * amount
 	 *
 	 */
 	public ItemStack(Material material, int amount) {
@@ -131,22 +131,20 @@ public class ItemStack {
 		return this;
 	}
 
+	@Override
 	public ItemStack clone() {
 		ItemStack newStack = new ItemStack(material, amount, damage);
 		newStack.setAuxData(auxData);
 		return newStack;
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof ItemStack)) {
 			return false;
 		}
 		ItemStack stack = (ItemStack) other;
-		return material.equals(stack.material)
-				&& amount == stack.amount
-				&& damage == stack.damage
-				&& potentialNullEquals(auxData, stack.auxData);
+		return material.equals(stack.material) && amount == stack.amount && damage == stack.damage && potentialNullEquals(auxData, stack.auxData);
 	}
 
 	public static boolean potentialNullEquals(Object a, Object b) {

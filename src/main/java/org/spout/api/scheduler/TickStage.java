@@ -49,13 +49,20 @@ public class TickStage {
 
 	public static String getStage(int num) {
 		switch (num) {
-		case (1<<0): return "TICKSTART";
-		case (1<<1): return "STAGE1";
-		case (1<<2): return "STAGE2P";
-		case (1<<3): return "FINALIZE";
-		case (1<<4): return "PRESNAPSHOT";
-		case (1<<5): return "SNAPSHOT";
-		default:     return "UNKNOWN";
+			case 1 << 0:
+				return "TICKSTART";
+			case 1 << 1:
+				return "STAGE1";
+			case 1 << 2:
+				return "STAGE2P";
+			case 1 << 3:
+				return "FINALIZE";
+			case 1 << 4:
+				return "PRESNAPSHOT";
+			case 1 << 5:
+				return "SNAPSHOT";
+			default:
+				return "UNKNOWN";
 		}
 	}
 
@@ -82,7 +89,8 @@ public class TickStage {
 	private static int stage;
 
 	/**
-	 * Sets the current stage.  This is not synchronised, so should only be called during the stable period between stages.
+	 * Sets the current stage. This is not synchronised, so should only be
+	 * called during the stable period between stages.
 	 *
 	 * @param stage the stage
 	 */

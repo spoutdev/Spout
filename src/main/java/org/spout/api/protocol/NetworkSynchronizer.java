@@ -50,7 +50,7 @@ public class NetworkSynchronizer {
 	public NetworkSynchronizer(Player owner, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
-		this.session = owner.getSession();
+		session = owner.getSession();
 	}
 
 	private final static int TARGET_SIZE = 5 * Chunk.CHUNK_SIZE;
@@ -93,7 +93,8 @@ public class NetworkSynchronizer {
 
 	/**
 	 * Called just before the pre-snapshot stage.<br>
-	 * This stage can make changes but they should be checked to make sure they are non-conflicting.
+	 * This stage can make changes but they should be checked to make sure they
+	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
 		if (entity == null) {
@@ -101,13 +102,13 @@ public class NetworkSynchronizer {
 		}
 
 		// TODO teleport smoothing
-		
+
 		Transform lastTransform = entity.getTransform();
 		Transform liveTransform = entity.getLiveTransform();
 
 		if (liveTransform != null) {
 			Point currentPosition = liveTransform.getPosition();
-			if (currentPosition.getManhattanDistance(lastChunkCheck) > (Chunk.CHUNK_SIZE >> 1)) {
+			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck.set(currentPosition);
 			}
@@ -135,7 +136,7 @@ public class NetworkSynchronizer {
 		}
 
 	}
-	
+
 	public void preSnapshot() {
 
 		if (death) {
@@ -206,8 +207,6 @@ public class NetworkSynchronizer {
 		c.removeObserver(owner);
 	}
 
-
-
 	private void checkChunkUpdates(Point currentPosition) {
 
 		// Recalculating these
@@ -217,9 +216,9 @@ public class NetworkSynchronizer {
 		chunkInitQueue.clear();
 
 		World world = currentPosition.getWorld();
-		int bx = (int)currentPosition.getX();
-		int by = (int)currentPosition.getY();
-		int bz = (int)currentPosition.getZ();
+		int bx = (int) currentPosition.getX();
+		int by = (int) currentPosition.getY();
+		int bz = (int) currentPosition.getZ();
 
 		Point playerChunkBase = Chunk.pointToBase(currentPosition);
 
@@ -255,10 +254,10 @@ public class NetworkSynchronizer {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the entity protocol manager
-	 * 
+	 *
 	 * @return the entity protocol manager
 	 */
 	public EntityProtocol getEntityProtocol() {
@@ -270,11 +269,12 @@ public class NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should
+	 * be made to the chunk
 	 *
 	 * @param c the chunk
 	 */
-	public void sendChunk(Chunk c){
+	public void sendChunk(Chunk c) {
 		//TODO: Implement Spout Protocol
 	}
 
@@ -283,11 +283,12 @@ public class NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should
+	 * be made to the chunk
 	 *
 	 * @param p the base Point for the chunk
 	 */
-	protected void initChunk(Point p){
+	protected void initChunk(Point p) {
 		//TODO: Implement Spout Protocol
 	}
 
@@ -296,11 +297,12 @@ public class NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should
+	 * be made to the chunk
 	 *
 	 * @param p the base Point for the chunk
 	 */
-	protected void freeChunk(Point p){
+	protected void freeChunk(Point p) {
 		//TODO: Inplement Spout Protocol
 	}
 
@@ -309,11 +311,12 @@ public class NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should
+	 * be made to the chunk
 	 *
 	 * @param t the transform
 	 */
-	protected void sendPosition(Transform t){
+	protected void sendPosition(Transform t) {
 		//TODO: Implement Spout Protocol
 	}
 
@@ -322,44 +325,46 @@ public class NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should
+	 * be made to the chunk
 	 *
 	 * @param t the transform
 	 */
-	protected void worldChanged(World world){
+	protected void worldChanged(World world) {
 		//TODO: Implement Spout Protocol
 	}
 
 	/**
 	 * Called when a block in a chunk that the player is observing changes.<br>
 	 * <br>
-	 * Note: The coordinates of the block are chunk relative and the world field is undefined.
+	 * Note: The coordinates of the block are chunk relative and the world field
+	 * is undefined.
 	 *
 	 * @param chunk the chunk
 	 * @param block the block
 	 */
 	public void updateBlock(Chunk chunk, Block block) {
 	}
-	
+
 	/**
 	 * Instructs the client to spawn the entity
-	 * 
+	 *
 	 * @param e the entity
 	 */
 	public void spawnEntity(Entity e) {
 	}
-	
+
 	/**
 	 * Instructs the client to destroy the entity
-	 * 
+	 *
 	 * @param e the entity
 	 */
 	public void destroyEntity(Entity e) {
 	}
-	
+
 	/**
 	 * Instructs the client to update the entities state and position
-	 * 
+	 *
 	 * @param e the entity
 	 */
 	public void syncEntity(Entity e) {

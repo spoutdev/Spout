@@ -67,6 +67,7 @@ public class Cuboid {
 		return base.getWorld();
 	}
 
+	@Override
 	public int hashCode() {
 		int hash = getX();
 		hash += (hash << 5) + getY();
@@ -76,6 +77,7 @@ public class Cuboid {
 		return hash;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 
 		if (obj == null) {
@@ -83,13 +85,14 @@ public class Cuboid {
 		} else if (!(obj instanceof Cuboid)) {
 			return false;
 		} else {
-			Cuboid cuboid = (Cuboid)obj;
+			Cuboid cuboid = (Cuboid) obj;
 
 			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld().equals(getWorld()) && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
 		}
 
 	}
 
+	@Override
 	public String toString() {
 		return "Cuboid[" + size.getX() + ", " + size.getY() + ", " + size.getZ() + "]@[" + getX() + ", " + getY() + ", " + getZ() + "]";
 	}

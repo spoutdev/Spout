@@ -204,12 +204,12 @@ public abstract class PacketUtil {
 
 	/**
 	 * Unpacks an integer from the smallest space for network use.
+	 *
 	 * @param input network stream
 	 * @return the value
 	 * @throws IOException on network error
 	 */
-	public static int readPacked(final DataInputStream input)
-			throws IOException {
+	public static int readPacked(final DataInputStream input) throws IOException {
 		int value = input.readByte();
 		if ((value & 0x80) > 0) {
 			value = (value & 0x7F) + (input.readByte() << 7);
@@ -228,12 +228,12 @@ public abstract class PacketUtil {
 
 	/**
 	 * Packs an integer into the smallest space for network use.
+	 *
 	 * @param output network stream
 	 * @param value the value
 	 * @throws IOException on network error
 	 */
-	public static void writePacked(final DataOutputStream output, final int value)
-			throws IOException {
+	public static void writePacked(final DataOutputStream output, final int value) throws IOException {
 		if (value < 0x80) {
 			output.writeByte(value);
 		} else if (value < 0x4000) {
@@ -259,6 +259,7 @@ public abstract class PacketUtil {
 
 	/**
 	 * Gets the number of bytes it will take to send a packed number.
+	 *
 	 * @param value the number to pack
 	 * @return the number of bytes
 	 */

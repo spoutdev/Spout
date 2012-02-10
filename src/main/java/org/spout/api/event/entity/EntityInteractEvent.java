@@ -44,18 +44,20 @@ public class EntityInteractEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Get the entity being interacted with.
+	 *
 	 * @return The entity interacted with.
 	 */
-	public Entity getInteractedWith(){
+	public Entity getInteractedWith() {
 		return interacted;
 	}
 
 	/**
 	 * Set the entity being interacted with.
+	 *
 	 * @param e The entity that will be interacted with.
 	 */
-	public void setInteractedWith(Entity e){
-		this.interacted = e;
+	public void setInteractedWith(Entity e) {
+		interacted = e;
 	}
 
 	@Override
@@ -63,6 +65,7 @@ public class EntityInteractEvent extends EntityEvent implements Cancellable {
 		super.setCancelled(cancelled);
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

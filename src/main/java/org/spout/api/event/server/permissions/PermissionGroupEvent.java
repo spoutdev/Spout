@@ -49,6 +49,7 @@ public class PermissionGroupEvent extends Event {
 	public String getGroup() {
 		return group;
 	}
+
 	public boolean getResult() {
 		return result;
 	}
@@ -69,6 +70,7 @@ public class PermissionGroupEvent extends Event {
 		return world == null ? null : world.getName();
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

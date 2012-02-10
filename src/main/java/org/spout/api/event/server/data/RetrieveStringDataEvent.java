@@ -48,6 +48,7 @@ public class RetrieveStringDataEvent extends RetrieveDataEvent {
 		return result;
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

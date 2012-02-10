@@ -41,7 +41,7 @@ public class Ray implements CollisionVolume {
 	Vector3 direction;
 
 	public Ray(Vector3 start, Vector3 direction) {
-		this.origin = start;
+		origin = start;
 		this.direction = direction;
 	}
 
@@ -49,25 +49,26 @@ public class Ray implements CollisionVolume {
 		this(start, MathHelper.getDirectionVector(pitch, yaw));
 	}
 
-//	public boolean intersects(BoundingBox b) {
-//		return CollisionHelper.checkCollision(b, this);
-//	}
-//
+	//	public boolean intersects(BoundingBox b) {
+	//		return CollisionHelper.checkCollision(b, this);
+	//	}
+	//
 	public boolean intersects(BoundingSphere b) {
 		return CollisionHelper.checkCollision(b, this);
 	}
-//
-//	public boolean intersects(Ray b) {
-//		return CollisionHelper.checkCollision(this, b);
-//	}
-//
-//	public boolean intersects(Plane b) {
-//		return CollisionHelper.checkCollision(this, b);
-//	}
+
+	//
+	//	public boolean intersects(Ray b) {
+	//		return CollisionHelper.checkCollision(this, b);
+	//	}
+	//
+	//	public boolean intersects(Plane b) {
+	//		return CollisionHelper.checkCollision(this, b);
+	//	}
 
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
-			return intersects((BoundingBox) other);
+			return intersects(other);
 		}
 		if (other instanceof BoundingSphere) {
 			return intersects((BoundingSphere) other);
@@ -75,8 +76,8 @@ public class Ray implements CollisionVolume {
 		if (other instanceof Segment) {
 			//return intersects((Segment)other);
 		}
-        return other instanceof Plane && intersects((Plane) other);
-    }
+		return other instanceof Plane && intersects(other);
+	}
 
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof BoundingBox) {

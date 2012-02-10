@@ -32,9 +32,9 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * This event is called before a command goes through the full command handling process.
- * This can be used for command blocking, and really shouldn't be useful anywhere else,
- * since we support dynamic command registration.
+ * This event is called before a command goes through the full command handling
+ * process. This can be used for command blocking, and really shouldn't be
+ * useful anywhere else, since we support dynamic command registration.
  */
 public class PreCommandEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -62,10 +62,12 @@ public class PreCommandEvent extends Event implements Cancellable {
 		this.message = message;
 	}
 
+	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

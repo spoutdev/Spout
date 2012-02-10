@@ -26,8 +26,8 @@
 package org.spout.api.plugin;
 
 /**
- * Platform describes whether the Plugin was written for the client,
- * the server, or for both.
+ * Platform describes whether the Plugin was written for the client, the server,
+ * or for both.
  */
 public enum Platform {
 	SERVER,

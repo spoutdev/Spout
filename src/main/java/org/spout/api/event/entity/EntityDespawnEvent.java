@@ -44,6 +44,7 @@ public class EntityDespawnEvent extends EntityEvent implements Cancellable {
 		super.setCancelled(cancelled);
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

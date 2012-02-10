@@ -36,7 +36,7 @@ public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 
 	public PlayerKickEvent(Player p, String reason) {
 		super(p, reason, false);
-		this.kickReason = reason;
+		kickReason = reason;
 	}
 
 	@Override

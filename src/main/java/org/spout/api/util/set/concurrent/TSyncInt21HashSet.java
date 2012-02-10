@@ -25,10 +25,10 @@
  */
 package org.spout.api.util.set.concurrent;
 
+import org.spout.api.util.set.TInt21HashSet;
+
 import gnu.trove.TCollections;
 import gnu.trove.set.hash.TLongHashSet;
-
-import org.spout.api.util.set.TInt21HashSet;
 
 /**
  * A synchronized version of the {@link TInt21HashSet}.

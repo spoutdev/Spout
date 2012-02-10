@@ -44,7 +44,7 @@ public class ShapelessRecipe implements Recipe {
 		this.plugin = plugin;
 		this.name = name;
 		this.result = result;
-		this.ingredients = new HashMap<Character, Material>();
+		ingredients = new HashMap<Character, Material>();
 	}
 
 	public ItemStack getResult() {

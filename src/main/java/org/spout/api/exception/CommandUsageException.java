@@ -42,7 +42,7 @@ public class CommandUsageException extends CommandException {
 
 	public CommandUsageException(String msg, Command cmd) {
 		super(msg);
-		this.usage = cmd.getUsage(new String[] {cmd.getPreferredName()}, 0);
+		usage = cmd.getUsage(new String[] {cmd.getPreferredName()}, 0);
 	}
 
 	public String getUsage() {

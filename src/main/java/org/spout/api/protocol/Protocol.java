@@ -28,7 +28,7 @@ package org.spout.api.protocol;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Protocol {
-	private static final ConcurrentHashMap<Long,Protocol> map = new ConcurrentHashMap<Long,Protocol>();
+	private static final ConcurrentHashMap<Long, Protocol> map = new ConcurrentHashMap<Long, Protocol>();
 
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
@@ -62,6 +62,7 @@ public class Protocol {
 
 	/**
 	 * Gets the player protocol wrapper associated with this Protocol
+	 *
 	 * @return the player protocol wrapper
 	 */
 	public PlayerProtocol getPlayerProtocol() {

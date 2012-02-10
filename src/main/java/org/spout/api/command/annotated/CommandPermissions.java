@@ -31,11 +31,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Command methods that require a specific permissions node should be annotated with this.
+ * Command methods that require a specific permissions node should be annotated
+ * with this.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandPermissions {
 	public String[] value();
+
 	public boolean requireAll() default false;
 }

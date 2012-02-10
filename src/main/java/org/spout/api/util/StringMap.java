@@ -33,7 +33,8 @@ import org.spout.api.io.store.simple.SimpleStore;
 /**
  * Represents a map for mapping Strings to unique ids.
  *
- * The class supports conversion of ids between maps and allocation of new unique ids for unknown Strings
+ * The class supports conversion of ids between maps and allocation of new
+ * unique ids for unknown Strings
  *
  * Conversions to and from parent/child maps are cached
  */

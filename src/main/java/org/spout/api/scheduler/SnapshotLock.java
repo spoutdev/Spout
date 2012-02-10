@@ -28,13 +28,15 @@ package org.spout.api.scheduler;
 import org.spout.api.plugin.Plugin;
 
 /**
- * A class to allow non-pulsed threads to synchronize with the pulsed thread system
+ * A class to allow non-pulsed threads to synchronize with the pulsed thread
+ * system
  */
 public interface SnapshotLock {
 	/**
 	 * Readlocks the stable snapshot.
 	 *
-	 * This method will prevent server ticks from completing, so any locks should be short
+	 * This method will prevent server ticks from completing, so any locks
+	 * should be short
 	 *
 	 * @param plugin the plugin
 	 */
@@ -43,7 +45,8 @@ public interface SnapshotLock {
 	/**
 	 * Attempts to readlock the stable snapshot and returns immediately
 	 *
-	 * This method will prevent server ticks from completing, so any locks should be short
+	 * This method will prevent server ticks from completing, so any locks
+	 * should be short
 	 *
 	 * @param plugin the plugin
 	 */

@@ -30,8 +30,8 @@ package org.spout.api.math;
  *
  * Theta is in Radians!
  *
- * Note, this is the Immutable form of Vector2Polar. All operations will construct a
- * new Vector2Polar.
+ * Note, this is the Immutable form of Vector2Polar. All operations will
+ * construct a new Vector2Polar.
  */
 public class Vector2Polar implements Comparable<Vector2Polar> {
 	/**
@@ -96,6 +96,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 
 	/**
 	 * Gets the length of the vector from 0, 0
+	 *
 	 * @return
 	 */
 	public float getR() {
@@ -103,8 +104,9 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Gets the angle of the vector from the positive X axis
-	 * Vector2(1, 0) == Vector2Polar(1, 0)
+	 * Gets the angle of the vector from the positive X axis Vector2(1, 0) ==
+	 * Vector2Polar(1, 0)
+	 *
 	 * @return
 	 */
 	public float getTheta() {
@@ -112,16 +114,16 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Gets the X coordinate of this vector in the cartesian system.
-	 * Uses Math.cos(), so it should be used as little as possible.
+	 * Gets the X coordinate of this vector in the cartesian system. Uses
+	 * Math.cos(), so it should be used as little as possible.
 	 */
 	public float getX() {
 		return (float) (r * Math.cos(theta));
 	}
 
 	/**
-	 * Gets the Y coordinate of this vector in the cartesian system.
-	 * Uses Math.sin(), so it should be used as little as possible.
+	 * Gets the Y coordinate of this vector in the cartesian system. Uses
+	 * Math.sin(), so it should be used as little as possible.
 	 */
 	public float getY() {
 		return (float) (r * Math.sin(theta));
@@ -371,6 +373,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 
 	/**
 	 * Returns a Vector2 with the same x, y coordinates as this vector
+	 *
 	 * @return
 	 */
 	public Vector2 toVector2() {
@@ -379,6 +382,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 
 	/**
 	 * Returns a Vector2m with the same x, y coordinates as this vector
+	 *
 	 * @return
 	 */
 	public Vector2m toVector2m() {
@@ -396,8 +400,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Rounds the values of this Vector2Polar up to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector2Polar up to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -406,8 +409,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Rounds the values of this Vector2Polar down to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector2Polar down to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -416,8 +418,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Rounds the values of this Vector2Polar to
-	 * the nearest integer value.
+	 * Rounds the values of this Vector2Polar to the nearest integer value.
 	 *
 	 * @return
 	 */
@@ -436,8 +437,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Returns this Vector2Polar in an array. Element 0 contains r Element 1 contains
-	 * theta
+	 * Returns this Vector2Polar in an array. Element 0 contains r Element 1
+	 * contains theta
 	 *
 	 * @return The array containing this Vector2Polar
 	 */
@@ -464,7 +465,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 			return true;
 		}
 		Vector2Polar polar = (Vector2Polar) o;
-		return polar.r == this.r && polar.theta == this.theta;
+		return polar.r == r && polar.theta == theta;
 	}
 
 	/**
@@ -473,8 +474,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	@Override
 	public int hashCode() {
 		int hash = 5;
-		hash = 59 * hash + Float.floatToIntBits(this.r);
-		hash = 59 * hash + Float.floatToIntBits(this.theta);
+		hash = 59 * hash + Float.floatToIntBits(r);
+		hash = 59 * hash + Float.floatToIntBits(theta);
 		return hash;
 	}
 
@@ -569,8 +570,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Rounds the values of the given Vector2Polar up to
-	 * the nearest integer value.
+	 * Rounds the values of the given Vector2Polar up to the nearest integer
+	 * value.
 	 *
 	 * @param o Vector2Polar to use
 	 * @return
@@ -580,8 +581,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Rounds the values of the given Vector2Polar down to
-	 * the nearest integer value.
+	 * Rounds the values of the given Vector2Polar down to the nearest integer
+	 * value.
 	 *
 	 * @param o Vector2Polar to use
 	 * @return
@@ -591,8 +592,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Rounds the values of the given Vector2Polar to
-	 * the nearest integer value.
+	 * Rounds the values of the given Vector2Polar to the nearest integer value.
 	 *
 	 * @param o Vector2Polar to use
 	 * @return
@@ -634,13 +634,13 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Returns the provided Vector2Polar in an array. Element 0 contains r Element 1
-	 * contains theta
+	 * Returns the provided Vector2Polar in an array. Element 0 contains r
+	 * Element 1 contains theta
 	 *
 	 * @return The array containing the Vector2Polar
 	 */
 	public static float[] toArray(Vector2Polar a) {
-		return new float[]{a.r, a.theta};
+		return new float[] {a.r, a.theta};
 	}
 
 	/**
@@ -681,7 +681,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	public static float getRealAngle(float theta) {
 		float out = 0;
 		if (theta < 0) {
-			for (float i = theta; i <= (twoPi); i = i + twoPi) {
+			for (float i = theta; i <= twoPi; i = i + twoPi) {
 				out = i;
 			}
 		} else if (theta < twoPi) {

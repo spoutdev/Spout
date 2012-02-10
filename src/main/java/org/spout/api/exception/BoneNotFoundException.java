@@ -28,7 +28,7 @@ package org.spout.api.exception;
 public class BoneNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	public BoneNotFoundException(String m){
+	public BoneNotFoundException(String m) {
 		super(m);
 	}
 }

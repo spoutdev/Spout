@@ -31,6 +31,7 @@ package org.spout.api.protocol;
 public interface PlayerProtocol {
 	/**
 	 * Returns a chat packet to target with message
+	 *
 	 * @param message The chat message that is trying to be sent
 	 * @return The message to send
 	 */
@@ -38,6 +39,7 @@ public interface PlayerProtocol {
 
 	/**
 	 * Returns a kick packet with the desired kick reason.
+	 *
 	 * @param reason The reason for a kick.
 	 * @return The kick packet.
 	 */

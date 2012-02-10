@@ -36,16 +36,18 @@ public interface RenderEffect {
 	 * Used for setting the shader or texture.
 	 */
 	public void preBatch();
+
 	/**
-	 * Called after the mesh has been batched but before the batch has been flushed to the GPU
+	 * Called after the mesh has been batched but before the batch has been
+	 * flushed to the GPU
 	 *
 	 * Used to add additional verticies to the model
 	 */
 	public void postBatch();
 
 	/**
-	 * Called before the mesh is drawn to the scene.
-	 * Used to set GPU modes and/or effects
+	 * Called before the mesh is drawn to the scene. Used to set GPU modes
+	 * and/or effects
 	 */
 	public void preDraw();
 

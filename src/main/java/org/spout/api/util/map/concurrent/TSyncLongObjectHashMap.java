@@ -25,16 +25,6 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import gnu.trove.function.TObjectFunction;
-import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TLongObjectIterator;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.procedure.TLongObjectProcedure;
-import gnu.trove.procedure.TLongProcedure;
-import gnu.trove.procedure.TObjectProcedure;
-import gnu.trove.set.TLongSet;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,12 +36,23 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.math.MathHelper;
 
+import gnu.trove.function.TObjectFunction;
+import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongObjectProcedure;
+import gnu.trove.procedure.TLongProcedure;
+import gnu.trove.procedure.TObjectProcedure;
+import gnu.trove.set.TLongSet;
+
 /**
  * This is a synchronised version of the Trove LongObjectHashMap.
  *
  * Read/write locks are used to synchronise access.
  *
- * By default, it creates 16 sub-maps and there is a separate read/write lock for each submap.
+ * By default, it creates 16 sub-maps and there is a separate read/write lock
+ * for each submap.
  *
  * @param <V> the value type
  */
@@ -133,7 +134,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
-	private void clear (int m) {
+	private void clear(int m) {
 		Lock lock = lockArray[m].writeLock();
 		lock.lock();
 		try {
@@ -228,9 +229,9 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			int position = 0;
 			for (int m = 0; m < mapCount; m++) {
 				long[] mapKeys = mapArray[m].keys();
-                for (long mapKey : mapKeys) {
-                    keys[position++] = mapKey;
-                }
+				for (long mapKey : mapKeys) {
+					keys[position++] = mapKey;
+				}
 			}
 			if (position != localSize) {
 				throw new IllegalStateException("Key counter does not match actual total map size");
@@ -322,7 +323,6 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
-
 	public boolean retainEntries(TLongObjectProcedure<? super V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
@@ -344,8 +344,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			for (int m = 0; m < mapCount; m++) {
 				collection.addAll(mapArray[m].valueCollection());
 			}
-		}
-		finally {
+		} finally {
 			for (int m = 0; m < mapCount; m++) {
 				lockArray[m].readLock().unlock();
 			}
@@ -366,16 +365,16 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			int localSize = totalKeys.get();
 			V[] values;
 			if (dest == null || dest.length < localSize) {
-				values = (V[])new Object[size()];
+				values = (V[]) new Object[size()];
 			} else {
 				values = dest;
 			}
 			int position = 0;
 			for (int m = 0; m < mapCount; m++) {
 				V[] mapValues = mapArray[m].values();
-                for (V mapValue : mapValues) {
-                    values[position++] = mapValue;
-                }
+				for (V mapValue : mapValues) {
+					values[position++] = mapValue;
+				}
 			}
 			if (position != localSize) {
 				throw new IllegalStateException("Key counter does not match actual total map size");
@@ -389,8 +388,8 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	}
 
 	private int mapHash(long key) {
-		int intKey = (int)((key >> 32) ^ key);
+		int intKey = (int) (key >> 32 ^ key);
 
-		return ((0x7FFFFFFF & intKey) % hashScramble) & mapMask;
+		return (0x7FFFFFFF & intKey) % hashScramble & mapMask;
 	}
 }

@@ -82,7 +82,7 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @param synchronizer the synchronizer
 	 */
 	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
-	
+
 	/**
 	 * Gets the NetworkSynchronizer associated with this player.<br>
 	 *
@@ -105,8 +105,9 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	public boolean isOnline();
 
 	/**
-	 * Gets the sessions address
-	 * This is equivalent to getSession().getAddress().getAddress();
+	 * Gets the sessions address This is equivalent to
+	 * getSession().getAddress().getAddress();
+	 *
 	 * @return The session's address
 	 */
 	public InetAddress getAddress();
@@ -118,6 +119,7 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 
 	/**
 	 * Kicks the player for the given reason.
+	 *
 	 * @param reason the message to send to the player.
 	 */
 	public void kick(String reason);

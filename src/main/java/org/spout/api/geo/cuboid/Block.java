@@ -97,7 +97,8 @@ public abstract class Block extends Cube {
 	/**
 	 * Gets the live material for the block
 	 *
-	 * Note: this may have a negative performance impact, relative to reading the snapshot value
+	 * Note: this may have a negative performance impact, relative to reading
+	 * the snapshot value
 	 *
 	 * @param x the x coordinate
 	 * @param y the x coordinate
@@ -111,7 +112,8 @@ public abstract class Block extends Cube {
 	/**
 	 * Gets the live id for the block
 	 *
-	 * Note: this may have a negative performance impact, relative to reading the snapshot value
+	 * Note: this may have a negative performance impact, relative to reading
+	 * the snapshot value
 	 *
 	 * @param x the x coordinate
 	 * @param y the x coordinate

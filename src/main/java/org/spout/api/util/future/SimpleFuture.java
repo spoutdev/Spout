@@ -35,7 +35,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Implementation of a Future object that can store one result.
  *
- * This Future is intended for transferring of a result from a source thread to a receiver thread.
+ * This Future is intended for transferring of a result from a source thread to
+ * a receiver thread.
  *
  * It should only be reused by the calling thread.
  */
@@ -69,7 +70,7 @@ public class SimpleFuture<T> implements Future<T> {
 	 * The monitor is notified when the future is set.
 	 */
 	public void waitForMonitor() throws InterruptedException {
-		synchronized(waiting) {
+		synchronized (waiting) {
 			waiting.incrementAndGet();
 			try {
 				waiting.wait();
@@ -95,7 +96,8 @@ public class SimpleFuture<T> implements Future<T> {
 	/**
 	 * Sets the result.
 	 *
-	 * This method should only be called by the thread responsible for answering the future.
+	 * This method should only be called by the thread responsible for answering
+	 * the future.
 	 *
 	 * Calling this method from more than 1 thread is not threadsafe.
 	 *
@@ -107,7 +109,7 @@ public class SimpleFuture<T> implements Future<T> {
 			throw new IllegalStateException("A SimpleFuture can not store more than 1 element");
 		}
 		if (waiting.get() > 0) {
-			synchronized(waiting) {
+			synchronized (waiting) {
 				waiting.notifyAll();
 			}
 		}
@@ -116,7 +118,8 @@ public class SimpleFuture<T> implements Future<T> {
 	/**
 	 * Gets the result and waits if required.
 	 *
-	 * The get methods for this class should only be called by a dedicated read thread
+	 * The get methods for this class should only be called by a dedicated read
+	 * thread
 	 *
 	 * Calling this method from multiple threads is not threadsafe
 	 *
@@ -138,7 +141,8 @@ public class SimpleFuture<T> implements Future<T> {
 	/**
 	 * Gets the result and waits, up to the timeout, if required.
 	 *
-	 * The get methods for this class should only be called from a single read thread.
+	 * The get methods for this class should only be called from a single read
+	 * thread.
 	 *
 	 * Calling this method from multiple threads is not threadsafe
 	 *
@@ -162,7 +166,7 @@ public class SimpleFuture<T> implements Future<T> {
 
 			while (endTime > currentTime) {
 				if (!done.getAndSet(false)) {
-					synchronized(waiting) {
+					synchronized (waiting) {
 						waiting.incrementAndGet();
 						try {
 							waiting.wait();

@@ -54,6 +54,7 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Sets the location in which spawning will take place.
+	 *
 	 * @param point The new location where spawning will take place.
 	 */
 	public void setPoint(Point point) {

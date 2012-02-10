@@ -39,6 +39,8 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.SOURCE)
 public @interface ClientOnly {
 	public String author() default "SpoutDev";
+
 	public String version() default "1.1";
+
 	public String shortDescription() default "Indicates that the function requires the use of the Spout SinglePlayer client mod to have any effect.";
 }

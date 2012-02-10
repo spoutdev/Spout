@@ -26,6 +26,7 @@
 package org.spout.api.protocol;
 
 import org.spout.api.Server;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.StaticChannelPipeline;

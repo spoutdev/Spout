@@ -84,8 +84,8 @@ public class CollisionHelper {
 	}
 
 	/**
-	 * Checks if a bounding box and a line segment collide.
-	 * Based off of people.csail.mit.edu/amy/papers/box-jgt.ps
+	 * Checks if a bounding box and a line segment collide. Based off of
+	 * people.csail.mit.edu/amy/papers/box-jgt.ps
 	 *
 	 * There must be a better way to do this.
 	 *
@@ -140,14 +140,9 @@ public class CollisionHelper {
 	}
 
 	public static boolean checkCollision(BoundingBox a, Plane b) {
-		boolean pos = (b.distance(a.min) > 0);
-		return pos != (b.distance(a.max) > 0) //Planes that are axis-aligned. most cases
-			|| pos != (b.distance(new Vector3(a.max.getX(), a.min.getY(), a.min.getZ())) > 0)
-			|| pos != (b.distance(new Vector3(a.min.getX(), a.max.getY(), a.min.getZ())) > 0)
-			|| pos != (b.distance(new Vector3(a.min.getX(), a.min.getY(), a.max.getZ())) > 0)
-			|| pos != (b.distance(new Vector3(a.min.getX(), a.max.getY(), a.max.getZ())) > 0)
-			|| pos != (b.distance(new Vector3(a.max.getX(), a.min.getY(), a.max.getZ())) > 0)
-			|| pos != (b.distance(new Vector3(a.max.getX(), a.max.getY(), a.min.getZ())) > 0);
+		boolean pos = b.distance(a.min) > 0;
+		return pos != b.distance(a.max) > 0 //Planes that are axis-aligned. most cases
+				|| pos != b.distance(new Vector3(a.max.getX(), a.min.getY(), a.min.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.max.getY(), a.min.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.min.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.max.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.max.getX(), a.min.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.max.getX(), a.max.getY(), a.min.getZ())) > 0;
 	}
 
 	/**
@@ -176,7 +171,7 @@ public class CollisionHelper {
 		Vector3 d = l.multiply(1f / lnorm);
 
 		float e = m.dot(d);
-		float f = (float) (m.dot(m) - (a.radius * a.radius));
+		float f = (float) (m.dot(m) - a.radius * a.radius);
 
 		// Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0)
 		if (f > 0.0f && e > 0.0f) {
@@ -190,7 +185,7 @@ public class CollisionHelper {
 		}
 
 		//Check that the intersection is not past the segment
-		return (-e - MathHelper.sqrt(discr)) <= lnorm;
+		return -e - MathHelper.sqrt(discr) <= lnorm;
 	}
 
 	/**
@@ -203,7 +198,7 @@ public class CollisionHelper {
 	public static boolean checkCollision(BoundingSphere a, Ray b) {
 		Vector3 m = b.origin.subtract(a.center);
 		float e = m.dot(b.direction);
-		float f = (float) (m.dot(m) - (a.radius * a.radius));
+		float f = (float) (m.dot(m) - a.radius * a.radius);
 
 		// Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0)
 		if (f > 0.0f && e > 0.0f) {
@@ -225,25 +220,25 @@ public class CollisionHelper {
 	}
 
 	/**
-	 * Checks for a collision between two line segments.
-	 * RoyAwesome says rays are line segments.
+	 * Checks for a collision between two line segments. RoyAwesome says rays
+	 * are line segments.
 	 *
 	 * <Afforess_> Perhaps Roy needs to brush up on geometry then
 	 *
-	 * Code based on http://www.bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+	 * Code based on
+	 * http://www.bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
 	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static boolean checkCollision(Segment a, Segment b) {
-		return (ccw(a.origin, b.origin, b.endpoint) != ccw(a.endpoint, b.origin, b.endpoint))
-			&& (ccw(b.origin, a.origin, a.endpoint) != ccw(b.endpoint, a.origin, a.endpoint));
+		return ccw(a.origin, b.origin, b.endpoint) != ccw(a.endpoint, b.origin, b.endpoint) && ccw(b.origin, a.origin, a.endpoint) != ccw(b.endpoint, a.origin, a.endpoint);
 	}
 
 	/**
-	 * Checks if 3 points are counterclockwise.
-	 * (A helper for a helper method)
+	 * Checks if 3 points are counterclockwise. (A helper for a helper method)
+	 *
 	 * @param a
 	 * @param b
 	 * @param c
@@ -251,113 +246,108 @@ public class CollisionHelper {
 	 */
 	private static boolean ccw(Vector3 a, Vector3 b, Vector3 c) {
 		//This is Java lisp
-		return (c.getY() - a.getY()) * (b.getX() - a.getX())
-			< (b.getY() - a.getY()) * (c.getX() - a.getX())
-			|| (c.getY() - a.getY()) * (b.getZ() - a.getZ())
-			< ((b.getY() - a.getY()) * (c.getZ() - a.getZ()));
+		return (c.getY() - a.getY()) * (b.getX() - a.getX()) < (b.getY() - a.getY()) * (c.getX() - a.getX()) || (c.getY() - a.getY()) * (b.getZ() - a.getZ()) < (b.getY() - a.getY()) * (c.getZ() - a.getZ());
 
 	}
 
 	public static boolean checkCollision(Segment a, Plane b) {
-		return (b.distance(a.origin) > 0) != (b.distance(a.endpoint) > 0);
+		return b.distance(a.origin) > 0 != b.distance(a.endpoint) > 0;
 	}
 
 	public static boolean checkCollision(Plane a, Plane b) {
 		return !a.normal.equals(b.normal) && !a.normal.equals(b.normal.multiply(-1));
 	}
 
-
-	public static Vector3 getCollision(BoundingSphere a, BoundingBox b){
+	public static Vector3 getCollision(BoundingSphere a, BoundingBox b) {
 		//TODO implement this
 		return null;
 	}
 
-	public static Vector3 getCollision(BoundingBox a, Plane b){
+	public static Vector3 getCollision(BoundingBox a, Plane b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(BoundingSphere a, BoundingSphere b){
+	public static Vector3 getCollision(BoundingSphere a, BoundingSphere b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(BoundingBox a, Segment b){
+	public static Vector3 getCollision(BoundingBox a, Segment b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(BoundingSphere a, Plane b){
+	public static Vector3 getCollision(BoundingSphere a, Plane b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(Plane a, Plane b){
+	public static Vector3 getCollision(Plane a, Plane b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(Plane a, Ray b){
+	public static Vector3 getCollision(Plane a, Ray b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(Plane a, Segment b){
+	public static Vector3 getCollision(Plane a, Segment b) {
 		//TODO this
 		return null;
 	}
 
-	public static Vector3 getCollision(Ray a, Ray b){
+	public static Vector3 getCollision(Ray a, Ray b) {
 		//TODO this
 		return null;
 	}
+
 	/**
-	 * Gets the intersection between two BoundingBoxes.
-	 * Null will be returned if there's no collision.
+	 * Gets the intersection between two BoundingBoxes. Null will be returned if
+	 * there's no collision.
 	 *
 	 * Inspiration taken from:
 	 * http://clb.demon.fi/MathGeoLib/docs/AABB.cpp_code.html#876
-	 * http://tekpool.wordpress.com/2006/10/12/rectangle-intersection-find-the-intersecting-rectangle/
+	 * http://tekpool.
+	 * wordpress.com/2006/10/12/rectangle-intersection-find-the-intersecting
+	 * -rectangle/
 	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static BoundingBox getIntersection(BoundingBox a, BoundingBox b) {
-		if ( ! checkCollision(a, b)) return null;
+		if (!checkCollision(a, b)) {
+			return null;
+		}
 
-		Vector3 intersectionMin = new Vector3(
-			Math.max(a.min.getX(), b.min.getX()),
-			Math.max(a.min.getY(), b.min.getY()),
-			Math.max(a.min.getZ(), b.min.getZ())
-		);
+		Vector3 intersectionMin = new Vector3(Math.max(a.min.getX(), b.min.getX()), Math.max(a.min.getY(), b.min.getY()), Math.max(a.min.getZ(), b.min.getZ()));
 
-		Vector3 intersectionMax = new Vector3(
-			Math.min(a.max.getX(), b.max.getX()),
-			Math.min(a.max.getY(), b.max.getY()),
-			Math.min(a.max.getZ(), b.max.getZ())
-		);
+		Vector3 intersectionMax = new Vector3(Math.min(a.max.getX(), b.max.getX()), Math.min(a.max.getY(), b.max.getY()), Math.min(a.max.getZ(), b.max.getZ()));
 
 		return new BoundingBox(intersectionMin, intersectionMax);
 	}
 
 	/**
 	 * Gets the collision point between two BoundingBoxes.
+	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector3 getCollision(BoundingBox a, BoundingBox b) {
 		BoundingBox intersection = getIntersection(a, b);
-		if (intersection == null) return null;
+		if (intersection == null) {
+			return null;
+		}
 		Vector3m ret = new Vector3m(intersection.min);
 		ret.add(intersection.max);
 		ret.multiply(0.5f);
 		return ret;
 	}
 
-
-	public static Vector3 getCollision(Segment a, Segment b){
+	public static Vector3 getCollision(Segment a, Segment b) {
 		//TODO this
 		return null;
 	}
@@ -367,8 +357,7 @@ public class CollisionHelper {
 		float tmax = Float.MAX_VALUE;
 
 		//Check X slab
-		if ((Math.abs(b.direction.getX()) < MathHelper.FLT_EPSILON)
-			&& (b.origin.getX() < a.min.getX() || b.origin.getX() > a.max.getX())) {
+		if (Math.abs(b.direction.getX()) < MathHelper.FLT_EPSILON && (b.origin.getX() < a.min.getX() || b.origin.getX() > a.max.getX())) {
 			return null;
 		}
 		float ood = 1.0f / b.direction.getX();
@@ -390,8 +379,7 @@ public class CollisionHelper {
 		}
 
 		//Check Y slab
-		if ((Math.abs(b.direction.getY()) < MathHelper.FLT_EPSILON)
-			&& (b.origin.getY() < a.min.getY() || b.origin.getY() > a.max.getY())) {
+		if (Math.abs(b.direction.getY()) < MathHelper.FLT_EPSILON && (b.origin.getY() < a.min.getY() || b.origin.getY() > a.max.getY())) {
 			return null;
 		}
 		ood = 1.0f / b.direction.getY();
@@ -413,8 +401,7 @@ public class CollisionHelper {
 		}
 
 		//Check Z slab
-		if ((Math.abs(b.direction.getZ()) < MathHelper.FLT_EPSILON)
-			&& (b.origin.getZ() < a.min.getZ() || b.origin.getZ() > a.max.getZ())) {
+		if (Math.abs(b.direction.getZ()) < MathHelper.FLT_EPSILON && (b.origin.getZ() < a.min.getZ() || b.origin.getZ() > a.max.getZ())) {
 			return null;
 		}
 		ood = 1.0f / b.direction.getZ();
@@ -440,8 +427,7 @@ public class CollisionHelper {
 	}
 
 	/**
-	 * Gets the collision point between a
-	 * BoundingSphere and a Segment.
+	 * Gets the collision point between a BoundingSphere and a Segment.
 	 *
 	 * Taken from Real-Time Collision Detection.
 	 *
@@ -455,7 +441,7 @@ public class CollisionHelper {
 		Vector3 d = l.multiply(1f / l.fastLength());
 
 		float e = m.dot(d);
-		float f = (float) (m.dot(m) - (a.radius * a.radius));
+		float f = (float) (m.dot(m) - a.radius * a.radius);
 
 		// Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0)
 		if (f > 0.0f && e > 0.0f) {
@@ -479,8 +465,7 @@ public class CollisionHelper {
 	}
 
 	/**
-	 * Gets the point of collision between a BoundingSphere
-	 * and a Ray.
+	 * Gets the point of collision between a BoundingSphere and a Ray.
 	 *
 	 * @param a
 	 * @param b
@@ -489,7 +474,7 @@ public class CollisionHelper {
 	public static Vector3 getCollision(BoundingSphere a, Ray b) {
 		Vector3 m = b.origin.subtract(a.center);
 		float e = m.dot(b.direction);
-		float f = (float) (m.dot(m) - (a.radius * a.radius));
+		float f = (float) (m.dot(m) - a.radius * a.radius);
 
 		// Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0)
 		if (f > 0.0f && e > 0.0f) {
@@ -520,7 +505,7 @@ public class CollisionHelper {
 	 * @return
 	 */
 	public static boolean contains(BoundingBox a, BoundingBox b) {
-		return (a.min.compareTo(b.min) >= 0 && a.max.compareTo(b.max) >= 0);
+		return a.min.compareTo(b.min) >= 0 && a.max.compareTo(b.max) >= 0;
 	}
 
 	/**
@@ -533,12 +518,7 @@ public class CollisionHelper {
 	public static boolean contains(BoundingBox a, BoundingSphere b) {
 		Vector3 zeroed = a.max.subtract(a.min);
 		Vector3 newCenter = b.center.subtract(a.min);
-		return (newCenter.getX() - b.radius) <= 0
-			&& zeroed.getX() <= (newCenter.getX() + b.radius)
-			&& (newCenter.getY() - b.radius) <= 0
-			&& zeroed.getY() <= (newCenter.getY() + b.radius)
-			&& (newCenter.getZ() - b.radius) <= 0
-			&& zeroed.getZ() <= (newCenter.getZ() + b.radius);
+		return newCenter.getX() - b.radius <= 0 && zeroed.getX() <= newCenter.getX() + b.radius && newCenter.getY() - b.radius <= 0 && zeroed.getY() <= newCenter.getY() + b.radius && newCenter.getZ() - b.radius <= 0 && zeroed.getZ() <= newCenter.getZ() + b.radius;
 	}
 
 	/**
@@ -575,7 +555,7 @@ public class CollisionHelper {
 	 * @return
 	 */
 	public static boolean contains(BoundingBox a, Segment b) {
-		return (a.containsPoint(b.origin) && a.containsPoint(b.endpoint));
+		return a.containsPoint(b.origin) && a.containsPoint(b.endpoint);
 	}
 
 	/**
@@ -586,8 +566,7 @@ public class CollisionHelper {
 	 * @return
 	 */
 	public static boolean contains(BoundingSphere a, BoundingSphere b) {
-		return b.center.subtract(a.center).lengthSquared()
-			+ (b.radius * b.radius) < a.radius * a.radius;
+		return b.center.subtract(a.center).lengthSquared() + b.radius * b.radius < a.radius * a.radius;
 	}
 
 	public static boolean contains(BoundingSphere a, Plane b) {
@@ -596,6 +575,7 @@ public class CollisionHelper {
 
 	/**
 	 * Joke's getting old.
+	 *
 	 * @param a
 	 * @param b
 	 * @return

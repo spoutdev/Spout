@@ -35,7 +35,7 @@ import org.spout.api.geo.discrete.Point;
  */
 public class EntityTeleportEvent extends EntityMoveEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-	
+
 	public EntityTeleportEvent(Entity e, Point from, Point to) {
 		super(e, from, to);
 	}

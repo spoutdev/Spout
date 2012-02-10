@@ -28,18 +28,20 @@ package org.spout.api.generator;
 import org.spout.api.geo.cuboid.Chunk;
 
 public abstract class WorldGeneratorObject {
-	
-	public void placeObject(Chunk c, int x, int y, int z){
+
+	public void placeObject(Chunk c, int x, int y, int z) {
 		this.placeObject(c, x, y, z, false);
 	}
-	
+
 	/**
 	 * Place this object into the world
+	 *
 	 * @param c
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @param override If false, this object should fail if it encounters a non air block.  If true, it should replace blocks it findes
+	 * @param override If false, this object should fail if it encounters a non
+	 *            air block. If true, it should replace blocks it findes
 	 */
 	public abstract void placeObject(Chunk c, int x, int y, int z, boolean override);
 }

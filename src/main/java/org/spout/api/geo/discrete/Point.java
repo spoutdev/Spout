@@ -38,9 +38,10 @@ public class Point extends Vector3 {
 		super(point);
 		world = point.getWorld();
 	}
-	public Point(Vector3 vector, World w){
+
+	public Point(Vector3 vector, World w) {
 		super(vector);
-		this.world = w;
+		world = w;
 	}
 
 	public Point(World world, float x, float y, float z) {
@@ -48,24 +49,29 @@ public class Point extends Vector3 {
 		this.world = world;
 	}
 
-	public Point add(Point other){
-		if(this.world != other.world) throw new IllegalArgumentException("Cannot add two points in seperate worlds");
-		return new Point(Vector3.add(this, other), this.world);
+	public Point add(Point other) {
+		if (world != other.world) {
+			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
+		}
+		return new Point(Vector3.add(this, other), world);
 	}
-	public Point add(Vector3 other){
-		return new Point(Vector3.add(this, other), this.world);
+
+	@Override
+	public Point add(Vector3 other) {
+		return new Point(Vector3.add(this, other), world);
 	}
-	
+
 	/**
 	 * Gets the square of the distance between two points.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either
+	 * world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the Manhattan distance.
 	 *
 	 */
 	public double getSquaredDistance(Point other) {
-		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
+		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
 			return Double.MAX_VALUE;
 		}
 		double dx = x - other.x;
@@ -73,11 +79,12 @@ public class Point extends Vector3 {
 		double dz = z - other.z;
 		return dx * dx + dy * dy + dz * dz;
 	}
-	
+
 	/**
 	 * Gets the distance between two points.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either
+	 * world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the Manhattan distance.
 	 *
@@ -89,27 +96,30 @@ public class Point extends Vector3 {
 	/**
 	 * Gets the Manhattan distance between two points.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either
+	 * world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the Manhattan distance.
 	 *
 	 */
 	public double getManhattanDistance(Point other) {
-		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
+		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
 			return Double.MAX_VALUE;
 		}
 		return Math.abs(x - other.x) + Math.abs(y - other.y) + Math.abs(z - other.z);
 	}
 
 	/**
-	 * Gets the largest distance between two points, when projected onto one of the axes.
+	 * Gets the largest distance between two points, when projected onto one of
+	 * the axes.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either
+	 * world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the max distance.
 	 */
 	public double getMaxDistance(Point other) {
-		if (other == null || this.world == null || other.world == null || !(this.world.equals(other.world))) {
+		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
 			return Double.MAX_VALUE;
 		}
 		return Math.max(Math.abs(x - other.x), Math.max(Math.abs(y - other.y), Math.abs(z - other.z)));
@@ -124,13 +134,14 @@ public class Point extends Vector3 {
 		return world;
 	}
 
+	@Override
 	public int hashCode() {
-		int hash = (int)world.getUID().getLeastSignificantBits();
-		hash += (hash << 5) + (int)world.getUID().getMostSignificantBits();
+		int hash = (int) world.getUID().getLeastSignificantBits();
+		hash += (hash << 5) + (int) world.getUID().getMostSignificantBits();
 
-		int xx = (int)(x * 1024);
-		int yy = (int)(y * 1024);
-		int zz = (int)(z * 1024);
+		int xx = (int) (x * 1024);
+		int yy = (int) (y * 1024);
+		int zz = (int) (z * 1024);
 
 		hash += (hash << 5) + xx;
 		hash += (hash << 5) + yy;
@@ -138,6 +149,7 @@ public class Point extends Vector3 {
 		return hash;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 
 		if (obj == null) {
@@ -145,13 +157,14 @@ public class Point extends Vector3 {
 		} else if (!(obj instanceof Point)) {
 			return false;
 		} else {
-			Point point = (Point)obj;
+			Point point = (Point) obj;
 
 			return point.world.equals(world) && point.x == x && point.y == y && point.z == z;
 		}
 
 	}
 
+	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
 	}

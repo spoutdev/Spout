@@ -30,7 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Gets a unique sequence number for Datatable updates.
  *
- * If a record has the same sequence number before and a read, then the read can be considered to have completed correctly.
+ * If a record has the same sequence number before and a read, then the read can
+ * be considered to have completed correctly.
  */
 public class DatatableSequenceNumber {
 	private static AtomicInteger sequenceNumber = new AtomicInteger(0);
@@ -41,7 +42,8 @@ public class DatatableSequenceNumber {
 	public static final int UNSTABLE = 1;
 
 	/**
-	 * Sequence number that indicates that the read was atomic, and so always is valid
+	 * Sequence number that indicates that the read was atomic, and so always is
+	 * valid
 	 */
 	public static final int ATOMIC = 3;
 

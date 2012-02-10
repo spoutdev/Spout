@@ -65,7 +65,8 @@ public interface PluginLoader {
 	 * Loads the file as a plugin
 	 *
 	 * @param paramFile
-	 * @param paramBoolean ignores soft dependencies when it attempts to load the plugin
+	 * @param paramBoolean ignores soft dependencies when it attempts to load
+	 *            the plugin
 	 * @return instance of the plugin
 	 * @throws InvalidPluginException
 	 * @throws InvalidPluginException

@@ -54,8 +54,11 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 * @param world The world to use for tracing
 	 * @param eye the eyeline to trace
-	 * @param yOffset The trace begins vertically offset from the start vector by this value
-	 * @param maxDistance This is the maximum distance in blocks for the trace.  Setting this value above 140 may lead to problems with unloaded chunks.  A value of 0 indicates no limit
+	 * @param yOffset The trace begins vertically offset from the start vector
+	 *            by this value
+	 * @param maxDistance This is the maximum distance in blocks for the trace.
+	 *            Setting this value above 140 may lead to problems with
+	 *            unloaded chunks. A value of 0 indicates no limit
 	 *
 	 */
 	public BlockIterator(World world, Transform pos, int maxDistance) {
@@ -63,24 +66,22 @@ public class BlockIterator implements Iterator<Block> {
 		direction = new Vector3m(MathHelper.getDirectionVector(pos.getRotation()));
 
 		float max = Math.abs(direction.getX());
-		max = (Math.abs(direction.getY()) > max) ? Math.abs(direction.getY()) : max;
-		max = (Math.abs(direction.getZ()) > max) ? Math.abs(direction.getY()) : max;
+		max = Math.abs(direction.getY()) > max ? Math.abs(direction.getY()) : max;
+		max = Math.abs(direction.getZ()) > max ? Math.abs(direction.getY()) : max;
 
 		if (max == 0) {
 			throw new IllegalArgumentException("Direction may not be a zero vector");
 		}
 
-		direction.multiply(1/max);
+		direction.multiply(1 / max);
 
 		blocksRead = 0;
 		this.maxDistance = maxDistance;
 	}
 
-
 	public boolean hasNext() {
 		return !done && blocksRead < maxDistance;
 	}
-
 
 	public Block next() {
 		if (done) {

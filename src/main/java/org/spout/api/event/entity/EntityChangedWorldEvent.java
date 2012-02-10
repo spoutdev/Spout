@@ -46,6 +46,7 @@ public class EntityChangedWorldEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Gets the world that the entity came from
+	 *
 	 * @return The world the entity came from.
 	 */
 	public World getPrevious() {
@@ -54,6 +55,7 @@ public class EntityChangedWorldEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Sets the world that the entity came from
+	 *
 	 * @param The world the entity came from.
 	 */
 	public void setPrevious(World previous) {
@@ -62,6 +64,7 @@ public class EntityChangedWorldEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Gets the world that the entity changed to.
+	 *
 	 * @return The world the entity changed to.
 	 */
 	public World getTarget() {
@@ -70,6 +73,7 @@ public class EntityChangedWorldEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Sets the world that the entity changed to.
+	 *
 	 * @param The world the entity changed to.
 	 */
 	public void setTarget(World target) {

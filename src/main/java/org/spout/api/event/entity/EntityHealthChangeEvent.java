@@ -48,6 +48,7 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Gets the source that caused the event.
+	 *
 	 * @return The source that caused this event.
 	 */
 	public Source getSource() {
@@ -56,6 +57,7 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Sets the source that caused this event.
+	 *
 	 * @param source The new source of this event.
 	 */
 	public void setSource(Source source) {

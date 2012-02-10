@@ -63,6 +63,7 @@ public class BlockFullState<T> implements Cloneable {
 		this.auxData = auxData;
 	}
 
+	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "{" + id + ", " + data + ", " + auxData + "}";
 	}
@@ -75,14 +76,15 @@ public class BlockFullState<T> implements Cloneable {
 			return false;
 		} else {
 			@SuppressWarnings("unchecked")
-			BlockFullState<T> fullState = (BlockFullState<T>)o;
+			BlockFullState<T> fullState = (BlockFullState<T>) o;
 
-			return (fullState.id == id && fullState.data == data && fullState.auxData.equals(auxData));
+			return fullState.id == id && fullState.data == data && fullState.auxData.equals(auxData);
 		}
 	}
 
 	/**
-	 * Gets a shallow copy of the BlockFullState, the auxiliary data is not cloned.
+	 * Gets a shallow copy of the BlockFullState, the auxiliary data is not
+	 * cloned.
 	 *
 	 * @return the shallow clone
 	 */

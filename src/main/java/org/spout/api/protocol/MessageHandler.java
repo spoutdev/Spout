@@ -30,7 +30,8 @@ import org.spout.api.player.Player;
 
 public abstract class MessageHandler<T extends Message> {
 	/**
-	 * Handles a message.  If the message is a one way method, then this method can be overriden.
+	 * Handles a message. If the message is a one way method, then this method
+	 * can be overriden.
 	 *
 	 * Otherwise, it will call handleServer or handleClient as required.
 	 *
@@ -49,7 +50,8 @@ public abstract class MessageHandler<T extends Message> {
 	/**
 	 * Handles a message.
 	 *
-	 * If handle is not overriden, then this method is called when a packet is received from the client by the server.
+	 * If handle is not overriden, then this method is called when a packet is
+	 * received from the client by the server.
 	 *
 	 * @param session the network session
 	 * @param player the player
@@ -61,7 +63,8 @@ public abstract class MessageHandler<T extends Message> {
 	/**
 	 * Handles a message.
 	 *
-	 * If handle is not overriden, then this method is called when a packet is received from the server by the client.
+	 * If handle is not overriden, then this method is called when a packet is
+	 * received from the server by the client.
 	 *
 	 * @param session the network session
 	 * @param player the player

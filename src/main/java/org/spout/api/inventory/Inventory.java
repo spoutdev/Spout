@@ -33,26 +33,26 @@ public class Inventory implements Serializable {
 	private int currentSlot;
 
 	public Inventory(int size) {
-		this.contents = new ItemStack[size];
-		this.currentSlot = 0;
+		contents = new ItemStack[size];
+		currentSlot = 0;
 	}
 
 	public ItemStack[] getContents() {
-		return this.contents;
+		return contents;
 	}
 
 	public ItemStack getItem(int slot) {
-		return this.contents[slot];
+		return contents[slot];
 	}
 
 	public void setItem(ItemStack item, int slot) {
-		this.contents[slot] = item;
+		contents[slot] = item;
 	}
 
 	public boolean addItem(ItemStack item) {
-		for (int i = 0; i < this.contents.length; i++) {
-			if (this.contents[i] == null) {
-				this.contents[i] = item;
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i] == null) {
+				contents[i] = item;
 				return true;
 			}
 		}
@@ -60,21 +60,21 @@ public class Inventory implements Serializable {
 	}
 
 	public int getSize() {
-		return this.contents.length;
+		return contents.length;
 	}
 
 	public ItemStack getCurrentItem() {
-		return getItem(this.currentSlot);
+		return getItem(currentSlot);
 	}
 
 	public int getCurrentSlot() {
-		return this.currentSlot;
+		return currentSlot;
 	}
 
 	public void setCurrentSlot(int slot) {
-		if (slot < 0 || slot >= this.contents.length) {
+		if (slot < 0 || slot >= contents.length) {
 			throw new ArrayIndexOutOfBoundsException();
 		}
-		this.currentSlot = slot;
+		currentSlot = slot;
 	}
 }

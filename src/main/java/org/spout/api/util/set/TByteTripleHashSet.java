@@ -30,7 +30,8 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 /**
- * A hash set that uses three 8 bit integers as key, backed by a int trove hashset.
+ * A hash set that uses three 8 bit integers as key, backed by a int trove
+ * hashset.
  */
 public class TByteTripleHashSet {
 	protected TIntSet set;
@@ -85,16 +86,16 @@ public class TByteTripleHashSet {
 	protected static final int key(int x, int y, int z) {
 		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
 	}
-	
+
 	public static final int key1(int key) {
-		return (key >> 16) & 0xFF; 
+		return key >> 16 & 0xFF;
 	}
-	
+
 	public static final int key2(int key) {
-		return key & 0xFF; 
+		return key & 0xFF;
 	}
-	
+
 	public static final int key3(int key) {
-		return (key >> 8) & 0xFF; 
+		return key >> 8 & 0xFF;
 	}
 }

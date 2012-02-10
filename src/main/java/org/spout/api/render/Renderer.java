@@ -5,7 +5,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.util.Color;
 
-
 public interface Renderer {
 
 	/**
@@ -19,7 +18,7 @@ public interface Renderer {
 	public abstract void end();
 
 	/**
-	 * Renders the batch. 
+	 * Renders the batch.
 	 */
 	public abstract void render();
 

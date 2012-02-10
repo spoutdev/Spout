@@ -64,6 +64,7 @@ public class PermissionGetGroupsEvent extends Event {
 		return world == null ? null : world.getName();
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
