@@ -68,7 +68,9 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.inventory.CommonRecipeManager;
 import org.spout.api.inventory.Recipe;
+import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
@@ -229,7 +231,15 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
 
+	/**
+	 * The service manager.
+	 */
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
+	
+	/**
+	 * The recipe manager.
+	 */
+	private final RecipeManager recipeManager = new CommonRecipeManager();
 
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 
@@ -1039,25 +1049,12 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public void addRecipe(Recipe recipe) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public Recipe getRecipe(Plugin plugin, String recipe) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Recipe removeRecipe(Plugin plugin, String recipe) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ServiceManager getServiceManager() {
 		return serviceManager;
 	}
 
+	@Override
+	public RecipeManager getRecipeManager() {
+		return recipeManager;
+	}
 }
