@@ -101,11 +101,6 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutServer server;
 
 	/**
-	 * The scheduled executor service which backs this scheduler.
-	 */
-	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-	/**
 	 * A list of new tasks to be added.
 	 */
 	private final List<SpoutTask> newTasks = new ArrayList<SpoutTask>();

@@ -59,12 +59,12 @@ import org.spout.server.player.SpoutPlayer;
 
 public class SpoutEntity implements Entity {
 	private static final long serialVersionUID = 1L;
-
+	
 	public final static int NOTSPAWNEDID = -1;
 	private final static Transform DEAD = new Transform(new Point(null, 0, 0, 0), new Quaternion(0F, 0F, 0F, 0F), new Vector3(0, 0, 0));
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
-
+	
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final Transform transform = new Transform();
 	private final Transform transformLive = new Transform();
@@ -72,37 +72,39 @@ public class SpoutEntity implements Entity {
 	private EntityManager entityManagerLive;
 	private Controller controller = null;
 	private Controller controllerLive = null;
+	private final SpoutServer server;
 	private Chunk chunk;
 	private Chunk chunkLive;
 	private boolean justSpawned = true;
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private int viewDistance;
-
+	
 	public int id = NOTSPAWNEDID;
-
+	
 	Model model;
 	CollisionModel collision;
-
+	
 	SpoutDatatableMap map;
-
+	
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
+		this.server = server;
 		this.transform.set(transform);
 		setTransform(transform);
 		if (controller != null) {
 			this.controller = controller;
 			setController(controller);
 		}
-		map = new SpoutDatatableMap();
-		viewDistanceLive.set(viewDistance);
+		this.map = new SpoutDatatableMap();
+		this.viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
 	}
-
+	
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
 		this(server, transform, controller, 64);
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
-		this(server, new Transform(point, Quaternion.identity, Vector3.ONE), controller);
+		this(server, new Transform(point, Quaternion.identity , Vector3.ONE), controller);
 	}
 
 	public int getId() {
@@ -123,40 +125,40 @@ public class SpoutEntity implements Entity {
 			lock.writeUnlock(seq);
 		}
 	}
-
+	
 	@Override
 	public Controller getLiveController() {
 		while (true) {
 			int seq = lock.readLock();
-			Controller controller = controllerLive;
+			Controller controller = this.controllerLive;
 			if (lock.readUnlock(seq)) {
 				return controller;
 			}
 		}
 	}
-
+	
 	@Override
 	public Controller getController() {
 		return controller;
 	}
-
+	
 	@Override
 	public void setController(Controller controller) {
 		controller.attachToEntity(this);
 		int seq = lock.writeLock();
 		try {
-			controllerLive = controller;
+			this.controllerLive = controller;
 		} finally {
 			lock.writeUnlock(seq);
 		}
 		controller.onAttached();
 	}
-
+	
 	@Override
 	public Transform getTransform() {
 		return transform;
 	}
-
+	
 	@Override
 	public Transform getLiveTransform() {
 		return transformLive;
@@ -164,7 +166,7 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setTransform(Transform transform) {
-
+		
 		int seq = lock.writeLock();
 		try {
 			while (true) {
@@ -180,12 +182,12 @@ public class SpoutEntity implements Entity {
 				}
 				chunkLive = newPosition.getWorld().getChunk(newPosition);
 				Region newRegion = chunkLive.getRegion();
-
+				
 				// TODO - entity moved into unloaded chunk - what happens for normal entities?
-				if (newRegion == null && getController() instanceof PlayerController) {
+				if (newRegion == null && this.getController() instanceof PlayerController) {
 					newRegion = newPosition.getWorld().getRegion(newPosition, true);
 				}
-				EntityManager newEntityManager = ((SpoutRegion) newRegion).getEntityManager();
+				EntityManager newEntityManager = ((SpoutRegion)newRegion).getEntityManager();
 
 				transformLive.set(transform);
 				entityManagerLive = newEntityManager;
@@ -197,9 +199,9 @@ public class SpoutEntity implements Entity {
 		} finally {
 			lock.writeUnlock(seq);
 		}
-
+		
 	}
-
+	
 	// TODO - make actually atomic, rather than just threadsafe
 	public boolean kill() {
 		int seq = lock.writeLock();
@@ -214,7 +216,7 @@ public class SpoutEntity implements Entity {
 		setTransform(DEAD);
 		return alive;
 	}
-
+	
 	@Override
 	public boolean isDeadLive() {
 		while (true) {
@@ -225,13 +227,13 @@ public class SpoutEntity implements Entity {
 			}
 		}
 	}
-
+	
 	@Override
 	public boolean isDead() {
 		boolean dead = id != NOTSPAWNEDID && transformLive.getPosition().getWorld() == null;
 		return dead;
 	}
-
+	
 	// TODO - needs to be made thread safe
 	@Override
 	public void setModel(Model model) {
@@ -247,7 +249,7 @@ public class SpoutEntity implements Entity {
 	// TODO - needs to be made thread safe
 	@Override
 	public void setCollision(CollisionModel model) {
-		collision = model;
+		this.collision = model;
 
 	}
 
@@ -265,22 +267,22 @@ public class SpoutEntity implements Entity {
 			controller.onTick(dt);
 		}
 	}
-
+	
 	@Override
 	public boolean isSpawned() {
-		return id != NOTSPAWNEDID;
+		return (id != NOTSPAWNEDID);
 	}
-
+	
 	/**
-	 * Called when the tick is finished and collisions need to be resolved and
-	 * move events fired
+	 * Called when the tick is finished and collisions need to be resolved
+	 * and move events fired
 	 */
 	public void resolve() {
 		//Resolve Collisions Here
-
+		
 		//Check to see if we should fire off a Move event
 	}
-
+	
 	public void finalizeRun() {
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive || controller != controllerLive) {
@@ -288,27 +290,27 @@ public class SpoutEntity implements Entity {
 				if (entityManagerLive == null) {
 					controller.onDeath();
 					if (controller instanceof PlayerController) {
-						Player p = ((PlayerController) controller).getPlayer();
-						((SpoutPlayer) p).getNetworkSynchronizer().onDeath();
+						Player p = ((PlayerController)controller).getPlayer();
+						((SpoutPlayer)p).getNetworkSynchronizer().onDeath();
 					}
 				}
 			}
 		}
 		if (entityManagerLive != null) {
-			if (entityManager != entityManagerLive || controller != controllerLive) {
+			if(entityManager != entityManagerLive || controller != controllerLive) {
 				entityManagerLive.allocate(this);
 			}
 		}
 		if (chunkLive != chunk) {
 			if (chunkLive != null) {
-				((SpoutChunk) chunkLive).addEntity(this);
+				((SpoutChunk)chunkLive).addEntity(this);
 			}
 			if (chunk != null) {
-				((SpoutChunk) chunk).removeEntity(this);
+				((SpoutChunk)chunk).removeEntity(this);
 			}
 		}
 	}
-
+	
 	public void copyToSnapshot() {
 		transform.set(transformLive);
 		chunk = chunkLive;
@@ -319,6 +321,7 @@ public class SpoutEntity implements Entity {
 		justSpawned = false;
 		viewDistance = viewDistanceLive.get();
 	}
+	
 
 	@Override
 	public Chunk getChunk() {
@@ -338,7 +341,7 @@ public class SpoutEntity implements Entity {
 			}
 		}
 	}
-
+	
 	@Override
 	public Chunk getChunkLive() {
 		while (true) {
@@ -385,7 +388,7 @@ public class SpoutEntity implements Entity {
 			}
 		}
 	}
-
+	
 	@Override
 	public World getWorld() {
 		return transform.getPosition().getWorld();
@@ -393,27 +396,27 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public boolean is(Class<? extends Controller> clazz) {
-		return clazz.isAssignableFrom(getController().getClass());
+		return clazz.isAssignableFrom(this.getController().getClass());
 	}
 
 	// TODO - datatable and atomics
 	@Override
 	public void setData(String key, int value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableInt(ikey, value));
+		map.set(ikey, new SpoutDatatableInt(ikey, value));		
 	}
 
 	@Override
 	public void setData(String key, float value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableFloat(ikey, value));
+		map.set(ikey, new SpoutDatatableFloat(ikey, value));		
 	}
 
 	@Override
 	public void setData(String key, boolean value) {
 		int ikey = map.getKey(key);
 		map.set(ikey, new SpoutDatatableBool(ikey, value));
-
+		
 	}
 
 	@Override
@@ -437,61 +440,84 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setInventorySize(int newsize) {
-		if (inventorySize == newsize) {
-			return;
-		}
+		if(inventorySize == newsize) return;
 		inventorySize = newsize;
-		if (getInventory().getSize() != inventorySize) {
+		if(getInventory().getSize() != inventorySize) {
 			inventory = null;
 			setData("inventory", null);
 		}
 	}
 
+
 	@Override
 	public Inventory getInventory() {
-		if (getInventorySize() <= 0) {
+		if(getInventorySize() <= 0) {
 			return null;
 		}
-		if (inventory == null) {
-			SpoutDatatableObject obj = (SpoutDatatableObject) getData("inventory");
-			if (obj == null) {
+		if(inventory == null) {
+			SpoutDatatableObject obj = (SpoutDatatableObject)getData("inventory");
+			if(obj == null) {
 				inventory = new Inventory(getInventorySize());
 				setData("inventory", inventory);
 			} else {
-				inventory = (Inventory) obj.get();
+				inventory = (Inventory)obj.get();
 			}
 		}
 		return inventory;
 	}
-
+	
 	@Override
 	public void onSync() {
 		//Forward to controller for now, but we may want to do some sync logic here for the entitiy.
 		controller.onSync();
 		//TODO - this might not be needed, if it is, it needs to send to the network synchronizer for players
 	}
-
+	
 	public boolean justSpawned() {
 		return justSpawned;
 	}
 
 	@Override
 	public void setViewDistance(int distance) {
-		viewDistanceLive.set(distance);
+		this.viewDistanceLive.set(distance);
 	}
 
 	@Override
 	public int getViewDistanceLive() {
-		return viewDistanceLive.get();
+		return this.viewDistanceLive.get();
 	}
 
 	@Override
 	public int getViewDistance() {
-		return viewDistance;
+		return this.viewDistance;
 	}
-
+	
 	public boolean viewDistanceChanged() {
 		return viewDistance != viewDistanceLive.get();
 	}
 
+	@Override
+	public float getRotation() {
+		return getTransform().getRotation().getAxisAngles().getY();
+	}
+	
+	@Override
+	public void setRotation(float rot) {
+		getTransform().getRotation().rotate(rot, Vector3.UNIT_Y);
+	}
+
+	@Override
+	public float getPitch() {
+		return getTransform().getRotation().getAxisAngles().getZ();
+	}
+	
+	@Override
+	public void setPitch(float pitch) {
+		getTransform().getRotation().rotate(pitch, Vector3.UNIT_Z);
+	}
+
+	@Override
+	public Point getPosition() {
+		return getTransform().getPosition();
+	}
 }

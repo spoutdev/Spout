@@ -25,6 +25,10 @@
  */
 package org.spout.server.command;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
@@ -53,6 +57,23 @@ public class AdministrationCommands {
 			message = args.getJoinedString(0);
 		}
 		server.stop(message);
+	}
+	
+	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = { "" })
+	@CommandPermissions("spout.command.dumpstack")
+	public void dumpstack(CommandContext args, CommandSource source) throws CommandException {
+		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
+		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
+		server.getLogger().info("[--------------Thread Stack Dump--------------]");
+		while(i.hasNext()) {
+			Entry<Thread, StackTraceElement[]> e = i.next();
+			server.getLogger().info("Thread: " + e.getKey().getName());
+			for (StackTraceElement element : e.getValue()) {
+				server.getLogger().info("    " + element.toString());
+			}
+			server.getLogger().info("");
+		}
+		server.getLogger().info("[---------------End Stack Dump---------------]");
 	}
 
 	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)

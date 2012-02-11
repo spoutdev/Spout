@@ -31,6 +31,7 @@ import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.player.PlayerJoinEvent;
+import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.player.Player;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.player.SpoutPlayer;
@@ -51,6 +52,10 @@ public class InternalEventListener implements Listener {
 		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession());
 
 		if (player != null) {
+			PlayerLoadEvent loadEvent = Spout.getGame().getEventManager().callEvent(new PlayerLoadEvent(player));
+			if (!loadEvent.isLoaded()) {
+				
+			}
 			Spout.getGame().getEventManager().callDelayedEvent(new PlayerJoinEvent(player));
 		} else {
 			event.getSession().disconnect("Player is already online");

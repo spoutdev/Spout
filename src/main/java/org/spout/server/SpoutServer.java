@@ -91,6 +91,7 @@ import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
+import org.spout.server.io.SaveTaskThread;
 import org.spout.server.io.StorageQueue;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.net.SpoutSessionRegistry;
@@ -118,11 +119,13 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	private volatile String[] allAddresses;
 
-	private File pluginDirectory = new File("plugins");
+	private final File pluginDirectory = new File("plugins");
 
-	private File configDirectory = new File("config");
+	private final File configDirectory = new File("config");
 
-	private File updateDirectory = new File("update");
+	private final File updateDirectory = new File("update");
+	
+	private final File dataDirectory = new File("data");
 
 	private String logFile = "logs/log-%D.txt";
 
@@ -252,7 +255,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * re-parsing the config file for each access
 	 */
 	private Configuration configCache = null;
-
+	
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
@@ -415,6 +418,8 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
 		bootstrap.setPipelineFactory(pipelineFactory);
+		
+		SaveTaskThread.startThread();
 	}
 
 	public void loadPlugins() {
@@ -880,6 +885,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	public File getConfigDirectory() {
 		return configDirectory;
 	}
+	
+	@Override
+	public File getDataFolder() {
+		return dataDirectory;
+	}
 
 	@Override
 	public String getLogFile() {
@@ -901,6 +911,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		for (Player player : getOnlinePlayers()) {
 			player.kick(message);
 		}
+		
+		SaveTaskThread.endThread();
 
 		getPluginManager().clearPlugins();
 

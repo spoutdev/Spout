@@ -37,6 +37,7 @@ import org.spout.api.Game;
 import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
+import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
@@ -46,8 +47,9 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.server.SpoutServer;
 import org.spout.server.SpoutWorld;
+import org.spout.server.io.PlayerSaveTask;
+import org.spout.server.io.SaveTaskThread;
 import org.spout.server.player.SpoutPlayer;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 
@@ -62,7 +64,7 @@ public final class SpoutSession implements Session {
 	 * to a timeout.
 	 */
 	private static final int TIMEOUT_TICKS = 20 * 60;
-
+	
 	/**
 	 * The server this session belongs to.
 	 */
@@ -115,7 +117,7 @@ public final class SpoutSession implements Session {
 	 * vanilla client where duplicate packets are sent.
 	 */
 	//private BlockPlacementMessage previousPlacement;
-
+	
 	private final BootstrapProtocol bootstrapProtocol;
 
 	/**
@@ -127,7 +129,7 @@ public final class SpoutSession implements Session {
 	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol) {
 		this.server = server;
 		this.channel = channel;
-		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
+		this.protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		this.bootstrapProtocol = bootstrapProtocol;
 	}
 
@@ -163,7 +165,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @param player The new player.
 	 * @throws IllegalStateException if there is already a player associated
-	 *             with this session.
+	 * with this session.
 	 */
 	public void setPlayer(Player player) {
 		if (this.player != null) {
@@ -201,12 +203,12 @@ public final class SpoutSession implements Session {
 
 		Message message;
 		while ((message = messageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
+			MessageHandler<Message> handler = (MessageHandler<Message>) this.protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				try {
 					handler.handle(this, player, message);
 				} catch (Exception e) {
-					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + getPlayer().getName());
+					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + this.getPlayer().getName());
 					e.printStackTrace();
 					disconnect("Message handler exception for " + message.getClass().getSimpleName());
 				}
@@ -228,8 +230,9 @@ public final class SpoutSession implements Session {
 	}
 
 	/**
-	 * Disconnects the session with the specified reason. This causes a kick
-	 * packet to be sent. When it has been delivered, the channel is closed.
+	 * Disconnects the session with the specified reason. This causes a
+	 * kick packet to be sent. When it has been delivered, the channel
+	 * is closed.
 	 *
 	 * @param reason The reason for disconnection.
 	 */
@@ -238,8 +241,9 @@ public final class SpoutSession implements Session {
 	}
 
 	/**
-	 * Disconnects the session with the specified reason. This causes a kick
-	 * packet to be sent. When it has been delivered, the channel is closed.
+	 * Disconnects the session with the specified reason. This causes a
+	 * kick packet to be sent. When it has been delivered, the channel
+	 * is closed.
 	 *
 	 * @param reason The reason for disconnection.
 	 * @param overrideKick Whether to override the kick event.
@@ -257,7 +261,7 @@ public final class SpoutSession implements Session {
 				server.broadcastMessage(event.getMessage());
 			}
 
-			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
+			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
 			dispose(false);
 		}
 
@@ -313,8 +317,14 @@ public final class SpoutSession implements Session {
 			if (broadcastQuit && text != null) {
 				server.broadcastMessage(text);
 			}
-			((SpoutWorld) player.getEntity().getWorld()).removePlayer(player);
-			((SpoutPlayer) player).disconnect();
+			
+			PlayerSaveEvent event = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
+			if (!event.isSaved()) {
+				SaveTaskThread.addTask(new PlayerSaveTask(player));
+			}
+			
+			((SpoutWorld)player.getEntity().getWorld()).removePlayer(player);
+			((SpoutPlayer)player).disconnect();
 			player = null; // in case we are disposed twice
 		}
 	}
