@@ -31,8 +31,11 @@ import org.spout.api.datatable.Datatable;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.atomic.Transform;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.math.Vector3;
+import org.spout.api.math.Vector3m;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -53,46 +56,12 @@ public interface Entity extends Datatable, Source {
 	public Controller getController();
 
 	/**
-	 * Gets the live version controller for the entity
-	 *
-	 * @return the controller
-	 */
-	@LiveRead
-	public Controller getLiveController();
-
-	/**
 	 * Sets the controller for the entity
 	 *
 	 * @param controller
 	 */
 	@DelayedWrite
 	public void setController(Controller controller);
-
-	/**
-	 * Gets the transform for entity
-	 *
-	 * @return
-	 */
-	@SnapshotRead
-	public Transform getTransform();
-
-	/**
-	 * Gets the live/unstable position of the entity.
-	 *
-	 * Use of live reads may have a negative performance impact
-	 *
-	 * @return
-	 */
-	@LiveRead
-	public Transform getLiveTransform();
-
-	/**
-	 * Set transform
-	 *
-	 * @param transform new Transform
-	 */
-	@DelayedWrite
-	public void setTransform(Transform transform);
 
 	// TODO - add thread timing annotations
 	public void setModel(Model model);
@@ -102,7 +71,88 @@ public interface Entity extends Datatable, Source {
 	public void setCollision(CollisionModel model);
 
 	public CollisionModel getCollision();
+	
+	/**
+	 * Gets the x coordinate this entity is located at
+	 * 
+	 * @return x coordinate
+	 */
+	public float getX();
+	
+	/**
+	 * Gets the y coordinate this entity is located at
+	 * 
+	 * @return y coordinate
+	 */
+	public float getY();
+	
+	/**
+	 * Gets the z coordinate this entity is located at
+	 * 
+	 * @return z coordinate
+	 */
+	public float getZ();
+	
+	/**
+	 * Returns a copy of a point with the position that this entity is located at.
+	 * 
+	 * Modifications to this position will not be reflected without calling {@link #setPosition(Point)}.
+	 * 
+	 * @return position
+	 */
+	public Pointm getPosition();
+	
+	/**
+	 * Returns a copy of the velocity of this entity. 
+	 * 
+	 * Modifications to this vector will not be reflected without calling {@link #setVelocity(Vector3)}.
+	 * 
+	 * @return velocity vector
+	 */
+	public Vector3m getVelocity();
+	
+	/**
+	 * Sets the position of this entity. Will teleport it to the new position.
+	 * 
+	 * @param p
+	 */
+	public void setPosition(Point p);
 
+	/**
+	 * Sets the velocity of this entity.
+	 * 
+	 * @param v
+	 */
+	public void setVelocity(Vector3 v);
+	
+	/**
+	 * Gets the yaw of this entity.
+	 * 
+	 * @return yaw
+	 */
+	public float getYaw();
+	
+	/**
+	 * Sets the yaw of this entity.
+	 * 
+	 * @param yaw
+	 */
+	public void setYaw(float yaw);
+	
+	/**
+	 * Gets the pitch of this entity.
+	 * 
+	 * @return pitch
+	 */
+	public float getPitch();
+	
+	/**
+	 * Sets the pitch of this entity
+	 * 
+	 * @param pitch
+	 */
+	public void setPitch(float pitch);
+	
 	/**
 	 * Called when the entity is set to be sent to clients
 	 */
@@ -132,14 +182,6 @@ public interface Entity extends Datatable, Source {
 	public Chunk getChunk();
 
 	/**
-	 * Gets the chunk the entity resides in, or null if unspawned.
-	 *
-	 * @return chunk
-	 */
-	@LiveRead
-	public Chunk getChunkLive();
-
-	/**
 	 * Gets the region the entity is associated and managed with, or null if
 	 * unspawned.
 	 *
@@ -147,15 +189,6 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public Region getRegion();
-
-	/**
-	 * Gets the region the entity is associated and managed with, or null if
-	 * unspawned.
-	 *
-	 * @return region
-	 */
-	@LiveRead
-	public Region getRegionLive();
 
 	/**
 	 * Gets the world the entity is associated with, or null if unspawned.
@@ -232,14 +265,6 @@ public interface Entity extends Datatable, Source {
 	 */
 	@DelayedWrite
 	public void setViewDistance(int distance);
-
-	/**
-	 * Gets the maximum distance at which the entity can be seen.<br>
-	 *
-	 * @return the distance in blocks at which the entity can be seen
-	 */
-	@LiveRead
-	public int getViewDistanceLive();
 
 	/**
 	 * Gets the maximum distance at which the entity can be seen.<br>
