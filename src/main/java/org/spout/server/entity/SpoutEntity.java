@@ -26,7 +26,9 @@
 package org.spout.server.entity;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.collision.model.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
@@ -37,15 +39,18 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.geo.discrete.atomic.AtomicPoint;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.Vector3m;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.concurrent.AtomicFloat;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.server.SpoutChunk;
 import org.spout.server.SpoutRegion;
@@ -125,7 +130,7 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
-	public Controller getLiveController() {
+	public Controller getController() {
 		while (true) {
 			int seq = lock.readLock();
 			Controller controller = controllerLive;
@@ -135,8 +140,7 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	@Override
-	public Controller getController() {
+	public Controller getPrevController() {
 		return controller;
 	}
 
@@ -152,17 +156,14 @@ public class SpoutEntity implements Entity {
 		controller.onAttached();
 	}
 
-	@Override
 	public Transform getTransform() {
 		return transform;
 	}
 
-	@Override
 	public Transform getLiveTransform() {
 		return transformLive;
 	}
 
-	@Override
 	public void setTransform(Transform transform) {
 
 		int seq = lock.writeLock();
@@ -339,7 +340,6 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	@Override
 	public Chunk getChunkLive() {
 		while (true) {
 			int seq = lock.readLock();
@@ -369,7 +369,6 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	@Override
 	public Region getRegionLive() {
 		while (true) {
 			int seq = lock.readLock();
@@ -480,18 +479,246 @@ public class SpoutEntity implements Entity {
 		viewDistanceLive.set(distance);
 	}
 
-	@Override
-	public int getViewDistanceLive() {
+	public int getViewDistance() {
 		return viewDistanceLive.get();
 	}
 
-	@Override
-	public int getViewDistance() {
+	public int getPrevViewDistance() {
 		return viewDistance;
 	}
+	
+	float x, y, z, yaw, pitch, velX, velY, velZ;
+	boolean posModified = false, velModified = false, yawModified = false, pitchModified = false;
+	//Locking is done to prevent tearing, not to provide access to live values
+	ReentrantReadWriteLock posLock = new ReentrantReadWriteLock(), velLock = new ReentrantReadWriteLock();
+	ReentrantReadWriteLock pitchLock = new ReentrantReadWriteLock(), yawLock = new ReentrantReadWriteLock();
 
-	public boolean viewDistanceChanged() {
-		return viewDistance != viewDistanceLive.get();
+	@Override
+	public float getX() {
+		posLock.readLock().lock();
+		try {
+			return x;
+		}
+		finally {
+			posLock.readLock().unlock();
+		}
 	}
 
+	@Override
+	public float getY() {
+		posLock.readLock().lock();
+		try {
+			return y;
+		}
+		finally {
+			posLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public float getZ() {
+		posLock.readLock().lock();
+		try {
+			return z;
+		}
+		finally {
+			posLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public Pointm getPosition() {
+		posLock.readLock().lock();
+		try {
+			return new Pointm(getWorld(), x, y, z);
+		}
+		finally {
+			posLock.readLock().unlock();
+		}
+	}
+	
+	@Override
+	public void setPosition(Point p) {
+		posLock.writeLock().lock();
+		try {
+			x = p.getX();
+			y = p.getY();
+			z = p.getZ();
+			posModified = true;
+		}
+		finally {
+			posLock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * Called when the game finalizes the position from any movement or collision calculations, and updates the cache.
+	 * 
+	 * If the API has modified the position, it will use the modified value instead of the calculated value.
+	 * @param newPosition the calculated new position value
+	 * @return the new value, or the modified value if one was set
+	 */
+	public Point updatePosition(Point newPosition) {
+		posLock.writeLock().lock();
+		try {
+			if (!posModified) {
+				x = newPosition.getX();
+				y = newPosition.getY();
+				z = newPosition.getZ();
+				return newPosition;
+			}
+			else {
+				posModified = false;
+				return new Point(newPosition.getWorld(), x, y, z);
+			}
+		}
+		finally {
+			posLock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public Vector3m getVelocity() {
+		velLock.readLock().lock();
+		try {
+			return new Vector3m(velX, velY, velZ);
+		}
+		finally {
+			velLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void setVelocity(Vector3 v) {
+		velLock.writeLock().lock();
+		try {
+			velX = v.getX();
+			velY = v.getY();
+			velZ = v.getZ();
+			velModified = true;
+		}
+		finally {
+			velLock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * Called when the game finalizes the velocity from any movement or collision calculations, and updates the cache.
+	 * 
+	 * If the API has modified the velocity, it will use the modified value instead of the calculated value.
+	 * @param newVelocity the calculated new velocity value
+	 * @return the new value, or the modified value if one was set
+	 */
+	public Vector3 updateVelocity(Vector3 newVelocity) {
+		velLock.writeLock().lock();
+		try {
+			if (!velModified) {
+				x = newVelocity.getX();
+				y = newVelocity.getY();
+				z = newVelocity.getZ();
+				return newVelocity;
+			}
+			else {
+				velModified = false;
+				return new Vector3(x, y, z);
+			}
+		}
+		finally {
+			velLock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public float getYaw() {
+		yawLock.readLock().lock();
+		try {
+			return yaw;
+		}
+		finally {
+			yawLock.readLock().unlock();
+		}
+	}
+	
+	@Override
+	public void setYaw(float yaw) {
+		yawLock.writeLock().lock();
+		try {
+			this.yaw = yaw;
+			yawModified = true;
+		}
+		finally {
+			yawLock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * Called when the game finalizes the yaw from any movement or collision calculations, and updates the cache.
+	 * 
+	 * If the API has modified the yaw, it will use the modified value instead of the calculated value.
+	 * @param newYaw the calculated new yaw value
+	 * @return the new value, or the modified value if one was set
+	 */
+	public float updateYaw(float newYaw) {
+		yawLock.writeLock().lock();
+		try {
+			if (!yawModified) {
+				yaw = newYaw;
+				return newYaw;
+			}
+			else {
+				yawModified = false;
+				return yaw;
+			}
+		}
+		finally {
+			yawLock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public float getPitch() {
+		pitchLock.readLock().lock();
+		try {
+			return pitch;
+		}
+		finally {
+			pitchLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void setPitch(float pitch) {
+		pitchLock.writeLock().lock();
+		try {
+			this.pitch = pitch;
+			pitchModified = true;
+		}
+		finally {
+			pitchLock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * Called when the game finalizes the pitch from any movement or collision calculations, and updates the cache.
+	 * 
+	 * If the API has modified the pitch, it will use the modified value instead of the calculated value.
+	 * @param newPitch the calculated new pitch value
+	 * @return the new value, or the modified value if one was set
+	 */
+	public float updatePitch(float newPitch) {
+		pitchLock.writeLock().lock();
+		try {
+			if (!pitchModified) {
+				yaw = newPitch;
+				return newPitch;
+			}
+			else {
+				pitchModified = false;
+				return yaw;
+			}
+		}
+		finally {
+			pitchLock.writeLock().unlock();
+		}
+	}
 }

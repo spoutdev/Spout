@@ -56,8 +56,6 @@ import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.AsyncManager;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
-import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
-import org.spout.server.util.thread.snapshotable.SnapshotableInt;
 import org.spout.server.util.thread.snapshotable.SnapshotableLong;
 import org.spout.server.util.thread.snapshotable.SnapshotableReference;
 
@@ -91,70 +89,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	private SnapshotableReference<Transform> spawnLocation = new SnapshotableReference<Transform>(snapshotManager, null);
 
 	/**
-	 * Whether to keep the spawn chunks in memory (prevent them from being
-	 * unloaded)
-	 */
-	private SnapshotableBoolean keepSpawnLoaded = new SnapshotableBoolean(snapshotManager, true);
-
-	/**
-	 * Whether PvP is allowed in this world.
-	 */
-	private SnapshotableBoolean pvpAllowed = new SnapshotableBoolean(snapshotManager, true);
-
-	/**
-	 * Whether animals can spawn in this world.
-	 */
-	private SnapshotableBoolean spawnAnimals = new SnapshotableBoolean(snapshotManager, true);
-
-	/**
-	 * Whether monsters can spawn in this world.
-	 */
-	private SnapshotableBoolean spawnMonsters = new SnapshotableBoolean(snapshotManager, true);
-
-	/**
-	 * Whether it is currently raining/snowing on this world.
-	 */
-	private SnapshotableBoolean currentlyRaining = new SnapshotableBoolean(snapshotManager, false);
-
-	/**
-	 * How many ticks until the rain/snow status is expected to change.
-	 */
-	private SnapshotableInt rainingTicks = new SnapshotableInt(snapshotManager, 0);
-
-	/**
-	 * Whether it is currently thundering on this world.
-	 */
-	private SnapshotableBoolean currentlyThundering = new SnapshotableBoolean(snapshotManager, false);
-
-	/**
-	 * How many ticks until the thundering status is expected to change.
-	 */
-	private SnapshotableInt thunderingTicks = new SnapshotableInt(snapshotManager, 0);
-
-	/**
 	 * The current world age.
 	 */
 	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
-
-	/**
-	 * The current world time.
-	 */
-	private SnapshotableInt time = new SnapshotableInt(snapshotManager, 0);
-
-	/**
-	 * The current world time.
-	 */
-	private SnapshotableInt dayLength = new SnapshotableInt(snapshotManager, 0);
-
-	/**
-	 * The time until the next full-save.
-	 */
-	private SnapshotableInt saveTimer = new SnapshotableInt(snapshotManager, 0);
-
-	/**
-	 * The check to autosave.
-	 */
-	private SnapshotableBoolean autosave = new SnapshotableBoolean(snapshotManager, true);
 
 	/**
 	 * The world's UUID.
@@ -318,7 +255,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		SpoutRegion region = (SpoutRegion) e.getRegion();
 		region.allocate((SpoutEntity) e);
-		EntitySpawnEvent event = new EntitySpawnEvent(e, e.getTransform().getPosition());
+		EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPosition());
 		Spout.getGame().getEventManager().callEvent(event);
 		if (event.isCancelled()) {
 			region.deallocate((SpoutEntity) e);
