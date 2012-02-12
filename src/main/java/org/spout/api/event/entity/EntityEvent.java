@@ -32,7 +32,7 @@ import org.spout.api.event.Event;
  * Represents an entity-related event.
  */
 public abstract class EntityEvent extends Event {
-	private Entity entity;
+	private final Entity entity;
 
 	public EntityEvent(Entity e) {
 		entity = e;
@@ -47,12 +47,4 @@ public abstract class EntityEvent extends Event {
 		return entity;
 	}
 
-	/**
-	 * Sets the entity associated with this event.
-	 *
-	 * @param entity The entity to be associated with this event.
-	 */
-	public void setEntity(Entity entity) {
-		this.entity = entity;
-	}
 }
