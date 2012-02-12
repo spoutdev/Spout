@@ -156,7 +156,7 @@ public class SimpleCommand implements Command {
 		if (args.length > baseIndex && children.size() > 0) {
 			Command sub = getChild(args[baseIndex + 1], fuzzyLookup);
 			if (sub == null) {
-				throw new MissingCommandException("Child command needed!", getUsage(args, baseIndex));
+				throw getMissingChildException(getUsage(args, baseIndex));
 			}
 			sub.execute(source, args, ++baseIndex, fuzzyLookup);
 			return;
@@ -192,6 +192,10 @@ public class SimpleCommand implements Command {
 		} catch (Throwable t) {
 			throw new WrappedCommandException(t);
 		}
+	}
+	
+	public CommandException getMissingChildException(String usage) {
+		return new MissingCommandException("Child command needed!", usage);
 	}
 
 	public String getPreferredName() {
