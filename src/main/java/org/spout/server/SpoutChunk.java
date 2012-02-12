@@ -351,7 +351,7 @@ public class SpoutChunk extends Chunk {
 	public boolean refreshObserver(Player player) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
-		int distance = (int) player.getEntity().getChunkLive().getBase().getDistance(getBase());
+		int distance = (int) ((SpoutEntity)player.getEntity()).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(player, distance);
 		if (oldDistance == null) {
 			return true;
@@ -529,8 +529,8 @@ public class SpoutChunk extends Chunk {
 					if (p.getEntity().equals(e)) {
 						continue;
 					}
-					Integer entityViewDistanceOld = e.getViewDistance();
-					Integer entityViewDistanceNew = e.getViewDistanceLive();
+					Integer entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+					Integer entityViewDistanceNew = e.getViewDistance();
 
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
 						n.destroyEntity(e);
@@ -546,7 +546,7 @@ public class SpoutChunk extends Chunk {
 			if (((SpoutEntity) e).justSpawned()) {
 				oldChunk = null;
 			}
-			SpoutChunk newChunk = (SpoutChunk) e.getChunkLive();
+			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity)e).getChunkLive();
 			if (!(oldChunk != null && oldChunk.equals(this)) && !((SpoutEntity) e).justSpawned()) {
 				continue;
 			}
@@ -573,8 +573,8 @@ public class SpoutChunk extends Chunk {
 						playerDistanceNew = Integer.MAX_VALUE;
 					}
 				}
-				Integer entityViewDistanceOld = e.getViewDistance();
-				Integer entityViewDistanceNew = e.getViewDistanceLive();
+				Integer entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+				Integer entityViewDistanceNew = e.getViewDistance();
 
 				NetworkSynchronizer n = p.getNetworkSynchronizer();
 
@@ -597,7 +597,7 @@ public class SpoutChunk extends Chunk {
 				for (Entity e : entitiesSnapshot) {
 					if (playerEntity != e) {
 						if (playerDistance <= e.getViewDistance()) {
-							if (e.getController() != e.getLiveController()) {
+							if (e.getController() != ((SpoutEntity)e).getController()) {
 								n.destroyEntity(e);
 								n.spawnEntity(e);
 							}
@@ -611,7 +611,7 @@ public class SpoutChunk extends Chunk {
 					} else if (((SpoutEntity) e).justSpawned()) {
 						if (playerEntity != e) {
 							if (playerDistance <= e.getViewDistance()) {
-								if (e.getController() != e.getLiveController()) {
+								if (e.getController() != ((SpoutEntity)e).getController()) {
 									n.destroyEntity(e);
 									n.spawnEntity(e);
 								}
