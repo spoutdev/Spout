@@ -25,6 +25,7 @@
  */
 package org.spout.api.event;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -143,6 +144,12 @@ public class SimpleEventManager implements EventManager {
 							throw new EventException("Wrong event type passed to registered method");
 						}
 						method.invoke(listener, event);
+					} catch (InvocationTargetException e) {
+						if (e.getCause() instanceof EventException) {
+							throw (EventException)e.getCause();
+						} else {
+							throw new EventException(e.getCause());
+						}
 					} catch (Throwable t) {
 						throw new EventException(t);
 					}
