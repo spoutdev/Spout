@@ -71,6 +71,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.CommonRecipeManager;
+import org.spout.api.inventory.Recipe;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
@@ -1000,7 +1001,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (player == null) {
 			throw new IllegalStateException("Attempting to set session to null player, which shouldn't be possible");
 		} else {
-			World world = newEntity.getPosition().getWorld();
+			World world = newEntity.getTransform().getPosition().getWorld();
 			world.spawnEntity(newEntity);
 			session.setPlayer(player);
 			((SpoutWorld) world).addPlayer(player);

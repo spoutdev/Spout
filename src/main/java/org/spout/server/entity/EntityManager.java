@@ -131,7 +131,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		int currentId = entity.getId();
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
-			getRawAll(entity.getController().getClass()).add(entity);
+			getRawAll(entity.getLiveController().getClass()).add(entity);
 			return currentId;
 		} else {
 			int id = nextId.getAndIncrement();
@@ -140,7 +140,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			}
 			entities.put(id, entity);
 			entity.setId(id);
-			Controller controller = entity.getController();
+			Controller controller = entity.getLiveController();
 			if (controller != null) {
 				getRawAll(controller.getClass()).add(entity);
 			}
