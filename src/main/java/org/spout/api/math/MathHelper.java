@@ -129,7 +129,7 @@ public class MathHelper {
 		int blue = lerp(a.getBlueI(), b.getBlueI(), percent);
 		int green = lerp(a.getGreenI(), b.getGreenI(), percent);
 		int alpha = lerp(a.getAlphaI(), b.getAlphaI(), percent);
-		return new Color(red, green, blue, alpha);
+		return new Color(red, blue, green, alpha);
 	}
 
 	public static double clamp(double value, double low, double high) {

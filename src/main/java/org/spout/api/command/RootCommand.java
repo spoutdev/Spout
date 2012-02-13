@@ -25,8 +25,8 @@
  */
 package org.spout.api.command;
 
+import org.spout.api.ChatColor;
 import org.spout.api.Game;
-import org.spout.api.exception.CommandException;
 import org.spout.api.exception.SpoutRuntimeException;
 
 public class RootCommand extends SimpleCommand {
@@ -36,7 +36,7 @@ public class RootCommand extends SimpleCommand {
 
 	@Override
 	public String getUsage(String[] input, int baseIndex) {
-		return "Command '" + (input.length > baseIndex ? input[baseIndex + 1] : getPreferredName()) + "' could not be found!";
+		return ChatColor.RED + "Command '" + (input.length > baseIndex ? input[baseIndex + 1] : getPreferredName()) + "' could not be found";
 	}
 
 	@Override
@@ -47,10 +47,5 @@ public class RootCommand extends SimpleCommand {
 	@Override
 	public boolean isLocked() {
 		return false;
-	}
-	
-	@Override
-	public CommandException getMissingChildException(String usage) {
-		return new CommandException(usage);
 	}
 }
