@@ -35,6 +35,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
+import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.player.Player;
 
 public class NetworkSynchronizer {
@@ -72,7 +73,6 @@ public class NetworkSynchronizer {
 	private boolean death = false;
 	private boolean first = true;
 	private volatile boolean teleported = false;
-	private Point lastPosition = null;
 
 	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 
@@ -103,21 +103,21 @@ public class NetworkSynchronizer {
 
 		// TODO teleport smoothing
 
-		Point currentPosition = entity.getPosition();
-		if (currentPosition != null) {
+		Transform lastTransform = entity.getTransform();
+		Transform liveTransform = entity.getLiveTransform();
+
+		if (liveTransform != null) {
+			Point currentPosition = liveTransform.getPosition();
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck.set(currentPosition);
 			}
 
-			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
-				worldChanged(currentPosition.getWorld());
+			if (first || lastTransform == null || lastTransform.getPosition().getWorld() != liveTransform.getPosition().getWorld()) {
+				worldChanged(liveTransform.getPosition().getWorld());
 				teleported = true;
 			}
-			
 		}
-		
-		lastPosition = currentPosition;
 
 		for (Point p : chunkFreeQueue) {
 			if (initializedChunks.contains(p)) {
@@ -188,7 +188,8 @@ public class NetworkSynchronizer {
 			}
 
 			if (teleported && entity != null) {
-				sendPosition(entity.getPosition(), entity.getYaw(), entity.getPitch());
+				Transform liveTransform = entity.getLiveTransform();
+				sendPosition(liveTransform);
 				first = false;
 				teleported = false;
 			}
@@ -315,7 +316,7 @@ public class NetworkSynchronizer {
 	 *
 	 * @param t the transform
 	 */
-	protected void sendPosition(Point p, float yaw, float pitch) {
+	protected void sendPosition(Transform t) {
 		//TODO: Implement Spout Protocol
 	}
 
