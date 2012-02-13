@@ -63,6 +63,7 @@ import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.exception.CommandException;
+import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.generator.WorldGenerator;
@@ -546,9 +547,16 @@ public class SpoutServer extends AsyncManager implements Server {
 			commandLine = event.getMessage();
 			getRootCommand().execute(source, commandLine.split(" "), -1, false);
 		} catch (WrappedCommandException e) {
-			source.sendMessage(ChatColor.RED + "Internal error executing command!");
-			source.sendMessage(ChatColor.RED + "Error: " + e.getMessage() + "; See console for details.");
-			e.printStackTrace();
+			if (e.getCause() instanceof NumberFormatException) {
+				source.sendMessage(ChatColor.RED + "Number expected; string given!");
+			} else {
+				source.sendMessage(ChatColor.RED + "Internal error executing command!");
+				source.sendMessage(ChatColor.RED + "Error: " + e.getMessage() + "; See console for details.");
+				e.printStackTrace();
+			}
+		} catch (CommandUsageException e) {
+			source.sendMessage(ChatColor.RED + e.getMessage());
+			source.sendMessage(ChatColor.RED + e.getUsage());
 		} catch (CommandException e) {
 			// TODO: Better exception handling!
 			source.sendMessage(ChatColor.RED + e.getMessage());
