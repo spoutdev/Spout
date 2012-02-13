@@ -30,17 +30,10 @@ package org.spout.api.exception;
  * This is called when a child command is required but missing or an unknown
  * command is given.
  */
-public class MissingCommandException extends CommandException {
+public class MissingCommandException extends CommandUsageException {
 	private static final long serialVersionUID = 1L;
 
-	private final String usage;
-
 	public MissingCommandException(String msg, String usage) {
-		super(msg);
-		this.usage = usage;
-	}
-
-	public String getUsage() {
-		return usage;
+		super(msg, usage);
 	}
 }
