@@ -107,4 +107,8 @@ public abstract class CommonPlugin implements Plugin {
 		getLogger().severe("Unknown generator for world '" + world + "', generator: '" + generator + "'");
 		return null;
 	}
+
+	public String getName() {
+		return getDescription().getName();
+	}
 }
