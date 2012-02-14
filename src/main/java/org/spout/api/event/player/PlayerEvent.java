@@ -32,7 +32,8 @@ import org.spout.api.player.Player;
  * Represents a player-related event.
  */
 public abstract class PlayerEvent extends Event {
-	protected Player player;
+	
+	private final Player player;
 
 	public PlayerEvent(Player p) {
 		player = p;
@@ -40,9 +41,5 @@ public abstract class PlayerEvent extends Event {
 
 	public Player getPlayer() {
 		return player;
-	}
-
-	public void setPlayer(Player player) {
-		this.player = player;
 	}
 }

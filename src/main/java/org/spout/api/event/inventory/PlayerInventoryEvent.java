@@ -36,6 +36,7 @@ import org.spout.api.player.Player;
  * Represents an inventory-related event.
  */
 public abstract class PlayerInventoryEvent extends PlayerEvent implements Cancellable {
+	
 	private static HandlerList handlers = new HandlerList();
 
 	protected Point point = null;

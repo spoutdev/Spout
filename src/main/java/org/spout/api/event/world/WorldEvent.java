@@ -32,7 +32,8 @@ import org.spout.api.geo.World;
  * Represents a world-related event.
  */
 public abstract class WorldEvent extends Event {
-	protected World world;
+	
+	private final World world;
 
 	public WorldEvent(World p) {
 		world = p;
@@ -45,14 +46,5 @@ public abstract class WorldEvent extends Event {
 	 */
 	public World getWorld() {
 		return world;
-	}
-
-	/**
-	 * Sets the world associated with this event.
-	 *
-	 * @param world The world to be associated with the event.
-	 */
-	public void setWorld(World world) {
-		this.world = world;
 	}
 }
