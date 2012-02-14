@@ -542,7 +542,13 @@ public class AtomicBlockStore<T> {
 			array = new short[length];
 		}
 		for (int i = 0; i < length; i++) {
-			array[i] = blockIds.get(i);
+			short blockId = blockIds.get(i);
+			if (auxStore.isReserved(blockId)) {
+				blockId = auxStore.getId(blockId);
+			} else {
+				blockId &= 0x0000FFFF;
+			}
+			array[i] = blockId;
 		}
 		return array;
 	}
