@@ -71,7 +71,6 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.CommonRecipeManager;
-import org.spout.api.inventory.Recipe;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
@@ -91,7 +90,6 @@ import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
-import org.spout.server.io.SaveTaskThread;
 import org.spout.server.io.StorageQueue;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.net.SpoutSessionRegistry;
@@ -418,8 +416,6 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
 		bootstrap.setPipelineFactory(pipelineFactory);
-		
-		SaveTaskThread.startThread();
 	}
 
 	public void loadPlugins() {
@@ -911,8 +907,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		for (Player player : getOnlinePlayers()) {
 			player.kick(message);
 		}
-		
-		SaveTaskThread.endThread();
 
 		getPluginManager().clearPlugins();
 
@@ -1013,7 +1007,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (player == null) {
 			throw new IllegalStateException("Attempting to set session to null player, which shouldn't be possible");
 		} else {
-			World world = newEntity.getTransform().getPosition().getWorld();
+			World world = newEntity.getWorld();
 			world.spawnEntity(newEntity);
 			session.setPlayer(player);
 			((SpoutWorld) world).addPlayer(player);

@@ -424,6 +424,7 @@ public class SpoutRegion extends Region {
 	public void haltRun() throws InterruptedException {
 	}
 
+	@SuppressWarnings("unused")
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
 		isPopulatingChunks = true;

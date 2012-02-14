@@ -47,8 +47,6 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.server.SpoutServer;
 import org.spout.server.SpoutWorld;
-import org.spout.server.io.PlayerSaveTask;
-import org.spout.server.io.SaveTaskThread;
 import org.spout.server.player.SpoutPlayer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -320,7 +318,7 @@ public final class SpoutSession implements Session {
 			
 			PlayerSaveEvent event = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
 			if (!event.isSaved()) {
-				SaveTaskThread.addTask(new PlayerSaveTask(player));
+				//SaveTaskThread.addTask(new PlayerSaveTask(player));
 			}
 			
 			((SpoutWorld)player.getEntity().getWorld()).removePlayer(player);
