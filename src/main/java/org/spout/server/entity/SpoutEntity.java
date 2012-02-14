@@ -47,6 +47,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.Vector3m;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
@@ -99,7 +100,8 @@ public class SpoutEntity implements Entity {
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
 		
-		//Sets the cached x, y, z, yaw, pitch, scale values
+		//Sets the cached x, y, z, yaw, pitch, roll, scale values
+		this.scale = new Vector3m(transform.getScale());
 		updatePosition();
 		updateRotation();
 	}
@@ -310,6 +312,7 @@ public class SpoutEntity implements Entity {
 		viewDistance = viewDistanceLive.get();
 		updatePosition();
 		updateRotation();
+		updateScale();
 	}
 
 	@Override
@@ -469,7 +472,8 @@ public class SpoutEntity implements Entity {
 	}
 	
 	float x, y, z, yaw, pitch, roll;
-	boolean posModified = false, yawModified = false, pitchModified = false, rollModified = false;
+	final Vector3m scale;
+	boolean posModified = false, yawModified = false, pitchModified = false, rollModified = false, scaleModified = false;
 	//Locking is done to prevent tearing, not to provide access to live values
 	final ReentrantReadWriteLock stateLock = new ReentrantReadWriteLock();
 
@@ -650,6 +654,46 @@ public class SpoutEntity implements Entity {
 		try {
 			this.roll = roll;
 			rollModified = true;
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+	
+	public void updateScale() {
+		stateLock.writeLock().lock();
+		try {
+			Vector3m scale = transform.getScale();
+			if (!scaleModified) {
+				this.scale.set(scale);
+			}
+			else {
+				scaleModified = false;
+				scale.set(this.scale);
+			}
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public Vector3 getScale() {
+		stateLock.readLock().lock();
+		try {
+			return scale;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void setScale(Vector3 scale) {
+		stateLock.writeLock().lock();
+		try {
+			this.scale.set(scale);
+			scaleModified = true;
 		}
 		finally {
 			stateLock.writeLock().unlock();
