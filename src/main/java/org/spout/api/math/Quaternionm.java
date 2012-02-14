@@ -135,5 +135,10 @@ public class Quaternionm extends Quaternion {
 		set(super.rotate(angle, axis));
 		return this;
 	}
-
+	
+	@Override
+	public Quaternion rotate(float angle, float x, float y, float z) {
+		set(super.rotate(angle, x, y, z));
+		return this;
+	}
 }

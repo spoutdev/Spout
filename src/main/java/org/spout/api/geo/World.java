@@ -131,6 +131,17 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Region getRegion(Point point, boolean load);
+	
+	/**
+	 * Gets the {@link Region} at block coordinates (x, y, z)
+	 *
+	 * @param x the block x coordinate
+	 * @param y the block y coordinate
+	 * @param z the block z coordinate
+	 * @return the region
+	 */
+	@LiveRead
+	public Region getRegionFromBlock(int x, int y, int z);
 
 	/**
 	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)

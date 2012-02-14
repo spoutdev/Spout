@@ -34,8 +34,6 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.Inventory;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -138,6 +136,20 @@ public interface Entity extends Datatable, Source {
 	public void setPitch(float pitch);
 	
 	/**
+	 * Gets the roll of this entity.
+	 * 
+	 * @return roll
+	 */
+	public float getRoll();
+	
+	/**
+	 * Sets the roll of this entity
+	 * 
+	 * @param roll
+	 */
+	public void setRoll(float roll);
+	
+	/**
 	 * Called when the entity is set to be sent to clients
 	 */
 	public void onSync();
@@ -206,14 +218,6 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public boolean isDead();
-
-	/**
-	 * True if the entity is dead.
-	 *
-	 * @return dead
-	 */
-	@LiveRead
-	public boolean isDeadLive();
 
 	/**
 	 * Returns the inventory of the entity

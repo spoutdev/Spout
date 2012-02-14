@@ -172,10 +172,24 @@ public class Quaternion {
 	 *
 	 * @param angle
 	 * @param axis
-	 * @return
+	 * @return rotated Quaternion
 	 */
 	public Quaternion rotate(float angle, Vector3 axis) {
 		return Quaternion.rotate(this, angle, axis);
+	}
+	
+	/**
+	 * Creates and returns a new Quaternion that represnets this quaternion
+	 * rotated by the given Axis and Angle
+	 *
+	 * @param angle
+	 * @param x axis
+	 * @param y axis
+	 * @param z axis
+	 * @return rotated Quaternion
+	 */
+	public Quaternion rotate(float angle, float x, float y, float z) {
+		return Quaternion.rotate(this, angle, x, y, z);
 	}
 
 	/**
@@ -268,9 +282,9 @@ public class Quaternion {
 	 *
 	 * @param a
 	 * @param angle
-	 * @param x-axis
-	 * @param y-axis
-	 * @param z-axis
+	 * @param x axis
+	 * @param y axis
+	 * @param z axis
 	 * @return rotated Quaternion
 	 */
 	public static Quaternion rotate(Quaternion a, float angle, float x, float y, float z) {
