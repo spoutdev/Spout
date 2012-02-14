@@ -25,6 +25,7 @@
  */
 package org.spout.api.protocol;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -101,40 +102,39 @@ public class NetworkSynchronizer {
 		}
 
 		// TODO teleport smoothing
-
-			Point currentPosition = entity.getPosition();
-			if (currentPosition != null) {
-				if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
-					checkChunkUpdates(currentPosition);
-					lastChunkCheck.set(currentPosition);
-				}
-
-				if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
-					worldChanged(currentPosition.getWorld());
-					teleported = true;
-				}
-
+		Point currentPosition = entity.getPosition();
+		if (currentPosition != null) {
+			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
+				checkChunkUpdates(currentPosition);
+				lastChunkCheck.set(currentPosition);
 			}
 
-			lastPosition = currentPosition;
-
-			for (Point p : chunkFreeQueue) {
-				if (initializedChunks.contains(p)) {
-					Chunk c = p.getWorld().getChunk(p, false);
-					if (c != null) {
-						removeObserver(c);
-					}
-				}
-			}
-
-			for (Point p : chunkInitQueue) {
-				if (!initializedChunks.contains(p)) {
-					Chunk c = p.getWorld().getChunk(p, true);
-					addObserver(c);
-				}
+			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
+				worldChanged(currentPosition.getWorld());
+				teleported = true;
 			}
 
 		}
+
+		lastPosition = currentPosition;
+
+		for (Point p : chunkFreeQueue) {
+			if (initializedChunks.contains(p)) {
+				Chunk c = p.getWorld().getChunk(p, false);
+				if (c != null) {
+					removeObserver(c);
+				}
+			}
+		}
+
+		for (Point p : chunkInitQueue) {
+			if (!initializedChunks.contains(p)) {
+				Chunk c = p.getWorld().getChunk(p, true);
+				addObserver(c);
+			}
+		}
+
+	}
 
 	public void preSnapshot() {
 
@@ -251,6 +251,19 @@ public class NetworkSynchronizer {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Returns a copy of all currently active sent chunks to this player
+	 * 
+	 * @return active chunks
+	 */
+	public Set<Chunk> getActiveChunks() {
+		HashSet<Chunk> chunks = new HashSet<Chunk>();
+		for (Point p : activeChunks) {
+			chunks.add(p.getWorld().getChunk(p));
+		}
+		return chunks;
 	}
 
 	/**
