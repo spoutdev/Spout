@@ -34,6 +34,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -148,6 +149,20 @@ public interface Entity extends Datatable, Source {
 	 * @param roll
 	 */
 	public void setRoll(float roll);
+	
+	/**
+	 * Gets a copy of the scale for this entity
+	 * 
+	 * @return scale
+	 */
+	public Vector3 getScale();
+	
+	/**
+	 * Sets the scale of this entity
+	 * 
+	 * @param scale
+	 */
+	public void setScale(Vector3 scale);
 	
 	/**
 	 * Called when the entity is set to be sent to clients
