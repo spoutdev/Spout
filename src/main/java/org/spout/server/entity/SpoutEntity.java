@@ -187,7 +187,7 @@ public class SpoutEntity implements Entity {
 				}
 				EntityManager newEntityManager = ((SpoutRegion) newRegion).getEntityManager();
 
-				transform.set(transform);
+				this.transform.set(transform);
 				entityManagerLive = newEntityManager;
 				if (transform.readUnlock(seqRead)) {
 					return;
@@ -197,7 +197,6 @@ public class SpoutEntity implements Entity {
 		} finally {
 			lock.writeUnlock(seq);
 		}
-
 	}
 
 	// TODO - make actually atomic, rather than just threadsafe
@@ -207,7 +206,9 @@ public class SpoutEntity implements Entity {
 		try {
 			AtomicPoint p = transform.getPosition();
 			alive = p.getWorld() != null;
-			setTransform(DEAD);
+			this.transform.set(DEAD);
+			chunkLive = null;
+			entityManagerLive = null;
 		} finally {
 			lock.writeUnlock(seq);
 		}
@@ -523,11 +524,16 @@ public class SpoutEntity implements Entity {
 	
 	@Override
 	public void setPosition(Point p) {
+		setPosition(p.getX(), p.getY(), p.getZ());
+	}
+	
+	@Override
+	public void setPosition(float x, float y, float z) {
 		stateLock.writeLock().lock();
 		try {
-			x = p.getX();
-			y = p.getY();
-			z = p.getZ();
+			this.x = x;
+			this.y = y;
+			this.z = z;
 			posModified = true;
 		}
 		finally {

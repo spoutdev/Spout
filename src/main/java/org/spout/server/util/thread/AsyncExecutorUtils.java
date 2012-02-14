@@ -25,10 +25,39 @@
  */
 package org.spout.server.util.thread;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
+
+import org.spout.api.Spout;
 
 public class AsyncExecutorUtils {
+	private static final String LINE = "------------------------------";
+	
+	/**
+	 * Logs all threads, the thread details, and active stack traces
+	 */
+	public static void dumpAllStacks() {
+		Logger log = Spout.getLogger();
+		Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+		Iterator<Entry<Thread, StackTraceElement[]>> i = traces.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<Thread, StackTraceElement[]> entry = i.next();
+			log.info(LINE);
+			Thread thread = entry.getKey();
+			log.info("Current Thread: " + thread.getName());
+			log.info("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
+			log.info("    Stack:");
+			StackTraceElement[] stack = entry.getValue();
+			for (int line = 0; line < stack.length; line++) {
+				log.info("        " + stack[line].toString());
+			}
+		}
+		log.info(LINE);
+	}
 
 	/**
 	 * Waits for a list of ManagedThreads to complete a pulse
