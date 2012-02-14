@@ -28,6 +28,7 @@ package org.spout.server;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -97,6 +98,8 @@ public class SpoutRegion extends Region {
 	protected Set<Chunk> nonPopulatedChunks = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
 
 	private boolean isPopulatingChunks = false;
+
+	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
 
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
 
@@ -399,6 +402,11 @@ public class SpoutRegion extends Region {
 							material.onUpdate(world, x + (this.x << blockShifts), y + (this.y << blockShifts), z + (this.z << blockShifts));
 						}
 					}
+				}
+				
+				Chunk toUnload = unloadQueue.poll();
+				if (toUnload != null) {
+					toUnload.unload(true);
 				}
 
 				break;

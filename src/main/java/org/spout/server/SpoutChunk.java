@@ -354,6 +354,7 @@ public class SpoutChunk extends Chunk {
 		int distance = (int) ((SpoutEntity)player.getEntity()).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(player, distance);
 		if (oldDistance == null) {
+			parentRegion.unloadQueue.remove(this);
 			return true;
 		} else {
 			return false;
@@ -367,7 +368,7 @@ public class SpoutChunk extends Chunk {
 		Integer oldDistance = observers.remove(player);
 		if (oldDistance != null) {
 			if (observers.isEmptyLive()) {
-				unload(true);
+				parentRegion.unloadQueue.add(this);
 			}
 			return true;
 		} else {

@@ -43,6 +43,7 @@ public class RegionSource implements Iterable<Region> {
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
 	private final TSyncInt21TripleObjectHashMap<Region> loadedRegions;
+	
 	/**
 	 * World associated with this region source
 	 */
