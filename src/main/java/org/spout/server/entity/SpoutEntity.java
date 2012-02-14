@@ -27,6 +27,7 @@ package org.spout.server.entity;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.collision.model.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
@@ -37,11 +38,14 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.geo.discrete.atomic.AtomicPoint;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
+import org.spout.api.math.Quaternionm;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
@@ -59,52 +63,53 @@ import org.spout.server.player.SpoutPlayer;
 
 public class SpoutEntity implements Entity {
 	private static final long serialVersionUID = 1L;
-	
+
 	public final static int NOTSPAWNEDID = -1;
 	private final static Transform DEAD = new Transform(new Point(null, 0, 0, 0), new Quaternion(0F, 0F, 0F, 0F), new Vector3(0, 0, 0));
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
-	
+
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final Transform transform = new Transform();
-	private final Transform transformLive = new Transform();
 	private EntityManager entityManager;
 	private EntityManager entityManagerLive;
 	private Controller controller = null;
 	private Controller controllerLive = null;
-	private final SpoutServer server;
 	private Chunk chunk;
 	private Chunk chunkLive;
 	private boolean justSpawned = true;
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private int viewDistance;
-	
+
 	public int id = NOTSPAWNEDID;
-	
+
 	Model model;
 	CollisionModel collision;
-	
+
 	SpoutDatatableMap map;
-	
+
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
-		this.server = server;
 		this.transform.set(transform);
 		setTransform(transform);
 		if (controller != null) {
 			this.controller = controller;
 			setController(controller);
 		}
-		this.map = new SpoutDatatableMap();
-		this.viewDistanceLive.set(viewDistance);
+		map = new SpoutDatatableMap();
+		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
+		
+		//Sets the cached x, y, z, yaw, pitch, scale values
+		updatePosition();
+		updateRotation();
 	}
-	
+
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
 		this(server, transform, controller, 64);
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
-		this(server, new Transform(point, Quaternion.identity , Vector3.ONE), controller);
+		this(server, new Transform(point, Quaternion.identity, Vector3.ONE), controller);
 	}
 
 	public int getId() {
@@ -125,48 +130,39 @@ public class SpoutEntity implements Entity {
 			lock.writeUnlock(seq);
 		}
 	}
-	
+
 	@Override
-	public Controller getLiveController() {
+	public Controller getController() {
 		while (true) {
 			int seq = lock.readLock();
-			Controller controller = this.controllerLive;
+			Controller controller = controllerLive;
 			if (lock.readUnlock(seq)) {
 				return controller;
 			}
 		}
 	}
-	
-	@Override
-	public Controller getController() {
+
+	public Controller getPrevController() {
 		return controller;
 	}
-	
+
 	@Override
 	public void setController(Controller controller) {
 		controller.attachToEntity(this);
 		int seq = lock.writeLock();
 		try {
-			this.controllerLive = controller;
+			controllerLive = controller;
 		} finally {
 			lock.writeUnlock(seq);
 		}
 		controller.onAttached();
 	}
-	
-	@Override
+
 	public Transform getTransform() {
 		return transform;
 	}
-	
-	@Override
-	public Transform getLiveTransform() {
-		return transformLive;
-	}
 
-	@Override
 	public void setTransform(Transform transform) {
-		
 		int seq = lock.writeLock();
 		try {
 			while (true) {
@@ -176,20 +172,20 @@ public class SpoutEntity implements Entity {
 				World world = newPosition.getWorld();
 				if (world == null) {
 					chunkLive = null;
-					transformLive.set(DEAD);
+					transform.set(DEAD);
 					entityManagerLive = null;
 					return;
 				}
 				chunkLive = newPosition.getWorld().getChunk(newPosition);
 				Region newRegion = chunkLive.getRegion();
-				
+
 				// TODO - entity moved into unloaded chunk - what happens for normal entities?
-				if (newRegion == null && this.getController() instanceof PlayerController) {
+				if (newRegion == null && getController() instanceof PlayerController) {
 					newRegion = newPosition.getWorld().getRegion(newPosition, true);
 				}
-				EntityManager newEntityManager = ((SpoutRegion)newRegion).getEntityManager();
+				EntityManager newEntityManager = ((SpoutRegion) newRegion).getEntityManager();
 
-				transformLive.set(transform);
+				transform.set(transform);
 				entityManagerLive = newEntityManager;
 				if (transform.readUnlock(seqRead)) {
 					return;
@@ -199,41 +195,34 @@ public class SpoutEntity implements Entity {
 		} finally {
 			lock.writeUnlock(seq);
 		}
-		
+
 	}
-	
+
 	// TODO - make actually atomic, rather than just threadsafe
 	public boolean kill() {
 		int seq = lock.writeLock();
 		boolean alive = true;
 		try {
-			AtomicPoint p = transformLive.getPosition();
+			AtomicPoint p = transform.getPosition();
 			alive = p.getWorld() != null;
-			transformLive.set(DEAD);
+			setTransform(DEAD);
 		} finally {
 			lock.writeUnlock(seq);
 		}
-		setTransform(DEAD);
 		return alive;
 	}
-	
+
 	@Override
-	public boolean isDeadLive() {
+	public boolean isDead() {
 		while (true) {
-			int seq = transformLive.readLock();
-			boolean dead = id != NOTSPAWNEDID && transformLive.getPosition().getWorld() == null;
-			if (transformLive.readUnlock(seq)) {
+			int seq = transform.readLock();
+			boolean dead = id != NOTSPAWNEDID && transform.getPosition().getWorld() == null;
+			if (transform.readUnlock(seq)) {
 				return dead;
 			}
 		}
 	}
-	
-	@Override
-	public boolean isDead() {
-		boolean dead = id != NOTSPAWNEDID && transformLive.getPosition().getWorld() == null;
-		return dead;
-	}
-	
+
 	// TODO - needs to be made thread safe
 	@Override
 	public void setModel(Model model) {
@@ -249,7 +238,7 @@ public class SpoutEntity implements Entity {
 	// TODO - needs to be made thread safe
 	@Override
 	public void setCollision(CollisionModel model) {
-		this.collision = model;
+		collision = model;
 
 	}
 
@@ -267,22 +256,22 @@ public class SpoutEntity implements Entity {
 			controller.onTick(dt);
 		}
 	}
-	
+
 	@Override
 	public boolean isSpawned() {
-		return (id != NOTSPAWNEDID);
+		return id != NOTSPAWNEDID;
 	}
-	
+
 	/**
-	 * Called when the tick is finished and collisions need to be resolved
-	 * and move events fired
+	 * Called when the tick is finished and collisions need to be resolved and
+	 * move events fired
 	 */
 	public void resolve() {
 		//Resolve Collisions Here
-		
+
 		//Check to see if we should fire off a Move event
 	}
-	
+
 	public void finalizeRun() {
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive || controller != controllerLive) {
@@ -290,29 +279,28 @@ public class SpoutEntity implements Entity {
 				if (entityManagerLive == null) {
 					controller.onDeath();
 					if (controller instanceof PlayerController) {
-						Player p = ((PlayerController)controller).getPlayer();
-						((SpoutPlayer)p).getNetworkSynchronizer().onDeath();
+						Player p = ((PlayerController) controller).getPlayer();
+						((SpoutPlayer) p).getNetworkSynchronizer().onDeath();
 					}
 				}
 			}
 		}
 		if (entityManagerLive != null) {
-			if(entityManager != entityManagerLive || controller != controllerLive) {
+			if (entityManager != entityManagerLive || controller != controllerLive) {
 				entityManagerLive.allocate(this);
 			}
 		}
 		if (chunkLive != chunk) {
 			if (chunkLive != null) {
-				((SpoutChunk)chunkLive).addEntity(this);
+				((SpoutChunk) chunkLive).addEntity(this);
 			}
 			if (chunk != null) {
-				((SpoutChunk)chunk).removeEntity(this);
+				((SpoutChunk) chunk).removeEntity(this);
 			}
 		}
 	}
-	
+
 	public void copyToSnapshot() {
-		transform.set(transformLive);
 		chunk = chunkLive;
 		if (entityManager != entityManagerLive) {
 			entityManager = entityManagerLive;
@@ -320,11 +308,21 @@ public class SpoutEntity implements Entity {
 		controller = controllerLive;
 		justSpawned = false;
 		viewDistance = viewDistanceLive.get();
+		updatePosition();
+		updateRotation();
 	}
-	
 
 	@Override
 	public Chunk getChunk() {
+		World world = getWorld();
+		if (world == null) {
+			return null;
+		} else {
+			return world.getChunkFromBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+		}
+	}
+
+	public Chunk getChunkLive() {
 		while (true) {
 			int seq = lock.readLock();
 			Point position = transform.getPosition();
@@ -341,42 +339,21 @@ public class SpoutEntity implements Entity {
 			}
 		}
 	}
-	
-	@Override
-	public Chunk getChunkLive() {
-		while (true) {
-			int seq = lock.readLock();
-			Point position = transformLive.getPosition();
-			World w = position.getWorld();
-			if (w == null) {
-				if (lock.readUnlock(seq)) {
-					return null;
-				}
-			} else {
-				Chunk c = w.getChunk(position, true);
-				if (lock.readUnlock(seq)) {
-					return c;
-				}
-			}
-		}
-	}
 
 	@Override
 	public Region getRegion() {
-		Point position = transform.getPosition();
-		World world = position.getWorld();
+		World world = getWorld();
 		if (world == null) {
 			return null;
 		} else {
-			return world.getRegion(position, true);
+			return world.getRegionFromBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
 		}
 	}
 
-	@Override
 	public Region getRegionLive() {
 		while (true) {
 			int seq = lock.readLock();
-			Point position = transformLive.getPosition();
+			Point position = transform.getPosition();
 			World world = position.getWorld();
 			if (world == null && lock.readUnlock(seq)) {
 				return null;
@@ -388,7 +365,7 @@ public class SpoutEntity implements Entity {
 			}
 		}
 	}
-	
+
 	@Override
 	public World getWorld() {
 		return transform.getPosition().getWorld();
@@ -396,27 +373,27 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public boolean is(Class<? extends Controller> clazz) {
-		return clazz.isAssignableFrom(this.getController().getClass());
+		return clazz.isAssignableFrom(getController().getClass());
 	}
 
 	// TODO - datatable and atomics
 	@Override
 	public void setData(String key, int value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableInt(ikey, value));		
+		map.set(ikey, new SpoutDatatableInt(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, float value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableFloat(ikey, value));		
+		map.set(ikey, new SpoutDatatableFloat(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, boolean value) {
 		int ikey = map.getKey(key);
 		map.set(ikey, new SpoutDatatableBool(ikey, value));
-		
+
 	}
 
 	@Override
@@ -440,84 +417,242 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setInventorySize(int newsize) {
-		if(inventorySize == newsize) return;
+		if (inventorySize == newsize) {
+			return;
+		}
 		inventorySize = newsize;
-		if(getInventory().getSize() != inventorySize) {
+		if (getInventory().getSize() != inventorySize) {
 			inventory = null;
 			setData("inventory", null);
 		}
 	}
 
-
 	@Override
 	public Inventory getInventory() {
-		if(getInventorySize() <= 0) {
+		if (getInventorySize() <= 0) {
 			return null;
 		}
-		if(inventory == null) {
-			SpoutDatatableObject obj = (SpoutDatatableObject)getData("inventory");
-			if(obj == null) {
+		if (inventory == null) {
+			SpoutDatatableObject obj = (SpoutDatatableObject) getData("inventory");
+			if (obj == null) {
 				inventory = new Inventory(getInventorySize());
 				setData("inventory", inventory);
 			} else {
-				inventory = (Inventory)obj.get();
+				inventory = (Inventory) obj.get();
 			}
 		}
 		return inventory;
 	}
-	
+
 	@Override
 	public void onSync() {
 		//Forward to controller for now, but we may want to do some sync logic here for the entitiy.
 		controller.onSync();
 		//TODO - this might not be needed, if it is, it needs to send to the network synchronizer for players
 	}
-	
+
 	public boolean justSpawned() {
 		return justSpawned;
 	}
 
 	@Override
 	public void setViewDistance(int distance) {
-		this.viewDistanceLive.set(distance);
+		viewDistanceLive.set(distance);
 	}
 
-	@Override
-	public int getViewDistanceLive() {
-		return this.viewDistanceLive.get();
-	}
-
-	@Override
 	public int getViewDistance() {
-		return this.viewDistance;
+		return viewDistanceLive.get();
+	}
+
+	public int getPrevViewDistance() {
+		return viewDistance;
 	}
 	
-	public boolean viewDistanceChanged() {
-		return viewDistance != viewDistanceLive.get();
+	float x, y, z, yaw, pitch, roll;
+	boolean posModified = false, yawModified = false, pitchModified = false, rollModified = false;
+	//Locking is done to prevent tearing, not to provide access to live values
+	final ReentrantReadWriteLock stateLock = new ReentrantReadWriteLock();
+
+	@Override
+	public float getX() {
+		stateLock.readLock().lock();
+		try {
+			return x;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
 	}
 
 	@Override
-	public float getRotation() {
-		return getTransform().getRotation().getAxisAngles().getY();
+	public float getY() {
+		stateLock.readLock().lock();
+		try {
+			return y;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public float getZ() {
+		stateLock.readLock().lock();
+		try {
+			return z;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public Pointm getPosition() {
+		stateLock.readLock().lock();
+		try {
+			return new Pointm(getWorld(), x, y, z);
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
 	}
 	
 	@Override
-	public void setRotation(float rot) {
-		getTransform().getRotation().rotate(rot, Vector3.UNIT_Y);
+	public void setPosition(Point p) {
+		stateLock.writeLock().lock();
+		try {
+			x = p.getX();
+			y = p.getY();
+			z = p.getZ();
+			posModified = true;
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * Called when the game finalizes the position from any movement or collision calculations, and updates the cache.
+	 * 
+	 * If the API has modified the position, it will use the modified value instead of the calculated value.
+	 */
+	public void updatePosition() {
+		stateLock.writeLock().lock();
+		try {
+			Pointm position = transform.getPosition();
+			if (!posModified) {
+				x = position.getX();
+				y = position.getY();
+				z = position.getZ();
+			}
+			else {
+				posModified = false;
+				position.setX(x);
+				position.setY(y);
+				position.setZ(z);
+			}
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public float getYaw() {
+		stateLock.readLock().lock();
+		try {
+			return yaw;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
+	}
+	
+	@Override
+	public void setYaw(float yaw) {
+		stateLock.writeLock().lock();
+		try {
+			this.yaw = yaw;
+			yawModified = true;
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * Called when the game finalizes the rotation from any movement or collision calculations, and updates the cache. <br/>
+	 * <br/>
+	 * If the API has modified the yaw, pitch, or scale, it will use the modified value instead of the calculated value.
+	 */
+	public void updateRotation() {
+		stateLock.writeLock().lock();
+		try {
+			Quaternionm rotation = transform.getRotation();
+			Vector3 axisAngles = rotation.getAxisAngles();
+			if (!yawModified) {
+				this.yaw = axisAngles.getY();
+			}
+			if (!pitchModified) {
+				this.pitch = axisAngles.getZ();
+			}
+			if (!rollModified){
+				this.roll = axisAngles.getX();
+			}
+			yawModified = pitchModified = rollModified = false;
+			rotation.set(Quaternion.identity);
+			rotation.rotate(roll, 1, 0, 0);
+			rotation.rotate(yaw, 0, 1, 0);
+			rotation.rotate(pitch, 0, 0, 1);
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public float getPitch() {
-		return getTransform().getRotation().getAxisAngles().getZ();
-	}
-	
-	@Override
-	public void setPitch(float pitch) {
-		getTransform().getRotation().rotate(pitch, Vector3.UNIT_Z);
+		stateLock.readLock().lock();
+		try {
+			return pitch;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
 	}
 
 	@Override
-	public Point getPosition() {
-		return getTransform().getPosition();
+	public void setPitch(float pitch) {
+		stateLock.writeLock().lock();
+		try {
+			this.pitch = pitch;
+			pitchModified = true;
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+	
+	@Override
+	public float getRoll() {
+		stateLock.readLock().lock();
+		try {
+			return roll;
+		}
+		finally {
+			stateLock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void setRoll(float roll) {
+		stateLock.writeLock().lock();
+		try {
+			this.roll = roll;
+			rollModified = true;
+		}
+		finally {
+			stateLock.writeLock().unlock();
+		}
 	}
 }
