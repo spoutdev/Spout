@@ -186,6 +186,13 @@ public interface Command extends RawCommandExecutor {
 	public Command removeChild(String name);
 
 	/**
+	 * Removes children from this command who are owned by {@code owner}
+	 * @param owner The owner to remove the children of
+	 * @return The active command
+	 */
+	public Command removeChildren(Named owner);
+
+	/**
 	 * Removes an alias
 	 *
 	 * @param name The name of the alias to remove.
@@ -213,6 +220,19 @@ public interface Command extends RawCommandExecutor {
 	 * @return whether this command is locked.
 	 */
 	public boolean isLocked();
+
+	/**
+	 * Check if {@code owner} owns this command
+	 * @param owner The {@link Named} to check
+	 * @return Whether owner is the owner
+	 */
+	public boolean isOwnedBy(Named owner);
+
+	/**
+	 * Returns the name of this command's owner
+	 * @return The name of this command's owner
+	 */
+	public String getOwnerName();
 
 	/**
 	 * Updates the aliases list for this child command
@@ -264,4 +284,19 @@ public interface Command extends RawCommandExecutor {
 	 * @return The active command
 	 */
 	public Command setArgBounds(int min, int max);
+
+	/**
+	 * Return a child of this command registered with {@code name}
+	 * @param name The name of the child command requested
+	 * @return The child command, or null if it does not exist
+	 */
+	public Command getChild(String name);
+
+	/**
+	 * Checks whether {@code source} has the necessary permissions to use this command,
+	 * using the same method used for executing this command
+	 * @param source The sender of this command
+	 * @return Whether {@code source} can use this command
+	 */
+	public boolean hasPermission(CommandSource source);
 }

@@ -140,8 +140,9 @@ public class SimpleCommand implements Command {
 				if (raw.length > i + 1 && raw[i + 1] == ':') {
 					valueFlags.add(raw[i]);
 					++i;
+				} else {
+					flags.add(raw[i]);
 				}
-				flags.add(raw[i]);
 			}
 		}
 		return this;
@@ -154,7 +155,11 @@ public class SimpleCommand implements Command {
 		}
 
 		if (args.length > baseIndex && children.size() > 0) {
-			Command sub = getChild(args[baseIndex + 1], fuzzyLookup);
+			Command sub = null;
+			if (args.length > baseIndex + 1) {
+				sub = getChild(args[baseIndex + 1], fuzzyLookup);
+			}
+
 			if (sub == null) {
 				throw getMissingChildException(getUsage(args, baseIndex));
 			}
@@ -169,20 +174,21 @@ public class SimpleCommand implements Command {
 		if (!hasPermission(source)) {
 			throw new CommandException("You no not have the required permissions!");
 		}
-		args = MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length);
+		final String[] originalArgs = args;
+		args = MiscCompatibilityUtils.arrayCopyOfRange(originalArgs, baseIndex, args.length);
 
 		CommandContext context = new CommandContext(args, valueFlags);
 		for (char flag : context.getFlags().toArray()) {
 			if (!flags.contains(flag)) {
-				throw new CommandUsageException("Unknown flag:" + flag, getUsage(args, baseIndex));
+				throw new CommandUsageException("Unknown flag:" + flag, getUsage(originalArgs, baseIndex));
 			}
 		}
 
 		if (context.length() < minArgLength) {
-			throw new CommandUsageException("Not enough arguments", getUsage(args, baseIndex));
+			throw new CommandUsageException("Not enough arguments", getUsage(originalArgs, baseIndex));
 		}
 		if (maxArgLength >= 0 && context.length() > maxArgLength) {
-			throw new CommandUsageException("Too many arguments", getUsage(args, baseIndex));
+			throw new CommandUsageException("Too many arguments", getUsage(originalArgs, baseIndex));
 		}
 
 		try {
@@ -215,7 +221,41 @@ public class SimpleCommand implements Command {
 	}
 
 	public String getUsage(String[] input, int baseIndex) {
-		return help + " - " + usage;
+		StringBuilder usage = new StringBuilder("/");
+		for (int i = 0; i <= baseIndex && i < input.length; ++i) { // Add the arguments preceding the command
+			usage.append(input[i]);
+			if (i <= baseIndex - 1 && i < input.length - 1) {
+				usage.append(" ");
+			}
+		}
+		
+		usage.append(" ");
+		
+		if (children.size() > 0) { // There are subcommands, print a list of them
+			usage.append("<");
+			Set<Command> childValues = new HashSet<Command>(children.values());
+			for (Iterator<Command> i = childValues.iterator(); i.hasNext();) {
+				usage.append(i.next().getPreferredName());
+				if (i.hasNext()) {
+					usage.append("|");
+				}
+			}
+			usage.append(">");
+		} else {
+			if (flags.size() > 0) { // We have flags, place them in front of the args
+				usage.append("[-");
+				for (char flag : flags.toArray()) {
+					usage.append(flag);
+				}
+				usage.append("] ");
+			}
+			usage.append(this.usage); // Then manually specified usage
+		}
+		return usage.toString();
+	}
+	
+	public Command getChild(String name) {
+		return getChild(name,  false);
 	}
 
 	public Command getChild(String name, boolean fuzzyLookup) {
@@ -288,6 +328,30 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
+	public Command removeChildren(Named owner) {
+		if (isLocked()) {
+			return this;
+		}
+		Map<String, Command> removeAliases = new HashMap<String, Command>();
+		for (Iterator<Command> i = children.values().iterator(); i.hasNext();) {
+			Command cmd = i.next();
+			if (cmd.isOwnedBy(owner)) {
+				i.remove();
+				for (String alias : cmd.getNames()) {
+					Command aliasCmd = children.get(alias);
+					if (cmd.equals(aliasCmd)) {
+						removeAliases.put(alias, aliasCmd);
+					}
+				}
+			}
+		}
+		for (Map.Entry<String, Command> entry : removeAliases.entrySet()) {
+			entry.getValue().removeAlias(entry.getKey());
+		}
+		return this;
+	}
+
 	public Command removeAlias(String name) {
 		if (isLocked()) {
 			return this;
@@ -317,6 +381,16 @@ public class SimpleCommand implements Command {
 
 	public boolean isLocked() {
 		return locked;
+	}
+
+	@Override
+	public boolean isOwnedBy(Named owner) {
+		return this.owner == owner;
+	}
+
+	@Override
+	public String getOwnerName() {
+		return this.owner.getName();
 	}
 
 	public boolean updateAliases(Command child) {
