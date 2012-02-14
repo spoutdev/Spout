@@ -35,7 +35,6 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
-import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.player.Player;
 
 public class NetworkSynchronizer {
@@ -73,7 +72,7 @@ public class NetworkSynchronizer {
 	private boolean death = false;
 	private boolean first = true;
 	private volatile boolean teleported = false;
-
+	private Point lastPosition = null;
 	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 
 	public void setEntity(Entity entity) {
@@ -103,39 +102,39 @@ public class NetworkSynchronizer {
 
 		// TODO teleport smoothing
 
-		Transform lastTransform = entity.getTransform();
-		Transform liveTransform = entity.getLiveTransform();
+			Point currentPosition = entity.getPosition();
+			if (currentPosition != null) {
+				if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
+					checkChunkUpdates(currentPosition);
+					lastChunkCheck.set(currentPosition);
+				}
 
-		if (liveTransform != null) {
-			Point currentPosition = liveTransform.getPosition();
-			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
-				checkChunkUpdates(currentPosition);
-				lastChunkCheck.set(currentPosition);
+				if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
+					worldChanged(currentPosition.getWorld());
+					teleported = true;
+				}
+
 			}
 
-			if (first || lastTransform == null || lastTransform.getPosition().getWorld() != liveTransform.getPosition().getWorld()) {
-				worldChanged(liveTransform.getPosition().getWorld());
-				teleported = true;
-			}
-		}
+			lastPosition = currentPosition;
 
-		for (Point p : chunkFreeQueue) {
-			if (initializedChunks.contains(p)) {
-				Chunk c = p.getWorld().getChunk(p, false);
-				if (c != null) {
-					removeObserver(c);
+			for (Point p : chunkFreeQueue) {
+				if (initializedChunks.contains(p)) {
+					Chunk c = p.getWorld().getChunk(p, false);
+					if (c != null) {
+						removeObserver(c);
+					}
 				}
 			}
-		}
 
-		for (Point p : chunkInitQueue) {
-			if (!initializedChunks.contains(p)) {
-				Chunk c = p.getWorld().getChunk(p, true);
-				addObserver(c);
+			for (Point p : chunkInitQueue) {
+				if (!initializedChunks.contains(p)) {
+					Chunk c = p.getWorld().getChunk(p, true);
+					addObserver(c);
+				}
 			}
-		}
 
-	}
+		}
 
 	public void preSnapshot() {
 
@@ -188,8 +187,7 @@ public class NetworkSynchronizer {
 			}
 
 			if (teleported && entity != null) {
-				Transform liveTransform = entity.getLiveTransform();
-				sendPosition(liveTransform);
+				sendPosition(entity.getPosition(), entity.getYaw(), entity.getPitch());
 				first = false;
 				teleported = false;
 			}
@@ -314,9 +312,11 @@ public class NetworkSynchronizer {
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
 	 *
-	 * @param t the transform
+	 * @param p position to send
+	 * @param yaw to send
+	 * @param pitch to send
 	 */
-	protected void sendPosition(Transform t) {
+	protected void sendPosition(Point p, float yaw, float pitch) {
 		//TODO: Implement Spout Protocol
 	}
 

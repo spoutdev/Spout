@@ -37,11 +37,11 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.inventory.Recipe;
+import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
@@ -374,41 +374,24 @@ public interface Game extends Named {
 	public Scheduler getScheduler();
 
 	/**
-	 * Registers a recipe to this games recipe database, then stores the recipe in the associated plugins recipe.yml.
-	 * If a recipe for that plugin of that name already exists, it will update the database and the recipe.yml
-	 *
-	 * @param recipe to register
-	 */
-	public void addRecipe(Recipe recipe);
-
-	/**
-	 * Gets a recipe registered to this games recipe database, based on the plugin and name of the recipe.
-	 *
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return the recipe if it's found, otherwise null
-	 */
-	public Recipe getRecipe(Plugin plugin, String recipe);
-
-	/**
-	 * Removes a recipe from the games recipes database, then returns the instance of it if you want to back it up.
-	 *
-	 * *WARNING*
-	 * This will also remove the recipe from the plugins recipe.yml!
-	 * It returns a reference to the removed recipe if you want to back it up for safe keeping still.
-	 * *WARNING*
-	 *
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return recipe that was removed
-	 */
-	public Recipe removeRecipe(Plugin plugin, String recipe);
-
-	/**
 	 * Returns the bootstrap protocol for {@code address}
 	 * @param address The address
 	 * @return The protocol
 	 */
 	public BootstrapProtocol getBootstrapProtocol(SocketAddress address);
+
+	/**
+	 * Gets the service manager
+	 * 
+	 * @return ServiceManager
+	 */
+	public ServiceManager getServiceManager();
+
+	/**
+	 * Gets the recipe manager
+	 * 
+	 * @return RecipeManager
+	 */
+	public RecipeManager getRecipeManager();
 	
 }
