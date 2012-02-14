@@ -54,6 +54,25 @@ public class Quaternion {
 		this.z = z;
 		this.w = w;
 	}
+	
+	/**
+	 * Constructs a new Quaternion that represents a given rotation around an
+	 * arbatrary axis
+	 *
+	 * @param angle Angle, in Degrees, to rotate the axis about by
+	 * @param x-axis
+	 * @param y-axis
+	 * @param z-axis
+	 * @param ignore
+	 */
+	public Quaternion(float angle, float x, float y, float z, boolean ignore) {
+		double rads = Math.toRadians(angle);
+		double halfAngle = Math.sin(rads / 2);
+		this.x = (float) (x * halfAngle);
+		this.y = (float) (y * halfAngle);
+		this.z = (float) (z * halfAngle);
+		this.w = (float) Math.cos(rads / 2);
+	}
 
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
@@ -63,7 +82,7 @@ public class Quaternion {
 	 * @param axis
 	 */
 	public Quaternion(float angle, Vector3 axis) {
-		this(axis.getX() * (float) Math.sin(Math.toRadians(angle) / 2), axis.getY() * (float) Math.sin(Math.toRadians(angle) / 2), axis.getZ() * (float) Math.sin(Math.toRadians(angle) / 2), (float) Math.cos(Math.toRadians(angle) / 2));
+		this(angle, axis.getX(), axis.getY(), axis.getZ(), true);
 	}
 
 	/**
@@ -188,11 +207,12 @@ public class Quaternion {
 	}
 
 	/**
-	 * Returns the length of the given Quaternion Note: Uses sqrt, so is
-	 * slowish.
+	 * Returns the length of the given Quaternion <br/>
+	 * <br/>
+	 * Note: Uses Math.sqrt.
 	 *
 	 * @param a
-	 * @return
+	 * @return length of Quaternion
 	 */
 	public static float length(Quaternion a) {
 		return (float) Math.sqrt(lengthSquared(a));
@@ -203,7 +223,7 @@ public class Quaternion {
 	 * length() == 1
 	 *
 	 * @param a
-	 * @return
+	 * @return normalized Quaternion
 	 */
 	public static Quaternion normalize(Quaternion a) {
 		float length = length(a);
@@ -215,7 +235,7 @@ public class Quaternion {
 	 *
 	 * @param a
 	 * @param b
-	 * @return
+	 * @return multiplied Quaternion
 	 */
 	public static Quaternion multiply(Quaternion a, Quaternion b) {
 		float x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
@@ -230,27 +250,43 @@ public class Quaternion {
 	}
 
 	/**
-	 * Constructs and returns a new Quaternion that is A rotated about the axis
+	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
 	 *
 	 * @param a
 	 * @param angle
 	 * @param axis
-	 * @return
+	 * @return rotated Quaternion
 	 */
 	public static Quaternion rotate(Quaternion a, float angle, Vector3 axis) {
 		return multiply(new Quaternion(angle, axis), a);
 	}
+	
+	/**
+	 * Constructs and returns a new Quaternion that is rotated about the axis
+	 * and angle
+	 *
+	 * @param a
+	 * @param angle
+	 * @param x-axis
+	 * @param y-axis
+	 * @param z-axis
+	 * @return rotated Quaternion
+	 */
+	public static Quaternion rotate(Quaternion a, float angle, float x, float y, float z) {
+		return multiply(new Quaternion(angle, x, y, z, true), a);
+	}
 
 	/**
 	 * Returns the angles, in degrees, about each axis of this quaternion stored
-	 * in a Vector3
+	 * in a Vector3 <br/> <br/>
 	 *
-	 * vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y
-	 * axis (Yaw) vect.Z = Rotation about the Z axis (Pitch)
+	 * vect.X = Rotation about the X axis (Roll) <br/>
+	 * vect.Y = Rotation about the Y axis (Yaw) <br/>
+	 * vect.Z = Rotation about the Z axis (Pitch) <br/>
 	 *
 	 * @param a
-	 * @return
+	 * @return axis angles
 	 */
 	public static Vector3 getAxisAngles(Quaternion a) {
 		//Forward is 1,0,0
