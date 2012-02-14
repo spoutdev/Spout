@@ -91,7 +91,7 @@ public interface Entity extends Datatable, Source {
 	 * @return z coordinate
 	 */
 	public float getZ();
-	
+
 	/**
 	 * Returns a copy of a point with the position that this entity is located at.
 	 * 
@@ -107,6 +107,15 @@ public interface Entity extends Datatable, Source {
 	 * @param p
 	 */
 	public void setPosition(Point p);
+	
+	/**
+	 * Sets the position of this entity. Will teleport it to the new position.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void setPosition(float x, float y, float z);
 	
 	/**
 	 * Gets the yaw of this entity.

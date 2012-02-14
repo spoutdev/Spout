@@ -297,6 +297,12 @@ public interface Game extends Named {
 	 * data is saved, and all threads are ended cleanly.
 	 */
 	public void stop();
+	
+	/**
+	 * Ends this game instance safely. All worlds, players, and configuration
+	 * data is saved, and all threads are ended cleanly.
+	 */
+	public void stop(String reason);
 
 	/**
 	 * Gets the folder that contains the world save data.
