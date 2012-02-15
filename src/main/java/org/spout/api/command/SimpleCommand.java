@@ -220,6 +220,14 @@ public class SimpleCommand implements Command {
 		return new ArrayList<String>(aliases);
 	}
 
+	public String getHelp() {
+		return help;
+	}
+	
+	public String getUsage() {
+		return getUsage(new String[] {getPreferredName()}, 0);
+	}
+
 	public String getUsage(String[] input, int baseIndex) {
 		StringBuilder usage = new StringBuilder("/");
 		for (int i = 0; i <= baseIndex && i < input.length; ++i) { // Add the arguments preceding the command
@@ -249,7 +257,9 @@ public class SimpleCommand implements Command {
 				}
 				usage.append("] ");
 			}
-			usage.append(this.usage); // Then manually specified usage
+			if (this.usage != null) {
+				usage.append(this.usage); // Then manually specified usage
+			}
 		}
 		return usage.toString();
 	}

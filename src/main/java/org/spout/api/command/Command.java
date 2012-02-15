@@ -135,9 +135,23 @@ public interface Command extends RawCommandExecutor {
 	public Command addFlags(String flags);
 
 	/**
+	 * Returns this command's help. The help may contain multiple lines, split by \n.
+	 * @return this command's help
+	 */
+	public String getHelp();
+
+	/**
+	 * Returns the usage for this command with {@link #getPreferredName()} 
+	 * as the only element in the input array and a baseIndex of zero
+	 * @return The usage for this command
+	 */
+	public String getUsage();
+
+	/**
 	 * Gets the usage message for the command.
 	 *
 	 * @param input The raw input that was given
+	 * @param baseIndex The index where command arguments begin in input
 	 * @return the command's usage message
 	 */
 	public String getUsage(String[] input, int baseIndex);
