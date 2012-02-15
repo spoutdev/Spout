@@ -79,7 +79,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 */
 	public boolean setFormat(String format) {
 		try {
-			String.format(format, getPlayer().getName(), message);
+			String.format(format, getPlayer().getDisplayName(), message);
 		} catch (Throwable t) {
 			return false;
 		}

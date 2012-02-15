@@ -36,7 +36,7 @@ public class PlayerLoginEvent extends PlayerEvent {
 
 	private String message;
 
-	private boolean allowed;
+	private boolean allowed = true;
 
 	public PlayerLoginEvent(Player p) {
 		super(p);
