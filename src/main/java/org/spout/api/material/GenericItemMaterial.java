@@ -25,6 +25,9 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.model.Model;
 
 public class GenericItemMaterial implements ItemMaterial {
@@ -87,6 +90,9 @@ public class GenericItemMaterial implements ItemMaterial {
 	}
 
 	public void onInventoryRender() {
-		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onInteract(Entity entity, Point position, Action type) {
 	}
 }

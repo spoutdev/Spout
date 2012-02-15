@@ -40,13 +40,13 @@ public interface BlockAccess extends BlockData {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param material
-	 * @param updatePhysics whether this block change should update the physics
-	 *            of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param notify whether players nearby should be notified of the block change
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, boolean notify, Source source);
 
 	/**
 	 * Sets the block at (x, y, z) to the given material type.
@@ -72,13 +72,13 @@ public interface BlockAccess extends BlockData {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @param updatePhysics whether this block change should update the physics
-	 *            of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param notify whether players nearby should be notified of the block change
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, boolean notify, Source source);
 
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -108,13 +108,13 @@ public interface BlockAccess extends BlockData {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param id
-	 * @param updatePhysics whether this block change should update the physics
-	 *            of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param notify whether players nearby should be notified of the block change
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, boolean notify, Source source);
 
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -143,13 +143,13 @@ public interface BlockAccess extends BlockData {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 * @param data
-	 * @param updatePhysics whether this block change should update the physics
-	 *            of neighbor blocks afterword
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
+	 * @param notify whether players nearby should be notified of the block change
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source);
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, boolean notify, Source source);
 
 	/**
 	 * Sets the data for the block at (x, y, z) to the given data.<br>
@@ -175,6 +175,15 @@ public interface BlockAccess extends BlockData {
 	 * @param z the z coordinate
 	 */
 	public void updatePhysics(int x, int y, int z);
+	
+	/**
+	 * Sends all players observing the block at the (x, y, z) an update of its state
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 */
+	public void notify(int x, int y, int z);
 
 	/**
 	 * Sets the snapshot data for the block at (x, y, z) to the given data, but

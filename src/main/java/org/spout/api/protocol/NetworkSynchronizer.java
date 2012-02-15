@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
@@ -346,6 +345,21 @@ public class NetworkSynchronizer {
 	protected void worldChanged(World world) {
 		//TODO: Implement Spout Protocol
 	}
+	
+	/**
+	 * Called when a block in a chunk that the player is observing changes.<br>
+	 * <br>
+	 * Note: The coordinates of the block are chunk relative and the world field
+	 * is undefined.
+	 *
+	 * @param chunk the chunk
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param z coordinate
+	 */
+	public void updateBlock(Chunk chunk, int x, int y, int z) {
+		updateBlock(chunk, x, y, z, chunk.getBlockId(x, y, z), chunk.getBlockData(x, y, z));
+	}
 
 	/**
 	 * Called when a block in a chunk that the player is observing changes.<br>
@@ -354,9 +368,13 @@ public class NetworkSynchronizer {
 	 * is undefined.
 	 *
 	 * @param chunk the chunk
-	 * @param block the block
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param z coordinate
+	 * @param id to send in the update
+	 * @param data to send in the update
 	 */
-	public void updateBlock(Chunk chunk, Block block) {
+	public void updateBlock(Chunk chunk, int x, int y, int z, short id, short data) {
 	}
 
 	/**

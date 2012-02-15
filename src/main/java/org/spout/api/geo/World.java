@@ -184,6 +184,17 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunk(int x, int y, int z, boolean load);
+	
+	/**
+	 * Gets the {@link Chunk} at block coordinates (x, y, z)
+	 *
+	 * @param x the block x coordinate
+	 * @param y the block y coordinate
+	 * @param z the block z coordinate
+	 * @return the chunk
+	 */
+	@LiveRead
+	public Chunk getChunkFromBlock(int x, int y, int z);
 
 	/**
 	 * Create a new Entity for initialization
@@ -277,7 +288,12 @@ public interface World extends Source, BlockAccess {
 	@SnapshotRead
 	public Set<Entity> getAll();
 
+	/**
+	 * Gets a set of all players on active on this world
+	 * 
+	 * @return all players on this world
+	 */
 	public Set<Player> getPlayers();
 
-	Chunk getChunkFromBlock(int x, int y, int z);
+	
 }
