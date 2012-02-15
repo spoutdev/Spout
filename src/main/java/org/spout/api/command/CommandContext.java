@@ -173,6 +173,18 @@ public class CommandContext {
 	public int getInteger(int index, int def) throws NumberFormatException {
 		return index < parsedArgs.size() ? Integer.parseInt(parsedArgs.get(index)) : def;
 	}
+	
+	public boolean isInteger(int index) {
+		if (index >= parsedArgs.size()) {
+			return false;
+		}
+		try {
+			Integer.parseInt(parsedArgs.get(index));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 
 	public double getDouble(int index) throws NumberFormatException {
 		return Double.parseDouble(parsedArgs.get(index));
@@ -180,6 +192,18 @@ public class CommandContext {
 
 	public double getDouble(int index, double def) throws NumberFormatException {
 		return index < parsedArgs.size() ? Double.parseDouble(parsedArgs.get(index)) : def;
+	}
+
+	public boolean isDouble(int index) {
+		if (index >= parsedArgs.size()) {
+			return false;
+		}
+		try {
+			Double.parseDouble(parsedArgs.get(index));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	public String getString(int index) throws NumberFormatException {
@@ -228,6 +252,15 @@ public class CommandContext {
 		return Integer.parseInt(value);
 	}
 
+	public boolean isFlagInteger(char ch) {
+		try {
+			Integer.parseInt(valueFlags.get(ch));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
 	public double getFlagDouble(char ch) throws NumberFormatException {
 		return Double.parseDouble(valueFlags.get(ch));
 	}
@@ -239,6 +272,15 @@ public class CommandContext {
 		}
 
 		return Double.parseDouble(value);
+	}
+
+	public boolean isFlagDouble(char ch) {
+		try {
+			Double.parseDouble(valueFlags.get(ch));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	public String getJoinedString(int initialIndex) {
