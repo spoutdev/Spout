@@ -512,7 +512,7 @@ public class SpoutRegion extends Region {
 											break;
 										} else {
 											try {
-												synchronizer.updateBlock(spoutChunk, block);
+												synchronizer.updateBlock(spoutChunk, block.getX(), block.getY(), block.getZ());
 											} catch (Exception e) {
 												Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
 												e.printStackTrace();

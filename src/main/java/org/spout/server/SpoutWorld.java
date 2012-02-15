@@ -344,27 +344,27 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, true, source);
+		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, true, true, source);
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, updatePhysics, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, boolean notify, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, updatePhysics, notify, source);
 	}
 
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, true, source);
+		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, true, true, source);
 	}
 
 	@Override
-	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, updatePhysics, source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, boolean notify, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockId(x, y, z, id, updatePhysics, notify, source);
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, updatePhysics, source);
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, boolean notify, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, updatePhysics, notify, source);
 	}
 
 	@Override
@@ -404,17 +404,22 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, true, source);
+		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, true, true, source);
 	}
 
 	@Override
-	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, updatePhysics, source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, boolean notify, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockIdAndData(x, y, z, id, data, updatePhysics, notify, source);
 	}
 
 	@Override
 	public void updatePhysics(int x, int y, int z) {
 		regions.getRegionFromBlock(x, y, z).queuePhysicsUpdate(x, y, z);
+	}
+	
+	@Override
+	public void notify(int x, int y, int z) {
+		getChunkFromBlock(x, y, z).notify(x, y, z);
 	}
 
 	@Override
