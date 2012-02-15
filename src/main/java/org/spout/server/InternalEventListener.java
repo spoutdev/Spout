@@ -25,6 +25,7 @@
  */
 package org.spout.server;
 
+import org.spout.api.ChatColor;
 import org.spout.api.Spout;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
@@ -32,6 +33,7 @@ import org.spout.api.event.Order;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.player.PlayerJoinEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
+import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.player.Player;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.player.SpoutPlayer;
@@ -56,13 +58,23 @@ public class InternalEventListener implements Listener {
 			if (!loadEvent.isLoaded()) {
 				
 			}
-			Spout.getGame().getEventManager().callDelayedEvent(new PlayerJoinEvent(player));
+			PlayerLoginEvent loginEvent = Spout.getGame().getEventManager().callEvent(new PlayerLoginEvent(player));
+			if (!loginEvent.isAllowed()) {
+				if (loginEvent.getMessage() != null) {
+					player.kick(loginEvent.getMessage());
+				} else {
+					player.kick();
+				}
+			} else {
+				Spout.getGame().getEventManager().callDelayedEvent(new PlayerJoinEvent(player,
+						ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
+			}
 		} else {
 			event.getSession().disconnect("Player is already online");
 		}
 	}
 
-	@EventHandler(order = Order.LATEST)
+	@EventHandler(order = Order.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SpoutPlayer p = (SpoutPlayer) event.getPlayer();
 
@@ -70,7 +82,9 @@ public class InternalEventListener implements Listener {
 			p.kick("Server is full!");
 		}
 
-		server.broadcastMessage(p.getName() + " has Connected");
+		if (event.getMessage() != null) {
+			server.broadcastMessage(event.getMessage());
+		}
 	}
 
 }

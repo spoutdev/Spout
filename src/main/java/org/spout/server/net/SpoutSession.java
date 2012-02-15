@@ -33,6 +33,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.spout.api.ChatColor;
 import org.spout.api.Game;
 import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKickEvent;
@@ -264,7 +265,6 @@ public final class SpoutSession implements Session {
 		}
 
 		channel.write(protocol.get().getPlayerProtocol().getKickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
-		channel.close();
 	}
 
 	/**
@@ -311,7 +311,9 @@ public final class SpoutSession implements Session {
 	 */
 	public void dispose(boolean broadcastQuit) {
 		if (player != null) {
-			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, null, broadcastQuit)).getMessage();
+			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, 
+					ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + 
+							" has left the game", broadcastQuit)).getMessage();
 			if (broadcastQuit && text != null) {
 				server.broadcastMessage(text);
 			}

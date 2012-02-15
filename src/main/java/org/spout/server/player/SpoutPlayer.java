@@ -160,7 +160,7 @@ public class SpoutPlayer implements Player {
 			}
 			String formattedMessage;
 			try {
-				formattedMessage = String.format(event.getFormat(), getName(), event.getMessage());
+				formattedMessage = String.format(event.getFormat(), getDisplayName(), event.getMessage());
 			} catch (Throwable t) {
 				return;
 			}
@@ -350,10 +350,13 @@ public class SpoutPlayer implements Player {
 	}
 
 	public void kick() {
-		kick("");
+		kick("Kicked");
 	}
 
 	public void kick(String reason) {
+		if (reason == null) {
+			throw new IllegalArgumentException("reason cannot be null");
+		}
 		session.disconnect(reason);
 	}
 
