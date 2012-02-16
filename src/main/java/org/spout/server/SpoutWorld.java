@@ -340,7 +340,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public int getHeight() {
 		// TODO: Variable world height
-		return 128;
+		return 256;
 	}
 
 	@Override

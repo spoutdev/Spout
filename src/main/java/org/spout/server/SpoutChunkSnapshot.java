@@ -78,12 +78,12 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public short getBlockId(int x, int y, int z) {
-		return blockIds[(x & coordMask) << 8 | (z & coordMask) << 4 | y & coordMask];
+		return blockIds[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
 	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
-		return blockData[(x & coordMask) << 8 | (z & coordMask) << 4 | y & coordMask];
+		return blockData[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
 	}
 
 	@Override
