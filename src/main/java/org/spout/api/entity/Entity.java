@@ -95,18 +95,18 @@ public interface Entity extends Datatable, Source {
 	/**
 	 * Returns a copy of a point with the position that this entity is located at.
 	 * 
-	 * Modifications to this position will not be reflected without calling {@link #setPosition(Point)}.
+	 * Modifications to this position will not be reflected without calling {@link #setPoint(Point)}.
 	 * 
 	 * @return position
 	 */
-	public Pointm getPosition();
+	public Pointm getPoint();
 	
 	/**
 	 * Sets the position of this entity. Will teleport it to the new position.
 	 * 
 	 * @param p
 	 */
-	public void setPosition(Point p);
+	public void setPoint(Point p);
 	
 	/**
 	 * Sets the position of this entity. Will teleport it to the new position.
@@ -115,7 +115,35 @@ public interface Entity extends Datatable, Source {
 	 * @param y
 	 * @param z
 	 */
-	public void setPosition(float x, float y, float z);
+	public void setPoint(float x, float y, float z);
+
+	/**
+	 * Sets the position, including pitch, yaw, and roll, of this entity. Will teleport 
+	 * it to the new position. 
+	 * @param p The point to set
+	 * @param pitch The pitch to set
+	 * @param yaw The yaw to set
+	 * @param roll The roll to set
+	 */
+	public void setPosition(Point p, float pitch, float yaw, float roll);
+
+	/**
+	 * Sets the position of this entity to the position of another entity. Will teleport
+	 * @param other The entity to move this entity to
+	 */
+	public void setPosition(Entity other);
+
+	/**
+	 * Sets the position of this entity to the specified {@link Position}
+	 * @param pos The position to move to
+	 */
+	public void setPosition(Position pos);
+
+	/**
+	 * Returns a {@link Position} containing a snapshot of this entity's positions
+	 * @return the position of this entity
+	 */
+	public Position getPosition();
 	
 	/**
 	 * Gets the yaw of this entity.

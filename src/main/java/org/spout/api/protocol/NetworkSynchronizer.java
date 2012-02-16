@@ -101,7 +101,7 @@ public class NetworkSynchronizer {
 		}
 
 		// TODO teleport smoothing
-		Point currentPosition = entity.getPosition();
+		Point currentPosition = entity.getPoint();
 		if (currentPosition != null) {
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
@@ -186,7 +186,7 @@ public class NetworkSynchronizer {
 			}
 
 			if (teleported && entity != null) {
-				sendPosition(entity.getPosition(), entity.getYaw(), entity.getPitch());
+				sendPosition(entity.getPoint(), entity.getYaw(), entity.getPitch());
 				first = false;
 				teleported = false;
 			}
