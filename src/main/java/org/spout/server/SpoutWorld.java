@@ -260,7 +260,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		SpoutRegion region = (SpoutRegion) e.getRegion();
 		region.allocate((SpoutEntity) e);
-		EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPosition());
+		EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPoint());
 		Spout.getGame().getEventManager().callEvent(event);
 		if (event.isCancelled()) {
 			region.deallocate((SpoutEntity) e);

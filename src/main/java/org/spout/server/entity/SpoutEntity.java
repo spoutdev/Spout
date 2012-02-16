@@ -34,6 +34,7 @@ import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
+import org.spout.api.entity.Position;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -297,7 +298,7 @@ public class SpoutEntity implements Entity {
 			if (chunkLive != null) {
 				((SpoutChunk) chunkLive).addEntity(this);
 			}
-			if (chunk != null) {
+			if (chunk != null && !chunk.isUnloaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
 			}
 		}
@@ -483,8 +484,7 @@ public class SpoutEntity implements Entity {
 		stateLock.readLock().lock();
 		try {
 			return x;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
@@ -494,8 +494,7 @@ public class SpoutEntity implements Entity {
 		stateLock.readLock().lock();
 		try {
 			return y;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
@@ -512,35 +511,72 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
-	public Pointm getPosition() {
+	public Pointm getPoint() {
 		stateLock.readLock().lock();
 		try {
 			return new Pointm(getWorld(), x, y, z);
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
 	
 	@Override
-	public void setPosition(Point p) {
-		setPosition(p.getX(), p.getY(), p.getZ());
+	public void setPoint(Point p) {
+		setPoint(p.getX(), p.getY(), p.getZ());
 	}
 	
 	@Override
-	public void setPosition(float x, float y, float z) {
+	public void setPoint(float x, float y, float z) {
 		stateLock.writeLock().lock();
 		try {
 			this.x = x;
 			this.y = y;
 			this.z = z;
 			posModified = true;
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
-	
+
+	@Override
+	public void setPosition(Point p, float pitch, float yaw, float roll) {
+		stateLock.writeLock().lock();
+		try {
+			this.x = p.getX();
+			this.y = p.getY();
+			this.z = p.getZ();
+			this.pitch = pitch;
+			this.pitchModified = true;
+			this.yaw = yaw;
+			this.yawModified = true;
+			this.roll = roll;
+			this.rollModified = true;
+			posModified = true;
+		} finally {
+			stateLock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public void setPosition(Entity other) {
+		setPosition(other.getPoint(), other.getPitch(), other.getYaw(), other.getRoll());
+	}
+
+	@Override
+	public void setPosition(Position pos) {
+		setPosition(pos.getPosition(), pos.getPitch(), pos.getYaw(), pos.getRoll());
+	}
+
+	@Override
+	public Position getPosition() {
+		stateLock.readLock().lock();
+		try {
+			return new Position(new Point(getWorld(), x, y, z), pitch, yaw, roll);
+		} finally {
+			stateLock.readLock().unlock();
+		}
+	}
+
 	/**
 	 * Called when the game finalizes the position from any movement or collision calculations, and updates the cache.
 	 * 
@@ -554,15 +590,13 @@ public class SpoutEntity implements Entity {
 				x = position.getX();
 				y = position.getY();
 				z = position.getZ();
-			}
-			else {
+			} else {
 				posModified = false;
 				position.setX(x);
 				position.setY(y);
 				position.setZ(z);
 			}
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
@@ -572,8 +606,7 @@ public class SpoutEntity implements Entity {
 		stateLock.readLock().lock();
 		try {
 			return yaw;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}

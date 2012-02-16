@@ -25,14 +25,19 @@
  */
 package org.spout.server.util.thread;
 
+import org.spout.api.Spout;
+
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Thread object that can be pulsed
  */
 public abstract class PulsableThread extends Thread {
-	private AtomicBoolean pulsing = new AtomicBoolean(false);
+	private static final Logger logger = Logger.getLogger(PulsableThread.class.getCanonicalName());
+	private final AtomicBoolean pulsing = new AtomicBoolean(false);
 
 	/**
 	 * Causes the thread to execute one pulse by calling pulseRun();
@@ -125,6 +130,11 @@ public abstract class PulsableThread extends Thread {
 
 				try {
 					pulsedRun();
+				} catch (InterruptedException ie) {
+					throw ie;
+				} catch (Throwable t) {
+					logger.log(Level.SEVERE, 
+							"Error while pulsing thread " + getName() + ":  " + t.getMessage(), t);
 				} finally {
 					synchronized (pulsing) {
 						pulsing.set(false);
