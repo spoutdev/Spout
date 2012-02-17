@@ -122,44 +122,44 @@ public class SpoutChunk extends Chunk {
 		if (material == null) {
 			throw new NullPointerException("Material can not be null");
 		}
-		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), true, true, source);
+		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), true, source);
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, boolean notify, Source source) {
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
 		if (material == null) {
 			throw new NullPointerException("Material can not be null");
 		}
-		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), updatePhysics, notify, source);
+		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), updatePhysics, source);
 	}
 
 	@Override
 	public boolean setBlockId(int x, int y, int z, short id, Source source) {
-		return setBlockIdAndData(x, y, z, id, (short) 0, true, true, source);
+		return setBlockIdAndData(x, y, z, id, (short) 0, true, source);
 	}
 
 	@Override
-	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, boolean notify, Source source) {
-		return setBlockIdAndData(x, y, z, id, (short) 0, updatePhysics, notify, source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
+		return setBlockIdAndData(x, y, z, id, (short) 0, updatePhysics, source);
 	}
 
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, Source source) {
-		return setBlockData(x, y, z, data, true, true, source);
+		return setBlockData(x, y, z, data, true, source);
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, boolean notify, Source source) {
-		return setBlockIdAndData(x, y, z, (short) blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask), data, updatePhysics, notify, source);
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
+		return setBlockIdAndData(x, y, z, (short) blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask), data, updatePhysics, source);
 	}
 
 	@Override
 	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
-		return setBlockIdAndData(x, y, z, id, data, true, true, source);
+		return setBlockIdAndData(x, y, z, id, data, true, source);
 	}
 
 	@Override
-	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, boolean notify, Source source) {
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
@@ -182,25 +182,7 @@ public class SpoutChunk extends Chunk {
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
-		
-		if (notify) {
-			notify(x, y, z, id, data);
-		}
 		return true;
-	}
-	
-	public void notify(int x, int y, int z) {
-		x &= coordMask;
-		y &= coordMask;
-		z &= coordMask;
-		notify(x, y, z, (short)blockStore.getBlockId(x, y, z), (short)blockStore.getData(x, y, z));
-	}
-	
-	//Saves a lookup call to id, data
-	protected void notify(int x, int y, int z, short id, short data) {
-		for (Player p : observers.getLive().keySet()) {
-			p.getNetworkSynchronizer().updateBlock(this, x & coordMask, y & coordMask, z & coordMask, id, data);
-		}
 	}
 
 	@Override
