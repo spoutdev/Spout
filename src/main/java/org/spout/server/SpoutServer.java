@@ -682,6 +682,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		for (int i = 0; i < whitelist.length; i++) {
 			whitelist[i] = whitelistedPlayers.get(i);
 		}
+		
 		return whitelist;
 	}
 
@@ -787,17 +788,16 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public void ban(String address) {
-		// TODO Auto-generated method stub
-
+	public void ban(Player player) {
+		bannedPlayers.add(player.getName());
 	}
 
 	@Override
-	public void unban(String address) {
-		// TODO Auto-generated method stub
-
+	public void unban(Player player) {
+		bannedPlayers.remove(player.getName());
 	}
 
+	
 	@Override
 	public List<String> getAllPlayers() {
 		// TODO Auto-generated method stub
@@ -844,10 +844,10 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public Collection<Player> getBannedPlayers() {
-		Set<Player> players = new HashSet<Player>();
+	public Collection<String> getBannedPlayers() {
+		Set<String> players = new HashSet<String>();
 		for (String name : bannedPlayers) {
-			players.add(new SpoutPlayer(name));
+			players.add(name);
 		}
 		return players;
 	}
@@ -910,6 +910,22 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		getPluginManager().clearPlugins();
 
+		
+		//Save the configuration file.
+		try
+		{
+			Configuration config = getConfiguration(false);
+				
+			config.setProperty("banlist", new ArrayList<String>(getBannedPlayers()));
+			config.setProperty("whitelist", getWhitelistedPlayers());
+			config.save();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// And finally kill the console
 		consoleManager.stop();
 		scheduler.stop();
