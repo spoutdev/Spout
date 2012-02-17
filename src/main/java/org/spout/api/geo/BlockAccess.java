@@ -46,7 +46,7 @@ public interface BlockAccess extends BlockData {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, boolean notify, Source source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source);
 
 	/**
 	 * Sets the block at (x, y, z) to the given material type.
@@ -78,7 +78,7 @@ public interface BlockAccess extends BlockData {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, boolean notify, Source source);
+	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source);
 
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -114,7 +114,7 @@ public interface BlockAccess extends BlockData {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, boolean notify, Source source);
+	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source);
 
 	/**
 	 * Sets the id for the block at (x, y, z) to the given id.<br>
@@ -149,7 +149,7 @@ public interface BlockAccess extends BlockData {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, boolean notify, Source source);
+	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source);
 
 	/**
 	 * Sets the data for the block at (x, y, z) to the given data.<br>
@@ -175,15 +175,6 @@ public interface BlockAccess extends BlockData {
 	 * @param z the z coordinate
 	 */
 	public void updatePhysics(int x, int y, int z);
-	
-	/**
-	 * Sends all players observing the block at the (x, y, z) an update of its state
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 */
-	public void notify(int x, int y, int z);
 
 	/**
 	 * Sets the snapshot data for the block at (x, y, z) to the given data, but
