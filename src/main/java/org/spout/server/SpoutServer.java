@@ -682,6 +682,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		for (int i = 0; i < whitelist.length; i++) {
 			whitelist[i] = whitelistedPlayers.get(i);
 		}
+		
 		return whitelist;
 	}
 
@@ -789,15 +790,58 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public void ban(String address) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
-	public void unban(String address) {
-		// TODO Auto-generated method stub
-
+	public void ban(Player player) {
+		bannedPlayers.add(player.getName());
+		Configuration config;
+		try
+		{
+			config = getConfiguration(true);
+			List<String> bannedList = (List<String>) config.getStringList("banlist", null);
+			if (bannedList == null) {
+				bannedList = new ArrayList<String>();
+			}
+			if (!bannedList.contains(player.getName()))
+				bannedList.add(player.getName());
+			config.setProperty("banlist", bannedList);
+			config.save();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
+	@Override
+	public void unban(String playerName) {
+		// TODO Auto-generated method stub
+		bannedPlayers.remove(playerName);
+		Configuration config;
+		try
+		{
+			config = getConfiguration(true);
+			List<String> bannedList = (List<String>) config.getStringList("banlist", null);
+			if (bannedList == null) {
+				bannedList = new ArrayList<String>();
+			}
+			if (bannedList.contains(playerName))
+				bannedList.remove(playerName);
+			config.setProperty("banlist", bannedList);
+			config.save();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
 	@Override
 	public List<String> getAllPlayers() {
 		// TODO Auto-generated method stub
