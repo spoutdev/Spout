@@ -453,10 +453,9 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void populate(boolean force) {
-		if (isPopulated() && !force) {
+		if ((isPopulated() && !force) || getY() < 0) {
 			return;
 		}
-
 		final Random random = new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42));
 
 		for (Populator populator : getWorld().getGenerator().getPopulators()) {
