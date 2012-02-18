@@ -36,10 +36,13 @@ import java.util.logging.Level;
 import org.spout.api.ChatColor;
 import org.spout.api.Game;
 import org.spout.api.Spout;
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.player.Player;
+import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.PlayerProtocol;
@@ -78,7 +81,7 @@ public final class SpoutSession implements Session {
 	 * The channel associated with this session.
 	 */
 	private final Channel channel;
-
+	
 	/**
 	 * A queue of incoming and unprocessed messages.
 	 */
@@ -118,6 +121,12 @@ public final class SpoutSession implements Session {
 	//private BlockPlacementMessage previousPlacement;
 	
 	private final BootstrapProtocol bootstrapProtocol;
+	
+	/**
+	 * Stores if this is Connected
+	 * @todo Probably add to SpoutAPI
+	 */
+	private boolean isConnected = false;
 
 	/**
 	 * Creates a new session.
@@ -130,6 +139,7 @@ public final class SpoutSession implements Session {
 		this.channel = channel;
 		this.protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		this.bootstrapProtocol = bootstrapProtocol;
+		this.isConnected = true;
 	}
 
 	/**
@@ -220,12 +230,12 @@ public final class SpoutSession implements Session {
 	}
 
 	/**
-	 * Sends a message to the client.
++	 * Sends a message to the client.
 	 *
 	 * @param message The message.
 	 */
 	public void send(Message message) {
-		channel.write(message);
+				channel.write(message);
 	}
 
 	/**
@@ -249,6 +259,7 @@ public final class SpoutSession implements Session {
 	 */
 	public void disconnect(String reason, boolean overrideKick) {
 		if (player != null && !overrideKick) {
+			boolean useMessage = true;
 			PlayerKickEvent event = getGame().getEventManager().callEvent(new PlayerKickEvent(player, reason));
 			if (event.isCancelled()) {
 				return;
@@ -256,15 +267,18 @@ public final class SpoutSession implements Session {
 
 			reason = event.getKickReason();
 
-			if (event.getMessage() != null) {
+			if (event.getMessage() != null && event.getMessage() != reason) {
 				server.broadcastMessage(event.getMessage());
+				useMessage = false;
 			}
 
 			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
-			dispose(false);
+			
+			dispose(useMessage);
 		}
 
 		channel.write(protocol.get().getPlayerProtocol().getKickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
+		channel.close();
 	}
 
 	/**
@@ -310,7 +324,8 @@ public final class SpoutSession implements Session {
 	 * one.
 	 */
 	public void dispose(boolean broadcastQuit) {
-		if (player != null) {
+		if (player != null && this.isConnected) {
+			this.isConnected = false;
 			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, 
 					ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + 
 							" has left the game", broadcastQuit)).getMessage();
@@ -322,9 +337,17 @@ public final class SpoutSession implements Session {
 			if (!event.isSaved()) {
 				//SaveTaskThread.addTask(new PlayerSaveTask(player));
 			}
-			
-			((SpoutWorld)player.getEntity().getWorld()).removePlayer(player);
+			//If its null or can't be get , just ignore it
+			//If disconnect fails, we just ignore it for now.
+			try{
+				if(player.getEntity() != null) {
+					((SpoutWorld)player.getEntity().getWorld()).removePlayer(player);
+					for(Player user : getPlayer().getEntity().getWorld().getPlayers()) {
+						user.getNetworkSynchronizer().destroyEntity(getPlayer().getEntity());
+					}
+				}
 			((SpoutPlayer)player).disconnect();
+			}catch(Exception e) { }
 			player = null; // in case we are disposed twice
 		}
 	}
