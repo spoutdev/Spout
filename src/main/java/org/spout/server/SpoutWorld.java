@@ -189,7 +189,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		int z = MathHelper.floor(point.getZ());
 		return regions.getRegionFromBlock(x, y, z, load);
 	}
-	
+
 	@Override
 	public Region getRegionFromBlock(int x, int y, int z) {
 		return regions.getRegionFromBlock(x, y, z);

@@ -33,6 +33,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Game;
 import org.spout.api.Spout;
@@ -49,13 +52,11 @@ import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.server.SpoutServer;
 import org.spout.server.SpoutWorld;
 import org.spout.server.player.SpoutPlayer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
 
 /**
  * A single connection to the server, which may or may not be associated with a
  * player.
- * 
+ *
  */
 public final class SpoutSession implements Session {
 	/**
@@ -121,28 +122,28 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Stores if this is Connected
-	 * 
+	 *
 	 * @todo Probably add to SpoutAPI
 	 */
 	private boolean isConnected = false;
 
 	/**
 	 * Creates a new session.
-	 * 
+	 *
 	 * @param server The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
 	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol) {
 		this.server = server;
 		this.channel = channel;
-		this.protocol = new AtomicReference<Protocol>(bootstrapProtocol);
+		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		this.bootstrapProtocol = bootstrapProtocol;
-		this.isConnected = true;
+		isConnected = true;
 	}
 
 	/**
 	 * Gets the state of this session.
-	 * 
+	 *
 	 * @return The session's state.
 	 */
 	public State getState() {
@@ -151,7 +152,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Sets the state of this session.
-	 * 
+	 *
 	 * @param state The new state.
 	 */
 	public void setState(State state) {
@@ -160,7 +161,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Gets the player associated with this session.
-	 * 
+	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
 	public Player getPlayer() {
@@ -169,7 +170,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Sets the player associated with this session.
-	 * 
+	 *
 	 * @param player The new player.
 	 * @throws IllegalStateException if there is already a player associated
 	 *             with this session.
@@ -210,12 +211,12 @@ public final class SpoutSession implements Session {
 
 		Message message;
 		while ((message = messageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) this.protocol.get().getHandlerLookupService().find(message.getClass());
+			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				try {
 					handler.handle(this, player, message);
 				} catch (Exception e) {
-					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + this.getPlayer().getName());
+					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + getPlayer().getName());
 					e.printStackTrace();
 					disconnect("Message handler exception for " + message.getClass().getSimpleName());
 				}
@@ -229,7 +230,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * + * Sends a message to the client.
-	 * 
+	 *
 	 * @param message The message.
 	 */
 	public void send(Message message) {
@@ -243,7 +244,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * Disconnects the session with the specified reason. This causes a kick
 	 * packet to be sent. When it has been delivered, the channel is closed.
-	 * 
+	 *
 	 * @param reason The reason for disconnection.
 	 */
 	public void disconnect(String reason) {
@@ -253,7 +254,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * Disconnects the session with the specified reason. This causes a kick
 	 * packet to be sent. When it has been delivered, the channel is closed.
-	 * 
+	 *
 	 * @param reason The reason for disconnection.
 	 * @param overrideKick Whether to override the kick event.
 	 */
@@ -283,7 +284,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Gets the server associated with this session.
-	 * 
+	 *
 	 * @return The server.
 	 */
 	public SpoutServer getServer() {
@@ -292,7 +293,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Returns the address of this session.
-	 * 
+	 *
 	 * @return The remote address.
 	 */
 	public InetSocketAddress getAddress() {
@@ -311,7 +312,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Adds a message to the unprocessed queue.
-	 * 
+	 *
 	 * @param message The message.
 	 * @param <T> The type of message.
 	 */
@@ -324,8 +325,8 @@ public final class SpoutSession implements Session {
 	 * one.
 	 */
 	public void dispose(boolean broadcastQuit) {
-		if (player != null && this.isConnected) {
-			this.isConnected = false;
+		if (player != null && isConnected) {
+			isConnected = false;
 			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has left the game", broadcastQuit)).getMessage();
 			if (broadcastQuit && text != null) {
 				server.broadcastMessage(text);

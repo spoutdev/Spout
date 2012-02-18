@@ -403,7 +403,7 @@ public class SpoutRegion extends Region {
 						}
 					}
 				}
-				
+
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
 					toUnload.unload(true);

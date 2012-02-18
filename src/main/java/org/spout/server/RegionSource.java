@@ -43,7 +43,7 @@ public class RegionSource implements Iterable<Region> {
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
 	private final TSyncInt21TripleObjectHashMap<Region> loadedRegions;
-	
+
 	/**
 	 * World associated with this region source
 	 */
@@ -161,7 +161,7 @@ public class RegionSource implements Iterable<Region> {
 			if (current != null) {
 				return current;
 			} else {
-				if (!(region).getManager().getExecutor().startExecutor()) {
+				if (!region.getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
 				return region;

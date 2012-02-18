@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
 import org.spout.api.math.Vector2;
@@ -43,8 +45,6 @@ import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
-
-import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
  * Contains several {@link ChannelBuffer}-related utility methods.

@@ -100,9 +100,9 @@ public class SpoutEntity implements Entity {
 		map = new SpoutDatatableMap();
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
-		
+
 		//Sets the cached x, y, z, yaw, pitch, roll, scale values
-		this.scale = new Vector3m(transform.getScale());
+		scale = new Vector3m(transform.getScale());
 		updatePosition();
 		updateRotation();
 	}
@@ -207,7 +207,7 @@ public class SpoutEntity implements Entity {
 		try {
 			AtomicPoint p = transform.getPosition();
 			alive = p.getWorld() != null;
-			this.transform.set(DEAD);
+			transform.set(DEAD);
 			chunkLive = null;
 			entityManagerLive = null;
 		} finally {
@@ -472,10 +472,11 @@ public class SpoutEntity implements Entity {
 	public int getPrevViewDistance() {
 		return viewDistance;
 	}
-	
+
 	float x, y, z, yaw, pitch, roll;
 	final Vector3m scale;
-	boolean posModified = false, yawModified = false, pitchModified = false, rollModified = false, scaleModified = false;
+	boolean posModified = false, yawModified = false, pitchModified = false,
+			rollModified = false, scaleModified = false;
 	//Locking is done to prevent tearing, not to provide access to live values
 	final ReentrantReadWriteLock stateLock = new ReentrantReadWriteLock();
 
@@ -504,8 +505,7 @@ public class SpoutEntity implements Entity {
 		stateLock.readLock().lock();
 		try {
 			return z;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
@@ -519,12 +519,12 @@ public class SpoutEntity implements Entity {
 			stateLock.readLock().unlock();
 		}
 	}
-	
+
 	@Override
 	public void setPoint(Point p) {
 		setPoint(p.getX(), p.getY(), p.getZ());
 	}
-	
+
 	@Override
 	public void setPoint(float x, float y, float z) {
 		stateLock.writeLock().lock();
@@ -542,15 +542,15 @@ public class SpoutEntity implements Entity {
 	public void setPosition(Point p, float pitch, float yaw, float roll) {
 		stateLock.writeLock().lock();
 		try {
-			this.x = p.getX();
-			this.y = p.getY();
-			this.z = p.getZ();
+			x = p.getX();
+			y = p.getY();
+			z = p.getZ();
 			this.pitch = pitch;
-			this.pitchModified = true;
+			pitchModified = true;
 			this.yaw = yaw;
-			this.yawModified = true;
+			yawModified = true;
 			this.roll = roll;
-			this.rollModified = true;
+			rollModified = true;
 			posModified = true;
 		} finally {
 			stateLock.writeLock().unlock();
@@ -579,7 +579,7 @@ public class SpoutEntity implements Entity {
 
 	/**
 	 * Called when the game finalizes the position from any movement or collision calculations, and updates the cache.
-	 * 
+	 *
 	 * If the API has modified the position, it will use the modified value instead of the calculated value.
 	 */
 	public void updatePosition() {
@@ -610,15 +610,14 @@ public class SpoutEntity implements Entity {
 			stateLock.readLock().unlock();
 		}
 	}
-	
+
 	@Override
 	public void setYaw(float yaw) {
 		stateLock.writeLock().lock();
 		try {
 			this.yaw = yaw;
 			yawModified = true;
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
@@ -634,21 +633,20 @@ public class SpoutEntity implements Entity {
 			Quaternionm rotation = transform.getRotation();
 			Vector3 axisAngles = rotation.getAxisAngles();
 			if (!yawModified) {
-				this.yaw = axisAngles.getY();
+				yaw = axisAngles.getY();
 			}
 			if (!pitchModified) {
-				this.pitch = axisAngles.getZ();
+				pitch = axisAngles.getZ();
 			}
-			if (!rollModified){
-				this.roll = axisAngles.getX();
+			if (!rollModified) {
+				roll = axisAngles.getX();
 			}
 			yawModified = pitchModified = rollModified = false;
 			rotation.set(Quaternion.identity);
 			rotation.rotate(roll, 1, 0, 0);
 			rotation.rotate(yaw, 0, 1, 0);
 			rotation.rotate(pitch, 0, 0, 1);
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
@@ -658,8 +656,7 @@ public class SpoutEntity implements Entity {
 		stateLock.readLock().lock();
 		try {
 			return pitch;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
@@ -670,19 +667,17 @@ public class SpoutEntity implements Entity {
 		try {
 			this.pitch = pitch;
 			pitchModified = true;
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
-	
+
 	@Override
 	public float getRoll() {
 		stateLock.readLock().lock();
 		try {
 			return roll;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
@@ -693,25 +688,22 @@ public class SpoutEntity implements Entity {
 		try {
 			this.roll = roll;
 			rollModified = true;
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
-	
+
 	public void updateScale() {
 		stateLock.writeLock().lock();
 		try {
 			Vector3m scale = transform.getScale();
 			if (!scaleModified) {
 				this.scale.set(scale);
-			}
-			else {
+			} else {
 				scaleModified = false;
 				scale.set(this.scale);
 			}
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}
@@ -721,8 +713,7 @@ public class SpoutEntity implements Entity {
 		stateLock.readLock().lock();
 		try {
 			return scale;
-		}
-		finally {
+		} finally {
 			stateLock.readLock().unlock();
 		}
 	}
@@ -733,8 +724,7 @@ public class SpoutEntity implements Entity {
 		try {
 			this.scale.set(scale);
 			scaleModified = true;
-		}
-		finally {
+		} finally {
 			stateLock.writeLock().unlock();
 		}
 	}

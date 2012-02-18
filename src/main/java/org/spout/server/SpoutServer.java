@@ -47,6 +47,14 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Server;
 import org.spout.api.Spout;
@@ -101,14 +109,6 @@ import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableReference;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-
 public class SpoutServer extends AsyncManager implements Server {
 
 	private volatile int maxPlayers = 20;
@@ -122,7 +122,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	private final File configDirectory = new File("config");
 
 	private final File updateDirectory = new File("update");
-	
+
 	private final File dataDirectory = new File("data");
 
 	private String logFile = "logs/log-%D.txt";
@@ -238,14 +238,14 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * The service manager.
 	 */
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
-	
+
 	/**
 	 * The recipe manager.
 	 */
 	private final RecipeManager recipeManager = new CommonRecipeManager();
 
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
-	
+
 	private final Random random = new Random();
 
 	/**
@@ -253,7 +253,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * re-parsing the config file for each access
 	 */
 	private Configuration configCache = null;
-	
+
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
 		registerWithScheduler(scheduler);
@@ -881,7 +881,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	public File getConfigDirectory() {
 		return configDirectory;
 	}
-	
+
 	@Override
 	public File getDataFolder() {
 		return dataDirectory;

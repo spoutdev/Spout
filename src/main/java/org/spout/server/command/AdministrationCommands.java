@@ -58,14 +58,14 @@ public class AdministrationCommands {
 		}
 		server.stop(message);
 	}
-	
-	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = { "" })
+
+	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = {""})
 	@CommandPermissions("spout.command.dumpstack")
 	public void dumpstack(CommandContext args, CommandSource source) throws CommandException {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
 		server.getLogger().info("[--------------Thread Stack Dump--------------]");
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			Entry<Thread, StackTraceElement[]> e = i.next();
 			server.getLogger().info("Thread: " + e.getKey().getName());
 			for (StackTraceElement element : e.getValue()) {

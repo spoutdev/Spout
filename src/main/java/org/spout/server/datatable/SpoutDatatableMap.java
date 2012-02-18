@@ -29,13 +29,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
-
-import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class SpoutDatatableMap implements DatatableMap {
 	private final static StringMap rootStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);

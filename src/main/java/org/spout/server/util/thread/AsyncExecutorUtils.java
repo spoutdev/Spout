@@ -36,7 +36,7 @@ import org.spout.api.Spout;
 
 public class AsyncExecutorUtils {
 	private static final String LINE = "------------------------------";
-	
+
 	/**
 	 * Logs all threads, the thread details, and active stack traces
 	 */
@@ -52,8 +52,8 @@ public class AsyncExecutorUtils {
 			log.info("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
 			log.info("    Stack:");
 			StackTraceElement[] stack = entry.getValue();
-			for (int line = 0; line < stack.length; line++) {
-				log.info("        " + stack[line].toString());
+			for (StackTraceElement element : stack) {
+				log.info("        " + element.toString());
 			}
 		}
 		log.info(LINE);

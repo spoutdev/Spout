@@ -25,8 +25,6 @@
  */
 package org.spout.server.util.thread;
 
-import org.spout.api.Spout;
-
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -133,8 +131,7 @@ public abstract class PulsableThread extends Thread {
 				} catch (InterruptedException ie) {
 					throw ie;
 				} catch (Throwable t) {
-					logger.log(Level.SEVERE, 
-							"Error while pulsing thread " + getName() + ":  " + t.getMessage(), t);
+					logger.log(Level.SEVERE, "Error while pulsing thread " + getName() + ":  " + t.getMessage(), t);
 				} finally {
 					synchronized (pulsing) {
 						pulsing.set(false);
