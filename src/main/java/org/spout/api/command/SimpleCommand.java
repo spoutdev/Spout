@@ -172,7 +172,7 @@ public class SimpleCommand implements Command {
 		}
 
 		if (!hasPermission(source)) {
-			throw new CommandException("You no not have the required permissions!");
+			throw new CommandException("You do not have the required permissions!");
 		}
 		final String[] originalArgs = args;
 		args = MiscCompatibilityUtils.arrayCopyOfRange(originalArgs, baseIndex, args.length);
