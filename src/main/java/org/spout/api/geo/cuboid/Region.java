@@ -25,7 +25,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-import java.util.Collection;
+import java.util.Set;
 
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -127,16 +127,24 @@ public abstract class Region extends Cube {
 	 */
 	@DelayedWrite
 	public abstract void unload(boolean save);
+	
+	/**
+	 * Gets the number of currently loaded chunks in this region
+	 * 
+	 * @return number of loaded chunks
+	 */
+	@SnapshotRead
+	public abstract int getNumLoadedChunks();
 
 	/**
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.
 	 * @param <T> The type of entity.
-	 * @return A collection of entities with the specified type.
+	 * @return A set of entities with the specified type.
 	 */
 	@SnapshotRead
-	public abstract Collection<Entity> getAll(Class<? extends Controller> type);
+	public abstract Set<Entity> getAll(Class<? extends Controller> type);
 
 	/**
 	 * Gets all entities.
@@ -144,7 +152,7 @@ public abstract class Region extends Cube {
 	 * @return A collection of entities.
 	 */
 	@SnapshotRead
-	public abstract Collection<Entity> getAll();
+	public abstract Set<Entity> getAll();
 
 	/**
 	 * Gets an entity by its id.
