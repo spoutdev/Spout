@@ -25,7 +25,6 @@
  */
 package org.spout.server;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
@@ -184,7 +183,7 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
-		throw new IndexOutOfBoundsException("Invalid coordinates");
+		throw new IndexOutOfBoundsException("Invalid coordinates (" + x + ", " + y + ", " + z + ")");
 	}
 
 	/**
@@ -534,14 +533,14 @@ public class SpoutRegion extends Region {
 
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Collection<Entity> getAll(Class<? extends Controller> type) {
-		return (Collection) entityManager.getAll(type);
+	public Set<Entity> getAll(Class<? extends Controller> type) {
+		return (Set) entityManager.getAll(type);
 	}
 
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Collection<Entity> getAll() {
-		return (Collection) entityManager.getAll();
+	public Set<Entity> getAll() {
+		return (Set) entityManager.getAll();
 	}
 
 	@Override
@@ -593,5 +592,15 @@ public class SpoutRegion extends Region {
 		synchronized (queuedPhysicsUpdates) {
 			queuedPhysicsUpdates.add(x & blockCoordMask, y & blockCoordMask, z & blockCoordMask);
 		}
+	}
+
+	@Override
+	public int getNumLoadedChunks() {
+		return numberActiveChunks.get();
+	}
+	
+	@Override
+	public String toString() {
+		return "SpoutRegion{ ( " + x + ", " + y + ", " + z + "), World: " + this.getWorld() + "}";
 	}
 }

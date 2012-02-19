@@ -29,6 +29,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.spout.api.Spout;
+import org.spout.api.event.world.RegionLoadEvent;
+import org.spout.api.event.world.RegionUnloadEvent;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
@@ -100,6 +103,8 @@ public class RegionSource implements Iterable<Region> {
 				boolean success = loadedRegions.remove(x, y, z, r);
 				if (success) {
 					r.getManager().getExecutor().haltExecutor();
+					
+					Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
 				}
 			}
 		});
@@ -164,6 +169,9 @@ public class RegionSource implements Iterable<Region> {
 				if (!region.getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
+				
+				Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
+				
 				return region;
 			}
 		}

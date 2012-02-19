@@ -100,7 +100,7 @@ public class SpoutChunk extends Chunk {
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-
+	
 	public SpoutChunk(World world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
@@ -623,6 +623,11 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "SpoutChunk{ (" + getX() + ", " + getY() + ", " + getZ() + ") }";
 	}
 
 	public static class ChunkAccessException extends RuntimeException {

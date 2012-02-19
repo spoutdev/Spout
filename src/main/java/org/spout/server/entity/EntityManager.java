@@ -26,7 +26,9 @@
 package org.spout.server.entity;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -86,9 +88,9 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * Gets all entities with the specified type from the live map.
 	 *
 	 * @param type The {@link Class} for the type.
-	 * @return A collection of entities with the specified type.
+	 * @return A set of entities with the specified type.
 	 */
-	public Collection<SpoutEntity> getLiveAll(Class<? extends Controller> type) {
+	public Set<SpoutEntity> getLiveAll(Class<? extends Controller> type) {
 		return getRawAll(type).getLive();
 	}
 
@@ -96,19 +98,24 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.
-	 * @return A collection of entities with the specified type.
+	 * @return A set of entities with the specified type.
 	 */
-	public Collection<SpoutEntity> getAll(Class<? extends Controller> type) {
+	public Set<SpoutEntity> getAll(Class<? extends Controller> type) {
 		return getRawAll(type).get();
 	}
 
 	/**
 	 * Gets all entities.
 	 *
-	 * @return A collection of entities.
+	 * @return A set of entities.
 	 */
-	public Collection<SpoutEntity> getAll() {
-		return entities.get().values();
+	public Set<SpoutEntity> getAll() {
+		Collection<SpoutEntity> collection = entities.get().values();
+		HashSet<SpoutEntity> set = new HashSet<SpoutEntity>(collection.size());
+		for (SpoutEntity entity : collection) {
+			set.add(entity);
+		}
+		return set;
 	}
 
 	/**

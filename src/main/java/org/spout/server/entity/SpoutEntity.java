@@ -93,10 +93,7 @@ public class SpoutEntity implements Entity {
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
 		setTransform(transform);
-		if (controller != null) {
-			this.controller = controller;
-			setController(controller);
-		}
+		
 		map = new SpoutDatatableMap();
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
@@ -105,6 +102,11 @@ public class SpoutEntity implements Entity {
 		scale = new Vector3m(transform.getScale());
 		updatePosition();
 		updateRotation();
+		
+		if (controller != null) {
+			this.controller = controller;
+			setController(controller);
+		}
 	}
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {

@@ -216,10 +216,15 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Chunk getChunk(Point point, boolean load) {
-		int x = (int) Math.floor(point.getX());
-		int y = (int) Math.floor(point.getY());
-		int z = (int) Math.floor(point.getZ());
+		int x = MathHelper.floor(point.getX());
+		int y = MathHelper.floor(point.getY());
+		int z = MathHelper.floor(point.getZ());
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
+	}
+	
+	@Override
+	public Chunk getChunkFromBlock(int x, int y, int z) {
+		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
 	}
 
 	@Override
@@ -335,11 +340,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	public int getHeight() {
 		// TODO: Variable world height
 		return 128;
-	}
-
-	@Override
-	public Chunk getChunkFromBlock(int x, int y, int z) {
-		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
 	}
 
 	@Override
@@ -475,5 +475,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public Set<Player> getPlayers() {
 		return Collections.unmodifiableSet(players);
+	}
+	
+	@Override
+	public String toString() {
+		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";
 	}
 }
