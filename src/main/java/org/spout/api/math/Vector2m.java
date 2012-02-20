@@ -25,7 +25,7 @@
  */
 package org.spout.api.math;
 
-public class Vector2m extends Vector2 {
+public class Vector2m extends Vector2 implements Cloneable{
 	public Vector2m() {
 	}
 
@@ -177,5 +177,10 @@ public class Vector2m extends Vector2 {
 	public Vector2 pow(double power) {
 		set(super.pow(power));
 		return this;
+	}
+
+	@Override
+	public Vector2m clone() {
+		return new Vector2m(x, y);
 	}
 }

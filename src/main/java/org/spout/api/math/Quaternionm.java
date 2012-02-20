@@ -30,7 +30,7 @@ package org.spout.api.math;
  *
  *
  */
-public class Quaternionm extends Quaternion {
+public class Quaternionm extends Quaternion implements Cloneable {
 	/**
 	 * Constructs a new Quaternion and sets the components equal to the identity
 	 */
@@ -140,5 +140,10 @@ public class Quaternionm extends Quaternion {
 	public Quaternion rotate(float angle, float x, float y, float z) {
 		set(super.rotate(angle, x, y, z));
 		return this;
+	}
+
+	@Override
+	public Quaternionm clone() {
+		return new Quaternionm(x, y, z, w);
 	}
 }

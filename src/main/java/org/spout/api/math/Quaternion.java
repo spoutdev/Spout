@@ -30,7 +30,7 @@ package org.spout.api.math;
  *
  *
  */
-public class Quaternion {
+public class Quaternion implements Cloneable{
 	protected float x, y, z, w;
 
 	/**
@@ -190,6 +190,11 @@ public class Quaternion {
 	 */
 	public Quaternion rotate(float angle, float x, float y, float z) {
 		return Quaternion.rotate(this, angle, x, y, z);
+	}
+	
+	@Override
+	public Quaternion clone() {
+		return new Quaternion(x, y, z, w);
 	}
 
 	/**

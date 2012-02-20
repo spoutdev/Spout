@@ -31,7 +31,7 @@ package org.spout.api.math;
  * Note, this is the Immutable form of Vector2. All operations will construct a
  * new Vector2.
  */
-public class Vector2 implements Comparable<Vector2> {
+public class Vector2 implements Comparable<Vector2>, Cloneable{
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
@@ -554,6 +554,11 @@ public class Vector2 implements Comparable<Vector2> {
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ")";
+	}
+
+	@Override
+	public Vector2 clone() {
+		return new Vector2(x, y);
 	}
 
 	/**

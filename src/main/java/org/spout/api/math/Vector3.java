@@ -28,7 +28,7 @@ package org.spout.api.math;
 /**
  * Represents a 3d vector.
  */
-public class Vector3 implements Comparable<Vector3> {
+public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
@@ -583,6 +583,11 @@ public class Vector3 implements Comparable<Vector3> {
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";
+	}
+
+	@Override
+	public Vector3 clone() {
+		return new Vector3(x, y, z);
 	}
 
 	/**

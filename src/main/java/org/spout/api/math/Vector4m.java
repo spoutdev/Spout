@@ -25,7 +25,7 @@
  */
 package org.spout.api.math;
 
-public class Vector4m extends Vector4 {
+public class Vector4m extends Vector4 implements Cloneable{
 	public Vector4m() {
 	}
 
@@ -189,5 +189,10 @@ public class Vector4m extends Vector4 {
 	public Vector4 normalize() {
 		set(super.normalize());
 		return this;
+	}
+
+	@Override
+	public Vector4m clone() {
+		return new Vector4m(x, y, z, w);
 	}
 }
