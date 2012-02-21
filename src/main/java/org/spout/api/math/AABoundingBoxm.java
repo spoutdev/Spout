@@ -21,7 +21,7 @@ package org.spout.api.math;
  */
 public class AABoundingBoxm extends AABoundingBox implements Cloneable{
 	/**
-	 * Constructs a bounding box from the getMin()imum and getMax()imum edge vectors
+	 * Constructs a bounding box from the minimum and maximum edge vectors
 	 * 
 	 * @param getMin()
 	 * @param getMax()
@@ -40,7 +40,7 @@ public class AABoundingBoxm extends AABoundingBox implements Cloneable{
 	}
 
 	/**
-	 * Constructs a bounding box from the components of getMin()imum and getMax()imum vectors
+	 * Constructs a bounding box from the components of minimum and maximum vectors
 	 * 
 	 * @param minX
 	 * @param minY
