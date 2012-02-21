@@ -74,6 +74,50 @@ public class AABoundingBoxm extends AABoundingBox implements Cloneable{
 	public Vector3m getMax() {
 		return (Vector3m)max;
 	}
+	
+	/**
+	 * Sets the location of the bounding box edges
+	 * 
+	 * @param minX
+	 * @param minY
+	 * @param minZ
+	 * @param maxX
+	 * @param maxY
+	 * @param maxZ
+	 * @return this bounding box
+	 */
+	public AABoundingBoxm set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+		getMin().setX(minX);
+		getMin().setY(minY);
+		getMin().setZ(minZ);
+		getMax().setX(maxX);
+		getMax().setY(maxY);
+		getMax().setZ(maxZ);
+		return this;
+	}
+	
+	/**
+	 * Sets the location of the bounding box edges
+	 * 
+	 * @param min
+	 * @param max
+	 * @return this bounding box
+	 */
+	public AABoundingBoxm set(Vector3 min, Vector3 max) {
+		getMin().set(min);
+		getMax().set(max);
+		return this;
+	}
+	
+	/**
+	 * Sets this bounding box to the same maximum and minimum edges as the given bounding box
+	 * 
+	 * @param box
+	 * @return this bounding box
+	 */
+	public AABoundingBoxm set(AABoundingBox box) {
+		return set(box.getMin(), box.getMax());
+	}
 
 	/**
 	 * Adds the vector components to this bounding box
