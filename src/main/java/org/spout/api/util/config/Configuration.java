@@ -111,6 +111,11 @@ public class Configuration extends ConfigurationNode {
 	public void load() {
 		BufferedReader in = null;
 		try {
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+			}
+			
 			in = new BufferedReader(new FileReader(file));
 			String str;
 			StringBuilder buffer = new StringBuilder(10000);
