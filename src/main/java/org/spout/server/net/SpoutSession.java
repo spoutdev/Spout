@@ -279,7 +279,6 @@ public final class SpoutSession implements Session {
 		}
 
 		channel.write(protocol.get().getPlayerProtocol().getKickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
-		channel.close();
 	}
 
 	/**

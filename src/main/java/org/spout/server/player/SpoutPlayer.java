@@ -40,6 +40,7 @@ import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -222,7 +223,7 @@ public class SpoutPlayer implements Player {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
-			world = entity.getChunk().getWorld();
+			world = entity.getWorld();
 		}
 
 		return hasPermission(world, node);
@@ -243,7 +244,7 @@ public class SpoutPlayer implements Player {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
-			world = entity.getChunk().getWorld();
+			world = entity.getWorld();
 		}
 
 		PermissionGroupEvent event = Spout.getGame().getEventManager().callEvent(new PermissionGroupEvent(world, this, group));
@@ -255,7 +256,7 @@ public class SpoutPlayer implements Player {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
-			world = entity.getChunk().getWorld();
+			world = entity.getWorld();
 		}
 
 		PermissionGetGroupsEvent event = Spout.getGame().getEventManager().callEvent(new PermissionGetGroupsEvent(world, this));
@@ -275,7 +276,7 @@ public class SpoutPlayer implements Player {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
-			world = entity.getChunk().getWorld();
+			world = entity.getWorld();
 		}
 		return getData(world, node, defaultValue);
 	}
@@ -303,7 +304,7 @@ public class SpoutPlayer implements Player {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
-			world = entity.getChunk().getWorld();
+			world = entity.getWorld();
 		}
 		return getInt(world, node, defaultValue);
 	}
@@ -331,7 +332,7 @@ public class SpoutPlayer implements Player {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
-			world = entity.getChunk().getWorld();
+			world = entity.getWorld();
 		}
 		return getString(world, node, defaultValue);
 	}
