@@ -222,7 +222,7 @@ public class Vector3m extends Vector3 implements Cloneable{
 	}
 
 	@Override
-	public Vector3 clone() {
-		return new Vector3(x, y, z);
+	public Vector3m clone() {
+		return new Vector3m(x, y, z);
 	}
 }

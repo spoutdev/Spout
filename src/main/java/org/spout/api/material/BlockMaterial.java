@@ -25,8 +25,8 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.collision.BoundingBox;
 import org.spout.api.geo.World;
-import org.spout.api.math.AABoundingBox;
 
 public interface BlockMaterial extends ItemMaterial {
 	public void onWorldRender();
@@ -52,15 +52,7 @@ public interface BlockMaterial extends ItemMaterial {
 	 * 
 	 * @return area
 	 */
-	public AABoundingBox getBoundingArea();
-	
-	/**
-	 * Sets the bounding area of this material to the given bounding box
-	 * 
-	 * @param box to set
-	 * @return this material
-	 */
-	public BlockMaterial setBoundingArea(AABoundingBox box);
+	public BoundingBox getBoundingArea();
 
 	/**
 	 * True if this block requires physic updates when a neighbor block changes,

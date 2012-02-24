@@ -27,22 +27,209 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class BoundingBox implements CollisionVolume {
-	Vector3 min;
-	Vector3 max;
+public class BoundingBox implements CollisionVolume, Cloneable {
+	protected Vector3 min;
+	protected Vector3 max;
 
 	public BoundingBox(Vector3 min, Vector3 max) {
-		this.min = min;
-		this.max = max;
+		this.min = new Vector3(min);
+		this.max = new Vector3(max);
+	}
+	
+	public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+		this.min = new Vector3(minX, minY, minZ);
+		this.max = new Vector3(maxX, maxY, maxZ);
 	}
 
 	public BoundingBox(Vector3 pos) {
-		min = pos;
-		max = pos.add(Vector3.ONE);
+		min = new Vector3(pos);
+		max = new Vector3(pos.add(Vector3.ONE));
 	}
 
 	public BoundingBox() {
 		this(Vector3.ZERO, Vector3.ONE);
+	}
+	
+	/**
+	 * Constructs a copy of the bounding box
+	 * 
+	 * @param box to copy
+	 */
+	public BoundingBox(BoundingBox box) {
+		this(box.min, box.max);
+	}
+	
+	/**
+	 * Gets the minimum edge vector for this bounding box.
+	 * 
+	 * @return minimum edge
+	 */
+	public Vector3 getMin() {
+		return min;
+	}
+	
+	/**
+	 * Gets the maximum edge vector for this bounding box.
+	 * 
+	 * @return maximum edge
+	 */
+	public Vector3 getMax() {
+		return max;
+	}
+	
+	/**
+	 * Sets the location of the bounding box edges
+	 * 
+	 * @param minX
+	 * @param minY
+	 * @param minZ
+	 * @param maxX
+	 * @param maxY
+	 * @param maxZ
+	 * @return this bounding box
+	 */
+	public BoundingBox set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+		min = new Vector3(minX, minY, minZ);
+		max = new Vector3(maxX, maxY, maxZ);
+		return this;
+	}
+	
+	/**
+	 * Sets the location of the bounding box edges
+	 * 
+	 * @param min
+	 * @param max
+	 * @return this bounding box
+	 */
+	public BoundingBox set(Vector3 min, Vector3 max) {
+		this.min = min.clone();
+		this.max = max.clone();
+		return this;
+	}
+	
+	/**
+	 * Sets this bounding box to the same maximum and minimum edges as the given bounding box
+	 * 
+	 * @param box
+	 * @return this bounding box
+	 */
+	public BoundingBox set(BoundingBox box) {
+		return set(box.min, box.max);
+	}
+
+	/**
+	 * Adds the vector components to this bounding box
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return this bounding box
+	 */
+	public BoundingBox add(float x, float y, float z) {
+		if (x < 0.0D) {
+			this.min = min.add(x, 0, 0);
+		}
+		else {
+			this.max = max.add(x, 0, 0);
+		}
+		if (y < 0.0D) {
+			this.min = min.add(0, y, 0);
+		}
+		else {
+			this.max = max.add(0, y, 0);
+		}
+		if (z < 0.0D) {
+			this.min = min.add(0, 0, z);
+		}
+		else {
+			this.max = max.add(0, 0, z);
+		}
+		return this;
+	}
+
+	/**
+	 * Adds the vector to this bounding box
+	 * 
+	 * @param vec to add
+	 * @return this bounding box
+	 */
+	public BoundingBox add(Vector3 vec) {
+		return add(vec.getX(), vec.getY(), vec.getZ());
+	}
+
+	/**
+	 * Expands this bounding box in both directions by the given vector components
+	 * 
+	 * @param x to expand
+	 * @param y to expand
+	 * @param z to expand
+	 * @return this bounding box
+	 */
+	public BoundingBox expand(float x, float y, float z) {
+		this.min = min.add(-x, -y, -z);
+		this.max = max.add(x, y, z);
+		return this;
+	}
+
+	/**
+	 * Expands this bounding box in both directions by the given vector
+	 * 
+	 * @param vec to expand by
+	 * @return this bounding box
+	 */
+	public BoundingBox expand(Vector3 vec) {
+		return expand(vec.getX(), vec.getY(), vec.getZ());
+	}
+
+	/**
+	 * Contracts this bounding box in both directions by the given vector components
+	 * 
+	 * @param x to contract
+	 * @param y to contract
+	 * @param z to contract
+	 * @return this bounding box
+	 */
+	public BoundingBox contract(float x, float y, float z) {
+		return expand(-x, -y, -z);
+	}
+
+	/**
+	 * Contracts this bounding box in both directions by the given vector
+	 * 
+	 * @param vec to contract by
+	 * @return this bounding box
+	 */
+	public BoundingBox contract(Vector3 vec) {
+		return contract(vec.getX(), vec.getY(), vec.getZ());
+	}
+
+	/**
+	 * Offsets this bounding box in both directions by the given vector components
+	 * 
+	 * @param x to offset
+	 * @param y to offset
+	 * @param z to offset
+	 * @return this bounding box
+	 */
+	public BoundingBox offset(float x, float y, float z) {
+		this.min = min.add(x, y, z);
+		this.max = max.add(x, y, z);
+		return this;
+	}
+
+	/**
+	 * Offsets this bounding box in both directions by the given vector
+	 * 
+	 * @param vec to offset by
+	 * @return this bounding box
+	 */
+	public BoundingBox offset(Vector3 vec) {
+		return offset(vec.getX(), vec.getY(), vec.getZ());
+	}
+
+	@Override
+	public BoundingBox clone() {
+		return new BoundingBox(this);
 	}
 
 	public boolean intersects(BoundingBox b) {

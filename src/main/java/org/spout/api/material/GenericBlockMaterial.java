@@ -25,12 +25,11 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.collision.BoundingBox;
 import org.spout.api.geo.World;
-import org.spout.api.math.AABoundingBox;
-import org.spout.api.math.AABoundingBoxm;
 
 public class GenericBlockMaterial extends GenericItemMaterial implements BlockMaterial {
-	private final AABoundingBoxm area = new AABoundingBoxm(0F, 0F, 0F, 1F, 1F, 1F);
+	private final BoundingBox area = new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F);
 	private float hardness = 0F;
 	private float friction = 0F;
 	private boolean opaque = true;
@@ -97,13 +96,8 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 	}
 	
 	@Override
-	public AABoundingBox getBoundingArea() {
+	public BoundingBox getBoundingArea() {
 		return area;
-	}
-	
-	public BlockMaterial setBoundingArea(AABoundingBox box) {
-		area.set(box);
-		return this;
 	}
 
 	public void onUpdate(World world, int x, int y, int z) {

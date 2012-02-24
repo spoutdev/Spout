@@ -991,5 +991,11 @@ public class AtomicPoint extends Pointm {
 			}
 		}
 	}
-
+	
+	@Override
+	public AtomicPoint clone() {
+		AtomicPoint p = new AtomicPoint(new OptimisticReadWriteLock());
+		p.set(this);
+		return p;
+	}
 }

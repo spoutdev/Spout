@@ -434,6 +434,13 @@ public class AtomicQuaternion extends Quaternionm {
 			}
 		}
 	}
+	
+	@Override
+	public AtomicQuaternion clone() {
+		AtomicQuaternion q = new AtomicQuaternion(new OptimisticReadWriteLock());
+		q.set(this);
+		return q;
+	}
 
 	private OptimisticReadWriteLock handleNull(OptimisticReadWriteLock lock) {
 		if (lock == null) {

@@ -803,6 +803,13 @@ public class AtomicVector3 extends Vector3m {
 			}
 		}
 	}
+	
+	@Override
+	public AtomicVector3 clone() {
+		AtomicVector3 vec = new AtomicVector3(new OptimisticReadWriteLock());
+		vec.set(this);
+		return vec;
+	}
 
 	public boolean equals(AtomicVector3 obj) {
 		while (true) {

@@ -26,6 +26,7 @@
 package org.spout.api.geo.discrete;
 
 import org.spout.api.geo.World;
+import org.spout.api.math.Vector3;
 
 /**
  * Represents a mutable position in a World
@@ -41,6 +42,20 @@ public class Pointm extends Point {
 
 	public Pointm(Point point) {
 		super(point.getWorld(), point.getX(), point.getY(), point.getZ());
+	}
+	
+	@Override
+	public Point add(Point other) {
+		if (world != other.world) {
+			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
+		}
+		set(new Point(Vector3.add(this, other), world));
+		return this;
+	}
+
+	@Override
+	public Point add(Vector3 other) {
+		return add(new Point(Vector3.add(this, other), world));
 	}
 
 	/**
