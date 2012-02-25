@@ -372,6 +372,7 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (TimeoutException e) {
 				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 				AsyncExecutorUtils.dumpAllStacks();
+				AsyncExecutorUtils.checkForDeadlocks();
 			}
 		}
 

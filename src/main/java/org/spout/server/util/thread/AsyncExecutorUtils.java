@@ -25,6 +25,9 @@
  */
 package org.spout.server.util.thread;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,23 @@ public class AsyncExecutorUtils {
 			}
 		}
 		log.info(LINE);
+	}
+	
+	/**
+	 * Scans for deadlocked threads
+	 */
+	public static void checkForDeadlocks() {
+		Logger log = Spout.getLogger();
+		log.info("Checking for deadlocks");
+		ThreadMXBean tmx = ManagementFactory.getThreadMXBean();
+		long[] ids = tmx.findDeadlockedThreads();
+		if (ids != null) {
+			ThreadInfo[] infos = tmx.getThreadInfo(ids, true, true);
+			log.info("The following threads are deadlocked:");
+			for (ThreadInfo ti : infos) {
+				log.info(ti.toString());
+			}
+		}
 	}
 
 	/**
