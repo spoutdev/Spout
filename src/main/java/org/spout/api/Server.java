@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,18 +18,20 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api;
 
 import java.io.File;
+import java.net.SocketAddress;
 import java.util.Collection;
 
 import org.spout.api.geo.World;
 import org.spout.api.player.Player;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 
@@ -37,7 +39,6 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents the server-specific implementation of Minecraft.
  */
 public interface Server extends Game {
-
 	/**
 	 * Returns the name this server, if set.
 	 *
@@ -72,17 +73,17 @@ public interface Server extends Game {
 	 * @return whitelisted player names
 	 */
 	public String[] getWhitelistedPlayers();
-	
+
 	/**
 	 * Adds the given player to the list of whitelisted players
-	 * 
+	 *
 	 * @param player to whitelist
 	 */
 	public void whitelist(String player);
-	
+
 	/**
 	 * Removes the given player from the list of whitelisted players
-	 * 
+	 *
 	 * @param player to remove from whitelist
 	 */
 	public void unWhitelist(String player);
@@ -108,23 +109,23 @@ public interface Server extends Game {
 	 * @return true if the world was unloaded, false if not
 	 */
 	public boolean unloadWorld(World world, boolean save);
-	
+
 	/**
-	 * Sets the default world.  
-	 * 
+	 * Sets the default world.
+	 *
 	 * The first loaded world will be set as the default world automatically.
-	 * 
+	 *
 	 * New players start in the default world.
-	 * 
+	 *
 	 * @param world the default world
 	 * @return true on success
 	 */
 	@DelayedWrite
 	public boolean setDefaultWorld(World world);
-	
+
 	/**
 	 * Gets the default world.
-	 * 
+	 *
 	 * @return the default world
 	 */
 	@SnapshotRead
@@ -166,27 +167,26 @@ public interface Server extends Game {
 	 * @return operators
 	 */
 	public Collection<Player> getOps();
-	
-	
+
 	/**
 	 * Gets the server's configuration directory
-	 * 
+	 *
 	 * @return the config directory
 	 */
 	public File getConfigDirectory();
-	
+
 	/**
 	 * Gets the server's log file
-	 * 
+	 *
 	 * @return the log filename
 	 */
 	public String getLogFile();
-	
+
 	/**
-	* Gets a list of available commands from the command map.
-	*
-	* @return A list of all commands at the time.
-	*/
+	 * Gets a list of available commands from the command map.
+	 *
+	 * @return A list of all commands at the time.
+	 */
 	public String[] getAllCommands();
 
 	/**
@@ -198,5 +198,14 @@ public interface Server extends Game {
 	 * @return allow flight
 	 */
 	public boolean allowFlight();
-	
+
+	/**
+	 * Binds the server to a certain address
+	 *
+	 * @param address The address to bind to.
+	 * @param bootstrapProtocol The bootstrap protocol to use for connections to
+	 *            this binding
+	 * @return true if successful
+	 */
+	public boolean bind(SocketAddress address, BootstrapProtocol bootstrapProtocol);
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,12 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.command;
-
-import gnu.trove.set.TCharSet;
-import gnu.trove.set.hash.TCharHashSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,12 +34,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.spout.api.exception.CommandException;
+import org.spout.api.exception.CommandUsageException;
+import org.spout.api.exception.MissingCommandException;
+import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.util.MiscCompatibilityUtils;
 import org.spout.api.util.Named;
 import org.spout.api.util.StringUtil;
 
-public class SimpleCommand implements Command {
+import gnu.trove.set.TCharSet;
+import gnu.trove.set.hash.TCharHashSet;
 
+public class SimpleCommand implements Command {
 	protected final Map<String, Command> children = new HashMap<String, Command>();
 	protected Command parent;
 	private final Named owner;
@@ -137,8 +140,9 @@ public class SimpleCommand implements Command {
 				if (raw.length > i + 1 && raw[i + 1] == ':') {
 					valueFlags.add(raw[i]);
 					++i;
+				} else {
+					flags.add(raw[i]);
 				}
-				flags.add(raw[i]);
 			}
 		}
 		return this;
@@ -146,14 +150,18 @@ public class SimpleCommand implements Command {
 
 	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		if (rawExecutor != null && rawExecutor != this) {
-			rawExecutor.execute(source,  args, baseIndex, fuzzyLookup);
+			rawExecutor.execute(source, args, baseIndex, fuzzyLookup);
 			return;
 		}
 
 		if (args.length > baseIndex && children.size() > 0) {
-			Command sub = getChild(args[baseIndex + 1], fuzzyLookup);
+			Command sub = null;
+			if (args.length > baseIndex + 1) {
+				sub = getChild(args[baseIndex + 1], fuzzyLookup);
+			}
+
 			if (sub == null) {
-				throw new MissingCommandException("Child command needed!", getUsage(args, baseIndex));
+				throw getMissingChildException(getUsage(args, baseIndex));
 			}
 			sub.execute(source, args, ++baseIndex, fuzzyLookup);
 			return;
@@ -164,22 +172,23 @@ public class SimpleCommand implements Command {
 		}
 
 		if (!hasPermission(source)) {
-			throw new CommandException("You no not have the required permissions!");
+			throw new CommandException("You do not have the required permissions!");
 		}
-		args = MiscCompatibilityUtils.arrayCopyOfRange(args, baseIndex, args.length);
+		final String[] originalArgs = args;
+		args = MiscCompatibilityUtils.arrayCopyOfRange(originalArgs, baseIndex, args.length);
 
 		CommandContext context = new CommandContext(args, valueFlags);
 		for (char flag : context.getFlags().toArray()) {
 			if (!flags.contains(flag)) {
-				throw new CommandUsageException("Unknown flag:" + flag, getUsage(args, baseIndex));
+				throw new CommandUsageException("Unknown flag:" + flag, getUsage(originalArgs, baseIndex));
 			}
 		}
 
 		if (context.length() < minArgLength) {
-			throw new CommandUsageException("Not enough arguments", getUsage(args, baseIndex));
+			throw new CommandUsageException("Not enough arguments", getUsage(originalArgs, baseIndex));
 		}
 		if (maxArgLength >= 0 && context.length() > maxArgLength) {
-			throw new CommandUsageException("Too many arguments", getUsage(args, baseIndex));
+			throw new CommandUsageException("Too many arguments", getUsage(originalArgs, baseIndex));
 		}
 
 		try {
@@ -189,6 +198,10 @@ public class SimpleCommand implements Command {
 		} catch (Throwable t) {
 			throw new WrappedCommandException(t);
 		}
+	}
+	
+	public CommandException getMissingChildException(String usage) {
+		return new MissingCommandException("Child command needed!", usage);
 	}
 
 	public String getPreferredName() {
@@ -207,8 +220,52 @@ public class SimpleCommand implements Command {
 		return new ArrayList<String>(aliases);
 	}
 
+	public String getHelp() {
+		return help;
+	}
+	
+	public String getUsage() {
+		return getUsage(new String[] {getPreferredName()}, 0);
+	}
+
 	public String getUsage(String[] input, int baseIndex) {
-		return help + " - " + usage;
+		StringBuilder usage = new StringBuilder("/");
+		for (int i = 0; i <= baseIndex && i < input.length; ++i) { // Add the arguments preceding the command
+			usage.append(input[i]);
+			if (i <= baseIndex - 1 && i < input.length - 1) {
+				usage.append(" ");
+			}
+		}
+		
+		usage.append(" ");
+		
+		if (children.size() > 0) { // There are subcommands, print a list of them
+			usage.append("<");
+			Set<Command> childValues = new HashSet<Command>(children.values());
+			for (Iterator<Command> i = childValues.iterator(); i.hasNext();) {
+				usage.append(i.next().getPreferredName());
+				if (i.hasNext()) {
+					usage.append("|");
+				}
+			}
+			usage.append(">");
+		} else {
+			if (flags.size() > 0) { // We have flags, place them in front of the args
+				usage.append("[-");
+				for (char flag : flags.toArray()) {
+					usage.append(flag);
+				}
+				usage.append("] ");
+			}
+			if (this.usage != null) {
+				usage.append(this.usage); // Then manually specified usage
+			}
+		}
+		return usage.toString();
+	}
+	
+	public Command getChild(String name) {
+		return getChild(name,  false);
 	}
 
 	public Command getChild(String name, boolean fuzzyLookup) {
@@ -281,6 +338,30 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
+	public Command removeChildren(Named owner) {
+		if (isLocked()) {
+			return this;
+		}
+		Map<String, Command> removeAliases = new HashMap<String, Command>();
+		for (Iterator<Command> i = children.values().iterator(); i.hasNext();) {
+			Command cmd = i.next();
+			if (cmd.isOwnedBy(owner)) {
+				i.remove();
+				for (String alias : cmd.getNames()) {
+					Command aliasCmd = children.get(alias);
+					if (cmd.equals(aliasCmd)) {
+						removeAliases.put(alias, aliasCmd);
+					}
+				}
+			}
+		}
+		for (Map.Entry<String, Command> entry : removeAliases.entrySet()) {
+			entry.getValue().removeAlias(entry.getKey());
+		}
+		return this;
+	}
+
 	public Command removeAlias(String name) {
 		if (isLocked()) {
 			return this;
@@ -310,6 +391,16 @@ public class SimpleCommand implements Command {
 
 	public boolean isLocked() {
 		return locked;
+	}
+
+	@Override
+	public boolean isOwnedBy(Named owner) {
+		return this.owner == owner;
+	}
+
+	@Override
+	public String getOwnerName() {
+		return this.owner.getName();
 	}
 
 	public boolean updateAliases(Command child) {
@@ -355,13 +446,15 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command setPermissions(boolean requireAll, String... permissions) {
-		this.requireAllPermissions = requireAll;
+		requireAllPermissions = requireAll;
 		this.permissions = permissions;
 		return this;
 	}
 
 	public boolean hasPermission(CommandSource sender) {
-		if (permissions == null || permissions.length < 1) return true;
+		if (permissions == null || permissions.length < 1) {
+			return true;
+		}
 		boolean success = requireAllPermissions;
 		for (String perm : permissions) {
 			if (requireAllPermissions) {
@@ -372,7 +465,7 @@ public class SimpleCommand implements Command {
 		}
 		return success;
 	}
-	
+
 	public Command setArgBounds(int min, int max) {
 		if (min >= 0) {
 			minArgLength = min;

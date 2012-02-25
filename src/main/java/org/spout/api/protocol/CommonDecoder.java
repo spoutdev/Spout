@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,17 +18,16 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.protocol;
 
 import java.io.IOException;
-import org.spout.api.Commons;
-import org.spout.api.protocol.bootstrap.BootstrapCodecLookupService;
-import org.spout.api.protocol.bootstrap.msg.BootstrapIdentificationMessage;
+import org.spout.api.Spout;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -37,17 +36,15 @@ import org.jboss.netty.handler.codec.replay.VoidEnum;
 
 /**
  * A {@link ReplayingDecoder} which decodes {@link ChannelBuffer}s into
- * Common {@link org.spout.unchecked.server.msg.Message}s.
+ * Common {@link org.spout.api.protocol.Message}s.
  */
 public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
-	
-	private final CodecLookupService bootstrapCodecLookup = new BootstrapCodecLookupService();
-	private volatile CodecLookupService codecLookup = bootstrapCodecLookup;
+	private volatile CodecLookupService codecLookup = null;
 	private int previousOpcode = -1;
-	private boolean configListen = true;
+	private volatile BootstrapProtocol bootstrapProtocol;
 	private final CommonHandler handler;
 	private final CommonEncoder encoder;
-	
+
 	public CommonDecoder(CommonHandler handler, CommonEncoder encoder) {
 		this.encoder = encoder;
 		this.handler = handler;
@@ -55,14 +52,28 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
-		int opcode = buf.getShort(buf.readerIndex());
+		if (codecLookup == null) {
+			System.out.println("Setting codec lookup service");
+			bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
+			System.out.println("Bootstrap protocol is: " + bootstrapProtocol);
+			codecLookup = bootstrapProtocol.getCodecLookupService();
+			System.out.println("Codec lookup service is: " + codecLookup);
+		}
+
+		int opcode;
 		
+		try {
+			opcode = buf.getUnsignedShort(buf.readerIndex());
+		}
+		catch (Error e) {
+			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
+		}
+
 		MessageCodec<?> codec = codecLookup.find(opcode);
-		
 		if (codec == null) {
 			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
 		}
-		
+
 		if (codec.isExpanded()) {
 			buf.readShort();
 		} else {
@@ -70,31 +81,27 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		}
 
 		previousOpcode = opcode;
-		
-		Object message = codec.decode(buf);
-		
-		if (configListen) {
-			if (Commons.isSpout) {
-				if (message instanceof BootstrapIdentificationMessage) {
-					BootstrapIdentificationMessage idMessage = (BootstrapIdentificationMessage)message;
 
-					long id = idMessage.getSeed();
+		Message message = codec.decode(buf);
 
-					Protocol protocol = Protocol.getProtocol(id);
-					
-					if (protocol != null) {
-						codecLookup = protocol.getCodecLookupService();
-						encoder.setProtocol(protocol);
-						handler.setProtocol(protocol);
-						configListen = true;
-					} else {
-						throw new IllegalStateException("No protocol associated with an id of " + id);
-					}
+		if (bootstrapProtocol != null) {
+			//TODO: Why is this never printed??????
+			System.out.println("Checking for protocol definition");
+			long id = bootstrapProtocol.detectProtocolDefinition(message);
+			if (id != -1L) {
+				Protocol protocol = Protocol.getProtocol(id);
+
+				if (protocol != null) {
+					codecLookup = protocol.getCodecLookupService();
+					encoder.setProtocol(protocol);
+					handler.setProtocol(protocol);
+					bootstrapProtocol = null;
+				} else {
+					throw new IllegalStateException("No protocol associated with an id of " + id);
 				}
 			}
 		}
-			
+
 		return message;
 	}
-	
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
@@ -37,11 +37,6 @@ public class MathHelper {
 	 * A "close to zero" float epsilon value for use
 	 */
 	public static final float FLT_EPSILON = Float.intBitsToFloat(0x34000000);
-
-	/**
-	 * A "close to zero" float epsilon value for use
-	 */
-	public static final float ZERO_TOLERANCE = 0.0001f;
 
 	public static final double PI = Math.PI;
 
@@ -134,7 +129,7 @@ public class MathHelper {
 		int blue = lerp(a.getBlueI(), b.getBlueI(), percent);
 		int green = lerp(a.getGreenI(), b.getGreenI(), percent);
 		int alpha = lerp(a.getAlphaI(), b.getAlphaI(), percent);
-		return new Color(red, blue, green, alpha);
+		return new Color(red, green, blue, alpha);
 	}
 
 	public static double clamp(double value, double low, double high) {
@@ -165,7 +160,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 getDirectionVector(float pitch, float yaw) {
-		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate((new Quaternion(pitch, Vector3.UNIT_Z)).multiply(new Quaternion(yaw, Vector3.UNIT_Y))));
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(new Quaternion(pitch, Vector3.UNIT_Z).multiply(new Quaternion(yaw, Vector3.UNIT_Y))));
 	}
 
 	/**
@@ -230,12 +225,28 @@ public class MathHelper {
 	private final static double asin_d = 1.00138940860107040d;
 
 	private final static double atan_a = 0.280872d;
-	
+
 	// Integer Maths
-	
+
+	public static int floor(double x) {
+		int y = (int) x;
+		if (x < y) {
+			return y - 1;
+		}
+		return y;
+	}
+
+	public static int floor(float x) {
+		int y = (int) x;
+		if (x < y) {
+			return y - 1;
+		}
+		return y;
+	}
+
 	/**
 	 * Rounds an integer up to the next power of 2.
-	 * 
+	 *
 	 * @param x
 	 * @return the lowest power of 2 greater or equal to x
 	 */
@@ -255,5 +266,4 @@ public class MathHelper {
 			return x;
 		}
 	}
-
 }

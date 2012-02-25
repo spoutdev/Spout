@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,13 +18,15 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.protocol;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,21 +70,30 @@ public abstract class CodecLookupService {
 		}
 		classTable.put(codec.getType(), codec);
 	}
-	
+
 	/**
 	 * Finds a codec by short opcode.
 	 *
 	 * @param opcode The opcode.
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
+	private MessageCodec<?> findNotchian(int opcode) {
+		if (opcode < 0 || opcode >= opcodeTable.length) {
+			return null;
+		} else {
+			return opcodeTable[opcode];
+		}
+	}
+
 	public MessageCodec<?> find(int opcode) {
-		MessageCodec<?> codec = opcodeTable[(opcode >> 8) & 0xFF];
-		
+		MessageCodec<?> codec = findNotchian(opcode >> 8);
+
 		if (codec != null) {
 			return codec;
-		} else {
+		} else if (opcode > -1 && opcode < expandedOpcodeTable.length) {
 			return expandedOpcodeTable[opcode];
 		}
+		return null;
 	}
 
 	/**
@@ -95,6 +106,10 @@ public abstract class CodecLookupService {
 	@SuppressWarnings("unchecked")
 	public <T extends Message> MessageCodec<T> find(Class<T> clazz) {
 		return (MessageCodec<T>) classTable.get(clazz);
+	}
+
+	public Collection<MessageCodec<?>> getCodecs() {
+		return Collections.unmodifiableCollection(classTable.values());
 	}
 
 	/**

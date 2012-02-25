@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,17 +18,17 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.event.entity;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.discrete.Point;
-
 
 /**
  * Holds information for entity movement events
@@ -40,45 +40,46 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 
 	private Point to;
 
+	public EntityMoveEvent(Entity e, Point from, Point to) {
+		super(e);
+		this.from = from;
+		this.to = to;
+	}
+
 	/**
-	 * Gets the Point this entity moved from
+	 * Gets the Point this entity moved from.
 	 *
-	 * @return Point the entity moved from
+	 * @return Point the entity moved from.
 	 */
 	public Point getFrom() {
 		return from;
 	}
 
 	/**
-	 * Sets the Point to mark as where the entity moved from
+	 * Sets the Point to mark as where the entity moved from.
 	 *
-	 * @param from New Point to mark as the entitys previous Point
+	 * @param from New Point to mark as the entity's previous Point.
 	 */
 	public void setFrom(Point from) {
 		this.from = from;
 	}
 
 	/**
-	 * Gets the Point this entity moved to
+	 * Gets the Point this entity moved to.
 	 *
-	 * @return Point the entity moved to
+	 * @return Point the entity moved to.
 	 */
 	public Point getTo() {
 		return to;
 	}
 
 	/**
-	 * Sets the Point that this entity will move to
+	 * Sets the Point that this entity will move to.
 	 *
-	 * @param to New Point this entity will move to
+	 * @param to New Point this entity will move to.
 	 */
 	public void setTo(Point to) {
 		this.to = to;
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
 	}
 
 	@Override
@@ -86,8 +87,12 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 		super.setCancelled(cancelled);
 	}
 
-	public static HandlerList getHandlerList() {
+	@Override
+	public HandlerList getHandlers() {
 		return handlers;
 	}
 
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util;
@@ -29,8 +29,8 @@ import java.util.Iterator;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.geo.discrete.Pointm;
+import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3m;
 
@@ -54,8 +54,11 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 * @param world The world to use for tracing
 	 * @param eye the eyeline to trace
-	 * @param yOffset The trace begins vertically offset from the start vector by this value
-	 * @param maxDistance This is the maximum distance in blocks for the trace.  Setting this value above 140 may lead to problems with unloaded chunks.  A value of 0 indicates no limit
+	 * @param yOffset The trace begins vertically offset from the start vector
+	 *            by this value
+	 * @param maxDistance This is the maximum distance in blocks for the trace.
+	 *            Setting this value above 140 may lead to problems with
+	 *            unloaded chunks. A value of 0 indicates no limit
 	 *
 	 */
 	public BlockIterator(World world, Transform pos, int maxDistance) {
@@ -63,24 +66,22 @@ public class BlockIterator implements Iterator<Block> {
 		direction = new Vector3m(MathHelper.getDirectionVector(pos.getRotation()));
 
 		float max = Math.abs(direction.getX());
-		max = (Math.abs(direction.getY()) > max) ? Math.abs(direction.getY()) : max;
-		max = (Math.abs(direction.getZ()) > max) ? Math.abs(direction.getY()) : max;
+		max = Math.abs(direction.getY()) > max ? Math.abs(direction.getY()) : max;
+		max = Math.abs(direction.getZ()) > max ? Math.abs(direction.getY()) : max;
 
 		if (max == 0) {
 			throw new IllegalArgumentException("Direction may not be a zero vector");
 		}
 
-		direction.multiply(1/max);
+		direction.multiply(1 / max);
 
 		blocksRead = 0;
 		this.maxDistance = maxDistance;
 	}
 
-
 	public boolean hasNext() {
 		return !done && blocksRead < maxDistance;
 	}
-
 
 	public Block next() {
 		if (done) {
@@ -98,6 +99,6 @@ public class BlockIterator implements Iterator<Block> {
 	}
 
 	public void remove() {
-		throw new UnsupportedOperationException("Block removal is not supported by this iterator");		
+		throw new UnsupportedOperationException("Block removal is not supported by this iterator");
 	}
 }

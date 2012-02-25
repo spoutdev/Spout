@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,29 +18,32 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.generator;
 
 import org.spout.api.geo.cuboid.Chunk;
+import java.util.Random;
 
 public interface Populator {
-	
 	/**
-	 * Populates the chunk.  
-	 * 
+	 * Populates the chunk.
+	 *
 	 * This method may make full use of the block modifying methods of the API.
-	 * 
-	 * This method will be called once per chunk and it is guaranteed that a 2x2x2 cube of chunks containing the chunk will be loaded.
-	 * 
-	 * The chunk to populate is the chunk with the lowest x, y and z coordinates of the cube.
-	 * 
+	 *
+	 * This method will be called once per chunk and it is guaranteed that a
+	 * 2x2x2 cube of chunks containing the chunk will be loaded.
+	 *
+	 * The chunk to populate is the chunk with the lowest x, y and z coordinates
+	 * of the cube.
+	 *
 	 * This allows the populator to create features that cross chunk boundaries.
-	 * 
-	 * @param c the chunk to populate
+	 *
+	 * @param chunk the chunk to populate
+     * @param random The RNG for this chunk
 	 */
-	public void populate(Chunk c);
+	public void populate(Chunk chunk, Random random);
 }

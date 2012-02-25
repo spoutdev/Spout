@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
@@ -28,8 +28,7 @@ package org.spout.api.math;
 /**
  * Represents a 3d vector.
  */
-public class Vector3 implements Comparable<Vector3> {
-
+public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
@@ -103,8 +102,8 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Constructs and initializes a Vector3 from an old Vector3
-	 * 
-	 * @param o 
+	 *
+	 * @param o
 	 */
 	public Vector3(Vector3 o) {
 		this(o.x, o.y, o.z);
@@ -116,7 +115,6 @@ public class Vector3 implements Comparable<Vector3> {
 	public Vector3() {
 		this(0, 0, 0);
 	}
-
 
 	public float getX() {
 		return x;
@@ -142,38 +140,38 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		return Vector3.add(this, new Vector3(x, y, z));
+		return add(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 add(double x, double y, double z) {
-		return Vector3.add(this, new Vector3(x, y, z));
+		return add(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 add(int x, int y, int z) {
-		return Vector3.add(this, new Vector3(x, y, z));
+		return add(new Vector3(x, y, z));
 	}
 
 	/**
@@ -188,38 +186,38 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		return Vector3.subtract(this, new Vector3(x, y, z));
+		return subtract(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 subtract(double x, double y, double z) {
-		return Vector3.subtract(this, new Vector3(x, y, z));
+		return subtract(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 subtract(int x, int y, int z) {
-		return Vector3.subtract(this, new Vector3(x, y, z));
+		return subtract(new Vector3(x, y, z));
 	}
 
 	/**
@@ -234,68 +232,68 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 multiply(float x, float y, float z) {
-		return Vector3.multiply(this, new Vector3(x, y, z));
+		return multiply(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 multiply(double x, double y, double z) {
-		return Vector3.multiply(this, new Vector3(x, y, z));
+		return multiply(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 multiply(int x, int y, int z) {
-		return Vector3.multiply(this, new Vector3(x, y, z));
+		return multiply(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector3 multiply(float val) {
-		return Vector3.multiply(this, new Vector3(val, val, val));
+		return multiply(new Vector3(val, val, val));
 	}
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector3 multiply(double val) {
-		return Vector3.multiply(this, new Vector3(val, val, val));
+		return multiply(new Vector3(val, val, val));
 	}
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector3 multiply(int val) {
-		return Vector3.multiply(this, new Vector3(val, val, val));
+		return multiply(new Vector3(val, val, val));
 	}
 
 	/**
@@ -310,70 +308,69 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 divide(float x, float y, float z) {
-		return Vector3.divide(this, new Vector3(x, y, z));
+		return divide(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 divide(double x, double y, double z) {
-		return Vector3.divide(this, new Vector3(x, y, z));
+		return divide(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return 
+	 * @return
 	 */
 	public Vector3 divide(int x, int y, int z) {
-		return Vector3.divide(this, new Vector3(x, y, z));
+		return divide(new Vector3(x, y, z));
 	}
 
 	/**
 	 * Divides a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector3 divide(float val) {
-		return Vector3.divide(this, new Vector3(val, val, val));
+		return divide(new Vector3(val, val, val));
 	}
 
 	/**
 	 * Divides a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector3 divide(double val) {
-		return Vector3.divide(this, new Vector3(val, val, val));
+		return divide(new Vector3(val, val, val));
 	}
 
 	/**
 	 * Divides a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
-	 * @return 
+	 * @return
 	 */
 	public Vector3 divide(int val) {
-		return Vector3.divide(this, new Vector3(val, val, val));
+		return divide(new Vector3(val, val, val));
 	}
-
 
 	/**
 	 * Takes the dot product of two vectors
@@ -386,24 +383,22 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Returns a Vector2 object using the X and Z values of
-	 * this Vector3. The x of this Vector3 becomes the x 
-	 * of the Vector2, and the z of this Vector3 becomes the 
-	 * y of the Vector2.
-	 * 
-	 * @return 
+	 * Returns a Vector2 object using the X and Z values of this Vector3. The x
+	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
+	 * becomes the y of the Vector2.
+	 *
+	 * @return
 	 */
 	public Vector2 toVector2() {
 		return Vector3.toVector2(this);
 	}
 
 	/**
-	 * Returns a Vector2m object using the X and Z values of
-	 * this Vector3. The x of this Vector3 becomes the x 
-	 * of the Vector2, and the z of this Vector3 becomes the 
-	 * y of the Vector2m.
-	 * 
-	 * @return 
+	 * Returns a Vector2m object using the X and Z values of this Vector3. The x
+	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
+	 * becomes the y of the Vector2m.
+	 *
+	 * @return
 	 */
 	public Vector2m toVector2m() {
 		return Vector3.toVector2m(this);
@@ -420,40 +415,39 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 up to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
 	public Vector3 ceil() {
 		return new Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z));
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 down to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
 	public Vector3 floor() {
 		return new Vector3(Math.floor(x), Math.floor(y), Math.floor(z));
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
 	public Vector3 round() {
 		return new Vector3(Math.round(x), Math.round(y), Math.round(z));
 	}
 
 	/**
-	 * Sets the X, Y, and Z values of this Vector3 to their
-	 * absolute value.
-	 * 
-	 * @return 
+	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
+	 *
+	 * @return
 	 */
 	public Vector3 abs() {
 		return new Vector3(Math.abs(x), Math.abs(y), Math.abs(z));
@@ -461,9 +455,9 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Gets the distance between this Vector3 and a given Vector3.
-	 * 
+	 *
 	 * @param a
-	 * @return 
+	 * @return
 	 */
 	public double distance(Vector3 a) {
 		return Vector3.distance(a, this);
@@ -471,9 +465,9 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Raises the X, Y, and Z values of this Vector3 to the given power.
-	 * 
+	 *
 	 * @param power
-	 * @return 
+	 * @return
 	 */
 	public Vector3 pow(double power) {
 		return Vector3.pow(this, power);
@@ -500,8 +494,8 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Returns a fast approximation of this vector's length.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public float fastLength() {
 		return Vector3.fastLength(this);
@@ -536,6 +530,13 @@ public class Vector3 implements Comparable<Vector3> {
 		return Vector3.transform(this, transformation);
 	}
 
+	/**
+	 * Returns a new vector that is a transformation of this vector around the
+	 * given transformation
+	 *
+	 * @param transformation
+	 * @return
+	 */
 	public Vector3 transform(Quaternion transformation) {
 		return Vector3.transform(this, transformation);
 	}
@@ -550,6 +551,7 @@ public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Checks if two Vector3s are equal
 	 */
+	@Override
 	public boolean equals(Object b) {
 		if (!(b instanceof Vector3)) {
 			return false;
@@ -559,22 +561,22 @@ public class Vector3 implements Comparable<Vector3> {
 		}
 		Vector3 xT = this;
 		Vector3 yT = (Vector3) b;
-		if (xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ()) {
-			return true;
-		}
-		return false;
+		return xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ();
 	}
+
+	// TODO - all the methods below need to use .getX(), .getY() etc, for all "other" vectors.
 
 	/**
 	 * Generates a unique hash code for this set of values
-	 * @return 
+	 *
+	 * @return
 	 */
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 37 * hash + Float.floatToIntBits(this.x);
-		hash = 37 * hash + Float.floatToIntBits(this.y);
-		hash = 37 * hash + Float.floatToIntBits(this.z);
+		hash = 37 * hash + Float.floatToIntBits(x);
+		hash = 37 * hash + Float.floatToIntBits(y);
+		hash = 37 * hash + Float.floatToIntBits(z);
 		return hash;
 	}
 
@@ -583,14 +585,18 @@ public class Vector3 implements Comparable<Vector3> {
 		return "(" + x + ", " + y + ", " + z + ")";
 	}
 
+	@Override
+	public Vector3 clone() {
+		return new Vector3(x, y, z);
+	}
+
 	/**
-	 * Returns the length of the given vector. 
-	 * 
-	 * Note: Makes use of Math.sqrt and
-	 * is not cached, so can be slow
+	 * Returns the length of the given vector.
+	 *
+	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
 	 *
 	 * Also known as norm. ||a||
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -600,9 +606,9 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Returns an approximate length of the given vector.
-	 * 
+	 *
 	 * @param a
-	 * @return 
+	 * @return
 	 */
 	public static float fastLength(Vector3 a) {
 		return (float) Math.sqrt(lengthSquared(a));
@@ -638,7 +644,7 @@ public class Vector3 implements Comparable<Vector3> {
 	public static Vector3 add(Vector3 a, Vector3 b) {
 		return new Vector3(a.getX() + b.getX(), a.getY() + b.getY(), a.getZ() + b.getZ());
 	}
-	
+
 	/**
 	 * Creates a new vector that is A - B
 	 *
@@ -649,7 +655,7 @@ public class Vector3 implements Comparable<Vector3> {
 	public static Vector3 subtract(Vector3 a, Vector3 b) {
 		return new Vector3(a.getX() - b.getX(), a.getY() - b.getY(), a.getZ() - b.getZ());
 	}
-	
+
 	/**
 	 * Multiplies one Vector3 by the other Vector3
 	 *
@@ -658,7 +664,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 multiply(Vector3 a, Vector3 b) {
-		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+		return new Vector3(a.getX() * b.getX(), a.getY() * b.getY(), a.getZ() * b.getZ());
 	}
 
 	/**
@@ -669,7 +675,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static Vector3 divide(Vector3 a, Vector3 b) {
-		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+		return new Vector3(a.getX() / b.getX(), a.getY() / b.getY(), a.getZ() / b.getZ());
 	}
 
 	/**
@@ -696,86 +702,89 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of the given Vector3 up to 
-	 * the nearest integer value. 
-	 * 
+	 * Rounds the X, Y, and Z values of the given Vector3 up to the nearest
+	 * integer value.
+	 *
 	 * @param o Vector3 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 ceil(Vector3 o) {
-		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
+		return new Vector3(Math.ceil(o.getX()), Math.ceil(o.getY()), Math.ceil(o.getZ()));
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of the given Vector3 down to 
-	 * the nearest integer value. 
-	 * 
+	 * Rounds the X, Y, and Z values of the given Vector3 down to the nearest
+	 * integer value.
+	 *
 	 * @param o Vector3 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 floor(Vector3 o) {
-		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
+		return new Vector3(Math.floor(o.getX()), Math.floor(o.getY()), Math.floor(o.getZ()));
 	}
 
 	/**
-	 * Rounds the X, Y, and Z values of the given Vector3 to 
-	 * the nearest integer value. 
-	 * 
+	 * Rounds the X, Y, and Z values of the given Vector3 to the nearest integer
+	 * value.
+	 *
 	 * @param o Vector3 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 round(Vector3 o) {
-		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
+		return new Vector3(Math.round(o.getX()), Math.round(o.getY()), Math.round(o.getZ()));
 	}
 
 	/**
-	 * Sets the X, Y, and Z values of the given Vector3 to their
-	 * absolute value.
-	 * 
+	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
+	 *
 	 * @param o Vector3 to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 abs(Vector3 o) {
-		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
+		return new Vector3(Math.abs(o.getX()), Math.abs(o.getY()), Math.abs(o.getZ()));
 	}
 
 	/**
 	 * Returns a Vector3 containing the smallest X, Y, and Z values.
-	 * 
+	 *
 	 * @param o1
 	 * @param o2
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 min(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
+		return new Vector3(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()), Math.min(o1.getZ(), o2.getZ()));
 	}
 
 	/**
 	 * Returns a Vector3 containing the largest X, Y, and Z values.
-	 * 
+	 *
 	 * @param o1
 	 * @param o2
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 max(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
+		return new Vector3(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()), Math.max(o1.getZ(), o2.getZ()));
 	}
 
 	/**
 	 * Returns a Vector3 with random X, Y, and Z values (between 0 and 1)
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public static Vector3 rand() {
-		return new Vector3(Math.random(), Math.random(), Math.random());
+		double[] rands = new double[3];
+		for (int i = 0; i < 3; i++) {
+			rands[i] = Math.random() * 2 - 1;
+		}
+		return new Vector3(rands[0], rands[1], rands[2]);
 	}
 
 	/**
-	 * Gets the distance between two Vector3. 
-	 * 
+	 * Gets the distance between two Vector3.
+	 *
 	 * @param a
 	 * @param b
-	 * @return 
+	 * @return
 	 */
 	public static double distance(Vector3 a, Vector3 b) {
 		double xzDist = Vector2.distance(a.toVector2(), b.toVector2());
@@ -784,39 +793,37 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Raises the X, Y, and Z values of a Vector3 to the given power.
-	 * 
+	 *
 	 * @param o
 	 * @param power
-	 * @return 
+	 * @return
 	 */
 	public static Vector3 pow(Vector3 o, double power) {
-		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
+		return new Vector3(Math.pow(o.getX(), power), Math.pow(o.getY(), power), Math.pow(o.getZ(), power));
 	}
 
 	/**
-	 * Returns a Vector2 object using the X and Z values of
-	 * the given Vector3. The x of the Vector3 becomes the x 
-	 * of the Vector2, and the z of this Vector3 becomes the 
-	 * y of the Vector2m.
-	 * 
+	 * Returns a Vector2 object using the X and Z values of the given Vector3.
+	 * The x of the Vector3 becomes the x of the Vector2, and the z of this
+	 * Vector3 becomes the y of the Vector2m.
+	 *
 	 * @param o Vector3 object to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector2 toVector2(Vector3 o) {
-		return new Vector2(o.x, o.z);
+		return new Vector2(o.getX(), o.getZ());
 	}
 
 	/**
-	 * Returns a Vector2m object using the X and Z values of
-	 * the given Vector3. The x of the Vector3 becomes the x 
-	 * of the Vector2m, and the z of this Vector3 becomes the 
-	 * y of the Vector2m.
-	 * 
+	 * Returns a Vector2m object using the X and Z values of the given Vector3.
+	 * The x of the Vector3 becomes the x of the Vector2m, and the z of this
+	 * Vector3 becomes the y of the Vector2m.
+	 *
 	 * @param o Vector3 object to use
-	 * @return 
+	 * @return
 	 */
 	public static Vector2m toVector2m(Vector3 o) {
-		return new Vector2m(o.x, o.z);
+		return new Vector2m(o.getX(), o.getZ());
 	}
 
 	/**
@@ -826,7 +833,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static float[] toArray(Vector3 a) {
-		return new float[]{a.getX(), a.getY(), a.getZ()};
+		return new float[] {a.getX(), a.getY(), a.getZ()};
 	}
 
 	/**
@@ -844,6 +851,7 @@ public class Vector3 implements Comparable<Vector3> {
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
+	 *
 	 * @param vector
 	 * @param rot
 	 * @return

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.scheduler;
@@ -28,33 +28,34 @@ package org.spout.api.scheduler;
 import org.spout.api.plugin.Plugin;
 
 /**
- * A class to allow non-pulsed threads to synchronize with the pulsed thread system
+ * A class to allow non-pulsed threads to synchronize with the pulsed thread
+ * system
  */
 public interface SnapshotLock {
-
 	/**
 	 * Readlocks the stable snapshot.
-	 * 
-	 * This method will prevent server ticks from completing, so any locks should be short
-	 * 
+	 *
+	 * This method will prevent server ticks from completing, so any locks
+	 * should be short
+	 *
 	 * @param plugin the plugin
 	 */
 	public void readLock(Plugin plugin);
-	
+
 	/**
 	 * Attempts to readlock the stable snapshot and returns immediately
-	 * 
-	 * This method will prevent server ticks from completing, so any locks should be short
-	 * 
+	 *
+	 * This method will prevent server ticks from completing, so any locks
+	 * should be short
+	 *
 	 * @param plugin the plugin
 	 */
 	public boolean readTryLock(Plugin plugin);
-	
+
 	/**
 	 * Releases a previous readlock
-	 * 
+	 *
 	 * @param plugin the plugin
 	 */
 	public void readUnlock(Plugin plugin);
-	
 }

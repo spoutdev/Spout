@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,17 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.material;
 
-public interface BlockMaterial extends ItemMaterial {
+import org.spout.api.collision.BoundingBox;
+import org.spout.api.geo.World;
 
+public interface BlockMaterial extends ItemMaterial {
 	public void onWorldRender();
 
 	public float getFriction();
@@ -44,4 +46,39 @@ public interface BlockMaterial extends ItemMaterial {
 	public int getLightLevel();
 
 	public BlockMaterial setLightLevel(int level);
+	
+	/**
+	 * Gets the bounding box area of this material
+	 * 
+	 * @return area
+	 */
+	public BoundingBox getBoundingArea();
+
+	/**
+	 * True if this block requires physic updates when a neighbor block changes,
+	 * false if not.
+	 *
+	 * @return if this block requires physics updates
+	 */
+	public boolean hasPhysics();
+
+	/**
+	 * Called when a block adjacent to this material is changed.
+	 *
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 */
+	public void onUpdate(World world, int x, int y, int z);
+
+	/**
+	 * Called when this block has been destroyed.
+	 *
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 */
+	public void onDestroy(World world, int x, int y, int z);
 }

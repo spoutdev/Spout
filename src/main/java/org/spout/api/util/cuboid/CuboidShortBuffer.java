@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.cuboid;
@@ -30,10 +30,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
 public class CuboidShortBuffer extends CuboidBuffer {
-
 	private final short[] buffer;
 	private CuboidShortBuffer source;
-	
+
 	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] buffer) {
 		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.buffer = buffer;
@@ -67,7 +66,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 			throw new IllegalArgumentException("Only CuboidShortBuffers may be used as the data source when copying to a CuboidShortBuffer");
 		}
 	}
-	
+
 	public void set(int x, int y, int z, short data) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
@@ -76,7 +75,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 			buffer[index] = data;
 		}
 	}
-	
+
 	public short get(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
@@ -85,15 +84,14 @@ public class CuboidShortBuffer extends CuboidBuffer {
 			return buffer[index];
 		}
 	}
-	
+
 	public short[] getRawArray() {
 		return buffer;
 	}
-	
+
 	public void flood(short id) {
 		for (int i = 0; i < buffer.length; i++) {
 			buffer[i] = id;
 		}
 	}
-
 }

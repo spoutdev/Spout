@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.command;
@@ -41,9 +41,7 @@ import org.spout.api.util.Named;
  * Game.getCommandRoot().sub(&quot;preferredname&quot;).alias(&quot;alias1&quot;, &quot;alias2&quot;).help(&quot;This is the main command for MyPlugin&quot;).executor(myExecutor).sub(&quot;subcommand&quot;).help(&quot;This is a sub command of main command&quot;).executor(myExecutor).closeSub().closeSub();
  * </pre>
  */
-
-public interface Command extends RawCommandExecutor{
-
+public interface Command extends RawCommandExecutor {
 	/**
 	 * Creates a command and adds it as a sub-command to the active Command.
 	 *
@@ -79,7 +77,7 @@ public interface Command extends RawCommandExecutor{
 	 * @return the new active command or null if the stack was empty
 	 */
 	public Command closeSubCommand();
-	
+
 	/**
 	 * Adds an alias to the active Command.
 	 *
@@ -137,9 +135,23 @@ public interface Command extends RawCommandExecutor{
 	public Command addFlags(String flags);
 
 	/**
+	 * Returns this command's help. The help may contain multiple lines, split by \n.
+	 * @return this command's help
+	 */
+	public String getHelp();
+
+	/**
+	 * Returns the usage for this command with {@link #getPreferredName()} 
+	 * as the only element in the input array and a baseIndex of zero
+	 * @return The usage for this command
+	 */
+	public String getUsage();
+
+	/**
 	 * Gets the usage message for the command.
 	 *
 	 * @param input The raw input that was given
+	 * @param baseIndex The index where command arguments begin in input
 	 * @return the command's usage message
 	 */
 	public String getUsage(String[] input, int baseIndex);
@@ -188,6 +200,13 @@ public interface Command extends RawCommandExecutor{
 	public Command removeChild(String name);
 
 	/**
+	 * Removes children from this command who are owned by {@code owner}
+	 * @param owner The owner to remove the children of
+	 * @return The active command
+	 */
+	public Command removeChildren(Named owner);
+
+	/**
 	 * Removes an alias
 	 *
 	 * @param name The name of the alias to remove.
@@ -217,6 +236,19 @@ public interface Command extends RawCommandExecutor{
 	public boolean isLocked();
 
 	/**
+	 * Check if {@code owner} owns this command
+	 * @param owner The {@link Named} to check
+	 * @return Whether owner is the owner
+	 */
+	public boolean isOwnedBy(Named owner);
+
+	/**
+	 * Returns the name of this command's owner
+	 * @return The name of this command's owner
+	 */
+	public String getOwnerName();
+
+	/**
 	 * Updates the aliases list for this child command
 	 *
 	 * @param child The child command to update.
@@ -240,7 +272,9 @@ public interface Command extends RawCommandExecutor{
 	public Command setParent(Command parent);
 
 	/**
-	 * Sets a raw command executor that overrides Spout's built-in nested command and command flags handling.
+	 * Sets a raw command executor that overrides Spout's built-in nested
+	 * command and command flags handling.
+	 *
 	 * @param rawExecutor The command's raw executor.
 	 * @return The active command
 	 */
@@ -248,7 +282,9 @@ public interface Command extends RawCommandExecutor{
 
 	/**
 	 * Sets the permissions required to use this command.
-	 * @param requireAll Whether to require all of the listed permissions to execute the command.
+	 *
+	 * @param requireAll Whether to require all of the listed permissions to
+	 *            execute the command.
 	 * @param permissions The permissions required
 	 * @return The active command
 	 */
@@ -256,9 +292,25 @@ public interface Command extends RawCommandExecutor{
 
 	/**
 	 * Sets the arg limits for a command.
+	 *
 	 * @param min Minimum arg length. Cannot be less than 0.
 	 * @param max Maximum argument length. -1 for unlimited
 	 * @return The active command
 	 */
 	public Command setArgBounds(int min, int max);
+
+	/**
+	 * Return a child of this command registered with {@code name}
+	 * @param name The name of the child command requested
+	 * @return The child command, or null if it does not exist
+	 */
+	public Command getChild(String name);
+
+	/**
+	 * Checks whether {@code source} has the necessary permissions to use this command,
+	 * using the same method used for executing this command
+	 * @param source The sender of this command
+	 * @return Whether {@code source} can use this command
+	 */
+	public boolean hasPermission(CommandSource source);
 }

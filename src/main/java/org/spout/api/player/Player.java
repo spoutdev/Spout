@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,26 +18,27 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.player;
 
 import java.net.InetAddress;
 
+import org.spout.api.Source;
 import org.spout.api.command.CommandSource;
-import org.spout.api.entity.Entity;
-import org.spout.api.protocol.Session;
 import org.spout.api.data.DataSubject;
+import org.spout.api.entity.Entity;
 import org.spout.api.permissions.PermissionsSubject;
+import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.Session;
 
-public interface Player extends CommandSource, PermissionsSubject, DataSubject {
-	
+public interface Player extends CommandSource, PermissionsSubject, DataSubject, Source {
 	/**
 	 * Gets the player's name. This method is thread-safe.
-	 * 
+	 *
 	 * @Threadsafe
 	 * @return the player's name
 	 */
@@ -45,15 +46,15 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject {
 
 	/**
 	 * Gets the player's display name. This method is thread-safe.
-	 * 
-	 * @Threadsafe 
+	 *
+	 * @Threadsafe
 	 * @return the player's display name
 	 */
 	public String getDisplayName();
 
 	/**
 	 * Sets the player's display name. This method is thread-safe.
-	 * 
+	 *
 	 * @Threadsafe
 	 * @param the new player's display name
 	 */
@@ -65,42 +66,60 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject {
 	 * @param message the message to send
 	 */
 	public void chat(String message);
-	
+
 	/**
 	 * Gets the entity corresponding to the player
-	 * 
+	 *
 	 * @return the entity, or null if the player is offline
 	 */
 	public Entity getEntity();
-	
+
+	/**
+	 * Sets the NetworkSynchronizer associated with this player.<br>
+	 * <br>
+	 * This can only be called once per player login.
+	 *
+	 * @param synchronizer the synchronizer
+	 */
+	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
+
+	/**
+	 * Gets the NetworkSynchronizer associated with this player.<br>
+	 *
+	 * @return the synchronizer
+	 */
+	public NetworkSynchronizer getNetworkSynchronizer();
+
 	/**
 	 * Gets the session associated with the Player.
-	 * 
+	 *
 	 * @return the session, or null if the player is offline
 	 */
 	public Session getSession();
-	
+
 	/**
 	 * Gets if the player is online
-	 * 
+	 *
 	 * @return true if online
 	 */
 	public boolean isOnline();
 
 	/**
-	 * Gets the sessions address
-	 * This is equivalent to getSession().getAddress().getAddress();
+	 * Gets the sessions address This is equivalent to
+	 * getSession().getAddress().getAddress();
+	 *
 	 * @return The session's address
 	 */
 	public InetAddress getAddress();
-	
+
 	/**
 	 * Kicks the player without giving a reason.
 	 */
 	public void kick();
-	
+
 	/**
 	 * Kicks the player for the given reason.
+	 *
 	 * @param reason the message to send to the player.
 	 */
 	public void kick(String reason);

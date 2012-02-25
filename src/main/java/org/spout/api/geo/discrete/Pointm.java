@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,20 +18,23 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.geo.discrete;
 
 import org.spout.api.geo.World;
+import org.spout.api.math.Vector3;
 
 /**
  * Represents a mutable position in a World
  */
-
 public class Pointm extends Point {
+	public Pointm() {
+		super(null, 0, 0, 0);
+	}
 
 	public Pointm(World world, float x, float y, float z) {
 		super(world, x, y, z);
@@ -39,6 +42,20 @@ public class Pointm extends Point {
 
 	public Pointm(Point point) {
 		super(point.getWorld(), point.getX(), point.getY(), point.getZ());
+	}
+	
+	@Override
+	public Point add(Point other) {
+		if (world != other.world) {
+			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
+		}
+		set(new Point(Vector3.add(this, other), world));
+		return this;
+	}
+
+	@Override
+	public Point add(Vector3 other) {
+		return add(new Point(Vector3.add(this, other), world));
 	}
 
 	/**
@@ -68,14 +85,14 @@ public class Pointm extends Point {
 	public void setZ(float z) {
 		this.z = z;
 	}
-	
+
 	/**
 	 * Sets this point equal to another point
 	 */
-	public void setPoint(Point point) {
-		this.world = point.world;
-		this.x = point.getX();
-		this.y = point.getY();
-		this.z = point.getZ();
+	public void set(Point point) {
+		world = point.world;
+		x = point.getX();
+		y = point.getY();
+		z = point.getZ();
 	}
 }

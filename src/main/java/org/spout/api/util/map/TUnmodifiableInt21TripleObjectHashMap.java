@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.map;
@@ -28,18 +28,20 @@ package org.spout.api.util.map;
 import gnu.trove.impl.unmodifiable.TUnmodifiableLongObjectMap;
 
 /**
- * A simplistic unmodifiable map that supports a 3 21 bit integers for keys, using a trove long Object hashmap in the backend. 1 bit is wasted.
+ * A simplistic unmodifiable map that supports a 3 21 bit integers for keys,
+ * using a trove long Object hashmap in the backend. 1 bit is wasted.
  */
-public class TUnmodifiableInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<K>{
+public class TUnmodifiableInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<K> {
 	public TUnmodifiableInt21TripleObjectHashMap(TInt21TripleObjectHashMap<K> map) {
 		this.map = new TUnmodifiableLongObjectMap<K>(map.getInternalMap());
 	}
-	
+
 	/**
 	 * Replaces the internal immutable map with this new one
+	 *
 	 * @param newMap to replace
 	 */
 	public void update(TInt21TripleObjectHashMap<K> newMap) {
-		this.map = new TUnmodifiableLongObjectMap<K>(newMap.getInternalMap());
+		map = new TUnmodifiableLongObjectMap<K>(newMap.getInternalMap());
 	}
 }

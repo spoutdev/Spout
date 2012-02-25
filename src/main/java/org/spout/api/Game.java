@@ -1,14 +1,14 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * In addition, 180 days after any changes are published, you can use the 
+ * In addition, 180 days after any changes are published, you can use the
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
@@ -18,14 +18,15 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.  
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license, 
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api;
 
 import java.io.File;
+import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -34,14 +35,14 @@ import java.util.logging.Logger;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.EventManager;
-import org.spout.api.event.EventSource;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.inventory.Recipe;
+import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.plugin.ServiceManager;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.Scheduler;
@@ -54,8 +55,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
  */
-public interface Game extends Named, EventSource {
-
+public interface Game extends Named {
 	/**
 	 * Gets the name of this game's implementation
 	 *
@@ -77,7 +77,7 @@ public interface Game extends Named, EventSource {
 	 * @return all the player names
 	 */
 	public List<String> getAllPlayers();
-	
+
 	/**
 	 * Gets all players currently online
 	 *
@@ -107,7 +107,7 @@ public interface Game extends Named, EventSource {
 	 * @return address
 	 */
 	public String getAddress();
-	
+
 	/**
 	 * Returns all IP addresses in use.
 	 *
@@ -174,11 +174,17 @@ public interface Game extends Named, EventSource {
 
 	/**
 	 * Gets the config folder for the game
-	 * 
-	 * It's in the server root
-	 * @return 
+	 *
+	 * @return config folder
 	 */
 	public File getConfigFolder();
+	
+	/**
+	 * Gets the folder that contains world, entity and player data.
+	 * 
+	 * @return data
+	 */
+	public File getDataFolder();
 
 	/**
 	 * Gets the player by the given username. <br/>
@@ -216,7 +222,7 @@ public interface Game extends Named, EventSource {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
-	 * 
+	 *
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 *
 	 * @param name of the world to search for
@@ -244,7 +250,7 @@ public interface Game extends Named, EventSource {
 
 	/**
 	 * Gets a List of actively loaded worlds
-	 * 
+	 *
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 *
 	 * @return a {@link List} of actively loaded worlds
@@ -252,16 +258,16 @@ public interface Game extends Named, EventSource {
 	@LiveRead
 	@SnapshotRead
 	public Collection<World> getWorlds();
-	
+
 	/**
 	 * Loads a world with the given name and generator
 	 * If the world doesn't exist on disk, it creates it.
-	 * 
+	 *
 	 * if the world is already loaded, this functions the same as {@link #getWorld(String)}
-	 * 
+	 *
 	 * @param name Name of the world
 	 * @param generator World Generator
-	 * @return 
+	 * @return
 	 */
 	@LiveRead
 	public World loadWorld(String name, WorldGenerator generator);
@@ -291,6 +297,12 @@ public interface Game extends Named, EventSource {
 	 * data is saved, and all threads are ended cleanly.
 	 */
 	public void stop();
+	
+	/**
+	 * Ends this game instance safely. All worlds, players, and configuration
+	 * data is saved, and all threads are ended cleanly.
+	 */
+	public void stop(String reason);
 
 	/**
 	 * Gets the folder that contains the world save data.
@@ -317,85 +329,69 @@ public interface Game extends Named, EventSource {
 	 * @return Our EventManager instance
 	 */
 	public EventManager getEventManager();
-	
+
 	/**
 	 * Returns the {@link Platform} that the game is currently running on.
-	 * 
+	 *
 	 * @return current platform type
 	 */
 	public Platform getPlatform();
-	
+
 	/**
 	 * Creates a new Session
-	 * 
+	 *
 	 * @param channel the associated channel
 	 * @return the session
 	 */
 	public Session newSession(Channel channel);
-	
+
 	/**
 	 * Gets the network channel group.
 	 *
 	 * @return The {@link ChannelGroup}.
 	 */
 	public ChannelGroup getChannelGroup();
-	
+
 	/**
 	 * Gets the session registry.
 	 *
 	 * @return The {@link SessionRegistry}.
 	 */
 	public SessionRegistry getSessionRegistry();
-	
+
 	/**
 	 * Gets the default world generator for this game. Specific generators can be specified when loading new worlds.
-	 * 
+	 *
 	 * @return default world generator.
 	 */
 	public WorldGenerator getDefaultGenerator();
-	
-	/**
-	 * Sets the default world generator for this game. Any worlds without a specific world generator will use this generator.
-	 * 
-	 * @param generator to use by default
-	 */
-	public void setDefaultGenerator(WorldGenerator generator);
-	
+
 	/**
 	 * Gets the scheduler
-	 * 
+	 *
 	 * @return the scheduler
 	 */
 	public Scheduler getScheduler();
 
 	/**
-	 * Registers a recipe to this games recipe database, then stores the recipe in the associated plugins recipe.yml.
-	 * If a recipe for that plugin of that name already exists, it will update the database and the recipe.yml
-	 * 
-	 * @param recipe to register
+	 * Returns the bootstrap protocol for {@code address}
+	 * @param address The address
+	 * @return The protocol
 	 */
-	public void addRecipe(Recipe recipe);
-	
+	public BootstrapProtocol getBootstrapProtocol(SocketAddress address);
+
 	/**
-	 * Gets a recipe registered to this games recipe database, based on the plugin and name of the recipe.
+	 * Gets the service manager
 	 * 
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return the recipe if it's found, otherwise null
+	 * @return ServiceManager
 	 */
-	public Recipe getRecipe(Plugin plugin, String recipe);
-	
+	public ServiceManager getServiceManager();
+
 	/**
-	 * Removes a recipe from the games recipes database, then returns the instance of it if you want to back it up.
+	 * Gets the recipe manager
 	 * 
-	 * *WARNING*
-	 * This will also remove the recipe from the plugins recipe.yml!
-	 * It returns a reference to the removed recipe if you want to back it up for safe keeping still.
-	 * *WARNING*
-	 * 
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return recipe that was removed
+	 * @return RecipeManager
 	 */
-	public Recipe removeRecipe(Plugin plugin, String recipe);
+	public RecipeManager getRecipeManager();
+	
 }

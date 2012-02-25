@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.collision;
@@ -29,12 +29,13 @@ import org.spout.api.math.Vector3;
 
 /**
  * Defines a Volume that can collide with another Volume
- * 
+ *
  *
  */
 public interface CollisionVolume {
 	/**
 	 * Checks for Intersection
+	 *
 	 * @param other
 	 * @return
 	 */
@@ -42,8 +43,9 @@ public interface CollisionVolume {
 
 	/**
 	 * Checks for containing
+	 *
 	 * @param other
-	 * @return 
+	 * @return
 	 */
 	public boolean contains(CollisionVolume other);
 
@@ -51,9 +53,9 @@ public interface CollisionVolume {
 
 	/**
 	 * Checks for containing the given bounding sphere.
-	 * 
+	 *
 	 * @param b
-	 * @return 
+	 * @return
 	 */
 	public boolean containsBoundingSphere(BoundingSphere b);
 
@@ -65,18 +67,18 @@ public interface CollisionVolume {
 
 	/**
 	 * Checks if the volume contains the other Vector3.
-	 * 
+	 *
 	 * @param p
-	 * @return 
+	 * @return
 	 */
 	public boolean containsPoint(Vector3 b);
 
 	/**
 	 * Defines a sweep test from one start to an end
+	 *
 	 * @param start
 	 * @param end
 	 * @return
 	 */
 	public Vector3 resolve(CollisionVolume start, CollisionVolume end);
-
 }

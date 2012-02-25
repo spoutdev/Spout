@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.render;
@@ -37,7 +37,6 @@ import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
 
 public class GenericBlockDesign implements BlockDesign {
-
 	protected boolean reset = false;
 
 	protected float lowXBound;
@@ -263,8 +262,7 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public Vector3m getLightSource(int quad, int x, int y, int z) {
-		Vector3m blockVector = new Vector3m(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
-		return blockVector;
+		return new Vector3m(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
 	}
 
 	public BlockDesign setTexture(Plugin addon, Texture texture) {
@@ -308,5 +306,4 @@ public class GenericBlockDesign implements BlockDesign {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }

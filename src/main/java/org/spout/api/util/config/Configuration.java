@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util.config;
@@ -34,6 +34,8 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.spout.api.exception.ConfigurationException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -48,36 +50,41 @@ import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * YAML configuration loader. To use this class, construct it with path to
- * a file and call its load() method. For specifying node paths in the
- * various get*() methods, they support SK's path notation, allowing you to
- * select child nodes by delimiting node names with periods.
- * 
+ * YAML configuration loader. To use this class, construct it with path to a
+ * file and call its load() method. For specifying node paths in the various
+ * get*() methods, they support SK's path notation, allowing you to select child
+ * nodes by delimiting node names with periods.
+ *
  * <p>
- * For example, given the following configuration file:</p>
- * 
- * <pre>members:
- *	 - Hollie
- *	 - Jason
- *	 - Bobo
- *	 - Aya
- *	 - Tetsu
+ * For example, given the following configuration file:
+ * </p>
+ *
+ * <pre>
+ * members:
+ *  - Hollie
+ *  - Jason
+ *  - Bobo
+ *  - Aya
+ *  - Tetsu
  * worldguard:
- *	 fire:
- *		 spread: false
- *		 blocks: [cloth, rock, glass]
+ *  fire:
+ * 	 spread: false
+ * 	 blocks: [cloth, rock, glass]
  * sturmeh:
- *	 cool: false
- *	 eats:
- *		 babies: true</pre>
- * 
- * <p>Calling code could access sturmeh's baby eating state by using
+ *  cool: false
+ *  eats:
+ * 	 babies: true
+ * </pre>
+ *
+ * <p>
+ * Calling code could access sturmeh's baby eating state by using
  * <code>getBoolean("sturmeh.eats.babies", false)</code>. For lists, there are
  * methods such as <code>getStringList</code> that will return a type safe list.
- * 
- * <p>This class is currently incomplete. It is not yet possible to get a node.
+ *
+ * <p>
+ * This class is currently incomplete. It is not yet possible to get a node.
  * </p>
- * 
+ *
  * @author sk89q
  */
 public class Configuration extends ConfigurationNode {
@@ -104,9 +111,14 @@ public class Configuration extends ConfigurationNode {
 	public void load() {
 		BufferedReader in = null;
 		try {
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+			}
+			
 			in = new BufferedReader(new FileReader(file));
 			String str;
-			StringBuffer buffer = new StringBuffer(10000);
+			StringBuilder buffer = new StringBuilder(10000);
 			while ((str = in.readLine()) != null) {
 				buffer.append(str.replaceAll("\t", "    "));
 				buffer.append('\n');
@@ -122,44 +134,45 @@ public class Configuration extends ConfigurationNode {
 				if (in != null) {
 					in.close();
 				}
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 	}
 
 	/**
-	 * Set the header for the file as a series of lines that are terminated
-	 * by a new line sequence.
-	 * 
+	 * Set the header for the file as a series of lines that are terminated by a
+	 * new line sequence.
+	 *
 	 * @param headerLines header lines to prepend
 	 */
-	public void setHeader(String ... headerLines)  {
+	public void setHeader(String... headerLines) {
 		StringBuilder header = new StringBuilder();
-		
+
 		for (String line : headerLines) {
 			if (header.length() > 0) {
 				header.append("\r\n");
 			}
 			header.append(line);
 		}
-		
+
 		setHeader(header.toString());
 	}
-	
+
 	/**
-	 * Set the header for the file. A header can be provided to prepend the
-	 * YAML data output on configuration save. The header is 
-	 * printed raw and so must be manually commented if used. A new line will
-	 * be appended after the header, however, if a header is provided.
-	 * 
+	 * Set the header for the file. A header can be provided to prepend the YAML
+	 * data output on configuration save. The header is printed raw and so must
+	 * be manually commented if used. A new line will be appended after the
+	 * header, however, if a header is provided.
+	 *
 	 * @param header header to prepend
 	 */
 	public void setHeader(String header) {
 		this.header = header;
 	}
-	
+
 	/**
 	 * Return the set header.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getHeader() {
@@ -167,8 +180,8 @@ public class Configuration extends ConfigurationNode {
 	}
 
 	/**
-	 * Saves the configuration to disk. All errors are clobbered. 
-	 * 
+	 * Saves the configuration to disk. All errors are clobbered.
+	 *
 	 * @param header header to prepend
 	 * @return true if it was successful
 	 */
@@ -190,12 +203,14 @@ public class Configuration extends ConfigurationNode {
 			}
 			yaml.dump(root, writer);
 			return true;
-		} catch (IOException e) {} finally {
+		} catch (IOException e) {
+		} finally {
 			try {
 				if (stream != null) {
 					stream.close();
 				}
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 
 		return false;
@@ -215,8 +230,9 @@ public class Configuration extends ConfigurationNode {
 	}
 
 	/**
-	 * This method returns an empty ConfigurationNode for using as a
-	 * default in methods that select a node from a node list.
+	 * This method returns an empty ConfigurationNode for using as a default in
+	 * methods that select a node from a node list.
+	 *
 	 * @return
 	 */
 	public static ConfigurationNode getEmptyNode() {
@@ -225,10 +241,9 @@ public class Configuration extends ConfigurationNode {
 }
 
 class EmptyNullRepresenter extends Representer {
-
 	public EmptyNullRepresenter() {
 		super();
-		this.nullRepresenter = new EmptyRepresentNull();
+		nullRepresenter = new EmptyRepresentNull();
 	}
 
 	protected class EmptyRepresentNull implements Represent {

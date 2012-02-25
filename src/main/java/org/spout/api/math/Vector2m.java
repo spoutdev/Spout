@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,14 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
 
-public class Vector2m extends Vector2 {
-
+public class Vector2m extends Vector2 implements Cloneable{
 	public Vector2m() {
 	}
 
@@ -44,6 +43,11 @@ public class Vector2m extends Vector2 {
 
 	public Vector2m(float x, float y) {
 		super(x, y);
+	}
+
+	public void set(Vector2 vector) {
+		x = vector.getX();
+		y = vector.getY();
 	}
 
 	/**
@@ -66,80 +70,117 @@ public class Vector2m extends Vector2 {
 
 	@Override
 	public Vector2 add(Vector2 that) {
-		x += that.x;
-		y += that.y;
+		set(super.add(that));
 		return this;
 	}
 
 	@Override
 	public Vector2 subtract(Vector2 that) {
-		x -= that.x;
-		y -= that.y;
+		set(super.subtract(that));
 		return this;
 	}
-
 
 	@Override
 	public Vector2 cross() {
-		float tmp = y;
-		y = -x;
-		x = tmp;
+		set(super.cross());
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X and Y values of this Vector2 up to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X and Y values of this Vector2 up to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector2 ceil() {
-		x = (float) Math.ceil(x);
-		y = (float) Math.ceil(y);
+		set(super.ceil());
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X and Y values of this Vector2 down to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X and Y values of this Vector2 down to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector2 floor() {
-		x = (float) Math.floor(x);
-		y = (float) Math.floor(y);
+		set(super.floor());
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X and Y values of this Vector2 to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X and Y values of this Vector2 to the nearest integer value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector2 round() {
-		x = Math.round(x);
-		y = Math.round(y);
+		set(super.round());
 		return this;
 	}
-	
+
 	/**
-	 * Sets the X and Y values of this Vector2 to their
-	 * absolute value.
-	 * 
-	 * @return 
+	 * Sets the X and Y values of this Vector2 to their absolute value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector2 abs() {
-		x = Math.abs(x);
-		y = Math.abs(y);
+		set(super.abs());
+		return this;
+	}
+
+	/**
+	 * Returns this Vector2 where the length is equal to 1
+	 *
+	 * @return This Vector2 with length 1
+	 */
+	@Override
+	public Vector2 normalize() {
+		set(super.normalize());
+		return this;
+	}
+
+	/**
+	 * Divides the given Vector2 from this Vector2
+	 *
+	 * @param that The Vector2 to divide
+	 * @return the new Vector2
+	 */
+	@Override
+	public Vector2 divide(Vector2 that) {
+		set(super.divide(that));
+		return this;
+	}
+
+	/**
+	 * Multiplies this Vector2 to the value of the Vector2 argument
+	 *
+	 * @param that The Vector2 to multiply
+	 * @return the new Vector2
+	 */
+	@Override
+	public Vector2 multiply(Vector2 that) {
+		set(super.multiply(that));
+		return this;
+	}
+
+	/**
+	 * Raises the X and Y values of this Vector2 to the given power
+	 *
+	 * @param power
+	 * @return
+	 */
+	@Override
+	public Vector2 pow(double power) {
+		set(super.pow(power));
 		return this;
 	}
 
 	@Override
-	public Vector2 normalize() {
-		float length = this.length();
-		x *= 1 / length;
-		y *= 1 / length;
-		return this;
+	public Vector2m clone() {
+		return new Vector2m(x, y);
 	}
 }

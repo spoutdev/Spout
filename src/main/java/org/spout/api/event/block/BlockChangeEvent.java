@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,22 +18,23 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.event.block;
 
-import org.spout.api.event.EventSource;
+import org.spout.api.Source;
+import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockSnapshot;
 
 /**
  * Called when a block changes its state.
  */
-public abstract class BlockChangeEvent extends BlockEvent {
-	public BlockChangeEvent(Block block, EventSource source) {
+public class BlockChangeEvent extends BlockEvent {
+	public BlockChangeEvent(Block block, Source source) {
 		super(block, source);
 	}
 
@@ -62,4 +63,9 @@ public abstract class BlockChangeEvent extends BlockEvent {
 		super.setCancelled(cancelled);
 	}
 
+	@Override
+	public HandlerList getHandlers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

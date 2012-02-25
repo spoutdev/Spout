@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.permissions;
@@ -29,43 +29,46 @@ import org.spout.api.geo.World;
 import org.spout.api.util.Named;
 
 /**
- * Interface for classes that can have permissions attached to them. 
- * 
+ * Interface for classes that can have permissions attached to them.
+ *
  * @author yetanotherx
  */
 public interface PermissionsSubject extends Named {
-	
 	/**
 	 * Gets whether or not the Player has a given permission
+	 *
 	 * @param node
-	 * @return 
+	 * @return
 	 */
 	public boolean hasPermission(String node);
-	
+
 	/**
 	 * Gets whether or not the Player has a given permission in a World
+	 *
 	 * @param node
-	 * @return 
+	 * @return
 	 */
 	public boolean hasPermission(World world, String node);
-	
+
 	/**
 	 * Gets whether or not the Player is in a given group
+	 *
 	 * @param group
-	 * @return 
+	 * @return
 	 */
 	public boolean isInGroup(String group);
-	
+
 	/**
 	 * Gets the groups this player is in
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String[] getGroups();
-	
+
 	/**
 	 * Returns whether or not this subject is a group itself
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isGroup();
-	
 }

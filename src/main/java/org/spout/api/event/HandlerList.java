@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.event;
@@ -40,7 +40,7 @@ public class HandlerList {
 	 * Handler array. This field being an array is the key to this system's
 	 * speed.
 	 */
-	private ListenerRegistration[][] handlers = new ListenerRegistration[Order.values().length][];
+	private ListenerRegistration[] handlers = null;
 
 	/**
 	 * Dynamic handler lists. These are changed using register() and
@@ -48,15 +48,6 @@ public class HandlerList {
 	 * they have changed.
 	 */
 	private final EnumMap<Order, ArrayList<ListenerRegistration>> handlerslots;
-
-	/**
-	 * Whether the current HandlerList has been fully baked. When this is set to
-	 * false, the Map<Order, List<RegisteredListener>> will be baked to
-	 * RegisteredListener[][] next time the event is called.
-	 *
-	 * @see
-	 */
-	private boolean baked = false;
 
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
@@ -76,8 +67,10 @@ public class HandlerList {
 
 	public static void unregisterAll() {
 		for (HandlerList h : alllists) {
-			h.handlerslots.clear();
-			h.baked = false;
+			for (List<ListenerRegistration> regs : h.handlerslots.values()) {
+				regs.clear();
+			}
+			h.handlers = null;
 		}
 	}
 
@@ -108,7 +101,7 @@ public class HandlerList {
 		if (handlerslots.get(listener.getOrder()).contains(listener)) {
 			throw new IllegalStateException("This listener is already registered to priority " + listener.getOrder().toString());
 		}
-		baked = false;
+		handlers = null;
 		handlerslots.get(listener.getOrder()).add(listener);
 	}
 
@@ -125,7 +118,7 @@ public class HandlerList {
 	 */
 	public void unregister(ListenerRegistration listener) {
 		if (handlerslots.get(listener.getOrder()).contains(listener)) {
-			baked = false;
+			handlers = null;
 			handlerslots.get(listener.getOrder()).remove(listener);
 		}
 	}
@@ -141,7 +134,7 @@ public class HandlerList {
 			}
 		}
 		if (changed) {
-			baked = false;
+			handlers = null;
 		}
 	}
 
@@ -149,16 +142,21 @@ public class HandlerList {
 	 * Bake HashMap and ArrayLists to 2d array - does nothing if not necessary
 	 */
 	public void bake() {
-		if (baked) {
+		if (handlers != null) {
 			return; // don't re-bake when still valid
 		}
+		List<ListenerRegistration> entries = new ArrayList<ListenerRegistration>();
 		for (Entry<Order, ArrayList<ListenerRegistration>> entry : handlerslots.entrySet()) {
-			handlers[entry.getKey().getIndex()] = entry.getValue().toArray(new ListenerRegistration[entry.getValue().size()]);
+			entries.addAll(entry.getValue());
 		}
-		baked = true;
+		handlers = entries.toArray(new ListenerRegistration[entries.size()]);
 	}
 
-	public ListenerRegistration[][] getRegisteredListeners() {
+	public ListenerRegistration[] getRegisteredListeners() {
+		if (handlers == null) {
+			bake();
+		}
+
 		return handlers;
 	}
 

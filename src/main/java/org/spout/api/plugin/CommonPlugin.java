@@ -1,14 +1,14 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * In addition, 180 days after any changes are published, you can use the 
+ * In addition, 180 days after any changes are published, you can use the
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.  
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license, 
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.plugin;
@@ -33,7 +33,6 @@ import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
 
 public abstract class CommonPlugin implements Plugin {
-
 	private PluginDescriptionFile description;
 	private CommonClassLoader classLoader;
 	private CommonPluginLoader pluginLoader;
@@ -41,6 +40,7 @@ public abstract class CommonPlugin implements Plugin {
 	private File dataFolder;
 	private File file;
 	private boolean enabled;
+	private Logger logger;
 
 	@UnsafeMethod
 	public abstract void onEnable();
@@ -69,7 +69,7 @@ public abstract class CommonPlugin implements Plugin {
 	}
 
 	public final Logger getLogger() {
-		return game.getLogger();
+		return logger;
 	}
 
 	public final PluginDescriptionFile getDescription() {
@@ -77,12 +77,13 @@ public abstract class CommonPlugin implements Plugin {
 	}
 
 	public final void initialize(CommonPluginLoader commonsPluginLoader, Game game, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
-		this.description = desc;
-		this.classLoader = loader;
+		description = desc;
+		classLoader = loader;
 		this.game = game;
-		this.pluginLoader = commonsPluginLoader;
+		pluginLoader = commonsPluginLoader;
 		this.dataFolder = dataFolder;
-		this.file = paramFile;
+		file = paramFile;
+		logger = new PluginLogger(this);
 	}
 
 	public final ClassLoader getClassLoader() {
@@ -92,19 +93,22 @@ public abstract class CommonPlugin implements Plugin {
 	public final File getDataFolder() {
 		return dataFolder;
 	}
-	
+
 	public final File getFile() {
 		return file;
 	}
-	
+
 	public final Game getGame() {
 		return game;
 	}
-	
+
 	@UnsafeMethod
 	public WorldGenerator getWorldGenerator(String world, String generator) {
 		getLogger().severe("Unknown generator for world '" + world + "', generator: '" + generator + "'");
 		return null;
 	}
 
+	public String getName() {
+		return getDescription().getName();
+	}
 }

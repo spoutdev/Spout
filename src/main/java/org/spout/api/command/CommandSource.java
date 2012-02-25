@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.command;
@@ -29,7 +29,6 @@ import org.spout.api.data.DataSubject;
 import org.spout.api.permissions.PermissionsSubject;
 
 public interface CommandSource extends PermissionsSubject, DataSubject {
-
 	/**
 	 * Sends a text message to the source of the command.
 	 *
@@ -39,11 +38,11 @@ public interface CommandSource extends PermissionsSubject, DataSubject {
 	public boolean sendMessage(String message);
 
 	/**
-	 * Sends a message to the client without any processing by the server, except to prevent exploits.
+	 * Sends a message to the client without any processing by the server,
+	 * except to prevent exploits.
+	 *
 	 * @param message The message to send
 	 * @return whether the message was sent correctly
 	 */
 	public boolean sendRawMessage(String message);
-
-
 }

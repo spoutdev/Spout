@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.event.server.data;
@@ -33,7 +33,6 @@ import org.spout.api.geo.World;
  * This event is called when DataSubject.getData*() is called.
  */
 public class RetrieveStringDataEvent extends RetrieveDataEvent {
-
 	private static final HandlerList handlers = new HandlerList();
 	private String result;
 
@@ -44,17 +43,17 @@ public class RetrieveStringDataEvent extends RetrieveDataEvent {
 	public void setResult(String result) {
 		this.result = result;
 	}
-	
+
 	public String getResult() {
 		return result;
 	}
-	
+
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
 }

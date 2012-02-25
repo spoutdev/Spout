@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.command;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.spout.api.exception.CommandException;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -42,7 +43,6 @@ import gnu.trove.set.hash.TCharHashSet;
  * boolean and value flag parsing and several command helper methods.
  */
 public class CommandContext {
-
 	protected final String command;
 	protected final List<String> parsedArgs;
 	protected final TIntList originalArgIndices;
@@ -173,6 +173,18 @@ public class CommandContext {
 	public int getInteger(int index, int def) throws NumberFormatException {
 		return index < parsedArgs.size() ? Integer.parseInt(parsedArgs.get(index)) : def;
 	}
+	
+	public boolean isInteger(int index) {
+		if (index >= parsedArgs.size()) {
+			return false;
+		}
+		try {
+			Integer.parseInt(parsedArgs.get(index));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 
 	public double getDouble(int index) throws NumberFormatException {
 		return Double.parseDouble(parsedArgs.get(index));
@@ -180,6 +192,18 @@ public class CommandContext {
 
 	public double getDouble(int index, double def) throws NumberFormatException {
 		return index < parsedArgs.size() ? Double.parseDouble(parsedArgs.get(index)) : def;
+	}
+
+	public boolean isDouble(int index) {
+		if (index >= parsedArgs.size()) {
+			return false;
+		}
+		try {
+			Double.parseDouble(parsedArgs.get(index));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	public String getString(int index) throws NumberFormatException {
@@ -228,6 +252,15 @@ public class CommandContext {
 		return Integer.parseInt(value);
 	}
 
+	public boolean isFlagInteger(char ch) {
+		try {
+			Integer.parseInt(valueFlags.get(ch));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
 	public double getFlagDouble(char ch) throws NumberFormatException {
 		return Double.parseDouble(valueFlags.get(ch));
 	}
@@ -239,6 +272,15 @@ public class CommandContext {
 		}
 
 		return Double.parseDouble(value);
+	}
+
+	public boolean isFlagDouble(char ch) {
+		try {
+			Double.parseDouble(valueFlags.get(ch));
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	public String getJoinedString(int initialIndex) {

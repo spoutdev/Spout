@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.command.annotated;
@@ -28,11 +28,10 @@ package org.spout.api.command.annotated;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.spout.api.util.Named;
 import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.util.Named;
 
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
-
 	/**
 	 * An {@link Injector} used to create instances of command classes when
 	 * non-static methods are used.
@@ -66,13 +65,8 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 				success = false;
 				continue;
 			}
-			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0])
-			.addAlias(command.aliases())
-			.addFlags(command.flags())
-			.setUsage(command.usage())
-			.setHelp(command.desc())
-			.setArgBounds(command.min(), command.max());
-			
+			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]).addAlias(command.aliases()).addFlags(command.flags()).setUsage(command.usage()).setHelp(command.desc()).setArgBounds(command.min(), command.max());
+
 			if (method.isAnnotationPresent(CommandPermissions.class)) {
 				CommandPermissions perms = method.getAnnotation(CommandPermissions.class);
 				child.setPermissions(perms.requireAll(), perms.value());

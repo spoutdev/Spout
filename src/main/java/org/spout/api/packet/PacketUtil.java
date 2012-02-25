@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.packet;
@@ -34,7 +34,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.Color;
 
 public abstract class PacketUtil {
-
 	public static final int maxString = 32767;
 	public static final byte FLAG_COLORINVALID = 1;
 	public static final byte FLAG_COLOROVERRIDE = 2;
@@ -86,9 +85,9 @@ public abstract class PacketUtil {
 		try {
 			byte flags = 0x0;
 
-			if (color.getRedF() == -1F) {
+			if (color.equals(Color.invalid)) {
 				flags |= FLAG_COLORINVALID;
-			} else if (color.getRedF() == -2F) {
+			} else if (color.equals(Color.override)) {
 				flags |= FLAG_COLOROVERRIDE;
 			}
 
@@ -105,10 +104,10 @@ public abstract class PacketUtil {
 			int argb = input.readInt();
 
 			if ((flags & FLAG_COLORINVALID) > 0) {
-				return Color.invalid();
+				return Color.invalid;
 			}
 			if ((flags & FLAG_COLOROVERRIDE) > 0) {
-				return Color.override();
+				return Color.override;
 			}
 
 			return new Color(argb);
@@ -205,12 +204,12 @@ public abstract class PacketUtil {
 
 	/**
 	 * Unpacks an integer from the smallest space for network use.
+	 *
 	 * @param input network stream
 	 * @return the value
 	 * @throws IOException on network error
 	 */
-	public static int readPacked(final DataInputStream input)
-			throws IOException {
+	public static int readPacked(final DataInputStream input) throws IOException {
 		int value = input.readByte();
 		if ((value & 0x80) > 0) {
 			value = (value & 0x7F) + (input.readByte() << 7);
@@ -229,12 +228,12 @@ public abstract class PacketUtil {
 
 	/**
 	 * Packs an integer into the smallest space for network use.
+	 *
 	 * @param output network stream
 	 * @param value the value
 	 * @throws IOException on network error
 	 */
-	public static void writePacked(final DataOutputStream output, final int value)
-			throws IOException {
+	public static void writePacked(final DataOutputStream output, final int value) throws IOException {
 		if (value < 0x80) {
 			output.writeByte(value);
 		} else if (value < 0x4000) {
@@ -260,6 +259,7 @@ public abstract class PacketUtil {
 
 	/**
 	 * Gets the number of bytes it will take to send a packed number.
+	 *
 	 * @param value the number to pack
 	 * @return the number of bytes
 	 */

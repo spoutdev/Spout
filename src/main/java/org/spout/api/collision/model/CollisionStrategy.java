@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,27 +18,29 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.collision.model;
 
 public enum CollisionStrategy {
 	/**
-	 * Indicates that the given volume is Soft, and that it counts as colliding with solid volumes, but doesn't hard resolve.  
-	 * 
+	 * Indicates that the given volume is Soft, and that it counts as colliding
+	 * with solid volumes, but doesn't hard resolve.
+	 *
 	 * Collision models should handle how softCollisions are handled.
 	 */
 	SOFT,
 	/**
-	 * Indicates that the marked Collision Volume is solid, and that other Solid volumes should 
-	 * resolve their collisions
+	 * Indicates that the marked Collision Volume is solid, and that other Solid
+	 * volumes should resolve their collisions
 	 */
 	SOLID,
 	/**
-	 * Indicates that the marked Collision Volume is not solid, and that it should not collide with Solid Volumes.  
+	 * Indicates that the marked Collision Volume is not solid, and that it
+	 * should not collide with Solid Volumes.
 	 */
-	NOCOLLIDE;
+	NOCOLLIDE
 }

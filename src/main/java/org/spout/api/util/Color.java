@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,18 +18,18 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util;
 
 public final class Color {
-	private short red;
-	private short green;
-	private short blue;
-	private short alpha = 255;
+	private byte red;
+	private byte green;
+	private byte blue;
+	private byte alpha = (byte) 255;
 
 	public Color(float r, float g, float b) {
 		setRed(r);
@@ -44,13 +44,13 @@ public final class Color {
 		setAlpha(a);
 	}
 
-	public Color(short r, short g, short b) {
+	public Color(byte r, byte g, byte b) {
 		red = r;
 		green = g;
 		blue = b;
 	}
 
-	public Color(short r, short g, short b, short a) {
+	public Color(byte r, byte g, byte b, byte a) {
 		red = r;
 		green = g;
 		blue = b;
@@ -58,10 +58,10 @@ public final class Color {
 	}
 
 	public Color(int argb) {
-		alpha = (short) (argb >>> 24);
-		red = (short) ((argb & 0xFF0000) >>> 16);
-		green = (short) ((argb & 0xFF00) >>> 8);
-		blue = (short) (argb & 0xFF);
+		alpha = (byte) (argb >>> 24);
+		red = (byte) ((argb & 0xFF0000) >>> 16);
+		green = (byte) ((argb & 0xFF00) >>> 8);
+		blue = (byte) (argb & 0xFF);
 	}
 
 	public float getRedF() {
@@ -113,22 +113,22 @@ public final class Color {
 	}
 
 	public Color setRed(float r) {
-		red = (short) (r * 255);
+		red = (byte) (r * 255);
 		return this;
 	}
 
 	public Color setGreen(float g) {
-		green = (short) (g * 255);
+		green = (byte) (g * 255);
 		return this;
 	}
 
 	public Color setBlue(float b) {
-		blue = (short) (b * 255);
+		blue = (byte) (b * 255);
 		return this;
 	}
 
 	public Color setAlpha(float a) {
-		alpha = (short) (a * 255);
+		alpha = (byte) (a * 255);
 		return this;
 	}
 
@@ -142,23 +142,29 @@ public final class Color {
 		return "r: " + red + " g: " + green + " b: " + blue + " a: " + alpha;
 	}
 
-	public boolean isInvalid() {
-		return red == -1 || red / 255 == -1;
-	}
-
-	public boolean isOverride() {
-		return red == -2 || red / 255 == -2;
-	}
-
-	public static Color invalid() {
-		return new Color(-1, -1, -1);
-	}
-
-	public static Color override() {
-		return new Color(-2, -2, -2);
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (!(other instanceof Color)) {
+			return false;
+		}
+		Color o = (Color) other;
+		return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;
 	}
 
 	public int toInt() {
 		return (getAlphaI() & 0xFF) << 24 | (getRedI() & 0xFF) << 16 | (getGreenI() & 0xFF) << 8 | getBlueI() & 0xFF;
 	}
+
+	public static final Color Red = new Color(255, 0, 0);
+	public static final Color Green = new Color(0, 255, 0);
+	public static final Color Blue = new Color(0, 0, 255);
+	public static final Color Black = new Color(0, 0, 0);
+	public static final Color White = new Color(255, 255, 255);
+
+	public static final Color invalid = new Color(254, 0, 254, 0);
+	public static final Color override = new Color(253, 0, 253, 0);
+
 }

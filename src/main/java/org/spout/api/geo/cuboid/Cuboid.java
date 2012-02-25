@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.geo.cuboid;
@@ -35,7 +35,6 @@ import org.spout.api.math.Vector3m;
  * Represents a Cuboid shaped volume that is located somewhere in a world.
  */
 public class Cuboid {
-
 	protected Pointm base;
 	protected Vector3m size;
 
@@ -63,11 +62,12 @@ public class Cuboid {
 	public int getZ() {
 		return (int) (base.getZ() / size.getZ());
 	}
-	
+
 	public World getWorld() {
 		return base.getWorld();
 	}
-	
+
+	@Override
 	public int hashCode() {
 		int hash = getX();
 		hash += (hash << 5) + getY();
@@ -76,21 +76,23 @@ public class Cuboid {
 		hash += (hash << 5) + getWorld().getUID().getMostSignificantBits();
 		return hash;
 	}
-	
+
+	@Override
 	public boolean equals(Object obj) {
-		
+
 		if (obj == null) {
 			return false;
 		} else if (!(obj instanceof Cuboid)) {
 			return false;
 		} else {
-			Cuboid cuboid = (Cuboid)obj;
-			
+			Cuboid cuboid = (Cuboid) obj;
+
 			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld().equals(getWorld()) && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
 		}
-		
+
 	}
-	
+
+	@Override
 	public String toString() {
 		return "Cuboid[" + size.getX() + ", " + size.getY() + ", " + size.getZ() + "]@[" + getX() + ", " + getY() + ", " + getZ() + "]";
 	}

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util;
@@ -28,13 +28,14 @@ package org.spout.api.util;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.spout.api.io.store.SimpleStore;
+import org.spout.api.io.store.simple.SimpleStore;
 
 /**
  * Represents a map for mapping Strings to unique ids.
- * 
- * The class supports conversion of ids between maps and allocation of new unique ids for unknown Strings
- * 
+ *
+ * The class supports conversion of ids between maps and allocation of new
+ * unique ids for unknown Strings
+ *
  * Conversions to and from parent/child maps are cached
  */
 
@@ -158,7 +159,7 @@ public class StringMap {
 			return id;
 		} else {
 			int localId = nextId.getAndIncrement();
-			
+
 			while (localId < maxId) {
 				if (store.setIfAbsent(key, localId)) {
 					return localId;

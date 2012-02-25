@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.material.block;
@@ -29,45 +29,45 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.io.nbt.Tag;
 import org.spout.api.material.Material;
+import org.spout.nbt.Tag;
 
 /**
  * Represents an immutable snapshot of the state of a block
  */
 public class BlockSnapshot {
-	
 	private final Block block;
 	private final Material material;
 	private final Map<String, Tag> auxData;
-	
+
 	public BlockSnapshot(Block block, Material material, Map<String, Tag> auxData) {
 		this.block = block;
 		this.material = material;
 		this.auxData = Tag.cloneMap(auxData);
 	}
-	
+
 	/**
 	 * Gets which block corresponding to the snapshot
-	 * 
+	 *
 	 * @return the block
 	 */
 	public Block getBlock() {
 		return block;
 	}
-	
+
 	/**
 	 * Gets the block's material at the time of the snapshot
-	 * 
+	 *
 	 * @return the material
 	 */
 	public Material getMaterial() {
 		return material;
 	}
-	
+
 	/**
-	 * Gets the auxiliary data associated with the block at the time of the snapshot
-	 * 
+	 * Gets the auxiliary data associated with the block at the time of the
+	 * snapshot
+	 *
 	 * @return the auxiliary data, or null if there was no auxiliary data
 	 */
 	public Map<String, Tag> getAuxData() {
@@ -77,5 +77,4 @@ public class BlockSnapshot {
 			return Collections.unmodifiableMap(auxData);
 		}
 	}
-	
 }

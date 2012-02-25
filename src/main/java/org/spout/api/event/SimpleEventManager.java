@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,9 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.event;
@@ -33,10 +33,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
-import org.spout.api.plugin.exceptions.IllegalPluginAccessException;
+import org.spout.api.exception.EventException;
+import org.spout.api.exception.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {
-	
 	public <T extends Event> void callDelayedEvent(final T event) {
 		Spout.getGame().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
 			public void run() {
@@ -47,19 +47,16 @@ public class SimpleEventManager implements EventManager {
 
 	public <T extends Event> T callEvent(T event) {
 		HandlerList handlers = event.getHandlers();
-		handlers.bake();
-		ListenerRegistration[][] listeners = handlers.getRegisteredListeners();
+		ListenerRegistration[] listeners = handlers.getRegisteredListeners();
 
 		if (listeners != null) {
-			for (ListenerRegistration[] listener : listeners) {
-				for (ListenerRegistration registration : listener) {
-					try {
-						if (!event.isCancelled() || registration.getOrder().ignoresCancelled()) {
-							registration.getExecutor().execute(event);
-						}
-					} catch (Throwable ex) {
-						Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + registration.getOwner().getClass().getName(), ex);
+			for (ListenerRegistration listener : listeners) {
+				try {
+					if (!event.isCancelled() || listener.getOrder().ignoresCancelled()) {
+						listener.getExecutor().execute(event);
 					}
+				} catch (Throwable ex) {
+					Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
 				}
 			}
 		}
@@ -102,7 +99,7 @@ public class SimpleEventManager implements EventManager {
 			clazz.getDeclaredMethod("getHandlerList");
 			return clazz;
 		} catch (NoSuchMethodException e) {
-			if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && clazz.getSuperclass().isAssignableFrom(Event.class)) {
+			if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && Event.class.isAssignableFrom(clazz.getSuperclass())) {
 				return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
 			} else {
 				throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName());
@@ -125,15 +122,18 @@ public class SimpleEventManager implements EventManager {
 				continue;
 			}
 			final Class<?> checkClass = method.getParameterTypes()[0];
-			if (!checkClass.isAssignableFrom(eh.event()) || method.getParameterTypes().length != 1) {
+			Class<? extends Event> eventClass;
+			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
 				Spout.getGame().getLogger().severe("Wrong method arguments used for event type registered");
 				continue;
+			} else {
+				eventClass = checkClass.asSubclass(Event.class);
 			}
 			method.setAccessible(true);
-			Set<ListenerRegistration> eventSet = ret.get(eh.event());
+			Set<ListenerRegistration> eventSet = ret.get(eventClass);
 			if (eventSet == null) {
 				eventSet = new HashSet<ListenerRegistration>();
-				ret.put(eh.event(), eventSet);
+				ret.put(eventClass, eventSet);
 			}
 			eventSet.add(new ListenerRegistration(new EventExecutor() {
 
@@ -152,5 +152,4 @@ public class SimpleEventManager implements EventManager {
 		}
 		return ret;
 	}
-
 }

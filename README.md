@@ -1,9 +1,9 @@
 [![SpoutAPI][Project Logo]][Website]
 What is SpoutAPI?
 -----------------
-SpoutAPI is an API for the spout framework. Spout is a plugin for Bukkit-based servers and a Minecraft client mod system that exposes new API for other plugins to utilize, in an attempt to bring the Minecraft Multiplayer experience to parity with the single player modding experience.
+SpoutAPI is the API for the Spout server and framework.
 
-Copyright &copy; 2011-2012, SpoutDev <http://www.spout.org>
+Copyright (c) 2011-2012, SpoutDev <http://www.spout.org>
 
 SpoutAPI is licensed under [GNU LESSER GENERAL PUBLIC LICENSE Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
 

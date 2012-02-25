@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,99 +18,82 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.entity;
 
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.protocol.EntityProtocol;
+import org.spout.api.protocol.EntityProtocolStore;
+import org.spout.api.util.StringMap;
 
 public abstract class Controller {
-	protected Entity parent;
-	public void attachToEntity(Entity e){
-		this.parent = e;
+
+	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
+
+	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
+
+	public EntityProtocol getEntityProtocol(int protocolId) {
+		return entityProtocolStore.getEntityProtocol(protocolId);
 	}
-	
+
+	public static void setEntityProtocol(int protocolId, EntityProtocol protocol) {
+		entityProtocolStore.setEntityProtocol(protocolId, protocol);
+	}
+
+	public static int getProtocolId(String protocolName) {
+		return protocolMap.register(protocolName);
+	}
+
+	protected Entity parent;
+
+	public void attachToEntity(Entity e) {
+		parent = e;
+	}
+
 	public abstract void onAttached();
-	
+
 	/**
 	 * Called when the entity dies.
-	 * 
-	 * Called just before the snapshotStart method.
+	 *
+	 * Called just before the preSnapshot method.
 	 */
 	public void onDeath() {
 	}
+
 	/**
-	 * 
+	 *
 	 * @param dt the number of seconds since last update
 	 */
 	public abstract void onTick(float dt);
-	
+
 	/**
-	 * Called just before a snapshot update.  
-	 * 
-	 * This is intended purely as a monitor based step.  
-	 * 
-	 * NO updates should be made to the entity at this stage.
-	 * 
-	 * It can be used to send packets for network update.
+	 * Called when this controller is being synced with the client.
 	 */
-	public void snapshotStart() {
-	}
-	
-	/**
-	 * Checks if this entity has moved this cycle.
-	 * @return {@code true} if so, {@code false} if not.
-	 */
-	public boolean hasMoved() {
-		Transform old = parent.getTransform();
-		Transform current= parent.getLiveTransform();
-		if (current == null) {
-			return false;
-		} else if (old == null) {
-			return true;
-		} else {
-			return Math.abs(old.getPosition().getMahattanDistance(current.getPosition())) > 0.01D;
-		}
-	}
-	
-	/**
-	 * Checks if this entity has moved farther than 128 blocks in this cycle.
-	 * @return {@code true} if so, {@code false} if not.
-	 */
-	public boolean hasTeleported() {
-		Transform old = parent.getTransform();
-		Transform current= parent.getLiveTransform();
-		if (current == null) {
-			return false;
-		} else if (old == null) {
-			return true;
-		} else {
-			return Math.abs(old.getPosition().getMahattanDistance(current.getPosition())) > 128D;
-		}
+	public void onSync() {
+
 	}
 
 	/**
-	 * Checks if this entity has rotated this cycle.
-	 * @return {@code true} if so, {@code false} if not.
+	 * Called just before a snapshot update.
+	 *
+	 * This is intended purely as a monitor based step.
+	 *
+	 * NO updates should be made to the entity at this stage.
+	 *
+	 * It can be used to send packets for network update.
 	 */
-	public boolean hasRotated() {
-		Transform old = parent.getTransform();
-		Transform current= parent.getLiveTransform();
-		if (current == null) {
-			return false;
-		} else if (old == null) {
-			return false;
-		} else {
-			Quaternion oldQ = old.getRotation();
-			Quaternion currentQ = current.getRotation();
-			Vector3 oldAngles = oldQ.getAxisAngles();
-			Vector3 currentAngles = currentQ.getAxisAngles();
-			return Math.abs(oldAngles.getX() - currentAngles.getX()) + Math.abs(oldAngles.getY() - currentAngles.getY()) + Math.abs(oldAngles.getZ() - currentAngles.getZ()) > 0.01D;
-		}
+	public void preSnapshot() {
+	}
+
+	/**
+	 * Called just before the pre-snapshot stage.<br>
+	 * This stage can make changes but they should be checked to make sure they
+	 * are non-conflicting.
+	 */
+	public void finalizeTick() {
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,14 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.math;
 
-public class Vector3m extends Vector3 {
-
+public class Vector3m extends Vector3 implements Cloneable{
 	public Vector3m() {
 	}
 
@@ -58,6 +57,12 @@ public class Vector3m extends Vector3 {
 		this.x = x;
 	}
 
+	public void set(Vector3 vector) {
+		x = vector.getX();
+		y = vector.getY();
+		z = vector.getZ();
+	}
+
 	/**
 	 * Adds two vectors
 	 *
@@ -65,10 +70,9 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
+	@Override
 	public Vector3 add(Vector3 that) {
-		x += that.x;
-		y += that.y;
-		z += that.z;
+		set(super.add(that));
 		return this;
 	}
 
@@ -79,24 +83,71 @@ public class Vector3m extends Vector3 {
 	 * @return
 	 */
 
+	@Override
 	public Vector3 subtract(Vector3 that) {
-		x -= that.x;
-		y -= that.y;
-		z -= that.z;
+		set(super.subtract(that));
 		return this;
 	}
 
 	/**
-	 * Scales by the scalar value
+	 * Multiplies this Vector3 by the value of the Vector3 argument
 	 *
-	 * @param scale
+	 * @param that The Vector3 to multiply
+	 * @return the new Vector3
+	 */
+	@Override
+	public Vector3 multiply(Vector3 that) {
+		set(super.multiply(that));
+		return this;
+	}
+
+	/**
+	 * Divides the given Vector3 from this Vector3
+	 *
+	 * @param that The Vector3 to divide
+	 * @return the new Vector3
+	 */
+	@Override
+	public Vector3 divide(Vector3 that) {
+		set(super.divide(that));
+		return this;
+	}
+
+	/**
+	 * Calculates and sets a new Vector3 transformed by the transformation
+	 * matrix
+	 *
+	 * @param transformation
 	 * @return
 	 */
+	@Override
+	public Vector3 transform(Matrix transformation) {
+		set(super.transform(transformation));
+		return this;
+	}
 
-	public Vector3 multiply(float scale) {
-		x *= scale;
-		y *= scale;
-		z *= scale;
+	/**
+	 * Calculates and sets a new Vector3 transformed by the given quaternion
+	 *
+	 * @param vector
+	 * @param rot
+	 * @return
+	 */
+	@Override
+	public Vector3 transform(Quaternion transformation) {
+		set(super.transform(transformation));
+		return this;
+	}
+
+	/**
+	 * Raises the X, Y and Z values to the given power
+	 *
+	 * @param power
+	 * @return
+	 */
+	@Override
+	public Vector3 pow(double power) {
+		set(super.pow(power));
 		return this;
 	}
 
@@ -106,64 +157,56 @@ public class Vector3m extends Vector3 {
 	 * @param that
 	 * @return
 	 */
-
+	@Override
 	public Vector3 cross(Vector3 that) {
-		x = getY() * that.getZ() - getZ() * that.getY();
-		y = getZ() * that.getX() - getX() * that.getZ();
-		z = getX() * that.getY() - getY() * that.getX();
+		set(super.cross(that));
+		return this;
+	}
 
-		return this;
-	}
-	
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 up to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector3 ceil() {
-		x = (float) Math.ceil(x);
-		y = (float) Math.ceil(y);
-		z = (float) Math.ceil(z);
+		set(super.ceil());
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 down to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector3 floor() {
-		x = (float) Math.floor(x);
-		y = (float) Math.floor(y);
-		z = (float) Math.floor(z);
+		set(super.floor());
 		return this;
 	}
-	
+
 	/**
-	 * Rounds the X, Y, and Z values of this Vector3 to 
-	 * the nearest integer value. 
-	 * 
-	 * @return 
+	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
+	 * value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector3 round() {
-		x = Math.round(x);
-		y = Math.round(y);
-		z = Math.round(z);
+		set(super.round());
 		return this;
 	}
-	
+
 	/**
-	 * Sets the X, Y, and Z values of this Vector3 to their
-	 * absolute value.
-	 * 
-	 * @return 
+	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
+	 *
+	 * @return
 	 */
+	@Override
 	public Vector3 abs() {
-		x = Math.abs(x);
-		y = Math.abs(y);
-		z = Math.abs(z);
+		set(super.abs());
 		return this;
 	}
 
@@ -172,12 +215,14 @@ public class Vector3m extends Vector3 {
 	 *
 	 * @return
 	 */
-
+	@Override
 	public Vector3 normalize() {
-		float length = this.length();
-		x *= 1 / length;
-		y *= 1 / length;
-		z *= 1 / length;
+		set(super.normalize());
 		return this;
+	}
+
+	@Override
+	public Vector3m clone() {
+		return new Vector3m(x, y, z);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * SpoutAPI is licensed under the SpoutDev license version 1.
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,16 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev license version 1 along with this program.
+ * the MIT license and the SpoutDev License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://getspout.org/SpoutDevLicenseV1.txt> for the full license,
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
 package org.spout.api.util;
 
 /**
  * Represents a single parameter - this is used for things like mob metadata.
+ *
  * @author Graham Edgecombe
  * @param <T> The type of value this parameter contains.
  */
@@ -78,6 +79,7 @@ public class Parameter<T> {
 
 	/**
 	 * Creates a new parameter.
+	 *
 	 * @param type The type of parameter.
 	 * @param index The index.
 	 * @param value The value.
@@ -90,6 +92,7 @@ public class Parameter<T> {
 
 	/**
 	 * Gets the type of the parameter.
+	 *
 	 * @return The type of the parameter.
 	 */
 	public int getType() {
@@ -98,6 +101,7 @@ public class Parameter<T> {
 
 	/**
 	 * Gets the index of this parameter.
+	 *
 	 * @return The index.
 	 */
 	public int getIndex() {
@@ -106,6 +110,7 @@ public class Parameter<T> {
 
 	/**
 	 * Gets the value of this parameter.
+	 *
 	 * @return The value.
 	 */
 	public T getValue() {
@@ -115,5 +120,14 @@ public class Parameter<T> {
 	@Override
 	public String toString() {
 		return "Parameter{type=" + type + ",index=" + index + ",value=" + value + "}";
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Parameter)) {
+			return false;
+		}
+		Parameter<?> param = (Parameter<?>) other;
+		return type == param.type && index == param.index && value.equals(param.value);
 	}
 }
