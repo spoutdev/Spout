@@ -108,26 +108,7 @@ public abstract class AbstractWidget extends AbstractAttr implements Widget {
 
 	@Override
 	public int getNumBytes() {
-		int size = WidgetHandler.getNumBytes(dirtyAttr.size());
-		for (WidgetAttr attr : dirtyAttr) {
-			final Class type = attr.getType();
-			if (type == null) {
-				continue;
-			}
-			if (type.equals(Integer.class)) {
-				size += WidgetHandler.getNumBytes((Integer) getAttr(attr));
-			} else if (type.equals(String.class)) {
-				size += WidgetHandler.getNumBytes((String) getAttr(attr));
-			} else if (type.equals(Color.class)) {
-				size += WidgetHandler.getNumBytes((Color) getAttr(attr));
-			} else if (type.equals(Plugin.class)) {
-				size += WidgetHandler.getNumBytes(((Plugin) getAttr(attr)).getDescription().getName(), true);
-			} else {
-				// throw unknown type
-			}
-		}
-//		return 48 + PacketUtil.getNumBytes(tooltip) + PacketUtil.getNumBytes(plugin == null ? PLUGIN : plugin);
-		return size;
+		return getNumBytes(attributes, dirtyAttr);
 	}
 
 	@Override

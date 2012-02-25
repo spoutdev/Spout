@@ -35,7 +35,7 @@ public class GenericSlider extends AbstractControl implements Slider {
 
 	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 1L;
-	private Label label = new GenericLabel();
+	private Label label = new Label();
 	private float slider = 0.5f;
 
 	public GenericSlider() {

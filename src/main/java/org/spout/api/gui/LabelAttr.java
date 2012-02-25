@@ -25,27 +25,65 @@
  */
 package org.spout.api.gui;
 
-public interface BasicLabel extends Label {
+import org.spout.api.util.Color;
+
+/**
+ * All attributes for a Gradient widget.
+ */
+public enum LabelAttr implements Attr {
+
+	/** The text to display (String). */
+	TEXT(String.class),
+	/** The label color ({@Link Color}). */
+	COLOR(Color.class),
+	/** Direction to draw the gradient. */
+	ALIGN(Align.class, Align.LEFT);
+
+	/** The allowed type of data - Integer.class as default. */
+	private final Class type;
+	/** The default value - null by default. */
+	private final Object def;
+
 	/**
-	 * Recalculates the word wrapping result.
+	 * Default type is Integer.
 	 */
-	public void recalculateLines();
-	
+	private LabelAttr() {
+		this(Integer.class, null);
+	}
+
 	/**
-	 * @return the lines of the text. If wordwrapping is enabled, this will already be wrapped to width.
+	 * Set the type explicitely.
+	 * @param allow this class and subclasses only
 	 */
-	public String [] getLines();
-	
+	private LabelAttr(final Class allow) {
+		this(allow, null);
+	}
+
 	/**
-	 * Enables word wrapping. Right now, this will wrap for spaces when a line is too big to be displayed in the width.
-	 * If a single word is longer than the width, it will be cut off by char.
-	 * @param wrapLines wether to enable the feature.
-	 * @return instance of the label
+	 * Set the default value for an int attribute.
+	 * @param defValue default value
 	 */
-	public Label setWrapLines(boolean wrapLines);
-	
+	private LabelAttr(final int defValue) {
+		this(Integer.class, defValue);
+	}
+
 	/**
-	 * @return if this label has word wrapping enabled.
+	 * Set the type and default.
+	 * @param allow class
+	 * @param defValue default value
 	 */
-	public boolean isWrapLines();
+	private LabelAttr(final Class allow, final Object defValue) {
+		type = allow;
+		def = defValue;
+	}
+
+	@Override
+	public final Class getType() {
+		return type;
+	}
+
+	@Override
+	public final Object getDefault() {
+		return def;
+	}
 }

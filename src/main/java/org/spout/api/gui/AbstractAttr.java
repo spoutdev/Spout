@@ -143,6 +143,31 @@ public abstract class AbstractAttr {
 		return size;
 	}
 
+	public final <T extends Enum & Attr> int getNumBytes(final Map<T, Object> attrStore, final Set<T> attrDirty) {
+		int size = WidgetHandler.getNumBytes(attrDirty.size());
+		for (Attr attr : attrDirty) {
+			if (!hasAttr(attrStore, (T) attr)) {
+				continue;
+			}
+			final Class type = attr.getType();
+			if (type == null) {
+				continue;
+			}
+			if (type.equals(Integer.class)) {
+				size += WidgetHandler.getNumBytes((Integer) getAttr(attrStore, (T) attr, null));
+			} else if (type.equals(String.class)) {
+				size += WidgetHandler.getNumBytes((String) getAttr(attrStore, (T) attr, null));
+			} else if (type.equals(Color.class)) {
+				size += WidgetHandler.getNumBytes((Color) getAttr(attrStore, (T) attr, null));
+			} else if (type.equals(Plugin.class)) {
+				size += WidgetHandler.getNumBytes(((Plugin) getAttr(attrStore, (T) attr, null)).getDescription().getName(), true);
+			} else {
+				// throw unknown type
+			}
+		}
+		return size;
+	}
+
 	protected final <T extends Enum & Attr> void readAttr(final Class<T> clazz, final Map<T, Object> attrStore,
 			final DataInputStream input) throws IOException {
 		for (int i = WidgetHandler.readInt(input); i > 0; i--) {

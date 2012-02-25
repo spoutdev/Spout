@@ -36,7 +36,7 @@ public class GenericButton extends AbstractControl implements Button {
 
 	/** Current version for serialisation and packet handling.*/
 	private static final long serialVersionUID = 3L;
-	private GenericLabel label = (GenericLabel) new GenericLabel().setAlign(WidgetAnchor.TOP_CENTER);
+	private Label label = (Label) new Label().setAlign(WidgetAnchor.TOP_CENTER);
 	private String disabledText = "";
 	private Color hoverColor = new Color(1, 1, 0.627F);
 	private float scale = 1.0F;

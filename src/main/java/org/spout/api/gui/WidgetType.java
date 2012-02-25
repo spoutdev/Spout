@@ -44,7 +44,7 @@ public final class WidgetType {
 	private static final Set<WidgetType> LOOKUP = new HashSet<WidgetType>();
 	/** Spout registered network widgets, save bandwidth by only sending the id. */
 	public static final WidgetType WIDGET = new WidgetType(AbstractWidget.class, CUSTOM_WIDGET),
-			LABEL = new WidgetType(GenericLabel.class, 0),
+			LABEL = new WidgetType(Label.class, 0),
 			HEALTHBAR = new WidgetType(VanillaHealthBar.class, 1),
 			BUBBLEBAR = new WidgetType(VanillaBubbleBar.class, 2),
 			CHATBAR = new WidgetType(ChatBar.class, 3),
@@ -57,8 +57,8 @@ public final class WidgetType {
 			BUTTON = new WidgetType(GenericButton.class, 10),
 			SLIDER = new WidgetType(GenericSlider.class, 11),
 			TEXTFIELD = new WidgetType(GenericTextField.class, 12),
-			GRADIENT = new WidgetType(GenericGradient.class, 13),
-			CONTAINER = new WidgetType(GenericGradient.class, 14),
+			GRADIENT = new WidgetType(Gradient.class, 13),
+			CONTAINER = new WidgetType(Gradient.class, 14),
 			ENTITYWIDGET = new WidgetType(GenericEntityWidget.class, 15),
 			HUNGERBAR = new WidgetType(VanillaHungerBar.class, 17),
 			EXPBAR = new WidgetType(VanillaExpBar.class, 18),

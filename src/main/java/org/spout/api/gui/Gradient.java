@@ -25,70 +25,212 @@
  */
 package org.spout.api.gui;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
+import org.spout.api.ClientOnly;
 import org.spout.api.util.Color;
 
 /**
- * The GenericGradient represents a vertical gradient only.
- *
- * You can specify the same colour for the top and bottom in order to get a
- * solid block of colour, and can set the alpha-level of the Color in order
- * to make it translucent.
+ * A Gradient is a solid block of one or two colors, the direction of the
+ * gradient can be changed. See {@Link GradientAttr} for attributes.
  */
-public interface Gradient extends Widget {
+public class Gradient extends AbstractInline implements Widget {
 
 	/**
-	 * Gets the top colour of the gradient to render.
-	 * @return color
+	 * Current version for serialisation and packet handling.
 	 */
-	public Color getTopColor();
+	private static final long serialVersionUID = 2L;
+	/**
+	 * Attributes, all values are Object, even for primitives.
+	 */
+	private final Map<GradientAttr, Object> attributes = new EnumMap<GradientAttr, Object>(GradientAttr.class);
+	/**
+	 * All dirty attributes.
+	 */
+	private final Set<GradientAttr> dirtyAttr = EnumSet.noneOf(GradientAttr.class);
 
 	/**
-	 * Sets the top colour of the gradient to render.
-	 * @param color
-	 * @return gradient
+	 * Create a new widget initialized from the specified GenericGradient.
+	 *
+	 * @param from the widget from which to initialize this GenericGradient
 	 */
-	public Gradient setTopColor(Color color);
+	public Gradient(final Gradient from) {
+		super(from);
+		attributes.putAll(from.attributes);
+	}
 
 	/**
-	 * Gets the bottom colour of the gradient to render.
-	 * @return color
+	 * Create a new widget with no default values.
 	 */
-	public Color getBottomColor();
+	public Gradient() {
+		super();
+	}
 
 	/**
-	 * Sets the bottom colour of the gradient to render.
-	 * @param color
-	 * @return gradient
+	 * Create a new widget with default values.
+	 *
+	 * @param both the color to set both values
 	 */
-	public Gradient setBottomColor(Color color);
+	public Gradient(final Color both) {
+		super();
+		setAttr(GradientAttr.COLOR, both);
+	}
 
 	/**
-	 * Set both top and bottom gradient color in one call.
-	 * @param color
-	 * @return gradient
+	 * Create a new widget with default values.
+	 *
+	 * @param color1 the first color
+	 * @param color2 the second color
 	 */
-	public Gradient setColor(Color color);
+	public Gradient(final Color color1, final Color color2) {
+		super();
+		setAttr(GradientAttr.COLOR, color1, color2);
+	}
 
 	/**
-	 * Set both top and bottom gradient color in one call.
-	 * @param top
-	 * @param bottom
-	 * @return gradient
+	 * Create a new widget with default values.
+	 *
+	 * @param width the default width
+	 * @param height the default height
 	 */
-	public Gradient setColor(Color top, Color bottom);
+	public Gradient(final int width, final int height) {
+		super(width, height);
+	}
 
 	/**
-	 * Set the direction the gradient is drawn.
-	 * Default is VERTICAL, if using HORIZONTAL then read top as left and bottom as right.
-	 * @param axis the orientation to draw in
-	 * @return
+	 * Create a new widget with default values.
+	 *
+	 * @param width the default width
+	 * @param height the default height
+	 * @param both the color to set both values
 	 */
-	public Gradient setOrientation(Orientation axis);
+	public Gradient(final int width, final int height, final Color both) {
+		super(width, height);
+		setAttr(GradientAttr.COLOR, both);
+	}
 
 	/**
-	 * Get the direction the gradient is drawn.
-	 * Default is VERTICAL, if using HORIZONTAL then read top as left and bottom as right.
-	 * @return the orientation being used
+	 * Create a new widget with default values.
+	 *
+	 * @param width the default width
+	 * @param height the default height
+	 * @param color1 the first color
+	 * @param color2 the second color
 	 */
-	public Orientation getOrientation();
+	public Gradient(final int width, final int height, final Color color1, final Color color2) {
+		super(width, height);
+		setAttr(GradientAttr.COLOR, color1, color2);
+	}
+
+	/**
+	 * Create a new widget with default values.
+	 *
+	 * @param left the default left
+	 * @param top the default top
+	 * @param width the default width
+	 * @param height the default height
+	 */
+	public Gradient(final int left, final int top, final int width, final int height) {
+		super(left, top, width, height);
+	}
+
+	/**
+	 * Create a new widget with default values.
+	 *
+	 * @param left the default left
+	 * @param top the default top
+	 * @param width the default width
+	 * @param height the default height
+	 * @param both the color to set both values
+	 */
+	public Gradient(final int left, final int top, final int width, final int height, final Color both) {
+		super(left, top, width, height);
+		setAttr(GradientAttr.COLOR, both);
+	}
+
+	/**
+	 * Create a new widget with default values.
+	 *
+	 * @param left the default left
+	 * @param top the default top
+	 * @param width the default width
+	 * @param height the default height
+	 * @param color1 the first color
+	 * @param color2 the second color
+	 */
+	public Gradient(final int left, final int top, final int width, final int height, final Color color1, final Color color2) {
+		super(left, top, width, height);
+		setAttr(GradientAttr.COLOR, color1, color2);
+	}
+
+	@Override
+	public int getVersion() {
+		return super.getVersion() + (int) serialVersionUID + GradientAttr.values().length;
+	}
+
+	@Override
+	public WidgetType getType() {
+		return WidgetType.GRADIENT;
+	}
+
+	@Override
+	public int getNumBytes() {
+		return super.getNumBytes() + getNumBytes(attributes, dirtyAttr);
+	}
+
+	@Override
+	public void readData(final DataInputStream input) throws IOException {
+		super.readData(input);
+		readAttr(GradientAttr.class, attributes, input);
+	}
+
+	@Override
+	public void writeData(final DataOutputStream output) throws IOException {
+		super.writeData(output);
+		writeAttr(attributes, dirtyAttr, output);
+	}
+
+	@Override
+	public Gradient setAttr(final Attr key, final Object... values) {
+		if (key instanceof GradientAttr) {
+			switch ((GradientAttr) key) {
+				case COLOR:
+					setAttr(attributes, dirtyAttr, GradientAttr.COLOR1, values[0]);
+					setAttr(attributes, dirtyAttr, GradientAttr.COLOR2, values[values.length == 2 ? 1 : 0]);
+					break;
+				default:
+					setAttr(attributes, dirtyAttr, (GradientAttr) key, values[0]);
+			}
+		} else {
+			super.setAttr(key, values);
+		}
+		return this;
+	}
+
+	@Override
+	public Object getAttr(final Attr key, final Object def) {
+		if (key instanceof GradientAttr) {
+			return getAttr(attributes, (GradientAttr) key, def);
+		}
+		return super.getAttr(key, def);
+	}
+
+	@Override
+	public boolean hasAttr(final Attr key) {
+		if (key instanceof GradientAttr) {
+			return hasAttr(attributes, (GradientAttr) key);
+		}
+		return super.hasAttr(key);
+	}
+
+	@Override
+	@ClientOnly
+	public void render() {
+//		Spoutcraft.getClient().getRenderDelegate().render(this);
+	}
 }

@@ -37,79 +37,79 @@ import org.spout.api.util.Color;
  */
 public enum WidgetAttr implements Attr {
 
-	/** Widget top offset. */
+	/** Widget top offset (int). */
 	TOP,
-	/** Widget right offset. */
+	/** Widget right offset (int). */
 	RIGHT,
-	/** Widget bottom offset. */
+	/** Widget bottom offset (int). */
 	BOTTOM,
-	/** Widget left offset. */
+	/** Widget left offset (int). */
 	LEFT,
-	/** Widget width. */
+	/** Widget width (int). */
 	WIDTH,
-	/** Widget minimum width. */
+	/** Widget minimum width (int). */
 	MIN_WIDTH,
-	/** Widget maximum width. */
+	/** Widget maximum width (int). */
 	MAX_WIDTH,
-	/** Widget height. */
+	/** Widget height (int). */
 	HEIGHT,
-	/** Widget minimum height. */
+	/** Widget minimum height (int). */
 	MIN_HEIGHT,
-	/** Widget maximum height. */
+	/** Widget maximum height (int). */
 	MAX_HEIGHT,
-	/** Tooltip on mouse hover. */
+	/** Tooltip on mouse hover (String). */
 	TOOLTIP(String.class),
-	/** Plugin which owns the widget. */
+	/** Plugin which owns the widget (Plugin). */
 	PLUGIN(Plugin.class),
-	/** How to display the widget "box". */
+	/** How to display the widget "box" (Display). */
 	DISPLAY(Display.class),
-	/** What to do when the content overflows the box. */
+	/** What to do when the content overflows the box (Overflow). */
 	OVERFLOW(Overflow.class, Overflow.VISIBLE),
-	/** Where to layout. */
+	/** Where to layout (Position). */
 	POSITION(Position.class, Position.STATIC),
-	/** Whether the widget is drawn, it still takes up space. */
+	/** Whether the widget is drawn, it still takes up space (boolean). */
 	VISIBLE(Boolean.class, true),
-	/** Priority for drawing order. */
+	/** Priority for drawing order (int). */
 	PRIORITY,
-	/** Padding top size. */
+	/** Padding top size (int). */
 	PADDING_TOP,
-	/** Padding right size. */
+	/** Padding right size (int). */
 	PADDING_RIGHT,
-	/** Padding bottom size. */
+	/** Padding bottom size (int). */
 	PADDING_BOTTOM,
-	/** Padding left size. */
+	/** Padding left size (int). */
 	PADDING_LEFT,
-	/** Border top size. */
+	/** Border top size (int). */
 	BORDER_TOP,
-	/** Border top color. */
+	/** Border top color ({@Link Color}). */
 	BORDER_TOP_COLOR(Color.class),
-	/** Border top style. */
+	/** Border top style ({@Link Border}). */
 	BORDER_TOP_STYLE(Border.class, Border.SOLID),
-	/** Border right size. */
+	/** Border right size (int). */
 	BORDER_RIGHT,
-	/** Border right color. */
+	/** Border right color ({@Link Color}). */
 	BORDER_RIGHT_COLOR(Color.class),
-	/** Border right style. */
+	/** Border right style ({@Link Border}). */
 	BORDER_RIGHT_STYLE(Border.class, Border.SOLID),
 	/** Border bottom size. */
 	BORDER_BOTTOM,
-	/** Border bottom color. */
+	/** Border bottom color ({@Link Color}). */
 	BORDER_BOTTOM_COLOR(Color.class),
-	/** Border bottom style. */
+	/** Border bottom style ({@Link Border}). */
 	BORDER_BOTTOM_STYLE(Border.class, Border.SOLID),
 	/** Border left size. */
 	BORDER_LEFT,
-	/** Border left color. */
+	/** Border left color ({@Link Color}). */
 	BORDER_LEFT_COLOR(Color.class),
-	/** Border left style. */
+	/** Border left style ({@Link Border}). */
 	BORDER_LEFT_STYLE(Border.class, Border.SOLID),
-	/** Margin top size. */
+	/** Margin top size (int). */
 	MARGIN_TOP,
-	/** Margin right size. */
+	/** Margin right size (int). */
 	MARGIN_RIGHT,
-	/** Margin bottom size. */
+	/** Margin bottom size (int). */
 	MARGIN_BOTTOM,
-	/** Margin left size. */
+	/** Margin left size (int). */
 	MARGIN_LEFT,;
 
 	/**
