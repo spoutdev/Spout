@@ -33,21 +33,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.spout.api.exception.ConfigurationException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.CollectionNode;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.SequenceNode;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
-import org.yaml.snakeyaml.representer.Representer;
 
 /**
  * YAML configuration loader. To use this class, construct it with path to a
@@ -87,13 +79,13 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author sk89q
  */
-public class Configuration extends ConfigurationNode {
+public class Configuration extends MemoryConfiguration {
 	private Yaml yaml;
 	private File file;
 	private String header = null;
 
 	public Configuration(File file) {
-		super(new HashMap<String, Object>());
+		super(new HashMap<String, Object>(), new HashSet<ConfigurationNode>());
 
 		DumperOptions options = new DumperOptions();
 
@@ -115,7 +107,7 @@ public class Configuration extends ConfigurationNode {
 				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
-			
+
 			in = new BufferedReader(new FileReader(file));
 			String str;
 			StringBuilder buffer = new StringBuilder(10000);
@@ -201,6 +193,11 @@ public class Configuration extends ConfigurationNode {
 				writer.append(header);
 				writer.append("\r\n");
 			}
+			
+			for (ConfigurationNode node : nodes) {
+				node.setConfiguration(this);
+			}
+			
 			yaml.dump(root, writer);
 			return true;
 		} catch (IOException e) {
@@ -228,51 +225,4 @@ public class Configuration extends ConfigurationNode {
 			throw new ConfigurationException("Root document must be an key-value structure");
 		}
 	}
-
-	/**
-	 * This method returns an empty ConfigurationNode for using as a default in
-	 * methods that select a node from a node list.
-	 *
-	 * @return
-	 */
-	public static ConfigurationNode getEmptyNode() {
-		return new ConfigurationNode(new HashMap<String, Object>());
-	}
-}
-
-class EmptyNullRepresenter extends Representer {
-	public EmptyNullRepresenter() {
-		super();
-		nullRepresenter = new EmptyRepresentNull();
-	}
-
-	protected class EmptyRepresentNull implements Represent {
-		public Node representData(Object data) {
-			return representScalar(Tag.NULL, ""); // Changed "null" to "" so as to avoid writing nulls
-		}
-	}
-
-	// Code borrowed from snakeyaml (http://code.google.com/p/snakeyaml/source/browse/src/test/java/org/yaml/snakeyaml/issues/issue60/SkipBeanTest.java)
-	@Override
-	protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
-		NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-		Node valueNode = tuple.getValueNode();
-		if (valueNode instanceof CollectionNode) {
-			// Removed null check
-			if (Tag.SEQ.equals(valueNode.getTag())) {
-				SequenceNode seq = (SequenceNode) valueNode;
-				if (seq.getValue().isEmpty()) {
-					return null; // skip empty lists
-				}
-			}
-			if (Tag.MAP.equals(valueNode.getTag())) {
-				MappingNode seq = (MappingNode) valueNode;
-				if (seq.getValue().isEmpty()) {
-					return null; // skip empty maps
-				}
-			}
-		}
-		return tuple;
-	}
-	// End of borrowed code
 }
