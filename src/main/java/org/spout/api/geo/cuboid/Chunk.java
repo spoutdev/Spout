@@ -125,11 +125,11 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	}
 
 	/**
-	 * Tests if the chunk has been unloaded.
+	 * Tests if the chunk is currently loaded
 	 *
 	 * Chunks may be unloaded at the end of each tick
 	 */
-	public abstract boolean isUnloaded();
+	public abstract boolean isLoaded();
 
 	/**
 	 * Populates the chunk with all the Populators attached to the
