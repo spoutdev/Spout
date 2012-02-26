@@ -33,6 +33,14 @@ import org.spout.api.math.Vector3;
  *
  */
 public interface CollisionVolume {
+	
+	
+	public Vector3 getPosition();
+	
+	
+	public CollisionVolume offset(Vector3 ammount);
+	
+	
 	/**
 	 * Checks for Intersection
 	 *
@@ -49,21 +57,6 @@ public interface CollisionVolume {
 	 */
 	public boolean contains(CollisionVolume other);
 
-	public boolean containsBoundingBox(BoundingBox b);
-
-	/**
-	 * Checks for containing the given bounding sphere.
-	 *
-	 * @param b
-	 * @return
-	 */
-	public boolean containsBoundingSphere(BoundingSphere b);
-
-	public boolean containsPlane(Plane b);
-
-	public boolean containsRay(Ray b);
-
-	public boolean containsSegment(Segment b);
 
 	/**
 	 * Checks if the volume contains the other Vector3.
@@ -80,5 +73,5 @@ public interface CollisionVolume {
 	 * @param end
 	 * @return
 	 */
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end);
+	public Vector3 resolve(CollisionVolume other);
 }

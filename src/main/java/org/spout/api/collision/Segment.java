@@ -127,8 +127,19 @@ public class Segment implements CollisionVolume {
 		return CollisionHelper.contains(this, b);
 	}
 
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+	public Vector3 resolve(CollisionVolume start) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public CollisionVolume offset(Vector3 ammount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector3 getPosition() {
+		return origin;
 	}
 }

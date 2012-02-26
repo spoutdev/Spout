@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 public enum CollisionType {
 	/**
-	 * Indicates that one object wholley contains another object
+	 * Indicates that one object fully contains another object
 	 */
 	Contains,
 	/**

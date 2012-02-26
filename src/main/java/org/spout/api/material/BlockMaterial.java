@@ -25,7 +25,7 @@
  */
 package org.spout.api.material;
 
-import org.spout.api.collision.BoundingBox;
+import org.spout.api.collision.CollisionVolume;
 import org.spout.api.geo.World;
 
 public interface BlockMaterial extends ItemMaterial {
@@ -52,7 +52,7 @@ public interface BlockMaterial extends ItemMaterial {
 	 * 
 	 * @return area
 	 */
-	public BoundingBox getBoundingArea();
+	public CollisionVolume getBoundingArea();
 
 	/**
 	 * True if this block requires physic updates when a neighbor block changes,

@@ -300,8 +300,18 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 		return CollisionHelper.contains(this, b);
 	}
 
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
-		// TODO Auto-generated method stub
+	public Vector3 resolve(CollisionVolume other) {
+		if(other instanceof BoundingBox){
+			return CollisionHelper.getCollision(this, (BoundingBox)other);
+		}
 		return null;
 	}
+
+	@Override
+	public Vector3 getPosition() {
+		
+		return min;
+	}
+	
+	
 }
