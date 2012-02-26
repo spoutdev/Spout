@@ -514,6 +514,7 @@ public class SpoutChunk extends Chunk {
 		
 		//If we are observed and not populated, queue population
 		if(!isPopulated() && observers.getLive().size() > 0){
+			System.out.println("Queuing Chunk for Population: " + this.toString());
 			parentRegion.queueChunkForPopulation(this);
 			
 		}

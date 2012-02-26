@@ -75,6 +75,9 @@ public class SpoutRegion extends Region {
 	 * the region.
 	 */
 	private final int x, y, z;
+	
+	private final int POPULATE_PER_TICK = 5;
+	
 
 	/**
 	 * The source of this region
@@ -409,18 +412,24 @@ public class SpoutRegion extends Region {
 					}
 				}
 
+				for(int i = 0; i < POPULATE_PER_TICK; i++)
+				{
+					Chunk toPopulate = populationQueue.poll();
+					if(toPopulate == null) break;
+					if(toPopulate.isLoaded()){
+						System.out.println("Populating Chunk: " + toPopulate.toString() + " Chunks Left: " + populationQueue.size());
+						toPopulate.populate();
+					}
+					
+				}
+
+				
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
 					toUnload.unload(true);
 				}
 				
-				//Do these one at a time
-				Chunk toPopulate = populationQueue.poll();
-				//TODO: Have some way to load chunks without generation 
-				if(toPopulate != null && toPopulate.isLoaded()){
-					toPopulate.populate();
-				}
-
+			
 				break;
 			}
 			case 1: {
