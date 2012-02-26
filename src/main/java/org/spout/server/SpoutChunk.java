@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -38,13 +39,15 @@ import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.TileEntity;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
@@ -64,43 +67,36 @@ public class SpoutChunk extends Chunk {
 	 * and auxiliary data = null, the block is stored as a short.
 	 */
 	private AtomicBlockStore<DatatableMap> blockStore;
-
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
 	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
-
 	/**
 	 * The parent region that manages this chunk
 	 */
 	private final SpoutRegion parentRegion;
-
 	/**
 	 * Holds if the chunk is populated
 	 */
 	private SnapshotableBoolean populated;
-
 	/**
 	 * Snapshot Manager
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * A set of all players who are observing this chunk
 	 */
 	private final SnapshotableHashMap<Player, Integer> observers = new SnapshotableHashMap<Player, Integer>(snapshotManager);
-
 	/**
 	 * A set of entities contained in the chunk
 	 */
 	// Hash set should return "dirty" list
 	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
-
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-	
+
 	public SpoutChunk(World world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
@@ -166,6 +162,31 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
 
+		//Set the tile entity
+		BlockMaterial bm = MaterialData.getBlock(id, data);
+		Block b = this.getWorld().getBlock(x, y, z);
+		if (bm.hasTileEntity()) {
+			TileEntity te = null;
+			try {
+				te = (TileEntity) bm.getTileEntity().getDeclaredConstructor(Block.class).newInstance(b);
+
+			} catch (Exception ex) {
+				Spout.getGame().getLogger().severe("Tried to set invalid tile entity at x=" + x + ", y=" + y + ",z=" + z);
+			} finally {
+				if (b.hasTileEntity()) {
+					((SpoutWorld) this.getWorld()).removeTileEntity(b.getTileEntity());
+					b.removeTileEntity();
+				}
+				b.setTileEntity(te);
+				((SpoutWorld) this.getWorld()).addTileEntity(te);
+			}
+		} else {
+			if (b.hasTileEntity()) {
+				((SpoutWorld) this.getWorld()).removeTileEntity(b.getTileEntity());
+				b.removeTileEntity();
+			}
+		}
+
 		//do neighbor updates
 		if (updatePhysics) {
 			updatePhysics(x, y, z);
@@ -210,7 +231,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public void updatePhysics(int x, int y, int z) {
 		checkChunkLoaded();
-		SpoutRegion region = ((SpoutRegion)parentRegion.getWorld().getRegionFromBlock(x, y, z));
+		SpoutRegion region = ((SpoutRegion) parentRegion.getWorld().getRegionFromBlock(x, y, z));
 		if (region != null) {
 			region.queuePhysicsUpdate(x, y, z);
 		}
@@ -230,16 +251,14 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
 		throw new UnsupportedOperationException("TBD");
-		/*while (true) {
-			BlockFullState<DatatableMap> fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
-			if (!fullState.equals(expect)) {
-				return false;
-			}
-			BlockFullState<DatatableMap> newFullState = fullState.shallowClone();
-			if (newFullState.getAuxData() == null) {
-				newFullState.setAuxData(new SpoutDatatableMap());
-			}
-		}*/
+		/*
+		 * while (true) { BlockFullState<DatatableMap> fullState =
+		 * blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
+		 * if (!fullState.equals(expect)) { return false; }
+		 * BlockFullState<DatatableMap> newFullState = fullState.shallowClone();
+		 * if (newFullState.getAuxData() == null) { newFullState.setAuxData(new
+		 * SpoutDatatableMap()); } }
+		 */
 	}
 
 	@Override
@@ -354,7 +373,7 @@ public class SpoutChunk extends Chunk {
 	public boolean refreshObserver(Player player) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
-		int distance = (int) ((SpoutEntity)player.getEntity()).getChunkLive().getBase().getDistance(getBase());
+		int distance = (int) ((SpoutEntity) player.getEntity()).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(player, distance);
 		if (oldDistance == null) {
 			parentRegion.unloadQueue.remove(this);
@@ -429,6 +448,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public static enum SaveState {
+
 		UNLOAD_SAVE,
 		UNLOAD,
 		SAVE,
@@ -461,16 +481,16 @@ public class SpoutChunk extends Chunk {
 		}
 
 		final Random random = new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42));
-		
+
 		for (Populator populator : getWorld().getGenerator().getPopulators()) {
 			try {
 				populator.populate(this, random);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 				e.printStackTrace();
 			}
 		}
-		
+
 		populated.set(true);
 		if (getRegion() instanceof SpoutRegion) {
 			((SpoutRegion) getRegion()).onChunkPopulated(this);
@@ -511,15 +531,15 @@ public class SpoutChunk extends Chunk {
 		Map<Player, Integer> observerSnapshot = observers.get();
 		Map<Player, Integer> observerLive = observers.getLive();
 
-		
+
 		//If we are observed and not populated, queue population
-		if(!isPopulated() && observers.getLive().size() > 0){
+		if (!isPopulated() && observers.getLive().size() > 0) {
 			System.out.println("Queuing Chunk for Population: " + this.toString());
 			parentRegion.queueChunkForPopulation(this);
-			
+
 		}
-		
-		
+
+
 		Set<Entity> entitiesSnapshot = entities.get();
 		entities.getLive();
 
@@ -542,7 +562,7 @@ public class SpoutChunk extends Chunk {
 					if (p.getEntity().equals(e)) {
 						continue;
 					}
-					int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+					int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
 					int entityViewDistanceNew = e.getViewDistance();
 
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
@@ -559,7 +579,7 @@ public class SpoutChunk extends Chunk {
 			if (((SpoutEntity) e).justSpawned()) {
 				oldChunk = null;
 			}
-			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity)e).getChunkLive();
+			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity) e).getChunkLive();
 			if (!(oldChunk != null && oldChunk.equals(this)) && !((SpoutEntity) e).justSpawned()) {
 				continue;
 			}
@@ -586,7 +606,7 @@ public class SpoutChunk extends Chunk {
 						playerDistanceNew = Integer.MAX_VALUE;
 					}
 				}
-				int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+				int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
 				int entityViewDistanceNew = e.getViewDistance();
 
 				NetworkSynchronizer n = p.getNetworkSynchronizer();
@@ -610,7 +630,7 @@ public class SpoutChunk extends Chunk {
 				for (Entity e : entitiesSnapshot) {
 					if (playerEntity != e) {
 						if (playerDistance <= e.getViewDistance()) {
-							if (((SpoutEntity)e).getPrevController() != e.getController()) {
+							if (((SpoutEntity) e).getPrevController() != e.getController()) {
 								n.destroyEntity(e);
 								n.spawnEntity(e);
 							}
@@ -624,7 +644,7 @@ public class SpoutChunk extends Chunk {
 					} else if (((SpoutEntity) e).justSpawned()) {
 						if (playerEntity != e) {
 							if (playerDistance <= e.getViewDistance()) {
-								if (((SpoutEntity)e).getPrevController() != e.getController()) {
+								if (((SpoutEntity) e).getPrevController() != e.getController()) {
 									n.destroyEntity(e);
 									n.spawnEntity(e);
 								}
@@ -636,7 +656,7 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SpoutChunk{ (" + getX() + ", " + getY() + ", " + getZ() + ") }";
@@ -650,5 +670,4 @@ public class SpoutChunk extends Chunk {
 			super(message);
 		}
 	}
-
 }
