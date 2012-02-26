@@ -417,8 +417,7 @@ public class SpoutRegion extends Region {
 				//Do these one at a time
 				Chunk toPopulate = populationQueue.poll();
 				//TODO: Have some way to load chunks without generation 
-				if(toPopulate != null && toPopulate.isUnloaded()){
-					
+				if(toPopulate != null && toPopulate.isLoaded()){
 					toPopulate.populate();
 				}
 

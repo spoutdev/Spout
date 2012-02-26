@@ -413,8 +413,8 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean isUnloaded() {
-		return saveState.get() == SaveState.UNLOADED;
+	public boolean isLoaded() {
+		return saveState.get() != SaveState.UNLOADED;
 	}
 
 	public void setUnloaded() {
