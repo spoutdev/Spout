@@ -45,6 +45,7 @@ import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.TileEntity;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
@@ -112,6 +113,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
+	
+	/**
+	 * Holds all of the tile entities to be simulated
+	 */
+	private final Set<TileEntity> tileEntities = new HashSet<TileEntity>();
 
 	/**
 	 * A set of all players currently connected to this world
@@ -303,6 +309,14 @@ public class SpoutWorld extends AsyncManager implements World {
 						ent.onTick(dt);
 					} catch (Exception e) {
 						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+						e.printStackTrace();
+					}
+				}
+				for(TileEntity te : tileEntities) {
+					try{
+					te.onTick();
+					} catch(Exception e) {
+						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + te.toString());
 						e.printStackTrace();
 					}
 				}
@@ -519,5 +533,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";
+	}
+
+	public void removeTileEntity(TileEntity tileEntity) {
+		tileEntities.remove(tileEntity);
+	}
+
+	public void addTileEntity(TileEntity te) {
+		tileEntities.add(te);
 	}
 }
