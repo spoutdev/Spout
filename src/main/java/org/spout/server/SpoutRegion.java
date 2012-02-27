@@ -75,6 +75,9 @@ public class SpoutRegion extends Region {
 	 * the region.
 	 */
 	private final int x, y, z;
+	
+	private final int POPULATE_PER_TICK = 5;
+	
 
 	/**
 	 * The source of this region
@@ -114,6 +117,8 @@ public class SpoutRegion extends Region {
 	private final int blockCoordMask;
 
 	private final int blockShifts;
+	
+	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, false);
@@ -368,6 +373,10 @@ public class SpoutRegion extends Region {
 		return empty;
 	}
 
+	public void queueChunkForPopulation(Chunk c){
+		populationQueue.add(c);
+	}
+	
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
@@ -403,11 +412,23 @@ public class SpoutRegion extends Region {
 					}
 				}
 
+				for(int i = 0; i < POPULATE_PER_TICK; i++)
+				{
+					Chunk toPopulate = populationQueue.poll();
+					if(toPopulate == null) break;
+					if(toPopulate.isLoaded()){
+						toPopulate.populate();
+					}
+					
+				}
+
+				
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
 					toUnload.unload(true);
 				}
-
+				
+			
 				break;
 			}
 			case 1: {
@@ -431,50 +452,10 @@ public class SpoutRegion extends Region {
 	public void haltRun() throws InterruptedException {
 	}
 
-	@SuppressWarnings("unused")
+	
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
-		isPopulatingChunks = true;
-		try {
-			Iterator<Chunk> iter = nonPopulatedChunks.iterator();
-			World world = getWorld();
-			int chunkHeight = world.getHeight() >> Chunk.CHUNK_SIZE_BITS - 1;
-			while (iter.hasNext()) {
-				Chunk c = iter.next();
-				if (c.isUnloaded()) {
-					iter.remove();
-				}
-				if (c.isPopulated()) {
-					//Cleanup
-					iter.remove();
-					continue;
-				}
-				int x = c.getX();
-				int y = c.getY();
-				int z = c.getZ();
-				boolean success = true;
-				int missing = 0;
-				seek: for (int dx = x - POPULATE_CHUNK_MARGIN; dx <= x + POPULATE_CHUNK_MARGIN; dx++) {
-					for (int dy = Math.max(y - POPULATE_CHUNK_MARGIN, 0); dy <= Math.min(y + POPULATE_CHUNK_MARGIN, chunkHeight); dy++) {
-						for (int dz = z - POPULATE_CHUNK_MARGIN; dz <= z + POPULATE_CHUNK_MARGIN; dz++) {
-							Chunk neighbor = world.getChunk(dx, dy, dz, false);
-							if (neighbor == null) {
-								success = false;
-								missing++;
-							}
-						}
-					}
-				}
-				//System.out.println(x + " " + y + " " + z + " "+ missing + " missing");
-				if (success) {
-					c.populate();
-					iter.remove();
-				}
-			}
-		} finally {
-			isPopulatingChunks = false;
-		}
-
+		
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 

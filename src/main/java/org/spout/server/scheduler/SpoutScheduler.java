@@ -72,12 +72,13 @@ import org.spout.server.util.thread.snapshotable.SnapshotableArrayList;
  * <ul>
  * <li><b>Stage 1</b><br>
  * This is the first stage of execution. Most Events are generated during this
- * stage and the API is fully open for use.
+ * stage and the API is fully open for use. - chunks are
+ * populated.
  * <li><b>Stage 2</b><br>
  * During this stage, entity collisions are handled.
  * <li><b>Finalize Tick</b><br>
- * During this stage - entities are moved between entity managers. - chunks are
- * populated. - chunks are compressed if necessary.
+ * During this stage - entities are moved between entity managers. 
+ *  - chunks are compressed if necessary.
  * <li><b>Pre-snapshot</b><br>
  * This is a MONITOR stage, data is stable and no modifications are allowed.
  * <li><b>Copy Snapshot</b><br>
@@ -372,6 +373,7 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (TimeoutException e) {
 				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 				AsyncExecutorUtils.dumpAllStacks();
+				AsyncExecutorUtils.checkForDeadlocks();
 			}
 		}
 

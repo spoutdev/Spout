@@ -27,6 +27,8 @@ package org.spout.server;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +38,9 @@ import org.spout.api.Server;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.basic.blocks.BlockFullState;
+import org.spout.api.collision.BoundingBox;
+import org.spout.api.collision.CollisionModel;
+import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Controller;
@@ -476,6 +481,40 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Set<Player> getPlayers() {
 		return Collections.unmodifiableSet(players);
 	}
+	
+	public List<CollisionVolume> getCollidingObject(CollisionModel model){
+		//TODO Make this more general
+		final int minX = MathHelper.floor(model.getPosition().getX());
+		final int minY = MathHelper.floor(model.getPosition().getY());
+		final int minZ = MathHelper.floor(model.getPosition().getZ());
+		final int maxX = minX + 1;
+		final int maxY = minY + 1;
+		final int maxZ = minZ + 1;
+		
+		final LinkedList<CollisionVolume> colliding = new LinkedList<CollisionVolume>();
+		
+		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
+		final BoundingBox position = new BoundingBox((BoundingBox)model.getVolume());
+		position.offset(minX, minY, minZ);
+		
+		for (int dx = minX; dx < maxX; dx++) {
+			for (int dy = minY - 1; dy < maxY; dy++) {
+				for (int dz = minZ; dz < maxZ; dz++) {
+					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
+					mutable.set((BoundingBox)material.getBoundingArea());
+					mutable.offset(dx, dy, dz);
+					if (mutable.intersects(position)) {
+						colliding.add(mutable.clone());
+					}
+				}
+			}
+		}
+		
+		//TODO: colliding entities
+		return colliding;
+		
+	}
+	
 	
 	@Override
 	public String toString() {

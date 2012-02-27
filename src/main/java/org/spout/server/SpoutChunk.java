@@ -413,8 +413,8 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean isUnloaded() {
-		return saveState.get() == SaveState.UNLOADED;
+	public boolean isLoaded() {
+		return saveState.get() != SaveState.UNLOADED;
 	}
 
 	public void setUnloaded() {
@@ -511,6 +511,14 @@ public class SpoutChunk extends Chunk {
 		Map<Player, Integer> observerSnapshot = observers.get();
 		Map<Player, Integer> observerLive = observers.getLive();
 
+		
+		//If we are observed and not populated, queue population
+		if(!isPopulated() && observers.getLive().size() > 0){
+			parentRegion.queueChunkForPopulation(this);
+			
+		}
+		
+		
 		Set<Entity> entitiesSnapshot = entities.get();
 		entities.getLive();
 

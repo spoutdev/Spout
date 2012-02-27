@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.spout.api.collision.model.CollisionModel;
+import org.spout.api.collision.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -300,7 +300,7 @@ public class SpoutEntity implements Entity {
 			if (chunkLive != null) {
 				((SpoutChunk) chunkLive).addEntity(this);
 			}
-			if (chunk != null && !chunk.isUnloaded()) {
+			if (chunk != null && chunk.isLoaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
 			}
 		}
