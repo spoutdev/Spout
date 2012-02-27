@@ -33,7 +33,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +93,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.config.Configuration;
+import org.spout.api.util.config.ConfigurationNode;
 import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
 import org.spout.server.entity.EntityManager;
@@ -103,6 +103,7 @@ import org.spout.server.net.SpoutSession;
 import org.spout.server.net.SpoutSessionRegistry;
 import org.spout.server.player.SpoutPlayer;
 import org.spout.server.scheduler.SpoutScheduler;
+import org.spout.server.util.config.SpoutConfiguration;
 import org.spout.server.util.thread.AsyncManager;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
@@ -252,7 +253,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * Cached copy of the server configuration, can be used instead of
 	 * re-parsing the config file for each access
 	 */
-	private Configuration configCache = null;
+	private Configuration config = new SpoutConfiguration();
 
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
@@ -281,11 +282,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		consoleManager.setupConsole();
 
-		try {
-			loadConfig();
-		} catch (Throwable t) {
-			throw new RuntimeException("Failed to parse config", t);
-		}
+		config.load();
 
 		// Start loading plugins
 		loadPlugins();
@@ -303,111 +300,9 @@ public class SpoutServer extends AsyncManager implements Server {
 		getEventManager().registerEvents(new InternalEventListener(this), this);
 		scheduler.startMainThread();
 	}
-
-	@SuppressWarnings("unchecked")
-	private void loadConfig() throws IOException {
-		Configuration config = getConfiguration(true);
-		boolean save = false;
-		try {
-			Map<String, String> generators = (Map<String, String>) config.getProperty("worlds");
-			if (generators == null) {
-				generators = new HashMap<String, String>();
-				generators.put("world", "default");
-				config.setProperty("worlds", generators);
-				save = true;
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read world generators from the config file!");
-		}
-		try {
-			List<String> whitelist = (List<String>) config.getProperty("whitelist");
-			if (whitelist == null) {
-				whitelist = new ArrayList<String>();
-				whitelist.add("Notch");
-				whitelist.add("ez");
-				whitelist.add("jeb");
-				config.setProperty("whitelist", whitelist);
-				save = true;
-			}
-			whitelistedPlayers = whitelist;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read whitelist from the config file!");
-		}
-		try {
-			List<String> bannedList = (List<String>) config.getProperty("banlist");
-			if (bannedList == null) {
-				bannedList = new ArrayList<String>();
-				bannedList.add("satan");
-				config.setProperty("banlist", bannedList);
-				save = true;
-			}
-			bannedPlayers = bannedList;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read banlist from the config file!");
-		}
-		try {
-			String fly = config.getString("allowflight");
-			if (fly == null) {
-				allowFlight = false;
-				config.setProperty("allowflight", false);
-				save = true;
-			} else {
-				allowFlight = fly.equalsIgnoreCase("true");
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read flight permissions from the config file!");
-		}
-		try {
-			String whitelist = config.getString("usewhitelist");
-			if (whitelist == null) {
-				this.whitelist = false;
-				config.setProperty("usewhitelist", false);
-				save = true;
-			} else {
-				this.whitelist = whitelist.equalsIgnoreCase("true");
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read whitelist value from the config file!");
-		}
-		try {
-			String worldFolder = config.getString("worldcontainer");
-			if (worldFolder == null) {
-				config.setProperty("worldcontainer", ".");
-				save = true;
-			} else {
-				this.worldFolder = new File(worldFolder);
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read world container value from the config file!");
-		}
-		try {
-			List<String> opsList = (List<String>) config.getProperty("ops");
-			if (opsList == null) {
-				opsList = new ArrayList<String>();
-				opsList.add("Notch");
-				opsList.add("ez");
-				opsList.add("jeb");
-				config.setProperty("ops", opsList);
-				save = true;
-			}
-			operators = opsList;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read operators from the config file!");
-		}
-		try {
-			String address = config.getString("address");
-			if (address == null) {
-				config.setProperty("address", "0.0.0.0:25565");
-				save = true;
-			} else {
-				primaryAddress = address;
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read server address from the config file!");
-		}
-		if (save) {
-			config.save();
-		}
+	
+	public Configuration getConfiguration() {
+		return config;
 	}
 
 	public void init() {
@@ -663,16 +558,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void updateWhitelist() {
-		try {
-			Configuration config = getConfiguration(true);
-			List<String> whitelist = (List<String>) config.getProperty("whitelist");
-			if (whitelist != null) {
-				whitelistedPlayers = whitelist;
-			} else {
-				whitelistedPlayers = new ArrayList<String>();
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to read whitelist from the config file!");
+		List<String> whitelist = SpoutConfiguration.WHITELIST.getStringList();
+		if (whitelist != null) {
+			whitelistedPlayers = whitelist;
+		} else {
+			whitelistedPlayers = new ArrayList<String>();
 		}
 	}
 
@@ -685,22 +575,16 @@ public class SpoutServer extends AsyncManager implements Server {
 		return whitelist;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void whitelist(String player) {
 		whitelistedPlayers.add(player);
-		try {
-			Configuration config = getConfiguration(true);
-			List<String> whitelist = (List<String>) config.getProperty("whitelist");
-			if (whitelist == null) {
-				whitelist = whitelistedPlayers;
-			} else {
-				whitelist.add(player);
-			}
-			config.setProperty("whitelist", whitelist);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to write whitelist to the config file!");
+		List<String> whitelist = SpoutConfiguration.WHITELIST.getStringList();
+		if (whitelist == null) {
+			whitelist = whitelistedPlayers;
+		} else {
+			whitelist.add(player);
 		}
+		config.addNode(new ConfigurationNode("whitelist", whitelist));
 	}
 
 	@Override
@@ -1015,52 +899,30 @@ public class SpoutServer extends AsyncManager implements Server {
 		return player;
 	}
 
-	private Configuration getConfiguration() throws IOException {
-		return getConfiguration(false);
-	}
-
-	private Configuration getConfiguration(boolean update) throws IOException {
-		if (configCache != null && !update) {
-			return configCache;
-		}
-		File configFile = new File(getConfigFolder(), "spout.yml");
-		if (!configFile.exists()) {
-			configFile.createNewFile();
-		}
-		Configuration config = new Configuration(configFile);
-		config.load();
-		configCache = config;
-		return config;
-	}
-
 	@SuppressWarnings("unchecked")
 	private WorldGenerator getGenerator(String name) {
-		try {
-			Configuration config = getConfiguration();
-			Map<String, String> generators = (Map<String, String>) config.getProperty("worlds");
-			if (generators != null) {
-				String genName = generators.get(name);
-				if (genName != null && genName.equalsIgnoreCase("default")) {
-					return getDefaultGenerator();
-				}
-				if (genName != null) {
-					String[] split = genName.split(":", 2);
-					String id = split.length > 1 ? split[1] : null;
-					Plugin plugin = pluginManager.getPlugin(split[0]);
+		Map<String, String> generators = (Map<String, String>) SpoutConfiguration.WORLDS.getValue();
+		if (generators != null) {
+			String genName = generators.get(name);
+			if (genName != null && genName.equalsIgnoreCase("default")) {
+				return getDefaultGenerator();
+			}
+			if (genName != null) {
+				String[] split = genName.split(":", 2);
+				String id = split.length > 1 ? split[1] : null;
+				Plugin plugin = pluginManager.getPlugin(split[0]);
 
-					if (plugin == null) {
-						getLogger().severe("Could not find generator for world '" + name + "', Plugin '" + split[0] + "' could not be found!");
-					} else if (!plugin.isEnabled()) {
-						getLogger().severe("Could not find generator for world '" + name + "', Plugin '" + split[0] + "' is not enabled!");
-					} else {
-						WorldGenerator gen = plugin.getWorldGenerator(name, id);
-						if (gen != null) {
-							return gen;
-						}
+				if (plugin == null) {
+					getLogger().severe("Could not find generator for world '" + name + "', Plugin '" + split[0] + "' could not be found!");
+				} else if (!plugin.isEnabled()) {
+					getLogger().severe("Could not find generator for world '" + name + "', Plugin '" + split[0] + "' is not enabled!");
+				} else {
+					WorldGenerator gen = plugin.getWorldGenerator(name, id);
+					if (gen != null) {
+						return gen;
 					}
 				}
 			}
-		} catch (IOException ignore) {
 		}
 		return getDefaultGenerator();
 	}
