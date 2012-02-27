@@ -417,7 +417,6 @@ public class SpoutRegion extends Region {
 					Chunk toPopulate = populationQueue.poll();
 					if(toPopulate == null) break;
 					if(toPopulate.isLoaded()){
-						System.out.println("Populating Chunk: " + toPopulate.toString() + " Chunks Left: " + populationQueue.size());
 						toPopulate.populate();
 					}
 					
