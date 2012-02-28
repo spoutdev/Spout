@@ -43,4 +43,8 @@ public interface Material {
 	public Material setModel(Model model);
 
 	public Model getModel();
+	
+	public int getMaxStackSize();
+	
+	public void setMaxStackSize(int newValue);
 }

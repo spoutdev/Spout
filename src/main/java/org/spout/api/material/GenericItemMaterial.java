@@ -37,6 +37,7 @@ public class GenericItemMaterial implements ItemMaterial {
 	private final String name;
 	private Model model;
 	private String displayName;
+	private int maxStackSize = 64;
 
 	public GenericItemMaterial(String name, int id, int data, boolean subtypes) {
 		this.name = name;
@@ -94,5 +95,15 @@ public class GenericItemMaterial implements ItemMaterial {
 
 	@Override
 	public void onInteract(Entity entity, Point position, Action type) {
+	}
+
+	@Override
+	public int getMaxStackSize() {
+		return maxStackSize;
+	}
+
+	@Override
+	public void setMaxStackSize(int newValue) {
+		maxStackSize = newValue;
 	}
 }

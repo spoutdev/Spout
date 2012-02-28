@@ -26,15 +26,40 @@
 package org.spout.api.inventory;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Inventory implements Serializable {
+
 	private static final long serialVersionUID = 0L;
 	private final ItemStack[] contents;
+	private Set<Integer> hidden = new HashSet<Integer>();
 	private int currentSlot;
+	private boolean dirty = false;
 
 	public Inventory(int size) {
 		contents = new ItemStack[size];
 		currentSlot = 0;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean newVal) {
+		dirty = newVal;
+	}
+
+	public void setHiddenSlot(int slot, boolean newValue) {
+		if (newValue) {
+			hidden.add(slot);
+		} else {
+			hidden.remove(slot);
+		}
+	}
+
+	public boolean isHiddenSlot(int slot) {
+		return hidden.contains(slot);
 	}
 
 	public ItemStack[] getContents() {
@@ -47,12 +72,30 @@ public class Inventory implements Serializable {
 
 	public void setItem(ItemStack item, int slot) {
 		contents[slot] = item;
+		setDirty(true);
 	}
 
 	public boolean addItem(ItemStack item) {
 		for (int i = 0; i < contents.length; i++) {
+			if (hidden.contains(i)) continue;
+			if (contents[i] != null && contents[i].getMaterial() == item.getMaterial()) {
+				int canTake = (contents[i].getMaterial().getMaxStackSize() - contents[i].getAmount());
+				if (canTake >= item.getAmount()) {
+					contents[i].setAmount(contents[i].getAmount() + item.getAmount());
+					setDirty(true);
+					return true;
+				} else {
+					item.setAmount(item.getAmount() - canTake);
+					contents[i].setAmount(contents[i].getMaterial().getMaxStackSize());
+				}
+			}
+		}
+
+		for (int i = 0; i < contents.length; i++) {
+			if (hidden.contains(i)) continue;
 			if (contents[i] == null) {
 				contents[i] = item;
+				setDirty(true);
 				return true;
 			}
 		}
@@ -76,5 +119,6 @@ public class Inventory implements Serializable {
 			throw new ArrayIndexOutOfBoundsException();
 		}
 		currentSlot = slot;
+		setDirty(true);
 	}
 }
