@@ -300,8 +300,11 @@ public class SpoutEntity implements Entity {
 				((SpoutChunk) chunk).removeEntity(this);
 			}
 			if (chunkLive == null) {
-				((SpoutChunk) chunk).removeEntity(this);
-				entityManagerLive.deallocate(this);
+				if(chunk!=null&&chunk.isLoaded())
+					((SpoutChunk) chunk).removeEntity(this);
+				if (entityManagerLive != null) {
+					entityManagerLive.deallocate(this);
+				}
 			}
 		}
 	}
