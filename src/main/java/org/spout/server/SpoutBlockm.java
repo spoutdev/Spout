@@ -25,6 +25,7 @@
  */
 package org.spout.server;
 
+import org.spout.api.entity.MaterialController;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.material.BlockMaterial;
@@ -74,6 +75,16 @@ public class SpoutBlockm extends Blockm {
 
 	@Override
 	public short getLiveBlockId() {
+		throw new UnsupportedOperationException("Operation is not supported");
+	}
+
+	@Override
+	public void setMaterialEntity(MaterialController materialEntity) {
+		throw new UnsupportedOperationException("Operation is not supported");
+	}
+
+	@Override
+	public MaterialController getMaterialEntity() {
 		throw new UnsupportedOperationException("Operation is not supported");
 	}
 }

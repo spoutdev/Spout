@@ -25,6 +25,11 @@
  */
 package org.spout.server;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.spout.api.Spout;
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.MaterialController;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
@@ -32,6 +37,7 @@ import org.spout.api.material.MaterialData;
 
 public class SpoutBlock extends Block {
 	BlockMaterial material = null;
+	Entity mEntity;
 
 	public SpoutBlock(World world, int x, int y, int z) {
 		super(world, x, y, z);
@@ -60,6 +66,14 @@ public class SpoutBlock extends Block {
 		if (newMat != null) {
 			material = newMat;
 		}
+		if(material.hasMaterialEntity()) {
+			try {
+				setMaterialEntity(material.getMaterialEntity().newInstance());
+			} catch (Exception ex) {
+				Spout.getGame().getLogger().log(Level.SEVERE, "Tried to set invalid Material entity for block at "+this.getX()+" "+this.getY()+" "+this.getZ()+"!");
+				Logger.getLogger(SpoutBlock.class.getName()).log(Level.SEVERE, null, ex);
+			} 
+		}
 		return material != null ? material.getId() : 0;
 	}
 
@@ -81,5 +95,27 @@ public class SpoutBlock extends Block {
 	@Override
 	public short getLiveBlockId() {
 		return getBlockId();
+	}
+
+	@Override
+	public void setMaterialEntity(MaterialController materialEntity) {
+		if(mEntity == null) {
+			mEntity = this.getWorld().createEntity(base, materialEntity);
+		}
+		else {
+			if(mEntity.getController() instanceof MaterialController) {
+				materialEntity.inherit((MaterialController) mEntity.getController());
+			}
+			mEntity.setController(materialEntity);
+		}
+	}
+
+	@Override
+	public MaterialController getMaterialEntity() {
+		if(mEntity==null)
+			return null;
+		if(!(mEntity.getController() instanceof MaterialController))
+			return null;
+		return (MaterialController) mEntity.getController();
 	}
 }
