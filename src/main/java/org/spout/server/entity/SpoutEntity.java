@@ -28,7 +28,7 @@ package org.spout.server.entity;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
@@ -44,11 +44,7 @@ import org.spout.api.geo.discrete.atomic.AtomicPoint;
 import org.spout.api.geo.discrete.atomic.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.math.MathHelper;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Quaternionm;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
+import org.spout.api.math.*;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
@@ -64,13 +60,12 @@ import org.spout.server.datatable.value.SpoutDatatableObject;
 import org.spout.server.player.SpoutPlayer;
 
 public class SpoutEntity implements Entity {
-	private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = 1L;
 	public final static int NOTSPAWNEDID = -1;
 	private final static Transform DEAD = new Transform(new Point(null, 0, 0, 0), new Quaternion(0F, 0F, 0F, 0F), new Vector3(0, 0, 0));
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
-
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final Transform transform = new Transform();
 	private EntityManager entityManager;
@@ -82,18 +77,15 @@ public class SpoutEntity implements Entity {
 	private boolean justSpawned = true;
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private int viewDistance;
-
 	public int id = NOTSPAWNEDID;
-
 	Model model;
 	CollisionModel collision;
-
 	SpoutDatatableMap map;
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
 		setTransform(transform);
-		
+
 		map = new SpoutDatatableMap();
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
@@ -102,7 +94,7 @@ public class SpoutEntity implements Entity {
 		scale = new Vector3m(transform.getScale());
 		updatePosition();
 		updateRotation();
-		
+
 		if (controller != null) {
 			this.controller = controller;
 			setController(controller);
@@ -117,12 +109,13 @@ public class SpoutEntity implements Entity {
 		this(server, new Transform(point, Quaternion.identity, Vector3.ONE), controller);
 	}
 
+	@Override
 	public int getId() {
 		while (true) {
 			int seq = lock.readLock();
-			int id = this.id;
+			int lid = this.id;
 			if (lock.readUnlock(seq)) {
-				return id;
+				return lid;
 			}
 		}
 	}
@@ -140,9 +133,9 @@ public class SpoutEntity implements Entity {
 	public Controller getController() {
 		while (true) {
 			int seq = lock.readLock();
-			Controller controller = controllerLive;
+			Controller lcontroller = controllerLive;
 			if (lock.readUnlock(seq)) {
-				return controller;
+				return lcontroller;
 			}
 		}
 	}
@@ -153,14 +146,19 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setController(Controller controller) {
-		controller.attachToEntity(this);
+		if (controller != null) {
+			controller.attachToEntity(this);
+		}
 		int seq = lock.writeLock();
 		try {
 			controllerLive = controller;
 		} finally {
 			lock.writeUnlock(seq);
 		}
-		controller.onAttached();
+
+		if (controller != null) {
+			controller.onAttached();
+		}
 	}
 
 	public Transform getTransform() {
@@ -203,6 +201,7 @@ public class SpoutEntity implements Entity {
 	}
 
 	// TODO - make actually atomic, rather than just threadsafe
+	@Override
 	public boolean kill() {
 		int seq = lock.writeLock();
 		boolean alive = true;
@@ -212,10 +211,11 @@ public class SpoutEntity implements Entity {
 			transform.set(DEAD);
 			chunkLive = null;
 			entityManagerLive = null;
+			((SpoutServer) Spout.getGame()).getEntityManager().deallocate(this);
 		} finally {
 			lock.writeUnlock(seq);
 		}
-		return alive;
+		return !alive;
 	}
 
 	@Override
@@ -274,10 +274,10 @@ public class SpoutEntity implements Entity {
 	 */
 	public void resolve() {
 		//Resolve Collisions Here
-
 		//Check to see if we should fire off a Move event
 	}
 
+	@Override
 	public void finalizeRun() {
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive || controller != controllerLive) {
@@ -413,7 +413,6 @@ public class SpoutEntity implements Entity {
 	public DatatableTuple getData(String key) {
 		return map.get(key);
 	}
-
 	private int inventorySize;
 	private Inventory inventory;
 
@@ -467,6 +466,7 @@ public class SpoutEntity implements Entity {
 		viewDistanceLive.set(distance);
 	}
 
+	@Override
 	public int getViewDistance() {
 		return viewDistanceLive.get();
 	}
@@ -474,7 +474,6 @@ public class SpoutEntity implements Entity {
 	public int getPrevViewDistance() {
 		return viewDistance;
 	}
-
 	float x, y, z, yaw, pitch, roll;
 	final Vector3m scale;
 	boolean posModified = false, yawModified = false, pitchModified = false,
@@ -580,9 +579,11 @@ public class SpoutEntity implements Entity {
 	}
 
 	/**
-	 * Called when the game finalizes the position from any movement or collision calculations, and updates the cache.
+	 * Called when the game finalizes the position from any movement or
+	 * collision calculations, and updates the cache.
 	 *
-	 * If the API has modified the position, it will use the modified value instead of the calculated value.
+	 * If the API has modified the position, it will use the modified value
+	 * instead of the calculated value.
 	 */
 	public void updatePosition() {
 		stateLock.writeLock().lock();
@@ -625,9 +626,10 @@ public class SpoutEntity implements Entity {
 	}
 
 	/**
-	 * Called when the game finalizes the rotation from any movement or collision calculations, and updates the cache. <br/>
-	 * <br/>
-	 * If the API has modified the yaw, pitch, or scale, it will use the modified value instead of the calculated value.
+	 * Called when the game finalizes the rotation from any movement or
+	 * collision calculations, and updates the cache. <br/> <br/> If the API has
+	 * modified the yaw, pitch, or scale, it will use the modified value instead
+	 * of the calculated value.
 	 */
 	public void updateRotation() {
 		stateLock.writeLock().lock();
@@ -698,12 +700,12 @@ public class SpoutEntity implements Entity {
 	public void updateScale() {
 		stateLock.writeLock().lock();
 		try {
-			Vector3m scale = transform.getScale();
+			Vector3m lscale = transform.getScale();
 			if (!scaleModified) {
-				this.scale.set(scale);
+				this.scale.set(lscale);
 			} else {
 				scaleModified = false;
-				scale.set(this.scale);
+				lscale.set(this.scale);
 			}
 		} finally {
 			stateLock.writeLock().unlock();
