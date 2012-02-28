@@ -266,4 +266,52 @@ public class MathHelper {
 			return x;
 		}
 	}
+	
+	/**
+	 * Casts a value to an integer. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Integer castInt(Object o) {
+		if (o instanceof Number) {
+			return ((Number)o).intValue();
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Casts a value to a double. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Double castDouble(Object o) {
+		if (o instanceof Number) {
+			return ((Number)o).doubleValue();
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Casts a value to a boolean. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Boolean castBoolean(Object o) {
+		if (o instanceof Boolean) {
+			return (Boolean) o;
+		} else if (o instanceof String) {
+			try {
+				return Boolean.parseBoolean((String) o);
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
+		}
+		
+		return null;
+	}
 }
