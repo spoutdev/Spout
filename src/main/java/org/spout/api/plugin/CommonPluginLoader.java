@@ -48,7 +48,12 @@ import org.spout.api.exception.UnknownSoftDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginLoader implements PluginLoader {
-	private final Game game;
+
+	public static final String YAML_SPOUT = "spoutplugin.yml";
+	public static final String YAML_OTHER = "plugin.yml";
+
+	protected final Game game;
+
 	private final Pattern[] patterns;
 	private final CommonSecurityManager manager;
 	private final double key;
@@ -123,75 +128,14 @@ public class CommonPluginLoader implements PluginLoader {
 		CommonPlugin result = null;
 		PluginDescriptionFile desc = null;
 
-		if (!paramFile.exists()) {
-			throw new InvalidPluginException(new StringBuilder().append(paramFile.getName()).append(" does not exist!").toString());
-		}
-
-		JarFile jar = null;
-		InputStream in = null;
-		try {
-			jar = new JarFile(paramFile);
-			JarEntry entry = jar.getJarEntry("spoutplugin.yml");
-
-			if (entry == null) {
-				entry = jar.getJarEntry("plugin.yml");
-			}
-
-			if (entry == null) {
-				throw new InvalidPluginException("Jar has no plugin.yml or spoutplugin.yml!");
-			}
-
-			in = jar.getInputStream(entry);
-			desc = new PluginDescriptionFile(in);
-		} catch (IOException e) {
-			throw new InvalidPluginException(e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (jar != null) {
-				try {
-					jar.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		desc = getDescription(paramFile);
 
 		File dataFolder = new File(paramFile.getParentFile(), desc.getName());
 
-		List<String> depends = desc.getDepends();
-		if (depends == null) {
-			depends = new ArrayList<String>();
-		}
-
-		for (String depend : depends) {
-			if (loaders == null) {
-				throw new UnknownDependencyException(depend);
-			}
-			if (!loaders.containsKey(depend)) {
-				throw new UnknownDependencyException(depend);
-			}
-		}
+		processDependencies(desc);
 
 		if (!ignoresoftdepends) {
-			List<String> softdepend = desc.getSoftDepends();
-			if (softdepend == null) {
-				softdepend = new ArrayList<String>();
-			}
-
-			for (String depend : depends) {
-				if (loaders == null) {
-					throw new UnknownSoftDependencyException(depend);
-				}
-				if (!loaders.containsKey(depend)) {
-					throw new UnknownSoftDependencyException(depend);
-				}
-			}
+			processSoftDependencies(desc);
 		}
 
 		CommonClassLoader loader = null;
@@ -221,6 +165,98 @@ public class CommonPluginLoader implements PluginLoader {
 		loaders.put(desc.getName(), loader);
 
 		return result;
+	}
+
+	/**
+	 * @param desc Plugin description element
+	 * @throws UnknownSoftDependencyException
+	 */
+	protected void processSoftDependencies(PluginDescriptionFile desc) throws UnknownSoftDependencyException {
+		List<String> softdepend = desc.getSoftDepends();
+		if (softdepend == null) {
+			softdepend = new ArrayList<String>();
+		}
+
+		for (String depend : softdepend) {
+			if (loaders == null) {
+				throw new UnknownSoftDependencyException(depend);
+			}
+			if (!loaders.containsKey(depend)) {
+				throw new UnknownSoftDependencyException(depend);
+			}
+		}
+	}
+
+	/**
+	 * @param desc Plugin description element
+	 * @throws UnknownDependencyException
+	 */
+	protected void processDependencies(PluginDescriptionFile desc) throws UnknownDependencyException {
+		List<String> depends = desc.getDepends();
+		if (depends == null) {
+			depends = new ArrayList<String>();
+		}
+
+		for (String depend : depends) {
+			if (loaders == null) {
+				throw new UnknownDependencyException(depend);
+			}
+			if (!loaders.containsKey(depend)) {
+				throw new UnknownDependencyException(depend);
+			}
+		}
+	}
+
+	/**
+	 * @param param File Plugin file object
+	 * @return The current plugins description element.
+	 * 
+	 * @throws InvalidPluginException
+	 * @throws InvalidDescriptionFileException
+	 */
+	protected PluginDescriptionFile getDescription(File paramFile) throws InvalidPluginException, InvalidDescriptionFileException {
+		if (!paramFile.exists()) {
+			throw new InvalidPluginException(new StringBuilder().append(paramFile.getName()).append(" does not exist!").toString());
+		}
+
+		PluginDescriptionFile desc = null;
+		JarFile jar = null;
+		InputStream in = null;
+		try {
+			// spout plugin configuration file
+			jar = new JarFile(paramFile);
+			JarEntry entry = jar.getJarEntry(YAML_SPOUT);
+
+			// fallback: other plugin configuration file
+			if (entry == null) {
+				entry = jar.getJarEntry(YAML_OTHER);
+			}
+
+			if (entry == null) {
+				throw new InvalidPluginException("Jar has no plugin.yml or spoutplugin.yml!");
+			}
+
+			in = jar.getInputStream(entry);
+			desc = new PluginDescriptionFile(in);
+		} catch (IOException e) {
+			throw new InvalidPluginException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					game.getLogger().log(Level.WARNING, "Problem closing input stream", e);
+				}
+			}
+			if (jar != null) {
+				try {
+					jar.close();
+				} catch (IOException e) {
+					game.getLogger().log(Level.WARNING, "Problem closing jar input stream", e);
+				}
+			}
+		}
+		return desc;
 	}
 
 	public Class<?> getClassByName(final String name) {
