@@ -150,6 +150,7 @@ public class MemoryConfiguration {
 		}
 		
 		nodes.add(node);
+		node.config = this;
 	}
 	
 	/**
@@ -202,12 +203,7 @@ public class MemoryConfiguration {
 	 * @return string
 	 */
 	public String getString(String path) {
-		Object value = getValue(path);
-		if (value instanceof String) {
-			return (String) value;
-		}
-		
-		return value.toString();
+		return getString(path, null);
 	}
 	
 	/**
@@ -230,13 +226,7 @@ public class MemoryConfiguration {
 	 * @return integer
 	 */
 	public int getInteger(String path) {
-		Object value = getValue(path);
-		Integer i = MathHelper.castInt(value);
-		if (i != null) {
-			return i;
-		}
-		
-		return 0;
+		return getInteger(path, 0);
 	}
 	
 	/**
@@ -260,13 +250,7 @@ public class MemoryConfiguration {
 	 * @return double
 	 */
 	public double getDouble(String path) {
-		Object value = getValue(path);
-		Double d = MathHelper.castDouble(value);
-		if (d != null) {
-			return d;
-		}
-		
-		return 0;
+		return getDouble(path, 0);
 	}
 	
 	/**
@@ -290,13 +274,7 @@ public class MemoryConfiguration {
 	 * @return boolean
 	 */
 	public boolean getBoolean(String path) {
-		Object value = getValue(path);
-		Boolean b = MathHelper.castBoolean(value);
-		if (b != null) {
-			return b;
-		}
-		
-		return false;
+		return getBoolean(path, false);
 	}
 	
 	/**
@@ -321,12 +299,7 @@ public class MemoryConfiguration {
 	 * @return list
 	 */
 	public List<Object> getList(String path) {
-		Object value = getValue(path);
-		if (value != null && value instanceof List) {
-			return (List<Object>) value;
-		}
-		
-		return null;
+		return getList(path, null);
 	}
 	
 	/**
@@ -349,16 +322,7 @@ public class MemoryConfiguration {
 	 * @return string list
 	 */
 	public List<String> getStringList(String path) {
-		List<Object> raw = this.getList(path);
-		if (raw != null) {
-			List<String> list = new ArrayList<String>();
-			for (Object obj : raw) {
-				list.add(obj.toString());
-			}
-			
-			return list;
-		}
-		return null;
+		return getStringList(path, null);
 	}
 	
 	/**
@@ -385,19 +349,7 @@ public class MemoryConfiguration {
 	 * @return integer list
 	 */
 	public List<Integer> getIntegerList(String path) {
-		List<Object> raw = this.getList(path);
-		if (raw != null) {
-			List<Integer> list = new ArrayList<Integer>();
-			for (Object o : raw) {
-				Integer i = MathHelper.castInt(o);
-				if (i != null) {
-					list.add(i);
-				}
-			}
-			
-			return list;
-		}
-		return null;
+		return getIntegerList(path, null);
 	}
 	
 	/**
@@ -427,19 +379,7 @@ public class MemoryConfiguration {
 	 * @return double list
 	 */
 	public List<Double> getDoubleList(String path) {
-		List<Object> raw = this.getList(path);
-		if (raw != null) {
-			List<Double> list = new ArrayList<Double>();
-			for (Object o : raw) {
-				Double i = MathHelper.castDouble(o);
-				if (i != null) {
-					list.add(i);
-				}
-			}
-			
-			return list;
-		}
-		return null;
+		return getDoubleList(path, null);
 	}
 	
 	/**
@@ -469,19 +409,7 @@ public class MemoryConfiguration {
 	 * @return boolean list
 	 */
 	public List<Boolean> getBooleanList(String path) {
-		List<Object> raw = this.getList(path);
-		if (raw != null) {
-			List<Boolean> list = new ArrayList<Boolean>();
-			for (Object o : raw) {
-				Boolean b = MathHelper.castBoolean(o);
-				if (b != null) {
-					list.add(b);
-				}
-			}
-			
-			return list;
-		}
-		return null;
+		return getBooleanList(path, null);
 	}
 	
 	/**

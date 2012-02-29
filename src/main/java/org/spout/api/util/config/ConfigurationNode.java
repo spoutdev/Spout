@@ -32,7 +32,7 @@ import org.spout.api.math.MathHelper;
 public class ConfigurationNode {
 	
 	private final String path;
-	private MemoryConfiguration config;
+	protected MemoryConfiguration config;
 	private Object value;
 	private Object def;
 
@@ -94,7 +94,6 @@ public class ConfigurationNode {
 	 * @param config 
 	 */
 	public void setConfiguration(MemoryConfiguration config) {
-		this.config = config;
 		config.addNode(this);
 	}
 	
