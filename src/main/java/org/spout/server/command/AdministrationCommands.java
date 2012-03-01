@@ -36,6 +36,10 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.exception.CommandException;
+import org.spout.api.inventory.Inventory;
+import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.Material;
+import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
 import org.spout.server.SpoutServer;
 
@@ -90,5 +94,46 @@ public class AdministrationCommands {
 			player.kick(message);
 			source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
 		}
+	}
+
+	@Command(aliases = "give", usage = "<player> <id> [count] [damage]", desc = "Give a player an item", min = 2, max = 4)
+	@CommandPermissions("spout.command.give")
+	public void give(CommandContext args, CommandSource source) throws CommandException {
+		String playerName = args.getString(0);
+
+		Player player = Spout.getGame().getPlayer(playerName, true);
+		if (player == null) {
+			throw new CommandException(playerName + " is not online.");
+		}
+		
+		Material mat = null;
+		if (args.isInteger(1)) {
+			short id = (short)args.getInteger(1);
+			mat = MaterialData.getMaterial(id);
+		} else {
+			mat = MaterialData.getMaterial(args.getString(1));
+		}
+		if (mat == null) {
+			throw new CommandException(args.getString(1) + " is not a valid material.");
+		}
+		
+		int count = mat.getMaxStackSize();
+		if (args.length() >= 3 && args.isInteger(2)) {
+			count = args.getInteger(2);
+		}
+		
+		short damage = 0;
+		if (args.length() >= 4 && args.isInteger(3)) {
+			damage = (short)args.getInteger(3);
+		}
+		
+		ItemStack stack = new ItemStack(mat, count, damage);
+		
+		Inventory inv = player.getEntity().getInventory();
+		if (inv.addItem(stack) == false) {
+			throw new CommandException("The inventory of " + playerName + " is full.");
+		}
+		
+		source.sendMessage("Giving " + playerName + " " + count + " " + mat.getName() + ".");
 	}
 }
