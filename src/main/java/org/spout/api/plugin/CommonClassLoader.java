@@ -35,9 +35,14 @@ public class CommonClassLoader extends URLClassLoader {
 	private final CommonPluginLoader loader;
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 
-	public CommonClassLoader(final CommonPluginLoader loader, final URL[] urls, final ClassLoader parent) {
-		super(urls, parent);
+	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent) {
+		super(new URL[0], parent);
 		this.loader = loader;
+	}
+	
+	@Override
+	protected void addURL(URL url) {
+		super.addURL(url);
 	}
 
 	@Override
