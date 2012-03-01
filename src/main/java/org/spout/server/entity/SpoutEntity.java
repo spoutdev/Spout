@@ -306,8 +306,12 @@ public class SpoutEntity implements Entity {
 				((SpoutChunk) chunk).removeEntity(this);
 			}
 			if (chunkLive == null) {
-				((SpoutChunk) chunk).removeEntity(this);
-				entityManagerLive.deallocate(this);
+				if (chunk != null && chunk.isLoaded()) {
+					((SpoutChunk) chunk).removeEntity(this);
+				}
+				if (entityManagerLive != null) {
+					entityManagerLive.deallocate(this);
+				}
 			}
 		}
 	}
@@ -447,7 +451,7 @@ public class SpoutEntity implements Entity {
 		if (inventory == null) {
 			SpoutDatatableObject obj = (SpoutDatatableObject) getData("inventory");
 			if (obj == null) {
-				inventory = new Inventory(getInventorySize());
+				inventory = controllerLive == null ? new Inventory(getInventorySize()) : controllerLive.createInventory(getInventorySize());
 				setData("inventory", inventory);
 			} else {
 				inventory = (Inventory) obj.get();

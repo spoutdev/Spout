@@ -226,7 +226,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		int z = MathHelper.floor(point.getZ());
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
 	}
-	
+
 	@Override
 	public Chunk getChunkFromBlock(int x, int y, int z) {
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
@@ -341,6 +341,16 @@ public class SpoutWorld extends AsyncManager implements World {
 	public int getHeight() {
 		// TODO: Variable world height
 		return 128;
+	}
+
+	@Override
+	public int getHighestBlock(int x, int z) {
+		for (int y = getHeight(); y > 0; --y) {
+			if (getBlockId(x, y, z) != 0) {
+				return y;
+			}
+		}
+		return 0;
 	}
 
 	@Override
@@ -477,7 +487,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Set<Player> getPlayers() {
 		return Collections.unmodifiableSet(players);
 	}
-	
+
 	public List<CollisionVolume> getCollidingObject(CollisionModel model){
 		//TODO Make this more general
 		final int minX = MathHelper.floor(model.getPosition().getX());
@@ -486,13 +496,13 @@ public class SpoutWorld extends AsyncManager implements World {
 		final int maxX = minX + 1;
 		final int maxY = minY + 1;
 		final int maxZ = minZ + 1;
-		
+
 		final LinkedList<CollisionVolume> colliding = new LinkedList<CollisionVolume>();
-		
+
 		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
 		final BoundingBox position = new BoundingBox((BoundingBox)model.getVolume());
 		position.offset(minX, minY, minZ);
-		
+
 		for (int dx = minX; dx < maxX; dx++) {
 			for (int dy = minY - 1; dy < maxY; dy++) {
 				for (int dz = minZ; dz < maxZ; dz++) {
@@ -505,13 +515,13 @@ public class SpoutWorld extends AsyncManager implements World {
 				}
 			}
 		}
-		
+
 		//TODO: colliding entities
 		return colliding;
-		
+
 	}
-	
-	
+
+
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";

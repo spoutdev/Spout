@@ -78,9 +78,9 @@ public class SpoutRegion extends Region {
 	 * the region.
 	 */
 	private final int x, y, z;
-	
+
 	private final int POPULATE_PER_TICK = 5;
-	
+
 
 	/**
 	 * The source of this region
@@ -120,11 +120,11 @@ public class SpoutRegion extends Region {
 	private final int blockCoordMask;
 
 	private final int blockShifts;
-	
+
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
-	
+
 	private final Queue<Entity> spawnQueue = new ConcurrentLinkedQueue<Entity>();
-	
+
 	private final Queue<Entity> removeQueue = new ConcurrentLinkedQueue<Entity>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -380,40 +380,39 @@ public class SpoutRegion extends Region {
 		return empty;
 	}
 
-	public void queueChunkForPopulation(Chunk c){
-		if(populationQueue.contains(c)) return; //Ignore this chunk if we are already populating it.
+	public void queueChunkForPopulation(Chunk c) {
+		if (populationQueue.contains(c)) return; //Ignore this chunk if we are already populating it.
 		populationQueue.add(c);
 	}
-	
-	
-	public void addEntity(Entity e){
-		if(spawnQueue.contains(e)) return;
-		if(removeQueue.contains(e)){
+
+
+	public void addEntity(Entity e) {
+		if (spawnQueue.contains(e)) return;
+		if (removeQueue.contains(e)) {
 			throw new IllegalArgumentException("Cannot add an entity marked for removal");
 		}
 		spawnQueue.add(e);
-		
+
 	}
-	
-	public void removeEntity(Entity e){
-		if(removeQueue.contains(e)) return;
-		if(spawnQueue.contains(e)) {
+
+	public void removeEntity(Entity e) {
+		if (removeQueue.contains(e)) return;
+		if (spawnQueue.contains(e)) {
 			spawnQueue.remove(e);
 			return;
 		}
 		removeQueue.add(e);
-		
-		
+
+
 	}
-	
+
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
 				//Add or remove entities
-				if(!spawnQueue.isEmpty())
-				{
+				if(!spawnQueue.isEmpty()) {
 					SpoutEntity e;
-					while((e = (SpoutEntity)spawnQueue.poll()) != null){
+					while ((e = (SpoutEntity)spawnQueue.poll()) != null) {
 						this.allocate(e);
 						EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPoint());
 						Spout.getGame().getEventManager().callEvent(event);
@@ -422,17 +421,14 @@ public class SpoutRegion extends Region {
 						}
 					}
 				}
-				
-				if(!removeQueue.isEmpty())
-				{
+
+				if(!removeQueue.isEmpty()) {
 					SpoutEntity e;
-					while((e = (SpoutEntity)removeQueue.poll()) != null){
+					while ((e = (SpoutEntity)removeQueue.poll()) != null) {
 						this.deallocate(e);
 					}
-				}				
-				
-				
-				
+				}
+
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
@@ -465,23 +461,22 @@ public class SpoutRegion extends Region {
 					}
 				}
 
-				for(int i = 0; i < POPULATE_PER_TICK; i++)
-				{
+				for(int i = 0; i < POPULATE_PER_TICK; i++) {
 					Chunk toPopulate = populationQueue.poll();
-					if(toPopulate == null) break;
-					if(toPopulate.isLoaded()){
+					if (toPopulate == null) break;
+					if (toPopulate.isLoaded()){
 						toPopulate.populate();
 					}
-					
+
 				}
 
-				
+
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
 					toUnload.unload(true);
 				}
-				
-			
+
+
 				break;
 			}
 			case 1: {
@@ -505,10 +500,10 @@ public class SpoutRegion extends Region {
 	public void haltRun() throws InterruptedException {
 	}
 
-	
+
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
-		
+
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
@@ -525,10 +520,12 @@ public class SpoutRegion extends Region {
 	}
 
 	private void syncChunkToPlayers(SpoutChunk chunk){
-		for (Entity entity : chunk.getObserversLive()) {
-			if(!(entity.getController() instanceof PlayerController)) continue;
-			SpoutPlayer player = (SpoutPlayer)((PlayerController) entity.getController()).getPlayer();
+		for (Player player : chunk.getObserversLive()) {
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
+			if (synchronizer == null) {
+				continue;
+			}
+
 			if (!chunk.isDirtyOverflow()) {
 				for (int i = 0; true; i++) {
 					Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
@@ -547,9 +544,9 @@ public class SpoutRegion extends Region {
 				synchronizer.sendChunk(chunk);
 			}
 		}
-		
+
 	}
-	
+
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
 
@@ -564,7 +561,7 @@ public class SpoutRegion extends Region {
 						spoutChunk.resetDirtyArrays();
 					}
 					spoutChunk.preSnapshot();
-				
+
 				}
 			}
 		}
@@ -637,7 +634,7 @@ public class SpoutRegion extends Region {
 	public int getNumLoadedChunks() {
 		return numberActiveChunks.get();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SpoutRegion{ ( " + x + ", " + y + ", " + z + "), World: " + this.getWorld() + "}";
