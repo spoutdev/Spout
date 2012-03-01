@@ -38,6 +38,8 @@ import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.entity.EntityDespawnEvent;
+import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
@@ -119,6 +121,10 @@ public class SpoutRegion extends Region {
 	private final int blockShifts;
 	
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
+	
+	private final Queue<Entity> spawnQueue = new ConcurrentLinkedQueue<Entity>();
+	
+	private final Queue<Entity> removeQueue = new ConcurrentLinkedQueue<Entity>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, false);
@@ -374,12 +380,62 @@ public class SpoutRegion extends Region {
 	}
 
 	public void queueChunkForPopulation(Chunk c){
+		if(populationQueue.contains(c)) return; //Ignore this chunk if we are already populating it.
 		populationQueue.add(c);
+	}
+	
+	
+	public void addEntity(Entity e){
+		if(spawnQueue.contains(e)) return;
+		if(removeQueue.contains(e)){
+			throw new IllegalArgumentException("Cannot add an entity marked for removal");
+		}
+		spawnQueue.add(e);
+		
+	}
+	
+	public void removeEntity(Entity e){
+		if(removeQueue.contains(e)) return;
+		if(spawnQueue.contains(e)) {
+			spawnQueue.remove(e);
+			return;
+		}
+		removeQueue.add(e);
+		
+		
 	}
 	
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
+				//Add or remove entities
+				if(!spawnQueue.isEmpty())
+				{
+					SpoutEntity e;
+					while((e = (SpoutEntity)spawnQueue.poll()) != null){
+						this.allocate(e);
+						EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPoint());
+						Spout.getGame().getEventManager().callEvent(event);
+						if (event.isCancelled()) {
+							this.deallocate((SpoutEntity) e);
+						}
+					}
+				}
+				
+				if(!removeQueue.isEmpty())
+				{
+					SpoutEntity e;
+					while((e = (SpoutEntity)removeQueue.poll()) != null){
+						EntityDespawnEvent event = new EntityDespawnEvent(e);
+						Spout.getGame().getEventManager().callEvent(event);
+						if (!event.isCancelled()) {
+							this.deallocate((SpoutEntity) e);
+						}
+					}
+				}				
+				
+				
+				
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {

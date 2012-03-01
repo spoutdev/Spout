@@ -277,7 +277,8 @@ public class SpoutEntity implements Entity {
 	public void finalizeRun() {
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive || controller != controllerLive) {
-				entityManager.deallocate(this);
+				SpoutRegion r = (SpoutRegion)chunk.getRegion();
+				r.removeEntity(this);
 				if (entityManagerLive == null) {
 					controller.onDeath();
 					if (controller instanceof PlayerController) {
