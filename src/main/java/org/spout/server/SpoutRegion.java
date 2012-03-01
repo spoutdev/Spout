@@ -426,11 +426,7 @@ public class SpoutRegion extends Region {
 				{
 					SpoutEntity e;
 					while((e = (SpoutEntity)removeQueue.poll()) != null){
-						EntityDespawnEvent event = new EntityDespawnEvent(e);
-						Spout.getGame().getEventManager().callEvent(event);
-						if (!event.isCancelled()) {
-							this.deallocate((SpoutEntity) e);
-						}
+						this.deallocate(e);
 					}
 				}				
 				
