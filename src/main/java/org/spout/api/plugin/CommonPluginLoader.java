@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +52,7 @@ public class CommonPluginLoader implements PluginLoader {
 	public static final String YAML_OTHER = "plugin.yml";
 
 	protected final Game game;
-
+	private final CommonClassLoader loader;
 	private final Pattern[] patterns;
 	private final CommonSecurityManager manager;
 	private final double key;
@@ -65,6 +64,8 @@ public class CommonPluginLoader implements PluginLoader {
 		this.manager = manager;
 		this.key = key;
 		patterns = new Pattern[] {Pattern.compile("\\.jar$")};
+		
+		loader = game.getPlatform() == Platform.CLIENT ? new ClientClassLoader(this, getClass().getClassLoader()) : new CommonClassLoader(this, getClass().getClassLoader());
 	}
 
 	public Pattern[] getPatterns() {
@@ -72,7 +73,7 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	@UnsafeMethod
-	public void enablePlugin(Plugin paramPlugin) {
+	public synchronized void enablePlugin(Plugin paramPlugin) {
 		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass())) {
 			throw new IllegalArgumentException("Cannot enable plugin with this PluginLoader as it is of the wrong type!");
 		}
@@ -96,7 +97,7 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	@UnsafeMethod
-	public void disablePlugin(Plugin paramPlugin) {
+	public synchronized void disablePlugin(Plugin paramPlugin) {
 		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass())) {
 			throw new IllegalArgumentException("Cannot disable plugin with this PluginLoader as it is of the wrong type!");
 		}
@@ -120,11 +121,11 @@ public class CommonPluginLoader implements PluginLoader {
 
 	}
 
-	public Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
+	public synchronized Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		return loadPlugin(paramFile, false);
 	}
 
-	public Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
+	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		CommonPlugin result = null;
 		PluginDescriptionFile desc = null;
 
@@ -138,12 +139,8 @@ public class CommonPluginLoader implements PluginLoader {
 			processSoftDependencies(desc);
 		}
 
-		CommonClassLoader loader = null;
 		try {
-			URL[] urls = new URL[1];
-			urls[0] = paramFile.toURI().toURL();
-
-			loader = game.getPlatform() == Platform.CLIENT ? new ClientClassLoader(this, urls, getClass().getClassLoader()) : new CommonClassLoader(this, urls, getClass().getClassLoader());
+			loader.addURL(paramFile.toURI().toURL());
 			Class<?> main = Class.forName(desc.getMain(), true, loader);
 			Class<? extends CommonPlugin> plugin = main.asSubclass(CommonPlugin.class);
 
@@ -171,7 +168,7 @@ public class CommonPluginLoader implements PluginLoader {
 	 * @param desc Plugin description element
 	 * @throws UnknownSoftDependencyException
 	 */
-	protected void processSoftDependencies(PluginDescriptionFile desc) throws UnknownSoftDependencyException {
+	protected synchronized void processSoftDependencies(PluginDescriptionFile desc) throws UnknownSoftDependencyException {
 		List<String> softdepend = desc.getSoftDepends();
 		if (softdepend == null) {
 			softdepend = new ArrayList<String>();
@@ -191,7 +188,7 @@ public class CommonPluginLoader implements PluginLoader {
 	 * @param desc Plugin description element
 	 * @throws UnknownDependencyException
 	 */
-	protected void processDependencies(PluginDescriptionFile desc) throws UnknownDependencyException {
+	protected synchronized void processDependencies(PluginDescriptionFile desc) throws UnknownDependencyException {
 		List<String> depends = desc.getDepends();
 		if (depends == null) {
 			depends = new ArrayList<String>();
@@ -214,7 +211,7 @@ public class CommonPluginLoader implements PluginLoader {
 	 * @throws InvalidPluginException
 	 * @throws InvalidDescriptionFileException
 	 */
-	protected PluginDescriptionFile getDescription(File paramFile) throws InvalidPluginException, InvalidDescriptionFileException {
+	protected synchronized PluginDescriptionFile getDescription(File paramFile) throws InvalidPluginException, InvalidDescriptionFileException {
 		if (!paramFile.exists()) {
 			throw new InvalidPluginException(new StringBuilder().append(paramFile.getName()).append(" does not exist!").toString());
 		}
@@ -259,7 +256,7 @@ public class CommonPluginLoader implements PluginLoader {
 		return desc;
 	}
 
-	public Class<?> getClassByName(final String name) {
+	protected Class<?> getClassByName(final String name) {
 		Class<?> cached = classes.get(name);
 
 		if (cached != null) {
@@ -280,7 +277,7 @@ public class CommonPluginLoader implements PluginLoader {
 		return null;
 	}
 
-	public void setClass(final String name, final Class<?> clazz) {
+	protected void setClass(final String name, final Class<?> clazz) {
 		if (!classes.containsKey(name)) {
 			classes.put(name, clazz);
 		}
