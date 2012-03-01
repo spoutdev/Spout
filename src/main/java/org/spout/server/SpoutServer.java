@@ -114,8 +114,6 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	private volatile int maxPlayers = 20;
 
-	private volatile String primaryAddress = "0.0.0.0";
-
 	private volatile String[] allAddresses;
 
 	private final File pluginDirectory = new File("plugins");
@@ -408,7 +406,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public String getAddress() {
-		return primaryAddress;
+		return SpoutConfiguration.ADDRESS.getString();
 	}
 
 	@Override
