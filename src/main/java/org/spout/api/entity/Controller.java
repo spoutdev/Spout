@@ -25,6 +25,7 @@
  */
 package org.spout.api.entity;
 
+import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
@@ -95,5 +96,9 @@ public abstract class Controller {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
+	}
+
+	public Inventory createInventory(int size) {
+		return new Inventory(size);
 	}
 }

@@ -35,9 +35,10 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
+import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.player.Player;
 
-public class NetworkSynchronizer {
+public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
 	protected Entity entity;
 	protected final Session session;
@@ -340,7 +341,7 @@ public class NetworkSynchronizer {
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
 	 *
-	 * @param t the transform
+	 * @param world the world
 	 */
 	protected void worldChanged(World world) {
 		//TODO: Implement Spout Protocol
