@@ -28,6 +28,7 @@ package org.spout.api.material;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.model.Model;
 
 public class GenericItemMaterial implements ItemMaterial {
@@ -94,7 +95,7 @@ public class GenericItemMaterial implements ItemMaterial {
 	}
 
 	@Override
-	public void onInteract(Entity entity, Point position, Action type) {
+	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedFace) {
 	}
 
 	@Override
