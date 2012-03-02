@@ -67,52 +67,42 @@ import org.spout.server.util.thread.snapshotable.SnapshotableReference;
 public class SpoutWorld extends AsyncManager implements World {
 
 	private SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * The server of this world.
 	 */
 	private final Server server;
-
 	/**
 	 * The name of this world.
 	 */
 	private final String name;
-
 	/**
 	 * The region source
 	 */
 	private final RegionSource regions;
-
 	/**
 	 * The world seed.
 	 */
 	private final long seed;
-
 	/**
 	 * The spawn position.
 	 */
 	private SnapshotableReference<Transform> spawnLocation = new SnapshotableReference<Transform>(snapshotManager, null);
-
 	/**
 	 * The current world age.
 	 */
 	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
-
 	/**
 	 * The world's UUID.
 	 */
 	private final UUID uid;
-
 	/**
 	 * The generator responsible for generating chunks in this world.
 	 */
 	private final WorldGenerator generator;
-
 	/**
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
-
 	/**
 	 * A set of all players currently connected to this world
 	 */
@@ -226,7 +216,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		int z = MathHelper.floor(point.getZ());
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
 	}
-	
+
 	@Override
 	public Chunk getChunkFromBlock(int x, int y, int z) {
 		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
@@ -261,7 +251,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	/**
-	 * Spawns an entity into the world.  Fires off a cancellable EntitySpawnEvent
+	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
 	@Override
 	public void spawnEntity(Entity e) {
@@ -477,8 +467,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Set<Player> getPlayers() {
 		return Collections.unmodifiableSet(players);
 	}
-	
-	public List<CollisionVolume> getCollidingObject(CollisionModel model){
+
+	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
 		//TODO Make this more general
 		final int minX = MathHelper.floor(model.getPosition().getX());
 		final int minY = MathHelper.floor(model.getPosition().getY());
@@ -486,18 +476,18 @@ public class SpoutWorld extends AsyncManager implements World {
 		final int maxX = minX + 1;
 		final int maxY = minY + 1;
 		final int maxZ = minZ + 1;
-		
+
 		final LinkedList<CollisionVolume> colliding = new LinkedList<CollisionVolume>();
-		
+
 		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
-		final BoundingBox position = new BoundingBox((BoundingBox)model.getVolume());
+		final BoundingBox position = new BoundingBox((BoundingBox) model.getVolume());
 		position.offset(minX, minY, minZ);
-		
+
 		for (int dx = minX; dx < maxX; dx++) {
 			for (int dy = minY - 1; dy < maxY; dy++) {
 				for (int dz = minZ; dz < maxZ; dz++) {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
-					mutable.set((BoundingBox)material.getBoundingArea());
+					mutable.set((BoundingBox) material.getBoundingArea());
 					mutable.offset(dx, dy, dz);
 					if (mutable.intersects(position)) {
 						colliding.add(mutable.clone());
@@ -505,13 +495,26 @@ public class SpoutWorld extends AsyncManager implements World {
 				}
 			}
 		}
-		
+
 		//TODO: colliding entities
 		return colliding;
-		
+
 	}
-	
-	
+
+	@Override
+	public Player getClosestPlayer(Point p) {
+		Player result = null;
+		float minDistance = -1;
+		for (Player plr : players) {
+			float dist = p.subtract(plr.getEntity().getPoint()).length();
+			if (dist < minDistance || minDistance == -1) {
+				result = plr;
+				minDistance = dist;
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";
