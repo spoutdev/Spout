@@ -50,6 +50,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	public NetworkSynchronizer(Player owner, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
+		entity.setObserver(true);
 		session = owner.getSession();
 	}
 
@@ -78,6 +79,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 
 	public void setEntity(Entity entity) {
 		this.entity = entity;
+		entity.setObserver(true);
 	}
 
 	public void onDeath() {
@@ -252,10 +254,10 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns a copy of all currently active sent chunks to this player
-	 * 
+	 *
 	 * @return active chunks
 	 */
 	public Set<Chunk> getActiveChunks() {
@@ -346,7 +348,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected void worldChanged(World world) {
 		//TODO: Implement Spout Protocol
 	}
-	
+
 	/**
 	 * Called when a block in a chunk that the player is observing changes.<br>
 	 * <br>
