@@ -57,6 +57,7 @@ import org.spout.server.datatable.value.SpoutDatatableFloat;
 import org.spout.server.datatable.value.SpoutDatatableInt;
 import org.spout.server.datatable.value.SpoutDatatableObject;
 import org.spout.server.player.SpoutPlayer;
+import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
 
 public class SpoutEntity implements Entity {
 
@@ -80,7 +81,8 @@ public class SpoutEntity implements Entity {
 	Model model;
 	CollisionModel collision;
 	SpoutDatatableMap map;
-
+	boolean observer = false;
+	
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
 		setTransform(transform);
@@ -732,5 +734,16 @@ public class SpoutEntity implements Entity {
 		} finally {
 			stateLock.writeLock().unlock();
 		}
+	}
+
+	@Override
+	public void setObserver(boolean obs) {
+		this.observer = obs;
+		
+	}
+
+	@Override
+	public boolean isObserver() {
+		return observer;
 	}
 }

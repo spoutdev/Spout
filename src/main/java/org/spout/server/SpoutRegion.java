@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.PlayerController;
 import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
@@ -523,42 +524,47 @@ public class SpoutRegion extends Region {
 		}
 	}
 
+	private void syncChunkToPlayers(SpoutChunk chunk){
+		for (Entity entity : chunk.getObserversLive()) {
+			if(!(entity.getController() instanceof PlayerController)) continue;
+			SpoutPlayer player = (SpoutPlayer)((PlayerController) entity.getController()).getPlayer();
+			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
+			if (!chunk.isDirtyOverflow()) {
+				for (int i = 0; true; i++) {
+					Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
+					if (block == null) {
+						break;
+					} else {
+						try {
+							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
+						} catch (Exception e) {
+							Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				synchronizer.sendChunk(chunk);
+			}
+		}
+		
+	}
+	
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
 
-		Blockm blockTemp = new SpoutBlockm(getWorld(), 0, 0, 0);
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
 					Chunk chunk = chunks[dx][dy][dz].get();
-					if (chunk != null) {
-						SpoutChunk spoutChunk = (SpoutChunk) chunk;
-						if (spoutChunk.isDirty()) {
-							for (Player player : spoutChunk.getObserversLive()) {
-								NetworkSynchronizer synchronizer = ((SpoutPlayer) player).getNetworkSynchronizer();
-								if (!spoutChunk.isDirtyOverflow()) {
-									Blockm block = blockTemp;
-									for (int i = 0; true; i++) {
-										block = spoutChunk.getDirtyBlock(i, block);
-										if (block == null) {
-											break;
-										} else {
-											try {
-												synchronizer.updateBlock(spoutChunk, block.getX(), block.getY(), block.getZ());
-											} catch (Exception e) {
-												Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-												e.printStackTrace();
-											}
-										}
-									}
-								} else {
-									synchronizer.sendChunk(spoutChunk);
-								}
-							}
-							spoutChunk.resetDirtyArrays();
-						}
-						spoutChunk.preSnapshot();
+					if (chunk == null) continue;
+					SpoutChunk spoutChunk = (SpoutChunk) chunk;
+					if (spoutChunk.isDirty()) {
+						syncChunkToPlayers(spoutChunk);
+						spoutChunk.resetDirtyArrays();
 					}
+					spoutChunk.preSnapshot();
+				
 				}
 			}
 		}
