@@ -26,7 +26,6 @@
 package org.spout.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
@@ -205,11 +204,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * A list of all players who can not log onto this server.
 	 */
 	private List<String> bannedPlayers = new ArrayList<String>();
-
-	/**
-	 * A list of all operators.
-	 */
-	private List<String> operators = new ArrayList<String>();
 
 	/**
 	 * A folder that holds all of the world data folders inside of it. By
@@ -730,15 +724,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	public Collection<Player> getBannedPlayers() {
 		Set<Player> players = new HashSet<Player>();
 		for (String name : bannedPlayers) {
-			players.add(new SpoutPlayer(name));
-		}
-		return players;
-	}
-
-	@Override
-	public Collection<Player> getOps() {
-		Set<Player> players = new HashSet<Player>();
-		for (String name : operators) {
 			players.add(new SpoutPlayer(name));
 		}
 		return players;

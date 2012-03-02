@@ -26,7 +26,10 @@
 package org.spout.server.util.config;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
+
 import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
 
@@ -40,7 +43,6 @@ public class SpoutConfiguration extends Configuration {
 	public static final ConfigurationNode ALLOW_FLIGHT = new ConfigurationNode("allowflight", false);
 	public static final ConfigurationNode USE_WHITELIST = new ConfigurationNode("usewhitelist", false);
 	public static final ConfigurationNode WORLD_CONTAINER = new ConfigurationNode("worldcontainer", ".");
-	public static final ConfigurationNode OPS = new ConfigurationNode("ops", Arrays.asList(whitelist));
 	public static final ConfigurationNode ADDRESS = new ConfigurationNode("address", "0.0.0.0:25565");
 	
 	public SpoutConfiguration() {
@@ -50,7 +52,19 @@ public class SpoutConfiguration extends Configuration {
 	@Override
 	public void load() {
 		super.load();
-		this.addNodes(ADDRESS, ALLOW_FLIGHT, BANLIST, OPS, USE_WHITELIST, WHITELIST, WORLDS, WORLD_CONTAINER);
+		for (Field field : SpoutConfiguration.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				try {
+					Object f = field.get(null);
+					if (f instanceof ConfigurationNode) {
+						this.addNode((ConfigurationNode) f);
+					}
+				} catch (IllegalArgumentException e) {
+				} catch (IllegalAccessException e) {
+				}
+			}
+		}
+		
 		this.save();
 	}
 }
