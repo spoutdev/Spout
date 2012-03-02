@@ -519,33 +519,27 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	private void syncChunkToPlayers(SpoutChunk chunk){
-		for (Entity entity : chunk.getObserversLive()) {
-			if (!(entity.getController() instanceof PlayerController)) continue;
-			Player player = ((PlayerController) entity.getController()).getPlayer();
-			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
-			if (synchronizer == null) {
-				continue;
-			}
-
-			if (!chunk.isDirtyOverflow()) {
-				for (int i = 0; true; i++) {
-					Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
-					if (block == null) {
-						break;
-					} else {
-						try {
-							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
-						} catch (Exception e) {
-							Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-							e.printStackTrace();
-						}
+	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity){
+		SpoutPlayer player = (SpoutPlayer)((PlayerController) entity.getController()).getPlayer();
+		NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
+		if (!chunk.isDirtyOverflow()) {
+			for (int i = 0; true; i++) {
+				Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
+				if (block == null) {
+					break;
+				} else {
+					try {
+						synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
+					} catch (Exception e) {
+						Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
+						
 					}
 				}
-			} else {
-				synchronizer.sendChunk(chunk);
 			}
-		}
+
+		} else {
+			synchronizer.sendChunk(chunk);
+		}	
 
 	}
 
@@ -558,8 +552,13 @@ public class SpoutRegion extends Region {
 					Chunk chunk = chunks[dx][dy][dz].get();
 					if (chunk == null) continue;
 					SpoutChunk spoutChunk = (SpoutChunk) chunk;
+					
 					if (spoutChunk.isDirty()) {
-						syncChunkToPlayers(spoutChunk);
+						for (Entity entity : spoutChunk.getObserversLive()) {
+							chunk.refreshObserver(entity);
+							if(!(entity.getController() instanceof PlayerController)) continue;						
+							syncChunkToPlayers(spoutChunk, entity);
+						}
 						spoutChunk.resetDirtyArrays();
 					}
 					spoutChunk.preSnapshot();
