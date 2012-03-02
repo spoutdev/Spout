@@ -38,6 +38,7 @@ import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
 import org.spout.server.SpoutServer;
+import org.spout.server.player.SpoutPlayer;
 
 /**
  * Commands related to server administration
@@ -90,5 +91,30 @@ public class AdministrationCommands {
 			player.kick(message);
 			source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
 		}
+	}
+	@Command(aliases = "ban", usage = "<player> [message]", desc = "Ban a player", min = 1, max = -1)
+	@CommandPermissions("spout.command.ban")
+	public void ban(CommandContext args, CommandSource source) throws CommandException {
+		String playerName = args.getString(0);
+		String message = "You have been banned from the server.";
+		if (args.length() >= 2) {
+			message = args.getJoinedString(1);
+		}
+		Player player = Spout.getGame().getPlayer(playerName, true);
+		if (player != null)
+		{
+			server.ban(player);
+			player.kick(message);
+			source.sendMessage(ChatColor.BRIGHT_GREEN + "Banned player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
+		}
+			
+	}
+	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
+	@CommandPermissions("spout.command.unban")
+	public void unban(CommandContext args, CommandSource source) throws CommandException {
+		String playerName = args.getString(0);
+		Player player = new SpoutPlayer(playerName);
+		server.unban(player);
+		source.sendMessage(ChatColor.BRIGHT_GREEN + playerName + " has been unbanned!");
 	}
 }
