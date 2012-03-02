@@ -183,16 +183,19 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		for (SpoutEntity e : entities.get().values()) {
 			e.finalizeRun();
 			Controller controller = e.getController();
-			if (controller != null) {
-				controller.finalizeTick();
-				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getPlayer();
-					NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
-					if (n != null) {
-						n.finalizeTick();
-					}
-				}
+			if (controller == null) continue;
+			
+			controller.finalizeTick();
+			
+			if (! (controller instanceof PlayerController)) continue;
+			
+			Player p = ((PlayerController) controller).getPlayer();
+			NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
+			if (n != null) {
+				n.finalizeTick();
 			}
+			
+			
 		}
 	}
 
