@@ -147,8 +147,10 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setController(Controller controller) {
-		if (controller != null);
-		controller.attachToEntity(this);
+		if (controller != null){
+			
+			controller.attachToEntity(this);
+		}
 		int seq = lock.writeLock();
 		try {
 			controllerLive = controller;
@@ -156,6 +158,7 @@ public class SpoutEntity implements Entity {
 			lock.writeUnlock(seq);
 		}
 		if (controller != null) {
+			if(controller instanceof PlayerController) setObserver(true);
 			controller.onAttached();
 		}
 	}
