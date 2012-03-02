@@ -33,12 +33,12 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
- * Abstract Biome Generator.  
- * 
+ * Abstract Biome Generator.
+ *
  * Simply extend this class and add Biomes in registerBiomes()
- * 
- * 
- * 
+ *
+ *
+ *
  *
  */
 public abstract class BiomeGenerator implements WorldGenerator {
@@ -89,5 +89,13 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	@Override
 	public final Populator[] getPopulators() {
 		return populators.toArray(new Populator[populators.size()]);
+	}
+
+	public BiomeType getBiome(int x, int y, int z, long seed) {
+		return biomes.getBiome(x, y, z, seed);
+	}
+
+	public BiomeType getBiome(int x, int z, long seed) {
+		return biomes.getBiome(x, z, seed);
 	}
 }

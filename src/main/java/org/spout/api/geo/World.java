@@ -131,7 +131,7 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Region getRegion(Point point, boolean load);
-	
+
 	/**
 	 * Gets the {@link Region} at block coordinates (x, y, z)
 	 *
@@ -184,7 +184,7 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunk(int x, int y, int z, boolean load);
-	
+
 	/**
 	 * Gets the {@link Chunk} at block coordinates (x, y, z)
 	 *
@@ -204,20 +204,20 @@ public interface World extends Source, BlockAccess {
 	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The controller that will be attached to the Entity
-	 * @return
+	 * @return The created entity
 	 */
 	public Entity createEntity(Point point, Controller controller);
 
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 *
-	 * @param e
+	 * @param e The entity to spawn
 	 */
 	public void spawnEntity(Entity e);
 
 	/**
 	 * Creates and Spawns an entity at the given point and with the given
-	 * Controller This is the same as {@link #createEntity()} and
+	 * Controller This is the same as {@link #createEntity(Point, Controller)} and
 	 * {@link #spawnEntity(Entity)} together.
 	 *
 	 * @param point The point to spawn the Entity
@@ -274,7 +274,6 @@ public interface World extends Source, BlockAccess {
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.
-	 * @param <T> The type of entity.
 	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
@@ -290,10 +289,10 @@ public interface World extends Source, BlockAccess {
 
 	/**
 	 * Gets a set of all players on active on this world
-	 * 
+	 *
 	 * @return all players on this world
 	 */
 	public Set<Player> getPlayers();
 
-	
+
 }

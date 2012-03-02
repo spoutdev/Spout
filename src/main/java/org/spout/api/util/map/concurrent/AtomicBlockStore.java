@@ -691,7 +691,7 @@ public class AtomicBlockStore<T> {
 	}
 
 	private final int getIndex(int x, int y, int z) {
-		return (x << doubleShift) + (z << shift) + y;
+		return (y << doubleShift) + (z << shift) + x;
 	}
 
 	/**

@@ -146,6 +146,10 @@ public class ItemStack {
 		ItemStack stack = (ItemStack) other;
 		return material.equals(stack.material) && amount == stack.amount && damage == stack.damage && potentialNullEquals(auxData, stack.auxData);
 	}
+	
+	public boolean equalsIgnoreSize(ItemStack other) {
+		return material.equals(other.material) && damage == other.damage && potentialNullEquals(auxData, other.auxData);
+	}
 
 	public static boolean potentialNullEquals(Object a, Object b) {
 		if (a == null && b == null) {

@@ -25,11 +25,13 @@
  */
 package org.spout.api.entity;
 
+import org.spout.api.inventory.Inventory;
+import org.spout.api.inventory.PlayerInventory;
 import org.spout.api.player.Player;
 
 /**
- * Represents a Controller that is controlled by a player An entity is a Player
- * if entity.GetController() instanceof PlayerController == true
+ * Represents a Controller that is controlled by a player. An entity is a Player
+ * if entity.getController() instanceof PlayerController == true
  */
 public abstract class PlayerController extends Controller {
 	protected Player owner;
@@ -41,4 +43,11 @@ public abstract class PlayerController extends Controller {
 	public Player getPlayer() {
 		return owner;
 	}
+
+	@Override
+	public Inventory createInventory(int size) {
+		return new PlayerInventory(size);
+	}
+
+	public abstract boolean hasInfiniteResources();
 }

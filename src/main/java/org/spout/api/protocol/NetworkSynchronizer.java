@@ -35,9 +35,10 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
+import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.player.Player;
 
-public class NetworkSynchronizer {
+public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
 	protected Entity entity;
 	protected final Session session;
@@ -49,6 +50,7 @@ public class NetworkSynchronizer {
 	public NetworkSynchronizer(Player owner, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
+		entity.setObserver(true);
 		session = owner.getSession();
 	}
 
@@ -77,6 +79,7 @@ public class NetworkSynchronizer {
 
 	public void setEntity(Entity entity) {
 		this.entity = entity;
+		entity.setObserver(true);
 	}
 
 	public void onDeath() {
@@ -251,10 +254,10 @@ public class NetworkSynchronizer {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns a copy of all currently active sent chunks to this player
-	 * 
+	 *
 	 * @return active chunks
 	 */
 	public Set<Chunk> getActiveChunks() {
@@ -340,12 +343,12 @@ public class NetworkSynchronizer {
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
 	 *
-	 * @param t the transform
+	 * @param world the world
 	 */
 	protected void worldChanged(World world) {
 		//TODO: Implement Spout Protocol
 	}
-	
+
 	/**
 	 * Called when a block in a chunk that the player is observing changes.<br>
 	 * <br>

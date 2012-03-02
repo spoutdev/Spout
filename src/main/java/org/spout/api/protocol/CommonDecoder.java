@@ -53,11 +53,8 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
 		if (codecLookup == null) {
-			System.out.println("Setting codec lookup service");
 			bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
-			System.out.println("Bootstrap protocol is: " + bootstrapProtocol);
 			codecLookup = bootstrapProtocol.getCodecLookupService();
-			System.out.println("Codec lookup service is: " + codecLookup);
 		}
 
 		int opcode;
@@ -85,8 +82,6 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		Message message = codec.decode(buf);
 
 		if (bootstrapProtocol != null) {
-			//TODO: Why is this never printed??????
-			System.out.println("Checking for protocol definition");
 			long id = bootstrapProtocol.detectProtocolDefinition(message);
 			if (id != -1L) {
 				Protocol protocol = Protocol.getProtocol(id);
