@@ -162,13 +162,6 @@ public interface Server extends Game {
 	public Collection<Player> getBannedPlayers();
 
 	/**
-	 * Returns a collection of all server operators
-	 *
-	 * @return operators
-	 */
-	public Collection<Player> getOps();
-
-	/**
 	 * Gets the server's configuration directory
 	 *
 	 * @return the config directory
