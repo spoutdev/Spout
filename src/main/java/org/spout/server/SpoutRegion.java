@@ -520,7 +520,9 @@ public class SpoutRegion extends Region {
 	}
 
 	private void syncChunkToPlayers(SpoutChunk chunk){
-		for (Player player : chunk.getObserversLive()) {
+		for (Entity entity : chunk.getObserversLive()) {
+			if (!(entity.getController() instanceof PlayerController)) continue;
+			Player player = ((PlayerController) entity.getController()).getPlayer();
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (synchronizer == null) {
 				continue;

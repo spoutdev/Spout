@@ -344,16 +344,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public int getHighestBlock(int x, int z) {
-		for (int y = getHeight(); y > 0; --y) {
-			if (getBlockId(x, y, z) != 0) {
-				return y;
-			}
-		}
-		return 0;
-	}
-
-	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, true, source);
 	}

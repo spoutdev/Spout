@@ -82,7 +82,7 @@ public class SpoutEntity implements Entity {
 	CollisionModel collision;
 	SpoutDatatableMap map;
 	boolean observer = false;
-	
+
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
 		setTransform(transform);
@@ -746,7 +746,7 @@ public class SpoutEntity implements Entity {
 	@Override
 	public void setObserver(boolean obs) {
 		this.observer = obs;
-		
+
 	}
 
 	@Override
