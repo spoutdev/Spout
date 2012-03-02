@@ -102,7 +102,7 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * @return false if the player was already observing the chunk
 	 */
 	@DelayedWrite
-	public abstract boolean refreshObserver(Player player);
+	public abstract boolean refreshObserver(Entity player);
 
 	/**
 	 * De-register a player as observing the chunk.
@@ -111,7 +111,7 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 * @return true if the player was observing the chunk
 	 */
 	@DelayedWrite
-	public abstract boolean removeObserver(Player player);
+	public abstract boolean removeObserver(Entity player);
 
 	/**
 	 * Gets the region that this chunk is located in

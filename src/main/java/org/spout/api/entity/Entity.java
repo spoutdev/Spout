@@ -313,4 +313,25 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public int getViewDistance();
+
+	
+	/**
+	 * Sets whether or not the entity is an observer
+	 * 
+	 * An entity that is an observer is an entity that keeps chunks loaded in memory
+	 * 
+	 * @param obs True if the entity should be an observer, false if not
+	 */
+	@DelayedWrite
+	public void setObserver(boolean obs);
+	
+	/**
+	 * Tells whether or not the entity is an Observer.
+	 * 
+	 * an entity that is an observer will keep chunks loaded in memory.
+	 * 
+	 * @return true if the entity is an observer, false if not
+	 */
+	@SnapshotRead
+	public boolean isObserver();
 }

@@ -196,12 +196,12 @@ public class NetworkSynchronizer {
 
 	private void addObserver(Chunk c) {
 		observed.add(c);
-		c.refreshObserver(owner);
+		c.refreshObserver(owner.getEntity());
 	}
 
 	private void removeObserver(Chunk c) {
 		observed.remove(c);
-		c.removeObserver(owner);
+		c.removeObserver(owner.getEntity());
 	}
 
 	private void checkChunkUpdates(Point currentPosition) {
