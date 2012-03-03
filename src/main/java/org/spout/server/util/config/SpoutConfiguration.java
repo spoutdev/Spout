@@ -34,21 +34,21 @@ import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
 
 public class SpoutConfiguration extends Configuration {
-	
+
 	private static final String[] whitelist = {"Notch", "ez", "jeb"};
 	private static final String[] banlist = {"satan"};
 	public static final ConfigurationNode WORLDS = new ConfigurationNode("worlds", "default");
 	public static final ConfigurationNode WHITELIST = new ConfigurationNode("whitelist", Arrays.asList(whitelist));
 	public static final ConfigurationNode BANLIST = new ConfigurationNode("banlist", banlist);
-	public static final ConfigurationNode ALLOW_FLIGHT = new ConfigurationNode("allowflight", false);
-	public static final ConfigurationNode USE_WHITELIST = new ConfigurationNode("usewhitelist", false);
-	public static final ConfigurationNode WORLD_CONTAINER = new ConfigurationNode("worldcontainer", ".");
+	public static final ConfigurationNode ALLOW_FLIGHT = new ConfigurationNode("allow-flight", false);
+	public static final ConfigurationNode USE_WHITELIST = new ConfigurationNode("use-whitelist", false);
+	public static final ConfigurationNode WORLD_CONTAINER = new ConfigurationNode("world-container", ".");
 	public static final ConfigurationNode ADDRESS = new ConfigurationNode("address", "0.0.0.0:25565");
-	
+
 	public SpoutConfiguration() {
-		super(new File("config/config.yml"));
+		super(new File("config/spout.yml"));
 	}
-	
+
 	@Override
 	public void load() {
 		super.load();
@@ -64,7 +64,7 @@ public class SpoutConfiguration extends Configuration {
 				}
 			}
 		}
-		
+
 		this.save();
 	}
 }
