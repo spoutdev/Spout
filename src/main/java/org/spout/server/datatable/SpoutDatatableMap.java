@@ -100,8 +100,8 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	}
     
-    public boolean contains(String key){
-        return map.containsKey(getKey(key));
-    }
+	public boolean contains(String key){
+		return map.containsKey(getKey(key));
+	}
 
 }
