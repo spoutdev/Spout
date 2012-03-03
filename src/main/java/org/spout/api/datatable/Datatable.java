@@ -48,5 +48,5 @@ public interface Datatable extends Serializable {
      * @param key
      * @return
      */
-    public boolean hasData(String key);
+	public boolean hasData(String key);
 }
