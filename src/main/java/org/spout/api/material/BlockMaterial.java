@@ -41,15 +41,17 @@ public interface BlockMaterial extends ItemMaterial {
 
 	public boolean isOpaque();
 
-	public BlockMaterial setOpaque(boolean opaque);
+	public short getLightLevel();
 
-	public int getLightLevel();
+	public BlockMaterial setLightLevel(short level);
 
-	public BlockMaterial setLightLevel(int level);
-	
+	public short getOpacity();
+
+	public BlockMaterial setOpacity(short level);
+
 	/**
 	 * Gets the bounding box area of this material
-	 * 
+	 *
 	 * @return area
 	 */
 	public CollisionVolume getBoundingArea();

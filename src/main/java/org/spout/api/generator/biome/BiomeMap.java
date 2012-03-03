@@ -30,8 +30,6 @@ import org.spout.api.io.store.map.SimpleStoreMap;
 
 /**
  * A simple store wrapper that holds biomes and the selector.
- *
- *
  */
 public final class BiomeMap {
 	private final SimpleStoreMap<Integer, BiomeType> map;
@@ -55,7 +53,7 @@ public final class BiomeMap {
 	 * Biomes for the biome generator
 	 */
 	public BiomeType getBiome(int x, int z, long seed) {
-		return map.get(Math.abs(selector.pickBiome(x, z, seed)) % map.getSize());
+		return getBiome(x, 0, z, seed);
 	}
 
 	public BiomeType getBiome(int x, int y, int z, long seed) {
