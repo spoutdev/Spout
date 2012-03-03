@@ -455,12 +455,12 @@ public class SpoutEntity implements Entity {
 			return null;
 		}
 		if (inventory == null) {
-			DatatableTuple obj =  getData("inventory");
-			if (obj == null) {
+
+			if (!hasData("inventory")) {
 				inventory = controllerLive == null ? new Inventory(getInventorySize()) : controllerLive.createInventory(getInventorySize());
 				setData("inventory", inventory);
 			} else {
-				inventory = (Inventory) obj.get();
+				inventory = (Inventory) getData("inventory").get();
 			}
 		}
 		return inventory;
