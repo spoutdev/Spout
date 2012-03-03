@@ -99,5 +99,9 @@ public class SpoutDatatableMap implements DatatableMap {
 	public void input(InputStream in) throws IOException {
 
 	}
+    
+    public boolean contains(String key){
+        return map.containsKey(getKey(key));
+    }
 
 }

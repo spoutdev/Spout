@@ -423,6 +423,12 @@ public class SpoutEntity implements Entity {
 	public DatatableTuple getData(String key) {
 		return map.get(key);
 	}
+
+    @Override
+    public boolean hasData(String key){
+        return map.contains(key);
+    }
+    
 	private int inventorySize;
 	private Inventory inventory;
 
