@@ -54,7 +54,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	private final short[] blockData;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, boolean entities) {
+	private final short[] blockLight;
+
+	private final short[] skyLight;
+
+	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, short[] blockLight, short[] skyLight, boolean entities) {
 		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
@@ -69,6 +73,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 		this.blockIds = blockIds;
 		this.blockData = blockData;
+		this.blockLight = blockLight;
+		this.skyLight = skyLight;
 	}
 
 	@Override
@@ -84,6 +90,16 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		return blockData[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
+	}
+
+	@Override
+	public short getSkyLight(int x, int y, int z) {
+		return skyLight[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
+	}
+
+	@Override
+	public short getBlockLight(int x, int y, int z) {
+		return blockLight[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
 	}
 
 	@Override
@@ -111,5 +127,15 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public short[] getBlockData() {
 		return blockData;
+	}
+
+	@Override
+	public short[] getBlockLight() {
+		return blockLight;
+	}
+
+	@Override
+	public short[] getSkyLight() {
+		return skyLight;
 	}
 }

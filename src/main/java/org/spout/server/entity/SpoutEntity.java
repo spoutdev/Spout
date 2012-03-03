@@ -148,7 +148,7 @@ public class SpoutEntity implements Entity {
 	@Override
 	public void setController(Controller controller) {
 		if (controller != null){
-			
+
 			controller.attachToEntity(this);
 		}
 		int seq = lock.writeLock();
@@ -425,10 +425,10 @@ public class SpoutEntity implements Entity {
 	}
 
     @Override
-	public boolean hasData(String key){
+	public boolean hasData(String key) {
 		return map.contains(key);
 	}
-    
+
 	private int inventorySize;
 	private Inventory inventory;
 

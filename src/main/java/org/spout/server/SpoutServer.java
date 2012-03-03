@@ -246,7 +246,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * Cached copy of the server configuration, can be used instead of
 	 * re-parsing the config file for each access
 	 */
-	private Configuration config = new SpoutConfiguration();
+	private SpoutConfiguration config = new SpoutConfiguration();
 
 	public SpoutServer() {
 		super(1, new ThreadAsyncExecutor());
@@ -293,7 +293,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		getEventManager().registerEvents(new InternalEventListener(this), this);
 		scheduler.startMainThread();
 	}
-	
+
 	public Configuration getConfiguration() {
 		return config;
 	}

@@ -41,7 +41,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -52,6 +51,7 @@ import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+import org.spout.api.util.map.concurrent.AtomicShortArray;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
@@ -97,17 +97,22 @@ public class SpoutChunk extends Chunk {
 	// Hash set should return "dirty" list
 	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
 
+	private final AtomicShortArray skyLight;
+	private final AtomicShortArray blockLight;
+
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-	
-	public SpoutChunk(World world, SpoutRegion region, float x, float y, float z, short[] initial) {
+
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS);
 		populated = new SnapshotableBoolean(snapshotManager, false);
+		skyLight = new AtomicShortArray(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+		blockLight = new AtomicShortArray(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 		int i = 0;
 		for (int xx = 0; xx < Chunk.CHUNK_SIZE; xx++) {
 			for (int zz = 0; zz < Chunk.CHUNK_SIZE; zz++) {
@@ -116,6 +121,11 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 		}
+		recalculateLighting(true, true);
+	}
+
+	public SpoutWorld getWorld() {
+		return (SpoutWorld) super.getWorld();
 	}
 
 	@Override
@@ -183,6 +193,7 @@ public class SpoutChunk extends Chunk {
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
+		updateLighting(x, y, z);
 		return true;
 	}
 
@@ -209,11 +220,100 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
+	public short getSkyLight(int x, int y, int z) {
+		checkChunkLoaded();
+		return skyLight.get(toIndex(x & coordMask, y & coordMask, z & coordMask));
+	}
+
+	@Override
+	public short getBlockLight(int x, int y, int z) {
+		checkChunkLoaded();
+		return blockLight.get(toIndex(x & coordMask, y & coordMask, z & coordMask));
+	}
+
+	@Override
 	public void updatePhysics(int x, int y, int z) {
 		checkChunkLoaded();
-		SpoutRegion region = ((SpoutRegion)parentRegion.getWorld().getRegionFromBlock(x, y, z));
+		SpoutRegion region = parentRegion.getWorld().getRegionFromBlock(x, y, z);
 		if (region != null) {
 			region.queuePhysicsUpdate(x, y, z);
+		}
+	}
+
+	private int toIndex(int x, int y, int z) {
+		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
+	}
+
+	protected void recalculateLighting(boolean sky, boolean block) {
+		// Sky light
+		if (sky) {
+			SpoutChunk aboveChunk = getWorld().getChunk(getX(), getY() + 1, getZ(), false);
+			short prevValue;
+			for (int x = CHUNK_SIZE - 1; x >= 0; --x) {
+				for (int z = CHUNK_SIZE - 1; z >= 0; --z) {
+					if (aboveChunk != null) {
+						prevValue = aboveChunk.getSkyLight(x, CHUNK_SIZE - 1, z);
+					} else {
+						prevValue = 0xF;
+					}
+					for (int y = CHUNK_SIZE - 1; y >= 0; --y) {
+						BlockMaterial type = getBlockMaterial(x, y, z);
+						prevValue -= type.getOpacity();
+						if (prevValue < 0) {
+							prevValue = 0;
+						}
+						skyLight.set(toIndex(x, y, z), prevValue);
+						if (prevValue == 0) {
+							break;
+						}
+					}
+				}
+			}
+
+			SpoutChunk belowChunk = getWorld().getChunk(getX(), getY() - 1, getZ(), false);
+			if (belowChunk != null) {
+				belowChunk.recalculateLighting(true, false);
+			}
+		}
+
+		// Block light
+		if (block) {
+			for (int x = CHUNK_SIZE - 1; x >= 0; --x) {
+				for (int z = CHUNK_SIZE - 1; z >= 0; --z) {
+					for (int y = CHUNK_SIZE - 1; y >= 0; --y) {
+						BlockMaterial type = getBlockMaterial(x, y, z);
+						blockLight.set(toIndex(x, y, z), type.getLightLevel());
+					}
+				}
+			}
+		}
+	}
+
+	protected void updateLighting(int x, int y, int z) {
+		final int index = toIndex(x, y, z);
+		SpoutChunk aboveChunk = getWorld().getChunk(getX(), getY() + 1, getZ(), false);
+		short oldSkyLight;
+		if (aboveChunk == null) {
+			oldSkyLight = skyLight.get(index);
+		}  else {
+			oldSkyLight = aboveChunk.getSkyLight(x, 0, z);
+		}
+
+		for (int dy = y; dy >= 0; --dy) {
+			oldSkyLight = (short)Math.max(0, oldSkyLight - getBlockMaterial(x, dy, z).getOpacity());
+			skyLight.set(toIndex(x, dy, z), oldSkyLight);
+			if (oldSkyLight == 0) {
+				if (dy == 0) {
+					break;
+				} else {
+					return;
+				}
+			}
+		}
+
+		SpoutChunk belowChunk = getWorld().getChunk(getX(), getY() - 1, getZ(), false);
+		if (belowChunk != null) {
+			belowChunk.updateLighting(x, 15, z);
 		}
 	}
 
@@ -348,7 +448,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		checkChunkLoaded();
-		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), entities);
+		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), blockLight.getArray(), skyLight.getArray(), entities);
 	}
 
 	@Override
@@ -463,7 +563,7 @@ public class SpoutChunk extends Chunk {
 		}
 
 		final Random random = new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42));
-		
+
 		for (Populator populator : getWorld().getGenerator().getPopulators()) {
 			try {
 				populator.populate(this, random);
@@ -472,7 +572,7 @@ public class SpoutChunk extends Chunk {
 				e.printStackTrace();
 			}
 		}
-		
+
 		populated.set(true);
 		if (getRegion() instanceof SpoutRegion) {
 			((SpoutRegion) getRegion()).onChunkPopulated(this);
@@ -513,14 +613,11 @@ public class SpoutChunk extends Chunk {
 		Map<Entity, Integer> observerSnapshot = observers.get();
 		Map<Entity, Integer> observerLive = observers.getLive();
 
-		
 		//If we are observed and not populated, queue population
 		if(!isPopulated() && observers.getLive().size() > 0){
 			parentRegion.queueChunkForPopulation(this);
-			
 		}
-		
-		
+
 		Set<Entity> entitiesSnapshot = entities.get();
 		entities.getLive();
 
@@ -541,7 +638,7 @@ public class SpoutChunk extends Chunk {
 				//Player Network sync
 				if(p.getController() instanceof PlayerController){
 					Player player = ((PlayerController)p.getController()).getPlayer();
-				
+
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					for (Entity e : entitiesSnapshot) {
 						if (player.getEntity().equals(e)) {
@@ -549,7 +646,7 @@ public class SpoutChunk extends Chunk {
 						}
 						int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
 						int entityViewDistanceNew = e.getViewDistance();
-	
+
 						if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
 							n.destroyEntity(e);
 						} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
@@ -593,11 +690,11 @@ public class SpoutChunk extends Chunk {
 				}
 				int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
 				int entityViewDistanceNew = e.getViewDistance();
-				
+
 				if(p.getController() instanceof PlayerController){
 					Player player = ((PlayerController) p.getController()).getPlayer();
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
-	
+
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
 						n.destroyEntity(e);
 					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
@@ -647,7 +744,7 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SpoutChunk{ (" + getX() + ", " + getY() + ", " + getZ() + ") }";

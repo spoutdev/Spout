@@ -70,7 +70,7 @@ public class SpoutRegion extends Region {
 	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
 
 	@SuppressWarnings("unchecked")
-	public AtomicReference<Chunk>[][][] chunks = new AtomicReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
+	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
 
 	/**
 	 * Region coordinates of the lower, left start of the region. Add
@@ -143,28 +143,32 @@ public class SpoutRegion extends Region {
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					chunks[dx][dy][dz] = new AtomicReference<Chunk>(load ? getChunk(dx, dy, dz, true) : null);
+					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(load ? getChunk(dx, dy, dz, true) : null);
 				}
 			}
 		}
 	}
 
+	public SpoutWorld getWorld() {
+		return (SpoutWorld) super.getWorld();
+	}
+
 	@Override
 	@LiveRead
-	public Chunk getChunk(int x, int y, int z) {
+	public SpoutChunk getChunk(int x, int y, int z) {
 		return getChunk(x, y, z, true);
 	}
 
 	@Override
 	@LiveRead
-	public Chunk getChunk(int x, int y, int z, boolean load) {
+	public SpoutChunk getChunk(int x, int y, int z, boolean load) {
 		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
-			Chunk chunk = chunks[x][y][z].get();
+			SpoutChunk chunk = chunks[x][y][z].get();
 			if (chunk != null || !load) {
 				return chunk;
 			}
 
-			AtomicReference<Chunk> ref = chunks[x][y][z];
+			AtomicReference<SpoutChunk> ref = chunks[x][y][z];
 
 			boolean success = false;
 
@@ -188,7 +192,7 @@ public class SpoutRegion extends Region {
 					}
 					return newChunk;
 				} else {
-					Chunk oldChunk = ref.get();
+					SpoutChunk oldChunk = ref.get();
 					if (oldChunk != null) {
 						return oldChunk;
 					}
@@ -212,8 +216,8 @@ public class SpoutRegion extends Region {
 		int cy = c.getY() & Region.REGION_SIZE - 1;
 		int cz = c.getZ() & Region.REGION_SIZE - 1;
 
-		AtomicReference<Chunk> current = chunks[cx][cy][cz];
-		Chunk currentChunk = current.get();
+		AtomicReference<SpoutChunk> current = chunks[cx][cy][cz];
+		SpoutChunk currentChunk = current.get();
 		if (currentChunk != c) {
 			return false;
 		}
@@ -250,7 +254,7 @@ public class SpoutRegion extends Region {
 	@Override
 	@DelayedWrite
 	public void saveChunk(int x, int y, int z) {
-		Chunk c = getChunk(x, y, z, false);
+		SpoutChunk c = getChunk(x, y, z, false);
 		if (c != null) {
 			c.save();
 		}
@@ -265,9 +269,9 @@ public class SpoutRegion extends Region {
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					Chunk chunk = chunks[dx][dy][dz].get();
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
-						((SpoutChunk) chunk).saveNoMark();
+						chunk.saveNoMark();
 					}
 				}
 			}
@@ -280,9 +284,9 @@ public class SpoutRegion extends Region {
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					Chunk chunk = chunks[dx][dy][dz].get();
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
-						((SpoutChunk) chunk).unloadNoMark(save);
+						chunk.unloadNoMark(save);
 					}
 				}
 			}
@@ -292,7 +296,7 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void unloadChunk(int x, int y, int z, boolean save) {
-		Chunk c = getChunk(x, y, z, false);
+		SpoutChunk c = getChunk(x, y, z, false);
 		if (c != null) {
 			c.unload(save);
 		}
@@ -532,14 +536,14 @@ public class SpoutRegion extends Region {
 						synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
 					} catch (Exception e) {
 						Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-						
+
 					}
 				}
 			}
 
 		} else {
 			synchronizer.sendChunk(chunk);
-		}	
+		}
 
 	}
 
@@ -552,11 +556,11 @@ public class SpoutRegion extends Region {
 					Chunk chunk = chunks[dx][dy][dz].get();
 					if (chunk == null) continue;
 					SpoutChunk spoutChunk = (SpoutChunk) chunk;
-					
+
 					if (spoutChunk.isDirty()) {
 						for (Entity entity : spoutChunk.getObserversLive()) {
 							//chunk.refreshObserver(entity);
-							if(!(entity.getController() instanceof PlayerController)) continue;						
+							if(!(entity.getController() instanceof PlayerController)) continue;
 							syncChunkToPlayers(spoutChunk, entity);
 						}
 						spoutChunk.resetDirtyArrays();
