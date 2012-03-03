@@ -71,7 +71,7 @@ public class ConfigurationNode {
 	 */
 	public void setValue(Object value) {
 		this.value = value;
-		if (config != null && config.getValue(path) != value) {
+		if (config != null) {
 			config.addNode(this);
 		}
 	}
