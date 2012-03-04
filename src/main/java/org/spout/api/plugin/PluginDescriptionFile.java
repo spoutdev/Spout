@@ -218,7 +218,7 @@ public class PluginDescriptionFile {
 	 * @return true if an official plugin
 	 */
 	private boolean isOfficialPlugin(String namespace) {
-		return namespace.equalsIgnoreCase("org.spout.vanilla.vanillaplugin");
+		return (namespace.equalsIgnoreCase("org.spout.vanilla.vanillaplugin") || namespace.equalsIgnoreCase("org.spout.bukkit.BukkitBridge"));
 	}
 
 	/**
