@@ -123,6 +123,10 @@ public class MemoryConfiguration {
 		}
 	}
 	
+	public Set<ConfigurationNode> getNodes() {
+		return nodes;
+	}
+	
 	/**
 	 * Removes a node from memory.
 	 * 
