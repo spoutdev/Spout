@@ -146,7 +146,7 @@ public class MemoryConfiguration {
 		if (value == null) {
 			this.setValue(node.getPath(), node.getValue());
 		} else {
-			node.setValue(value);
+			node.setValue(value, false);
 		}
 		
 		nodes.add(node);
@@ -192,7 +192,7 @@ public class MemoryConfiguration {
 			value = def;
 		}
 		
-		node.setValue(value);
+		node.setValue(value, true);
 		node.setConfiguration(this);
 		return node;
 	}

@@ -69,9 +69,9 @@ public class ConfigurationNode {
 	 * 
 	 * @param value 
 	 */
-	public void setValue(Object value) {
+	public void setValue(Object value, boolean toMemoryConfig) {
 		this.value = value;
-		if (config != null) {
+		if (config != null && toMemoryConfig) {
 			config.addNode(this);
 		}
 	}
