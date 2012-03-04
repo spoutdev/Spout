@@ -26,28 +26,33 @@
 package org.spout.api.entity;
 
 import org.spout.api.inventory.Inventory;
-import org.spout.api.inventory.PlayerInventory;
 import org.spout.api.player.Player;
 
 /**
- * Represents a Controller that is controlled by a player. An entity is a Player
- * if entity.getController() instanceof PlayerController == true
+ * Represents a Controller that is controlled by a player.
+ * 
+ * An entity is a Player if entity.getController() instanceof PlayerController == true
  */
-public abstract class PlayerController extends Controller {
-	protected Player owner;
+public interface PlayerController {
 
-	public PlayerController(Player owner) {
-		this.owner = owner;
-	}
+	/**
+	 * Gets the player that this controller represents
+	 * @return
+	 */
+	public Player getPlayer();
 
-	public Player getPlayer() {
-		return owner;
-	}
+	/**
+	 * Creates an inventory for this player
+	 * 
+	 * @param size
+	 * @return inventory
+	 */
+	public Inventory createInventory(int size);
 
-	@Override
-	public Inventory createInventory(int size) {
-		return new PlayerInventory(size);
-	}
-
-	public abstract boolean hasInfiniteResources();
+	/**
+	 * If this player needs to replenish supplies after use
+	 * 
+	 * @return true if it has infinite resources
+	 */
+	public boolean hasInfiniteResources();
 }
