@@ -41,7 +41,7 @@ public class GenericItemMaterial implements ItemMaterial {
 	private int maxStackSize = 64;
 
 	public GenericItemMaterial(String name, int id, int data, boolean subtypes) {
-		this.name = name;
+		this.name = name.replace(' ', '_');
 		displayName = name;
 		this.id = (short) id;
 		this.data = (short) data;
