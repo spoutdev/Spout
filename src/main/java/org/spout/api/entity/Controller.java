@@ -52,21 +52,21 @@ public abstract class Controller {
 	protected Entity parent;
 
 	public void attachToEntity(Entity e) {
-		parent = e;
+		this.parent = e;
 	}
 
 	public abstract void onAttached();
 
 	/**
 	 * Called when the entity dies.
-	 *
+	 * 
 	 * Called just before the preSnapshot method.
 	 */
 	public void onDeath() {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param dt the number of seconds since last update
 	 */
 	public abstract void onTick(float dt);
@@ -80,11 +80,11 @@ public abstract class Controller {
 
 	/**
 	 * Called just before a snapshot update.
-	 *
+	 * 
 	 * This is intended purely as a monitor based step.
-	 *
+	 * 
 	 * NO updates should be made to the entity at this stage.
-	 *
+	 * 
 	 * It can be used to send packets for network update.
 	 */
 	public void preSnapshot() {
@@ -100,5 +100,14 @@ public abstract class Controller {
 
 	public Inventory createInventory(int size) {
 		return new Inventory(size);
+	}
+
+	/**
+	 * Gets the parent Entity associated with this controller.
+	 * 
+	 * @return parent Entity
+	 */
+	public Entity getParent() {
+		return this.parent;
 	}
 }
