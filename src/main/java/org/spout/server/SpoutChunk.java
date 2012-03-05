@@ -109,18 +109,10 @@ public class SpoutChunk extends Chunk {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
-		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS);
+		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, initial);
 		populated = new SnapshotableBoolean(snapshotManager, false);
 		skyLight = new AtomicShortArray(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 		blockLight = new AtomicShortArray(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
-		int i = 0;
-		for (int xx = 0; xx < Chunk.CHUNK_SIZE; xx++) {
-			for (int zz = 0; zz < Chunk.CHUNK_SIZE; zz++) {
-				for (int yy = 0; yy < Chunk.CHUNK_SIZE; yy++) {
-					blockStore.setBlock(xx, yy, zz, initial[i++], (short) 0, null);
-				}
-			}
-		}
 		recalculateLighting(true, true);
 	}
 
