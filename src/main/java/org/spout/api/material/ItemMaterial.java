@@ -41,4 +41,12 @@ public interface ItemMaterial extends Material {
 	 * @param type of interaction
 	 */
 	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedFace);
+	
+	/**
+	 * Fired when an entity interacts with another entity
+	 * 
+	 * @param entity that is interacting with the world
+	 * @param other entity that was interacted with
+	 */
+	public void onInteract(Entity entity, Entity other);
 }

@@ -99,6 +99,10 @@ public class GenericItemMaterial implements ItemMaterial {
 	}
 
 	@Override
+	public void onInteract(Entity entity, Entity other) {
+	}
+
+	@Override
 	public int getMaxStackSize() {
 		return maxStackSize;
 	}
