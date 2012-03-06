@@ -250,8 +250,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	 */
 	private SpoutConfiguration config = new SpoutConfiguration();
 
-	public SpoutServer() {
+	public SpoutServer(String[] args) {
 		super(1, new ThreadAsyncExecutor());
+		for(String s : args){
+			if(s.equals("-debug")) debugMode = true;
+		}
 		registerWithScheduler(scheduler);
 		init();
 		if (!getExecutor().startExecutor()) {
@@ -260,13 +263,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	public static void main(String[] args) {
-		boolean debugMode = false;
-		for(String s : args){
-			if(s.equals("-debug"))  debugMode = true;
-		}
+	
 		
-		SpoutServer server = new SpoutServer();
-		server.setDebug(debugMode);
+		SpoutServer server = new SpoutServer(args);
 		server.start();
 
 	}
@@ -932,10 +931,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public RecipeManager getRecipeManager() {
 		return recipeManager;
-	}
-
-	public void setDebug(boolean mode){
-		this.debugMode = mode;
 	}
 
 	@Override
