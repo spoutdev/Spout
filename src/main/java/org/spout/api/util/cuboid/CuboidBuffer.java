@@ -86,9 +86,7 @@ public abstract class CuboidBuffer {
 		topY = baseY + sizeY;
 		topZ = baseZ + sizeZ;
 
-		Xinc = sizeY * sizeZ;
-		Yinc = 1;
-		Zinc = sizeY;
+		Yinc = sizeY * (Zinc = sizeZ * (Xinc = 1));
 	}
 
 	protected CuboidBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
@@ -154,10 +152,14 @@ public abstract class CuboidBuffer {
 	}
 
 	protected int getIndex(int x, int y, int z) {
-		if (x < baseX || x >= topX || y < baseY || y >= topY || z < baseZ || z >= topZ) {
+		return getIndex(this, x, y, z);
+	}
+
+	protected static int getIndex(CuboidBuffer source, int x, int y, int z) {
+		if (x < source.baseX || x >= source.topX || y < source.baseY || y >= source.topY || z < source.baseZ || z >= source.topZ) {
 			return -1;
 		} else {
-			return (y - baseY) * Yinc + (x - baseX) * Xinc + (z - baseZ) * Zinc;
+			return (y - source.baseY) * source.Yinc + (z - source.baseZ) * source.Zinc + (x - source.baseX) * source.Xinc;
 		}
 	}
 
@@ -202,13 +204,8 @@ public abstract class CuboidBuffer {
 				return;
 			}
 
-			sourceIndex = (overlapBaseX - source.baseX) * source.Xinc;
-			sourceIndex += (overlapBaseY - source.baseY) * source.Yinc;
-			sourceIndex += (overlapBaseZ - source.baseZ) * source.Zinc;
-
-			targetIndex = (overlapBaseX - target.baseX) * target.Xinc;
-			targetIndex += (overlapBaseY - target.baseY) * target.Yinc;
-			targetIndex += (overlapBaseZ - target.baseZ) * target.Zinc;
+			sourceIndex = getIndex(source, overlapBaseX, overlapBaseY, overlapBaseZ);
+			targetIndex = getIndex(target, overlapBaseX, overlapBaseY, overlapBaseZ);
 		}
 
 		public int getBaseSource() {
