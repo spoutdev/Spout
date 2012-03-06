@@ -28,6 +28,9 @@ package org.spout.server.entity;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.spout.api.Game;
+import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
@@ -82,6 +85,7 @@ public class SpoutEntity implements Entity {
 	CollisionModel collision;
 	SpoutDatatableMap map;
 	boolean observer = false;
+	Thread owningThread = null;
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
@@ -147,6 +151,7 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setController(Controller controller) {
+
 		if (controller != null){
 
 			controller.attachToEntity(this);
@@ -758,5 +763,42 @@ public class SpoutEntity implements Entity {
 	@Override
 	public boolean isObserver() {
 		return observer;
+	}
+
+	@Override
+	public void translate(Vector3 amount) {
+		//Check if this thread is the calling thread
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
+			return;
+		}
+		this.transform.getPosition().add(amount);
+	}
+
+	@Override
+	public void translate(float x, float y, float z) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
+			return;
+		}
+		this.transform.getPosition().add(x,y,z);
+	}
+
+	@Override
+	public void rotate(float ang, float x, float y, float z) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
+			return;
+		}
+		this.transform.getRotation().rotate(ang,x,y,z);
+	}
+
+	@Override
+	public void rotate(Quaternion rot) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
+			return;
+		}
+		this.transform.getRotation().multiply(rot);
 	}
 }
