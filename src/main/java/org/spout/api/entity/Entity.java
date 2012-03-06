@@ -34,6 +34,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
@@ -334,4 +335,18 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public boolean isObserver();
+
+
+
+	public void translate(Vector3 amount);
+
+	public void translate(float x, float y, float z);
+	
+	public void rotate(float ang, float x, float y, float z);
+	
+	public void rotate(Quaternion rot);
+
+
+	
+	
 }
