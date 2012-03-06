@@ -42,7 +42,6 @@ Thumbs.db
 # Project files #
 #################
 .classpath
-.externalToolBuilders
 .project
 .settings
 MANIFEST.MF
@@ -56,5 +55,5 @@ build.xml
 
 # IntelliJ IDEA files #
 #######################
-.idea
-.iml
+*.idea
+*.iml
