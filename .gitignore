@@ -55,5 +55,5 @@ build.xml
 
 # IntelliJ IDEA files #
 #######################
-.idea
-.iml
+*.idea
+*.iml
