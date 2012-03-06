@@ -393,5 +393,14 @@ public interface Game extends Named {
 	 * @return RecipeManager
 	 */
 	public RecipeManager getRecipeManager();
+
+
+	/**
+	 * Returns true if the game is running in debug mode
+	 *
+	 * To start debug mode, start Spout with -debug
+	 * @return true if server is started with the -debug flag, false if not
+	 */
+	public boolean debugMode();
 	
 }
