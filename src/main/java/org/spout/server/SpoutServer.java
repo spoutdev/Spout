@@ -242,6 +242,8 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	private final Random random = new Random();
 
+	private boolean debugMode = false;
+
 	/**
 	 * Cached copy of the server configuration, can be used instead of
 	 * re-parsing the config file for each access
@@ -258,14 +260,24 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	public static void main(String[] args) {
-
+		boolean debugMode = false;
+		for(String s : args){
+			if(s.equals("-debug"))  debugMode = true;
+		}
+		
 		SpoutServer server = new SpoutServer();
+		server.setDebug(debugMode);
 		server.start();
 
 	}
 
 	public void start() {
 		Spout.setGame(this);
+
+		if(debugMode()){
+			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
+
+		}
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
 
@@ -920,5 +932,14 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public RecipeManager getRecipeManager() {
 		return recipeManager;
+	}
+
+	public void setDebug(boolean mode){
+		this.debugMode = mode;
+	}
+
+	@Override
+	public boolean debugMode() {
+		return debugMode;
 	}
 }
