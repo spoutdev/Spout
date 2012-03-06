@@ -138,7 +138,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		int currentId = entity.getId();
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
-			System.out.println("Entity is controller is "+ entity.getController());
 			getRawAll(entity.getController().getClass()).add(entity);
 			return currentId;
 		} else {
