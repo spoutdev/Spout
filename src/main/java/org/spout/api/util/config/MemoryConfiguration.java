@@ -27,6 +27,7 @@ package org.spout.api.util.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -435,5 +436,30 @@ public class MemoryConfiguration {
 			return list;
 		}
 		return def;
+	}
+	/**
+	 * Returns a Set of the keys under that parent
+	 * @param path
+	 * @return Set String
+	 */
+	public Set<String> getKeys(String path) {
+		//TODO Add "deep" option in the future potentially.
+		Set<String> keys = new HashSet<String>();
+		String[] sections = path.split("\\.");
+		Map<String, Object> section = this.root;
+		for(int i = 0; i < sections.length && section != null; i++) {
+			String sec = sections[i];
+			try {
+				section = (Map<String, Object>) section.get(sec);
+			} catch (Exception e) {
+				System.err.println("[MemoryConfiguration] Invalid path!");
+				e.printStackTrace();
+			}
+		}
+		// Only if it's not null
+		if(section != null) {
+			keys = section.keySet();
+		}
+		return keys;
 	}
 }
