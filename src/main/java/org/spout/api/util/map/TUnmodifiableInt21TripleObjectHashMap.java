@@ -42,6 +42,10 @@ public class TUnmodifiableInt21TripleObjectHashMap<K> extends TInt21TripleObject
 	 * @param newMap to replace
 	 */
 	public void update(TInt21TripleObjectHashMap<K> newMap) {
+		if (map == null) {
+			throw new IllegalArgumentException("The backend can not be null.");
+		}
+
 		map = new TUnmodifiableLongObjectMap<K>(newMap.getInternalMap());
 	}
 }

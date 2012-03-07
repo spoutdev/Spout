@@ -36,10 +36,18 @@ import gnu.trove.set.hash.TLongHashSet;
  * This set is backed by a read/write lock synchronised set.
  */
 public class TSyncInt21HashSet extends TInt21HashSet {
+	/**
+	 * Creates a new <code>TSyncInt21HashSet</code> instance backend by a synchronized (thread-safe) {@see TLongSet} instance with an capacity of 100 and the default load factor.
+	 */
 	public TSyncInt21HashSet() {
 		super(TCollections.synchronizedSet(new TLongHashSet()));
 	}
 
+	/**
+	 * Creates a new <code>TSyncInt21HashSet</code> instance backend by a synchronized (thread-safe) {@see TLongSet} instance with a prime capacity equal to or greater than <code>capacity</code> and with the default load factor.
+	 *
+	 * @param capacity an <code>int</code> value
+	 */
 	public TSyncInt21HashSet(int capacity) {
 		super(TCollections.synchronizedSet(new TLongHashSet(capacity)));
 	}
