@@ -20,6 +20,7 @@
 	<description>Spout is an open-source implementation of the Minecraft server software written in Java, originally forked from the Glowstone project.</description>
 
 	<properties>
+		<netbeans.hint.license>Spout</netbeans.hint.license>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build.number>Unknown</build.number>
 	</properties>
@@ -99,7 +100,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-   
+
 	<build>
 		<defaultGoal>clean package install</defaultGoal>
 		<!-- Plugins -->
