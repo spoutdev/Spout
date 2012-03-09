@@ -60,7 +60,6 @@ import org.spout.server.util.thread.AsyncManager;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableLong;
-import org.spout.server.util.thread.snapshotable.SnapshotableReference;
 
 public class SpoutWorld extends AsyncManager implements World {
 
@@ -89,7 +88,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The spawn position.
 	 */
-	private Transform spawnLocation = new Transform();
+	private final Transform spawnLocation = new Transform();
 
 	/**
 	 * The current world age.
