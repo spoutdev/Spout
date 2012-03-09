@@ -45,10 +45,8 @@ import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -91,7 +89,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The spawn position.
 	 */
-	private SnapshotableReference<Transform> spawnLocation = new SnapshotableReference<Transform>(snapshotManager, null);
+	private Transform spawnLocation = new Transform();
 
 	/**
 	 * The current world age.
@@ -430,12 +428,12 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Transform getSpawnPoint() {
-		return spawnLocation.get();
+		return spawnLocation.copy();
 	}
 
 	@Override
 	public void setSpawnPoint(Transform transform) {
-		spawnLocation.set(transform.copy());
+		spawnLocation.set(transform);
 	}
 
 	public EntityManager getEntityManager() {
