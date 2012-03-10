@@ -221,6 +221,10 @@ public class MemoryConfiguration {
 		if (value instanceof String) {
 			return (String) value;
 		}
+
+		if(value == null) {
+			this.setValue(path, def);
+		}
 		
 		return def;
 	}
@@ -244,6 +248,10 @@ public class MemoryConfiguration {
 		Integer i = MathHelper.castInt(value);
 		if (i != null) {
 			return i;
+		}
+
+		if(value == null) {
+			this.setValue(path, def);
 		}
 		
 		return def;
@@ -269,6 +277,10 @@ public class MemoryConfiguration {
 		if (d != null) {
 			return d;
 		}
+
+		if(value == null) {
+			this.setValue(path, def);
+		}
 		
 		return def;
 	}
@@ -293,6 +305,10 @@ public class MemoryConfiguration {
 		if (b != null) {
 			return b;
 		}
+
+		if(value == null) {
+			this.setValue(path, def);
+		}
 		
 		return def;
 	}
@@ -316,6 +332,10 @@ public class MemoryConfiguration {
 		Object value = getValue(path);
 		if (value != null && value instanceof List) {
 			return (List<Object>) value;
+		}
+
+		if(value == null) {
+			this.setValue(path, def);
 		}
 		
 		return def;
@@ -345,6 +365,7 @@ public class MemoryConfiguration {
 			
 			return list;
 		}
+
 		return def;
 	}
 	
@@ -375,6 +396,7 @@ public class MemoryConfiguration {
 			
 			return list;
 		}
+
 		return def;
 	}
 	
@@ -405,6 +427,7 @@ public class MemoryConfiguration {
 			
 			return list;
 		}
+
 		return def;
 	}
 	
@@ -435,6 +458,7 @@ public class MemoryConfiguration {
 			
 			return list;
 		}
+
 		return def;
 	}
 	/**
