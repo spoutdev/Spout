@@ -624,11 +624,12 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
-		if(loadedWorlds.get().containsKey(name)) return loadedWorlds.get().get(name);
+		if(loadedWorlds.get().containsKey((name))) return loadedWorlds.get().get(name);
+		if(loadedWorlds.getLive().containsKey(name)) return loadedWorlds.getLive().get(name);
 		
 		// TODO - should include generator (and non-zero seed)
 		if (generator == null) {
-			generator = getGenerator(name);
+			generator = defaultGenerator;
 		}
 				
 
