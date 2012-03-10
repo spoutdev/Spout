@@ -33,10 +33,10 @@ import org.spout.api.math.Vector3;
 public enum BlockFace {
 	TOP(0, 1, 0),
 	BOTTOM(0, -1, 0, TOP),
-	NORTH(0, 0, -1),
-	SOUTH(0, 0, 1, NORTH),
-	EAST(1, 0, 0),
-	WEST(-1, 0, 0, EAST),
+	NORTH(-1, 0, 0),
+	SOUTH(1, 0, 0, NORTH),
+	EAST(0, 0, -1),
+	WEST(0, 0, 1, EAST),
 	THIS(0, 0, 0);
 
 	private Vector3 offset;
