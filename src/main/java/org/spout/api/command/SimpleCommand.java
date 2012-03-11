@@ -150,7 +150,7 @@ public class SimpleCommand implements Command {
 
 	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		if (rawExecutor != null && rawExecutor != this) {
-			rawExecutor.execute(source, args, baseIndex, fuzzyLookup);
+			rawExecutor.execute(this, source, args, baseIndex, fuzzyLookup);
 			return;
 		}
 
@@ -199,7 +199,7 @@ public class SimpleCommand implements Command {
 			throw new WrappedCommandException(t);
 		}
 	}
-	
+
 	public CommandException getMissingChildException(String usage) {
 		return new MissingCommandException("Child command needed!", usage);
 	}
@@ -223,7 +223,7 @@ public class SimpleCommand implements Command {
 	public String getHelp() {
 		return help;
 	}
-	
+
 	public String getUsage() {
 		return getUsage(new String[] {getPreferredName()}, 0);
 	}
@@ -236,9 +236,9 @@ public class SimpleCommand implements Command {
 				usage.append(" ");
 			}
 		}
-		
+
 		usage.append(" ");
-		
+
 		if (children.size() > 0) { // There are subcommands, print a list of them
 			usage.append("<");
 			Set<Command> childValues = new HashSet<Command>(children.values());
@@ -263,7 +263,7 @@ public class SimpleCommand implements Command {
 		}
 		return usage.toString();
 	}
-	
+
 	public Command getChild(String name) {
 		return getChild(name,  false);
 	}

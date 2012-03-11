@@ -28,6 +28,7 @@ package org.spout.api.command;
 import java.util.List;
 import java.util.Set;
 
+import org.spout.api.exception.CommandException;
 import org.spout.api.util.Named;
 
 /**
@@ -41,7 +42,7 @@ import org.spout.api.util.Named;
  * Game.getCommandRoot().sub(&quot;preferredname&quot;).alias(&quot;alias1&quot;, &quot;alias2&quot;).help(&quot;This is the main command for MyPlugin&quot;).executor(myExecutor).sub(&quot;subcommand&quot;).help(&quot;This is a sub command of main command&quot;).executor(myExecutor).closeSub().closeSub();
  * </pre>
  */
-public interface Command extends RawCommandExecutor {
+public interface Command {
 	/**
 	 * Creates a command and adds it as a sub-command to the active Command.
 	 *
@@ -77,6 +78,21 @@ public interface Command extends RawCommandExecutor {
 	 * @return the new active command or null if the stack was empty
 	 */
 	public Command closeSubCommand();
+
+	/**
+	 * Executes a command based on the provided arguments.
+	 *
+	 * The base index is equal to the number of arguments that have already been
+	 * processed by super commands.
+	 *
+	 * @param source the {@link CommandSource} that sent this command.
+	 * @param args the command arguments
+	 * @param baseIndex the arguments that have already been processed by
+	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
+	 *            commands.
+	 * @throws org.spout.api.exception.CommandException when an issue occurred with the command
+	 */
+	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
 
 	/**
 	 * Adds an alias to the active Command.
@@ -141,7 +157,7 @@ public interface Command extends RawCommandExecutor {
 	public String getHelp();
 
 	/**
-	 * Returns the usage for this command with {@link #getPreferredName()} 
+	 * Returns the usage for this command with {@link #getPreferredName()}
 	 * as the only element in the input array and a baseIndex of zero
 	 * @return The usage for this command
 	 */

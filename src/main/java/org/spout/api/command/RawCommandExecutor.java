@@ -38,6 +38,7 @@ public interface RawCommandExecutor {
 	 * The base index is equal to the number of arguments that have already been
 	 * processed by super commands.
 	 *
+	 * @param command The command being executed
 	 * @param source the {@link CommandSource} that sent this command.
 	 * @param args the command arguments
 	 * @param baseIndex the arguments that have already been processed by
@@ -45,5 +46,5 @@ public interface RawCommandExecutor {
 	 *            commands.
 	 * @throws CommandException when an issue occurred with the command
 	 */
-	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
+	public void execute(Command command, CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
 }
