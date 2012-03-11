@@ -77,8 +77,19 @@ public class InternalEventListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SpoutPlayer p = (SpoutPlayer) event.getPlayer();
 
+		if(server.isPlayerBanned(p.getName())) {
+			p.kick(server.getBanMessage(p.getName()));
+			return;
+		}
+		
+		if(server.isIpBanned(p.getAddress().getHostAddress())) {
+			p.kick(server.getIpBanMessage(p.getAddress().getHostAddress()));
+			return;
+		}
+		
 		if (server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
 			p.kick("Server is full!");
+			return;
 		}
 
 		if (event.getMessage() != null) {
