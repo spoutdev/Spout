@@ -25,6 +25,8 @@
  */
 package org.spout.server.util;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Stores a 3 int triple.
  *
@@ -60,10 +62,7 @@ public class TripleInt {
 
 	@Override
 	public int hashCode() {
-		int hash = x;
-		hash += (hash << 11) + y;
-		hash += (hash << 9) + z;
-		return hash;
+		return new HashCodeBuilder(10293, 7).append(x).append(y).append(z).toHashCode();
 	}
 
 	@Override
