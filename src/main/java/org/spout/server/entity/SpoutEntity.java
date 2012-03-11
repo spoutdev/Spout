@@ -92,6 +92,7 @@ public class SpoutEntity implements Entity {
 	boolean observer = false;
 	Thread owningThread = null;
 	Vector3m offset = new Vector3m();
+	float pitch, yaw, roll;
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
@@ -122,10 +123,17 @@ public class SpoutEntity implements Entity {
 	 */
 	public void onTick(float dt) {
 		lastTransform = transform.copy();
+		Vector3 ang = this.transform.getRotation().getAxisAngles();
+		pitch = ang.getZ();
+		yaw = ang.getY();
+		roll = ang.getX();
 
 		if (controller != null) {
 			controller.onTick(dt);
 		}
+		this.rotate(roll, 1, 0, 0);
+		this.rotate(yaw, 0, 1, 0);
+		this.rotate(pitch, 0, 0, 1);
 	}
 
 	/**
@@ -277,32 +285,71 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void roll(float ang) {
-		rotate(ang, 1, 0, 0);
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to roll from another thread!");
+			return;
+		}
+		roll += ang;
 	}
 
 	@Override
 	public void pitch(float ang) {
-		rotate(ang, 0, 0, 1);
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to pitch from another thread!");
+			return;
+		}
+		pitch += ang;
 	}
 
 	@Override
 	public void yaw(float ang) {
-		rotate(ang, 0, 1, 0);
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to yaw from another thread!");
+			return;
+		}
+		yaw += ang;
 	}
 
 	@Override
 	public float getPitch() {
-		return getRotation().getAxisAngles().getZ();
+		return pitch;
 	}
 
 	@Override
 	public float getYaw() {
-		return getRotation().getAxisAngles().getY();
+		return yaw;
 	}
 
 	@Override
 	public float getRoll() {
-		return getRotation().getAxisAngles().getX();
+		return roll;
+	}
+
+	@Override
+	public void setPitch(float ang) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to set pitch from another thread!");
+			return;
+		}
+		pitch = ang;
+	}
+
+	@Override
+	public void setRoll(float ang) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to set scale from another thread!");
+			return;
+		}
+		roll = ang;
+	}
+
+	@Override
+	public void setYaw(float ang) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to set scale from another thread!");
+			return;
+		}
+		yaw = ang;
 	}
 
 //
