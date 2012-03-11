@@ -290,7 +290,6 @@ public class SpoutEntity implements Entity {
 	public void resolve() {
 		//Don't need to do collisions if we have no collision volume
 		if(this.collision == null) return;
-		if(Spout.getGame().debugMode()) Spout.getLogger().info("Doing collision on " + this.getController());
 
 		//Move the collision volume to the new postion
 		this.collision.setPosition(this.getTransform().getPosition());
@@ -318,17 +317,12 @@ public class SpoutEntity implements Entity {
 			}
 		}
 
-		if (colliding.size() > 0)
-			System.out.println("Old: " + lastTransform.getPosition().toString() + " New: " + offset + " Colliding: " + colliding.size());
-
 
 
 
 		location.add(offset);
 		Point old = this.getPoint();
 		this.setPoint(location);
-		if (colliding.size() > 0)
-			System.out.println("Moved from " + old + " to " + this.getPoint() + ". Expected: " + location);
 
 		//Check to see if we should fire off a Move event
 	}
