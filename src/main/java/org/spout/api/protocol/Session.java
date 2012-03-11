@@ -78,6 +78,14 @@ public interface Session {
 	 * @param message The message.
 	 */
 	public void send(Message message);
+	
+	/**
+	 * Sends a message to the client.
+	 *
+	 * @param message The message.
+	 * @param force if this message is used in the identification stages of communication
+	 */
+	public void send(Message message, boolean force);
 
 	/**
 	 * Disconnects the session with the specified reason. This causes a

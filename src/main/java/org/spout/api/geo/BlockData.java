@@ -62,7 +62,7 @@ public interface BlockData {
 	 * @return the block's sky light value
 	 */
 	@LiveRead
-	public short getSkyLight(int x, int y, int z);
+	public byte getSkyLight(int x, int y, int z);
 
 	/**
 	 * Gets the block light value for the block at (x, y, z)
@@ -73,5 +73,5 @@ public interface BlockData {
 	 * @return the block's block light value
 	 */
 	@LiveRead
-	public short getBlockLight(int x, int y, int z);
+	public byte getBlockLight(int x, int y, int z);
 }

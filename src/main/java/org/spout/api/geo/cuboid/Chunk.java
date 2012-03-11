@@ -31,7 +31,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.BlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.player.Player;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -116,13 +115,9 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	/**
 	 * Gets the region that this chunk is located in
 	 *
-	 * @return
+	 * @return region
 	 */
 	public abstract Region getRegion();
-
-	public static Point pointToBase(Point p) {
-		return new Point(p.getWorld(), (int) p.getX() & BASE_MASK, (int) p.getY() & BASE_MASK, (int) p.getZ() & BASE_MASK);
-	}
 
 	/**
 	 * Tests if the chunk is currently loaded
@@ -168,4 +163,8 @@ public abstract class Chunk extends Cube implements BlockAccess {
 	 */
 	@LiveRead
 	public abstract Set<Entity> getLiveEntities();
+	
+	public static Point pointToBase(Point p) {
+		return new Point(p.getWorld(), (int) p.getX() & BASE_MASK, (int) p.getY() & BASE_MASK, (int) p.getZ() & BASE_MASK);
+	}
 }

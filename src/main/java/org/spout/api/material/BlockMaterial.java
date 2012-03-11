@@ -31,7 +31,6 @@ import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 
 public interface BlockMaterial extends ItemMaterial {
-	public void onWorldRender();
 
 	public float getFriction();
 
@@ -41,15 +40,33 @@ public interface BlockMaterial extends ItemMaterial {
 
 	public BlockMaterial setHardness(float hardness);
 
+	public byte getLightLevel();
+
+	public BlockMaterial setLightLevel(byte level);
+
+	/**
+	 * True if no light can pass through this block
+	 * 
+	 * @return opacity
+	 */
 	public boolean isOpaque();
+	
+	/**
+	 * Gets the amount of light blocked by this block.
+	 * 
+	 * 0xF (15) represents a fully opaque block.
+	 * @return opacity
+	 */
+	public byte getOpacity();
 
-	public short getLightLevel();
-
-	public BlockMaterial setLightLevel(short level);
-
-	public short getOpacity();
-
-	public BlockMaterial setOpacity(short level);
+	/**
+	 * Sets the amount of light blocked  by this block.
+	 * 
+	 * 0xF (15) represents a fully opaque block.
+	 * @param level of opacity
+	 * @return this material
+	 */
+	public BlockMaterial setOpacity(byte level);
 
 	/**
 	 * Gets the bounding box area of this material

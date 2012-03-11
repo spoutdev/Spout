@@ -34,8 +34,8 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 	private final BoundingBox area = new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F);
 	private float hardness = 0F;
 	private float friction = 0F;
-	private short opacity = 0x0F;
-	private short lightLevel = 0;
+	private byte opacity = 0xF;
+	private byte lightLevel = 0;
 
 	private GenericBlockMaterial(String name, int id, int data, boolean subtypes) {
 		super(name, id, data, subtypes);
@@ -68,29 +68,25 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 	}
 
 	public boolean isOpaque() {
-		return opacity == 0x0F;
+		return opacity == 0xF;
 	}
 
-	public short getLightLevel() {
+	public byte getLightLevel() {
 		return lightLevel;
 	}
 
-	public short getOpacity() {
+	public byte getOpacity() {
 		return opacity;
 	}
 
-	public BlockMaterial setOpacity(short level) {
-		this.opacity = level;
+	public BlockMaterial setOpacity(byte level) {
+		this.opacity = (byte) (level & 0xF);
 		return this;
 	}
 
-	public BlockMaterial setLightLevel(short level) {
-		lightLevel = level;
+	public BlockMaterial setLightLevel(byte level) {
+		lightLevel = (byte) (level & 0xF);
 		return this;
-	}
-
-	public void onWorldRender() {
-		// TODO Auto-generated method stub
 	}
 
 	public boolean isLiquid() {

@@ -44,13 +44,35 @@ public abstract class ChunkSnapshot extends Cube implements BlockData {
 		super(new Point(world, x, y, z), CHUNK_SIZE);
 	}
 
+	/**
+	 * Gets the raw block ids
+	 * 
+	 * @return raw block ids
+	 */
 	public abstract short[] getBlockIds();
 
+	/**
+	 * Gets the raw block data.
+	 * 
+	 * @return block data
+	 */
 	public abstract short[] getBlockData();
 
-	public abstract short[] getBlockLight();
+	/**
+	 * Gets the raw block light data. <br/><br/> 
+	 * 
+	 * Light is stored in nibbles, with the first index even, the second odd.
+	 * @return raw block light data
+	 */
+	public abstract byte[] getBlockLight();
 
-	public abstract short[] getSkyLight();
+	/**
+	 * Gets the raw sky light data. <br/><br/> 
+	 * 
+	 * Light is stored in nibbles, with the first index even, the second odd.
+	 * @return raw skylight data
+	 */
+	public abstract byte[] getSkyLight();
 
 	/**
 	 * Gets the region that this chunk is located in

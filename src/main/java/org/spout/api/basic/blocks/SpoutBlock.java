@@ -33,6 +33,6 @@ public final class SpoutBlock extends GenericBlockMaterial {
 
 	public SpoutBlock(String name, int id) {
 		super(name, id);
-		setFriction(0.8f).setHardness(1.0F).setLightLevel((short)15);
+		setFriction(0.8f).setHardness(1.0F).setLightLevel((byte)0);
 	}
 }

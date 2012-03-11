@@ -61,7 +61,7 @@ public abstract class HashUtil {
 	 * @return the 4 most significant bits in a byte
 	 */
 	public static byte byteToNibble1(int composite) {
-		return (byte) (composite >> 4 & 0xF);
+		return (byte) ((composite >> 4) & 0xF);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public abstract class HashUtil {
 	 * @return squashed byte
 	 */
 	public static byte nibbleToByte(int key1, int key2) {
-		return (byte) (key1 << 4 | key2 & 0xF);
+		return (byte) (key1 << 4 | (key2 & 0xF));
 	}
 
 }
