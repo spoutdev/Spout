@@ -26,12 +26,15 @@
 package org.spout.server.entity;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.Game;
 import org.spout.api.Spout;
+import org.spout.api.collision.CollisionHelper;
 import org.spout.api.collision.CollisionModel;
+import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -54,6 +57,7 @@ import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.server.SpoutChunk;
 import org.spout.server.SpoutRegion;
 import org.spout.server.SpoutServer;
+import org.spout.server.SpoutWorld;
 import org.spout.server.datatable.SpoutDatatableMap;
 import org.spout.server.datatable.value.SpoutDatatableBool;
 import org.spout.server.datatable.value.SpoutDatatableFloat;
@@ -71,6 +75,7 @@ public class SpoutEntity implements Entity {
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final Transform transform = new Transform();
+	private Transform lastTransform  = transform;
 	private EntityManager entityManager;
 	private EntityManager entityManagerLive;
 	private Controller controller = null;
@@ -264,6 +269,8 @@ public class SpoutEntity implements Entity {
 	 * @param dt milliseconds since the last tick
 	 */
 	public void onTick(float dt) {
+		lastTransform = transform.copy();
+
 		if (controller != null) {
 			controller.onTick(dt);
 		}
@@ -280,6 +287,40 @@ public class SpoutEntity implements Entity {
 	 */
 	public void resolve() {
 		//Resolve Collisions Here
+		final Pointm location = this.getPoint();
+		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
+		
+		Vector3m offset = new Vector3m(lastTransform.getPosition().getX(), lastTransform.getPosition().getY(), lastTransform.getPosition().getZ());
+		offset.subtract(this.getTransform().getPosition());
+		for (CollisionVolume box : colliding) {
+			Vector3 collision = this.collision.resolve(box);
+			if (collision != null) {
+				collision = collision.subtract(location);
+				System.out.println("Collision: " + collision);
+				if (collision.getX() != 0F) {
+					offset.setX(collision.getX());
+				}
+				if (collision.getY() != 0F) {
+					offset.setY(collision.getY());
+				}
+				if (collision.getZ() != 0F) {
+					offset.setZ(collision.getZ());
+				}
+			}
+		}
+
+		if (colliding.size() > 0)
+			System.out.println("Old: " + lastTransform.getPosition().toString() + " New: " + offset + " Colliding: " + colliding.size());
+
+
+
+
+		location.add(offset);
+		Point old = this.getPoint();
+		this.setPoint(location);
+		if (colliding.size() > 0)
+			System.out.println("Moved from " + old + " to " + this.getPoint() + ". Expected: " + location);
+
 		//Check to see if we should fire off a Move event
 	}
 
