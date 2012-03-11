@@ -25,6 +25,7 @@
  */
 package org.spout.api.geo.cuboid;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Pointm;
@@ -69,12 +70,7 @@ public class Cuboid {
 
 	@Override
 	public int hashCode() {
-		int hash = getX();
-		hash += (hash << 5) + getY();
-		hash += (hash << 5) + getZ();
-		hash += (hash << 5) + getWorld().getUID().getLeastSignificantBits();
-		hash += (hash << 5) + getWorld().getUID().getMostSignificantBits();
-		return hash;
+		return new HashCodeBuilder(563, 21).append(base).append(size).toHashCode();
 	}
 
 	@Override

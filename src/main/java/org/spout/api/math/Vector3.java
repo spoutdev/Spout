@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Represents a 3d vector.
  */
@@ -573,11 +575,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 37 * hash + Float.floatToIntBits(x);
-		hash = 37 * hash + Float.floatToIntBits(y);
-		hash = 37 * hash + Float.floatToIntBits(z);
-		return hash;
+		return new HashCodeBuilder(7, 37).append(x).append(y).append(z).toHashCode();
 	}
 
 	@Override

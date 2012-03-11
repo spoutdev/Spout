@@ -25,6 +25,7 @@
  */
 package org.spout.api.geo.discrete;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
 import org.spout.api.math.Vector3;
 
@@ -136,17 +137,7 @@ public class Point extends Vector3 {
 
 	@Override
 	public int hashCode() {
-		int hash = (int) world.getUID().getLeastSignificantBits();
-		hash += (hash << 5) + (int) world.getUID().getMostSignificantBits();
-
-		int xx = (int) (x * 1024);
-		int yy = (int) (y * 1024);
-		int zz = (int) (z * 1024);
-
-		hash += (hash << 5) + xx;
-		hash += (hash << 5) + yy;
-		hash += (hash << 5) + zz;
-		return hash;
+		return new HashCodeBuilder(5033, 61).appendSuper(super.hashCode()).append(world).toHashCode();
 	}
 
 	@Override

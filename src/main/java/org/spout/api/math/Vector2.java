@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * A 2-dimensional vector represented by float-precision x,y coordinates
  *
@@ -545,10 +547,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 59 * hash + Float.floatToIntBits(x);
-		hash = 59 * hash + Float.floatToIntBits(y);
-		return hash;
+		return new HashCodeBuilder(5, 59).append(x).append(y).toHashCode();
 	}
 
 	@Override
