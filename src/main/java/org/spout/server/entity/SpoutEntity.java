@@ -128,7 +128,7 @@ public class SpoutEntity implements Entity {
 		yaw = ang.getY();
 		roll = ang.getX();
 
-		if (controller != null) {
+		if (controller != null && controller.getParent() != null && !isDead()) {
 			controller.onTick(dt);
 		}
 		this.rotate(roll, 1, 0, 0);
