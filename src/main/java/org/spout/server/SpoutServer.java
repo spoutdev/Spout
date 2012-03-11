@@ -102,6 +102,8 @@ import org.spout.server.net.SpoutSession;
 import org.spout.server.net.SpoutSessionRegistry;
 import org.spout.server.player.SpoutPlayer;
 import org.spout.server.scheduler.SpoutScheduler;
+import org.spout.server.util.bans.BanManager;
+import org.spout.server.util.bans.FlatFileBanManager;
 import org.spout.server.util.config.SpoutConfiguration;
 import org.spout.server.util.thread.AsyncManager;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
@@ -200,9 +202,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	private List<String> whitelistedPlayers = new ArrayList<String>();
 
 	/**
-	 * A list of all players who can not log onto this server.
+	 * The server's ban manager
 	 */
-	private List<String> bannedPlayers = new ArrayList<String>();
+	private BanManager banManager = new FlatFileBanManager(this);
 
 	/**
 	 * A folder that holds all of the world data folders inside of it. By
@@ -286,6 +288,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		consoleManager.setupConsole();
 
 		config.load();
+		
+		banManager.load();
 
 		// Start loading plugins
 		loadPlugins();
@@ -671,20 +675,47 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public Collection<String> getIPBans() {
-		// TODO Auto-generated method stub
-		return null;
+		return banManager.getIpBans();
 	}
 
 	@Override
-	public void ban(String address) {
-		// TODO Auto-generated method stub
-
+	public void banIp(String address) {
+		banManager.setIpBanned(address, true);
 	}
 
 	@Override
-	public void unban(String address) {
-		// TODO Auto-generated method stub
+	public void unbanIp(String address) {
+		banManager.setIpBanned(address, false);
+	}
+	
+	@Override
+	public void banPlayer(String player) {
+		banManager.setBanned(player, true);
+	}
 
+	@Override
+	public void unbanPlayer(String player) {
+		banManager.setBanned(player, false);
+	}
+	
+	public boolean isBanned(String player, String address) {
+		return banManager.isBanned(player, address);
+	}
+	
+	public boolean isIpBanned(String address) {
+		return banManager.isIpBanned(address);
+	}
+	
+	public boolean isPlayerBanned(String player) {
+		return banManager.isBanned(player);
+	}
+	
+	public String getBanMessage(String player) {
+		return banManager.getBanMessage(player);
+	}
+	
+	public String getIpBanMessage(String address) {
+		return banManager.getIpBanMessage(address);
 	}
 
 	@Override
@@ -733,12 +764,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	@Override
-	public Collection<Player> getBannedPlayers() {
-		Set<Player> players = new HashSet<Player>();
-		for (String name : bannedPlayers) {
-			players.add(new SpoutPlayer(name));
-		}
-		return players;
+	public Collection<String> getBannedPlayers() {
+		return banManager.getBans();
 	}
 
 	@Override
@@ -937,4 +964,5 @@ public class SpoutServer extends AsyncManager implements Server {
 	public boolean debugMode() {
 		return debugMode;
 	}
+	
 }
