@@ -255,7 +255,9 @@ public class SpoutEntity implements Entity {
 	// TODO - needs to be made thread safe
 	@Override
 	public void setCollision(CollisionModel model) {
+
 		collision = model;
+		if(collision != null) collision.setPosition(this.getTransform().getPosition());
 
 	}
 
@@ -289,6 +291,9 @@ public class SpoutEntity implements Entity {
 		//Don't need to do collisions if we have no collision volume
 		if(this.collision == null) return;
 		if(Spout.getGame().debugMode()) Spout.getLogger().info("Doing collision on " + this.getController());
+
+		//Move the collision volume to the new postion
+		this.collision.setPosition(this.getTransform().getPosition());
 
 		//Resolve Collisions Here
 		final Pointm location = this.getPoint();
