@@ -95,16 +95,12 @@ public class SpoutEntity implements Entity {
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
-		setTransform(transform);
+
 
 		map = new SpoutDatatableMap();
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
 
-		//Sets the cached x, y, z, yaw, pitch, roll, scale values
-		scale = new Vector3m(transform.getScale());
-		updatePosition();
-		updateRotation();
 
 		if (controller != null) {
 			this.controller = controller;
@@ -120,6 +116,197 @@ public class SpoutEntity implements Entity {
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
 		this(server, new Transform(point, Quaternion.identity, Vector3.ONE), controller);
 	}
+
+	/**
+	 * @param dt milliseconds since the last tick
+	 */
+	public void onTick(float dt) {
+		lastTransform = transform.copy();
+
+		if (controller != null) {
+			controller.onTick(dt);
+		}
+	}
+
+	/**
+	 * Called when the tick is finished and collisions need to be resolved and
+	 * move events fired
+	 */
+	public void resolve() {
+		//Don't need to do collisions if we have no collision volume
+		if(this.collision == null) return;
+
+		//Move the collision volume to the new postion
+		this.collision.setPosition(this.transform.getPosition());
+
+		//Resolve Collisions Here
+		final Pointm location = this.transform.getPosition();
+		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
+
+		offset.set(this.lastTransform.getPosition());
+		offset.subtract(this.transform.getPosition());
+		for (CollisionVolume box : colliding) {
+			Vector3 collision = this.collision.resolve(box);
+			if (collision != null) {
+				collision = collision.subtract(location);
+				System.out.println("Collision: " + collision);
+				if (collision.getX() != 0F) {
+					offset.setX(collision.getX());
+				}
+				if (collision.getY() != 0F) {
+					offset.setY(collision.getY());
+				}
+				if (collision.getZ() != 0F) {
+					offset.setZ(collision.getZ());
+				}
+			}
+		}
+
+
+
+
+		location.add(offset);
+		Point old = this.getPosition();
+		this.setPosition(location);
+
+		//Check to see if we should fire off a Move event
+	}
+
+
+
+
+//REGION: Accessors
+	@Override
+	public void translate(Vector3 amount) {
+		//Check if this thread is the calling thread
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
+			return;
+		}
+		this.transform.getPosition().add(amount);
+	}
+
+	@Override
+	public void translate(float x, float y, float z) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
+			return;
+		}
+		this.transform.getPosition().add(x,y,z);
+	}
+
+	@Override
+	public void rotate(float ang, float x, float y, float z) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
+			return;
+		}
+		this.transform.getRotation().rotate(ang,x,y,z);
+	}
+
+	@Override
+	public void rotate(Quaternion rot) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
+			return;
+		}
+		this.transform.getRotation().multiply(rot);
+	}
+
+	@Override
+	public void scale(Vector3 amount) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to scale from another thread!");
+			return;
+		}
+		this.transform.getScale().multiply(amount);
+	}
+
+	@Override
+	public void scale(float x, float y, float z) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to scale from another thread!");
+			return;
+		}
+		this.transform.getScale().multiply(x,y,z);
+	}
+
+
+	@Override
+	public Point getPosition() {
+		return transform.getPosition();
+	}
+
+	@Override
+	public Quaternion getRotation() {
+		return transform.getRotation();
+	}
+
+	@Override
+	public Vector3 getScale() {
+		return this.transform.getScale();
+	}
+
+	@Override
+	public void setPosition(Point position) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to set position from another thread!");
+			return;
+		}
+		this.transform.setPosition(position);
+	}
+
+	@Override
+	public void setRotation(Quaternion rotation) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to set rotation from another thread!");
+			return;
+		}
+		this.transform.setRotation(rotation);
+	}
+
+	@Override
+	public void setScale(Vector3 scale) {
+		if(this.owningThread != Thread.currentThread()){
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to set scale from another thread!");
+			return;
+		}
+		this.transform.setScale(scale);
+	}
+
+
+	@Override
+	public void roll(float ang) {
+		rotate(ang, 1, 0, 0);
+	}
+
+	@Override
+	public void pitch(float ang) {
+		rotate(ang, 0, 0, 1);
+	}
+
+	@Override
+	public void yaw(float ang) {
+		rotate(ang, 0, 1, 0);
+	}
+
+	@Override
+	public float getPitch() {
+		return getRotation().getAxisAngles().getZ();
+	}
+
+	@Override
+	public float getYaw() {
+		return getRotation().getAxisAngles().getY();
+	}
+
+	@Override
+	public float getRoll() {
+		return getRotation().getAxisAngles().getX();
+	}
+
+//
+
 
 	@Override
 	public int getId() {
@@ -175,44 +362,6 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	public Transform getTransform() {
-		return transform;
-	}
-
-	public void setTransform(Transform transform) {
-		int seq = lock.writeLock();
-		try {
-			while (true) {
-				int seqRead = transform.readLock();
-				Point newPosition = transform.getPosition();
-
-				World world = newPosition.getWorld();
-				if (world == null) {
-					chunkLive = null;
-					transform.set(DEAD);
-					entityManagerLive = null;
-					return;
-				}
-				chunkLive = newPosition.getWorld().getChunk(newPosition);
-				Region newRegion = chunkLive.getRegion();
-
-				// TODO - entity moved into unloaded chunk - what happens for normal entities?
-				if (newRegion == null && getController() instanceof PlayerController) {
-					newRegion = newPosition.getWorld().getRegion(newPosition, true);
-				}
-				EntityManager newEntityManager = ((SpoutRegion) newRegion).getEntityManager();
-
-				this.transform.set(transform);
-				entityManagerLive = newEntityManager;
-				if (transform.readUnlock(seqRead)) {
-					return;
-				}
-			}
-
-		} finally {
-			lock.writeUnlock(seq);
-		}
-	}
 
 	// TODO - make actually atomic, rather than just threadsafe
 	@Override
@@ -259,7 +408,7 @@ public class SpoutEntity implements Entity {
 	public void setCollision(CollisionModel model) {
 
 		collision = model;
-		if(collision != null) collision.setPosition(this.getTransform().getPosition());
+		if(collision != null) collision.setPosition(this.transform.getPosition());
 
 	}
 
@@ -269,65 +418,14 @@ public class SpoutEntity implements Entity {
 		return collision;
 	}
 
-	/**
-	 * @param dt milliseconds since the last tick
-	 */
-	public void onTick(float dt) {
-		lastTransform = transform.copy();
 
-		if (controller != null) {
-			controller.onTick(dt);
-		}
-	}
 
 	@Override
 	public boolean isSpawned() {
 		return id != NOTSPAWNEDID;
 	}
 
-	/**
-	 * Called when the tick is finished and collisions need to be resolved and
-	 * move events fired
-	 */
-	public void resolve() {
-		//Don't need to do collisions if we have no collision volume
-		if(this.collision == null) return;
 
-		//Move the collision volume to the new postion
-		this.collision.setPosition(this.getTransform().getPosition());
-
-		//Resolve Collisions Here
-		final Pointm location = this.getPoint();
-		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
-	
-		offset.set(this.lastTransform.getPosition());
-		offset.subtract(this.getTransform().getPosition());
-		for (CollisionVolume box : colliding) {
-			Vector3 collision = this.collision.resolve(box);
-			if (collision != null) {
-				collision = collision.subtract(location);
-				System.out.println("Collision: " + collision);
-				if (collision.getX() != 0F) {
-					offset.setX(collision.getX());
-				}
-				if (collision.getY() != 0F) {
-					offset.setY(collision.getY());
-				}
-				if (collision.getZ() != 0F) {
-					offset.setZ(collision.getZ());
-				}
-			}
-		}
-
-
-
-
-		location.add(offset);
-		Point old = this.getPoint();
-		this.setPoint(location);
-
-		//Check to see if we should fire off a Move event
-	}
 
 	@Override
 	public void finalizeRun() {
@@ -375,9 +473,7 @@ public class SpoutEntity implements Entity {
 		controller = controllerLive;
 		justSpawned = false;
 		viewDistance = viewDistanceLive.get();
-		updatePosition();
-		updateRotation();
-		updateScale();
+
 	}
 
 	@Override
@@ -386,7 +482,7 @@ public class SpoutEntity implements Entity {
 		if (world == null) {
 			return null;
 		} else {
-			return world.getChunkFromBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+			return world.getChunkFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
 		}
 	}
 
@@ -414,7 +510,7 @@ public class SpoutEntity implements Entity {
 		if (world == null) {
 			return null;
 		} else {
-			return world.getRegionFromBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+			return world.getRegionFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
 		}
 	}
 
@@ -541,264 +637,7 @@ public class SpoutEntity implements Entity {
 	public int getPrevViewDistance() {
 		return viewDistance;
 	}
-	float x, y, z, yaw, pitch, roll;
-	final Vector3m scale;
-	boolean posModified = false, yawModified = false, pitchModified = false,
-			rollModified = false, scaleModified = false;
-	//Locking is done to prevent tearing, not to provide access to live values
-	final ReentrantReadWriteLock stateLock = new ReentrantReadWriteLock();
 
-	@Override
-	public float getX() {
-		stateLock.readLock().lock();
-		try {
-			return x;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public float getY() {
-		stateLock.readLock().lock();
-		try {
-			return y;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public float getZ() {
-		stateLock.readLock().lock();
-		try {
-			return z;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public Pointm getPoint() {
-		stateLock.readLock().lock();
-		try {
-			return new Pointm(getWorld(), x, y, z);
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public void setPoint(Point p) {
-		setPoint(p.getX(), p.getY(), p.getZ());
-	}
-
-	@Override
-	public void setPoint(float x, float y, float z) {
-		stateLock.writeLock().lock();
-		try {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			posModified = true;
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public void setPosition(Point p, float pitch, float yaw, float roll) {
-		stateLock.writeLock().lock();
-		try {
-			x = p.getX();
-			y = p.getY();
-			z = p.getZ();
-			this.pitch = pitch;
-			pitchModified = true;
-			this.yaw = yaw;
-			yawModified = true;
-			this.roll = roll;
-			rollModified = true;
-			posModified = true;
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public void setPosition(Entity other) {
-		setPosition(other.getPoint(), other.getPitch(), other.getYaw(), other.getRoll());
-	}
-
-	@Override
-	public void setPosition(Position pos) {
-		setPosition(pos.getPosition(), pos.getPitch(), pos.getYaw(), pos.getRoll());
-	}
-
-	@Override
-	public Position getPosition() {
-		stateLock.readLock().lock();
-		try {
-			return new Position(new Point(getWorld(), x, y, z), pitch, yaw, roll);
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	/**
-	 * Called when the game finalizes the position from any movement or
-	 * collision calculations, and updates the cache.
-	 *
-	 * If the API has modified the position, it will use the modified value
-	 * instead of the calculated value.
-	 */
-	public void updatePosition() {
-		stateLock.writeLock().lock();
-		try {
-			Pointm position = transform.getPosition();
-			if (!posModified) {
-				x = position.getX();
-				y = position.getY();
-				z = position.getZ();
-			} else {
-				posModified = false;
-				position.setX(x);
-				position.setY(y);
-				position.setZ(z);
-			}
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public float getYaw() {
-		stateLock.readLock().lock();
-		try {
-			return yaw;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public void setYaw(float yaw) {
-		stateLock.writeLock().lock();
-		try {
-			this.yaw = yaw;
-			yawModified = true;
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	/**
-	 * Called when the game finalizes the rotation from any movement or
-	 * collision calculations, and updates the cache. <br/> <br/> If the API has
-	 * modified the yaw, pitch, or scale, it will use the modified value instead
-	 * of the calculated value.
-	 */
-	public void updateRotation() {
-		stateLock.writeLock().lock();
-		try {
-			Quaternionm rotation = transform.getRotation();
-			Vector3 axisAngles = rotation.getAxisAngles();
-			if (!yawModified) {
-				yaw = axisAngles.getY();
-			}
-			if (!pitchModified) {
-				pitch = axisAngles.getZ();
-			}
-			if (!rollModified) {
-				roll = axisAngles.getX();
-			}
-			yawModified = pitchModified = rollModified = false;
-			rotation.set(Quaternion.identity);
-			rotation.rotate(roll, 1, 0, 0);
-			rotation.rotate(yaw, 0, 1, 0);
-			rotation.rotate(pitch, 0, 0, 1);
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public float getPitch() {
-		stateLock.readLock().lock();
-		try {
-			return pitch;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public void setPitch(float pitch) {
-		stateLock.writeLock().lock();
-		try {
-			this.pitch = pitch;
-			pitchModified = true;
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public float getRoll() {
-		stateLock.readLock().lock();
-		try {
-			return roll;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public void setRoll(float roll) {
-		stateLock.writeLock().lock();
-		try {
-			this.roll = roll;
-			rollModified = true;
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	public void updateScale() {
-		stateLock.writeLock().lock();
-		try {
-			Vector3m lscale = transform.getScale();
-			if (!scaleModified) {
-				this.scale.set(lscale);
-			} else {
-				scaleModified = false;
-				lscale.set(this.scale);
-			}
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public Vector3 getScale() {
-		stateLock.readLock().lock();
-		try {
-			return scale;
-		} finally {
-			stateLock.readLock().unlock();
-		}
-	}
-
-	@Override
-	public void setScale(Vector3 scale) {
-		stateLock.writeLock().lock();
-		try {
-			this.scale.set(scale);
-			scaleModified = true;
-		} finally {
-			stateLock.writeLock().unlock();
-		}
-	}
 
 	@Override
 	public void setObserver(boolean obs) {
@@ -811,43 +650,9 @@ public class SpoutEntity implements Entity {
 		return observer;
 	}
 
-	@Override
-	public void translate(Vector3 amount) {
-		//Check if this thread is the calling thread
-		if(this.owningThread != Thread.currentThread()){
-			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
-			return;
-		}
-		this.transform.getPosition().add(amount);
-	}
 
-	@Override
-	public void translate(float x, float y, float z) {
-		if(this.owningThread != Thread.currentThread()){
-			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
-			return;
-		}
-		this.transform.getPosition().add(x,y,z);
-	}
 
-	@Override
-	public void rotate(float ang, float x, float y, float z) {
-		if(this.owningThread != Thread.currentThread()){
-			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
-			return;
-		}
-		this.transform.getRotation().rotate(ang,x,y,z);
-	}
 
-	@Override
-	public void rotate(Quaternion rot) {
-		if(this.owningThread != Thread.currentThread()){
-			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
-			return;
-		}
-		this.transform.getRotation().multiply(rot);
-	}
-	
 	public void setOwningThread(Thread thread){
 		this.owningThread = thread;
 	}
