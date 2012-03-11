@@ -27,10 +27,8 @@ package org.spout.api;
 
 import java.io.File;
 import java.net.SocketAddress;
-import java.util.Collection;
 
 import org.spout.api.geo.World;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
@@ -130,36 +128,6 @@ public interface Server extends Game {
 	 */
 	@SnapshotRead
 	public World getDefaultWorld();
-
-	/**
-	 * Gets a collection of all banned IP's, in string format.
-	 *
-	 * @return banned IP addresses
-	 */
-	public Collection<String> getIPBans();
-
-	/**
-	 * Adds the address to the ban list. Any players that log in with the
-	 * address will be unable to join.
-	 *
-	 * @param address to ban
-	 */
-	public void ban(String address);
-
-	/**
-	 * Removes the address from the ban list. If the address was not on the ban
-	 * list, nothing happens.
-	 *
-	 * @param address to unban
-	 */
-	public void unban(String address);
-
-	/**
-	 * Returns a collection of all banned players
-	 *
-	 * @return banned players
-	 */
-	public Collection<Player> getBannedPlayers();
 
 	/**
 	 * Gets the server's configuration directory
