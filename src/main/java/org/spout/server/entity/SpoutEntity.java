@@ -110,6 +110,7 @@ public class SpoutEntity implements Entity {
 			this.controller = controller;
 			setController(controller);
 		}
+
 	}
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
@@ -845,5 +846,9 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		this.transform.getRotation().multiply(rot);
+	}
+	
+	public void setOwningThread(Thread thread){
+		this.owningThread = thread;
 	}
 }

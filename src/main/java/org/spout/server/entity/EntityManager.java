@@ -39,6 +39,7 @@ import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
+import org.spout.server.SpoutRegion;
 import org.spout.server.datatable.SpoutDatatableMap;
 import org.spout.server.player.SpoutPlayer;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
@@ -139,6 +140,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
 			getRawAll(entity.getController().getClass()).add(entity);
+			entity.setOwningThread(((SpoutRegion)entity.getRegionLive()).getExceutionThread());
 			return currentId;
 		} else {
 			int id = nextId.getAndIncrement();
@@ -151,6 +153,8 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			if (controller != null) {
 				getRawAll(controller.getClass()).add(entity);
 			}
+			entity.setOwningThread(((SpoutRegion)entity.getRegionLive()).getExceutionThread());
+
 			return id;
 		}
 	}

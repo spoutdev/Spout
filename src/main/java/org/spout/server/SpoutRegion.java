@@ -670,4 +670,9 @@ public class SpoutRegion extends Region {
 	public String toString() {
 		return "SpoutRegion{ ( " + x + ", " + y + ", " + z + "), World: " + this.getWorld() + "}";
 	}
+	
+	public Thread getExceutionThread(){
+
+		return ((ThreadAsyncExecutor)manager.getExecutor());
+	}
 }
