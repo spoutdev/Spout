@@ -61,6 +61,7 @@ public class ConfigurationNode {
 			return value;
 		}
 		
+		this.setValue(def, true);
 		return def;
 	}
 	
@@ -116,6 +117,9 @@ public class ConfigurationNode {
 			return (String) value;
 		}
 		
+		if(value == null) {
+			this.setValue(def, true);
+		}
 		return def;
 	}
 	
@@ -137,6 +141,10 @@ public class ConfigurationNode {
 		Integer i = MathHelper.castInt(value);
 		if (i != null) {
 			return i;
+		}
+
+		if(value == null) {
+			this.setValue(def, true);
 		}
 		
 		return def;
@@ -161,6 +169,10 @@ public class ConfigurationNode {
 		if (d != null) {
 			return d;
 		}
+
+		if(value == null) {
+			this.setValue(def, true);
+		}
 		
 		return def;
 	}
@@ -184,6 +196,10 @@ public class ConfigurationNode {
 		if (b != null) {
 			return b;
 		}
+
+		if(value == null) {
+			this.setValue(def, true);
+		}
 		
 		return def;
 	}
@@ -206,6 +222,10 @@ public class ConfigurationNode {
 	public List<Object> getList(List<Object> def) {
 		if (value != null && value instanceof List) {
 			return (List<Object>) value;
+		}
+
+		if(value == null) {
+			this.setValue(def, true);
 		}
 		
 		return def;
@@ -235,6 +255,7 @@ public class ConfigurationNode {
 			
 			return list;
 		}
+
 		return def;
 	}
 	
@@ -265,6 +286,7 @@ public class ConfigurationNode {
 			
 			return list;
 		}
+
 		return def;
 	}
 	
@@ -295,6 +317,7 @@ public class ConfigurationNode {
 			
 			return list;
 		}
+
 		return def;
 	}
 	
@@ -325,6 +348,7 @@ public class ConfigurationNode {
 			
 			return list;
 		}
+
 		return def;
 	}
 }
