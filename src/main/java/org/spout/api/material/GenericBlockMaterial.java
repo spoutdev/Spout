@@ -25,8 +25,10 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.Source;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.geo.World;
+import org.spout.api.material.block.BlockFace;
 
 public class GenericBlockMaterial extends GenericItemMaterial implements BlockMaterial {
 	private final BoundingBox area = new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F);
@@ -110,5 +112,9 @@ public class GenericBlockMaterial extends GenericItemMaterial implements BlockMa
 
 	public void onDestroy(World world, int x, int y, int z) {
 
+	}
+
+	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source) {
+		return world.setBlockIdAndData(x, y, z, (short) this.getId(), data, true, source);
 	}
 }
