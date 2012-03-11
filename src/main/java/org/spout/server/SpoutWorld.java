@@ -497,8 +497,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		final LinkedList<CollisionVolume> colliding = new LinkedList<CollisionVolume>();
 
 		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
-		final BoundingBox position = new BoundingBox((BoundingBox)model.getVolume());
-		position.offset(minX, minY, minZ);
 
 		for (int dx = minX; dx < maxX; dx++) {
 			for (int dy = minY - 1; dy < maxY; dy++) {
@@ -506,7 +504,7 @@ public class SpoutWorld extends AsyncManager implements World {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
 					mutable.set((BoundingBox)material.getBoundingArea());
 					mutable.offset(dx, dy, dz);
-					if (mutable.intersects(position)) {
+					if (mutable.intersects(model.getVolume())) {
 						colliding.add(mutable.clone());
 					}
 				}
