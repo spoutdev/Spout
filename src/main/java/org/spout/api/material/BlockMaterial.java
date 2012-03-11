@@ -25,8 +25,10 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.Source;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.geo.World;
+import org.spout.api.material.block.BlockFace;
 
 public interface BlockMaterial extends ItemMaterial {
 	public void onWorldRender();
@@ -83,4 +85,19 @@ public interface BlockMaterial extends ItemMaterial {
 	 * @param z coordinate for this material
 	 */
 	public void onDestroy(World world, int x, int y, int z);
+	
+	/**
+	 * Called when this block is placed.
+	 *
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 * @param data block data to use during placement
+	 * @param against face against the block is placed
+	 * @param source source of this placement
+	 * @return true if placement is handled
+	 */
+	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source);
+	
 }
