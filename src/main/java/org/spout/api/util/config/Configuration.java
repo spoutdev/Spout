@@ -32,8 +32,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.spout.api.exception.ConfigurationException;
@@ -109,11 +111,24 @@ public class Configuration extends MemoryConfiguration {
 			}
 
 			in = new BufferedReader(new FileReader(file));
+			List<String> header = new ArrayList<String>();
+			boolean inHeader = true;
 			String str;
 			StringBuilder buffer = new StringBuilder(10000);
 			while ((str = in.readLine()) != null) {
+				if (inHeader) {
+					if (str.trim().startsWith("#")) {
+						header.add(str.trim().substring(1).trim());
+					} else {
+						inHeader = false;
+					}
+				}
 				buffer.append(str.replaceAll("\t", "    "));
 				buffer.append('\n');
+			}
+
+			if (header.size() > 0) {
+				setHeader(header.toArray(new String[header.size()]));
 			}
 
 			read(yaml.load(new StringReader(buffer.toString())));
@@ -174,7 +189,6 @@ public class Configuration extends MemoryConfiguration {
 	/**
 	 * Saves the configuration to disk. All errors are clobbered.
 	 *
-	 * @param header header to prepend
 	 * @return true if it was successful
 	 */
 	public boolean save() {
@@ -193,11 +207,11 @@ public class Configuration extends MemoryConfiguration {
 				writer.append(header);
 				writer.append("\r\n");
 			}
-			
+
 			for (ConfigurationNode node : nodes) {
 				node.setConfiguration(this);
 			}
-			
+
 			yaml.dump(root, writer);
 			return true;
 		} catch (IOException e) {

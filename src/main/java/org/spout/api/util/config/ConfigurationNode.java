@@ -30,7 +30,7 @@ import java.util.List;
 import org.spout.api.math.MathHelper;
 
 public class ConfigurationNode {
-	
+
 	private final String path;
 	protected MemoryConfiguration config;
 	private Object value;
@@ -41,34 +41,34 @@ public class ConfigurationNode {
 		this.def = def;
 		this.value = def;
 	}
-	
+
 	/**
 	 * Gets the final path of the node.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String getPath() {
 		return path;
 	}
-	
+
 	/**
 	 * Gets the current value of the node.
-	 * 
+	 *
 	 * @return the value of the node.
 	 */
 	public Object getValue() {
 		if (value != null) {
 			return value;
 		}
-		
+
 		this.setValue(def, true);
 		return def;
 	}
-	
+
 	/**
-	 * Sets the un-staged value of the node. The actually configuration will not be updated until 'MemoryConfiguration.setProperty()' 
-	 * 
-	 * @param value 
+	 * Sets the un-staged value of the node. The actually configuration will not be updated until 'MemoryConfiguration.setProperty()'
+	 *
+	 * @param value
 	 */
 	public void setValue(Object value, boolean toMemoryConfig) {
 		this.value = value;
@@ -76,11 +76,11 @@ public class ConfigurationNode {
 			config.addNode(this);
 		}
 	}
-	
+
 	/**
 	 * Sets the default value of the node.
-	 * 
-	 * @param default object
+	 *
+	 * @param def object
 	 */
 	public void setDefaultValue(Object def) {
 		this.def = def;
@@ -88,53 +88,52 @@ public class ConfigurationNode {
 			this.value = def;
 		}
 	}
-	
+
 	/**
 	 * Sets the configuration the node will be saved to.
-	 * 
-	 * @param config 
+	 *
+	 * @param config
 	 */
 	public void setConfiguration(MemoryConfiguration config) {
 		config.addNode(this);
 	}
-	
+
 	/**
 	 * Returns a string from the value, null if not a string.
-	 * 
+	 *
 	 * @return string
 	 */
 	public String getString() {
 		return getString(null);
 	}
-	
+
 	/**
 	 * Returns a string from the value, default value if not a string.
-	 * 
+	 *
 	 * @return string
 	 */
 	public String getString(String def) {
-		if (value instanceof String) {
-			return (String) value;
-		}
-		
-		if(value == null) {
+
+		if (value == null) {
 			this.setValue(def, true);
+		} else {
+			return value.toString();
 		}
 		return def;
 	}
-	
+
 	/**
 	 * Returns a integer from the value, null if not a integer.
-	 * 
+	 *
 	 * @return integer
 	 */
 	public int getInteger() {
 		return getInteger(0);
 	}
-	
+
 	/**
 	 * Returns a integer from the value, default value if not a integer.
-	 * 
+	 *
 	 * @return integer
 	 */
 	public int getInteger(int def) {
@@ -146,22 +145,21 @@ public class ConfigurationNode {
 		if(value == null) {
 			this.setValue(def, true);
 		}
-		
 		return def;
 	}
-	
+
 	/**
 	 * Returns a double from the value, null if not a double.
-	 * 
+	 *
 	 * @return double
 	 */
 	public double getDouble() {
 		return getDouble(0);
 	}
-	
+
 	/**
 	 * Returns a double from the value, default value if not a double.
-	 * 
+	 *
 	 * @return double
 	 */
 	public double getDouble(double def) {
@@ -170,25 +168,24 @@ public class ConfigurationNode {
 			return d;
 		}
 
-		if(value == null) {
+		if (value == null) {
 			this.setValue(def, true);
 		}
-		
 		return def;
 	}
-	
+
 	/**
 	 * Returns a boolean from the value, null if not a boolean.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean getBoolean() {
 		return getBoolean(false);
 	}
-	
+
 	/**
 	 * Returns a boolean from the value, default value if not a boolean.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean getBoolean(boolean def) {
@@ -197,26 +194,25 @@ public class ConfigurationNode {
 			return b;
 		}
 
-		if(value == null) {
+		if (value == null) {
 			this.setValue(def, true);
 		}
-		
 		return def;
 	}
-	
-	
+
+
 	/**
 	 * Returns a list from the value, null if not a list.
-	 * 
+	 *
 	 * @return list
 	 */
 	public List<Object> getList() {
 		return getList(null);
 	}
-	
+
 	/**
 	 * Returns a list from the value, default value if not a list.
-	 * 
+	 *
 	 * @return list
 	 */
 	public List<Object> getList(List<Object> def) {
@@ -224,25 +220,24 @@ public class ConfigurationNode {
 			return (List<Object>) value;
 		}
 
-		if(value == null) {
+		if (value == null) {
 			this.setValue(def, true);
 		}
-		
 		return def;
 	}
-	
+
 	/**
 	 * Returns a string list from the value, null if not a string list.
-	 * 
+	 *
 	 * @return string list
 	 */
 	public List<String> getStringList() {
 		return getStringList(null);
 	}
-	
+
 	/**
 	 * Returns a string list from the value, default value if not a string list.
-	 * 
+	 *
 	 * @return string list
 	 */
 	public List<String> getStringList(List<String> def) {
@@ -252,25 +247,25 @@ public class ConfigurationNode {
 			for (Object obj : raw) {
 				list.add(obj.toString());
 			}
-			
+
 			return list;
 		}
 
 		return def;
 	}
-	
+
 	/**
 	 * Returns a integer list from the value, null if not a integer list.
-	 * 
+	 *
 	 * @return integer list
 	 */
 	public List<Integer> getIntegerList() {
 		return getIntegerList(null);
 	}
-	
+
 	/**
 	 * Returns a integer list from the value, default value if not a integer list.
-	 * 
+	 *
 	 * @return integer list
 	 */
 	public List<Integer> getIntegerList(List<Integer> def) {
@@ -283,25 +278,25 @@ public class ConfigurationNode {
 					list.add(i);
 				}
 			}
-			
+
 			return list;
 		}
 
 		return def;
 	}
-	
+
 	/**
 	 * Returns a double list from the value, null if not a double list.
-	 * 
+	 *
 	 * @return double list
 	 */
 	public List<Double> getDoubleList() {
 		return getDoubleList(null);
 	}
-	
+
 	/**
 	 * Returns a double list from the value, default value if not a double list.
-	 * 
+	 *
 	 * @return double list
 	 */
 	public List<Double> getDoubleList(List<Double> def) {
@@ -314,25 +309,25 @@ public class ConfigurationNode {
 					list.add(i);
 				}
 			}
-			
+
 			return list;
 		}
 
 		return def;
 	}
-	
+
 	/**
 	 * Returns a boolean list from the value, null if not a boolean list.
-	 * 
+	 *
 	 * @return boolean list
 	 */
 	public List<Boolean> getBooleanList() {
 		return getBooleanList(null);
 	}
-	
+
 	/**
 	 * Returns a boolean list from the value, default value if not a boolean list.
-	 * 
+	 *
 	 * @return boolean list
 	 */
 	public List<Boolean> getBooleanList(List<Boolean> def) {
@@ -345,7 +340,7 @@ public class ConfigurationNode {
 					list.add(b);
 				}
 			}
-			
+
 			return list;
 		}
 
