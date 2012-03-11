@@ -126,6 +126,9 @@ public class CollisionModel implements CollisionVolume {
 	public Vector3 getPosition() {
 		return origin;
 	}
-	
+
+	public void setPosition(Vector3 position) {
+		this.origin = position;
+	}
 	
 }
