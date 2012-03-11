@@ -54,11 +54,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	private final short[] blockData;
 
-	private final short[] blockLight;
+	private final byte[] blockLight;
 
-	private final short[] skyLight;
+	private final byte[] skyLight;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, short[] blockLight, short[] skyLight, boolean entities) {
+	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
 		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
@@ -93,13 +93,23 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public short getSkyLight(int x, int y, int z) {
-		return skyLight[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
+	public byte getSkyLight(int x, int y, int z) {
+		int index = (y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask;
+		byte light = skyLight[index / 2];
+		if ((index & 1) == 0) {
+			return (byte)((light >> 4) & 0xF);
+		}
+		return (byte)(light & 0xF);
 	}
 
 	@Override
-	public short getBlockLight(int x, int y, int z) {
-		return blockLight[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
+	public byte getBlockLight(int x, int y, int z) {
+		int index = (y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask;
+		byte light = blockLight[index / 2];
+		if ((index & 1) == 0) {
+			return (byte)((light >> 4) & 0xF);
+		}
+		return (byte)(light & 0xF);
 	}
 
 	@Override
@@ -130,12 +140,12 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public short[] getBlockLight() {
+	public byte[] getBlockLight() {
 		return blockLight;
 	}
 
 	@Override
-	public short[] getSkyLight() {
+	public byte[] getSkyLight() {
 		return skyLight;
 	}
 }

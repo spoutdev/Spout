@@ -386,12 +386,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public short getSkyLight(int x, int y, int z) {
+	public byte getSkyLight(int x, int y, int z) {
 		return getChunkFromBlock(x, y, z).getSkyLight(x, y, z);
 	}
 
 	@Override
-	public short getBlockLight(int x, int y, int z) {
+	public byte getBlockLight(int x, int y, int z) {
 		return getChunkFromBlock(x, y, z).getBlockLight(x, y, z);
 	}
 

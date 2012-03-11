@@ -39,7 +39,6 @@ import org.spout.api.Spout;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
-import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
@@ -47,7 +46,6 @@ import org.spout.api.geo.cuboid.Blockm;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -79,8 +77,15 @@ public class SpoutRegion extends Region {
 	 */
 	private final int x, y, z;
 
-	private final int POPULATE_PER_TICK = 5;
-
+	/**
+	 * The maximum number of chunks that will be processed for population each tick.
+	 */
+	private static final int POPULATE_PER_TICK = 5;
+	
+	/**
+	 * The maximum number of chunks that will be processed for lighting updates each tick.
+	 */
+	private static final int LIGHT_PER_TICK = 5;
 
 	/**
 	 * The source of this region
@@ -120,7 +125,15 @@ public class SpoutRegion extends Region {
 	private final int blockCoordMask;
 
 	private final int blockShifts;
+	
+	/**
+	 * A queue of chunks that have columns of light that need to be recalculated
+	 */
+	private final Queue<SpoutChunk> lightingQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 
+	/**
+	 * A queue of chunks that need to be populated
+	 */
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 
 	private final Queue<Entity> spawnQueue = new ConcurrentLinkedQueue<Entity>();
@@ -363,7 +376,6 @@ public class SpoutRegion extends Region {
 		if (empty) {
 			source.removeRegion(this);
 		}
-
 	}
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
@@ -384,11 +396,17 @@ public class SpoutRegion extends Region {
 		return empty;
 	}
 
-	public void queueChunkForPopulation(Chunk c) {
-		if (populationQueue.contains(c)) return; //Ignore this chunk if we are already populating it.
-		populationQueue.add(c);
+	protected void queueChunkForPopulation(Chunk c) {
+		if (!populationQueue.contains(c)) {
+			populationQueue.add(c);
+		}
 	}
-
+	
+	protected void queueLighting(SpoutChunk c) {
+		if (!lightingQueue.contains(c)) {
+			lightingQueue.add(c);
+		}
+	}
 
 	public void addEntity(Entity e) {
 		if (spawnQueue.contains(e)) return;
@@ -464,14 +482,21 @@ public class SpoutRegion extends Region {
 						}
 					}
 				}
+				
+				for(int i = 0; i < LIGHT_PER_TICK; i++) {
+					SpoutChunk toLight = lightingQueue.poll();
+					if (toLight == null) break;
+					if (toLight.isLoaded()) {
+						toLight.processQueuedLighting();
+					}
+				}
 
 				for(int i = 0; i < POPULATE_PER_TICK; i++) {
 					Chunk toPopulate = populationQueue.poll();
 					if (toPopulate == null) break;
-					if (toPopulate.isLoaded()){
+					if (toPopulate.isLoaded()) {
 						toPopulate.populate();
 					}
-
 				}
 
 
@@ -526,25 +551,26 @@ public class SpoutRegion extends Region {
 	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity){
 		SpoutPlayer player = (SpoutPlayer)((PlayerController) entity.getController()).getPlayer();
 		NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
-		if (!chunk.isDirtyOverflow()) {
-			for (int i = 0; true; i++) {
-				Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
-				if (block == null) {
-					break;
-				} else {
-					try {
-						synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
-					} catch (Exception e) {
-						Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-
+		if (synchronizer != null) {
+			if (!chunk.isDirtyOverflow()) {
+				for (int i = 0; true; i++) {
+					Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
+					if (block == null) {
+						break;
+					} else {
+						try {
+							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
+						} catch (Exception e) {
+							Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
+	
+						}
 					}
 				}
+	
+			} else {
+				synchronizer.sendChunk(chunk);
 			}
-
-		} else {
-			synchronizer.sendChunk(chunk);
 		}
-
 	}
 
 	public void preSnapshotRun() throws InterruptedException {

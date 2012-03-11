@@ -54,7 +54,6 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
-import org.spout.api.util.map.concurrent.AtomicShortArray;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
@@ -102,11 +101,13 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Stores a short value of the sky light
+	 * 
+	 * Note: These do not need to be thread-safe as long as only one thread (the region)
+	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
-	//TODO: short? WHY?
-	private final AtomicShortArray skyLight;
-	private final AtomicShortArray blockLight;
-	
+	private final byte[] skyLight;
+	private final byte[] blockLight;
+
 	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
 	 */
@@ -127,17 +128,17 @@ public class SpoutChunk extends Chunk {
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, initial);
 		populated = new SnapshotableBoolean(snapshotManager, false);
-		skyLight = new AtomicShortArray(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
-		blockLight = new AtomicShortArray(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+		skyLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		byte sky;
+		for (int i = 0; i < skyLight.length; i++) {
+			sky = 0;
+			//sky |= (initial[i * 2] == 0 ? 0xF0 : 0);
+			//sky |= (initial[i * 2 + 1] == 0 ? 0xF : 0);
+			skyLight[i] = sky;
+		}
+		blockLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue  = new TByteHashSet();
-		
-		//Recalculate lighting
-		for (int dx = CHUNK_SIZE - 1; dx >= 0; --dx) {
-			for (int dz = CHUNK_SIZE - 1; dz >= 0; --dz) {
-				recalculateLighting(dx, dz, true, true);
-			}
-		}
 	}
 
 	public SpoutWorld getWorld() {
@@ -191,8 +192,10 @@ public class SpoutChunk extends Chunk {
 			throw new NullPointerException("Source can not be null");
 		}
 		checkChunkLoaded();
+		BlockMaterial previous = getBlockMaterial(x, y, z);
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
-
+		BlockMaterial current = MaterialData.getBlock(id, data);
+		
 		//do neighbor updates
 		if (updatePhysics) {
 			updatePhysics(x, y, z);
@@ -209,7 +212,11 @@ public class SpoutChunk extends Chunk {
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
-		updateLighting(x, y, z);
+		boolean sky = previous.getOpacity() != current.getOpacity();
+		boolean block = previous.getLightLevel() != current.getLightLevel();
+		if (sky || block) {
+			this.queueLightUpdate(x & coordMask, z & coordMask, sky, block);
+		}
 		return true;
 	}
 
@@ -236,15 +243,25 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public short getSkyLight(int x, int y, int z) {
+	public byte getSkyLight(int x, int y, int z) {
 		checkChunkLoaded();
-		return skyLight.get(toIndex(x & coordMask, y & coordMask, z & coordMask));
+		int index = toIndex(x & coordMask, y & coordMask, z & coordMask);
+		byte light = skyLight[index / 2];
+		if ((index & 1) == 0) {
+			return (byte)((light >> 4) & 0xF);
+		}
+		return (byte)(light & 0xF);
 	}
 
 	@Override
-	public short getBlockLight(int x, int y, int z) {
+	public byte getBlockLight(int x, int y, int z) {
 		checkChunkLoaded();
-		return blockLight.get(toIndex(x & coordMask, y & coordMask, z & coordMask));
+		int index = toIndex(x & coordMask, y & coordMask, z & coordMask);
+		byte light = blockLight[index / 2];
+		if ((index & 1) == 0) {
+			return (byte)((light >> 4) & 0xF);
+		}
+		return (byte)(light & 0xF);
 	}
 
 	@Override
@@ -261,19 +278,24 @@ public class SpoutChunk extends Chunk {
 	}
 	
 	/**
-	 * Recalculates the lighting for the blocks in this column
+	 * Gets the sky brightness, may look up from neighbor chunks.
 	 * 
-	 * May queue more lighting updates in chunks underneath.
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return brightness
 	 */
-	private void recalculateLighting(int x, int z, boolean sky, boolean block) {
-		if (sky) {
-			recalculateSkyLighting(x, z);
+	private byte getSkyBrightness(int x, int y, int z) {
+		if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE) {
+			return getSkyLight(x, y, z);
 		}
-		if (block) {
-			recalculateBlockLighting(x, z);
+		SpoutChunk chunk = getWorld().getChunk(getX() + (x >> 4), getY() + (y >> 4), getZ() + (z >> 4), false);
+		if (chunk != null) {
+			return chunk.getBlockLight(x & coordMask, y & coordMask, z & coordMask);
 		}
+		return 0;
 	}
-	
+
 	/**
 	 * Recalculates the sky light in the x, z column.
 	 * 
@@ -283,8 +305,9 @@ public class SpoutChunk extends Chunk {
 	 * @param z coordinate
 	 */
 	private void recalculateSkyLighting(int x, int z) {
-		SpoutChunk aboveChunk = getWorld().getChunk(getX(), getY() + 1, getZ(), false);
-		short prevValue;
+		SpoutWorld world = getWorld();
+		SpoutChunk aboveChunk = world.getChunk(getX(), getY() + 1, getZ(), false);
+		byte prevValue;
 		if (aboveChunk != null) {
 			//find the sunlight shining through the bottom of the chunk above us
 			prevValue = aboveChunk.getSkyLight(x, 0, z);
@@ -293,6 +316,14 @@ public class SpoutChunk extends Chunk {
 			prevValue = 0xF;
 		}
 		for (int y = CHUNK_SIZE - 1; y >= 0; --y) {
+			//Check adjacent blocks, skylight spreads horizontally
+			if (prevValue < 0xF) {
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x + 1, y, z) - 1);
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x - 1, y, z) - 1);
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z + 1) - 1);
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z - 1) - 1);
+			}
+				
 			//Don't check the opacity unless there is some light
 			if (prevValue > 0) {
 				BlockMaterial type = getBlockMaterial(x, y, z);
@@ -301,10 +332,18 @@ public class SpoutChunk extends Chunk {
 					prevValue = 0;
 				}
 			}
-			skyLight.set(toIndex(x, y, z), prevValue);
+
+			int index = toIndex(x, y, z);
+			byte old = skyLight[index / 2];
+			
+			if ((index & 1) == 0) {
+				skyLight[index / 2] = HashUtil.nibbleToByte(prevValue, old);
+			} else {
+				skyLight[index / 2] = HashUtil.nibbleToByte(old, prevValue);
+			}
 		}
 
-		SpoutChunk belowChunk = getWorld().getChunk(getX(), getY() - 1, getZ(), false);
+		SpoutChunk belowChunk = world.getChunk(getX(), getY() - 1, getZ(), false);
 		if (belowChunk != null) {
 			if (belowChunk.getSkyLight(x, CHUNK_SIZE - 1, z) != prevValue) {
 				belowChunk.queueLightUpdate(x, z, true, false); 
@@ -331,7 +370,16 @@ public class SpoutChunk extends Chunk {
 		//}
 	}
 	
+	/**
+	 * Queues a lighting update for the column. This will be processed in a later tick.
+	 * 
+	 * @param x coordinate of the column
+	 * @param z coordinate of the column
+	 * @param sky whether to update the sky lighting
+	 * @param block whether to update the block lighting
+	 */
 	private void queueLightUpdate(int x, int z, boolean sky, boolean block) {
+		if (!sky && !block) throw new IllegalStateException("Invalid paramaters");
 		if (sky) {
 			synchronized(skyLightQueue) {
 				skyLightQueue.add(HashUtil.nibbleToByte(x & 0xF, z & 0xF));
@@ -342,33 +390,33 @@ public class SpoutChunk extends Chunk {
 				blockLightQueue.add(HashUtil.nibbleToByte(x & 0xF, z & 0xF));
 			}
 		}
+		parentRegion.queueLighting(this);
 	}
-
-	protected void updateLighting(int x, int y, int z) {
-		final int index = toIndex(x, y, z);
-		SpoutChunk aboveChunk = getWorld().getChunk(getX(), getY() + 1, getZ(), false);
-		short oldSkyLight;
-		if (aboveChunk == null) {
-			oldSkyLight = skyLight.get(index);
-		}  else {
-			oldSkyLight = aboveChunk.getSkyLight(x, 0, z);
+	
+	/**
+	 * Processes the queued lighting updates for this chunk.
+	 * 
+	 * This should only be called from the SpoutRegion that manages this chunk, during the first tick stage.
+	 */
+	protected void processQueuedLighting() {
+		byte[] queue;
+		synchronized(skyLightQueue) {
+			queue = skyLightQueue.toArray();
+			skyLightQueue.clear();
 		}
-
-		for (int dy = y; dy >= 0; --dy) {
-			oldSkyLight = (short)Math.max(0, oldSkyLight - getBlockMaterial(x, dy, z).getOpacity());
-			skyLight.set(toIndex(x, dy, z), oldSkyLight);
-			if (oldSkyLight == 0) {
-				if (dy == 0) {
-					break;
-				} else {
-					return;
-				}
-			}
+		for (byte b : queue) {
+			int x = HashUtil.byteToNibble1(b);
+			int z = HashUtil.byteToNibble2(b);
+			recalculateSkyLighting(x, z);
 		}
-
-		SpoutChunk belowChunk = getWorld().getChunk(getX(), getY() - 1, getZ(), false);
-		if (belowChunk != null) {
-			belowChunk.queueLightUpdate(x, z, true, false);
+		synchronized(blockLightQueue) {
+			queue = blockLightQueue.toArray();
+			blockLightQueue.clear();
+		}
+		for (byte b : queue) {
+			int x = HashUtil.byteToNibble1(b);
+			int z = HashUtil.byteToNibble2(b);
+			recalculateBlockLighting(x, z);
 		}
 	}
 
@@ -503,7 +551,11 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		checkChunkLoaded();
-		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), blockLight.getArray(), skyLight.getArray(), entities);
+		byte[] blockLightCopy = new byte[blockLight.length];
+		System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
+		byte[] skyLightCopy = new byte[skyLight.length];
+		System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
+		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), blockLightCopy, skyLightCopy, entities);
 	}
 
 	@Override
@@ -627,11 +679,16 @@ public class SpoutChunk extends Chunk {
 				e.printStackTrace();
 			}
 		}
+		
+		//Recalculate lighting
+		for (int dx = CHUNK_SIZE - 1; dx >= 0; --dx) {
+			for (int dz = CHUNK_SIZE - 1; dz >= 0; --dz) {
+				queueLightUpdate(dx, dz, true, true);
+			}
+		}
 
 		populated.set(true);
-		if (getRegion() instanceof SpoutRegion) {
-			((SpoutRegion) getRegion()).onChunkPopulated(this);
-		}
+		parentRegion.onChunkPopulated(this);
 	}
 
 	@Override
@@ -725,28 +782,28 @@ public class SpoutChunk extends Chunk {
 				if (p == null || p.equals(e)) {
 					continue;
 				}
-				Integer playerDistanceOld;
-				if (oldChunk == null) {
-					playerDistanceOld = Integer.MAX_VALUE;
-				} else {
-					playerDistanceOld = oldChunk.observers.getLive().get(p);
-					if (playerDistanceOld == null) {
+				if(p.getController() instanceof PlayerController) {
+					Integer playerDistanceOld;
+					if (oldChunk == null) {
 						playerDistanceOld = Integer.MAX_VALUE;
+					} else {
+						playerDistanceOld = oldChunk.observers.getLive().get(p);
+						if (playerDistanceOld == null) {
+							playerDistanceOld = Integer.MAX_VALUE;
+						}
 					}
-				}
-				Integer playerDistanceNew;
-				if (newChunk == null) {
-					playerDistanceNew = Integer.MAX_VALUE;
-				} else {
-					playerDistanceNew = newChunk.observers.getLive().get(p);
-					if (playerDistanceNew == null) {
+					Integer playerDistanceNew;
+					if (newChunk == null) {
 						playerDistanceNew = Integer.MAX_VALUE;
+					} else {
+						playerDistanceNew = newChunk.observers.getLive().get(p);
+						if (playerDistanceNew == null) {
+							playerDistanceNew = Integer.MAX_VALUE;
+						}
 					}
-				}
-				int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
-				int entityViewDistanceNew = e.getViewDistance();
+					int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+					int entityViewDistanceNew = e.getViewDistance();
 
-				if(p.getController() instanceof PlayerController){
 					Player player = ((PlayerController) p.getController()).getPlayer();
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 

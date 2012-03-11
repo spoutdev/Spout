@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -84,6 +85,11 @@ public final class SpoutSession implements Session {
 	 * A queue of incoming and unprocessed messages.
 	 */
 	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
+	
+	/**
+	 * A queue of outgoing messages that will be sent after the client finishes identification
+	 */
+	private final Queue<Message> sendQueue = new ConcurrentLinkedQueue<Message>();
 
 	/**
 	 * A timeout counter. This is increment once every tick and if it goes above
@@ -208,8 +214,15 @@ public final class SpoutSession implements Session {
 	@SuppressWarnings("unchecked")
 	public void pulse() {
 		timeoutCounter++;
-
 		Message message;
+		
+		if (state == State.GAME){ 
+			while ((message = sendQueue.poll()) != null) {
+				send(message, true);
+			}
+		}
+
+		
 		while ((message = messageQueue.poll()) != null) {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
@@ -227,18 +240,28 @@ public final class SpoutSession implements Session {
 			disconnect("Timed out", true);
 		}
 	}
-
+	
 	/**
 	 * + * Sends a message to the client.
 	 *
 	 * @param message The message.
+	 * @param if this message is used in the identification stages of communication
 	 */
-	public void send(Message message) {
+	public void send(Message message, boolean force) {
 		try {
-			channel.write(message);
+			if (force || this.state == State.GAME) {
+				channel.write(message); 
+			}
+			else {
+				sendQueue.add(message);
+			}
 		} catch (Exception e) {
 			disconnect("Socket Error!");
 		}
+	}
+
+	public void send(Message message) {
+		send(message, false);
 	}
 
 	/**
@@ -345,8 +368,7 @@ public final class SpoutSession implements Session {
 					}
 				}
 				((SpoutPlayer) player).disconnect();
-			} catch (Exception e) {
-			}
+			} catch (Exception e) { }
 			player = null; // in case we are disposed twice
 		}
 	}

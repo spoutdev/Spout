@@ -77,7 +77,6 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.CommonRecipeManager;
-import org.spout.api.inventory.PlayerInventory;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
