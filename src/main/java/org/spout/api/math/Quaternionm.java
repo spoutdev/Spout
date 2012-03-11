@@ -76,6 +76,7 @@ public class Quaternionm extends Quaternion implements Cloneable {
 	 * @param x
 	 */
 	public void setX(float x) {
+		this.cachedAngle = null;
 		this.x = x;
 	}
 
@@ -85,6 +86,7 @@ public class Quaternionm extends Quaternion implements Cloneable {
 	 * @param y
 	 */
 	public void setY(float y) {
+		this.cachedAngle = null;
 		this.y = y;
 	}
 
@@ -94,6 +96,7 @@ public class Quaternionm extends Quaternion implements Cloneable {
 	 * @param z
 	 */
 	public void setZ(float z) {
+		this.cachedAngle = null;
 		this.z = z;
 	}
 
@@ -103,6 +106,7 @@ public class Quaternionm extends Quaternion implements Cloneable {
 	 * @param w
 	 */
 	public void setW(float w) {
+		this.cachedAngle = null;
 		this.w = w;
 	}
 
@@ -112,6 +116,7 @@ public class Quaternionm extends Quaternion implements Cloneable {
 	 * @param quaternion
 	 */
 	public void set(Quaternion quaternion) {
+		this.cachedAngle = null;
 		x = quaternion.getX();
 		y = quaternion.getY();
 		z = quaternion.getZ();

@@ -32,6 +32,7 @@ package org.spout.api.math;
  */
 public class Quaternion implements Cloneable{
 	protected float x, y, z, w;
+	protected Vector3 cachedAngle = null;
 
 	/**
 	 * Represents no rotation
@@ -207,7 +208,13 @@ public class Quaternion implements Cloneable{
 	 * @return
 	 */
 	public Vector3 getAxisAngles() {
-		return Quaternion.getAxisAngles(this);
+		if (cachedAngle != null) {
+			return cachedAngle.clone();
+		}
+		else {
+			cachedAngle = Quaternion.getAxisAngles(this);
+			return cachedAngle.clone();
+		}
 	}
 
 	@Override
