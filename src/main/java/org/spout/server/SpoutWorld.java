@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.Game;
 import org.spout.api.Server;
@@ -231,11 +232,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public int hashCode() {
-		UUID uid = getUID();
-		long hash = uid.getMostSignificantBits();
-		hash += (hash << 5) + uid.getLeastSignificantBits();
-
-		return (int) (hash ^ hash >> 32);
+		return new HashCodeBuilder(27, 971).append(uid).toHashCode();
 	}
 
 	@Override
