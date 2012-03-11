@@ -32,29 +32,48 @@ import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.util.StringMap;
 
 public abstract class Controller {
-
-	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
-
 	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
+	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
+	private Entity parent;
 
+	/**
+	 *
+	 * @param protocolId
+	 * @return
+	 */
 	public EntityProtocol getEntityProtocol(int protocolId) {
 		return entityProtocolStore.getEntityProtocol(protocolId);
 	}
 
+	/**
+	 *
+	 * @param protocolId
+	 * @param protocol
+	 */
 	public static void setEntityProtocol(int protocolId, EntityProtocol protocol) {
 		entityProtocolStore.setEntityProtocol(protocolId, protocol);
 	}
 
+	/**
+	 *
+	 * @param protocolName
+	 * @return
+	 */
 	public static int getProtocolId(String protocolName) {
 		return protocolMap.register(protocolName);
 	}
 
-	protected Entity parent;
-
+	/**
+	 *
+	 * @param e
+	 */
 	public void attachToEntity(Entity e) {
 		this.parent = e;
 	}
 
+	/**
+	 *
+	 */
 	public abstract void onAttached();
 
 	/**
@@ -91,13 +110,18 @@ public abstract class Controller {
 	}
 
 	/**
-	 * Called just before the pre-snapshot stage.<br>
+	 * Called just before the pre-snapshot stage.
 	 * This stage can make changes but they should be checked to make sure they
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
 	}
 
+	/**
+	 *
+	 * @param size
+	 * @return
+	 */
 	public Inventory createInventory(int size) {
 		return new Inventory(size);
 	}
@@ -108,6 +132,6 @@ public abstract class Controller {
 	 * @return parent Entity
 	 */
 	public Entity getParent() {
-		return this.parent;
+		return parent;
 	}
 }
