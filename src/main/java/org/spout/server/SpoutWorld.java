@@ -262,9 +262,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (e.isSpawned()) {
 			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		}
-		SpoutRegion region = (SpoutRegion) e.getRegion();
-		region.addEntity(e);
-
+		((SpoutRegion) e.getRegion()).addEntity(e);
 	}
 
 	@Override
@@ -453,7 +451,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public HashSet<Entity> getAll() {
-		HashSet<Entity> entities = new HashSet<Entity>();
+		HashSet<Entity> entities = new HashSet<Entity>(entityManager.getAll());
 		for (Region region : regions) {
 			entities.addAll(region.getAll());
 		}
@@ -462,11 +460,24 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public HashSet<Entity> getAll(Class<? extends Controller> type) {
-		HashSet<Entity> entities = new HashSet<Entity>();
+		HashSet<Entity> entities = new HashSet<Entity>(entityManager.getAll(type));
 		for (Region region : regions) {
 			entities.addAll(region.getAll(type));
 		}
 		return entities;
+	}
+
+	@Override
+	public Entity getEntity(int id) {
+		Entity entity = entityManager.getEntity(id);
+		if (entity == null) {
+			for (Region region : regions) {
+				if ((entity = region.getEntity(id)) != null) {
+					break;
+				}
+			}
+		}
+		return entity;
 	}
 
 	public void addPlayer(Player player) {
