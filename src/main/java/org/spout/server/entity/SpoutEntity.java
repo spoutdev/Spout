@@ -286,6 +286,8 @@ public class SpoutEntity implements Entity {
 	 * move events fired
 	 */
 	public void resolve() {
+		//Don't need to do collisions if we have no collision volume
+		if(this.collision == null) return;
 		//Resolve Collisions Here
 		final Pointm location = this.getPoint();
 		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
