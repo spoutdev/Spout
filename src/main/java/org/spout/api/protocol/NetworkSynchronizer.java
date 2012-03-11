@@ -104,7 +104,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 
 		// TODO teleport smoothing
-		Point currentPosition = entity.getPoint();
+		Point currentPosition = entity.getPosition();
 		if (currentPosition != null) {
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
@@ -189,7 +189,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			if (teleported && entity != null) {
-				sendPosition(entity.getPoint(), entity.getYaw(), entity.getPitch());
+				sendPosition(entity.getPosition(), entity.getYaw(), entity.getPitch());
 				first = false;
 				teleported = false;
 			}
