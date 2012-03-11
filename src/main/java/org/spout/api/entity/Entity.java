@@ -311,6 +311,12 @@ public interface Entity extends Datatable, Source {
 
 	public float getRoll();
 
+	public void setPitch(float ang);
+
+	public void setRoll(float ang);
+
+	public void setYaw(float ang);
+
 	
 	
 }
