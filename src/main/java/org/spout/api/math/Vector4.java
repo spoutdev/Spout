@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * A 4-dimensional vector represented by float-precision x,y,z,w coordinates
  *
@@ -580,12 +582,7 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 53 * hash + Float.floatToIntBits(x);
-		hash = 53 * hash + Float.floatToIntBits(y);
-		hash = 53 * hash + Float.floatToIntBits(z);
-		hash = 53 * hash + Float.floatToIntBits(w);
-		return hash;
+		return new HashCodeBuilder(7, 53).append(x).append(y).append(z).append(w).toHashCode();
 	}
 
 	@Override

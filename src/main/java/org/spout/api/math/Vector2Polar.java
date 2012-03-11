@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
  *
@@ -473,10 +475,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 59 * hash + Float.floatToIntBits(r);
-		hash = 59 * hash + Float.floatToIntBits(theta);
-		return hash;
+		return new HashCodeBuilder(5, 59).append(r).append(theta).toHashCode();
 	}
 
 	@Override
