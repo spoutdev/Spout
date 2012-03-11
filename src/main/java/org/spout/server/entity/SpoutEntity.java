@@ -91,6 +91,7 @@ public class SpoutEntity implements Entity {
 	SpoutDatatableMap map;
 	boolean observer = false;
 	Thread owningThread = null;
+	Vector3m offset = new Vector3m();
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
@@ -297,8 +298,8 @@ public class SpoutEntity implements Entity {
 		//Resolve Collisions Here
 		final Pointm location = this.getPoint();
 		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
-		
-		Vector3m offset = new Vector3m(lastTransform.getPosition().getX(), lastTransform.getPosition().getY(), lastTransform.getPosition().getZ());
+	
+		offset.set(this.lastTransform.getPosition());
 		offset.subtract(this.getTransform().getPosition());
 		for (CollisionVolume box : colliding) {
 			Vector3 collision = this.collision.resolve(box);
