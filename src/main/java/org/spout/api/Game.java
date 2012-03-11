@@ -403,4 +403,85 @@ public interface Game extends Named {
 	 */
 	public boolean debugMode();
 	
+	/**
+	 * Bans the specified player
+	 * 
+	 * @param Player to ban
+	 */
+	public void banPlayer(String player);
+	
+	/**
+	 * Unbans the specified player
+	 * 
+	 * @param Player to ban
+	 */
+	public void unbanPlayer(String player);
+	
+	/**
+	 * Bans the specified IP
+	 * 
+	 * @param Player to ban
+	 */
+	public void banIp(String address);
+	
+	/**
+	 * Unbans the specified IP
+	 * 
+	 * @param Player to ban
+	 */
+	public void unbanIp(String address);
+	
+	/**
+	 * Gets a collection of all banned IP's, in string format.
+	 *
+	 * @return banned IP addresses
+	 */
+	public Collection<String> getIPBans();
+	
+	/**
+	 * Returns a collection of all banned players
+	 *
+	 * @return banned players
+	 */
+	public Collection<String> getBannedPlayers();
+	
+	/**
+	 * Returns true if the player or address is banned.
+	 * 
+	 * @param Player name to check
+	 * @param Address to check
+	 * @return If either is banned
+	 */
+	public boolean isBanned(String player, String address);
+	
+	/**
+	 * Returns true if the address is banned.
+	 * 
+	 * @param Address to check
+	 * @return If the address is banned
+	 */
+	public boolean isIpBanned(String address);
+	
+	/**
+	 * Returns true if the player is banned.
+	 * 
+	 * @param Player name to check
+	 * @return If the player is banned
+	 */
+	public boolean isPlayerBanned(String player);
+	
+	/**
+	 * Gets the ban message for the player
+	 * 
+	 * @return the ban message
+	 */
+	public String getBanMessage(String player);
+	
+	/**
+	 * Gets the ban message for the IP
+	 * 
+	 * @return the ban message
+	 */
+	public String getIpBanMessage(String address);
+	
 }
