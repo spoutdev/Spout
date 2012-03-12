@@ -204,7 +204,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	/**
 	 * The server's ban manager
 	 */
-	private BanManager banManager = new FlatFileBanManager(this);
+	private BanManager banManager;
 
 	/**
 	 * A folder that holds all of the world data folders inside of it. By
@@ -288,8 +288,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		consoleManager.setupConsole();
 
 		config.load();
-		
-		banManager.load();
 
 		// Start loading plugins
 		loadPlugins();
