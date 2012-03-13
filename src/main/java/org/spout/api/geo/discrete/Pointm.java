@@ -39,6 +39,10 @@ public class Pointm extends Point {
 	public Pointm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
+	
+	public Pointm(Pointm point) {
+		super(point.world, point.x, point.y, point.z);
+	}
 
 	public Pointm(Point point) {
 		super(point.getWorld(), point.getX(), point.getY(), point.getZ());
@@ -85,7 +89,7 @@ public class Pointm extends Point {
 	public void setZ(float z) {
 		this.z = z;
 	}
-
+	
 	/**
 	 * Sets this point equal to another point
 	 */
@@ -94,5 +98,15 @@ public class Pointm extends Point {
 		x = point.getX();
 		y = point.getY();
 		z = point.getZ();
+	}
+
+	/**
+	 * Sets this point equal to another pointm
+	 */
+	public void set(Pointm point) {
+		world = point.world;
+		x = point.x;
+		y = point.y;
+		z = point.y;
 	}
 }
