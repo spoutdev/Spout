@@ -289,6 +289,10 @@ public class SpoutServer extends AsyncManager implements Server {
 		consoleManager.setupConsole();
 
 		config.load();
+		
+		storeQueue.start(); //Make sure the storageQueue is running
+		banManager = new FlatFileBanManager(this); //Load the BanManager after the init of the Queue
+		banManager.load();
 
 		// Start loading plugins
 		loadPlugins();
