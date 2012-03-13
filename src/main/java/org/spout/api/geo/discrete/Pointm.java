@@ -39,27 +39,39 @@ public class Pointm extends Point {
 	public Pointm(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
-	
-	public Pointm(Pointm point) {
-		super(point.world, point.x, point.y, point.z);
-	}
 
 	public Pointm(Point point) {
 		super(point.getWorld(), point.getX(), point.getY(), point.getZ());
 	}
-	
+
+	public Pointm(Pointm point) {
+		super(point.world, point.x, point.y, point.z);
+	}
+
 	@Override
 	public Point add(Point other) {
 		if (world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
-		set(new Point(Vector3.add(this, other), world));
+		return add((Vector3)other);
+	}
+
+	public Point add(Pointm other) {
+		if (world != other.world) {
+			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
+		}
+		this.x += other.x;
+		this.y += other.y;
+		this.z += other.z;
 		return this;
 	}
 
 	@Override
 	public Point add(Vector3 other) {
-		return add(new Point(Vector3.add(this, other), world));
+		this.x += other.getX();
+		this.y += other.getY();
+		this.z += other.getZ();
+		return this;
 	}
 
 	/**
