@@ -74,4 +74,12 @@ public final class Spout {
 		return instance.getScheduler();
 	}
 
+	public static boolean debugMode() {
+		return instance.debugMode();
+	}
+	
+	public static void log(String arg){
+		instance.getLogger().info(arg);
+	}
+
 }
