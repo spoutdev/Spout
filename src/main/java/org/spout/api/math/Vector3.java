@@ -26,11 +26,13 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.pool.PoolableObject;
+import org.spout.api.util.pool.Vector3Pool;
 
 /**
  * Represents a 3d vector.
  */
-public class Vector3 implements Comparable<Vector3>, Cloneable {
+public class Vector3 extends PoolableObject implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
@@ -74,47 +76,15 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @param y the y coordinate
 	 * @param z the z coordinate
 	 */
-	public Vector3(float x, float y, float z) {
+	protected Vector3(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
-
-	/**
-	 * Constructs and initializes a Vector3 from the given x, y, z
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 */
-	public Vector3(double x, double y, double z) {
-		this((float) x, (float) y, (float) z);
-	}
-
-	/**
-	 * Constructs and initializes a Vector3 from the given x, y, z
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 */
-	public Vector3(int x, int y, int z) {
-		this((float) x, (float) y, (float) z);
-	}
-
-	/**
-	 * Constructs and initializes a Vector3 from an old Vector3
-	 *
-	 * @param o
-	 */
-	public Vector3(Vector3 o) {
-		this(o.x, o.y, o.z);
-	}
-
 	/**
 	 * Constructs and initializes a Vector3 to (0,0)
 	 */
-	public Vector3() {
+	protected Vector3() {
 		this(0, 0, 0);
 	}
 
@@ -129,6 +99,18 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	public float getZ() {
 		return z;
 	}
+	
+	protected void setX(float x){
+		this.x = x;
+	}
+	
+	protected void setY(float y){
+		this.y = y;
+	}
+	
+	protected void setZ(float z){
+		this.z = z;
+	}
 
 	/**
 	 * Adds this Vector3 to the value of the Vector3 argument
@@ -136,8 +118,8 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @param that The Vector3 to add
 	 * @return the new Vector3
 	 */
-	public Vector3 add(Vector3 that) {
-		return Vector3.add(this, that);
+	public Vector3 add(Vector3 that) {		
+		return add(that.getX(), that.getY(), that.getZ());
 	}
 
 	/**
@@ -149,7 +131,11 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		return add(new Vector3(x, y, z));
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(this.getX() + x);
+		v.setY(this.getY() + y);
+		v.setZ(this.getZ() + z);
+		return v;
 	}
 
 	/**
@@ -161,7 +147,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public Vector3 add(double x, double y, double z) {
-		return add(new Vector3(x, y, z));
+		return add((float)x, (float) y, (float) z);
 	}
 
 	/**
@@ -173,7 +159,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public Vector3 add(int x, int y, int z) {
-		return add(new Vector3(x, y, z));
+		return add((float)x, (float)y, (float)z);
 	}
 
 	/**
@@ -183,7 +169,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return the new Vector3
 	 */
 	public Vector3 subtract(Vector3 that) {
-		return Vector3.subtract(this, that);
+		return subtract(that.getX(), that.getY(), that.getZ());
 	}
 
 	/**
@@ -195,7 +181,11 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		return subtract(new Vector3(x, y, z));
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(this.getX() - x);
+		v.setY(this.getY() - y);
+		v.setZ(this.getZ() - z);
+		return v;
 	}
 
 	/**
@@ -207,7 +197,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public Vector3 subtract(double x, double y, double z) {
-		return subtract(new Vector3(x, y, z));
+		return subtract((float)x, (float)y, (float) z);
 	}
 
 	/**
@@ -219,161 +209,26 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public Vector3 subtract(int x, int y, int z) {
-		return subtract(new Vector3(x, y, z));
+		return subtract((float)x, (float)y, (float)z);
 	}
 
-	/**
-	 * Multiplies this Vector3 by the value of the Vector3 argument
-	 *
-	 * @param that The Vector3 to multiply
-	 * @return the new Vector3
-	 */
-	public Vector3 multiply(Vector3 that) {
-		return Vector3.multiply(this, that);
+	public Vector3 scale(float s){
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(getX() * s);
+		v.setY(getY() * s);
+		v.setZ(getZ() * s);
+		return v;
 	}
-
-	/**
-	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	public Vector3 multiply(float x, float y, float z) {
-		return multiply(new Vector3(x, y, z));
+	
+	public Vector3 scale(float x, float y, float z){
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(getX() * x);
+		v.setY(getY() * y);
+		v.setZ(getZ() * z);
+		return v;
 	}
-
-	/**
-	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	public Vector3 multiply(double x, double y, double z) {
-		return multiply(new Vector3(x, y, z));
-	}
-
-	/**
-	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	public Vector3 multiply(int x, int y, int z) {
-		return multiply(new Vector3(x, y, z));
-	}
-
-	/**
-	 * Multiplies a Vector3 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector3 multiply(float val) {
-		return multiply(new Vector3(val, val, val));
-	}
-
-	/**
-	 * Multiplies a Vector3 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector3 multiply(double val) {
-		return multiply(new Vector3(val, val, val));
-	}
-
-	/**
-	 * Multiplies a Vector3 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector3 multiply(int val) {
-		return multiply(new Vector3(val, val, val));
-	}
-
-	/**
-	 * Divides the given Vector3 from this Vector3
-	 *
-	 * @param that The Vector3 to divide
-	 * @return the new Vector3
-	 */
-	public Vector3 divide(Vector3 that) {
-		return Vector3.divide(this, that);
-	}
-
-	/**
-	 * Divides a Vector3 comprised of the given x, y, z values
-	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	public Vector3 divide(float x, float y, float z) {
-		return divide(new Vector3(x, y, z));
-	}
-
-	/**
-	 * Divides a Vector3 comprised of the given x, y, z values
-	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	public Vector3 divide(double x, double y, double z) {
-		return divide(new Vector3(x, y, z));
-	}
-
-	/**
-	 * Divides a Vector3 comprised of the given x, y, z values
-	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	public Vector3 divide(int x, int y, int z) {
-		return divide(new Vector3(x, y, z));
-	}
-
-	/**
-	 * Divides a Vector3 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector3 divide(float val) {
-		return divide(new Vector3(val, val, val));
-	}
-
-	/**
-	 * Divides a Vector3 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector3 divide(double val) {
-		return divide(new Vector3(val, val, val));
-	}
-
-	/**
-	 * Divides a Vector3 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector3 divide(int val) {
-		return divide(new Vector3(val, val, val));
-	}
-
+	
+	
 	/**
 	 * Takes the dot product of two vectors
 	 *
@@ -870,5 +725,14 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 */
 	public static boolean equals(Vector3 a, Vector3 b) {
 		return a.equals(b);
+	}
+	
+	
+	/**
+	 * Creates a raw, unpooled immutable vector3 set to 0, 0, 0.    
+	 * @return
+	 */
+	public static Vector3 createRaw(){
+		return new Vector3();
 	}
 }
