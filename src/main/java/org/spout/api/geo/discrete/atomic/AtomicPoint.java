@@ -40,6 +40,9 @@ import org.spout.api.util.concurrent.OptimisticReadWriteLock;
  */
 public class AtomicPoint extends Pointm {
 
+	/**
+	 * Note: This is a non-reentrant lock!
+	 */
 	private final OptimisticReadWriteLock lock;
 
 	public AtomicPoint(OptimisticReadWriteLock lock) {

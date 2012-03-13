@@ -563,10 +563,10 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 		}
 		Vector3 xT = this;
 		Vector3 yT = (Vector3) b;
-		return xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ();
+		return xT.x == yT.x && xT.y == yT.y && xT.z == yT.z;
 	}
 
-	// TODO - all the methods below need to use .getX(), .getY() etc, for all "other" vectors.
+	// All of the below methods use .x, .y, .z instead of .getX() on purpose. Changing them will break AtomicPoint!
 
 	/**
 	 * Generates a unique hash code for this set of values
@@ -640,7 +640,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 add(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() + b.getX(), a.getY() + b.getY(), a.getZ() + b.getZ());
+		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
 
 	/**
@@ -651,7 +651,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 subtract(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() - b.getX(), a.getY() - b.getY(), a.getZ() - b.getZ());
+		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
 	/**
@@ -662,7 +662,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 multiply(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() * b.getX(), a.getY() * b.getY(), a.getZ() * b.getZ());
+		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 
 	/**
@@ -673,7 +673,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 divide(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() / b.getX(), a.getY() / b.getY(), a.getZ() / b.getZ());
+		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
 	}
 
 	/**
@@ -684,7 +684,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static float dot(Vector3 a, Vector3 b) {
-		return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
+		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
 
 	/**
@@ -696,7 +696,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 cross(Vector3 a, Vector3 b) {
-		return new Vector3(a.getY() * b.getZ() - a.getZ() * b.getY(), a.getZ() * b.getX() - a.getX() * b.getZ(), a.getX() * b.getY() - a.getY() * b.getX());
+		return new Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
 
 	/**
@@ -707,7 +707,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 ceil(Vector3 o) {
-		return new Vector3(Math.ceil(o.getX()), Math.ceil(o.getY()), Math.ceil(o.getZ()));
+		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
 	}
 
 	/**
@@ -718,7 +718,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 floor(Vector3 o) {
-		return new Vector3(Math.floor(o.getX()), Math.floor(o.getY()), Math.floor(o.getZ()));
+		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
 	}
 
 	/**
@@ -729,7 +729,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 round(Vector3 o) {
-		return new Vector3(Math.round(o.getX()), Math.round(o.getY()), Math.round(o.getZ()));
+		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
 	}
 
 	/**
@@ -739,7 +739,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 abs(Vector3 o) {
-		return new Vector3(Math.abs(o.getX()), Math.abs(o.getY()), Math.abs(o.getZ()));
+		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
 	}
 
 	/**
@@ -750,7 +750,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 min(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()), Math.min(o1.getZ(), o2.getZ()));
+		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
 	}
 
 	/**
@@ -761,7 +761,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 max(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()), Math.max(o1.getZ(), o2.getZ()));
+		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
 	}
 
 	/**
@@ -786,7 +786,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 */
 	public static double distance(Vector3 a, Vector3 b) {
 		double xzDist = Vector2.distance(a.toVector2(), b.toVector2());
-		return Math.sqrt(Math.pow(xzDist, 2) + Math.pow(Math.abs(Vector3.subtract(a, b).getY()), 2));
+		return Math.sqrt(Math.pow(xzDist, 2) + Math.pow(Math.abs(Vector3.subtract(a, b).y), 2));
 	}
 
 	/**
@@ -797,7 +797,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector3 pow(Vector3 o, double power) {
-		return new Vector3(Math.pow(o.getX(), power), Math.pow(o.getY(), power), Math.pow(o.getZ(), power));
+		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
 	}
 
 	/**
@@ -809,7 +809,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector3 o) {
-		return new Vector2(o.getX(), o.getZ());
+		return new Vector2(o.x, o.z);
 	}
 
 	/**
@@ -821,7 +821,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static Vector2m toVector2m(Vector3 o) {
-		return new Vector2m(o.getX(), o.getZ());
+		return new Vector2m(o.x, o.z);
 	}
 
 	/**
@@ -831,7 +831,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * @return
 	 */
 	public static float[] toArray(Vector3 a) {
-		return new float[] {a.getX(), a.getY(), a.getZ()};
+		return new float[] {a.x, a.y, a.z};
 	}
 
 	/**
