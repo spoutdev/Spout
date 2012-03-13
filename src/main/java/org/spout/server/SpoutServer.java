@@ -284,6 +284,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
+		if(Spout.getGame().debugMode()) getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 
 		consoleManager.setupConsole();
 
