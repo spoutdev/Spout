@@ -144,6 +144,16 @@ public class AtomicPoint extends Pointm {
 		}
 	}
 
+	@Override
+	public void set(Pointm point) {
+		int seq = this.lock.writeLock();
+		try {
+			super.set(point);
+		} finally {
+			this.lock.writeUnlock(seq);
+		}
+	}
+
 	/**
 	 * Atomically sets this point to the given values.
 	 * 
