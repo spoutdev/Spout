@@ -101,7 +101,7 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Stores a short value of the sky light
-	 * 
+	 *
 	 * Note: These do not need to be thread-safe as long as only one thread (the region)
 	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
@@ -123,7 +123,7 @@ public class SpoutChunk extends Chunk {
 	private final int coordMask;
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
-		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
+		super(world, x, y, z);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, initial);
@@ -195,7 +195,7 @@ public class SpoutChunk extends Chunk {
 		BlockMaterial previous = getBlockMaterial(x, y, z);
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
 		BlockMaterial current = MaterialData.getBlock(id, data);
-		
+
 		//do neighbor updates
 		if (updatePhysics) {
 			updatePhysics(x, y, z);
@@ -276,10 +276,10 @@ public class SpoutChunk extends Chunk {
 	private int toIndex(int x, int y, int z) {
 		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
 	}
-	
+
 	/**
 	 * Gets the sky brightness, may look up from neighbor chunks.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -298,9 +298,9 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Recalculates the sky light in the x, z column.
-	 * 
+	 *
 	 * May queue more lighting updates in chunks underneath.
-	 * 
+	 *
 	 * @param x coordinate
 	 * @param z coordinate
 	 */
@@ -323,7 +323,7 @@ public class SpoutChunk extends Chunk {
 				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z + 1) - 1);
 				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z - 1) - 1);
 			}
-				
+
 			//Don't check the opacity unless there is some light
 			if (prevValue > 0) {
 				BlockMaterial type = getBlockMaterial(x, y, z);
@@ -335,7 +335,7 @@ public class SpoutChunk extends Chunk {
 
 			int index = toIndex(x, y, z);
 			byte old = skyLight[index / 2];
-			
+
 			if ((index & 1) == 0) {
 				skyLight[index / 2] = HashUtil.nibbleToByte(prevValue, old);
 			} else {
@@ -346,16 +346,16 @@ public class SpoutChunk extends Chunk {
 		SpoutChunk belowChunk = world.getChunk(getX(), getY() - 1, getZ(), false);
 		if (belowChunk != null) {
 			if (belowChunk.getSkyLight(x, CHUNK_SIZE - 1, z) != prevValue) {
-				belowChunk.queueLightUpdate(x, z, true, false); 
+				belowChunk.queueLightUpdate(x, z, true, false);
 			}
 		}
 	}
-	
+
 	/**
 	 * Recalculates the block light in the x, z column
-	 * 
+	 *
 	 * May queue more lighting updates in neighbor chunks.
-	 * 
+	 *
 	 * @param x coordinate
 	 * @param z coordinate
 	 */
@@ -369,10 +369,10 @@ public class SpoutChunk extends Chunk {
 		//	blockLight.set(toIndex(x, y, z), type.getLightLevel());
 		//}
 	}
-	
+
 	/**
 	 * Queues a lighting update for the column. This will be processed in a later tick.
-	 * 
+	 *
 	 * @param x coordinate of the column
 	 * @param z coordinate of the column
 	 * @param sky whether to update the sky lighting
@@ -392,10 +392,10 @@ public class SpoutChunk extends Chunk {
 		}
 		parentRegion.queueLighting(this);
 	}
-	
+
 	/**
 	 * Processes the queued lighting updates for this chunk.
-	 * 
+	 *
 	 * This should only be called from the SpoutRegion that manages this chunk, during the first tick stage.
 	 */
 	protected void processQueuedLighting() {
@@ -679,7 +679,7 @@ public class SpoutChunk extends Chunk {
 				e.printStackTrace();
 			}
 		}
-		
+
 		//Recalculate lighting
 		for (int dx = CHUNK_SIZE - 1; dx >= 0; --dx) {
 			for (int dz = CHUNK_SIZE - 1; dz >= 0; --dz) {
