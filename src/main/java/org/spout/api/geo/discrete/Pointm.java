@@ -26,6 +26,7 @@
 package org.spout.api.geo.discrete;
 
 import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.atomic.AtomicPoint;
 import org.spout.api.math.Vector3;
 
 /**
@@ -50,14 +51,14 @@ public class Pointm extends Point {
 
 	@Override
 	public Point add(Point other) {
-		if (world != other.world) {
+		if (this.world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
-		return add((Vector3)other);
+		return add((Vector3) other);
 	}
 
 	public Point add(Pointm other) {
-		if (world != other.world) {
+		if (this.world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
 		this.x += other.x;
@@ -101,24 +102,34 @@ public class Pointm extends Point {
 	public void setZ(float z) {
 		this.z = z;
 	}
-	
+
 	/**
 	 * Sets this point equal to another point
 	 */
 	public void set(Point point) {
-		world = point.world;
-		x = point.getX();
-		y = point.getY();
-		z = point.getZ();
+		this.world = point.world;
+		this.x = point.getX();
+		this.y = point.getY();
+		this.z = point.getZ();
 	}
 
 	/**
 	 * Sets this point equal to another pointm
 	 */
-	public void set(Pointm point) {
-		world = point.world;
-		x = point.x;
-		y = point.y;
-		z = point.y;
+	protected void set(Pointm point) {
+		this.world = point.world;
+		this.x = point.x;
+		this.y = point.y;
+		this.z = point.y;
+	}
+
+	/**
+	 * Sets this point equal to another pointm
+	 */
+	protected void set(AtomicPoint point) {
+		this.world = point.world;
+		this.x = point.x;
+		this.y = point.y;
+		this.z = point.y;
 	}
 }
