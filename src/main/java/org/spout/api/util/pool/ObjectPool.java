@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class ObjectPool <T extends PoolableObject>{
 	
 	Queue<T> pool = new ConcurrentLinkedQueue<T>();
-	ConcurrentMap<T, Object> map = new ConcurrentHashMap<T, Object>();
+	ConcurrentMap<T, Boolean> map = new ConcurrentHashMap<T, Boolean>();
 	
 	public T getInstance(){
 		if(pool.isEmpty()) {
@@ -27,7 +27,7 @@ public abstract class ObjectPool <T extends PoolableObject>{
 	public void reclaim(T object){
 		if(map.containsKey(object)) throw new IllegalArgumentException("Cannot reclaim something that the pool already contains");
 		pool.add(object);
-		map.put(object, null);
+		map.put(object, Boolean.FALSE);
 	}
 
 }
