@@ -26,6 +26,7 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.pool.PoolableObject;
 
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
@@ -35,11 +36,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Note, this is the Immutable form of Vector2Polar. All operations will
  * construct a new Vector2Polar.
  */
-public class Vector2Polar implements Comparable<Vector2Polar> {
+public class Vector2Polar extends PoolableObject implements Comparable<Vector2Polar> {
 	/**
 	 * Represents the Zero vector (0 at 0 degrees)
 	 */
-	public final static Vector2Polar ZERO = new Vector2Polar(0, 0);
+	public final static Vector2Polar ZERO = new Vector2Polar();
 	/**
 	 * Represents the unit vector (1 at 0 degrees)
 	 */
@@ -49,15 +50,23 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	protected float r;
 	protected float theta;
 
-	/**
-	 * Constructs and initializes a Vector2Polar from the given r, theta
-	 *
-	 * @param r the r coordinate
-	 * @param theta the theta coordinate
-	 */
-	public Vector2Polar(float r, float theta) {
+	protected Vector2Polar(){
+		this(0,0);
+	}
+	
+	protected Vector2Polar(float r, float theta){
 		this.r = r;
-		this.theta = Vector2Polar.getRealAngle(theta);
+		this.theta = theta;
+	}
+	
+	/**
+	 * Constructs and initializes a Vector2Polar from the given r, theta
+	 *
+	 * @param r the r coordinate
+	 * @param theta the theta coordinate
+	 */
+	public static Vector2Polar create(float r, float theta) {
+		return Vector2PolarPool.checkout().set(r,theta);
 	}
 
 	/**
@@ -66,8 +75,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
-	public Vector2Polar(double r, double theta) {
-		this((float) r, (float) theta);
+	public static Vector2Polar create(double r, double theta) {
+		return create((float) r, (float) theta);
 	}
 
 	/**
@@ -76,8 +85,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
-	public Vector2Polar(int r, int theta) {
-		this((float) r, (float) theta);
+	public static Vector2Polar create(int r, int theta) {
+		return create((float) r, (float) theta);
 	}
 
 	/**
@@ -85,15 +94,15 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 *
 	 * @param o
 	 */
-	public Vector2Polar(Vector2Polar o) {
-		this(o.r, o.theta);
+	public static Vector2Polar create(Vector2Polar o) {
+		return create(o.r, o.theta);
 	}
 
 	/**
 	 * Constructs and initializes a Vector2Polar to (0,0)
 	 */
-	public Vector2Polar() {
-		this(0, 0);
+	public static Vector2Polar create() {
+		return create(0, 0);
 	}
 
 	/**
@@ -113,6 +122,12 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 */
 	public float getTheta() {
 		return theta;
+	}
+	
+	private Vector2Polar set(float r, float th){
+		this.r = r;
+		this.theta = th;
+		return this;
 	}
 
 	/**
@@ -149,7 +164,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar add(float r, float theta) {
-		return add(new Vector2Polar(r, theta));
+		return add(create(r, theta));
 	}
 
 	/**
@@ -160,7 +175,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar add(double r, double theta) {
-		return add(new Vector2Polar(r, theta));
+		return add(create(r, theta));
 	}
 
 	/**
@@ -171,7 +186,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar add(int r, int theta) {
-		return add(new Vector2Polar(r, theta));
+		return add(create(r, theta));
 	}
 
 	/**
@@ -192,7 +207,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar subtract(float r, float theta) {
-		return subtract(new Vector2Polar(r, theta));
+		return subtract(create(r, theta));
 	}
 
 	/**
@@ -203,7 +218,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar subtract(double r, double theta) {
-		return subtract(new Vector2Polar(r, theta));
+		return subtract(create(r, theta));
 	}
 
 	/**
@@ -214,7 +229,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar subtract(int r, int theta) {
-		return subtract(new Vector2Polar(r, theta));
+		return subtract(create(r, theta));
 	}
 
 	/**
@@ -235,7 +250,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar multiply(float r, float theta) {
-		return multiply(new Vector2Polar(r, theta));
+		return multiply(create(r, theta));
 	}
 
 	/**
@@ -246,7 +261,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar multiply(double r, double theta) {
-		return multiply(new Vector2Polar(r, theta));
+		return multiply(create(r, theta));
 	}
 
 	/**
@@ -257,7 +272,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar multiply(int r, int theta) {
-		return multiply(new Vector2Polar(r, theta));
+		return multiply(create(r, theta));
 	}
 
 	/**
@@ -267,7 +282,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar multiply(float val) {
-		return multiply(new Vector2Polar(val, 0));
+		return multiply(create(val, 0));
 	}
 
 	/**
@@ -277,7 +292,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar multiply(double val) {
-		return multiply(new Vector2Polar(val, 0));
+		return multiply(create(val, 0));
 	}
 
 	/**
@@ -287,7 +302,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar multiply(int val) {
-		return multiply(new Vector2Polar(val, 0));
+		return multiply(create(val, 0));
 	}
 
 	/**
@@ -308,7 +323,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar divide(float r, float theta) {
-		return divide(new Vector2Polar(r, theta));
+		return divide(create(r, theta));
 	}
 
 	/**
@@ -319,7 +334,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar divide(double r, double theta) {
-		return divide(new Vector2Polar(r, theta));
+		return divide(create(r, theta));
 	}
 
 	/**
@@ -330,7 +345,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar divide(int r, int theta) {
-		return divide(new Vector2Polar(r, theta));
+		return divide(create(r, theta));
 	}
 
 	/**
@@ -340,7 +355,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar divide(float val) {
-		return divide(new Vector2Polar(val, 0));
+		return divide(create(val, 0));
 	}
 
 	/**
@@ -350,7 +365,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar divide(double val) {
-		return divide(new Vector2Polar(val, 0));
+		return divide(create(val, 0));
 	}
 
 	/**
@@ -360,7 +375,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public Vector2Polar divide(int val) {
-		return divide(new Vector2Polar(val, 0));
+		return divide(create(val, 0));
 	}
 
 	/**
@@ -382,15 +397,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 		return Vector2Polar.toVector2(this);
 	}
 
-	/**
-	 * Returns a Vector2m with the same x, y coordinates as this vector
-	 *
-	 * @return
-	 */
-	public Vector2m toVector2m() {
-		return Vector2Polar.toVector2m(this);
-	}
-
+	
 	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
@@ -491,7 +498,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar add(Vector2Polar a, Vector2Polar b) {
-		return new Vector2(a.getX() + b.getX(), a.getY() + b.getY()).toVector2Polar();
+		return Vector2.create(a.getX() + b.getX(), a.getY() + b.getY()).toVector2Polar();
 	}
 
 	/**
@@ -502,7 +509,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar subtract(Vector2Polar a, Vector2Polar b) {
-		return new Vector2(a.getX() - b.getX(), a.getY() - b.getY()).toVector2Polar();
+		return Vector2.create(a.getX() - b.getX(), a.getY() - b.getY()).toVector2Polar();
 	}
 
 	/**
@@ -513,7 +520,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar multiply(Vector2Polar a, Vector2Polar b) {
-		return new Vector2Polar(a.r * b.r, a.theta + b.theta);
+		return create(a.r * b.r, a.theta + b.theta);
 	}
 
 	/**
@@ -524,7 +531,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar divide(Vector2Polar a, Vector2Polar b) {
-		return new Vector2Polar(a.r / b.r, a.theta - b.theta);
+		return create(a.r / b.r, a.theta - b.theta);
 	}
 
 	/**
@@ -545,19 +552,10 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector2Polar o) {
-		return new Vector2(o.getX(), o.getY());
+		return Vector2.create(o.getX(), o.getY());
 	}
 
-	/**
-	 * Returns a Vector2m object at the same coordinate.
-	 *
-	 * @param o Vector2Polar to use as the x/z values
-	 * @return
-	 */
-	public static Vector2m toVector2m(Vector2Polar o) {
-		return new Vector2m(o.getX(), o.getY());
-	}
-
+	
 	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
@@ -565,7 +563,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2Polar cross(Vector2Polar o) {
-		return new Vector2Polar(o.r, o.theta + ninetyDegrees);
+		return create(o.r, o.theta + ninetyDegrees);
 	}
 
 	/**
@@ -576,7 +574,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar ceil(Vector2Polar o) {
-		return new Vector2Polar(Math.ceil(o.r), Math.ceil(o.theta));
+		return create(Math.ceil(o.r), Math.ceil(o.theta));
 	}
 
 	/**
@@ -587,7 +585,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar floor(Vector2Polar o) {
-		return new Vector2Polar(Math.floor(o.r), Math.floor(o.theta));
+		return create(Math.floor(o.r), Math.floor(o.theta));
 	}
 
 	/**
@@ -597,7 +595,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar round(Vector2Polar o) {
-		return new Vector2Polar(Math.round(o.r), Math.round(o.theta));
+		return create(Math.round(o.r), Math.round(o.theta));
 	}
 
 	/**
@@ -608,7 +606,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar min(Vector2Polar o1, Vector2Polar o2) {
-		return new Vector2Polar(Math.min(o1.r, o2.r), Math.min(o1.theta, o2.theta));
+		return create(Math.min(o1.r, o2.r), Math.min(o1.theta, o2.theta));
 	}
 
 	/**
@@ -619,7 +617,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar max(Vector2Polar o1, Vector2Polar o2) {
-		return new Vector2Polar(Math.max(o1.r, o2.r), Math.max(o1.theta, o2.theta));
+		return create(Math.max(o1.r, o2.r), Math.max(o1.theta, o2.theta));
 	}
 
 	/**
@@ -629,7 +627,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar rand() {
-		return new Vector2Polar(Math.random(), Math.random() * twoPi);
+		return create(Math.random(), Math.random() * twoPi);
 	}
 
 	/**

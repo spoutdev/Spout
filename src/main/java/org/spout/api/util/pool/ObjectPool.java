@@ -8,7 +8,11 @@ public abstract class ObjectPool <T extends PoolableObject>{
 	Queue<T> pool = new ConcurrentLinkedQueue<T>();
 	
 	public T getInstance(){
-		if(pool.isEmpty()) return createNew();
+		if(pool.isEmpty()) {
+			T t = createNew();
+			t.pool(this);
+			return t;
+		}
 		return pool.poll();
 	}
 	

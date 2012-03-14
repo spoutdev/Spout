@@ -339,7 +339,7 @@ public class Vector2 extends PoolableObject implements Comparable<Vector2>, Clon
 	 * @return
 	 */
 	public Vector2Polar toVector2Polar() {
-		return new Vector2Polar(length(), Math.atan2(y, x));
+		return Vector2Polar.create(length(), Math.atan2(y, x));
 	}
 
 	/**
@@ -618,7 +618,7 @@ public class Vector2 extends PoolableObject implements Comparable<Vector2>, Clon
 	 * @return
 	 */
 	public static Vector2Polar toVector2Polar(Vector2 o) {
-		return new Vector2Polar(o.length(), Math.atan2(o.getY(), o.getX()));
+		return Vector2Polar.create(o.length(), Math.atan2(o.getY(), o.getX()));
 	}
 
 	/**

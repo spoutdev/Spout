@@ -8,9 +8,8 @@ public class Vector3Pool extends ObjectPool<Vector3> {
 	
 	@Override
 	protected Vector3 createNew() {
-		Vector3 v = new Vector3();
-		v.pool(this);
-		return v;
+		return new Vector3();
+	
 	}
 	
 	public static Vector3 checkout(){

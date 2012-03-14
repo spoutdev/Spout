@@ -160,7 +160,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 getDirectionVector(float pitch, float yaw) {
-		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(new Quaternion(pitch, Vector3.UNIT_Z).multiply(new Quaternion(yaw, Vector3.UNIT_Y))));
+		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(Quaternion.create(pitch, Vector3.UNIT_Z).multiply(Quaternion.create(yaw, Vector3.UNIT_Y))));
 	}
 
 	/**

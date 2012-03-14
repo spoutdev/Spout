@@ -7,7 +7,7 @@ public abstract class PoolableObject {
 	ObjectPool parentPool;
 	
 	
-	public void pool(ObjectPool p){
+	protected void pool(ObjectPool p){
 		if(isPooled) throw new IllegalArgumentException("Object already pooled! Cannot pool again");
 		isPooled = true;
 		parentPool = p;
