@@ -33,8 +33,8 @@ public abstract class ObjectPool<T extends PoolableObject> {
 	Queue<T> pool = new ConcurrentLinkedQueue<T>();
 
 	/**
-	 * Returns an object out of the pool.  
-	 * If the pool is exhausted, then a new object will be created.
+	 * Returns an object out of the pool. If the pool is exhausted, then a new
+	 * object will be created.
 	 * 
 	 * @return
 	 */
@@ -57,10 +57,10 @@ public abstract class ObjectPool<T extends PoolableObject> {
 	 * @param object
 	 */
 	public void reclaim(T object) {
-		if (!object.isFreed) {
+		if (object.isFreed) {
 			throw new IllegalArgumentException("Cannot reclaim something that the pool already contains");
 		}
-		if(object.parentPool != this){
+		if (object.parentPool != this) {
 			throw new IllegalArgumentException("Cannot reclaim something that isn't owned by this pool");
 		}
 		object.isFreed = true;
