@@ -33,6 +33,8 @@ import org.spout.api.math.Vector3;
  * Represents a position in a World
  */
 public class Point extends Vector3 {
+	public static final Point invalid = new Point();
+	
 	protected World world;
 	
 	protected Point(){
@@ -53,6 +55,7 @@ public class Point extends Vector3 {
 		return PointPool.checkout().set(world, x, y, z);
 	}
 	
+		
 	private Point set(World world, float x, float y, float z){
 		this.world = world;
 		super.set(x, y, z);

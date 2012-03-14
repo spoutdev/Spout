@@ -232,64 +232,7 @@ public class Vector3Test {
 		doAssertDouble("x.Z does not equal 8", 8, c.z);
 	}
 
-	@Test
-	public void testDivideVector3() {
-		Vector3 a = Vector3.create(4, -36, 8);
-		Vector3 b = Vector3.create(2, 6, 4);
-		Vector3 c = a.divide(b);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -6", -6, c.y);
-		doAssertDouble("x.Z does not equal 2", 2, c.z);
-	}
-
-	@Test
-	public void testDivideFloat() {
-		Vector3 a = Vector3.create(4, -36, 8);
-		Vector3 b = a.divide(2.0F, 6.0F, 2.5F);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 3.2", 3.2, b.z);
-
-		Vector3 c = a.divide(2.0F);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-		doAssertDouble("x.Z does not equal 4", 4, c.z);
-	}
-
-	@Test
-	public void testDivideDouble() {
-		Vector3 a = Vector3.create(4, -36, 3.4);
-		Vector3 b = a.divide(2.0D, 6.0D, 2.3D);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 1.478", 1.478, b.z);
-
-		Vector3 c = a.divide(2.0D);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-		doAssertDouble("x.Z does not equal 1.7", 1.7, c.z);
-	}
-
-	@Test
-	public void testDivideInt() {
-		Vector3 a = Vector3.create(4, -36, 4);
-		Vector3 b = a.divide(2, 6, 1);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 4", 4, b.z);
-
-		Vector3 c = a.divide(2);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-		doAssertDouble("x.Z does not equal 2", 2, c.z);
-	}
+	
 
 	@Test
 	public void testDot() {
@@ -309,13 +252,6 @@ public class Vector3Test {
 		assertTrue(x.toVector2().equals(y));
 	}
 
-	@Test
-	public void testToVector2m() {
-		Vector3 x = Vector3.create(3, 5, 6);
-		Vector2m y = new Vector2m(3, 6);
-
-		assertTrue(x.toVector2m().equals(y));
-	}
 
 	@Test
 	public void testCross() {
@@ -522,11 +458,11 @@ public class Vector3Test {
 	@Test
 	public void testTransformVector3Quaternion() {
 		Vector3 x = Vector3.create(1, 0, 0);
-		Vector3 u = x.transform(new Quaternion(90, Vector3.create(0, 1, 0)));
+		Vector3 u = x.transform(Quaternion.create(90, Vector3.create(0, 1, 0)));
 		testValue(u, 0, 0, -1);
 
 		Vector3 y = Vector3.create(2, 4, 5);
-		Vector3 v = y.transform(new Quaternion(30, Vector3.create(1, 0, 0)));
+		Vector3 v = y.transform(Quaternion.create(30, Vector3.create(1, 0, 0)));
 		testValue(v, 2, .964f, 6.328f);
 	}
 }

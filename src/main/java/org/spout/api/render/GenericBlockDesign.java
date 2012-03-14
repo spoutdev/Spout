@@ -32,7 +32,7 @@ import java.util.Random;
 
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.ItemMaterial;
-import org.spout.api.math.Vector3m;
+import org.spout.api.math.Vector3;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
 
@@ -261,8 +261,8 @@ public class GenericBlockDesign implements BlockDesign {
 		return this;
 	}
 
-	public Vector3m getLightSource(int quad, int x, int y, int z) {
-		return new Vector3m(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
+	public Vector3 getLightSource(int quad, int x, int y, int z) {
+		return Vector3.create(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
 	}
 
 	public BlockDesign setTexture(Plugin addon, Texture texture) {

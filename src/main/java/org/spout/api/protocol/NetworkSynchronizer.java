@@ -34,7 +34,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.player.Player;
 
@@ -60,7 +59,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	private final int viewDistance = 5;
 	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
 
-	private final Pointm lastChunkCheck = new Pointm();
+	private Point lastChunkCheck =  Point.invalid;
 
 	// Base points used so as not to load chunks unnecessarily
 	private final Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
@@ -108,7 +107,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		if (currentPosition != null) {
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
-				lastChunkCheck.set(currentPosition);
+				lastChunkCheck = currentPosition.clone();
 			}
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
@@ -236,7 +235,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		for (int x = cx - viewDistance; x < cx + viewDistance; x++) {
 			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
 				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
-					Point base = new Point(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
+					Point base = Point.create(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
 					double distance = base.getManhattanDistance(playerChunkBase);
 					if (distance <= blockViewDistance) {
 						if (!activeChunks.contains(base)) {

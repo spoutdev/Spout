@@ -262,7 +262,7 @@ public class MatrixTest {
 
 		compareMatrixToArray(m, id);
 
-		rot = new Quaternion(4,3,2,0);
+		rot = Quaternion.create(4,3,2,0);
 		m = Matrix.rotate(rot);
 
 		id = new double[][] { { 0.103448, 0.827586, 0.551724, 0},
@@ -273,7 +273,7 @@ public class MatrixTest {
 
 		compareMatrixToArray(m, id);
 
-		rot = new Quaternion(90, new Vector3(0,1,0));
+		rot = Quaternion.create(90, new Vector3(0,1,0));
 		m = Matrix.rotate(rot);
 		id = new double[][] { { 0, 0, 1, 0},
 				{ 0, 1, 0, 0},

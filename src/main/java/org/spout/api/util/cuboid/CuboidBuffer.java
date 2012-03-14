@@ -101,7 +101,7 @@ public abstract class CuboidBuffer {
 	 * Gets a Point representing the base of this CuboidBuffer
 	 */
 	public Point getBase() {
-		return new Point(world, baseX, baseY, baseZ);
+		return Point.create(world, baseX, baseY, baseZ);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public abstract class CuboidBuffer {
 	 * Gets the size of the CuboidBuffer
 	 */
 	public Vector3 getSize() {
-		return new Vector3(sizeX, sizeY, sizeZ);
+		return Vector3.create(sizeX, sizeY, sizeZ);
 	}
 
 	/**
