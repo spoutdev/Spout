@@ -23,24 +23,20 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.geo.discrete.atomic;
+package org.spout.api.geo.discrete;
 
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.api.util.thread.Threadsafe;
 
 public class Transform {
-	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
-	private final AtomicPoint position = new AtomicPoint(lock);
-	private final AtomicQuaternion rotation = new AtomicQuaternion(lock);
-	private final AtomicVector3 scale = new AtomicVector3(lock);
+	private Point position;
+	private Quaternion rotation;
+	private Vector3 scale;
 
-	private final AtomicReference<Transform> parent = new AtomicReference<Transform>();
+	private Transform parent;
 
 	public Transform() {
 	}
@@ -51,28 +47,31 @@ public class Transform {
 		setScale(scale);
 	}
 
-	public AtomicPoint getPosition() {
-		return position;
+	public Point getPosition() {
+		return position.clone();
 	}
 
 	public void setPosition(Point position) {
-		this.position.set(position);
+		this.position.free();
+		this.position = position.clone();
 	}
 
-	public AtomicQuaternion getRotation() {
-		return rotation;
+	public Quaternion getRotation() {
+		return rotation.clone();
 	}
 
 	public void setRotation(Quaternion rotation) {
-		this.rotation.set(rotation);
+		this.rotation.free();
+		this.rotation = rotation.clone();
 	}
 
-	public AtomicVector3 getScale() {
-		return scale;
+	public Vector3 getScale() {
+		return scale.clone();
 	}
 
 	public void setScale(Vector3 scale) {
-		this.scale.set(scale);
+		this.scale.free();
+		this.scale = scale.clone();
 	}
 
 	/**
@@ -82,17 +81,7 @@ public class Transform {
 	 */
 	@Threadsafe
 	public Transform getParent() {
-		while (true) {
-			int seq = lock.readLock();
-			Transform result = null;
-			try {
-				result = parent.get();
-			} finally {
-				if (lock.readUnlock(seq)) {
-					return result;
-				}
-			}
-		}
+		return parent;
 	}
 
 	/**
@@ -102,12 +91,7 @@ public class Transform {
 	 */
 	@Threadsafe
 	public void setParent(Transform parent) {
-		int seq = lock.writeLock();
-		try {
-			this.parent.set(parent);
-		} finally {
-			lock.writeUnlock(seq);
-		}
+		this.parent = parent;
 	}
 
 	/**
@@ -118,23 +102,9 @@ public class Transform {
 	 */
 	@Threadsafe
 	public void set(Transform transform) {
-		if (lock == transform.getLock()) {
-			throw new IllegalArgumentException("Attemping to set a transform to another transform with the same lock");
-		}
-		int seq = lock.writeLock();
-		try {
-			while (true) {
-				int seq2 = transform.getLock().readLock();
-				position.directSet(transform.getPosition());
-				rotation.directSet(transform.getRotation());
-				scale.directSet(transform.getScale());
-				if (transform.getLock().readUnlock(seq2)) {
-					return;
-				}
-			}
-		} finally {
-			lock.writeUnlock(seq);
-		}
+		setPosition(transform.position);
+		setRotation(transform.rotation);
+		setScale(transform.scale);
 	}
 
 	/**
@@ -154,14 +124,9 @@ public class Transform {
 	 */
 	@Threadsafe
 	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
-		int seq = lock.writeLock();
-		try {
-			position.directSet(world, px, py, pz);
-			rotation.directSet(rx, ry, rz, rw);
-			scale.directSet(sx, sy, sz);
-		} finally {
-			lock.writeUnlock(seq);
-		}
+		this.position = Point.create(world, px, py, pz);
+		this.rotation = Quaternion.create(rx, ry, rz, rw);
+		this.scale = Vector3.create(sx, sy, sz);		
 	}
 
 	/**
@@ -171,14 +136,9 @@ public class Transform {
 	 */
 	@Threadsafe
 	public void set(Point p, Quaternion r, Vector3 s) {
-		int seq = lock.writeLock();
-		try {
-			position.directSet(p);
-			rotation.directSet(r);
-			scale.directSet(s);
-		} finally {
-			lock.writeUnlock(seq);
-		}
+		setPosition(p);
+		setRotation(r);
+		setScale(s);
 	}
 
 	/**
@@ -191,16 +151,13 @@ public class Transform {
 	@Threadsafe
 	public Transform createSum(Transform t) {
 		Transform r = new Transform();
-		while (true) {
-			int seq = lock.readLock();
-			r.setPosition(position.add(t.getPosition()));
-			r.setRotation(rotation.multiply(t.getRotation()));
-			r.setScale(scale.add(t.getScale()));
-			r.setParent(parent.get());
-			if (lock.readUnlock(seq)) {
-				return r;
-			}
-		}
+			
+		r.setPosition(position.add(t.getPosition()));
+		r.setRotation(rotation.multiply(t.getRotation()));
+		r.setScale(scale.add(t.getScale()));
+		r.setParent(parent);
+		return r;
+	
 	}
 
 	/**
@@ -210,21 +167,16 @@ public class Transform {
 	 * @return the snapshot
 	 */
 	@Threadsafe
-	public Transform getAbsolutePosition() {
-		while (true) {
-			int seq = lock.readLock();
-			if (parent == null) {
-				Transform r = copy();
-				if (lock.readUnlock(seq)) {
-					return r;
-				}
-			} else {
-				Transform r = createSum(parent.get().getAbsolutePosition());
-				if (lock.readUnlock(seq)) {
-					return r;
-				}
-			}
+	public Transform getAbsolutePosition() {		
+		if (parent == null) {
+			Transform r = copy();
+			return r;				
+		} else {
+			Transform r = createSum(parent.getAbsolutePosition());
+			return r;
+		
 		}
+		
 	}
 
 	/**
@@ -235,16 +187,14 @@ public class Transform {
 	@Threadsafe
 	public Transform copy() {
 		Transform t = new Transform();
-		while (true) {
-			int seq = lock.readLock();
-			t.setPosition(position);
-			t.setRotation(rotation);
-			t.setScale(scale);
-			t.setParent(parent.get());
-			if (lock.readUnlock(seq)) {
-				return t;
-			}
-		}
+		
+		t.setPosition(position);
+		t.setRotation(rotation);
+		t.setScale(scale);
+		t.setParent(parent);
+		
+		return t;
+			
 	}
 
 	/**
@@ -254,37 +204,11 @@ public class Transform {
 	 */
 	@Override
 	@Threadsafe
-	public String toString() {
-		while (true) {
-			int seq = lock.readLock();
-			String s = getClass().getSimpleName() + "{" + position + ", " + rotation + ", " + scale + "}";
-			if (lock.readUnlock(seq)) {
-				return s;
-			}
-		}
+	public String toString() {		
+		String s = getClass().getSimpleName() + "{" + position + ", " + rotation + ", " + scale + "}";		
+		return s;
+			
 	}
 
-	@Threadsafe
-	protected OptimisticReadWriteLock getLock() {
-		return lock;
-	}
 
-	/**
-	 * Optimistically Read locks the Transform
-	 *
-	 * @return the sequence number
-	 */
-	public int readLock() {
-		return lock.readLock();
-	}
-
-	/**
-	 * Unlocks the optimistic read lock
-	 *
-	 * @param sequence the sequence number returned by readLock()
-	 * @return true if the Transform hasn't changed
-	 */
-	public boolean readUnlock(int sequence) {
-		return lock.readUnlock(sequence);
-	}
 }

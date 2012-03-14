@@ -97,11 +97,8 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return pooled vector3
 	 */
 	public static Vector3 create(float x, float y, float z) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(x);
-		v.setY(y);
-		v.setZ(z);
-		return v;
+		return  Vector3Pool.checkout().set(x,y,z);
+		
 	}
 
 	/**
@@ -113,11 +110,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return pooled vector3
 	 */
 	public static Vector3 create(double x, double y, double z) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX((float) x);
-		v.setY((float) y);
-		v.setZ((float) z);
-		return v;
+		return create((float) x, (float) y, (float) z);
 	}
 
 	/**
@@ -127,11 +120,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return pooled vector3
 	 */
 	public static Vector3 create(Vector3 vector) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(vector.getX());
-		v.setY(vector.getY());
-		v.setZ(vector.getZ());
-		return v;
+		return create(vector.getX(), vector.getY(), vector.getZ());
 	}
 
 	/**
@@ -140,11 +129,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return pooled vector3
 	 */
 	public static Vector3 create() {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(0);
-		v.setY(0);
-		v.setZ(0);
-		return v;
+		return create(0,0,0);
 	}
 
 	/**
@@ -156,11 +141,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return pooled vector3
 	 */
 	public static Vector3 create(int x, int y, int z) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(x);
-		v.setY(y);
-		v.setZ(z);
-		return v;
+		return create((float)x, (float)y, (float)z);
 	}
 
 	
@@ -177,16 +158,11 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		return this.z;
 	}
 
-	protected void setX(float x) {
+	protected Vector3 set(float x, float y, float z){
 		this.x = x;
-	}
-
-	protected void setY(float y) {
 		this.y = y;
-	}
-
-	protected void setZ(float z) {
 		this.z = z;
+		return this;
 	}
 
 	/**

@@ -23,27 +23,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.geo.cuboid;
 
-import org.spout.api.geo.discrete.Point;
+package org.spout.api.geo.discrete;
 
-/**
- * Represents a movable Cube that is located somewhere in a world.
- */
-public class Cubem extends Cube implements MovableCuboid {
-	public Cubem(Point base, float size) {
-		super(base, size);
+import org.spout.api.util.pool.ObjectPool;
+
+public class PointPool extends ObjectPool<Point> {
+	static PointPool instance = new PointPool();
+	
+	@Override
+	protected Point createNew() {
+		return new Point();
+	}
+	
+	public static Point checkout(){
+		return instance.getInstance();
+	}
+	
+	public static void free(Point obj){
+		instance.reclaim(obj);
 	}
 
-	public void setX(int x) {
-		base.setX(x * size.getX());
-	}
-
-	public void setY(int y) {
-		base.setY(y * size.getY());
-	}
-
-	public void setZ(int z) {
-		base.setZ(z * size.getZ());
-	}
 }

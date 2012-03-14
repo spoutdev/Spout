@@ -27,7 +27,6 @@ package org.spout.api.collision;
 
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
 
 public class CollisionHelper {
 	/**
@@ -141,8 +140,23 @@ public class CollisionHelper {
 
 	public static boolean checkCollision(BoundingBox a, Plane b) {
 		boolean pos = b.distance(a.min) > 0;
-		return pos != b.distance(a.max) > 0 //Planes that are axis-aligned. most cases
-				|| pos != b.distance(new Vector3(a.max.getX(), a.min.getY(), a.min.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.max.getY(), a.min.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.min.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.max.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.max.getX(), a.min.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.max.getX(), a.max.getY(), a.min.getZ())) > 0;
+		Vector3 v1 = Vector3.create(a.max.getX(), a.min.getY(), a.min.getZ());
+		Vector3 v2 = Vector3.create(a.min.getX(), a.max.getY(), a.min.getZ());
+		Vector3 v3 = Vector3.create(a.min.getX(), a.min.getY(), a.max.getZ());
+		Vector3 v4 = Vector3.create(a.min.getX(), a.max.getY(), a.max.getZ());
+		Vector3 v5 = Vector3.create(a.max.getX(), a.min.getY(), a.max.getZ());
+		Vector3 v6 = Vector3.create(a.max.getX(), a.max.getY(), a.min.getZ());
+		
+		boolean intersects = pos != b.distance(a.max) > 0 //Planes that are axis-aligned. most cases
+				|| pos != b.distance(v1) > 0 || pos != b.distance(v2) > 0 ||
+				pos != b.distance(v3) > 0 || pos != b.distance(v4) > 0 || pos != b.distance(v5) > 0 
+				|| pos != b.distance(v6) > 0;
+				
+		v1.free(); v2.free();
+		v3.free(); v4.free();
+		v5.free(); v6.free();
+				
+		return intersects;
 	}
 
 	/**
@@ -322,9 +336,9 @@ public class CollisionHelper {
 			return null;
 		}
 
-		Vector3 intersectionMin = new Vector3(Math.max(a.min.getX(), b.min.getX()), Math.max(a.min.getY(), b.min.getY()), Math.max(a.min.getZ(), b.min.getZ()));
+		Vector3 intersectionMin = Vector3.create(Math.max(a.min.getX(), b.min.getX()), Math.max(a.min.getY(), b.min.getY()), Math.max(a.min.getZ(), b.min.getZ()));
 
-		Vector3 intersectionMax = new Vector3(Math.min(a.max.getX(), b.max.getX()), Math.min(a.max.getY(), b.max.getY()), Math.min(a.max.getZ(), b.max.getZ()));
+		Vector3 intersectionMax = Vector3.create(Math.min(a.max.getX(), b.max.getX()), Math.min(a.max.getY(), b.max.getY()), Math.min(a.max.getZ(), b.max.getZ()));
 
 		return new BoundingBox(intersectionMin, intersectionMax);
 	}
@@ -341,7 +355,7 @@ public class CollisionHelper {
 		if (intersection == null) {
 			return null;
 		}
-		Vector3m ret = new Vector3m(intersection.min);
+		Vector3 ret = Vector3.create(intersection.min);
 		ret.add(intersection.max);
 		ret.scale(0.5f);
 		return ret;

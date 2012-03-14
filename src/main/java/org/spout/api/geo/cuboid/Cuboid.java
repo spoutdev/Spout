@@ -28,20 +28,18 @@ package org.spout.api.geo.cuboid;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
 
 /**
  * Represents a Cuboid shaped volume that is located somewhere in a world.
  */
 public class Cuboid {
-	protected Pointm base;
-	protected Vector3m size;
+	protected Point base;
+	protected Vector3 size;
 
 	public Cuboid(Point base, Vector3 size) {
-		this.base = new Pointm(base);
-		this.size = new Vector3m(size);
+		this.base = new Point(base);
+		this.size = Vector3.create(size);
 	}
 
 	public Point getBase() {

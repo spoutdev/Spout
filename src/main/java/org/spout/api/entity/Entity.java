@@ -32,7 +32,6 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
