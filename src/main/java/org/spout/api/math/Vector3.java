@@ -208,7 +208,10 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		return add(create(x,y,z));
+		Vector3 v = create(x,y,z);
+		Vector3 a = add(v);
+		v.free();
+		return a;
 	}
 
 	/**
@@ -254,7 +257,10 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		return subtract(create(x,y,z));
+		Vector3 v = create(x,y,z);
+		Vector3 a = subtract(v);
+		v.free();
+		return a;
 	}
 
 	/**
@@ -286,7 +292,10 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	}
 
 	public Vector3 scale(float x, float y, float z) {
-		return Vector3.scale(this, create(x,y,z));
+		Vector3 s = Vector3.create(x,y,z);
+		Vector3 a = Vector3.scale(this, s);
+		s.free();
+		return a;
 	}
 
 	/**
