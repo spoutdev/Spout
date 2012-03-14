@@ -28,25 +28,19 @@ package org.spout.server.entity;
 import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.spout.api.Game;
 import org.spout.api.Spout;
-import org.spout.api.collision.CollisionHelper;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
-import org.spout.api.entity.Position;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
-import org.spout.api.geo.discrete.atomic.AtomicPoint;
-import org.spout.api.geo.discrete.atomic.Transform;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.math.*;
@@ -64,13 +58,13 @@ import org.spout.server.datatable.value.SpoutDatatableFloat;
 import org.spout.server.datatable.value.SpoutDatatableInt;
 import org.spout.server.datatable.value.SpoutDatatableObject;
 import org.spout.server.player.SpoutPlayer;
-import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
+
 
 public class SpoutEntity implements Entity {
 
 	private static final long serialVersionUID = 1L;
 	public final static int NOTSPAWNEDID = -1;
-	private final static Transform DEAD = new Transform(new Point(null, 0, 0, 0), new Quaternion(0F, 0F, 0F, 0F), new Vector3(0, 0, 0));
+	private final static Transform DEAD = new Transform(Point.invalid, Quaternion.identity, Vector3.ZERO);
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
@@ -91,7 +85,6 @@ public class SpoutEntity implements Entity {
 	SpoutDatatableMap map;
 	boolean observer = false;
 	Thread owningThread = null;
-	Vector3m offset = new Vector3m();
 	float pitch, yaw, roll;
 
 	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
@@ -148,24 +141,32 @@ public class SpoutEntity implements Entity {
 		this.collision.setPosition(this.transform.getPosition());
 
 		//Resolve Collisions Here
-		final Pointm location = this.transform.getPosition();
+		final Point location = this.transform.getPosition();
 		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
 
-		offset.set(this.lastTransform.getPosition());
-		offset.subtract(this.transform.getPosition());
+		
+		Vector3 offset = this.lastTransform.getPosition().subtract(this.transform.getPosition());
 		for (CollisionVolume box : colliding) {
 			Vector3 collision = this.collision.resolve(box);
 			if (collision != null) {
 				collision = collision.subtract(location);
 				System.out.println("Collision: " + collision);
+				
 				if (collision.getX() != 0F) {
-					offset.setX(collision.getX());
+					Vector3 t = offset;
+					offset = Vector3.create(collision.getX(), offset.getY(), offset.getZ());
+					t.free();
+					
 				}
 				if (collision.getY() != 0F) {
-					offset.setY(collision.getY());
+					Vector3 t = offset;
+					offset = Vector3.create(offset.getX(), collision.getY(), offset.getZ());
+					t.free();
 				}
 				if (collision.getZ() != 0F) {
-					offset.setZ(collision.getZ());
+					Vector3 t = offset;
+					offset = Vector3.create(offset.getX(), offset.getY(), collision.getZ());
+					t.free();
 				}
 			}
 		}
@@ -174,7 +175,6 @@ public class SpoutEntity implements Entity {
 
 
 		location.add(offset);
-		Point old = this.getPosition();
 		this.setPosition(location);
 
 		//Check to see if we should fire off a Move event
@@ -200,7 +200,11 @@ public class SpoutEntity implements Entity {
 			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to translate from another thread!");
 			return;
 		}
-		this.transform.getPosition().add(x,y,z);
+		Vector3 p = this.transform.getPosition().add(x,y,z);
+		Point s = Point.create(p, this.transform.getPosition().getWorld());
+		this.transform.setPosition(s);
+		p.free();
+		s.free();
 	}
 
 	@Override
@@ -209,7 +213,9 @@ public class SpoutEntity implements Entity {
 			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
 			return;
 		}
-		this.transform.getRotation().rotate(ang,x,y,z);
+		Quaternion q = this.transform.getRotation().rotate(ang,x,y,z);
+		this.transform.setRotation(q);
+		q.free();
 	}
 
 	@Override
@@ -218,7 +224,10 @@ public class SpoutEntity implements Entity {
 			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to Rotate from another thread!");
 			return;
 		}
-		this.transform.getRotation().multiply(rot);
+		Quaternion q = this.transform.getRotation().multiply(rot);
+		this.transform.setRotation(q);
+		q.free();
+		
 	}
 
 	@Override
@@ -227,16 +236,16 @@ public class SpoutEntity implements Entity {
 			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to scale from another thread!");
 			return;
 		}
-		this.transform.getScale().multiply(amount);
+		Vector3 s = this.transform.getScale().scale(amount);
+		this.transform.setScale(s);
+		s.free();
 	}
 
 	@Override
 	public void scale(float x, float y, float z) {
-		if(this.owningThread != Thread.currentThread()){
-			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to scale from another thread!");
-			return;
-		}
-		this.transform.getScale().multiply(x,y,z);
+		Vector3 s = Vector3.create(x,y,z);
+		scale(s);
+		s.free();
 	}
 
 
@@ -412,30 +421,18 @@ public class SpoutEntity implements Entity {
 
 	// TODO - make actually atomic, rather than just threadsafe
 	@Override
-	public boolean kill() {
-		int seq = lock.writeLock();
-		boolean alive = true;
-		try {
-			AtomicPoint p = transform.getPosition();
-			alive = p.getWorld() != null;
-			transform.set(DEAD);
-			chunkLive = null;
-			entityManagerLive = null;
-		} finally {
-			lock.writeUnlock(seq);
-		}
-		return alive;
+	public boolean kill() {		
+		Point p = transform.getPosition();
+		boolean alive = p.getWorld() != null;
+		transform.set(DEAD);
+		chunkLive = null;
+		entityManagerLive = null;
+		return alive;	
 	}
 
 	@Override
 	public boolean isDead() {
-		while (true) {
-			int seq = transform.readLock();
-			boolean dead = id != NOTSPAWNEDID && transform.getPosition().getWorld() == null;
-			if (transform.readUnlock(seq)) {
-				return dead;
-			}
-		}
+		return id != NOTSPAWNEDID && transform.getPosition().getWorld() == null;			
 	}
 
 	// TODO - needs to be made thread safe

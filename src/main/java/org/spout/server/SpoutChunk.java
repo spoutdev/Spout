@@ -43,7 +43,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
-import org.spout.api.geo.cuboid.Blockm;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
@@ -613,7 +613,7 @@ public class SpoutChunk extends Chunk {
 		return blockStore.isDirtyOverflow();
 	}
 
-	public Blockm getDirtyBlock(int i, Blockm blockm) {
+	public Block getDirtyBlock(int i, Block blockm) {
 		return blockStore.getDirtyBlock(i, blockm);
 	}
 

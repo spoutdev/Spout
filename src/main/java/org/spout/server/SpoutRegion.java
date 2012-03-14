@@ -42,7 +42,7 @@ import org.spout.api.entity.PlayerController;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Blockm;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
@@ -554,7 +554,7 @@ public class SpoutRegion extends Region {
 		if (synchronizer != null) {
 			if (!chunk.isDirtyOverflow()) {
 				for (int i = 0; true; i++) {
-					Blockm block = chunk.getDirtyBlock(i, new SpoutBlockm(getWorld(), 0, 0, 0));
+					Block block = chunk.getDirtyBlock(i, new SpoutBlock(getWorld(), 0, 0, 0));
 					if (block == null) {
 						break;
 					} else {
