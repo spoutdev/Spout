@@ -71,7 +71,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 *
+	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -81,6 +81,55 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		this.y = y;
 		this.z = z;
 	}
+
+	/**
+	 * Creates a new Vector3, grabbing it from the pool.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @return pooled vector3
+	 */
+	public static Vector3 create(float x, float y, float z) {
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(x);
+		v.setY(y);
+		v.setZ(z);
+		return v;
+	}
+
+	/**
+	 * Creates a new Vector3, grabbing it from the pool.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @return pooled vector3
+	 */
+	public static Vector3 create(double x, double y, double z) {
+		Vector3 v = Vector3Pool.checkout();
+		v.setX((float) x);
+		v.setY((float) y);
+		v.setZ((float) z);
+		return v;
+	}
+
+	/**
+	 * Creates a new Vector3, grabbing it from the pool.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @return pooled vector3
+	 */
+	public static Vector3 create(int x, int y, int z) {
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(x);
+		v.setY(y);
+		v.setZ(z);
+		return v;
+	}
+
 	/**
 	 * Constructs and initializes a Vector3 to (0,0)
 	 */
@@ -89,42 +138,42 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	}
 
 	public float getX() {
-		return x;
+		return this.x;
 	}
 
 	public float getY() {
-		return y;
+		return this.y;
 	}
 
 	public float getZ() {
-		return z;
+		return this.z;
 	}
-	
-	protected void setX(float x){
+
+	protected void setX(float x) {
 		this.x = x;
 	}
-	
-	protected void setY(float y){
+
+	protected void setY(float y) {
 		this.y = y;
 	}
-	
-	protected void setZ(float z){
+
+	protected void setZ(float z) {
 		this.z = z;
 	}
 
 	/**
 	 * Adds this Vector3 to the value of the Vector3 argument
-	 *
+	 * 
 	 * @param that The Vector3 to add
 	 * @return the new Vector3
 	 */
-	public Vector3 add(Vector3 that) {		
+	public Vector3 add(Vector3 that) {
 		return add(that.getX(), that.getY(), that.getZ());
 	}
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -140,31 +189,31 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @return
 	 */
 	public Vector3 add(double x, double y, double z) {
-		return add((float)x, (float) y, (float) z);
+		return add((float) x, (float) y, (float) z);
 	}
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @return
 	 */
 	public Vector3 add(int x, int y, int z) {
-		return add((float)x, (float)y, (float)z);
+		return add((float) x, (float) y, (float) z);
 	}
 
 	/**
 	 * Subtracts the given Vector3 from this Vector3
-	 *
+	 * 
 	 * @param that The Vector3 to subtract
 	 * @return the new Vector3
 	 */
@@ -174,7 +223,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -190,48 +239,47 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @return
 	 */
 	public Vector3 subtract(double x, double y, double z) {
-		return subtract((float)x, (float)y, (float) z);
+		return subtract((float) x, (float) y, (float) z);
 	}
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @return
 	 */
 	public Vector3 subtract(int x, int y, int z) {
-		return subtract((float)x, (float)y, (float)z);
+		return subtract((float) x, (float) y, (float) z);
 	}
 
-	public Vector3 scale(float s){
+	public Vector3 scale(float s) {
 		Vector3 v = Vector3Pool.checkout();
 		v.setX(getX() * s);
 		v.setY(getY() * s);
 		v.setZ(getZ() * s);
 		return v;
 	}
-	
-	public Vector3 scale(float x, float y, float z){
+
+	public Vector3 scale(float x, float y, float z) {
 		Vector3 v = Vector3Pool.checkout();
 		v.setX(getX() * x);
 		v.setY(getY() * y);
 		v.setZ(getZ() * z);
 		return v;
 	}
-	
-	
+
 	/**
 	 * Takes the dot product of two vectors
-	 *
+	 * 
 	 * @param that
 	 * @return
 	 */
@@ -243,7 +291,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * Returns a Vector2 object using the X and Z values of this Vector3. The x
 	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
 	 * becomes the y of the Vector2.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector2 toVector2() {
@@ -254,7 +302,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * Returns a Vector2m object using the X and Z values of this Vector3. The x
 	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
 	 * becomes the y of the Vector2m.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector2m toVector2m() {
@@ -263,7 +311,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Takes the cross product of two vectors
-	 *
+	 * 
 	 * @param that
 	 * @return
 	 */
@@ -274,45 +322,45 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 ceil() {
-		return new Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z));
+		return new Vector3(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
 	}
 
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 floor() {
-		return new Vector3(Math.floor(x), Math.floor(y), Math.floor(z));
+		return new Vector3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
 	}
 
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 round() {
-		return new Vector3(Math.round(x), Math.round(y), Math.round(z));
+		return new Vector3(Math.round(this.x), Math.round(this.y), Math.round(this.z));
 	}
 
 	/**
 	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 abs() {
-		return new Vector3(Math.abs(x), Math.abs(y), Math.abs(z));
+		return new Vector3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
 	}
 
 	/**
 	 * Gets the distance between this Vector3 and a given Vector3.
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -322,7 +370,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Raises the X, Y, and Z values of this Vector3 to the given power.
-	 *
+	 * 
 	 * @param power
 	 * @return
 	 */
@@ -332,7 +380,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * returns the squared length of the vector
-	 *
+	 * 
 	 * @return
 	 */
 	public float lengthSquared() {
@@ -342,7 +390,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * returns the length of this vector. Note: makes use of Math.sqrt and is
 	 * not cached.
-	 *
+	 * 
 	 * @return
 	 */
 	public float length() {
@@ -351,7 +399,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns a fast approximation of this vector's length.
-	 *
+	 * 
 	 * @return
 	 */
 	public float fastLength() {
@@ -360,7 +408,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * returns the vector with a length of 1
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 normalize() {
@@ -369,7 +417,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * returns the vector as [x,y,z]
-	 *
+	 * 
 	 * @return
 	 */
 	public float[] toArray() {
@@ -379,7 +427,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
-	 *
+	 * 
 	 * @param transformation
 	 * @return
 	 */
@@ -390,7 +438,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
-	 *
+	 * 
 	 * @param transformation
 	 * @return
 	 */
@@ -425,31 +473,31 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Generates a unique hash code for this set of values
-	 *
+	 * 
 	 * @return
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(7, 37).append(x).append(y).append(z).toHashCode();
+		return new HashCodeBuilder(7, 37).append(this.x).append(this.y).append(this.z).toHashCode();
 	}
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ", " + z + ")";
+		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 	}
 
 	@Override
 	public Vector3 clone() {
-		return new Vector3(x, y, z);
+		return new Vector3(this.x, this.y, this.z);
 	}
 
 	/**
 	 * Returns the length of the given vector.
-	 *
+	 * 
 	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
-	 *
+	 * 
 	 * Also known as norm. ||a||
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -459,7 +507,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns an approximate length of the given vector.
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -469,7 +517,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * returns the length squared to the given vector
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -479,7 +527,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns a new vector that is the given vector but length 1
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -489,7 +537,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Creates a new Vector that is A + B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -500,7 +548,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Creates a new vector that is A - B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -511,7 +559,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Multiplies one Vector3 by the other Vector3
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -522,7 +570,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Divides one Vector3 by the other Vector3
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -533,7 +581,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns the dot product of A and B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -545,7 +593,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Creates a new Vector that is the A x B The Cross Product is the vector
 	 * orthogonal to both A and B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -557,7 +605,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 up to the nearest
 	 * integer value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
@@ -568,7 +616,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 down to the nearest
 	 * integer value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
@@ -579,7 +627,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
@@ -589,7 +637,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
@@ -599,7 +647,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns a Vector3 containing the smallest X, Y, and Z values.
-	 *
+	 * 
 	 * @param o1
 	 * @param o2
 	 * @return
@@ -610,7 +658,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns a Vector3 containing the largest X, Y, and Z values.
-	 *
+	 * 
 	 * @param o1
 	 * @param o2
 	 * @return
@@ -621,7 +669,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns a Vector3 with random X, Y, and Z values (between 0 and 1)
-	 *
+	 * 
 	 * @return
 	 */
 	public static Vector3 rand() {
@@ -634,7 +682,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Gets the distance between two Vector3.
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -646,7 +694,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Raises the X, Y, and Z values of a Vector3 to the given power.
-	 *
+	 * 
 	 * @param o
 	 * @param power
 	 * @return
@@ -659,7 +707,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * Returns a Vector2 object using the X and Z values of the given Vector3.
 	 * The x of the Vector3 becomes the x of the Vector2, and the z of this
 	 * Vector3 becomes the y of the Vector2m.
-	 *
+	 * 
 	 * @param o Vector3 object to use
 	 * @return
 	 */
@@ -671,7 +719,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * Returns a Vector2m object using the X and Z values of the given Vector3.
 	 * The x of the Vector3 becomes the x of the Vector2m, and the z of this
 	 * Vector3 becomes the y of the Vector2m.
-	 *
+	 * 
 	 * @param o Vector3 object to use
 	 * @return
 	 */
@@ -681,7 +729,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Returns a new float array that is {x, y, z}
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -692,7 +740,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	/**
 	 * Calculates and returns a new Vector3 transformed by the transformation
 	 * matrix
-	 *
+	 * 
 	 * @param vector the vector to transform
 	 * @param transformation the transformation matrix
 	 * @return
@@ -704,7 +752,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
-	 *
+	 * 
 	 * @param vector
 	 * @param rot
 	 * @return
@@ -726,13 +774,13 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	public static boolean equals(Vector3 a, Vector3 b) {
 		return a.equals(b);
 	}
-	
-	
+
 	/**
-	 * Creates a raw, unpooled immutable vector3 set to 0, 0, 0.    
+	 * Creates a raw, unpooled immutable vector3 set to 0, 0, 0.
+	 * 
 	 * @return
 	 */
-	public static Vector3 createRaw(){
+	public static Vector3 createRaw() {
 		return new Vector3();
 	}
 }
