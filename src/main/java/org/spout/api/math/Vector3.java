@@ -115,6 +115,33 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	}
 
 	/**
+	 * Creates a new Vector3 from another Vector3, grabbing it from the pool.
+	 * 
+	 * @param x the x coordinate
+	 * @return pooled vector3
+	 */
+	public static Vector3 create(Vector3 vector) {
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(vector.getX());
+		v.setY(vector.getY());
+		v.setZ(vector.getZ());
+		return v;
+	}
+
+	/**
+	 * Creates a new Vector3, grabbing it from the pool.
+	 * 
+	 * @return pooled vector3
+	 */
+	public static Vector3 create() {
+		Vector3 v = Vector3Pool.checkout();
+		v.setX(0);
+		v.setY(0);
+		v.setZ(0);
+		return v;
+	}
+
+	/**
 	 * Creates a new Vector3, grabbing it from the pool.
 	 * 
 	 * @param x the x coordinate
@@ -180,11 +207,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(this.getX() + x);
-		v.setY(this.getY() + y);
-		v.setZ(this.getZ() + z);
-		return v;
+		return create(this.getX() + x, this.getY() + y, this.getZ() + z);
 	}
 
 	/**
@@ -230,11 +253,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(this.getX() - x);
-		v.setY(this.getY() - y);
-		v.setZ(this.getZ() - z);
-		return v;
+		return create(this.getX() - x, this.getY() - y, this.getZ() - z);
 	}
 
 	/**
@@ -262,19 +281,11 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	}
 
 	public Vector3 scale(float s) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(getX() * s);
-		v.setY(getY() * s);
-		v.setZ(getZ() * s);
-		return v;
+		return create(this.getX() * s, this.getY() * s, this.getZ() * s);
 	}
 
 	public Vector3 scale(float x, float y, float z) {
-		Vector3 v = Vector3Pool.checkout();
-		v.setX(getX() * x);
-		v.setY(getY() * y);
-		v.setZ(getZ() * z);
-		return v;
+		return create(this.getX() * x, this.getY() * y, this.getZ() * z);
 	}
 
 	/**
@@ -326,7 +337,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 ceil() {
-		return new Vector3(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
+		return create(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
 	}
 
 	/**
@@ -336,7 +347,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 floor() {
-		return new Vector3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
+		return create(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
 	}
 
 	/**
@@ -346,7 +357,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 round() {
-		return new Vector3(Math.round(this.x), Math.round(this.y), Math.round(this.z));
+		return create(Math.round(this.x), Math.round(this.y), Math.round(this.z));
 	}
 
 	/**
@@ -355,7 +366,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 abs() {
-		return new Vector3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
+		return create(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
 	}
 
 	/**
@@ -543,7 +554,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 add(Vector3 a, Vector3 b) {
-		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+		return create(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
 
 	/**
@@ -554,7 +565,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 subtract(Vector3 a, Vector3 b) {
-		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+		return create(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
 	/**
@@ -565,7 +576,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 multiply(Vector3 a, Vector3 b) {
-		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+		return create(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 
 	/**
@@ -576,7 +587,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 divide(Vector3 a, Vector3 b) {
-		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+		return create(a.x / b.x, a.y / b.y, a.z / b.z);
 	}
 
 	/**
@@ -599,7 +610,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 cross(Vector3 a, Vector3 b) {
-		return new Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+		return create(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
 
 	/**
@@ -610,7 +621,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 ceil(Vector3 o) {
-		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
+		return create(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
 	}
 
 	/**
@@ -621,7 +632,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 floor(Vector3 o) {
-		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
+		return create(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
 	}
 
 	/**
@@ -632,7 +643,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 round(Vector3 o) {
-		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
+		return create(Math.round(o.x), Math.round(o.y), Math.round(o.z));
 	}
 
 	/**
@@ -642,7 +653,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 abs(Vector3 o) {
-		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
+		return create(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
 	}
 
 	/**
@@ -653,7 +664,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 min(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
+		return create(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
 	}
 
 	/**
@@ -664,7 +675,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 max(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
+		return create(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
 	}
 
 	/**
@@ -677,7 +688,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		for (int i = 0; i < 3; i++) {
 			rands[i] = Math.random() * 2 - 1;
 		}
-		return new Vector3(rands[0], rands[1], rands[2]);
+		return create(rands[0], rands[1], rands[2]);
 	}
 
 	/**
@@ -700,7 +711,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 pow(Vector3 o, double power) {
-		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
+		return create(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
 	}
 
 	/**
