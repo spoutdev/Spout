@@ -39,7 +39,11 @@ public abstract class PoolableObject {
 		isFreed = false;
 		parentPool = p;
 	}
-
+		
+	/**
+	 * Frees the object back into the pool.
+	 * Notice: After calling this, you cannot trust the contents of this object.  
+	 */
 	public void free() {
 		if(!isPooled) return; //Ignore if not pooled
 		parentPool.reclaim(this);

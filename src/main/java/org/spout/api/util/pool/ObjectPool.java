@@ -57,7 +57,7 @@ public abstract class ObjectPool<T extends PoolableObject> {
 	 * @param object
 	 */
 	public void reclaim(T object) {
-		if (object.isFreed) {
+		if (!object.isFreed) {
 			throw new IllegalArgumentException("Cannot reclaim something that the pool already contains");
 		}
 		if(object.parentPool != this){
