@@ -47,7 +47,6 @@ public abstract class PoolableObject {
 	public void free() {
 		if(!isPooled) return; //Ignore if not pooled
 		parentPool.reclaim(this);
-		isFreed = true;
 	}
 
 	@Override

@@ -63,6 +63,7 @@ public abstract class ObjectPool<T extends PoolableObject> {
 		if(object.parentPool != this){
 			throw new IllegalArgumentException("Cannot reclaim something that isn't owned by this pool");
 		}
+		object.isFreed = true;
 		pool.add(object);
 	}
 }
