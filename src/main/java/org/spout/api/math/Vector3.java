@@ -543,7 +543,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector3 normalize(Vector3 a) {
-		return a.multiply(1.f / a.length());
+		return a.scale(1.f / a.length());
 	}
 
 	/**
