@@ -16,8 +16,8 @@ public abstract class PoolableObject {
 	}
 
 	public void free() {
-		isFreed = true;
 		parentPool.reclaim(this);
+		isFreed = true;
 	}
 
 	@Override
