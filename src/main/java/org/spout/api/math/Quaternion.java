@@ -29,10 +29,10 @@ import org.spout.api.util.pool.PoolableObject;
 
 /**
  * Represents a rotation around a unit 4d circle.
- *
- *
+ * 
+ * 
  */
-public class Quaternion extends PoolableObject implements Cloneable{
+public class Quaternion extends PoolableObject implements Cloneable {
 	protected float x, y, z, w;
 	protected Vector3 cachedAngle = null;
 
@@ -40,33 +40,32 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	 * Represents no rotation
 	 */
 	public static Quaternion identity = new Quaternion();
-	
-	protected Quaternion(){
-		this.x = 0;
-		this.y = 0;
-		this.z = 0;
-		this.w = 1;
+
+	protected Quaternion() {
+		x = 0;
+		y = 0;
+		z = 0;
+		w = 1;
 	}
-	
 
 	/**
 	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
 	 * Unit Vector in 4d space. Do not use unless you know what you are doing.
 	 * If you want to create a normal rotation, use the angle/axis override.
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param w
 	 */
 	public static Quaternion create(float x, float y, float z, float w, boolean ignore) {
-		return QuaternionPool.checkout().set(x, y, z, w);		
+		return QuaternionPool.checkout().set(x, y, z, w);
 	}
-	
+
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
 	 * arbatrary axis
-	 *
+	 * 
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param x-axis
 	 * @param y-axis
@@ -82,7 +81,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
 	 * arbatrary axis
-	 *
+	 * 
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */
@@ -99,7 +98,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the X component of the quaternion
-	 *
+	 * 
 	 * @return
 	 */
 	public float getX() {
@@ -108,7 +107,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the Y component of the quaternion
-	 *
+	 * 
 	 * @return
 	 */
 	public float getY() {
@@ -117,7 +116,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the Z component of the quaternion
-	 *
+	 * 
 	 * @return
 	 */
 	public float getZ() {
@@ -126,14 +125,14 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the W component of the quaternion
-	 *
+	 * 
 	 * @return
 	 */
 	public float getW() {
 		return w;
 	}
-	
-	private Quaternion set(float x, float y, float z, float w){
+
+	private Quaternion set(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -143,7 +142,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the length squared of the quaternion
-	 *
+	 * 
 	 * @return
 	 */
 	public float lengthSquared() {
@@ -153,7 +152,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	/**
 	 * Returns the length of the quaternion. Note: This uses square root, so is
 	 * slowish
-	 *
+	 * 
 	 * @return
 	 */
 	public float length() {
@@ -162,7 +161,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns this quaternion but length() == 1
-	 *
+	 * 
 	 * @return
 	 */
 	public Quaternion normalize() {
@@ -171,7 +170,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Multiplies this Quaternion by the other Quaternion
-	 *
+	 * 
 	 * @param o
 	 * @return
 	 */
@@ -182,7 +181,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	/**
 	 * Creates and returns a new Quaternion that represnets this quaternion
 	 * rotated by the given Axis and Angle
-	 *
+	 * 
 	 * @param angle
 	 * @param axis
 	 * @return rotated Quaternion
@@ -190,11 +189,11 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	public Quaternion rotate(float angle, Vector3 axis) {
 		return Quaternion.rotate(this, angle, axis);
 	}
-	
+
 	/**
 	 * Creates and returns a new Quaternion that represnets this quaternion
 	 * rotated by the given Axis and Angle
-	 *
+	 * 
 	 * @param angle
 	 * @param x axis
 	 * @param y axis
@@ -204,7 +203,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	public Quaternion rotate(float angle, float x, float y, float z) {
 		return Quaternion.rotate(this, angle, x, y, z);
 	}
-	
+
 	@Override
 	public Quaternion clone() {
 		return create(x, y, z, w, true);
@@ -212,18 +211,17 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 *
+	 * 
 	 * vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y
 	 * axis (Yaw) vect.Z = Rotation about the Z axis (Pitch)
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
 	public Vector3 getAxisAngles() {
 		if (cachedAngle != null) {
 			return cachedAngle.clone();
-		}
-		else {
+		} else {
 			cachedAngle = Quaternion.getAxisAngles(this);
 			return cachedAngle.clone();
 		}
@@ -236,7 +234,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the length squared of the given Quaternion
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -248,7 +246,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	 * Returns the length of the given Quaternion <br/>
 	 * <br/>
 	 * Note: Uses Math.sqrt.
-	 *
+	 * 
 	 * @param a
 	 * @return length of Quaternion
 	 */
@@ -259,7 +257,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	/**
 	 * Constructs and returns a new Quaternion that is the given Quaternion but
 	 * length() == 1
-	 *
+	 * 
 	 * @param a
 	 * @return normalized Quaternion
 	 */
@@ -270,7 +268,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Constructs and returns a new Quaternion that is A * B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return multiplied Quaternion
@@ -290,7 +288,7 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	/**
 	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
-	 *
+	 * 
 	 * @param a
 	 * @param angle
 	 * @param axis
@@ -299,11 +297,11 @@ public class Quaternion extends PoolableObject implements Cloneable{
 	public static Quaternion rotate(Quaternion a, float angle, Vector3 axis) {
 		return multiply(create(angle, axis), a);
 	}
-	
+
 	/**
 	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
-	 *
+	 * 
 	 * @param a
 	 * @param angle
 	 * @param x axis
@@ -317,12 +315,13 @@ public class Quaternion extends PoolableObject implements Cloneable{
 
 	/**
 	 * Returns the angles, in degrees, about each axis of this quaternion stored
-	 * in a Vector3 <br/> <br/>
-	 *
+	 * in a Vector3 <br/>
+	 * <br/>
+	 * 
 	 * vect.X = Rotation about the X axis (Roll) <br/>
 	 * vect.Y = Rotation about the Y axis (Yaw) <br/>
 	 * vect.Z = Rotation about the Z axis (Pitch) <br/>
-	 *
+	 * 
 	 * @param a
 	 * @return axis angles
 	 */
