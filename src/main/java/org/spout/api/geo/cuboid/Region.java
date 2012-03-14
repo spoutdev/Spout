@@ -55,7 +55,7 @@ public abstract class Region extends Cube {
 	public final static int EDGE = 256;
 
 	public Region(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), EDGE);
+		super(Point.create(world, x, y, z), EDGE);
 	}
 
 	/**

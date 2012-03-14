@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.DatatableSequenceNumber;
+import org.spout.api.geo.cuboid.Block;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -693,7 +694,7 @@ public class AtomicBlockStore<T> {
 	 * @param block
 	 * @return
 	 */
-	public Blockm getDirtyBlock(int i, Blockm block) {
+	public Block getDirtyBlock(int i, Block block) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
 		}

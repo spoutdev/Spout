@@ -41,7 +41,7 @@ public abstract class ChunkSnapshot extends Cube implements BlockData {
 	public final static int BASE_MASK = -CHUNK_SIZE;
 
 	public ChunkSnapshot(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), CHUNK_SIZE);
+		super(Point.create(world, x, y, z), CHUNK_SIZE);
 	}
 
 	/**
