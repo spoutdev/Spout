@@ -273,6 +273,10 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		s.free();
 		return a;
 	}
+	
+	public Vector3 scale(Vector3 other){
+		return scale(other.getX(), other.getY(), other.getZ());
+	}
 
 	/**
 	 * Takes the dot product of two vectors

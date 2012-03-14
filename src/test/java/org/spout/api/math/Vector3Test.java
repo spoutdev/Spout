@@ -187,7 +187,7 @@ public class Vector3Test {
 	@Test
 	public void testMultiplyFloat() {
 		Vector3 a = Vector3.create(1, -1, 3.5);
-		Vector3 b = a.multiply(2.0F, 6.0F, 2.0F);
+		Vector3 b = a.scale(2.0F, 6.0F, 2.0F);
 
 		doAssertDouble("x.X does not equal 2", 2, b.x);
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
@@ -199,39 +199,8 @@ public class Vector3Test {
 		doAssertDouble("x.Y does not equal -2", -2, c.y);
 		doAssertDouble("x.Z does not equal 7", 7, c.z);
 	}
-
-	@Test
-	public void testMultiplyDouble() {
-		Vector3 a = Vector3.create(1, -1, 2);
-		Vector3 b = a.multiply(2.0D, 6.0D, 5.1D);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 10.2", 10.2, b.z);
-
-		Vector3 c = a.scale(2.0D);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -2", -2, c.y);
-		doAssertDouble("x.Z does not equal 4", 4, c.z);
-	}
-
-	@Test
-	public void testMultiplyInt() {
-		Vector3 a = Vector3.create(1, -1, 4);
-		Vector3 b = a.multiply(2, 6, 5);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 20", 20, b.z);
-
-		Vector3 c = a.scale(2);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -2", -2, c.y);
-		doAssertDouble("x.Z does not equal 8", 8, c.z);
-	}
-
+	
+	
 	
 
 	@Test
