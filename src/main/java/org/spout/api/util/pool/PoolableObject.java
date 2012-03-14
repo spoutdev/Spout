@@ -13,13 +13,13 @@ public abstract class PoolableObject {
 		parentPool = p;
 	}
 	
-	public void reclaim(){
+	public void free(){
 		parentPool.reclaim(this);
 	}
 	
 	@Override
 	public void finalize(){
-		if(this.isPooled) parentPool.reclaim(this);
+		if(this.isPooled) free();
 		
 	}
 
