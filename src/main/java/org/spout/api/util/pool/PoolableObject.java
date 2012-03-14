@@ -1,6 +1,6 @@
 package org.spout.api.util.pool;
 
-public class PoolableObject {
+public abstract class PoolableObject {
 	
 	
 	boolean isPooled;

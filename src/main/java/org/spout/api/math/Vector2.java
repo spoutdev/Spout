@@ -26,6 +26,7 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.pool.PoolableObject;
 
 /**
  * A 2-dimensional vector represented by float-precision x,y coordinates
@@ -33,7 +34,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Note, this is the Immutable form of Vector2. All operations will construct a
  * new Vector2.
  */
-public class Vector2 implements Comparable<Vector2>, Cloneable{
+public class Vector2 extends PoolableObject implements Comparable<Vector2>, Cloneable{
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
@@ -59,19 +60,37 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
-	public Vector2(float x, float y) {
+	protected Vector2(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
-
+	/**
+	 * Constructs and initializes a Vector2 to (0,0)
+	 */
+	protected Vector2() {
+		this(0, 0);
+	}
+	
 	/**
 	 * Constructs and initializes a Vector2 from the given x, y
 	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
-	public Vector2(double x, double y) {
-		this((float) x, (float) y);
+	public static Vector2 create() {
+		return create(0,0);
+	}
+
+
+	
+	/**
+	 * Constructs and initializes a Vector2 from the given x, y
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	public static Vector2 create(float x, float y) {
+		return Vector2Pool.checkout().set(x, y);
 	}
 
 	/**
@@ -80,8 +99,18 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
-	public Vector2(int x, int y) {
-		this((float) x, (float) y);
+	public static Vector2 create(double x, double y) {
+		return create((float)x, (float) y);
+	}
+
+	/**
+	 * Constructs and initializes a Vector2 from the given x, y
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	public static Vector2 create(int x, int y) {
+		return create((float)x, (float) y);
 	}
 
 	/**
@@ -89,16 +118,11 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 *
 	 * @param o
 	 */
-	public Vector2(Vector2 o) {
-		this(o.x, o.y);
+	public static Vector2 create(Vector2 o) {
+		return create(o.getX(), o.getY());
 	}
 
-	/**
-	 * Constructs and initializes a Vector2 to (0,0)
-	 */
-	public Vector2() {
-		this(0, 0);
-	}
+	
 
 	/**
 	 * Gets the X coordinate
@@ -117,6 +141,14 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	public float getY() {
 		return y;
 	}
+	
+	protected Vector2 set(float x, float y){
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+	
+	
 
 	/**
 	 * Adds this Vector2 to the value of the Vector2 argument
@@ -136,7 +168,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 add(float x, float y) {
-		return add(new Vector2(x, y));
+		return add(create(x, y));
 	}
 
 	/**
@@ -147,7 +179,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 add(double x, double y) {
-		return add(new Vector2(x, y));
+		return add(create(x, y));
 	}
 
 	/**
@@ -158,7 +190,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 add(int x, int y) {
-		return add(new Vector2(x, y));
+		return add(create(x, y));
 	}
 
 	/**
@@ -179,7 +211,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 subtract(float x, float y) {
-		return subtract(new Vector2(x, y));
+		return subtract(create(x, y));
 	}
 
 	/**
@@ -190,7 +222,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 subtract(double x, double y) {
-		return subtract(new Vector2(x, y));
+		return subtract(create(x, y));
 	}
 
 	/**
@@ -201,7 +233,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 subtract(int x, int y) {
-		return subtract(new Vector2(x, y));
+		return subtract(create(x, y));
 	}
 
 	/**
@@ -210,7 +242,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param that The Vector2 to multiply
 	 * @return the new Vector2
 	 */
-	public Vector2 multiply(Vector2 that) {
+	public Vector2 scale(Vector2 that) {
 		return Vector2.multiply(this, that);
 	}
 
@@ -221,8 +253,8 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param y
 	 * @return
 	 */
-	public Vector2 multiply(float x, float y) {
-		return multiply(new Vector2(x, y));
+	public Vector2 scale(float x, float y) {
+		return scale(create(x, y));
 	}
 
 	/**
@@ -232,8 +264,8 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param y
 	 * @return
 	 */
-	public Vector2 multiply(double x, double y) {
-		return multiply(new Vector2(x, y));
+	public Vector2 scale(double x, double y) {
+		return scale(create(x, y));
 	}
 
 	/**
@@ -243,8 +275,8 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param y
 	 * @return
 	 */
-	public Vector2 multiply(int x, int y) {
-		return multiply(new Vector2(x, y));
+	public Vector2 scale(int x, int y) {
+		return scale(create(x, y));
 	}
 
 	/**
@@ -253,8 +285,8 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param val
 	 * @return
 	 */
-	public Vector2 multiply(float val) {
-		return multiply(new Vector2(val, val));
+	public Vector2 scale(float val) {
+		return scale(create(val, val));
 	}
 
 	/**
@@ -263,8 +295,8 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param val
 	 * @return
 	 */
-	public Vector2 multiply(double val) {
-		return multiply(new Vector2(val, val));
+	public Vector2 scale(double val) {
+		return scale(create(val, val));
 	}
 
 	/**
@@ -273,83 +305,11 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param val
 	 * @return
 	 */
-	public Vector2 multiply(int val) {
-		return multiply(new Vector2(val, val));
+	public Vector2 scale(int val) {
+		return scale(create(val, val));
 	}
 
-	/**
-	 * Divides the given Vector2 from this Vector2
-	 *
-	 * @param that The Vector2 to divide
-	 * @return the new Vector2
-	 */
-	public Vector2 divide(Vector2 that) {
-		return Vector2.divide(this, that);
-	}
-
-	/**
-	 * Divides a Vector2 comprised of the given x, y values
-	 *
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public Vector2 divide(float x, float y) {
-		return divide(new Vector2(x, y));
-	}
-
-	/**
-	 * Divides a Vector2 comprised of the given x, y values
-	 *
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public Vector2 divide(double x, double y) {
-		return divide(new Vector2(x, y));
-	}
-
-	/**
-	 * Divides a Vector2 comprised of the given x, y values
-	 *
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public Vector2 divide(int x, int y) {
-		return divide(new Vector2(x, y));
-	}
-
-	/**
-	 * Divides a Vector2 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector2 divide(float val) {
-		return divide(new Vector2(val, val));
-	}
-
-	/**
-	 * Divides a Vector2 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector2 divide(double val) {
-		return divide(new Vector2(val, val));
-	}
-
-	/**
-	 * Divides a Vector2 by the given value
-	 *
-	 * @param val
-	 * @return
-	 */
-	public Vector2 divide(int val) {
-		return divide(new Vector2(val, val));
-	}
-
+	
 	/**
 	 * Returns this Vector2 dot the Vector2 argument. Dot Product is defined as
 	 * a.x*b.x + a.y*b.y
@@ -372,16 +332,6 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 		return Vector2.toVector3(this);
 	}
 
-	/**
-	 * Returns a Vector3m object with a y-value of 0. The x of this Vector2
-	 * becomes the x of the Vector3m, the y of this Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @return
-	 */
-	public Vector3m toVector3m() {
-		return Vector2.toVector3m(this);
-	}
 
 	/**
 	 * Returns a Vector2Polar object with the same value as this Vector2
@@ -404,17 +354,6 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 		return Vector2.toVector3(this, y);
 	}
 
-	/**
-	 * Returns a Vector3m object with the given y value. The x of this Vector2
-	 * becomes the x of the Vector3m, the y of this Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @param y Y value to use in the new Vector3m.
-	 * @return
-	 */
-	public Vector3m toVector3m(float y) {
-		return Vector2.toVector3m(this, y);
-	}
 
 	/**
 	 * Returns the Cross Product of this Vector2 Note: Cross Product is
@@ -433,7 +372,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 ceil() {
-		return new Vector2(Math.ceil(x), Math.ceil(y));
+		return create(Math.ceil(x), Math.ceil(y));
 	}
 
 	/**
@@ -443,7 +382,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 floor() {
-		return new Vector2(Math.floor(x), Math.floor(y));
+		return create(Math.floor(x), Math.floor(y));
 	}
 
 	/**
@@ -452,7 +391,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 round() {
-		return new Vector2(Math.round(x), Math.round(y));
+		return create(Math.round(x), Math.round(y));
 	}
 
 	/**
@@ -461,7 +400,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public Vector2 abs() {
-		return new Vector2(Math.abs(x), Math.abs(y));
+		return create(Math.abs(x), Math.abs(y));
 	}
 
 	/**
@@ -557,7 +496,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 
 	@Override
 	public Vector2 clone() {
-		return new Vector2(x, y);
+		return create(x, y);
 	}
 
 	/**
@@ -588,7 +527,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 normalize(Vector2 a) {
-		return a.multiply(1.f / a.length());
+		return a.scale(1.f / a.length());
 	}
 
 	/**
@@ -599,7 +538,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 add(Vector2 a, Vector2 b) {
-		return new Vector2(a.getX() + b.getX(), a.getY() + b.getY());
+		return create(a.getX() + b.getX(), a.getY() + b.getY());
 	}
 
 	/**
@@ -610,7 +549,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 subtract(Vector2 a, Vector2 b) {
-		return new Vector2(a.getX() - b.getX(), a.getY() - b.getY());
+		return create(a.getX() - b.getX(), a.getY() - b.getY());
 	}
 
 	/**
@@ -621,7 +560,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 multiply(Vector2 a, Vector2 b) {
-		return new Vector2(a.getX() * b.getX(), a.getY() * b.getY());
+		return create(a.getX() * b.getX(), a.getY() * b.getY());
 	}
 
 	/**
@@ -632,7 +571,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 divide(Vector2 a, Vector2 b) {
-		return new Vector2(a.getX() / b.getX(), a.getY() / b.getY());
+		return create(a.getX() / b.getX(), a.getY() / b.getY());
 	}
 
 	/**
@@ -641,9 +580,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @param a
 	 * @param b
 	 * @return
-	 * @deprecated Use {@link Vector2#multiply} instead
 	 */
-	@Deprecated
 	public static Vector2 scale(Vector2 a, float b) {
 		return Vector2.multiply(a, new Vector2(b, b));
 	}
@@ -669,20 +606,10 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector3 toVector3(Vector2 o) {
-		return new Vector3(o.getX(), 0, o.getY());
+		return Vector3.create(o.getX(), 0, o.getY());
 	}
 
-	/**
-	 * Returns a Vector3m object with a y-value of 0. The x of the Vector2
-	 * becomes the x of the Vector3m, the y of the Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @param o Vector2 to use as the x/z values
-	 * @return
-	 */
-	public static Vector3m toVector3m(Vector2 o) {
-		return new Vector3m(o.getX(), 0, o.getY());
-	}
+
 
 	/**
 	 * Returns a Vector2Polar object with the same value as the given Vector2
@@ -704,20 +631,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector3 toVector3(Vector2 o, float y) {
-		return new Vector3(o.getX(), y, o.getY());
-	}
-
-	/**
-	 * Returns a Vector3m object with the given y-value. The x of the Vector2
-	 * becomes the x of the Vector3m, the y of the Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @param o Vector2 to use as the x/z values
-	 * @param y Y value of the new Vector3
-	 * @return
-	 */
-	public static Vector3m toVector3m(Vector2 o, float y) {
-		return new Vector3m(o.getX(), y, o.getY());
+		return Vector3.create(o.getX(), y, o.getY());
 	}
 
 	/**
@@ -727,7 +641,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2 cross(Vector2 o) {
-		return new Vector2(o.getY(), -o.getX());
+		return create(o.getY(), -o.getX());
 	}
 
 	/**
@@ -738,7 +652,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 ceil(Vector2 o) {
-		return new Vector2(Math.ceil(o.getX()), Math.ceil(o.getY()));
+		return create(Math.ceil(o.getX()), Math.ceil(o.getY()));
 	}
 
 	/**
@@ -749,7 +663,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 floor(Vector2 o) {
-		return new Vector2(Math.floor(o.getX()), Math.floor(o.getY()));
+		return create(Math.floor(o.getX()), Math.floor(o.getY()));
 	}
 
 	/**
@@ -760,7 +674,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 round(Vector2 o) {
-		return new Vector2(Math.round(o.getX()), Math.round(o.getY()));
+		return create(Math.round(o.getX()), Math.round(o.getY()));
 	}
 
 	/**
@@ -770,7 +684,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 abs(Vector2 o) {
-		return new Vector2(Math.abs(o.getX()), Math.abs(o.getY()));
+		return create(Math.abs(o.getX()), Math.abs(o.getY()));
 	}
 
 	/**
@@ -781,7 +695,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 min(Vector2 o1, Vector2 o2) {
-		return new Vector2(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()));
+		return create(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()));
 	}
 
 	/**
@@ -792,7 +706,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 max(Vector2 o1, Vector2 o2) {
-		return new Vector2(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()));
+		return create(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()));
 	}
 
 	/**
@@ -806,7 +720,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 		for (int i = 0; i < 2; i++) {
 			rands[i] = Math.random() * 2 - 1;
 		}
-		return new Vector2(rands[0], rands[1]);
+		return create(rands[0], rands[1]);
 	}
 
 	/**
@@ -846,7 +760,7 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static Vector2 pow(Vector2 o, double power) {
-		return new Vector2(Math.pow(o.getX(), power), Math.pow(o.getY(), power));
+		return create(Math.pow(o.getX(), power), Math.pow(o.getY(), power));
 	}
 
 	/**

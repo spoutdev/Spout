@@ -542,7 +542,7 @@ public class AtomicVector3 extends Vector3m {
 			int seq = lock.readLock();
 			Vector3 result = null;
 			try {
-				result = super.multiply(scale);
+				result = super.scale(scale);
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return result;
@@ -557,7 +557,7 @@ public class AtomicVector3 extends Vector3m {
 			int seq = lock.readLock();
 			Vector3 result = null;
 			try {
-				result = super.multiply(scale);
+				result = super.scale(scale);
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return result;
@@ -572,7 +572,7 @@ public class AtomicVector3 extends Vector3m {
 			int seq = lock.readLock();
 			Vector3 result = null;
 			try {
-				result = super.multiply(scale);
+				result = super.scale(scale);
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return result;

@@ -136,7 +136,7 @@ public class MatrixTest {
 		mat.set(2, 1, -f.getY());
 		mat.set(2, 2, -f.getZ());
 
-		Matrix trans = Matrix.translate(center.multiply(-1));
+		Matrix trans = Matrix.translate(center.scale(-1));
 		mat = Matrix.multiply(mat, trans);
 		id = new double[][] { {-0.7071068f , 0.0f , 0.7071068f , 0.0f},
 				{0.0f , 1.0000001f , 0.0f , 0.0f},

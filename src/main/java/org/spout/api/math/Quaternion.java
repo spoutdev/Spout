@@ -25,19 +25,29 @@
  */
 package org.spout.api.math;
 
+import org.spout.api.util.pool.PoolableObject;
+
 /**
  * Represents a rotation around a unit 4d circle.
  *
  *
  */
-public class Quaternion implements Cloneable{
+public class Quaternion extends PoolableObject implements Cloneable{
 	protected float x, y, z, w;
 	protected Vector3 cachedAngle = null;
 
 	/**
 	 * Represents no rotation
 	 */
-	public static Quaternion identity = new Quaternion(0, 0, 0, 1);
+	public static Quaternion identity = new Quaternion();
+	
+	protected Quaternion(){
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		this.w = 1;
+	}
+	
 
 	/**
 	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
@@ -49,11 +59,8 @@ public class Quaternion implements Cloneable{
 	 * @param z
 	 * @param w
 	 */
-	public Quaternion(float x, float y, float z, float w) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
+	public static Quaternion create(float x, float y, float z, float w, boolean ignore) {
+		return QuaternionPool.checkout().set(x, y, z, w);		
 	}
 	
 	/**
@@ -66,13 +73,10 @@ public class Quaternion implements Cloneable{
 	 * @param z-axis
 	 * @param ignore
 	 */
-	public Quaternion(float angle, float x, float y, float z, boolean ignore) {
+	public static Quaternion create(float angle, float x, float y, float z) {
 		double rads = Math.toRadians(angle);
 		double halfAngle = Math.sin(rads / 2);
-		this.x = (float) (x * halfAngle);
-		this.y = (float) (y * halfAngle);
-		this.z = (float) (z * halfAngle);
-		this.w = (float) Math.cos(rads / 2);
+		return create((float) (x * halfAngle), (float) (y * halfAngle), (float) (z * halfAngle), (float) Math.cos(rads / 2), true);
 	}
 
 	/**
@@ -82,15 +86,15 @@ public class Quaternion implements Cloneable{
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */
-	public Quaternion(float angle, Vector3 axis) {
-		this(angle, axis.getX(), axis.getY(), axis.getZ(), true);
+	public static Quaternion create(float angle, Vector3 axis) {
+		return create(angle, axis.getX(), axis.getY(), axis.getZ());
 	}
 
 	/**
 	 * Copy Constructor
 	 */
-	public Quaternion(Quaternion rotation) {
-		this(rotation.x, rotation.y, rotation.z, rotation.w);
+	public static Quaternion create(Quaternion rotation) {
+		return create(rotation.x, rotation.y, rotation.z, rotation.w, true);
 	}
 
 	/**
@@ -127,6 +131,14 @@ public class Quaternion implements Cloneable{
 	 */
 	public float getW() {
 		return w;
+	}
+	
+	private Quaternion set(float x, float y, float z, float w){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+		return this;
 	}
 
 	/**
@@ -195,7 +207,7 @@ public class Quaternion implements Cloneable{
 	
 	@Override
 	public Quaternion clone() {
-		return new Quaternion(x, y, z, w);
+		return create(x, y, z, w, true);
 	}
 
 	/**
@@ -253,7 +265,7 @@ public class Quaternion implements Cloneable{
 	 */
 	public static Quaternion normalize(Quaternion a) {
 		float length = length(a);
-		return new Quaternion(a.x / length, a.y / length, a.z / length, a.w / length);
+		return create(a.x / length, a.y / length, a.z / length, a.w / length, true);
 	}
 
 	/**
@@ -272,7 +284,7 @@ public class Quaternion implements Cloneable{
 
 		float w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
 
-		return new Quaternion(x, y, z, w);
+		return create(x, y, z, w, true);
 	}
 
 	/**
@@ -285,7 +297,7 @@ public class Quaternion implements Cloneable{
 	 * @return rotated Quaternion
 	 */
 	public static Quaternion rotate(Quaternion a, float angle, Vector3 axis) {
-		return multiply(new Quaternion(angle, axis), a);
+		return multiply(create(angle, axis), a);
 	}
 	
 	/**
@@ -300,7 +312,7 @@ public class Quaternion implements Cloneable{
 	 * @return rotated Quaternion
 	 */
 	public static Quaternion rotate(Quaternion a, float angle, float x, float y, float z) {
-		return multiply(new Quaternion(angle, x, y, z, true), a);
+		return multiply(create(angle, x, y, z), a);
 	}
 
 	/**
@@ -322,6 +334,6 @@ public class Quaternion implements Cloneable{
 		//Our left and right are swapped from this calculation, so we need to subtract the angle from 180.
 		float roll = 180 - (float) Math.toDegrees(Math.atan2(2 * (a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW())));
 
-		return new Vector3(roll, pitch, yaw);
+		return Vector3.create(roll, pitch, yaw);
 	}
 }

@@ -99,7 +99,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 lerp(Vector3 a, Vector3 b, float percent) {
-		return a.multiply(1 - percent).add(b.multiply(percent));
+		return a.scale(1 - percent).add(b.scale(percent));
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector2 lerp(Vector2 a, Vector2 b, float percent) {
-		return a.multiply(1 - percent).add(b.multiply(percent));
+		return a.scale(1 - percent).add(b.scale(percent));
 	}
 
 	/**

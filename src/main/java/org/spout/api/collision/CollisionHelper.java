@@ -168,7 +168,7 @@ public class CollisionHelper {
 		Vector3 m = b.origin.subtract(a.center);
 		Vector3 l = b.endpoint.subtract(b.origin);
 		float lnorm = l.fastLength();
-		Vector3 d = l.multiply(1f / lnorm);
+		Vector3 d = l.scale(1f / lnorm);
 
 		float e = m.dot(d);
 		float f = (float) (m.dot(m) - a.radius * a.radius);
@@ -255,7 +255,7 @@ public class CollisionHelper {
 	}
 
 	public static boolean checkCollision(Plane a, Plane b) {
-		return !a.normal.equals(b.normal) && !a.normal.equals(b.normal.multiply(-1));
+		return !a.normal.equals(b.normal) && !a.normal.equals(b.normal.scale(-1));
 	}
 
 	public static Vector3 getCollision(BoundingSphere a, BoundingBox b) {
@@ -343,7 +343,7 @@ public class CollisionHelper {
 		}
 		Vector3m ret = new Vector3m(intersection.min);
 		ret.add(intersection.max);
-		ret.multiply(0.5f);
+		ret.scale(0.5f);
 		return ret;
 	}
 
@@ -423,7 +423,7 @@ public class CollisionHelper {
 		}
 
 		// Ray intersects all 3 slabs. Return point (q) and intersection t value (tmin)
-		return b.origin.add(b.direction.multiply(tmin));
+		return b.origin.add(b.direction.scale(tmin));
 	}
 
 	/**
@@ -438,7 +438,7 @@ public class CollisionHelper {
 	public static Vector3 getCollision(BoundingSphere a, Segment b) {
 		Vector3 m = b.origin.subtract(a.center);
 		Vector3 l = b.endpoint.subtract(b.origin);
-		Vector3 d = l.multiply(1f / l.fastLength());
+		Vector3 d = l.scale(1f / l.fastLength());
 
 		float e = m.dot(d);
 		float f = (float) (m.dot(m) - a.radius * a.radius);
@@ -461,7 +461,7 @@ public class CollisionHelper {
 		if (t < 0.0f) {
 			t = 0.0f;
 		}
-		return b.origin.add(d.multiply(t));
+		return b.origin.add(d.scale(t));
 	}
 
 	/**
@@ -494,7 +494,7 @@ public class CollisionHelper {
 		if (t < 0.0f) {
 			t = 0.0f;
 		}
-		return b.origin.add(b.direction.multiply(t));
+		return b.origin.add(b.direction.scale(t));
 	}
 
 	/**
@@ -589,7 +589,7 @@ public class CollisionHelper {
 	}
 
 	public static boolean contains(Plane a, Plane b) {
-		return a.normal.equals(b.normal) || a.normal.equals(b.normal.multiply(-1));
+		return a.normal.equals(b.normal) || a.normal.equals(b.normal.scale(-1));
 	}
 
 	public static boolean contains(Plane a, Ray b) {

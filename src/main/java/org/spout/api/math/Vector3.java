@@ -27,7 +27,6 @@ package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.pool.PoolableObject;
-import org.spout.api.util.pool.Vector3Pool;
 
 /**
  * Represents a 3d vector.
@@ -80,6 +79,13 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	/**
+	 * Constructs and initializes a Vector3 to (0,0)
+	 */
+	protected Vector3() {
+		this(0, 0, 0);
 	}
 
 	/**
@@ -157,12 +163,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		return v;
 	}
 
-	/**
-	 * Constructs and initializes a Vector3 to (0,0)
-	 */
-	protected Vector3() {
-		this(0, 0, 0);
-	}
+	
 
 	public float getX() {
 		return this.x;
@@ -195,7 +196,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return the new Vector3
 	 */
 	public Vector3 add(Vector3 that) {
-		return add(that.getX(), that.getY(), that.getZ());
+		return Vector3.add(this, that);
 	}
 
 	/**
@@ -207,7 +208,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		return create(this.getX() + x, this.getY() + y, this.getZ() + z);
+		return add(create(x,y,z));
 	}
 
 	/**
@@ -241,7 +242,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return the new Vector3
 	 */
 	public Vector3 subtract(Vector3 that) {
-		return subtract(that.getX(), that.getY(), that.getZ());
+		return Vector3.subtract(this, that);
 	}
 
 	/**
@@ -253,7 +254,7 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		return create(this.getX() - x, this.getY() - y, this.getZ() - z);
+		return subtract(create(x,y,z));
 	}
 
 	/**
@@ -281,11 +282,11 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	}
 
 	public Vector3 scale(float s) {
-		return create(this.getX() * s, this.getY() * s, this.getZ() * s);
+		return scale(s,s,s);
 	}
 
 	public Vector3 scale(float x, float y, float z) {
-		return create(this.getX() * x, this.getY() * y, this.getZ() * z);
+		return Vector3.scale(this, create(x,y,z));
 	}
 
 	/**
@@ -309,16 +310,6 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		return Vector3.toVector2(this);
 	}
 
-	/**
-	 * Returns a Vector2m object using the X and Z values of this Vector3. The x
-	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
-	 * becomes the y of the Vector2m.
-	 * 
-	 * @return
-	 */
-	public Vector2m toVector2m() {
-		return Vector3.toVector2m(this);
-	}
 
 	/**
 	 * Takes the cross product of two vectors
@@ -575,20 +566,10 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @param b
 	 * @return
 	 */
-	public static Vector3 multiply(Vector3 a, Vector3 b) {
+	public static Vector3 scale(Vector3 a, Vector3 b) {
 		return create(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 
-	/**
-	 * Divides one Vector3 by the other Vector3
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static Vector3 divide(Vector3 a, Vector3 b) {
-		return create(a.x / b.x, a.y / b.y, a.z / b.z);
-	}
 
 	/**
 	 * Returns the dot product of A and B
@@ -723,20 +704,9 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector3 o) {
-		return new Vector2(o.x, o.z);
+		return Vector2.create(o.x, o.z);
 	}
 
-	/**
-	 * Returns a Vector2m object using the X and Z values of the given Vector3.
-	 * The x of the Vector3 becomes the x of the Vector2m, and the z of this
-	 * Vector3 becomes the y of the Vector2m.
-	 * 
-	 * @param o Vector3 object to use
-	 * @return
-	 */
-	public static Vector2m toVector2m(Vector3 o) {
-		return new Vector2m(o.x, o.z);
-	}
 
 	/**
 	 * Returns a new float array that is {x, y, z}
@@ -786,12 +756,5 @@ public class Vector3 extends PoolableObject implements Comparable<Vector3>, Clon
 		return a.equals(b);
 	}
 
-	/**
-	 * Creates a raw, unpooled immutable vector3 set to 0, 0, 0.
-	 * 
-	 * @return
-	 */
-	public static Vector3 createRaw() {
-		return new Vector3();
-	}
+	
 }

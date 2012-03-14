@@ -177,7 +177,7 @@ public class Vector3Test {
 	public void testMultiplyVector3() {
 		Vector3 a = Vector3.create(1, -1, 3);
 		Vector3 b = Vector3.create(2, 6, -3);
-		Vector3 c = a.multiply(b);
+		Vector3 c = a.scale(b);
 
 		doAssertDouble("x.X does not equal 2", 2, c.x);
 		doAssertDouble("x.Y does not equal -6", -6, c.y);
@@ -193,7 +193,7 @@ public class Vector3Test {
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
 		doAssertDouble("x.Z does not equal 7", 7, b.z);
 
-		Vector3 c = a.multiply(2.0F);
+		Vector3 c = a.scale(2.0F);
 
 		doAssertDouble("x.X does not equal 2", 2, c.x);
 		doAssertDouble("x.Y does not equal -2", -2, c.y);
@@ -209,7 +209,7 @@ public class Vector3Test {
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
 		doAssertDouble("x.Z does not equal 10.2", 10.2, b.z);
 
-		Vector3 c = a.multiply(2.0D);
+		Vector3 c = a.scale(2.0D);
 
 		doAssertDouble("x.X does not equal 2", 2, c.x);
 		doAssertDouble("x.Y does not equal -2", -2, c.y);
@@ -225,7 +225,7 @@ public class Vector3Test {
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
 		doAssertDouble("x.Z does not equal 20", 20, b.z);
 
-		Vector3 c = a.multiply(2);
+		Vector3 c = a.scale(2);
 
 		doAssertDouble("x.X does not equal 2", 2, c.x);
 		doAssertDouble("x.Y does not equal -2", -2, c.y);

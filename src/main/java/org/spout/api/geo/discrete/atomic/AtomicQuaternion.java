@@ -353,7 +353,7 @@ public class AtomicQuaternion extends Quaternionm {
 		while (true) {
 			int seq = lock.readLock();
 			try {
-				directSet(Quaternion.multiply(this, o));
+				directSet(Quaternion.scale(this, o));
 			} finally {
 				if (lock.readUnlock(seq)) {
 					return this;
@@ -366,7 +366,7 @@ public class AtomicQuaternion extends Quaternionm {
 		while (true) {
 			int seq = o.getLock().readLock();
 			try {
-				directSet(Quaternion.multiply(this, o));
+				directSet(Quaternion.scale(this, o));
 			} finally {
 				if (o.getLock().readUnlock(seq)) {
 					return this;

@@ -744,7 +744,7 @@ public class AtomicPoint extends Pointm {
 			int seq = this.lock.readLock();
 			Vector3 result = null;
 			try {
-				result = super.multiply(scale);
+				result = super.scale(scale);
 			} finally {
 				if (this.lock.readUnlock(seq)) {
 					return result;
@@ -759,7 +759,7 @@ public class AtomicPoint extends Pointm {
 			int seq = this.lock.readLock();
 			Vector3 result = null;
 			try {
-				result = super.multiply(scale);
+				result = super.scale(scale);
 			} finally {
 				if (this.lock.readUnlock(seq)) {
 					return result;
@@ -774,7 +774,7 @@ public class AtomicPoint extends Pointm {
 			int seq = this.lock.readLock();
 			Vector3 result = null;
 			try {
-				result = super.multiply(scale);
+				result = super.scale(scale);
 			} finally {
 				if (this.lock.readUnlock(seq)) {
 					return result;

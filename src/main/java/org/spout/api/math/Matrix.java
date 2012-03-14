@@ -387,7 +387,7 @@ public class Matrix {
 		mat.set(1, 2, -f.getY());
 		mat.set(2, 2, -f.getZ());
 
-		Matrix trans = Matrix.translate(eye.multiply(-1));
+		Matrix trans = Matrix.translate(eye.scale(-1));
 		mat = Matrix.multiply(trans, mat);
 		return mat;
 	}

@@ -132,7 +132,7 @@ public class Vector2mTest {
 	public void testMultiplyVector2m() {
 		Vector2 a = new Vector2m(1, -1);
 		Vector2 b = new Vector2m(2, 6);
-		Vector2 c = a.multiply(b);
+		Vector2 c = a.scale(b);
 
 		doAssertDouble("x.X does not equal 2", 2, c.x);
 		doAssertDouble("x.Y does not equal -6", -6, c.y);
@@ -142,13 +142,13 @@ public class Vector2mTest {
 	@Test
 	public void testMultiplyFloat() {
 		Vector2 a = new Vector2m(1, -1);
-		Vector2 b = a.multiply(2.0F, 6.0F);
+		Vector2 b = a.scale(2.0F, 6.0F);
 
 		doAssertDouble("x.X does not equal 2", 2, b.x);
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
 		assertTrue("b is not identical to a", b == a);
 
-		Vector2 c = a.multiply(2.0F);
+		Vector2 c = a.scale(2.0F);
 
 		doAssertDouble("x.X does not equal 4", 4, c.x);
 		doAssertDouble("x.Y does not equal -12", -12, c.y);
@@ -158,13 +158,13 @@ public class Vector2mTest {
 	@Test
 	public void testMultiplyDouble() {
 		Vector2 a = new Vector2m(1, -1);
-		Vector2 b = a.multiply(2.0D, 6.0D);
+		Vector2 b = a.scale(2.0D, 6.0D);
 
 		doAssertDouble("x.X does not equal 2", 2, b.x);
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
 		assertTrue("b is not identical to a", b == a);
 
-		Vector2 c = ((Vector2m)a).multiply(2.0D);
+		Vector2 c = ((Vector2m)a).scale(2.0D);
 
 		doAssertDouble("x.X does not equal 4", 4, c.x);
 		doAssertDouble("x.Y does not equal -12", -12, c.y);
@@ -174,13 +174,13 @@ public class Vector2mTest {
 	@Test
 	public void testMultiplyInt() {
 		Vector2 a = new Vector2m(1, -1);
-		Vector2 b = a.multiply(2, 6);
+		Vector2 b = a.scale(2, 6);
 
 		doAssertDouble("x.X does not equal 2", 2, b.x);
 		doAssertDouble("x.Y does not equal -6", -6, b.y);
 		assertTrue("b is not identical to a", b == a);
 
-		Vector2 c = a.multiply(2);
+		Vector2 c = a.scale(2);
 
 		doAssertDouble("x.X does not equal 4", 4, c.x);
 		doAssertDouble("x.Y does not equal -12", -12, c.y);
