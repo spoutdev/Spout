@@ -282,7 +282,7 @@ public final class ChannelBufferUtils {
 		float x = buf.readFloat();
 		float y = buf.readFloat();
 		float z = buf.readFloat();
-		return Vector3.create(x, y, z);
+		return new Vector3(x, y, z);
 	}
 
 	public static void writeVector3(Vector3 vec, ChannelBuffer buf) {
@@ -294,7 +294,7 @@ public final class ChannelBufferUtils {
 	public static Vector2 readVector2(ChannelBuffer buf) {
 		float x = buf.readFloat();
 		float z = buf.readFloat();
-		return Vector2.create(x, z);
+		return new Vector2(x, z);
 	}
 
 	public static void writeVector2(Vector2 vec, ChannelBuffer buf) {

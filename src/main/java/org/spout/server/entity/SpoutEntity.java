@@ -153,20 +153,13 @@ public class SpoutEntity implements Entity {
 				System.out.println("Collision: " + collision);
 				
 				if (collision.getX() != 0F) {
-					Vector3 t = offset;
-					offset = Vector3.create(collision.getX(), offset.getY(), offset.getZ());
-					t.free();
-					
+					offset = new Vector3(collision.getX(), offset.getY(), offset.getZ());
 				}
 				if (collision.getY() != 0F) {
-					Vector3 t = offset;
-					offset = Vector3.create(offset.getX(), collision.getY(), offset.getZ());
-					t.free();
+					offset = new Vector3(offset.getX(), collision.getY(), offset.getZ());
 				}
 				if (collision.getZ() != 0F) {
-					Vector3 t = offset;
-					offset = Vector3.create(offset.getX(), offset.getY(), collision.getZ());
-					t.free();
+					offset = new Vector3(offset.getX(), offset.getY(), collision.getZ());
 				}
 			}
 		}
@@ -201,11 +194,8 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		Vector3 p = this.transform.getPosition().add(x,y,z);
-		Point s = Point.create(p, this.transform.getPosition().getWorld());
-		this.transform.setPosition(s);
-		p.free();
-		s.free();
-	}
+		Point s = new Point(p, this.transform.getPosition().getWorld());
+		this.transform.setPosition(s);	}
 
 	@Override
 	public void rotate(float ang, float x, float y, float z) {
@@ -215,7 +205,6 @@ public class SpoutEntity implements Entity {
 		}
 		Quaternion q = this.transform.getRotation().rotate(ang,x,y,z);
 		this.transform.setRotation(q);
-		q.free();
 	}
 
 	@Override
@@ -226,7 +215,6 @@ public class SpoutEntity implements Entity {
 		}
 		Quaternion q = this.transform.getRotation().multiply(rot);
 		this.transform.setRotation(q);
-		q.free();
 		
 	}
 
@@ -236,16 +224,14 @@ public class SpoutEntity implements Entity {
 			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to scale from another thread!");
 			return;
 		}
-		Vector3 s = this.transform.getScale().scale(amount);
+		Vector3 s = this.transform.getScale().multiply(amount);
 		this.transform.setScale(s);
-		s.free();
 	}
 
 	@Override
 	public void scale(float x, float y, float z) {
-		Vector3 s = Vector3.create(x,y,z);
+		Vector3 s = new Vector3(x,y,z);
 		scale(s);
-		s.free();
 	}
 
 
