@@ -142,6 +142,11 @@ public class SpoutEntity implements Entity {
 
 		//Resolve Collisions Here
 		final Point location = this.transform.getPosition();
+		
+		//If the world is null, this prevents log spam for debugging purposes.
+		if(this.getWorld() == null) {
+			return;
+		}
 		List<CollisionVolume> colliding = ((SpoutWorld)this.getWorld()).getCollidingObject(this.collision);
 
 		
