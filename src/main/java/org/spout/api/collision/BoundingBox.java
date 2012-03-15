@@ -32,18 +32,18 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 	protected Vector3 max;
 
 	public BoundingBox(Vector3 min, Vector3 max) {
-		this.min = Vector3.create(min);
-		this.max = Vector3.create(max);
+		this.min = new Vector3(min);
+		this.max = new Vector3(max);
 	}
 	
 	public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-		this.min = Vector3.create(minX, minY, minZ);
-		this.max = Vector3.create(maxX, maxY, maxZ);
+		this.min = new Vector3(minX, minY, minZ);
+		this.max = new Vector3(maxX, maxY, maxZ);
 	}
 
 	public BoundingBox(Vector3 pos) {
-		min = Vector3.create(pos);
-		max = Vector3.create(pos.add(Vector3.ONE));
+		min = new Vector3(pos);
+		max = new Vector3(pos.add(Vector3.ONE));
 	}
 
 	public BoundingBox() {
@@ -89,8 +89,8 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-		min = Vector3.create(minX, minY, minZ);
-		max = Vector3.create(maxX, maxY, maxZ);
+		min = new Vector3(minX, minY, minZ);
+		max = new Vector3(maxX, maxY, maxZ);
 		return this;
 	}
 	

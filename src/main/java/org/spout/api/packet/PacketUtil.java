@@ -190,7 +190,7 @@ public abstract class PacketUtil {
 	}
 
 	public static Vector3 readVector3(DataInputStream input) throws IOException {
-		return Vector3.create(input.readFloat(), input.readFloat(), input.readFloat());
+		return new Vector3(input.readFloat(), input.readFloat(), input.readFloat());
 	}
 
 	public static void writeVector2(DataOutputStream output, Vector2 vector) throws IOException {
@@ -199,7 +199,7 @@ public abstract class PacketUtil {
 	}
 
 	public static Vector2 readVector2(DataInputStream input) throws IOException {
-		return Vector2.create(input.readFloat(), input.readFloat());
+		return new Vector2(input.readFloat(), input.readFloat());
 	}
 
 	/**

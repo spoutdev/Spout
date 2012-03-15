@@ -39,17 +39,17 @@ public abstract class Block extends Cube {
 	private final static float EDGE = 1.0f;
 
 	public Block(World world, float x, float y, float z) {
-		super(Point.create(world, x, y, z), EDGE);
+		super(new Point(world, x, y, z), EDGE);
 	}
 	
 	public void setX(float x){
-		this.base = Point.create(base.getWorld(), x, base.getY(), base.getZ());
+		this.base = new Point(base.getWorld(), x, base.getY(), base.getZ());
 	}
 	public void setY(float y){
-		this.base = Point.create(base.getWorld(), base.getX(), y, base.getZ());
+		this.base = new Point(base.getWorld(), base.getX(), y, base.getZ());
 	}
 	public void setZ(float z){
-		this.base = Point.create(base.getWorld(), base.getX(), base.getY(), z);
+		this.base = new Point(base.getWorld(), base.getX(), base.getY(), z);
 	}
 	
 	

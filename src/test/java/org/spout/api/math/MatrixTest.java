@@ -110,7 +110,7 @@ public class MatrixTest {
 		compareMatrixToArray(m, mul);
 
 		//LookAt Test
-		Vector3 center = Vector3.create(5, 0, 5);
+		Vector3 center = new Vector3(5, 0, 5);
 		Vector3 up = Vector3.Up;
 		Vector3 at = Vector3.ZERO;
 
@@ -134,7 +134,7 @@ public class MatrixTest {
 		mat.set(2, 1, -f.getY());
 		mat.set(2, 2, -f.getZ());
 
-		Matrix trans = Matrix.translate(center.scale(-1));
+		Matrix trans = Matrix.translate(center.multiply(-1));
 		mat = Matrix.multiply(mat, trans);
 		id = new double[][] { {-0.7071068f, 0.0f, 0.7071068f, 0.0f}, {0.0f, 1.0000001f, 0.0f, 0.0f}, {-0.7071068f, 0.0f, -0.7071068f, 0.0f}, {-5.0f, 0.0f, -5.0f, 1.0f}};
 		compareMatrixToArray(mat, id);
@@ -167,7 +167,7 @@ public class MatrixTest {
 
 	@Test
 	public void testTranslate() {
-		Vector3 a = Vector3.create(-1, 2, 4);
+		Vector3 a = new Vector3(-1, 2, 4);
 		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-1, 2, 4, 1}};
 		Matrix m = Matrix.translate(a);
 		compareMatrixToArray(m, id);
@@ -176,15 +176,15 @@ public class MatrixTest {
 	@Test
 	public void testScaleDouble() {
 		double[][] id = { {5, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 5, 0}, {0, 0, 0, 1}};
-		Matrix m = Matrix.scale(5.0f);
+		Matrix m = Matrix.multiply(5.0f);
 		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testScaleVector3() {
-		Vector3 s = Vector3.create(-1, 5, 3);
+		Vector3 s = new Vector3(-1, 5, 3);
 		double[][] id = { {-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
-		Matrix m = Matrix.scale(s);
+		Matrix m = Matrix.multiply(s);
 		compareMatrixToArray(m, id);
 	}
 
@@ -223,14 +223,14 @@ public class MatrixTest {
 
 		compareMatrixToArray(m, id);
 
-		rot = Quaternion.create(4, 3, 2, 0, true);
+		rot = new Quaternion(4, 3, 2, 0);
 		m = Matrix.rotate(rot);
 
 		id = new double[][] { {0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
-		rot = Quaternion.create(90, Vector3.create(0, 1, 0));
+		rot = new Quaternion(90, new Vector3(0, 1, 0));
 		m = Matrix.rotate(rot);
 		id = new double[][] { {0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
 

@@ -235,7 +235,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		for (int x = cx - viewDistance; x < cx + viewDistance; x++) {
 			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
 				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
-					Point base = Point.create(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
+					Point base = new Point(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
 					double distance = base.getManhattanDistance(playerChunkBase);
 					if (distance <= blockViewDistance) {
 						if (!activeChunks.contains(base)) {

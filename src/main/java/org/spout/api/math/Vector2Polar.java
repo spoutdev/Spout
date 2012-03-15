@@ -26,7 +26,6 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.spout.api.util.pool.PoolableObject;
 
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
@@ -36,11 +35,11 @@ import org.spout.api.util.pool.PoolableObject;
  * Note, this is the Immutable form of Vector2Polar. All operations will
  * construct a new Vector2Polar.
  */
-public class Vector2Polar extends PoolableObject implements Comparable<Vector2Polar> {
+public class Vector2Polar implements Comparable<Vector2Polar> {
 	/**
 	 * Represents the Zero vector (0 at 0 degrees)
 	 */
-	public final static Vector2Polar ZERO = new Vector2Polar();
+	public final static Vector2Polar ZERO = new Vector2Polar(0, 0);
 	/**
 	 * Represents the unit vector (1 at 0 degrees)
 	 */
@@ -50,23 +49,15 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	protected float r;
 	protected float theta;
 
-	protected Vector2Polar(){
-		this(0,0);
-	}
-	
-	protected Vector2Polar(float r, float theta){
+	/**
+	 * Constructs and initializes a Vector2Polar from the given r, theta
+	 *
+	 * @param r the r coordinate
+	 * @param theta the theta coordinate
+	 */
+	public Vector2Polar(float r, float theta) {
 		this.r = r;
-		this.theta = theta;
-	}
-	
-	/**
-	 * Constructs and initializes a Vector2Polar from the given r, theta
-	 *
-	 * @param r the r coordinate
-	 * @param theta the theta coordinate
-	 */
-	public static Vector2Polar create(float r, float theta) {
-		return Vector2PolarPool.checkout().set(r,theta);
+		this.theta = Vector2Polar.getRealAngle(theta);
 	}
 
 	/**
@@ -75,8 +66,8 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
-	public static Vector2Polar create(double r, double theta) {
-		return create((float) r, (float) theta);
+	public Vector2Polar(double r, double theta) {
+		this((float) r, (float) theta);
 	}
 
 	/**
@@ -85,8 +76,8 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
-	public static Vector2Polar create(int r, int theta) {
-		return create((float) r, (float) theta);
+	public Vector2Polar(int r, int theta) {
+		this((float) r, (float) theta);
 	}
 
 	/**
@@ -94,15 +85,15 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 *
 	 * @param o
 	 */
-	public static Vector2Polar create(Vector2Polar o) {
-		return create(o.r, o.theta);
+	public Vector2Polar(Vector2Polar o) {
+		this(o.r, o.theta);
 	}
 
 	/**
 	 * Constructs and initializes a Vector2Polar to (0,0)
 	 */
-	public static Vector2Polar create() {
-		return create(0, 0);
+	public Vector2Polar() {
+		this(0, 0);
 	}
 
 	/**
@@ -122,12 +113,6 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 */
 	public float getTheta() {
 		return theta;
-	}
-	
-	private Vector2Polar set(float r, float th){
-		this.r = r;
-		this.theta = th;
-		return this;
 	}
 
 	/**
@@ -164,7 +149,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar add(float r, float theta) {
-		return add(create(r, theta));
+		return add(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -175,7 +160,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar add(double r, double theta) {
-		return add(create(r, theta));
+		return add(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -186,7 +171,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar add(int r, int theta) {
-		return add(create(r, theta));
+		return add(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -207,7 +192,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar subtract(float r, float theta) {
-		return subtract(create(r, theta));
+		return subtract(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -218,7 +203,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar subtract(double r, double theta) {
-		return subtract(create(r, theta));
+		return subtract(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -229,7 +214,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar subtract(int r, int theta) {
-		return subtract(create(r, theta));
+		return subtract(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -250,7 +235,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar multiply(float r, float theta) {
-		return multiply(create(r, theta));
+		return multiply(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -261,7 +246,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar multiply(double r, double theta) {
-		return multiply(create(r, theta));
+		return multiply(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -272,7 +257,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar multiply(int r, int theta) {
-		return multiply(create(r, theta));
+		return multiply(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -282,7 +267,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar multiply(float val) {
-		return multiply(create(val, 0));
+		return multiply(new Vector2Polar(val, 0));
 	}
 
 	/**
@@ -292,7 +277,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar multiply(double val) {
-		return multiply(create(val, 0));
+		return multiply(new Vector2Polar(val, 0));
 	}
 
 	/**
@@ -302,7 +287,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar multiply(int val) {
-		return multiply(create(val, 0));
+		return multiply(new Vector2Polar(val, 0));
 	}
 
 	/**
@@ -323,7 +308,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar divide(float r, float theta) {
-		return divide(create(r, theta));
+		return divide(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -334,7 +319,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar divide(double r, double theta) {
-		return divide(create(r, theta));
+		return divide(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -345,7 +330,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar divide(int r, int theta) {
-		return divide(create(r, theta));
+		return divide(new Vector2Polar(r, theta));
 	}
 
 	/**
@@ -355,7 +340,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar divide(float val) {
-		return divide(create(val, 0));
+		return divide(new Vector2Polar(val, 0));
 	}
 
 	/**
@@ -365,7 +350,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar divide(double val) {
-		return divide(create(val, 0));
+		return divide(new Vector2Polar(val, 0));
 	}
 
 	/**
@@ -375,7 +360,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public Vector2Polar divide(int val) {
-		return divide(create(val, 0));
+		return divide(new Vector2Polar(val, 0));
 	}
 
 	/**
@@ -397,7 +382,6 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 		return Vector2Polar.toVector2(this);
 	}
 
-	
 	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
@@ -498,7 +482,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar add(Vector2Polar a, Vector2Polar b) {
-		return Vector2.create(a.getX() + b.getX(), a.getY() + b.getY()).toVector2Polar();
+		return new Vector2(a.getX() + b.getX(), a.getY() + b.getY()).toVector2Polar();
 	}
 
 	/**
@@ -509,7 +493,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar subtract(Vector2Polar a, Vector2Polar b) {
-		return Vector2.create(a.getX() - b.getX(), a.getY() - b.getY()).toVector2Polar();
+		return new Vector2(a.getX() - b.getX(), a.getY() - b.getY()).toVector2Polar();
 	}
 
 	/**
@@ -520,7 +504,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar multiply(Vector2Polar a, Vector2Polar b) {
-		return create(a.r * b.r, a.theta + b.theta);
+		return new Vector2Polar(a.r * b.r, a.theta + b.theta);
 	}
 
 	/**
@@ -531,7 +515,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar divide(Vector2Polar a, Vector2Polar b) {
-		return create(a.r / b.r, a.theta - b.theta);
+		return new Vector2Polar(a.r / b.r, a.theta - b.theta);
 	}
 
 	/**
@@ -552,10 +536,9 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector2Polar o) {
-		return Vector2.create(o.getX(), o.getY());
+		return new Vector2(o.getX(), o.getY());
 	}
 
-	
 	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
@@ -563,7 +546,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2Polar cross(Vector2Polar o) {
-		return create(o.r, o.theta + ninetyDegrees);
+		return new Vector2Polar(o.r, o.theta + ninetyDegrees);
 	}
 
 	/**
@@ -574,7 +557,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar ceil(Vector2Polar o) {
-		return create(Math.ceil(o.r), Math.ceil(o.theta));
+		return new Vector2Polar(Math.ceil(o.r), Math.ceil(o.theta));
 	}
 
 	/**
@@ -585,7 +568,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar floor(Vector2Polar o) {
-		return create(Math.floor(o.r), Math.floor(o.theta));
+		return new Vector2Polar(Math.floor(o.r), Math.floor(o.theta));
 	}
 
 	/**
@@ -595,7 +578,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar round(Vector2Polar o) {
-		return create(Math.round(o.r), Math.round(o.theta));
+		return new Vector2Polar(Math.round(o.r), Math.round(o.theta));
 	}
 
 	/**
@@ -606,7 +589,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar min(Vector2Polar o1, Vector2Polar o2) {
-		return create(Math.min(o1.r, o2.r), Math.min(o1.theta, o2.theta));
+		return new Vector2Polar(Math.min(o1.r, o2.r), Math.min(o1.theta, o2.theta));
 	}
 
 	/**
@@ -617,7 +600,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar max(Vector2Polar o1, Vector2Polar o2) {
-		return create(Math.max(o1.r, o2.r), Math.max(o1.theta, o2.theta));
+		return new Vector2Polar(Math.max(o1.r, o2.r), Math.max(o1.theta, o2.theta));
 	}
 
 	/**
@@ -627,7 +610,7 @@ public class Vector2Polar extends PoolableObject implements Comparable<Vector2Po
 	 * @return
 	 */
 	public static Vector2Polar rand() {
-		return create(Math.random(), Math.random() * twoPi);
+		return new Vector2Polar(Math.random(), Math.random() * twoPi);
 	}
 
 	/**

@@ -62,8 +62,8 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 	public BlockIterator(World world, Transform pos, int maxDistance) {
-		position = Point.create(pos.getPosition());
-		direction = Vector3.create(MathHelper.getDirectionVector(pos.getRotation()));
+		position = new Point(pos.getPosition());
+		direction = new Vector3(MathHelper.getDirectionVector(pos.getRotation()));
 
 		float max = Math.abs(direction.getX());
 		max = Math.abs(direction.getY()) > max ? Math.abs(direction.getY()) : max;
@@ -73,7 +73,7 @@ public class BlockIterator implements Iterator<Block> {
 			throw new IllegalArgumentException("Direction may not be a zero vector");
 		}
 
-		direction.scale(1 / max);
+		direction.multiply(1 / max);
 
 		blocksRead = 0;
 		this.maxDistance = maxDistance;

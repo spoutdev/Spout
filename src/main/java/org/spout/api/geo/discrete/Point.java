@@ -33,47 +33,34 @@ import org.spout.api.math.Vector3;
  * Represents a position in a World
  */
 public class Point extends Vector3 {
-	public static final Point invalid = new Point();
-	
 	protected World world;
-	
-	protected Point(){
-		super(0,0,0);
-		world = null;
-	}
-	
+	public static final Point invalid = new Point(null, 0, 0, 0);
 
-	public static Point create(Point point) {
-		return create(point.getWorld(), point.getX(), point.getY(), point.getZ());
+	public Point(Point point) {
+		super(point);
+		world = point.getWorld();
 	}
 
-	public static Point create(Vector3 vector, World w) {
-		return create(w, vector.getX(), vector.getY(), vector.getZ());
+	public Point(Vector3 vector, World w) {
+		super(vector);
+		world = w;
 	}
 
-	public static Point create(World world, float x, float y, float z) {
-		return PointPool.checkout().set(world, x, y, z);
-	}
-	
-		
-	private Point set(World world, float x, float y, float z){
+	public Point(World world, float x, float y, float z) {
+		super(x, y, z);
 		this.world = world;
-		super.set(x, y, z);
-		return this;			
-				
 	}
-	
 
 	public Point add(Point other) {
 		if (world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
-		return create(Vector3.add(this, other), world);
+		return new Point(Vector3.add(this, other), world);
 	}
 
 	@Override
 	public Point add(Vector3 other) {
-		return create(Vector3.add(this, other), world);
+		return new Point(Vector3.add(this, other), world);
 	}
 
 	/**
@@ -168,13 +155,13 @@ public class Point extends Vector3 {
 		}
 
 	}
-	
-	public Point clone(){
-		return Point.create(this);
-	}
 
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
+	}
+
+	public Point clone() {
+		return new Point(this);
 	}
 }

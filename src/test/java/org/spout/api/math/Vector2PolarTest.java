@@ -63,35 +63,35 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testConstructors() {
-		Vector2Polar x = Vector2Polar.create(2f, 3f);
+		Vector2Polar x = new Vector2Polar(2f, 3f);
 		doAssertDouble("x.r does not equal 2f", 2f, x.r);
 		doAssertDouble("x.theta does not equal 3f", 3f, x.theta);
 
-		x = Vector2Polar.create(4f, 5f);
+		x = new Vector2Polar(4f, 5f);
 		doAssertDouble("x.r does not equal 4f", 4f, x.r);
 		doAssertDouble("x.theta does not equal 5f", 5f, x.theta);
 
-		x = Vector2Polar.create(3d, 4d);
+		x = new Vector2Polar(3d, 4d);
 		doAssertDouble("x.r does not equal 3f", 3f, x.r);
 		doAssertDouble("x.theta does not equal 4f", 4f, x.theta);
 
-		x = Vector2Polar.create(2, 3);
+		x = new Vector2Polar(2, 3);
 		doAssertDouble("x.r does not equal 2f", 2f, x.r);
 		doAssertDouble("x.theta does not equal 3f", 3f, x.theta);
 
-		Vector2Polar y = Vector2Polar.create(x);
+		Vector2Polar y = new Vector2Polar(x);
 		doAssertDouble("y.r does not equal 2f", 2f, y.r);
 		doAssertDouble("y.theta does not equal 3f", 3f, y.theta);
 
-		x = Vector2Polar.create();
+		x = new Vector2Polar();
 		doAssertDouble("x.r does not equal 0", 0, x.r);
 		doAssertDouble("x.theta does not equal 0", 0, x.theta);
 	}
 
 	@Test
 	public void testAddVector2Polar() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
-		Vector2Polar b = Vector2Polar.create(2, Math.PI * (2.0/3.0) );
+		Vector2Polar a = new Vector2Polar(1, 0);
+		Vector2Polar b = new Vector2Polar(2, Math.PI * (2.0/3.0) );
 
 		Vector2Polar c = a.add(b);
 
@@ -101,7 +101,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testAddFloat() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
+		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar c = a.add(2.0F, (float) Math.PI * (2.0F/3.0F));
 
 		doAssertDouble("x.r does not equal Math.sqrt(3)", Math.sqrt(3), c.r);
@@ -110,7 +110,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testAddDouble() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
+		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar c = a.add(2.0D, Math.PI * (2.0d/3.0d));
 
 		doAssertDouble("x.r does not equal Math.sqrt(3)", Math.sqrt(3), c.r);
@@ -119,7 +119,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testAddInt() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
+		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar c = a.add(2, 2);
 
 		doAssertDouble("x.r does not equal ~Math.sqrt(3)", 1.826, c.r);
@@ -128,8 +128,8 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testSubtractVector2Polar() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
-		Vector2Polar b = Vector2Polar.create(2, Math.PI * (2.0/3.0) );
+		Vector2Polar a = new Vector2Polar(1, 0);
+		Vector2Polar b = new Vector2Polar(2, Math.PI * (2.0/3.0) );
 
 		Vector2Polar c = a.subtract(b);
 
@@ -139,7 +139,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testSubtractFloat() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
+		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar c = a.subtract(2f, (float) Math.PI * (2.0/3.0) );
 
 		doAssertDouble("x.r does not equal Math.sqrt(7)", Math.sqrt(7), c.r);
@@ -148,7 +148,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testSubtractDouble() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
+		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar c = a.subtract(2d, Math.PI * (2.0/3.0) );
 
 		doAssertDouble("x.r does not equal Math.sqrt(7)", Math.sqrt(7), c.r);
@@ -157,7 +157,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testSubtractInt() {
-		Vector2Polar a = Vector2Polar.create(1, 0);
+		Vector2Polar a = new Vector2Polar(1, 0);
 		Vector2Polar c = a.subtract(2, 2);
 
 		doAssertDouble("x.r does not equal ~Math.sqrt(7)", 2.581, c.r);
@@ -166,8 +166,8 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testMultiplyVector2Polar() {
-		Vector2Polar a = Vector2Polar.create(1, -1);
-		Vector2Polar b = Vector2Polar.create(2, 6);
+		Vector2Polar a = new Vector2Polar(1, -1);
+		Vector2Polar b = new Vector2Polar(2, 6);
 		Vector2Polar c = a.multiply(b);
 
 		doAssertDouble("x.r does not equal 2", 2, c.r);
@@ -176,7 +176,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testMultiplyFloat() {
-		Vector2Polar a = Vector2Polar.create(1, -1);
+		Vector2Polar a = new Vector2Polar(1, -1);
 		Vector2Polar b = a.multiply(2f, 6f);
 
 		doAssertDouble("b.r does not equal 2", 2, b.r);
@@ -190,7 +190,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testMultiplyDouble() {
-		Vector2Polar a = Vector2Polar.create(1, -1);
+		Vector2Polar a = new Vector2Polar(1, -1);
 		Vector2Polar b = a.multiply(2d, 6d);
 
 		doAssertDouble("b.r does not equal 2", 2, b.r);
@@ -204,7 +204,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testMultiplyInt() {
-		Vector2Polar a = Vector2Polar.create(1, -1);
+		Vector2Polar a = new Vector2Polar(1, -1);
 		Vector2Polar b = a.multiply(2, 6);
 
 		doAssertDouble("b.r does not equal 2", 2, b.r);
@@ -218,8 +218,8 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testDivideVector2Polar() {
-		Vector2Polar a = Vector2Polar.create(4, -1);
-		Vector2Polar b = Vector2Polar.create(2, 6);
+		Vector2Polar a = new Vector2Polar(4, -1);
+		Vector2Polar b = new Vector2Polar(2, 6);
 		Vector2Polar c = a.divide(b);
 
 		doAssertDouble("x.r does not equal 2", 2, c.r);
@@ -228,7 +228,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testDivideFloat() {
-		Vector2Polar a = Vector2Polar.create(4, -1);
+		Vector2Polar a = new Vector2Polar(4, -1);
 		Vector2Polar b = a.divide(2f, 6f);
 
 		doAssertDouble("b.r does not equal 2", 2, b.r);
@@ -242,7 +242,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testDivideDouble() {
-		Vector2Polar a = Vector2Polar.create(4, -1);
+		Vector2Polar a = new Vector2Polar(4, -1);
 		Vector2Polar b = a.divide(2d, 6d);
 
 		doAssertDouble("b.r does not equal 2", 2, b.r);
@@ -256,7 +256,7 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testDivideInt() {
-		Vector2Polar a = Vector2Polar.create(4, -1);
+		Vector2Polar a = new Vector2Polar(4, -1);
 		Vector2Polar b = a.divide(2, 6);
 
 		doAssertDouble("b.r does not equal 2", 2, b.r);
@@ -270,17 +270,17 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testDot() {
-		Vector2Polar x = Vector2Polar.create(2, 3);
+		Vector2Polar x = new Vector2Polar(2, 3);
 		doAssertDouble("x dot x should be 4", 4, x.dot(x));
 
-		x = Vector2Polar.create(3, 2);
-		Vector2Polar y = Vector2Polar.create(4, -1);
+		x = new Vector2Polar(3, 2);
+		Vector2Polar y = new Vector2Polar(4, -1);
 		doAssertDouble("x dot y should be 12cos(3)", 12*Math.cos(3), x.dot(y));
 	}
 
 	@Test
 	public void testToVector2() {
-		Vector2Polar x = Vector2Polar.create(5, Math.toRadians(53.13));
+		Vector2Polar x = new Vector2Polar(5, Math.toRadians(53.13));
 		Vector2 y = new Vector2(3, 4);
 
 		assertTrue(x.toVector2().equals(y));
@@ -289,12 +289,12 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testCeil() {
-		Vector2Polar x = Vector2Polar.create(1.4, 0.2);
+		Vector2Polar x = new Vector2Polar(1.4, 0.2);
 		Vector2Polar y = x.ceil();
 		doAssertDouble(2, y.r);
 		doAssertDouble(1, y.theta);
 
-		x = Vector2Polar.create(5.5, -3.3);
+		x = new Vector2Polar(5.5, -3.3);
 		y = x.ceil();
 		doAssertDouble(6, y.r);
 		doAssertDouble(3, y.theta);
@@ -302,12 +302,12 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testFloor() {
-		Vector2Polar x = Vector2Polar.create(1.4, 0.2);
+		Vector2Polar x = new Vector2Polar(1.4, 0.2);
 		Vector2Polar y = x.floor();
 		doAssertDouble(1, y.r);
 		doAssertDouble(0, y.theta);
 
-		x = Vector2Polar.create(5.5, -3.3);
+		x = new Vector2Polar(5.5, -3.3);
 		y = x.floor();
 		doAssertDouble(5, y.r);
 		doAssertDouble(2, y.theta);
@@ -315,12 +315,12 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testRound() {
-		Vector2Polar x = Vector2Polar.create(1.4, 0.2);
+		Vector2Polar x = new Vector2Polar(1.4, 0.2);
 		Vector2Polar y = x.round();
 		doAssertDouble(1, y.r);
 		doAssertDouble(0, y.theta);
 
-		x = Vector2Polar.create(5.5, -3.3);
+		x = new Vector2Polar(5.5, -3.3);
 		y = x.round();
 		doAssertDouble(6, y.r);
 		doAssertDouble(3, y.theta);
@@ -328,16 +328,16 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testDistance() {
-		Vector2Polar x = Vector2Polar.create(1.4, 0.2);
-		doAssertDouble(1.4, x.distance(Vector2Polar.create()));
+		Vector2Polar x = new Vector2Polar(1.4, 0.2);
+		doAssertDouble(1.4, x.distance(new Vector2Polar()));
 
-		Vector2Polar y = Vector2Polar.create(5.5, -3.3);
+		Vector2Polar y = new Vector2Polar(5.5, -3.3);
 		doAssertDouble(Math.sqrt(46.631), x.distance(y));
 	}
 
 	@Test
 	public void testToArray() {
-		Vector2Polar x = Vector2Polar.create(5, 3);
+		Vector2Polar x = new Vector2Polar(5, 3);
 		float[] r = x.toArray();
 		assertArrayEquals(new float[]{5, 3}, r, (float) eps);
 		doAssertDouble(5, r[0]);
@@ -346,27 +346,27 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testCompareTo() {
-		Vector2Polar x = Vector2Polar.create(0, 0);
-		Vector2Polar y = Vector2Polar.create(1, 1);
+		Vector2Polar x = new Vector2Polar(0, 0);
+		Vector2Polar y = new Vector2Polar(1, 1);
 		assertTrue(x.compareTo(y) < 0);
-		x = Vector2Polar.create(5, 3);
-		y = Vector2Polar.create(-2, 5);
+		x = new Vector2Polar(5, 3);
+		y = new Vector2Polar(-2, 5);
 		assertTrue(x.compareTo(y) >= 0);
 	}
 
 	@Test
 	public void testEquals() {
-		Vector2Polar x = Vector2Polar.create(1, 1);
-		Vector2Polar y = Vector2Polar.create(1, 1);
-		Vector2Polar z = Vector2Polar.create(1, 2);
+		Vector2Polar x = new Vector2Polar(1, 1);
+		Vector2Polar y = new Vector2Polar(1, 1);
+		Vector2Polar z = new Vector2Polar(1, 2);
 		assertTrue(x.equals(y));
 		assertFalse(x.equals(z));
 	}
 
 	@Test
 	public void testHashCode() {
-		Vector2Polar x = Vector2Polar.create(5, 27);
-		Vector2Polar y = Vector2Polar.create(5, -3);
+		Vector2Polar x = new Vector2Polar(5, 27);
+		Vector2Polar y = new Vector2Polar(5, -3);
 		System.out.println(x.hashCode());
 		System.out.println(y.hashCode());
 		doAssertDouble(617563713, x.hashCode());
@@ -375,22 +375,22 @@ public class Vector2PolarTest {
 
 	@Test
 	public void testToString() {
-		Vector2Polar x = Vector2Polar.create(3, 5);
+		Vector2Polar x = new Vector2Polar(3, 5);
 		assertEquals("(3.0, 5.0 radians)", x.toString());
 	}
 
 	@Test
 	public void testMin() {
-		Vector2Polar x = Vector2Polar.create(5, -15); //3.85 radians
-		Vector2Polar y = Vector2Polar.create(3, 2); //2 radians
-		assertEquals(Vector2Polar.create(3, 2), Vector2Polar.min(x, y));
+		Vector2Polar x = new Vector2Polar(5, -15); //3.85 radians
+		Vector2Polar y = new Vector2Polar(3, 2); //2 radians
+		assertEquals(new Vector2Polar(3, 2), Vector2Polar.min(x, y));
 	}
 
 	@Test
 	public void testMax() {
-		Vector2Polar x = Vector2Polar.create(5, -15);
-		Vector2Polar y = Vector2Polar.create(3, 2);
-		assertEquals(Vector2Polar.create(5, -15), Vector2Polar.max(x, y));
+		Vector2Polar x = new Vector2Polar(5, -15);
+		Vector2Polar y = new Vector2Polar(3, 2);
+		assertEquals(new Vector2Polar(5, -15), Vector2Polar.max(x, y));
 	}
 
 	@Test

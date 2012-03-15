@@ -38,8 +38,8 @@ public class Cuboid {
 	protected Vector3 size;
 
 	public Cuboid(Point base, Vector3 size) {
-		this.base = Point.create(base);
-		this.size = Vector3.create(size);
+		this.base = new Point(base);
+		this.size = new Vector3(size);
 	}
 
 	public Point getBase() {

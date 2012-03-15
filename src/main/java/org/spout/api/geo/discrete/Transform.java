@@ -52,7 +52,6 @@ public class Transform {
 	}
 
 	public void setPosition(Point position) {
-		this.position.free();
 		this.position = position.clone();
 	}
 
@@ -61,7 +60,6 @@ public class Transform {
 	}
 
 	public void setRotation(Quaternion rotation) {
-		this.rotation.free();
 		this.rotation = rotation.clone();
 	}
 
@@ -70,7 +68,6 @@ public class Transform {
 	}
 
 	public void setScale(Vector3 scale) {
-		this.scale.free();
 		this.scale = scale.clone();
 	}
 
@@ -124,9 +121,9 @@ public class Transform {
 	 */
 	@Threadsafe
 	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
-		this.position = Point.create(world, px, py, pz);
-		this.rotation = Quaternion.create(rx, ry, rz, rw);
-		this.scale = Vector3.create(sx, sy, sz);		
+		this.position = new Point(world, px, py, pz);
+		this.rotation = new Quaternion(rx, ry, rz, rw);
+		this.scale = new Vector3(sx, sy, sz);		
 	}
 
 	/**

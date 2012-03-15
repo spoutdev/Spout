@@ -262,7 +262,7 @@ public class GenericBlockDesign implements BlockDesign {
 	}
 
 	public Vector3 getLightSource(int quad, int x, int y, int z) {
-		return Vector3.create(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
+		return new Vector3(x + lightSourceXOffset[quad], y + lightSourceYOffset[quad], z + lightSourceZOffset[quad]);
 	}
 
 	public BlockDesign setTexture(Plugin addon, Texture texture) {
