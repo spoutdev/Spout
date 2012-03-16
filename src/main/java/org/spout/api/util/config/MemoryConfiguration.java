@@ -38,6 +38,7 @@ import org.spout.api.math.MathHelper;
  */
 public class MemoryConfiguration {
 	
+	protected String pathSeperator = ".";
 	protected Map<String, Object> root;
 	protected Set<ConfigurationNode> nodes;
 	
@@ -58,7 +59,7 @@ public class MemoryConfiguration {
 	 * @return the object from the path
 	 */
 	public Object getValue(String path) {
-		if (!path.contains(".")) {
+		if (!path.contains(pathSeperator)) {
 			Object val = root.get(path);
 			if (val == null) {
 				return null;
@@ -66,7 +67,7 @@ public class MemoryConfiguration {
 			return val;
 		}
 
-		String[] parts = path.split("\\.");
+		String[] parts = path.split(pathSeperator);
 		Map<String, Object> node = root;
 
 		for (int i = 0; i < parts.length; i++) {
@@ -97,12 +98,12 @@ public class MemoryConfiguration {
 	 * @param value 
 	 */
 	public void setValue(String path, Object value) {
-		if (!path.contains(".")) {
+		if (!path.contains(pathSeperator)) {
 			root.put(path, value);
 			return;
 		}
 
-		String[] parts = path.split("\\.");
+		String[] parts = path.split(pathSeperator);
 		Map<String, Object> node = root;
 
 		for (int i = 0; i < parts.length; i++) {
@@ -122,6 +123,14 @@ public class MemoryConfiguration {
 
 			node = (Map<String, Object>) o;
 		}
+	}
+	
+	public void setPathSeperator(String pathSeperator) {
+		this.pathSeperator = pathSeperator;
+	}
+	
+	public String getPathSeperator(String pathSeperator) {
+		return pathSeperator;
 	}
 	
 	public Set<ConfigurationNode> getNodes() {
