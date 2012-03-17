@@ -288,6 +288,15 @@ public interface World extends Source, BlockAccess {
 	public Set<Entity> getAll();
 
 	/**
+	 * Gets an entity by its id.
+	 *
+	 * @param id The id.
+	 * @return The entity, or {@code null} if it could not be found.
+	 */
+	@SnapshotRead
+	public Entity getEntity(int id);
+
+	/**
 	 * Gets a set of all players on active on this world
 	 *
 	 * @return all players on this world
