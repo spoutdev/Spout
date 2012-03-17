@@ -264,8 +264,8 @@ public class SpoutServer extends AsyncManager implements Server {
 	}
 
 	public static void main(String[] args) {
-	
-		
+
+
 		SpoutServer server = new SpoutServer(args);
 		server.start();
 
@@ -289,7 +289,7 @@ public class SpoutServer extends AsyncManager implements Server {
 		consoleManager.setupConsole();
 
 		config.load();
-		
+
 		storeQueue.start(); //Make sure the storageQueue is running
 		banManager = new FlatFileBanManager(this); //Load the BanManager after the init of the Queue
 		banManager.load();
@@ -632,15 +632,15 @@ public class SpoutServer extends AsyncManager implements Server {
 	public World loadWorld(String name, WorldGenerator generator) {
 		if(loadedWorlds.get().containsKey((name))) return loadedWorlds.get().get(name);
 		if(loadedWorlds.getLive().containsKey(name)) return loadedWorlds.getLive().get(name);
-		
+
 		// TODO - should include generator (and non-zero seed)
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
-				
+
 
 		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
-		
+
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 
@@ -650,6 +650,7 @@ public class SpoutServer extends AsyncManager implements Server {
 			if (!world.getExecutor().startExecutor()) {
 				throw new IllegalStateException("Unable to start executor for new world");
 			}
+			world.start();
 			return world;
 		}
 	}
@@ -694,7 +695,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	public void unbanIp(String address) {
 		banManager.setIpBanned(address, false);
 	}
-	
+
 	@Override
 	public void banPlayer(String player) {
 		banManager.setBanned(player, true);
@@ -704,23 +705,23 @@ public class SpoutServer extends AsyncManager implements Server {
 	public void unbanPlayer(String player) {
 		banManager.setBanned(player, false);
 	}
-	
+
 	public boolean isBanned(String player, String address) {
 		return banManager.isBanned(player, address);
 	}
-	
+
 	public boolean isIpBanned(String address) {
 		return banManager.isIpBanned(address);
 	}
-	
+
 	public boolean isPlayerBanned(String player) {
 		return banManager.isBanned(player);
 	}
-	
+
 	public String getBanMessage(String player) {
 		return banManager.getBanMessage(player);
 	}
-	
+
 	public String getIpBanMessage(String address) {
 		return banManager.getIpBanMessage(address);
 	}
@@ -975,10 +976,10 @@ public class SpoutServer extends AsyncManager implements Server {
 	public boolean debugMode() {
 		return debugMode;
 	}
-	
+
 	@Override
 	public Thread getMainThread() {
 		return scheduler.getMainThread();
 	}
-	
+
 }
