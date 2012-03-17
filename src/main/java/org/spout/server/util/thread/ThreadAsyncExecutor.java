@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.server.SpoutRegionManager;
 import org.spout.server.scheduler.SpoutScheduler;
 import org.spout.server.util.thread.coretasks.CopySnapshotTask;
 import org.spout.server.util.thread.coretasks.FinalizeTask;
@@ -59,11 +58,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
 		}
-		this.manager = manager;
-		if(manager instanceof SpoutRegionManager){
-			SpoutRegionManager m = (SpoutRegionManager)manager;
-			this.setName(m.getRegion().toString() + " Thread");
-		}
+	    
 		
 	}
 

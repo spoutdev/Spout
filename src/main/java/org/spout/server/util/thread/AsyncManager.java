@@ -45,6 +45,7 @@ public abstract class AsyncManager {
 		server = null;
 		this.maxStage = maxStage;
 		executor.setManager(this);
+		
 	}
 
 	public AsyncManager(int maxStage, AsyncExecutor executor, Server server) {

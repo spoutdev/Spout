@@ -28,6 +28,7 @@ package org.spout.server;
 import org.spout.api.Server;
 import org.spout.server.util.thread.AsyncExecutor;
 import org.spout.server.util.thread.AsyncManager;
+import org.spout.server.util.thread.ThreadAsyncExecutor;
 
 /**
  * This class just passes through the period method calls to the SpoutRegion
@@ -39,6 +40,7 @@ public class SpoutRegionManager extends AsyncManager {
 	public SpoutRegionManager(SpoutRegion parent, int maxStage, AsyncExecutor executor, Server server) {
 		super(maxStage, executor, server);
 		this.parent = parent;
+		
 	}
 
 	public SpoutRegion getParent() {
@@ -69,10 +71,6 @@ public class SpoutRegionManager extends AsyncManager {
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		parent.preSnapshotRun();
-	}
-	
-	public SpoutRegion getRegion(){
-		return parent;
 	}
 
 }
