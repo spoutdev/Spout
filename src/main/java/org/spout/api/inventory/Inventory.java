@@ -33,8 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an inventory, usually owned by an entity. In a grid-style inventory, slot
- * ordering starts in the lower-left corner at zero, going left-to-right for each row.
+ * Represents an inventory, usually owned by an entity. In a grid-style
+ * inventory, slot ordering starts in the lower-left corner at zero, going
+ * left-to-right for each row.
  */
 public class Inventory implements Serializable {
 
@@ -49,8 +50,8 @@ public class Inventory implements Serializable {
 		currentSlot = 0;
 	}
 
-	public void setHiddenSlot(int slot, boolean newValue) {
-		if (newValue) {
+	public void setHiddenSlot(int slot, boolean add) {
+		if (add) {
 			hidden.add(slot);
 		} else {
 			hidden.remove(slot);
@@ -143,5 +144,30 @@ public class Inventory implements Serializable {
 			throw new ArrayIndexOutOfBoundsException();
 		}
 		currentSlot = slot;
+	}
+
+	public boolean containsExactly(ItemStack item) {
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i].equals(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean contains(ItemStack item) {
+		if (containsExactly(item)) {
+			return true;
+		}
+		int neededAmount = item.getAmount();
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i].equalsIgnoreSize(item)) {
+				neededAmount -= contents[i].getAmount();
+				if (neededAmount <= 0) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
