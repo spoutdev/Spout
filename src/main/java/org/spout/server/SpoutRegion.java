@@ -80,7 +80,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * The maximum number of chunks that will be processed for population each tick.
 	 */
-	private static final int POPULATE_PER_TICK = 5;
+	private static final int POPULATE_PER_TICK = 50;
 	
 	/**
 	 * The maximum number of chunks that will be processed for lighting updates each tick.
