@@ -26,28 +26,23 @@
 package org.spout.api.util;
 
 public final class Color {
-	private byte red;
-	private byte green;
-	private byte blue;
-	private byte alpha = (byte) 255;
+	private final byte red;
+	private final byte green;
+	private final byte blue;
+	private final byte alpha;
 
 	public Color(float r, float g, float b) {
-		setRed(r);
-		setGreen(g);
-		setBlue(b);
+		this((byte)(r*255), (byte)(g*255), (byte)(b * 255));
+		
 	}
 
 	public Color(float r, float g, float b, float a) {
-		setRed(r);
-		setGreen(g);
-		setBlue(b);
-		setAlpha(a);
+		this((byte)(r*255), (byte)(g*255), (byte)(b * 255), (byte)(a* 255));
+		
 	}
 
 	public Color(byte r, byte g, byte b) {
-		red = r;
-		green = g;
-		blue = b;
+		this(r, g, b, 255);
 	}
 
 	public Color(byte r, byte g, byte b, byte a) {
@@ -58,10 +53,7 @@ public final class Color {
 	}
 
 	public Color(int argb) {
-		alpha = (byte) (argb >>> 24);
-		red = (byte) ((argb & 0xFF0000) >>> 16);
-		green = (byte) ((argb & 0xFF00) >>> 8);
-		blue = (byte) (argb & 0xFF);
+		this((byte) ((argb & 0xFF0000) >>> 16),  (byte) ((argb & 0xFF00) >>> 8), (byte) (argb & 0xFF), (byte) (argb >>> 24));		
 	}
 
 	public float getRedF() {
@@ -111,27 +103,7 @@ public final class Color {
 	public int getAlphaI() {
 		return alpha;
 	}
-
-	public Color setRed(float r) {
-		red = (byte) (r * 255);
-		return this;
-	}
-
-	public Color setGreen(float g) {
-		green = (byte) (g * 255);
-		return this;
-	}
-
-	public Color setBlue(float b) {
-		blue = (byte) (b * 255);
-		return this;
-	}
-
-	public Color setAlpha(float a) {
-		alpha = (byte) (a * 255);
-		return this;
-	}
-
+	
 	@Override
 	public Color clone() {
 		return new Color(red, green, blue, alpha);
