@@ -29,8 +29,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -39,10 +37,13 @@ public class MemoryConfigurationTest {
 	@Test
 	public void testValue() {
 		MemoryConfiguration config = new MemoryConfiguration(new HashMap<String, Object>(), new HashSet<ConfigurationNode>());
-		config.setValue("foo.bar", "baz");
-		String value = config.getString("foo.bar");
-		config.setPathSeperator("/");
-		String value1 = config.getString("foo/bar");
+		config.setValue("foo.bar.baz", "baz");
+		String value = config.getString("foo.bar.baz");
+		config.setPathSeparator("/");
+		String value1 = config.getString("foo/bar/baz");
+		config.setPathSeparator("a(b|c)", true);
+		String value2 = config.getString("fooabbaracbaz");
 		assertEquals(value, value1);
+		assertEquals(value, value2);
 	}
 }

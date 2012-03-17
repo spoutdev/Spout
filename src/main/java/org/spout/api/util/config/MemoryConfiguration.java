@@ -31,6 +31,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import org.spout.api.Spout;
 import org.spout.api.math.MathHelper;
 
 /**
@@ -38,28 +42,30 @@ import org.spout.api.math.MathHelper;
  */
 public class MemoryConfiguration {
 
-	protected String pathSeperator = ".";
+	private Pattern pathSeparator = Pattern.compile("\\.");
 	protected Map<String, Object> root;
 	protected Set<ConfigurationNode> nodes;
 
 	/**
 	 * Constructs a new configuration in memory.
 	 *
-	 * @param root
+	 * @param root The root node this configuration takes its data from
+	 * @param nodes The child nodes of this configuration
 	 */
 	public MemoryConfiguration(Map<String, Object> root, Set<ConfigurationNode> nodes) {
 		this.root = root;
-		this.nodes = nodes;
+		this.nodes = new HashSet<ConfigurationNode>(nodes);
 	}
 
 	/**
 	 * Gets the value at a given path
 	 *
-	 * @param path
+	 * @param path The path to get, split by {@link #getPathSeparator()}
 	 * @return the object from the path
 	 */
+	@SuppressWarnings("unchecked")
 	public Object getValue(String path) {
-		if (!path.contains(pathSeperator)) {
+		if (!pathSeparator.matcher(path).find()) {
 			Object val = root.get(path);
 			if (val == null) {
 				return null;
@@ -67,7 +73,7 @@ public class MemoryConfiguration {
 			return val;
 		}
 
-		String[] parts = path.split(pathSeperator);
+		String[] parts = pathSeparator.split(path);
 		Map<String, Object> node = root;
 
 		for (int i = 0; i < parts.length; i++) {
@@ -94,16 +100,17 @@ public class MemoryConfiguration {
 	/**
 	 * Sets the object value at the given path.
 	 *
-	 * @param path
-	 * @param value
+	 * @param path The path to set (split by {@link #getPathSeparator()})
+	 * @param value The value to set the path to.
 	 */
+	@SuppressWarnings("unchecked")
 	public void setValue(String path, Object value) {
-		if (!path.contains(pathSeperator)) {
+		if (!pathSeparator.matcher(path).find()) {
 			root.put(path, value);
 			return;
 		}
 
-		String[] parts = path.split(pathSeperator);
+		String[] parts = pathSeparator.split(path);
 		Map<String, Object> node = root;
 
 		for (int i = 0; i < parts.length; i++) {
@@ -125,12 +132,25 @@ public class MemoryConfiguration {
 		}
 	}
 
-	public void setPathSeperator(String pathSeperator) {
-		this.pathSeperator = pathSeperator;
+	public void setPathSeparator(String pathSeparator) {
+		setPathSeparator(pathSeparator, false);
 	}
 
-	public String getPathSeperator(String pathSeperator) {
-		return pathSeperator;
+	public void setPathSeparator(String pathSeparator, boolean regex) {
+		if (regex) {
+			try {
+				this.pathSeparator = Pattern.compile(pathSeparator);
+			} catch (PatternSyntaxException e) {
+				Spout.getGame().getLogger().severe("Invalid regex passed to MemoryConfiguration: " + pathSeparator);
+				e.printStackTrace();
+			}
+		} else {
+			this.pathSeparator = Pattern.compile(Pattern.quote(pathSeparator));
+		}
+	}
+
+	public String getPathSeparator() {
+		return pathSeparator.pattern();
 	}
 
 	public Set<ConfigurationNode> getNodes() {
@@ -140,7 +160,7 @@ public class MemoryConfiguration {
 	/**
 	 * Removes a node from memory.
 	 *
-	 * @param path
+	 * @param path The path to remove (split by {@link #getPathSeparator()})
 	 */
 	public void removeNode(String path) {
 		for (ConfigurationNode node :  nodes) {
@@ -152,8 +172,8 @@ public class MemoryConfiguration {
 
 	/**
 	 * Sets a node's state for this configuration.
-	 *
-	 * @param node
+	 * This will remove the node from another configuration if it already exists there
+	 * @param node The node to add
 	 */
 	public void addNode(ConfigurationNode node) {
 		Object value = this.getValue(node.getPath());
@@ -163,6 +183,10 @@ public class MemoryConfiguration {
 			node.setValue(value, false);
 		}
 
+		if (node.config != null) {
+			node.config.nodes.remove(node);
+		}
+
 		nodes.add(node);
 		node.config = this;
 	}
@@ -170,8 +194,8 @@ public class MemoryConfiguration {
 	/**
 	 * Adds a node to the configuration given the path and value.
 	 *
-	 * @param path
-	 * @param value
+	 * @param path The path to add (split by {@link #getPathSeparator()})
+	 * @param value The value to set
 	 * @return new node
 	 */
 	public ConfigurationNode addNode(String path, Object value) {
@@ -183,7 +207,7 @@ public class MemoryConfiguration {
 	/**
 	 * Adds multiple nodes to the configuration.
 	 *
-	 * @param nodes
+	 * @param nodes The nodes to add
 	 */
 	public void addNodes(ConfigurationNode... nodes) {
 		for (ConfigurationNode node : nodes) {
@@ -195,9 +219,9 @@ public class MemoryConfiguration {
 	 * Gets a node from the configuration, if the path is found, returns a node with the value of the path.
 	 * If it's null, it returns the default value given.
 	 *
-	 * @param path
-	 * @param def
-	 * @return
+	 * @param path The path to get (split by {@link #getPathSeparator()})
+	 * @param def The default value, returned as the configuration node's value if no existing value is present
+	 * @return A node with a reference to this MemoryConfiguration with the data at {@code path}
 	 */
 	public ConfigurationNode getNode(String path, Object def) {
 		ConfigurationNode node = new ConfigurationNode(path, def);
@@ -214,7 +238,9 @@ public class MemoryConfiguration {
 	/**
 	 * Returns a string from the value, null if not a string.
 	 *
-	 * @return string
+	 * @param path The path to get the string at
+	 * @return string The string at {@code path}
+	 * @see #getValue(String)
 	 */
 	public String getString(String path) {
 		return getString(path, null);
@@ -223,7 +249,9 @@ public class MemoryConfiguration {
 	/**
 	 * Returns a string from the value, default value if not a string.
 	 *
-	 * @return string
+	 * @param path The path to get the string at
+	 * @param def The default vale
+	 * @return The string at {@code path}, or {@code def} if the original value is not present
 	 */
 	public String getString(String path, String def) {
 		Object value = getValue(path);
@@ -472,10 +500,11 @@ public class MemoryConfiguration {
 	 * @param path
 	 * @return Set String
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<String> getKeys(String path) {
 		//TODO Add "deep" option in the future potentially.
 		Set<String> keys = new HashSet<String>();
-		String[] sections = path.split(pathSeperator);
+		String[] sections = pathSeparator.split(path);
 		Map<String, Object> section = this.root;
 		for(int i = 0; i < sections.length && section != null; i++) {
 			String sec = sections[i];
