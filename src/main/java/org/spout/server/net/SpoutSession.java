@@ -221,7 +221,6 @@ public final class SpoutSession implements Session {
 				send(message, true);
 			}
 		}
-
 		
 		while ((message = messageQueue.poll()) != null) {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());

@@ -343,7 +343,8 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-					AsyncExecutorUtils.dumpAllStacks();
+					//AsyncExecutorUtils.dumpAllStacks();
+					AsyncExecutorUtils.checkForDeadlocks();
 				}
 			}
 
@@ -372,7 +373,7 @@ public final class SpoutScheduler implements Scheduler {
 				joined = true;
 			} catch (TimeoutException e) {
 				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-				AsyncExecutorUtils.dumpAllStacks();
+				//AsyncExecutorUtils.dumpAllStacks();
 				AsyncExecutorUtils.checkForDeadlocks();
 			}
 		}
@@ -540,5 +541,9 @@ public final class SpoutScheduler implements Scheduler {
 
 	public SnapshotLock getSnapshotLock() {
 		return snapshotLock;
+	}
+	
+	public final Thread getMainThread() {
+		return mainThread;
 	}
 }

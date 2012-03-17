@@ -177,7 +177,7 @@ public class SpoutServer extends AsyncManager implements Server {
 	/**
 	 * A list of all the active {@link SpoutSession}s.
 	 */
-	private final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
+	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 
 	public static final StorageQueue storeQueue = new StorageQueue();
 
@@ -840,7 +840,11 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-		sessions.pulse();
+		switch (stage) {
+		case 0:
+			sessions.pulse();
+			break;
+		}
 	}
 
 	@Override
@@ -966,6 +970,11 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public boolean debugMode() {
 		return debugMode;
+	}
+	
+	@Override
+	public Thread getMainThread() {
+		return scheduler.getMainThread();
 	}
 	
 }
