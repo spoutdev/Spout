@@ -116,7 +116,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final Set<Player> players = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
 
-	// TODO need world that loads from disk
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Server server, long seed, WorldGenerator generator) {
 		super(1, new ThreadAsyncExecutor(), server);
@@ -127,7 +126,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.generator = generator;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
+	}
 
+	// TODO need world that loads from disk
+	public void start() {
 		//load spawn regions
 		for (int dx = -1; dx < 1; dx++) {
 			for (int dy = -1; dy < 1; dy++) {
@@ -477,7 +479,7 @@ public class SpoutWorld extends AsyncManager implements World {
 				}
 			}
 		}
-		return entity; 
+		return entity;
 	}
 
 	public void addPlayer(Player player) {
