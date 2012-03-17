@@ -73,7 +73,7 @@ import jline.SimpleCompletor;
 import org.spout.api.ChatColor;
 import org.spout.api.Server;
 import org.spout.api.command.CommandSource;
-import org.spout.api.event.server.data.RetrieveIntDataEvent;
+import org.spout.api.data.DataValue;
 import org.spout.api.geo.World;
 
 /**
@@ -318,62 +318,22 @@ public final class ConsoleManager {
 		}
 
 		@Override
-		public Object getData(String node) {
+		public DataValue getData(String node) {
 			return null;
 		}
 
 		@Override
-		public Object getData(String node, Object defaultValue) {
+		public DataValue getData(String node, DataValue defaultValue) {
 			return defaultValue;
 		}
 
 		@Override
-		public Object getData(World world, String node) {
+		public DataValue getData(World world, String node) {
 			return null;
 		}
 
 		@Override
-		public Object getData(World world, String node, Object defaultValue) {
-			return defaultValue;
-		}
-
-		@Override
-		public int getInt(String node) {
-			return RetrieveIntDataEvent.DEFAULT_VALUE;
-		}
-
-		@Override
-		public int getInt(String node, int defaultValue) {
-			return defaultValue;
-		}
-
-		@Override
-		public int getInt(World world, String node) {
-			return RetrieveIntDataEvent.DEFAULT_VALUE;
-		}
-
-		@Override
-		public int getInt(World world, String node, int defaultValue) {
-			return defaultValue;
-		}
-
-		@Override
-		public String getString(String node) {
-			return null;
-		}
-
-		@Override
-		public String getString(String node, String defaultValue) {
-			return defaultValue;
-		}
-
-		@Override
-		public String getString(World world, String node) {
-			return null;
-		}
-
-		@Override
-		public String getString(World world, String node, String defaultValue) {
+		public DataValue getData(World world, String node, DataValue defaultValue) {
 			return defaultValue;
 		}
 	}

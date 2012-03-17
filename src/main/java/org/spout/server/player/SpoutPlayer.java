@@ -30,12 +30,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
+import org.spout.api.data.DataValue;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerChatEvent;
-import org.spout.api.event.server.data.RetrieveIntDataEvent;
-import org.spout.api.event.server.data.RetrieveObjectDataEvent;
-import org.spout.api.event.server.data.RetrieveStringDataEvent;
+import org.spout.api.event.server.data.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
@@ -270,11 +269,11 @@ public class SpoutPlayer implements Player {
 		return false;
 	}
 
-	public Object getData(String node) {
+	public DataValue getData(String node) {
 		return getData(node, null);
 	}
 
-	public Object getData(String node, Object defaultValue) {
+	public DataValue getData(String node, DataValue defaultValue) {
 		World world = null;
 		Entity entity = getEntity();
 		if (entity != null) {
@@ -283,69 +282,13 @@ public class SpoutPlayer implements Player {
 		return getData(world, node, defaultValue);
 	}
 
-	public Object getData(World world, String node) {
+	public DataValue getData(World world, String node) {
 		return getData(world, node, null);
 	}
 
-	public Object getData(World world, String node, Object defaultValue) {
-		RetrieveObjectDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveObjectDataEvent(world, this, node));
-		Object res = event.getResult();
-		if (res == null) {
-			return defaultValue;
-		}
-		return res;
-	}
-
-	@Override
-	public int getInt(String node) {
-		return getInt(node, RetrieveIntDataEvent.DEFAULT_VALUE);
-	}
-
-	@Override
-	public int getInt(String node, int defaultValue) {
-		World world = null;
-		Entity entity = getEntity();
-		if (entity != null) {
-			world = entity.getWorld();
-		}
-		return getInt(world, node, defaultValue);
-	}
-
-	@Override
-	public int getInt(World world, String node) {
-		return getInt(world, node, RetrieveIntDataEvent.DEFAULT_VALUE);
-	}
-
-	@Override
-	public int getInt(World world, String node, int defaultValue) {
-		RetrieveIntDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveIntDataEvent(world, this, node));
-		int res = event.getResult();
-		if (res == RetrieveIntDataEvent.DEFAULT_VALUE) {
-			return defaultValue;
-		}
-		return res;
-	}
-
-	public String getString(String node) {
-		return getString(node, null);
-	}
-
-	public String getString(String node, String defaultValue) {
-		World world = null;
-		Entity entity = getEntity();
-		if (entity != null) {
-			world = entity.getWorld();
-		}
-		return getString(world, node, defaultValue);
-	}
-
-	public String getString(World world, String node) {
-		return getString(world, node, null);
-	}
-
-	public String getString(World world, String node, String defaultValue) {
-		RetrieveStringDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveStringDataEvent(world, this, node));
-		String res = event.getResult();
+	public DataValue getData(World world, String node, DataValue defaultValue) {
+		RetrieveDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveDataEvent(world, this, node));
+		DataValue res = event.getResult();
 		if (res == null) {
 			return defaultValue;
 		}
