@@ -642,12 +642,16 @@ public class SpoutServer extends AsyncManager implements Server {
 		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
 		
 
-		loadedWorlds.putIfAbsent(name, world);
-		
-		if (!world.getExecutor().startExecutor()) {
-			throw new IllegalStateException("Unable to start executor for new world");
+		World oldWorld = loadedWorlds.putIfAbsent(name, world);
+
+		if (oldWorld != null) {
+			return oldWorld;
+		} else {
+			if (!world.getExecutor().startExecutor()) {
+				throw new IllegalStateException("Unable to start executor for new world");
+			}
+			return world;
 		}
-		return world;
 	}
 
 	@Override
