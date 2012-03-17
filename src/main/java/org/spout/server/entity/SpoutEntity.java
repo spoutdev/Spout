@@ -674,4 +674,9 @@ public class SpoutEntity implements Entity {
 	public void setOwningThread(Thread thread){
 		this.owningThread = thread;
 	}
+	
+	@Override
+	public String toString() {
+		return "SpoutEntity - ID: " + this.getId() + " Controller: " + this.getController() + " Position: " + this.getPosition();
+	}
 }
