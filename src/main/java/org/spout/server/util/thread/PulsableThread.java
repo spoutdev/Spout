@@ -37,6 +37,13 @@ public abstract class PulsableThread extends Thread {
 	private static final Logger logger = Logger.getLogger(PulsableThread.class.getCanonicalName());
 	private final AtomicBoolean pulsing = new AtomicBoolean(false);
 
+	public PulsableThread(){
+		super();
+	}
+	public PulsableThread(String name){
+		super(name);
+	}
+	
 	/**
 	 * Causes the thread to execute one pulse by calling pulseRun();
 	 *

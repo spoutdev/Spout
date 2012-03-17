@@ -477,7 +477,7 @@ public class SpoutWorld extends AsyncManager implements World {
 				}
 			}
 		}
-		return entity;
+		return entity; 
 	}
 
 	public void addPlayer(Player player) {

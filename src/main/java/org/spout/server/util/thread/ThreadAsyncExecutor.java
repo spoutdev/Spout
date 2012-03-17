@@ -54,6 +54,14 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
 
+	
+	public ThreadAsyncExecutor(){
+		super();
+	}
+	public ThreadAsyncExecutor(String name){
+		super(name);
+	}
+	
 	public void setManager(AsyncManager manager) {
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");

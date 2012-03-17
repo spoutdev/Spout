@@ -28,7 +28,6 @@ package org.spout.server;
 import org.spout.api.Server;
 import org.spout.server.util.thread.AsyncExecutor;
 import org.spout.server.util.thread.AsyncManager;
-import org.spout.server.util.thread.ThreadAsyncExecutor;
 
 /**
  * This class just passes through the period method calls to the SpoutRegion
