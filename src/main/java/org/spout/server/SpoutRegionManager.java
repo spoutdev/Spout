@@ -70,5 +70,9 @@ public class SpoutRegionManager extends AsyncManager {
 	public void preSnapshotRun() throws InterruptedException {
 		parent.preSnapshotRun();
 	}
+	
+	public SpoutRegion getRegion(){
+		return parent;
+	}
 
 }
