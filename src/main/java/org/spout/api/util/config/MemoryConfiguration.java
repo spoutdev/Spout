@@ -478,7 +478,7 @@ public class MemoryConfiguration {
 	public Set<String> getKeys(String path) {
 		//TODO Add "deep" option in the future potentially.
 		Set<String> keys = new HashSet<String>();
-		String[] sections = path.split("\\.");
+		String[] sections = path.split(pathSeperator);
 		Map<String, Object> section = this.root;
 		for(int i = 0; i < sections.length && section != null; i++) {
 			String sec = sections[i];
