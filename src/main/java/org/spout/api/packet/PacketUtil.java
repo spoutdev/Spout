@@ -25,13 +25,14 @@
  */
 package org.spout.api.packet;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.Color;
+import org.spout.api.util.ColorHelper;
 
 public abstract class PacketUtil {
 	public static final int maxString = 32767;
@@ -85,14 +86,14 @@ public abstract class PacketUtil {
 		try {
 			byte flags = 0x0;
 
-			if (color.equals(Color.invalid)) {
+			if (color.equals(ColorHelper.invalid)) {
 				flags |= FLAG_COLORINVALID;
-			} else if (color.equals(Color.override)) {
+			} else if (color.equals(ColorHelper.override)) {
 				flags |= FLAG_COLOROVERRIDE;
 			}
 
 			output.writeByte(flags);
-			output.writeInt(color.toInt());
+			output.writeInt(ColorHelper.toInt(color));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,10 +105,10 @@ public abstract class PacketUtil {
 			int argb = input.readInt();
 
 			if ((flags & FLAG_COLORINVALID) > 0) {
-				return Color.invalid;
+				return ColorHelper.invalid;
 			}
 			if ((flags & FLAG_COLOROVERRIDE) > 0) {
-				return Color.override;
+				return ColorHelper.override;
 			}
 
 			return new Color(argb);

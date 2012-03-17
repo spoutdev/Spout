@@ -25,7 +25,9 @@
  */
 package org.spout.api.math;
 
-import org.spout.api.util.Color;
+import java.awt.Color;
+
+
 
 public class MathHelper {
 	/**
@@ -50,6 +52,10 @@ public class MathHelper {
 
 	public static final double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
+	
+
+	
+	
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
@@ -125,10 +131,18 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Color lerp(Color a, Color b, double percent) {
-		int red = lerp(a.getRedI(), b.getRedI(), percent);
-		int blue = lerp(a.getBlueI(), b.getBlueI(), percent);
-		int green = lerp(a.getGreenI(), b.getGreenI(), percent);
-		int alpha = lerp(a.getAlphaI(), b.getAlphaI(), percent);
+		int red = lerp(a.getRed(), b.getRed(), percent);
+		int blue = lerp(a.getBlue(), b.getBlue(), percent);
+		int green = lerp(a.getGreen(), b.getGreen(), percent);
+		int alpha = lerp(a.getAlpha(), b.getAlpha(), percent);
+		return new Color(red, green, blue, alpha);
+	}
+	
+	public static Color blend(Color a, Color b){
+		int red = lerp(a.getRed(), b.getRed(), (a.getAlpha()/255.0));
+		int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha()/255.0));
+		int green = lerp(a.getGreen(), b.getGreen(), (a.getAlpha()/255.0));
+		int alpha = lerp(a.getAlpha(), b.getAlpha(), (a.getAlpha()/255.0));
 		return new Color(red, green, blue, alpha);
 	}
 
