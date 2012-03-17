@@ -42,6 +42,7 @@ import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.player.Player;
+import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
@@ -63,6 +64,7 @@ public class SpoutPlayer implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
+	private final PlayerInputState inputState = new PlayerInputState();
 
 	public SpoutPlayer(String name) {
 		this.name = name;
@@ -378,5 +380,10 @@ public class SpoutPlayer implements Player {
 		} else {
 			return s;
 		}
+	}
+
+	@Override
+	public PlayerInputState input() {
+		return inputState;
 	}
 }
