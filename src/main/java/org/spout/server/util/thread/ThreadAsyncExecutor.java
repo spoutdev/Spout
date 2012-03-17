@@ -66,7 +66,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
 		}
-	    
+	    this.manager = manager;
 		
 	}
 
