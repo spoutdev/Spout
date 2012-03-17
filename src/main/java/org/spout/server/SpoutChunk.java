@@ -47,6 +47,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
@@ -624,6 +625,22 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean isLoaded() {
 		return saveState.get() != SaveState.UNLOADED;
+	}
+	
+	public boolean isInUse() {
+		/* 256 is actually larger than the distance of loaded chunks that actually surround a player
+		   The player is the center of a 21x21 chunk grid, so the edge is 10 chunks (160 blocks) away from the player
+		*/
+		for(Player player : this.getWorld().getServer().getOnlinePlayers()) {
+			Point loc = player.getEntity().getPosition();
+			if(player.getEntity().getWorld() != this.getWorld()) {
+				continue;
+			}
+			if (Math.abs(loc.getX() - (this.getX() << 4)) <= 256 && Math.abs(loc.getZ() - (this.getZ() << 4)) <= 256) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setUnloaded() {
