@@ -260,9 +260,9 @@ public interface Game extends Named {
 	public Collection<World> getWorlds();
 
 	/**
-	 * Loads a world with the given name and generator
-	 * If the world doesn't exist on disk, it creates it.
-	 *
+	 * Loads a world with the given name and generator<br/>
+	 * If the world doesn't exist on disk, it creates it.<br/>
+	 * <br/>
 	 * if the world is already loaded, this functions the same as {@link #getWorld(String)}
 	 *
 	 * @param name Name of the world
@@ -273,8 +273,8 @@ public interface Game extends Named {
 	public World loadWorld(String name, WorldGenerator generator);
 
 	/**
-	 * Initiates a save of the server state, including configuration files.
-	 *
+	 * Initiates a save of the server state, including configuration files. <br/>
+	 * <br/>
 	 * It will save the state of the world, if specificed, and the state of
 	 * players, if specified.
 	 *
@@ -284,7 +284,7 @@ public interface Game extends Named {
 	public void save(boolean worlds, boolean players);
 
 	/**
-	 * Registers the recipe with the recipe database.
+	 * Registers the recipe with the recipe database. <br/>
 	 *
 	 * @param recipe to register
 	 * @return true if the recipe was registered, false if there was a conflict
@@ -305,8 +305,8 @@ public interface Game extends Named {
 	public void stop(String reason);
 
 	/**
-	 * Gets the folder that contains the world save data.
-	 *
+	 * Gets the folder that contains the world save data. <br/>
+	 * <br/>
 	 * If the folder is unusued, the file path will be '.'
 	 *
 	 * @return world folder
@@ -314,8 +314,8 @@ public interface Game extends Named {
 	public File getWorldFolder();
 
 	/**
-	 * Returns the game's root {@link Command}.
-	 *
+	 * Returns the game's root {@link Command}. <br/>
+	 * <br/>
 	 * All command registration and execution is performed through here.
 	 *
 	 * @return the {@link Game}'s root {@link Command}
@@ -396,8 +396,8 @@ public interface Game extends Named {
 
 
 	/**
-	 * Returns true if the game is running in debug mode
-	 *
+	 * Returns true if the game is running in debug mode <br/>
+	 * <br/>
 	 * To start debug mode, start Spout with -debug
 	 * @return true if server is started with the -debug flag, false if not
 	 */
@@ -483,5 +483,13 @@ public interface Game extends Named {
 	 * @return the ban message
 	 */
 	public String getIpBanMessage(String address);
+	
+	/**
+	 * Gets the main thread that is used to manage all execution on the server. <br/>
+	 * <br/>
+	 * Note: Interrupting the main thread will lead to undetermined behavior.
+	 * @return main thread
+	 */
+	public Thread getMainThread();
 	
 }
