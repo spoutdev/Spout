@@ -25,6 +25,7 @@
  */
 package org.spout.server.util;
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,7 +40,6 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.MaterialData;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.Color;
 import org.spout.api.util.Parameter;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -311,10 +311,10 @@ public final class ChannelBufferUtils {
 	}
 
 	public static void writeColor(Color color, ChannelBuffer buf) {
-		buf.writeInt(color.getRedI());
-		buf.writeInt(color.getGreenI());
-		buf.writeInt(color.getBlueI());
-		buf.writeInt(color.getAlphaI());
+		buf.writeInt(color.getRed());
+		buf.writeInt(color.getGreen());
+		buf.writeInt(color.getBlue());
+		buf.writeInt(color.getAlpha());
 	}
 
 	/**
