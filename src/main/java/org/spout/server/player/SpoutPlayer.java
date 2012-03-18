@@ -40,7 +40,6 @@ import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
@@ -49,10 +48,10 @@ import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
+
 import org.spout.server.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
-
 	private final AtomicReference<Session> sessionLive = new AtomicReference<Session>();
 	private Session session;
 	private final String name;

@@ -46,7 +46,6 @@ public final class PlayerListFile {
 	 * The list as we currently know it.
 	 */
 	private final ArrayList<String> list = new ArrayList<String>();
-
 	/**
 	 * The file the list is associated with.
 	 */
@@ -54,7 +53,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Initialize the player list from the given file.
-	 *
 	 * @param path The file to use for this list.
 	 */
 	public PlayerListFile(String path) {
@@ -63,7 +61,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Initialize the player list from the given file.
-	 *
 	 * @param file The file to use for this list.
 	 */
 	public PlayerListFile(File file) {

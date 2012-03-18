@@ -29,11 +29,11 @@ import java.util.WeakHashMap;
 
 import org.spout.api.Server;
 import org.spout.api.scheduler.Scheduler;
+
 import org.spout.server.SpoutServer;
 import org.spout.server.scheduler.SpoutScheduler;
 
 public abstract class AsyncManager {
-
 	private final int maxStage;
 	private final Server server; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
@@ -45,7 +45,6 @@ public abstract class AsyncManager {
 		server = null;
 		this.maxStage = maxStage;
 		executor.setManager(this);
-		
 	}
 
 	public AsyncManager(int maxStage, AsyncExecutor executor, Server server) {
@@ -76,9 +75,8 @@ public abstract class AsyncManager {
 
 	/**
 	 * Gets a singleton task if available.
-	 *
+	 * <p/>
 	 * Tasks should be returned to the cache after usage
-	 *
 	 * @param taskEnum the enum of the task
 	 * @return an instance of task
 	 */
@@ -99,9 +97,8 @@ public abstract class AsyncManager {
 
 	/**
 	 * Returns a singleton task to the cache
-	 *
+	 * <p/>
 	 * Tasks should be returned to the cache after usage
-	 *
 	 * @param task the enum of the taskß
 	 * @return an instance of task
 	 */
@@ -121,7 +118,6 @@ public abstract class AsyncManager {
 
 	/**
 	 * Sets this AsyncManager as manager for a given object
-	 *
 	 * @param managed the object to give responsibility for
 	 */
 	public final void addManaged(Managed managed) {
@@ -132,7 +128,6 @@ public abstract class AsyncManager {
 
 	/**
 	 * Gets the associated AsyncExecutor
-	 *
 	 * @return the executor
 	 */
 	public final AsyncExecutor getExecutor() {
@@ -160,7 +155,6 @@ public abstract class AsyncManager {
 
 	/**
 	 * This method is called in order to start a new tick
-	 *
 	 * @param delta the time since the last tick
 	 */
 	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
@@ -168,19 +162,16 @@ public abstract class AsyncManager {
 	/**
 	 * This method is called when the associated executor is halted and occurs
 	 * right after the copySnapshotRun() method call.
-	 *
+	 * <p/>
 	 * This method is not called if the executor is halted before being started.
-	 *
 	 */
 	public abstract void haltRun() throws InterruptedException;
 
 	/**
 	 * Gets the number of stages this manager requires per tick
-	 *
 	 * @return the number of stages
 	 */
 	public final int getStages() {
 		return maxStage;
 	}
-
 }

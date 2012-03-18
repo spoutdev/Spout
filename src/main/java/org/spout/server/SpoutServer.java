@@ -32,7 +32,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -93,6 +92,7 @@ import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
+
 import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
 import org.spout.server.entity.EntityManager;
@@ -112,139 +112,103 @@ import org.spout.server.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableReference;
 
 public class SpoutServer extends AsyncManager implements Server {
-
 	private volatile int maxPlayers = 20;
-
 	private volatile String[] allAddresses;
-
 	private final File pluginDirectory = new File("plugins");
-
 	private final File configDirectory = new File("config");
-
 	private final File updateDirectory = new File("update");
-
 	private final File dataDirectory = new File("data");
-
 	private String logFile = "logs/log-%D.txt";
-
 	private String name = "Spout Server";
-
 	private EntityManager entityManager = new EntityManager();
-
 	private SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * Default world generator
 	 */
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
-
 	/**
 	 * Online player list
 	 */
 	private final SnapshotableLinkedHashMap<String, Player> players = new SnapshotableLinkedHashMap<String, Player>(snapshotManager);
-
 	/**
 	 * The security manager TODO - need to integrate this
 	 */
 	private CommonSecurityManager securityManager = new CommonSecurityManager(0);
-
 	/**
 	 * The plugin manager for the server
 	 */
 	private CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
-
 	/**
 	 * The console manager of this server.
 	 */
 	private final ConsoleManager consoleManager = new ConsoleManager(this, "jline");
-
 	/**
 	 * The logger for this class.
 	 */
 	public static final Logger logger = Logger.getLogger("Minecraft");
-
 	/**
 	 * A group containing all of the channels.
 	 */
 	private final ChannelGroup group = new DefaultChannelGroup();
-
 	/**
 	 * The network executor service - Netty dispatches events to this thread
 	 * pool.
 	 */
 	private final ExecutorService executor = Executors.newCachedThreadPool();
-
 	/**
 	 * A list of all the active {@link SpoutSession}s.
 	 */
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-
 	public static final StorageQueue storeQueue = new StorageQueue();
-
 	/**
 	 * The scheduler for the server.
 	 */
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
-
 	/**
 	 * If the server has a whitelist or not.
 	 */
 	private volatile boolean whitelist = false;
-
 	/**
 	 * If the server allows flight.
 	 */
 	private volatile boolean allowFlight = false;
-
 	/**
 	 * A list of all players who can log onto this server, if using a whitelist.
 	 */
 	private List<String> whitelistedPlayers = new ArrayList<String>();
-
 	/**
 	 * The server's ban manager
 	 */
 	private BanManager banManager;
-
 	/**
 	 * A folder that holds all of the world data folders inside of it. By
 	 * default, it does not exist ('.'), meant for organizational purposes.
 	 */
 	private File worldFolder = new File(".");
-
 	/**
 	 * loaded plugins
 	 */
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
-
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
-
 	/**
 	 * The root commnd for this server.
 	 */
 	private final RootCommand rootCommand = new RootCommand(this);
-
 	/**
 	 * The event manager.
 	 */
 	private final EventManager eventManager = new SimpleEventManager();
-
 	/**
 	 * The service manager.
 	 */
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
-
 	/**
 	 * The recipe manager.
 	 */
 	private final RecipeManager recipeManager = new CommonRecipeManager();
-
 	private final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
-
 	private final Random random = new Random();
-
 	private boolean debugMode = false;
-
 	/**
 	 * Cached copy of the server configuration, can be used instead of
 	 * re-parsing the config file for each access
@@ -253,8 +217,10 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	public SpoutServer(String[] args) {
 		super(1, new ThreadAsyncExecutor());
-		for(String s : args){
-			if(s.equals("-debug")) debugMode = true;
+		for (String s : args) {
+			if (s.equals("-debug")) {
+				debugMode = true;
+			}
 		}
 		registerWithScheduler(scheduler);
 		init();
@@ -265,18 +231,15 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	public static void main(String[] args) {
 
-
 		SpoutServer server = new SpoutServer(args);
 		server.start();
-
 	}
 
 	public void start() {
 		Spout.setGame(this);
 
-		if(debugMode()){
+		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
-
 		}
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
@@ -284,7 +247,9 @@ public class SpoutServer extends AsyncManager implements Server {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		if(Spout.getGame().debugMode()) getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
+		if (Spout.getGame().debugMode()) {
+			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
+		}
 
 		consoleManager.setupConsole();
 
@@ -309,7 +274,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		getEventManager().registerEvents(new InternalEventListener(this), this);
 		scheduler.startMainThread();
-		
+
 		getLogger().info("Done Loading, ready for players.");
 	}
 
@@ -342,7 +307,7 @@ public class SpoutServer extends AsyncManager implements Server {
 				//Technically unsafe.  This should call the security manager
 				plugin.onLoad();
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[] {plugin.getDescription().getName(), ex.getMessage()});
+				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[]{plugin.getDescription().getName(), ex.getMessage()});
 				ex.printStackTrace();
 			}
 		}
@@ -352,7 +317,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		for (Plugin plugin : pluginManager.getPlugins()) {
 			pluginManager.enablePlugin(plugin);
 		}
-
 	}
 
 	public Collection<Player> rawGetAllOnlinePlayers() {
@@ -366,7 +330,6 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	/**
 	 * Binds this server to the specified address.
-	 *
 	 * @param address The addresss.
 	 */
 	public boolean bind(SocketAddress address, BootstrapProtocol protocol) {
@@ -632,17 +595,19 @@ public class SpoutServer extends AsyncManager implements Server {
 
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
-		if(loadedWorlds.get().containsKey((name))) return loadedWorlds.get().get(name);
-		if(loadedWorlds.getLive().containsKey(name)) return loadedWorlds.getLive().get(name);
+		if (loadedWorlds.get().containsKey((name))) {
+			return loadedWorlds.get().get(name);
+		}
+		if (loadedWorlds.getLive().containsKey(name)) {
+			return loadedWorlds.getLive().get(name);
+		}
 
 		// TODO - should include generator (and non-zero seed)
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
 
-
 		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
-
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 
@@ -848,9 +813,9 @@ public class SpoutServer extends AsyncManager implements Server {
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
-		case 0:
-			sessions.pulse();
-			break;
+			case 0:
+				sessions.pulse();
+				break;
 		}
 	}
 
@@ -983,5 +948,4 @@ public class SpoutServer extends AsyncManager implements Server {
 	public Thread getMainThread() {
 		return scheduler.getMainThread();
 	}
-
 }

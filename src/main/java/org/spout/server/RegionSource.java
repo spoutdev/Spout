@@ -38,15 +38,14 @@ import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
-
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
 	private final TSyncInt21TripleObjectHashMap<Region> loadedRegions;
-
 	/**
 	 * World associated with this region source
 	 */
@@ -59,7 +58,6 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the block x, y, z coordinates
-	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -72,10 +70,9 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the block x, y, z coordinates
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
+	 * @param x	the x coordinate
+	 * @param y	the y coordinate
+	 * @param z	the z coordinate
 	 * @param load to load the region
 	 * @return region, if it is loaded and exists
 	 */
@@ -103,7 +100,7 @@ public class RegionSource implements Iterable<Region> {
 				boolean success = loadedRegions.remove(x, y, z, r);
 				if (success) {
 					r.getManager().getExecutor().haltExecutor();
-					
+
 					Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
 				}
 			}
@@ -112,7 +109,6 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the region x, y, z coordinates
-	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -125,14 +121,13 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
-	 *
+	 * <p/>
 	 * Will load or generate a region if requested.
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
+	 * @param x	the x coordinate
+	 * @param y	the y coordinate
+	 * @param z	the z coordinate
 	 * @param load whether to load or generate the region if one does not exist
-	 *            at the coordinates
+	 *             at the coordinates
 	 * @return region
 	 */
 	@LiveRead
@@ -142,14 +137,13 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
-	 *
+	 * <p/>
 	 * Will load or generate a region if requested.
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param load whether to load or generate the region if one does not exist
-	 *            at the coordinates
+	 * @param x		the x coordinate
+	 * @param y		the y coordinate
+	 * @param z		the z coordinate
+	 * @param load	 whether to load or generate the region if one does not exist
+	 *                 at the coordinates
 	 * @param generate all the chunks inside of the region immediately
 	 * @return region
 	 */
@@ -169,9 +163,9 @@ public class RegionSource implements Iterable<Region> {
 				if (!region.getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
-				
+
 				Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
-				
+
 				return region;
 			}
 		}
@@ -179,7 +173,6 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * True if there is a region loaded at the region x, y, z coordinates
-	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -192,7 +185,6 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets an unmodifiable collection of all loaded regions.
-	 *
 	 * @return collection of all regions
 	 */
 	public Collection<Region> getRegions() {

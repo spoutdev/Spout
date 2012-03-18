@@ -37,7 +37,6 @@ import org.spout.api.math.Vector3;
 public class SpoutDatatableObject implements DatatableTuple {
 	public static final byte Persist = 0x1;
 	public static final byte Sync = 0x2;
-
 	protected int keyID;
 	protected byte flags;
 	Object data;
@@ -58,7 +57,6 @@ public class SpoutDatatableObject implements DatatableTuple {
 			throw new IllegalArgumentException("Unsuported Metadata type");
 		}
 		data = value;
-
 	}
 
 	@Override
@@ -69,7 +67,6 @@ public class SpoutDatatableObject implements DatatableTuple {
 	@Override
 	public void setFlags(byte flags) {
 		this.flags = flags;
-
 	}
 
 	@Override
@@ -119,5 +116,4 @@ public class SpoutDatatableObject implements DatatableTuple {
 	public void input(InputStream in) throws IOException {
 
 	}
-
 }

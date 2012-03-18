@@ -41,14 +41,12 @@ public abstract class StorageOperation implements Runnable {
 
 	/**
 	 * Whether multiple of this operation can be in the storage queue at once
-	 *
 	 * @return
 	 */
 	public abstract boolean queueMultiple();
 
 	/**
 	 * The name of the operation being performed.
-	 *
 	 * @return
 	 */
 	public abstract String getOperation();

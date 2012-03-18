@@ -25,6 +25,13 @@
  */
 package org.spout.server;
 
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -53,14 +60,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-import javax.swing.border.Border;
-
 import com.grahamedgecombe.jterminal.JTerminal;
 
 import jline.ArgumentCompletor;
@@ -82,17 +81,14 @@ import org.spout.api.geo.World;
  */
 public final class ConsoleManager {
 	private final Server server;
-
 	private ConsoleReader reader;
 	private ColoredCommandSource source;
 	private ConsoleCommandThread thread;
 	private final FancyConsoleHandler consoleHandler;
 	private final RotatingFileHandler fileHandler;
-
 	private JFrame jFrame = null;
 	private JTerminal jTerminal = null;
 	private JTextField jInput = null;
-
 	private boolean running = true;
 	private boolean jLine = false;
 
@@ -205,7 +201,7 @@ public final class ConsoleManager {
 			reader.removeCompletor(c);
 		}
 
-		Completor[] list = new Completor[] {new SimpleCompletor(server.getAllCommands()), new NullCompletor()};
+		Completor[] list = new Completor[]{new SimpleCompletor(server.getAllCommands()), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
@@ -276,7 +272,6 @@ public final class ConsoleManager {
 
 	// TODO - convert to command source
 	public class ColoredCommandSource implements CommandSource {
-
 		public String getName() {
 			return "Console";
 		}
@@ -441,7 +436,7 @@ public final class ConsoleManager {
 			try {
 				setOutputStream(new FileOutputStream(filename, true));
 			} catch (FileNotFoundException ex) {
-				server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[] {filename, ex.getMessage()});
+				server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
 				ex.printStackTrace();
 			}
 		}
@@ -454,7 +449,7 @@ public final class ConsoleManager {
 				try {
 					setOutputStream(new FileOutputStream(filename, true));
 				} catch (FileNotFoundException ex) {
-					server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[] {filename, ex.getMessage()});
+					server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
 					ex.printStackTrace();
 				}
 			}

@@ -41,6 +41,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
+
 import org.spout.server.SpoutServer;
 import org.spout.server.util.thread.AsyncExecutor;
 import org.spout.server.util.thread.AsyncExecutorUtils;
@@ -77,8 +78,8 @@ import org.spout.server.util.thread.snapshotable.SnapshotableArrayList;
  * <li><b>Stage 2</b><br>
  * During this stage, entity collisions are handled.
  * <li><b>Finalize Tick</b><br>
- * During this stage - entities are moved between entity managers. 
- *  - chunks are compressed if necessary.
+ * During this stage - entities are moved between entity managers.
+ * - chunks are compressed if necessary.
  * <li><b>Pre-snapshot</b><br>
  * This is a MONITOR stage, data is stable and no modifications are allowed.
  * <li><b>Copy Snapshot</b><br>
@@ -86,50 +87,39 @@ import org.spout.server.util.thread.snapshotable.SnapshotableArrayList;
  * is unstable so no reads are permitted during this stage.
  * </ul>
  * </ul>
- *
  */
 public final class SpoutScheduler implements Scheduler {
 	/**
 	 * The number of milliseconds between pulses.
 	 */
 	private static final int PULSE_EVERY = 50;
-
 	/**
 	 * The server this scheduler is managing for.
 	 */
 	private final SpoutServer server;
-
 	/**
 	 * A list of new tasks to be added.
 	 */
 	private final List<SpoutTask> newTasks = new ArrayList<SpoutTask>();
-
 	/**
 	 * A list of tasks to be removed.
 	 */
 	private final List<SpoutTask> oldTasks = new ArrayList<SpoutTask>();
-
 	/**
 	 * A list of active tasks.
 	 */
 	private final List<SpoutTask> tasks = new ArrayList<SpoutTask>();
-
 	private final List<SpoutWorker> activeWorkers = Collections.synchronizedList(new ArrayList<SpoutWorker>());
-
 	/**
 	 * A snapshot manager for local snapshot variables
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
-
 	private volatile boolean shutdown = false;
-
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
-
 	private final Thread mainThread;
 
 	/**
@@ -142,7 +132,6 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private class MainThread extends Thread {
-
 		public MainThread() {
 			super("MainThread");
 			ThreadsafetyManager.setMainThread(this);
@@ -253,7 +242,6 @@ public final class SpoutScheduler implements Scheduler {
 
 	/**
 	 * Schedules the specified task.
-	 *
 	 * @param task The task.
 	 */
 	private int schedule(SpoutTask task) {
@@ -289,7 +277,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 
 		// Run the relevant tasks.
-		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext();) {
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
 			SpoutTask task = it.next();
 			boolean cont = false;
 			try {
@@ -542,7 +530,7 @@ public final class SpoutScheduler implements Scheduler {
 	public SnapshotLock getSnapshotLock() {
 		return snapshotLock;
 	}
-	
+
 	public final Thread getMainThread() {
 		return mainThread;
 	}

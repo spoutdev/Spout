@@ -59,7 +59,6 @@ public enum ManagementTaskEnum {
 			return new FinalizeTask();
 		}
 	});
-
 	private static final int maxId;
 	private static final HashSet<Integer> ids = new HashSet<Integer>();
 
@@ -102,7 +101,6 @@ public enum ManagementTaskEnum {
 
 	/**
 	 * Gets the highest registered id
-	 *
 	 * @return the highest id
 	 */
 	public static int getMaxId() {

@@ -44,7 +44,6 @@ public class SpoutDatatableBool extends SpoutDatatableObject {
 	@Override
 	public void set(int key, Object value) {
 		throw new IllegalArgumentException("This is an boolean value, use set(string,bool)");
-
 	}
 
 	public void set(String key, boolean value) {

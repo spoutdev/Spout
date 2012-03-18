@@ -23,64 +23,62 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-
 package org.spout.server.datatable.value;
-
-
-import org.spout.api.datatable.DatatableTuple;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.spout.api.datatable.DatatableTuple;
+
 public class SpoutDatatableNil implements DatatableTuple {
-    @Override
-    public void output(OutputStream out) throws IOException {
-        throw new RuntimeException("This value doesn't exist!");
-    }
+	@Override
+	public void output(OutputStream out) throws IOException {
+		throw new RuntimeException("This value doesn't exist!");
+	}
 
-    @Override
-    public void input(InputStream in) throws IOException {
-        throw new RuntimeException("This value doesn't exist!");
-    }
+	@Override
+	public void input(InputStream in) throws IOException {
+		throw new RuntimeException("This value doesn't exist!");
+	}
 
-    @Override
-    public void set(int key, Object value) {
-       throw new RuntimeException("This value doesn't exist!");
-    }
+	@Override
+	public void set(int key, Object value) {
+		throw new RuntimeException("This value doesn't exist!");
+	}
 
-    @Override
-    public void setFlags(byte flags) {
-        throw new RuntimeException("This value doesn't exist!");
-    }
+	@Override
+	public void setFlags(byte flags) {
+		throw new RuntimeException("This value doesn't exist!");
+	}
 
-    @Override
-    public void setPersistant(boolean value) {
-        throw new RuntimeException("This value doesn't exist!");
-    }
+	@Override
+	public void setPersistant(boolean value) {
+		throw new RuntimeException("This value doesn't exist!");
+	}
 
-    @Override
-    public void setSynced(boolean value) {
-        throw new RuntimeException("This value doesn't exist!");
-    }
+	@Override
+	public void setSynced(boolean value) {
+		throw new RuntimeException("This value doesn't exist!");
+	}
 
-    @Override
-    public Object get() {
-        return null;
-    }
+	@Override
+	public Object get() {
+		return null;
+	}
 
-    @Override
-    public int asInt() {
-        return 0;
-    }
+	@Override
+	public int asInt() {
+		return 0;
+	}
 
-    @Override
-    public float asFloat() {
-        return 0;
-    }
+	@Override
+	public float asFloat() {
+		return 0;
+	}
 
-    @Override
-    public boolean asBool() {
-        return false;
-    }
+	@Override
+	public boolean asBool() {
+		return false;
+	}
 }

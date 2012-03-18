@@ -34,7 +34,6 @@ import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
 
 public class SpoutConfiguration extends Configuration {
-
 	private static final String[] whitelist = {"Notch", "ez", "jeb"};
 	private static final String[] banlist = {"satan"};
 	public static final ConfigurationNode WORLDS = new ConfigurationNode("worlds", "default");

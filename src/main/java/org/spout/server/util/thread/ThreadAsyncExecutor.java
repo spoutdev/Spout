@@ -54,20 +54,19 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
 
-	
-	public ThreadAsyncExecutor(){
+	public ThreadAsyncExecutor() {
 		super();
 	}
-	public ThreadAsyncExecutor(String name){
+
+	public ThreadAsyncExecutor(String name) {
 		super(name);
 	}
-	
+
 	public void setManager(AsyncManager manager) {
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
 		}
-	    this.manager = manager;
-		
+		this.manager = manager;
 	}
 
 	public boolean startExecutor() {
@@ -134,7 +133,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	/**
 	 * Checks if the future is associated with this executor
-	 *
 	 * @param future the future
 	 */
 	private void checkFuture(ManagedFuture<Serializable> future) {
@@ -145,7 +143,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	/**
 	 * Executes all tasks on the queue
-	 *
 	 * @throws InterruptedException
 	 */
 	private final void executeAllTasks() throws InterruptedException {
@@ -252,5 +249,4 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		HALTING,
 		HALTED
 	}
-
 }

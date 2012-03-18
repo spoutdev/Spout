@@ -44,7 +44,6 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 	@Override
 	public void set(int key, Object value) {
 		throw new IllegalArgumentException("This is an int value, use set(string,float)");
-
 	}
 
 	public void set(String key, float value) {
@@ -81,5 +80,4 @@ public class SpoutDatatableFloat extends SpoutDatatableObject {
 	public void input(InputStream in) throws IOException {
 
 	}
-
 }

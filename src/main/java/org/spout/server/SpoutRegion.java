@@ -51,6 +51,7 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.player.SpoutPlayer;
@@ -59,60 +60,45 @@ import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 
 public class SpoutRegion extends Region {
-
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
-
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
-
 	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
-
 	@SuppressWarnings("unchecked")
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
-
 	/**
 	 * Region coordinates of the lower, left start of the region. Add
 	 * {@link Region#REGION_SIZE} to the coords to get the upper right end of
 	 * the region.
 	 */
 	private final int x, y, z;
-
 	/**
 	 * The maximum number of chunks that will be processed for population each tick.
 	 */
 	private static final int POPULATE_PER_TICK = 20;
-	
 	/**
 	 * The maximum number of chunks that will be processed for lighting updates each tick.
 	 */
 	private static final int LIGHT_PER_TICK = 20;
-
 	/**
 	 * The source of this region
 	 */
 	private final RegionSource source;
-
 	/**
 	 * Snapshot manager for this region
 	 */
 	protected SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * Holds all of the entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager();
-
 	/**
 	 * Holds all not populated chunks
 	 */
 	protected Set<Chunk> nonPopulatedChunks = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
-
 	private boolean isPopulatingChunks = false;
-
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
-
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
-
 	/**
 	 * A set of all blocks in this region that need a physics update in the next
 	 * tick. The coordinates in this set are relative to this region, so (0, 0,
@@ -121,23 +107,17 @@ public class SpoutRegion extends Region {
 	 */
 	//TODO thresholds?
 	private final TByteTripleHashSet queuedPhysicsUpdates = new TByteTripleHashSet();
-
 	private final int blockCoordMask;
-
 	private final int blockShifts;
-	
 	/**
 	 * A queue of chunks that have columns of light that need to be recalculated
 	 */
 	private final Queue<SpoutChunk> lightingQueue = new ConcurrentLinkedQueue<SpoutChunk>();
-
 	/**
 	 * A queue of chunks that need to be populated
 	 */
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
-
 	private final Queue<Entity> spawnQueue = new ConcurrentLinkedQueue<Entity>();
-
 	private final Queue<Entity> removeQueue = new ConcurrentLinkedQueue<Entity>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -153,7 +133,7 @@ public class SpoutRegion extends Region {
 		blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
 		blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
 		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getServer());
-		
+
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
@@ -218,7 +198,6 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Removes a chunk from the region and indicates if the region is empty
-	 *
 	 * @param c the chunk to remove
 	 * @return true if the region is now empty
 	 */
@@ -402,7 +381,7 @@ public class SpoutRegion extends Region {
 			populationQueue.add(c);
 		}
 	}
-	
+
 	protected void queueLighting(SpoutChunk c) {
 		if (!lightingQueue.contains(c)) {
 			lightingQueue.add(c);
@@ -410,32 +389,33 @@ public class SpoutRegion extends Region {
 	}
 
 	public void addEntity(Entity e) {
-		if (spawnQueue.contains(e)) return;
+		if (spawnQueue.contains(e)) {
+			return;
+		}
 		if (removeQueue.contains(e)) {
 			throw new IllegalArgumentException("Cannot add an entity marked for removal");
 		}
 		spawnQueue.add(e);
-
 	}
 
 	public void removeEntity(Entity e) {
-		if (removeQueue.contains(e)) return;
+		if (removeQueue.contains(e)) {
+			return;
+		}
 		if (spawnQueue.contains(e)) {
 			spawnQueue.remove(e);
 			return;
 		}
 		removeQueue.add(e);
-
-
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
 				//Add or remove entities
-				if(!spawnQueue.isEmpty()) {
+				if (!spawnQueue.isEmpty()) {
 					SpoutEntity e;
-					while ((e = (SpoutEntity)spawnQueue.poll()) != null) {
+					while ((e = (SpoutEntity) spawnQueue.poll()) != null) {
 						this.allocate(e);
 						EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPosition());
 						Spout.getGame().getEventManager().callEvent(event);
@@ -445,9 +425,9 @@ public class SpoutRegion extends Region {
 					}
 				}
 
-				if(!removeQueue.isEmpty()) {
+				if (!removeQueue.isEmpty()) {
 					SpoutEntity e;
-					while ((e = (SpoutEntity)removeQueue.poll()) != null) {
+					while ((e = (SpoutEntity) removeQueue.poll()) != null) {
 						this.deallocate(e);
 					}
 				}
@@ -483,29 +463,31 @@ public class SpoutRegion extends Region {
 						}
 					}
 				}
-				
-				for(int i = 0; i < LIGHT_PER_TICK; i++) {
+
+				for (int i = 0; i < LIGHT_PER_TICK; i++) {
 					SpoutChunk toLight = lightingQueue.poll();
-					if (toLight == null) break;
+					if (toLight == null) {
+						break;
+					}
 					if (toLight.isLoaded()) {
 						toLight.processQueuedLighting();
 					}
 				}
 
-				for(int i = 0; i < POPULATE_PER_TICK; i++) {
+				for (int i = 0; i < POPULATE_PER_TICK; i++) {
 					Chunk toPopulate = populationQueue.poll();
-					if (toPopulate == null) break;
+					if (toPopulate == null) {
+						break;
+					}
 					if (toPopulate.isLoaded()) {
 						toPopulate.populate();
 					}
 				}
 
-
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
 					toUnload.unload(true);
 				}
-
 
 				break;
 			}
@@ -530,7 +512,6 @@ public class SpoutRegion extends Region {
 	public void haltRun() throws InterruptedException {
 	}
 
-
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
 
@@ -549,8 +530,8 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity){
-		SpoutPlayer player = (SpoutPlayer)((PlayerController) entity.getController()).getPlayer();
+	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
+		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getPlayer();
 		NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 		if (synchronizer != null) {
 			if (!chunk.isDirtyOverflow()) {
@@ -563,11 +544,9 @@ public class SpoutRegion extends Region {
 							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
 						} catch (Exception e) {
 							Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-	
 						}
 					}
 				}
-	
 			} else {
 				synchronizer.sendChunk(chunk);
 			}
@@ -581,19 +560,22 @@ public class SpoutRegion extends Region {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
 					Chunk chunk = chunks[dx][dy][dz].get();
-					if (chunk == null) continue;
+					if (chunk == null) {
+						continue;
+					}
 					SpoutChunk spoutChunk = (SpoutChunk) chunk;
 
 					if (spoutChunk.isDirty()) {
 						for (Entity entity : spoutChunk.getObserversLive()) {
 							//chunk.refreshObserver(entity);
-							if(!(entity.getController() instanceof PlayerController)) continue;
+							if (!(entity.getController() instanceof PlayerController)) {
+								continue;
+							}
 							syncChunkToPlayers(spoutChunk, entity);
 						}
 						spoutChunk.resetDirtyArrays();
 					}
 					spoutChunk.preSnapshot();
-
 				}
 			}
 		}
@@ -618,7 +600,6 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Allocates the id for an entity.
-	 *
 	 * @param entity The entity.
 	 * @return The id.
 	 */
@@ -628,7 +609,6 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Deallocates the id for an entity.
-	 *
 	 * @param entity The entity.
 	 */
 	public void deallocate(SpoutEntity entity) {
@@ -651,7 +631,6 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Queues a block for a physic update at the next available tick.
-	 *
 	 * @param x, the block x coordinate
 	 * @param y, the block y coordinate
 	 * @param z, the block z coordinate
@@ -671,9 +650,9 @@ public class SpoutRegion extends Region {
 	public String toString() {
 		return "SpoutRegion{ ( " + x + ", " + y + ", " + z + "), World: " + this.getWorld() + "}";
 	}
-	
-	public Thread getExceutionThread(){
 
-		return ((ThreadAsyncExecutor)manager.getExecutor());
+	public Thread getExceutionThread() {
+
+		return ((ThreadAsyncExecutor) manager.getExecutor());
 	}
 }

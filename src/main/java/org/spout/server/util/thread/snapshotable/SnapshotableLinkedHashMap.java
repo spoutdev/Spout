@@ -62,8 +62,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map
-	 *
-	 * @param key the key
+	 * @param key   the key
 	 * @param value the value
 	 * @return the old value
 	 */
@@ -77,8 +76,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map, if no value exists for the key
-	 *
-	 * @param key the key
+	 * @param key   the key
 	 * @param value the value
 	 * @return the old value
 	 */
@@ -94,7 +92,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
-	 *
 	 * @param key the key
 	 * @return the old value
 	 */
@@ -110,8 +107,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
-	 *
-	 * @param key the key
+	 * @param key   the key
 	 * @param value the value
 	 * @return true if the key/value pair was removed
 	 */
@@ -127,7 +123,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
-	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -137,7 +132,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Gets the live value
-	 *
 	 * @return the live set
 	 */
 	@LiveRead
@@ -147,7 +141,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Get the values in the map, in order
-	 *
 	 * @return the values
 	 */
 	@SnapshotRead
@@ -157,7 +150,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Get the values in the map, in order
-	 *
 	 * @return the values
 	 */
 	@SnapshotRead
@@ -171,7 +163,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 	 * <br>
 	 * This method may only be called during the pre-snapshot stage and the list
 	 * only remains valid during that stage.
-	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<K> getDirtyList() {
@@ -190,7 +181,6 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Tests if the set is empty
-	 *
 	 * @return true if the set is empty
 	 */
 	public boolean isEmptyLive() {
@@ -213,5 +203,4 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 		dirtyList.clear();
 		dirtyListGenerated = false;
 	}
-
 }

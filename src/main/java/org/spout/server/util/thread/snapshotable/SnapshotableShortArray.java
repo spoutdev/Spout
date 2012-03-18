@@ -37,7 +37,6 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable array of type short
  */
 public class SnapshotableShortArray implements Snapshotable {
-
 	private final short[] snapshot;
 	private final AtomicIntegerArray live;
 	private final AtomicIntegerArray dirtyArray;
@@ -61,7 +60,6 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the snapshot short array
-	 *
 	 * @return copy of the snapshot short array
 	 */
 	public short[] get() {
@@ -70,7 +68,6 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the live short array
-	 *
 	 * @return copy of the live short array
 	 */
 	public short[] getLive() {
@@ -85,7 +82,6 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value in the array
-	 *
 	 * @param index to lookup
 	 * @return snapshot value
 	 */
@@ -96,7 +92,6 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets the live value in the array
-	 *
 	 * @param index to lookup
 	 * @return live value
 	 */
@@ -112,7 +107,6 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Sets the value for the next snapshot
-	 *
 	 * @param index to set at
 	 * @param value to set to
 	 * @return the old value
@@ -179,5 +173,4 @@ public class SnapshotableShortArray implements Snapshotable {
 	private short unpackOne(int value) {
 		return (short) (value >> 16);
 	}
-
 }
