@@ -648,6 +648,8 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (preEvent.isCancelled()) {
 		    return null;
 		}
+		
+		generator = preEvent.getGenerator();
 
 		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
 
