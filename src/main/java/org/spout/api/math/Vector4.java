@@ -59,10 +59,10 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	 */
 	public final static Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
 
-	protected float x;
-	protected float y;
-	protected float z;
-	protected float w;
+	protected final float x;
+	protected final float y;
+	protected final float z;
+	protected final float w;
 
 	/**
 	 * Constructs and initializes a Vector4 from the given x, y, z, w

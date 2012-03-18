@@ -63,9 +63,11 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * Unit Vector with all elements set to 1. (1, 1, 1)
 	 */
 	public final static Vector3 ONE = new Vector3(1, 1, 1);
-	protected float x;
-	protected float y;
-	protected float z;
+	
+	
+	protected final float x;
+	protected final float y;
+	protected final float z;
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z

@@ -46,8 +46,9 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	public final static Vector2Polar UNIT = new Vector2Polar(1, 0);
 	private final static float twoPi = (float) (Math.PI * 2);
 	private final static float ninetyDegrees = (float) (Math.PI / 4);
-	protected float r;
-	protected float theta;
+	
+	protected final float r;
+	protected final float theta;
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta
