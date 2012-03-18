@@ -48,7 +48,6 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.MaterialData;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
@@ -146,55 +145,13 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, Source source) {
-		if (material == null) {
-			throw new NullPointerException("Material can not be null");
-		}
-		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), true, source);
-	}
-
-	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, boolean updatePhysics, Source source) {
-		if (material == null) {
-			throw new NullPointerException("Material can not be null");
-		}
-		return setBlockIdAndData(x, y, z, material.getId(), material.getData(), updatePhysics, source);
-	}
-
-	@Override
-	public boolean setBlockId(int x, int y, int z, short id, Source source) {
-		return setBlockIdAndData(x, y, z, id, (short) 0, true, source);
-	}
-
-	@Override
-	public boolean setBlockId(int x, int y, int z, short id, boolean updatePhysics, Source source) {
-		return setBlockIdAndData(x, y, z, id, (short) 0, updatePhysics, source);
-	}
-
-	@Override
-	public boolean setBlockData(int x, int y, int z, short data, Source source) {
-		return setBlockData(x, y, z, data, true, source);
-	}
-
-	@Override
 	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
-		return setBlockIdAndData(x, y, z, (short) blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask), data, updatePhysics, source);
-	}
-
-	@Override
-	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, Source source) {
-		return setBlockIdAndData(x, y, z, id, data, true, source);
-	}
-
-	@Override
-	public boolean setBlockIdAndData(int x, int y, int z, short id, short data, boolean updatePhysics, Source source) {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
 		checkChunkLoaded();
-		BlockMaterial previous = getBlockMaterial(x, y, z);
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
-		BlockMaterial current = MaterialData.getBlock(id, data);
+		
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, getBlockMaterial(x, y, z).getId(), data, null);
 		
 		//do neighbor updates
 		if (updatePhysics) {
@@ -212,8 +169,36 @@ public class SpoutChunk extends Chunk {
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
-		boolean sky = previous.getOpacity() != current.getOpacity();
-		boolean block = previous.getLightLevel() != current.getLightLevel();
+		return true;
+	}
+
+	@Override
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, boolean updatePhysics, Source source) {
+		if (source == null) {
+			throw new NullPointerException("Source can not be null");
+		}
+		checkChunkLoaded();
+		BlockMaterial previous = getBlockMaterial(x, y, z);
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), data, null);
+		
+		//do neighbor updates
+		if (updatePhysics) {
+			updatePhysics(x, y, z);
+
+			//South and North
+			updatePhysics(x + 1, y, z);
+			updatePhysics(x - 1, y, z);
+
+			//West and East
+			updatePhysics(x, y, z + 1);
+			updatePhysics(x, y, z - 1);
+
+			//Above and Below
+			updatePhysics(x, y + 1, z);
+			updatePhysics(x, y - 1, z);
+		}
+		boolean sky = previous.getOpacity() != material.getOpacity();
+		boolean block = previous.getLightLevel() != material.getLightLevel();
 		if (sky || block) {
 			this.queueLightUpdate(x & coordMask, z & coordMask, sky, block);
 		}
@@ -225,15 +210,8 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		BlockFullState<DatatableMap> fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
 		short id = fullState.getId();
-		short data = fullState.getData();
-		DatatableMap auxData = fullState.getAuxData();
-		return MaterialData.getBlock(id, data, auxData);
-	}
-
-	@Override
-	public short getBlockId(int x, int y, int z) {
-		checkChunkLoaded();
-		return (short) blockStore.getBlockId(x & coordMask, y & coordMask, z & coordMask);
+		BlockMaterial mat = BlockMaterial.get(id);
+		return mat == null ? BlockMaterial.AIR : mat;
 	}
 
 	@Override

@@ -37,7 +37,7 @@ import java.util.Map;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.MaterialData;
+import org.spout.api.material.Material;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.Parameter;
@@ -89,7 +89,7 @@ public final class ChannelBufferUtils {
 					ItemStack item = ((Parameter<ItemStack>) parameter).getValue();
 					buf.writeShort(item.getMaterial().getId());
 					buf.writeByte(item.getAmount());
-					buf.writeShort(item.getDamage());
+					buf.writeShort(item.getData());
 					break;
 			}
 		}
@@ -127,10 +127,10 @@ public final class ChannelBufferUtils {
 					parameters.add(new Parameter<String>(type, index, readString(buf)));
 					break;
 				case Parameter.TYPE_ITEM:
-					int id = buf.readShort();
+					short id = buf.readShort();
 					int count = buf.readByte();
-					short damage = buf.readShort();
-					ItemStack item = new ItemStack(MaterialData.getMaterial((short) id), count, damage);
+					short data = buf.readShort();
+					ItemStack item = new ItemStack(Material.get(id), data, count);
 					parameters.add(new Parameter<ItemStack>(type, index, item));
 					break;
 			}

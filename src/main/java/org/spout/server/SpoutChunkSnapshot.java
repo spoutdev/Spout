@@ -35,7 +35,6 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.MaterialData;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
 	/**
@@ -79,11 +78,12 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
-		return MaterialData.getBlock(getBlockId(x, y, z), getBlockData(x, y, z));
+		BlockMaterial mat = BlockMaterial.get(getBlockId(x, y, z));
+		return mat == null ? BlockMaterial.AIR : mat;
 	}
 
-	@Override
-	public short getBlockId(int x, int y, int z) {
+	//TODO: Should this be hidden, or not?
+	private short getBlockId(int x, int y, int z) {
 		return blockIds[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
 	}
 

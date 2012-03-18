@@ -32,7 +32,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -567,7 +566,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		this.whitelist = whitelist;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void updateWhitelist() {
 		List<String> whitelist = SpoutConfiguration.WHITELIST.getStringList();
