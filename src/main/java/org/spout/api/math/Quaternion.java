@@ -31,7 +31,7 @@ package org.spout.api.math;
  *
  */
 public class Quaternion implements Cloneable{
-	protected float x, y, z, w;
+	protected final float x, y, z, w;
 	protected Vector3 cachedAngle = null;
 
 	/**

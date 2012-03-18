@@ -50,8 +50,10 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * Represents a unit vector (1,1)
 	 */
 	public final static Vector2 ONE = new Vector2(1, 1);
-	protected float x;
-	protected float y;
+	
+	
+	protected final float x;
+	protected final float y;
 
 	/**
 	 * Constructs and initializes a Vector2 from the given x, y
