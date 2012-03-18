@@ -38,7 +38,6 @@ import org.spout.api.util.thread.SnapshotRead;
  */
 public class SnapshotableArrayList<T> implements Snapshotable {
 	private ConcurrentLinkedQueue<SnapshotUpdate<T>> pendingUpdates = new ConcurrentLinkedQueue<SnapshotUpdate<T>>();
-
 	private ArrayList<T> snapshot;
 
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
@@ -53,7 +52,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list
-	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -63,7 +61,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Removes an object from the list
-	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -73,7 +70,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list at a particular index
-	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -83,7 +79,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Removes the object from the list at a particular index
-	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -93,7 +88,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
-	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -126,5 +120,4 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 			}
 		}
 	}
-
 }

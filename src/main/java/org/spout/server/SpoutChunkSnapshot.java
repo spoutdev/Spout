@@ -42,20 +42,14 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The parent region that manages this chunk
 	 */
 	private final WeakReference<Region> parentRegion;
-
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-
 	private final Set<WeakReference<Entity>> entities;
-
 	private final short[] blockIds;
-
 	private final short[] blockData;
-
 	private final byte[] blockLight;
-
 	private final byte[] skyLight;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
@@ -97,9 +91,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		int index = (y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask;
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte)((light >> 4) & 0xF);
+			return (byte) ((light >> 4) & 0xF);
 		}
-		return (byte)(light & 0xF);
+		return (byte) (light & 0xF);
 	}
 
 	@Override
@@ -107,9 +101,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		int index = (y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask;
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte)((light >> 4) & 0xF);
+			return (byte) ((light >> 4) & 0xF);
 		}
-		return (byte)(light & 0xF);
+		return (byte) (light & 0xF);
 	}
 
 	@Override

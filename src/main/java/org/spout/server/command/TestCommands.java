@@ -23,24 +23,22 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
+package org.spout.server.command;
 
-package org.spout.server;
-
-import org.spout.api.Game;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.exception.CommandException;
 
-public class TestCommands {
+import org.spout.server.SpoutServer;
+import org.spout.server.SpoutWorld;
 
+public class TestCommands {
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandContext args, CommandSource source) throws CommandException {
-		 SpoutServer server = (SpoutServer)Spout.getGame();
-		 SpoutWorld world = (SpoutWorld)server.getWorld("world");
-		 Spout.getLogger().info("World Entity size: " + world.getAll().size());
-
+		SpoutServer server = (SpoutServer) Spout.getGame();
+		SpoutWorld world = (SpoutWorld) server.getWorld("world");
+		Spout.getLogger().info("World Entity size: " + world.getAll().size());
 	}
-
 }

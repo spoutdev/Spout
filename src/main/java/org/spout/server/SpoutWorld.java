@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.Game;
@@ -55,6 +56,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
 import org.spout.api.player.Player;
+
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.AsyncManager;
@@ -63,54 +65,43 @@ import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableLong;
 
 public class SpoutWorld extends AsyncManager implements World {
-
 	private SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * The server of this world.
 	 */
 	private final Server server;
-
 	/**
 	 * The name of this world.
 	 */
 	private final String name;
-
 	/**
 	 * The region source
 	 */
 	private final RegionSource regions;
-
 	/**
 	 * The world seed.
 	 */
 	private final long seed;
-
 	/**
 	 * The spawn position.
 	 */
 	private final Transform spawnLocation = new Transform();
-
 	/**
 	 * The current world age.
 	 */
 	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
-
 	/**
 	 * The world's UUID.
 	 */
 	private final UUID uid;
-
 	/**
 	 * The generator responsible for generating chunks in this world.
 	 */
 	private final WorldGenerator generator;
-
 	/**
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
-
 	/**
 	 * A set of all players currently connected to this world
 	 */
@@ -248,7 +239,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 			return world.getUID().equals(getUID());
 		}
-
 	}
 
 	@Override
@@ -495,7 +485,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		return Collections.unmodifiableSet(players);
 	}
 
-	public List<CollisionVolume> getCollidingObject(CollisionModel model){
+	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
 		//TODO Make this more general
 		final int minX = MathHelper.floor(model.getPosition().getX());
 		final int minY = MathHelper.floor(model.getPosition().getY());
@@ -512,7 +502,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			for (int dy = minY - 1; dy < maxY; dy++) {
 				for (int dz = minZ; dz < maxZ; dz++) {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
-					mutable.set((BoundingBox)material.getBoundingArea());
+					mutable.set((BoundingBox) material.getBoundingArea());
 					mutable.offset(dx, dy, dz);
 					if (mutable.intersects(model.getVolume())) {
 						colliding.add(mutable.clone());
@@ -523,9 +513,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		//TODO: colliding entities
 		return colliding;
-
 	}
-
 
 	@Override
 	public String toString() {

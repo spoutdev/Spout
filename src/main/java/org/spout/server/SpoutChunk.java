@@ -25,14 +25,14 @@
  */
 package org.spout.server;
 
-import gnu.trove.set.hash.TByteHashSet;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+
+import gnu.trove.set.hash.TByteHashSet;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -54,6 +54,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
@@ -61,53 +62,44 @@ import org.spout.server.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
-
 	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.
 	 */
 	private AtomicBlockStore<DatatableMap> blockStore;
-
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
 	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
-
 	/**
 	 * The parent region that manages this chunk
 	 */
 	private final SpoutRegion parentRegion;
-
 	/**
 	 * Holds if the chunk is populated
 	 */
 	private SnapshotableBoolean populated;
-
 	/**
 	 * Snapshot Manager
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * A set of all entities who are observing this chunk
 	 */
 	private final SnapshotableHashMap<Entity, Integer> observers = new SnapshotableHashMap<Entity, Integer>(snapshotManager);
-
 	/**
 	 * A set of entities contained in the chunk
 	 */
 	// Hash set should return "dirty" list
 	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
-
 	/**
 	 * Stores a short value of the sky light
-	 * 
+	 * <p/>
 	 * Note: These do not need to be thread-safe as long as only one thread (the region)
 	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
 	private final byte[] skyLight;
 	private final byte[] blockLight;
-
 	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
 	 */
@@ -116,7 +108,6 @@ public class SpoutChunk extends Chunk {
 	 * Stores queued column updates for block light to be processed at the next tick
 	 */
 	private final TByteHashSet blockLightQueue;
-
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
@@ -138,7 +129,7 @@ public class SpoutChunk extends Chunk {
 		}
 		blockLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
 		skyLightQueue = new TByteHashSet();
-		blockLightQueue  = new TByteHashSet();
+		blockLightQueue = new TByteHashSet();
 	}
 
 	public SpoutWorld getWorld() {
@@ -195,7 +186,7 @@ public class SpoutChunk extends Chunk {
 		BlockMaterial previous = getBlockMaterial(x, y, z);
 		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, id, data, null);
 		BlockMaterial current = MaterialData.getBlock(id, data);
-		
+
 		//do neighbor updates
 		if (updatePhysics) {
 			updatePhysics(x, y, z);
@@ -248,9 +239,9 @@ public class SpoutChunk extends Chunk {
 		int index = toIndex(x & coordMask, y & coordMask, z & coordMask);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte)((light >> 4) & 0xF);
+			return (byte) ((light >> 4) & 0xF);
 		}
-		return (byte)(light & 0xF);
+		return (byte) (light & 0xF);
 	}
 
 	@Override
@@ -259,9 +250,9 @@ public class SpoutChunk extends Chunk {
 		int index = toIndex(x & coordMask, y & coordMask, z & coordMask);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte)((light >> 4) & 0xF);
+			return (byte) ((light >> 4) & 0xF);
 		}
-		return (byte)(light & 0xF);
+		return (byte) (light & 0xF);
 	}
 
 	@Override
@@ -276,10 +267,9 @@ public class SpoutChunk extends Chunk {
 	private int toIndex(int x, int y, int z) {
 		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
 	}
-	
+
 	/**
 	 * Gets the sky brightness, may look up from neighbor chunks.
-	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -298,9 +288,8 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Recalculates the sky light in the x, z column.
-	 * 
+	 * <p/>
 	 * May queue more lighting updates in chunks underneath.
-	 * 
 	 * @param x coordinate
 	 * @param z coordinate
 	 */
@@ -323,7 +312,7 @@ public class SpoutChunk extends Chunk {
 				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z + 1) - 1);
 				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z - 1) - 1);
 			}
-				
+
 			//Don't check the opacity unless there is some light
 			if (prevValue > 0) {
 				BlockMaterial type = getBlockMaterial(x, y, z);
@@ -335,7 +324,7 @@ public class SpoutChunk extends Chunk {
 
 			int index = toIndex(x, y, z);
 			byte old = skyLight[index / 2];
-			
+
 			if ((index & 1) == 0) {
 				skyLight[index / 2] = HashUtil.nibbleToByte(prevValue, old);
 			} else {
@@ -346,16 +335,15 @@ public class SpoutChunk extends Chunk {
 		SpoutChunk belowChunk = world.getChunk(getX(), getY() - 1, getZ(), false);
 		if (belowChunk != null) {
 			if (belowChunk.getSkyLight(x, CHUNK_SIZE - 1, z) != prevValue) {
-				belowChunk.queueLightUpdate(x, z, true, false); 
+				belowChunk.queueLightUpdate(x, z, true, false);
 			}
 		}
 	}
-	
+
 	/**
 	 * Recalculates the block light in the x, z column
-	 * 
+	 * <p/>
 	 * May queue more lighting updates in neighbor chunks.
-	 * 
 	 * @param x coordinate
 	 * @param z coordinate
 	 */
@@ -369,38 +357,39 @@ public class SpoutChunk extends Chunk {
 		//	blockLight.set(toIndex(x, y, z), type.getLightLevel());
 		//}
 	}
-	
+
 	/**
 	 * Queues a lighting update for the column. This will be processed in a later tick.
-	 * 
-	 * @param x coordinate of the column
-	 * @param z coordinate of the column
-	 * @param sky whether to update the sky lighting
+	 * @param x	 coordinate of the column
+	 * @param z	 coordinate of the column
+	 * @param sky   whether to update the sky lighting
 	 * @param block whether to update the block lighting
 	 */
 	private void queueLightUpdate(int x, int z, boolean sky, boolean block) {
-		if (!sky && !block) throw new IllegalStateException("Invalid paramaters");
+		if (!sky && !block) {
+			throw new IllegalStateException("Invalid paramaters");
+		}
 		if (sky) {
-			synchronized(skyLightQueue) {
+			synchronized (skyLightQueue) {
 				skyLightQueue.add(HashUtil.nibbleToByte(x & 0xF, z & 0xF));
 			}
 		}
 		if (block) {
-			synchronized(blockLightQueue) {
+			synchronized (blockLightQueue) {
 				blockLightQueue.add(HashUtil.nibbleToByte(x & 0xF, z & 0xF));
 			}
 		}
 		parentRegion.queueLighting(this);
 	}
-	
+
 	/**
 	 * Processes the queued lighting updates for this chunk.
-	 * 
+	 * <p/>
 	 * This should only be called from the SpoutRegion that manages this chunk, during the first tick stage.
 	 */
 	protected void processQueuedLighting() {
 		byte[] queue;
-		synchronized(skyLightQueue) {
+		synchronized (skyLightQueue) {
 			queue = skyLightQueue.toArray();
 			skyLightQueue.clear();
 		}
@@ -409,7 +398,7 @@ public class SpoutChunk extends Chunk {
 			int z = HashUtil.byteToNibble2(b);
 			recalculateSkyLighting(x, z);
 		}
-		synchronized(blockLightQueue) {
+		synchronized (blockLightQueue) {
 			queue = blockLightQueue.toArray();
 			blockLightQueue.clear();
 		}
@@ -560,10 +549,12 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean refreshObserver(Entity entity) {
-		if(!entity.isObserver()) throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
+		if (!entity.isObserver()) {
+			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
+		}
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
-		int distance = (int) ((SpoutEntity)entity).getChunkLive().getBase().getDistance(getBase());
+		int distance = (int) ((SpoutEntity) entity).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(entity, distance);
 		if (oldDistance == null) {
 			parentRegion.unloadQueue.remove(this);
@@ -674,12 +665,12 @@ public class SpoutChunk extends Chunk {
 		for (Populator populator : getWorld().getGenerator().getPopulators()) {
 			try {
 				populator.populate(this, random);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 				e.printStackTrace();
 			}
 		}
-		
+
 		//Recalculate lighting
 		for (int dx = CHUNK_SIZE - 1; dx >= 0; --dx) {
 			for (int dz = CHUNK_SIZE - 1; dz >= 0; --dz) {
@@ -726,7 +717,7 @@ public class SpoutChunk extends Chunk {
 		Map<Entity, Integer> observerLive = observers.getLive();
 
 		//If we are observed and not populated, queue population
-		if(!isPopulated() && observers.getLive().size() > 0){
+		if (!isPopulated() && observers.getLive().size() > 0) {
 			parentRegion.queueChunkForPopulation(this);
 		}
 
@@ -748,15 +739,15 @@ public class SpoutChunk extends Chunk {
 					playerDistanceNew = Integer.MAX_VALUE;
 				}
 				//Player Network sync
-				if(p.getController() instanceof PlayerController){
-					Player player = ((PlayerController)p.getController()).getPlayer();
+				if (p.getController() instanceof PlayerController) {
+					Player player = ((PlayerController) p.getController()).getPlayer();
 
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					for (Entity e : entitiesSnapshot) {
 						if (player.getEntity().equals(e)) {
 							continue;
 						}
-						int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+						int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
 						int entityViewDistanceNew = e.getViewDistance();
 
 						if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
@@ -774,7 +765,7 @@ public class SpoutChunk extends Chunk {
 			if (((SpoutEntity) e).justSpawned()) {
 				oldChunk = null;
 			}
-			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity)e).getChunkLive();
+			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity) e).getChunkLive();
 			if (!(oldChunk != null && oldChunk.equals(this)) && !((SpoutEntity) e).justSpawned()) {
 				continue;
 			}
@@ -782,7 +773,7 @@ public class SpoutChunk extends Chunk {
 				if (p == null || p.equals(e)) {
 					continue;
 				}
-				if(p.getController() instanceof PlayerController) {
+				if (p.getController() instanceof PlayerController) {
 					Integer playerDistanceOld;
 					if (oldChunk == null) {
 						playerDistanceOld = Integer.MAX_VALUE;
@@ -801,7 +792,7 @@ public class SpoutChunk extends Chunk {
 							playerDistanceNew = Integer.MAX_VALUE;
 						}
 					}
-					int entityViewDistanceOld = ((SpoutEntity)e).getPrevViewDistance();
+					int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
 					int entityViewDistanceNew = e.getViewDistance();
 
 					Player player = ((PlayerController) p.getController()).getPlayer();
@@ -820,8 +811,8 @@ public class SpoutChunk extends Chunk {
 		// TODO - should have sorting based on view distance
 		for (Map.Entry<Entity, Integer> entry : observerLive.entrySet()) {
 			Entity p = entry.getKey();
-			if(p.getController() instanceof PlayerController){
-				Player player = ((PlayerController)p.getController()).getPlayer();
+			if (p.getController() instanceof PlayerController) {
+				Player player = ((PlayerController) p.getController()).getPlayer();
 				NetworkSynchronizer n = player.getNetworkSynchronizer();
 				if (n != null) {
 					int playerDistance = entry.getValue();
@@ -829,7 +820,7 @@ public class SpoutChunk extends Chunk {
 					for (Entity e : entitiesSnapshot) {
 						if (playerEntity != e) {
 							if (playerDistance <= e.getViewDistance()) {
-								if (((SpoutEntity)e).getPrevController() != e.getController()) {
+								if (((SpoutEntity) e).getPrevController() != e.getController()) {
 									n.destroyEntity(e);
 									n.spawnEntity(e);
 								}
@@ -843,7 +834,7 @@ public class SpoutChunk extends Chunk {
 						} else if (((SpoutEntity) e).justSpawned()) {
 							if (playerEntity != e) {
 								if (playerDistance <= e.getViewDistance()) {
-									if (((SpoutEntity)e).getPrevController() != e.getController()) {
+									if (((SpoutEntity) e).getPrevController() != e.getController()) {
 										n.destroyEntity(e);
 										n.spawnEntity(e);
 									}
@@ -863,12 +854,10 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public static class ChunkAccessException extends RuntimeException {
-
 		private static final long serialVersionUID = 1L;
 
 		public ChunkAccessException(String message) {
 			super(message);
 		}
 	}
-
 }

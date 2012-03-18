@@ -35,7 +35,6 @@ public abstract class Managed {
 
 	/**
 	 * Returns the thread that is managing this object
-	 *
 	 * @return the management thread
 	 */
 	public AsyncManager getManager() {

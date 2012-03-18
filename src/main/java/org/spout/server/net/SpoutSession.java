@@ -50,6 +50,7 @@ import org.spout.api.protocol.PlayerProtocol;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+
 import org.spout.server.SpoutServer;
 import org.spout.server.SpoutWorld;
 import org.spout.server.player.SpoutPlayer;
@@ -57,7 +58,6 @@ import org.spout.server.player.SpoutPlayer;
 /**
  * A single connection to the server, which may or may not be associated with a
  * player.
- *
  */
 public final class SpoutSession implements Session {
 	/**
@@ -65,59 +65,47 @@ public final class SpoutSession implements Session {
 	 * to a timeout.
 	 */
 	private static final int TIMEOUT_TICKS = 20 * 60;
-
 	/**
 	 * The server this session belongs to.
 	 */
 	private final SpoutServer server;
-
 	/**
 	 * The Random for this session
 	 */
 	private final Random random = new Random();
-
 	/**
 	 * The channel associated with this session.
 	 */
 	private final Channel channel;
-
 	/**
 	 * A queue of incoming and unprocessed messages.
 	 */
 	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
-	
 	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
 	private final Queue<Message> sendQueue = new ConcurrentLinkedQueue<Message>();
-
 	/**
 	 * A timeout counter. This is increment once every tick and if it goes above
 	 * a certain value the session is disconnected.
 	 */
 	private int timeoutCounter = 0;
-
 	/**
 	 * The current state.
 	 */
 	private State state = State.EXCHANGE_HANDSHAKE;
-
 	/**
 	 * The player associated with this session (if there is one).
 	 */
 	private Player player;
-
 	/**
 	 * The random long used for client-server handshake
 	 */
-
 	private final String sessionId = Long.toString(random.nextLong(), 16).trim();
-
 	/**
 	 * The protocol for this session
 	 */
 	private final AtomicReference<Protocol> protocol;
-
 	/**
 	 * Stores the last block placement message to work around a bug in the
 	 * vanilla client where duplicate packets are sent.
@@ -125,18 +113,15 @@ public final class SpoutSession implements Session {
 	//private BlockPlacementMessage previousPlacement;
 
 	private final BootstrapProtocol bootstrapProtocol;
-
 	/**
 	 * Stores if this is Connected
-	 *
 	 * @todo Probably add to SpoutAPI
 	 */
 	private boolean isConnected = false;
 
 	/**
 	 * Creates a new session.
-	 *
-	 * @param server The server this session belongs to.
+	 * @param server  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
 	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol) {
@@ -149,7 +134,6 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Gets the state of this session.
-	 *
 	 * @return The session's state.
 	 */
 	public State getState() {
@@ -158,7 +142,6 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Sets the state of this session.
-	 *
 	 * @param state The new state.
 	 */
 	public void setState(State state) {
@@ -167,7 +150,6 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Gets the player associated with this session.
-	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
 	public Player getPlayer() {
@@ -176,10 +158,9 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Sets the player associated with this session.
-	 *
 	 * @param player The new player.
 	 * @throws IllegalStateException if there is already a player associated
-	 *             with this session.
+	 *                               with this session.
 	 */
 	public void setPlayer(Player player) {
 		if (this.player != null) {
@@ -215,13 +196,13 @@ public final class SpoutSession implements Session {
 	public void pulse() {
 		timeoutCounter++;
 		Message message;
-		
-		if (state == State.GAME){ 
+
+		if (state == State.GAME) {
 			while ((message = sendQueue.poll()) != null) {
 				send(message, true);
 			}
 		}
-		
+
 		while ((message = messageQueue.poll()) != null) {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
@@ -239,19 +220,17 @@ public final class SpoutSession implements Session {
 			disconnect("Timed out", true);
 		}
 	}
-	
+
 	/**
 	 * + * Sends a message to the client.
-	 *
 	 * @param message The message.
-	 * @param if this message is used in the identification stages of communication
+	 * @param if	  this message is used in the identification stages of communication
 	 */
 	public void send(Message message, boolean force) {
 		try {
 			if (force || this.state == State.GAME) {
-				channel.write(message); 
-			}
-			else {
+				channel.write(message);
+			} else {
 				sendQueue.add(message);
 			}
 		} catch (Exception e) {
@@ -266,7 +245,6 @@ public final class SpoutSession implements Session {
 	/**
 	 * Disconnects the session with the specified reason. This causes a kick
 	 * packet to be sent. When it has been delivered, the channel is closed.
-	 *
 	 * @param reason The reason for disconnection.
 	 */
 	public void disconnect(String reason) {
@@ -276,8 +254,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * Disconnects the session with the specified reason. This causes a kick
 	 * packet to be sent. When it has been delivered, the channel is closed.
-	 *
-	 * @param reason The reason for disconnection.
+	 * @param reason	   The reason for disconnection.
 	 * @param overrideKick Whether to override the kick event.
 	 */
 	public void disconnect(String reason, boolean overrideKick) {
@@ -295,7 +272,7 @@ public final class SpoutSession implements Session {
 				useMessage = false;
 			}
 
-			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
+			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
 
 			dispose(useMessage);
 		}
@@ -305,7 +282,6 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Gets the server associated with this session.
-	 *
 	 * @return The server.
 	 */
 	public SpoutServer getServer() {
@@ -314,7 +290,6 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Returns the address of this session.
-	 *
 	 * @return The remote address.
 	 */
 	public InetSocketAddress getAddress() {
@@ -333,9 +308,8 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Adds a message to the unprocessed queue.
-	 *
 	 * @param message The message.
-	 * @param <T> The type of message.
+	 * @param <T>     The type of message.
 	 */
 	public <T extends Message> void messageReceived(T message) {
 		messageQueue.add(message);
@@ -367,7 +341,8 @@ public final class SpoutSession implements Session {
 					}
 				}
 				((SpoutPlayer) player).disconnect();
-			} catch (Exception e) { }
+			} catch (Exception e) {
+			}
 			player = null; // in case we are disposed twice
 		}
 	}

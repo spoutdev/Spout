@@ -29,15 +29,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Stores a 3 int triple.
- *
+ * <p/>
  * Objects of this type can be used in HashMaps.
- *
+ * <p/>
  * TripleInt.NULL can be added to HashMaps that don't support null objects/
  */
 public class TripleInt {
-
 	public final static TripleInt NULL = new TripleInt(0, 0, 0);
-
 	public final int x;
 	public final int y;
 	public final int z;
@@ -79,5 +77,4 @@ public class TripleInt {
 			}
 		}
 	}
-
 }

@@ -36,15 +36,15 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
+
 import org.spout.server.datatable.value.SpoutDatatableNil;
 
 public class SpoutDatatableMap implements DatatableMap {
 	private final static StringMap rootStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	private final StringMap stringmap;
 	TSynchronizedIntObjectMap<DatatableTuple> map = new TSynchronizedIntObjectMap<DatatableTuple>(new TIntObjectHashMap<DatatableTuple>());
+	private final SpoutDatatableNil niltype = new SpoutDatatableNil();
 
-    private final SpoutDatatableNil niltype = new SpoutDatatableNil();
-    
 	public static StringMap getStringMap() {
 		return rootStringMap;
 	}
@@ -74,7 +74,9 @@ public class SpoutDatatableMap implements DatatableMap {
 
 	@Override
 	public DatatableTuple get(String key) {
-        if(!map.containsKey(getKey(key))) return niltype;
+		if (!map.containsKey(getKey(key))) {
+			return niltype;
+		}
 		return map.get(getKey(key));
 	}
 
@@ -99,9 +101,8 @@ public class SpoutDatatableMap implements DatatableMap {
 	public void input(InputStream in) throws IOException {
 
 	}
-    
-	public boolean contains(String key){
+
+	public boolean contains(String key) {
 		return map.containsKey(getKey(key));
 	}
-
 }

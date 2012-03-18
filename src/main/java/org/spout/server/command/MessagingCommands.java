@@ -32,10 +32,10 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
+
 import org.spout.server.SpoutServer;
 
 /**
- *
  * @author zml2008
  */
 public class MessagingCommands {

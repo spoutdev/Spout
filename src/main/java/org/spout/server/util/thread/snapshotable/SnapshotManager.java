@@ -28,7 +28,6 @@ package org.spout.server.util.thread.snapshotable;
 import java.util.LinkedHashSet;
 
 public class SnapshotManager {
-
 	private LinkedHashSet<Snapshotable> managed = new LinkedHashSet<Snapshotable>();
 
 	public synchronized void add(Snapshotable s) {
@@ -44,5 +43,4 @@ public class SnapshotManager {
 			}
 		}
 	}
-
 }

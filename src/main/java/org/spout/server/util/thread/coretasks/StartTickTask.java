@@ -32,9 +32,7 @@ import org.spout.server.util.thread.ManagementRunnable;
 import org.spout.server.util.thread.ManagementTaskEnum;
 
 public class StartTickTask extends ManagementRunnable {
-
 	private static final long serialVersionUID = 1L;
-
 	private long delta;
 	private int stage;
 

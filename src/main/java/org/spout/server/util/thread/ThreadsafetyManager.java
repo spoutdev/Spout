@@ -29,7 +29,6 @@ package org.spout.server.util.thread;
  * This class contains various methods to verify thread safe operation of the
  * API method calls
  */
-
 public class ThreadsafetyManager {
 	private static Thread mainThread = null;
 

@@ -35,7 +35,6 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable array of type byte
  */
 public class SnapshotableByteArray implements Snapshotable {
-
 	private final byte[] snapshot;
 	private final byte[] live;
 	private final int[] dirtyArray;
@@ -57,7 +56,6 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value in the array
-	 *
 	 * @param index to lookup
 	 * @return snapshot value
 	 */
@@ -68,7 +66,6 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Gets the live value in the array
-	 *
 	 * @param index to lookup
 	 * @return live value
 	 */
@@ -81,7 +78,6 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Sets the value for the next snapshot
-	 *
 	 * @param index to set at
 	 * @param value to set to
 	 */
@@ -114,5 +110,4 @@ public class SnapshotableByteArray implements Snapshotable {
 			}
 		}
 	}
-
 }
