@@ -309,6 +309,8 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		getEventManager().registerEvents(new InternalEventListener(this), this);
 		scheduler.startMainThread();
+		
+		getLogger().info("Done Loading, ready for players.");
 	}
 
 	public Configuration getConfiguration() {
