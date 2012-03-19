@@ -26,7 +26,7 @@
 package org.spout.api.util;
 
 /**
- * Represents n object that has a name
+ * Represents an object that has a name
  */
 public interface Named {
 	public String getName();
