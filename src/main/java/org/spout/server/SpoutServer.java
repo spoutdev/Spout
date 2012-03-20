@@ -68,6 +68,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.SpoutRuntimeException;
@@ -614,6 +615,11 @@ public class SpoutServer extends AsyncManager implements Server {
 		if (world == null) {
 			return false;
 		} else {
+		        WorldUnloadEvent event = new WorldUnloadEvent(world);
+		        this.getEventManager().callEvent(event);
+		        if (event.isCancelled()) {
+		            return false;
+		        }
 			boolean success = loadedWorlds.remove(world.getName(), (SpoutWorld) world);
 			if (success) {
 				if (save) {
