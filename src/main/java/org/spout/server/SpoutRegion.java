@@ -206,6 +206,7 @@ public class SpoutRegion extends Region {
 					}
 					return newChunk;
 				} else {
+					newChunk.setUnloaded();
 					SpoutChunk oldChunk = ref.get();
 					if (oldChunk != null) {
 						return oldChunk;

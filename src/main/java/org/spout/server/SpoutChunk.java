@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -121,6 +122,10 @@ public class SpoutChunk extends Chunk {
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
+	
+	private final SpoutColumn column;
+	
+	private final AtomicBoolean columnRegistered;
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
@@ -139,6 +144,9 @@ public class SpoutChunk extends Chunk {
 		blockLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue  = new TByteHashSet();
+		column = world.getColumn(((int)x) << Chunk.CHUNK_SIZE_BITS, ((int)z) << Chunk.CHUNK_SIZE_BITS, true);
+		column.registerChunk();
+		columnRegistered = new AtomicBoolean(true);
 	}
 
 	public SpoutWorld getWorld() {
@@ -629,6 +637,7 @@ public class SpoutChunk extends Chunk {
 	public void setUnloaded() {
 		saveState.set(SaveState.UNLOADED);
 		blockStore = null;
+		deregisterFromColumn();
 	}
 
 	private void checkChunkLoaded() {
@@ -854,6 +863,14 @@ public class SpoutChunk extends Chunk {
 					}
 				}
 			}
+		}
+	}
+	
+	public void deregisterFromColumn() {
+		if (columnRegistered.compareAndSet(true, false)) {
+			column.deregisterChunk();
+		} else {
+			throw new IllegalStateException("Chunk at " + getX() + ", " + getZ() + " deregistered from column more than once");
 		}
 	}
 

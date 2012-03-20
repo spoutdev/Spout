@@ -55,6 +55,8 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
 import org.spout.api.player.Player;
+import org.spout.api.util.HashUtil;
+import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.AsyncManager;
@@ -115,6 +117,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * A set of all players currently connected to this world
 	 */
 	private final Set<Player> players = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
+	
+	/**
+	 * A map of the loaded columns
+	 */
+	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Server server, long seed, WorldGenerator generator) {
@@ -526,9 +533,36 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	}
 
+	@Override
+	public int getSurfaceHeight(int x, int z) {
+		SpoutColumn column = getColumn(x, z);
+		if (column == null) {
+			return Integer.MIN_VALUE;
+		} else {
+			return column.getSurfaceHeight(x, z);
+		}
+	}
+	
+	public SpoutColumn getColumn(int x, int z, boolean create) {
+		long key = HashUtil.intToLong(x >> SpoutColumn.COLUMN_SIZE_BITS,  z >> SpoutColumn.COLUMN_SIZE_BITS);
+		SpoutColumn column = columns.get(key);
+		if (create && column == null) {
+			SpoutColumn newColumn = new SpoutColumn(this, x, z);
+			column = columns.putIfAbsent(key, newColumn);
+			if (column == null) {
+				column = newColumn;
+			}
+		}
+		return column;
+	}
+	
+	public SpoutColumn getColumn(int x, int z) {
+		return getColumn(x, z, false);
+	}
 
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";
 	}
+
 }
