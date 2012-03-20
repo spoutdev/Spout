@@ -195,6 +195,18 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunkFromBlock(int x, int y, int z);
+	
+	/**
+	 * Gets the height of the highest block in the given (x, z) column.<br>
+	 * <br>
+	 * Blocks which are completely transparent are ignored.
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @return the highest of the 
+	 */
+	@LiveRead
+	public int getSurfaceHeight(int x, int z);
 
 	/**
 	 * Create a new Entity for initialization
