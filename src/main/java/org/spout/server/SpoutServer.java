@@ -68,6 +68,8 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.event.world.PostWorldLoadEvent;
+import org.spout.api.event.world.PreWorldLoadEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.SpoutRuntimeException;
@@ -640,11 +642,21 @@ public class SpoutServer extends AsyncManager implements Server {
 			generator = defaultGenerator;
 		}
 
+		PreWorldLoadEvent preEvent = new PreWorldLoadEvent(name, generator);
+		this.getEventManager().callEvent(preEvent);
+		
+		if (preEvent.isCancelled()) {
+		    return null;
+		}
+		
+		generator = preEvent.getGenerator();
 
 		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
 
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
+		
+		
 
 		if (oldWorld != null) {
 			return oldWorld;
@@ -652,6 +664,9 @@ public class SpoutServer extends AsyncManager implements Server {
 			if (!world.getExecutor().startExecutor()) {
 				throw new IllegalStateException("Unable to start executor for new world");
 			}
+			PostWorldLoadEvent postEvent = new PostWorldLoadEvent(world);
+			this.getEventManager().callEvent(postEvent);
+
 			world.start();
 			return world;
 		}
