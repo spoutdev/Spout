@@ -80,7 +80,7 @@ public class SpoutEntity implements Entity {
 	private boolean justSpawned = true;
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private int viewDistance;
-	private int health = 1;
+	private int health = 1, maxHealth = 1;
 	public int id = NOTSPAWNEDID;
 	Model model;
 	CollisionModel collision;
@@ -365,8 +365,29 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 
-		this.health = health;
+		//Enforce max health
+		if (health >= maxHealth) {
+			this.health = maxHealth;
+		} else {
+			this.health = health;
+		}
 	}
+
+	@Override
+	public void setMaxHealth(int maxHealth) {
+		if(!isValidAccess()) {
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to adjust entity health from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
+			return;
+		}
+		this.maxHealth = maxHealth;
+	}
+
+	@Override
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+
+
 
 	@Override
 	public int getId() {
