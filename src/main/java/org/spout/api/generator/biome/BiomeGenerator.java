@@ -26,10 +26,12 @@
 package org.spout.api.generator.biome;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
@@ -97,5 +99,13 @@ public abstract class BiomeGenerator implements WorldGenerator {
 
 	public BiomeType getBiome(int x, int z, long seed) {
 		return biomes.getBiome(x, z, seed);
+	}
+
+	public Collection<BiomeType> getBiomes() {
+		return biomes.getBiomes();
+	}
+
+	public void setBiome(Vector3 loc, BiomeType type) {
+		biomes.setBiome(loc, type);
 	}
 }

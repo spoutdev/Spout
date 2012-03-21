@@ -58,6 +58,10 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 		return map.keySet();
 	}
 
+	public synchronized Collection<V> getValues() {
+		return map.values();
+	}
+
 	public synchronized Set<Entry<K, V>> getEntrySet() {
 		return map.entrySet();
 	}

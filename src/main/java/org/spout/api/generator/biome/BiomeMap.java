@@ -27,17 +27,24 @@ package org.spout.api.generator.biome;
 
 import org.spout.api.io.store.map.MemoryStoreMap;
 import org.spout.api.io.store.map.SimpleStoreMap;
+import org.spout.api.math.Vector3;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A simple store wrapper that holds biomes and the selector.
  */
 public final class BiomeMap {
+	private final SimpleStoreMap<Vector3, BiomeType> biomeOverrides;
 	private final SimpleStoreMap<Integer, BiomeType> map;
 	private BiomeSelector selector;
 
 	public BiomeMap() {
 		//Todo: Make this saveable
 		map = new MemoryStoreMap<Integer, BiomeType>();
+		biomeOverrides = new MemoryStoreMap<Vector3, BiomeType>();
 	}
 
 	public void setSelector(BiomeSelector selector) {
@@ -46,6 +53,10 @@ public final class BiomeMap {
 
 	public void addBiome(BiomeType biome) {
 		map.set(map.getSize(), biome);
+	}
+
+	public void setBiome(Vector3 loc, BiomeType biome) {
+		biomeOverrides.set(loc, biome);
 	}
 
 	/**
@@ -57,6 +68,16 @@ public final class BiomeMap {
 	}
 
 	public BiomeType getBiome(int x, int y, int z, long seed) {
-		return map.get(Math.abs(selector.pickBiome(x, y, z, seed)) % map.getSize());
+		BiomeType biome = biomeOverrides.get(new Vector3(x, y, z));
+		if (biome == null) {
+			biome = map.get(Math.abs(selector.pickBiome(x, y, z, seed)) % map.getSize());
+		}
+		return biome;
+	}
+
+	public Collection<BiomeType> getBiomes() {
+		Set<BiomeType> biomes = new HashSet<BiomeType> (map.getValues());
+		biomes.addAll(biomeOverrides.getValues());
+		return biomes;
 	}
 }
