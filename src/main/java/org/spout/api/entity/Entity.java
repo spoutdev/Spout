@@ -326,5 +326,14 @@ public interface Entity extends Datatable, Source {
 	 * Sets the health of the entity.
 	 */
 	public void setHealth(int health);
-	
+
+	/**
+	 * Sets the max health of the entity
+	 */
+	public void setMaxHealth(int maxHealth);
+
+	/**
+	 * Gets the max health of the entity
+	 */
+	public int getMaxHealth();
 }
