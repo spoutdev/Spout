@@ -38,7 +38,7 @@ import org.spout.api.math.MathHelper;
  */
 public class MemoryConfiguration {
 
-	protected String pathSeperator = ".";
+	protected String pathSeparator = ".";
 	protected Map<String, Object> root;
 	protected Set<ConfigurationNode> nodes;
 
@@ -59,7 +59,7 @@ public class MemoryConfiguration {
 	 * @return the object from the path
 	 */
 	public Object getValue(String path) {
-		if (!path.contains(pathSeperator)) {
+		if (!path.contains(pathSeparator)) {
 			Object val = root.get(path);
 			if (val == null) {
 				return null;
@@ -67,7 +67,7 @@ public class MemoryConfiguration {
 			return val;
 		}
 
-		String[] parts = path.split(pathSeperator);
+		String[] parts = path.split(pathSeparator);
 		Map<String, Object> node = root;
 
 		for (int i = 0; i < parts.length; i++) {
@@ -98,12 +98,12 @@ public class MemoryConfiguration {
 	 * @param value
 	 */
 	public void setValue(String path, Object value) {
-		if (!path.contains(pathSeperator)) {
+		if (!path.contains(pathSeparator)) {
 			root.put(path, value);
 			return;
 		}
 
-		String[] parts = path.split(pathSeperator);
+		String[] parts = path.split(pathSeparator);
 		Map<String, Object> node = root;
 
 		for (int i = 0; i < parts.length; i++) {
@@ -125,14 +125,29 @@ public class MemoryConfiguration {
 		}
 	}
 
-	public void setPathSeperator(String pathSeperator) {
-		this.pathSeperator = pathSeperator;
+	/**
+	 * Sets the path separator of the configuration, default is '.'
+	 *
+	 * @param pathSeparator
+	 */
+	public void setPathSeparator(String pathSeparator) {
+		this.pathSeparator = pathSeparator;
 	}
 
-	public String getPathSeperator(String pathSeperator) {
-		return pathSeperator;
+	/**
+	 * Gets the path separator of the configuration, default is '.'
+	 *
+	 * @return pathSeparator
+	 */
+	public String getPathSeparator() {
+		return pathSeparator;
 	}
 
+	/**
+	 * Gets the set of nodes in the configuration; only contains nodes assigned.
+	 *
+	 * @return node set
+	 */
 	public Set<ConfigurationNode> getNodes() {
 		return nodes;
 	}
@@ -141,30 +156,37 @@ public class MemoryConfiguration {
 	 * Removes a node from memory.
 	 *
 	 * @param path
+	 * @return true if contained node.
 	 */
-	public void removeNode(String path) {
+	public boolean removeNode(String path) {
 		for (ConfigurationNode node :  nodes) {
 			if (node.getPath().equalsIgnoreCase(path)) {
-				nodes.remove(node);
+				return nodes.remove(node);
 			}
 		}
+
+		return false;
+	}
+
+	/**
+	 * Removes a node from memory.
+	 *
+	 * @param node
+	 * @return true if contained node.
+	 */
+	public boolean removeNode(ConfigurationNode node) {
+		return nodes.remove(node);
 	}
 
 	/**
 	 * Sets a node's state for this configuration.
 	 *
 	 * @param node
+	 * @return true if node exists
 	 */
-	public void addNode(ConfigurationNode node) {
-		Object value = this.getValue(node.getPath());
-		if (value == null) {
-			this.setValue(node.getPath(), node.getValue());
-		} else {
-			node.setValue(value, false);
-		}
-
-		nodes.add(node);
+	public boolean addNode(ConfigurationNode node) {
 		node.config = this;
+		return nodes.add(node);
 	}
 
 	/**
@@ -172,23 +194,24 @@ public class MemoryConfiguration {
 	 *
 	 * @param path
 	 * @param value
-	 * @return new node
+	 * @return true if node exists
 	 */
-	public ConfigurationNode addNode(String path, Object value) {
-		ConfigurationNode node = new ConfigurationNode(path, value);
-		node.setConfiguration(this);
-		return node;
+	public boolean addNode(String path, Object value) {
+		return addNode(new ConfigurationNode(path, value));
 	}
 
 	/**
 	 * Adds multiple nodes to the configuration.
 	 *
 	 * @param nodes
+	 * @return true if node exists.
 	 */
-	public void addNodes(ConfigurationNode... nodes) {
+	public boolean addNodes(ConfigurationNode... nodes) {
 		for (ConfigurationNode node : nodes) {
-			node.setConfiguration(this);
+			return addNode(node);
 		}
+
+		return false;
 	}
 
 	/**
@@ -200,17 +223,36 @@ public class MemoryConfiguration {
 	 * @return
 	 */
 	public ConfigurationNode getNode(String path, Object def) {
-		ConfigurationNode node = new ConfigurationNode(path, def);
-		Object value = this.getValue(node.getPath());
+
+		// First, check if the node is already stored.
+		for (ConfigurationNode node : nodes) {
+			if (node.getPath().equalsIgnoreCase(path)) {
+				return node;
+			}
+		}
+
+		// If it's not found, create a new node from the path given.
+		Object value = getValue(path);
 		if (value == null) {
 			value = def;
 		}
 
-		node.setValue(value, true);
-		node.setConfiguration(this);
+		ConfigurationNode node = new ConfigurationNode(path, value);
+		nodes.add(node);
 		return node;
 	}
 
+	/**
+	 * Gets a node from the configuration, if the path is found, returns a node with the value of the path.
+	 * Can return null.
+	 *
+	 * @param path
+	 * @return node
+	 */
+	public ConfigurationNode getNode(String path) {
+		return getNode(path, null);
+	}
+	
 	/**
 	 * Returns a string from the value, null if not a string.
 	 *
@@ -221,7 +263,7 @@ public class MemoryConfiguration {
 	}
 
 	/**
-	 * Returns a string from the value, default value if not a string.
+	 * Returns a string from the value, default given if not a string.
 	 *
 	 * @return string
 	 */
@@ -230,13 +272,10 @@ public class MemoryConfiguration {
 		if (value instanceof String) {
 			return (String) value;
 		}
-
-		if (value == null) {
-			this.setValue(path, def);
-		}
+		
 		return def;
 	}
-
+	
 	/**
 	 * Returns a integer from the value, null if not a integer.
 	 *
@@ -258,9 +297,6 @@ public class MemoryConfiguration {
 			return i;
 		}
 
-		if (value == null) {
-			this.setValue(path, def);
-		}
 		return def;
 	}
 
@@ -285,9 +321,6 @@ public class MemoryConfiguration {
 			return d;
 		}
 
-		if (value == null) {
-			this.setValue(path, def);
-		}
 		return def;
 	}
 
@@ -312,10 +345,6 @@ public class MemoryConfiguration {
 			return b;
 		}
 
-		if (value == null) {
-			this.setValue(path, def);
-		}
-
 		return def;
 	}
 
@@ -338,10 +367,6 @@ public class MemoryConfiguration {
 		Object value = getValue(path);
 		if (value != null && value instanceof List) {
 			return (List<Object>) value;
-		}
-
-		if (value == null) {
-			this.setValue(path, def);
 		}
 
 		return def;
@@ -475,7 +500,7 @@ public class MemoryConfiguration {
 	public Set<String> getKeys(String path) {
 		//TODO Add "deep" option in the future potentially.
 		Set<String> keys = new HashSet<String>();
-		String[] sections = path.split(pathSeperator);
+		String[] sections = path.split(pathSeparator);
 		Map<String, Object> section = this.root;
 		for(int i = 0; i < sections.length && section != null; i++) {
 			String sec = sections[i];

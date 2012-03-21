@@ -209,7 +209,7 @@ public class Configuration extends MemoryConfiguration {
 			}
 
 			for (ConfigurationNode node : nodes) {
-				node.setConfiguration(this);
+				setValue(node.getPath(), node.getValue());
 			}
 
 			yaml.dump(root, writer);

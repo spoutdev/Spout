@@ -26,7 +26,10 @@
 package org.spout.api.util.config;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.spout.api.math.MathHelper;
 
 public class ConfigurationNode {
@@ -35,6 +38,7 @@ public class ConfigurationNode {
 	protected MemoryConfiguration config;
 	private Object value;
 	private Object def;
+	private final Set<String> keys = new HashSet<String>();
 
 	public ConfigurationNode(String path, Object def) {
 		this.path = path;
@@ -61,7 +65,6 @@ public class ConfigurationNode {
 			return value;
 		}
 
-		this.setValue(def, true);
 		return def;
 	}
 
@@ -70,9 +73,9 @@ public class ConfigurationNode {
 	 *
 	 * @param value
 	 */
-	public void setValue(Object value, boolean toMemoryConfig) {
+	public void setValue(Object value) {
 		this.value = value;
-		if (config != null && toMemoryConfig) {
+		if (config != null) {
 			config.addNode(this);
 		}
 	}
@@ -95,31 +98,16 @@ public class ConfigurationNode {
 	 * @param config
 	 */
 	public void setConfiguration(MemoryConfiguration config) {
-		config.addNode(this);
+		this.config = config;
 	}
 
 	/**
-	 * Returns a string from the value, null if not a string.
+	 * Returns a string from the value.
 	 *
 	 * @return string
 	 */
 	public String getString() {
-		return getString(null);
-	}
-
-	/**
-	 * Returns a string from the value, default value if not a string.
-	 *
-	 * @return string
-	 */
-	public String getString(String def) {
-
-		if (value == null) {
-			this.setValue(def, true);
-		} else {
-			return value.toString();
-		}
-		return def;
+		return value.toString();
 	}
 
 	/**
@@ -142,9 +130,6 @@ public class ConfigurationNode {
 			return i;
 		}
 
-		if(value == null) {
-			this.setValue(def, true);
-		}
 		return def;
 	}
 
@@ -168,9 +153,6 @@ public class ConfigurationNode {
 			return d;
 		}
 
-		if (value == null) {
-			this.setValue(def, true);
-		}
 		return def;
 	}
 
@@ -194,9 +176,6 @@ public class ConfigurationNode {
 			return b;
 		}
 
-		if (value == null) {
-			this.setValue(def, true);
-		}
 		return def;
 	}
 
@@ -220,9 +199,6 @@ public class ConfigurationNode {
 			return (List<Object>) value;
 		}
 
-		if (value == null) {
-			this.setValue(def, true);
-		}
 		return def;
 	}
 

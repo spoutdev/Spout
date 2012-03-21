@@ -25,12 +25,11 @@
  */
 package org.spout.api.util.config;
 
+import java.io.File;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -41,8 +40,19 @@ public class MemoryConfigurationTest {
 		MemoryConfiguration config = new MemoryConfiguration(new HashMap<String, Object>(), new HashSet<ConfigurationNode>());
 		config.setValue("foo.bar", "baz");
 		String value = config.getString("foo.bar");
-		config.setPathSeperator("/");
+		config.setPathSeparator("/");
 		String value1 = config.getString("foo/bar");
 		assertEquals(value, value1);
+	}
+	
+	@Test
+	public void testNode() {
+		File testFile = new File("test.yml");
+		Configuration config = new Configuration(testFile);
+		ConfigurationNode node = new ConfigurationNode("foo.bar", "baz");
+		config.addNode(node);
+		config.save();
+		assertEquals(node, config.getNode("foo.bar"));
+		testFile.delete();
 	}
 }
