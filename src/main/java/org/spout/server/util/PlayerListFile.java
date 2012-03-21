@@ -35,9 +35,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import org.spout.server.SpoutServer;
-import org.spout.server.io.StorageOperation;
-
 /**
  * Utility class for storing lists of player names.
  */
@@ -75,94 +72,47 @@ public final class PlayerListFile {
 	 * Reloads from the file.
 	 */
 	public void load() {
-		SpoutServer.storeQueue.queue(new StorageOperation() {
-			@Override
-			public boolean isParallel() {
-				return true;
-			}
-
-			@Override
-			public String getGroup() {
-				return file.getName();
-			}
-
-			@Override
-			public boolean queueMultiple() {
-				return true;
-			}
-
-			@Override
-			public String getOperation() {
-				return "playerlistfile-load";
-			}
-
-			@Override
-			public void run() {
-				synchronized (list) {
-					list.clear();
-					try {
-						Scanner input = new Scanner(file);
-						while (input.hasNextLine()) {
-							String line = input.nextLine().trim().toLowerCase();
-							if (line.length() > 0) {
-								if (!list.contains(line)) {
-									list.add(line);
-								}
-							}
+		synchronized (list) {
+			list.clear();
+			try {
+				Scanner input = new Scanner(file);
+				while (input.hasNextLine()) {
+					String line = input.nextLine().trim().toLowerCase();
+					if (line.length() > 0) {
+						if (!list.contains(line)) {
+							list.add(line);
 						}
-						Collections.sort(list);
-						save();
-					} catch (FileNotFoundException ex) {
-						save();
 					}
 				}
+				Collections.sort(list);
+				save();
+			} catch (FileNotFoundException ex) {
+				save();
 			}
-		});
+		}
+
 	}
 
 	/**
 	 * Saves to the file.
 	 */
 	private void save() {
-		SpoutServer.storeQueue.queue(new StorageOperation() {
-			@Override
-			public boolean isParallel() {
-				return true;
+		try {
+			PrintWriter out = new PrintWriter(new FileWriter(file));
+			for (String str : list) {
+				out.println(str);
 			}
-
-			@Override
-			public String getGroup() {
-				return file.getName();
-			}
-
-			@Override
-			public boolean queueMultiple() {
-				return true;
-			}
-
-			@Override
-			public String getOperation() {
-				return "playerlistfile-save";
-			}
-
-			@Override
-			public void run() {
-				try {
-					PrintWriter out = new PrintWriter(new FileWriter(file));
-					for (String str : list) {
-						out.println(str);
-					}
-					out.flush();
-					out.close();
-				} catch (IOException ex) {
-					// Pfft.
-				}
-			}
-		});
+			out.flush();
+			out.close();
+		} catch (IOException ex) {
+			// Pfft.
+		}
 	}
 
 	/**
 	 * Add a player to the list.
+	 *
+	 * @param player The name to add
 	 */
 	public void add(String player) {
 		if (!contains(player)) {
@@ -174,6 +124,8 @@ public final class PlayerListFile {
 
 	/**
 	 * Remove a player from the list.
+	 *
+	 * @param player The name to remove
 	 */
 	public void remove(String player) {
 		list.remove(player.trim());
@@ -182,6 +134,9 @@ public final class PlayerListFile {
 
 	/**
 	 * Check if a player is in the list.
+	 *
+	 * @param player The name to check
+	 * @return Whether this list contains the given name
 	 */
 	public boolean contains(String player) {
 		for (String str : list) {

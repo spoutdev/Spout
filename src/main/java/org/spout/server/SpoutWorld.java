@@ -117,7 +117,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * A set of all players currently connected to this world
 	 */
 	private final Set<Player> players = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
-	
+
 	/**
 	 * A map of the loaded columns
 	 */
@@ -542,7 +542,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			return column.getSurfaceHeight(x, z);
 		}
 	}
-	
+
 	public SpoutColumn getColumn(int x, int z, boolean create) {
 		long key = HashUtil.intToLong(x >> SpoutColumn.COLUMN_SIZE_BITS,  z >> SpoutColumn.COLUMN_SIZE_BITS);
 		SpoutColumn column = columns.get(key);
@@ -555,7 +555,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		return column;
 	}
-	
+
 	public SpoutColumn getColumn(int x, int z) {
 		return getColumn(x, z, false);
 	}

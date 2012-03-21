@@ -32,7 +32,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -68,6 +67,8 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.event.world.WorldLoadEvent;
+import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.SpoutRuntimeException;
@@ -97,7 +98,6 @@ import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
-import org.spout.server.io.StorageQueue;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.net.SpoutSessionRegistry;
 import org.spout.server.player.SpoutPlayer;
@@ -178,8 +178,6 @@ public class SpoutServer extends AsyncManager implements Server {
 	 * A list of all the active {@link SpoutSession}s.
 	 */
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-
-	public static final StorageQueue storeQueue = new StorageQueue();
 
 	/**
 	 * The scheduler for the server.
@@ -290,9 +288,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		config.load();
 
-		storeQueue.start(); //Make sure the storageQueue is running
-		banManager = new FlatFileBanManager(this); //Load the BanManager after the init of the Queue
-		banManager.load();
+		banManager = new FlatFileBanManager(this);
 
 		// Start loading plugins
 		loadPlugins();
@@ -309,7 +305,7 @@ public class SpoutServer extends AsyncManager implements Server {
 
 		getEventManager().registerEvents(new InternalEventListener(this), this);
 		scheduler.startMainThread();
-		
+
 		getLogger().info("Done Loading, ready for players.");
 	}
 
@@ -621,6 +617,7 @@ public class SpoutServer extends AsyncManager implements Server {
 					if (!w.getExecutor().haltExecutor()) {
 						throw new IllegalStateException("Executor was already halted when halting was attempted");
 					}
+					getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
 					//TODO Save the world, save the cheerleader
 				}
 				//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
@@ -652,6 +649,7 @@ public class SpoutServer extends AsyncManager implements Server {
 			if (!world.getExecutor().startExecutor()) {
 				throw new IllegalStateException("Unable to start executor for new world");
 			}
+			getEventManager().callDelayedEvent(new WorldLoadEvent(world));
 			world.start();
 			return world;
 		}
