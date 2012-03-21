@@ -80,6 +80,7 @@ public class SpoutEntity implements Entity {
 	private boolean justSpawned = true;
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private int viewDistance;
+	private int health = 1;
 	public int id = NOTSPAWNEDID;
 	Model model;
 	CollisionModel collision;
@@ -116,6 +117,9 @@ public class SpoutEntity implements Entity {
 	 * @param dt milliseconds since the last tick
 	 */
 	public void onTick(float dt) {
+		if (health <= 0) {
+			kill();
+		}
 		lastTransform = transform.copy();
 		Vector3 ang = this.transform.getRotation().getAxisAngles();
 		pitch = ang.getZ();
@@ -347,6 +351,21 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		yaw = ang;
+	}
+
+	@Override
+	public int getHealth() {
+		return health;
+	}
+
+	@Override
+	public void setHealth(int health) {
+		if(!isValidAccess()) {
+			if(Spout.getGame().debugMode()) throw new IllegalAccessError("Tried to adjust entity health from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
+			return;
+		}
+
+		this.health = health;
 	}
 
 	@Override
