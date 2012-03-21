@@ -34,6 +34,14 @@ public interface SimpleStoreMap<K, V> {
 	public Collection<K> getKeys();
 
 	/**
+	 * Returns a collection of all values for all (key, value) pairs within the
+	 * Store
+	 *
+	 * @return a Collection containing all the values
+	 */
+	public Collection<V> getValues();
+
+	/**
 	 * Returns an entry set containing all the key, value pairs within the Store
 	 *
 	 * @return returns a Set containing all the keys, value entries

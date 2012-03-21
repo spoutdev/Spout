@@ -37,7 +37,7 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
  * Defines an abstract biome.  Extend this to implement your own biome types
- * 
+ *
  *
  */
 public abstract class BiomeType {
@@ -48,6 +48,8 @@ public abstract class BiomeType {
 	}
 
 	public abstract void generateColumn(CuboidShortBuffer blockData, int x, int chunkY, int z);
+
+	public abstract String getName();
 
 	public final void decorate(Chunk chunk, Random random) {
 		for (BiomeDecorator b : decorators) {
