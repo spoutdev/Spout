@@ -37,6 +37,54 @@ public abstract class Controller {
 	private Entity parent;
 
 	/**
+	 * Called when this controller has been attached to an entity. Occurs in stage 1 of the tick.
+	 */
+	public abstract void onAttached();
+
+	/**
+	 * Called for each tick this controller isn't detached.
+	 * @param dt the number of ticks since the prior call of onTick.
+	 */
+	public abstract void onTick(float dt);
+
+	/**
+	 * Called when this controller is attached to an entity.
+	 * @param e entity this controller will be attached to.
+	 */
+	public void attachToEntity(Entity e) {
+		this.parent = e;
+	}
+
+	/**
+	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
+	 * Occurs before the Pre-Snapshot of the tick.
+	 */
+	public void onDeath() {
+	}
+
+	/**
+	 * Called when this controller is being synced with the client. Occurs before Pre-Snapshot of the tick.
+	 */
+	public void onSync() {
+	}
+
+	/**
+	 * TODO: This method needs to be moved to a more appropriate place.
+	 */
+	public Inventory createInventory(int size) {
+		return new Inventory(size);
+	}
+
+	/**
+	 * Gets the parent Entity associated with this controller.
+	 * 
+	 * @return parent Entity
+	 */
+	public Entity getParent() {
+		return parent;
+	}
+
+	/**
 	 *
 	 * @param protocolId
 	 * @return
@@ -64,47 +112,11 @@ public abstract class Controller {
 	}
 
 	/**
-	 *
-	 * @param e
+	 * TODO: These methods should be given the appropriate annotation that makes it clear they shouldn't be used by plugins.
 	 */
-	public void attachToEntity(Entity e) {
-		this.parent = e;
-	}
-
 	/**
-	 *
-	 */
-	public abstract void onAttached();
-
-	/**
-	 * Called when the entity dies.
-	 * 
-	 * Called just before the preSnapshot method.
-	 */
-	public void onDeath() {
-	}
-
-	/**
-	 * 
-	 * @param dt the number of seconds since last update
-	 */
-	public abstract void onTick(float dt);
-
-	/**
-	 * Called when this controller is being synced with the client.
-	 */
-	public void onSync() {
-
-	}
-
-	/**
-	 * Called just before a snapshot update.
-	 * 
-	 * This is intended purely as a monitor based step.
-	 * 
-	 * NO updates should be made to the entity at this stage.
-	 * 
-	 * It can be used to send packets for network update.
+	 * Called just before a snapshot update. This is intended purely as a monitor based step.
+	 * NO updates should be made to the entity at this stage. It can be used to send packets for network update.
 	 */
 	public void preSnapshot() {
 	}
@@ -115,23 +127,5 @@ public abstract class Controller {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
-	}
-
-	/**
-	 *
-	 * @param size
-	 * @return
-	 */
-	public Inventory createInventory(int size) {
-		return new Inventory(size);
-	}
-
-	/**
-	 * Gets the parent Entity associated with this controller.
-	 * 
-	 * @return parent Entity
-	 */
-	public Entity getParent() {
-		return parent;
 	}
 }

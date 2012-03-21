@@ -316,6 +316,15 @@ public interface Entity extends Datatable, Source {
 
 	public void setYaw(float ang);
 
-	
+	/**
+	 * Gets the health of the entity.
+	 * @return the health of the entity.
+	 */
+	public int getHealth();
+
+	/**
+	 * Sets the health of the entity.
+	 */
+	public void setHealth(int health);
 	
 }
