@@ -31,6 +31,10 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.util.StringMap;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public abstract class Controller {
 	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
@@ -41,11 +45,35 @@ public abstract class Controller {
 	 */
 	public abstract void onAttached();
 
+	private List<EntityAction<Controller>> activeActions = new ArrayList<EntityAction<Controller>>();
+
+	@SuppressWarnings("unchecked")
+	public void registerAction(EntityAction<?> ai) {
+		activeActions.add((EntityAction<Controller>) ai);
+	}
+
+	public void unregisterAction(Class<? extends EntityAction<?>> type) {
+		for (Iterator<EntityAction<Controller>> i = activeActions.iterator(); i.hasNext();) {
+			if (type.isAssignableFrom(i.next().getClass())) {
+				i.remove();
+			}
+		}
+	}
+
 	/**
 	 * Called for each tick this controller isn't detached.
 	 * @param dt the number of ticks since the prior call of onTick.
 	 */
-	public abstract void onTick(float dt);
+	public void onTick(float dt) {
+		if (parent == null || parent.getWorld() == null) {
+			return;
+		}
+		for (EntityAction<Controller> ai : activeActions) {
+			if (ai.shouldRun(parent, this)) {
+				ai.run(parent, this);
+			}
+		}
+	}
 
 	/**
 	 * Called when this controller is attached to an entity.
@@ -77,29 +105,25 @@ public abstract class Controller {
 
 	/**
 	 * Gets the parent Entity associated with this controller.
-	 * 
+	 *
 	 * @return parent Entity
 	 */
 	public Entity getParent() {
 		return parent;
 	}
 
-	/**
-	 *
-	 * @param protocolId
-	 * @return
-	 */
 	public EntityProtocol getEntityProtocol(int protocolId) {
-		return entityProtocolStore.getEntityProtocol(protocolId);
+		return entityProtocolStore.getEntityProtocol(this.getClass(), protocolId);
 	}
 
 	/**
 	 *
+	 * @param controller
 	 * @param protocolId
 	 * @param protocol
 	 */
-	public static void setEntityProtocol(int protocolId, EntityProtocol protocol) {
-		entityProtocolStore.setEntityProtocol(protocolId, protocol);
+	public static void setEntityProtocol(Class<? extends Controller> controller, int protocolId, EntityProtocol protocol) {
+		entityProtocolStore.setEntityProtocol(controller, protocolId, protocol);
 	}
 
 	/**

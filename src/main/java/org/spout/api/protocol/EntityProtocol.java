@@ -14,7 +14,7 @@ public interface EntityProtocol {
 	 * @param entity the entity
 	 * @return the spawn message
 	 */
-	public Message getSpawnMessage(Entity entity);
+	public Message[] getSpawnMessage(Entity entity);
 
 	/**
 	 * Gets a message to destroy the entity.
@@ -22,7 +22,7 @@ public interface EntityProtocol {
 	 * @param entity the entity
 	 * @return the destroy message
 	 */
-	public Message getDestroyMessage(Entity entity);
+	public Message[] getDestroyMessage(Entity entity);
 
 	/**
 	 * Gets a message to update the entity. This should move the entity from its
@@ -31,6 +31,6 @@ public interface EntityProtocol {
 	 * @param entity the entity
 	 * @return the update message
 	 */
-	public Message getUpdateMessage(Entity entity);
+	public Message[] getUpdateMessage(Entity entity);
 
 }
