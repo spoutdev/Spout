@@ -50,9 +50,11 @@ public class MemoryConfigurationTest {
 		File testFile = new File("test.yml");
 		Configuration config = new Configuration(testFile);
 		ConfigurationNode node = new ConfigurationNode("foo.bar", "baz");
-		config.addNode(node);
+		ConfigurationNode node1 = new ConfigurationNode("bar.baz", "qux");
+		config.addNodes(node, node1);
 		config.save();
 		assertEquals(node, config.getNode("foo.bar"));
+		assertEquals(node1, config.getNode("bar.baz"));
 		testFile.delete();
 	}
 }
