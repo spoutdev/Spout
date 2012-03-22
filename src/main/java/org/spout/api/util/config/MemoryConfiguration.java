@@ -208,7 +208,7 @@ public class MemoryConfiguration {
 	 */
 	public boolean addNodes(ConfigurationNode... nodes) {
 		for (ConfigurationNode node : nodes) {
-			return addNode(node);
+			addNode(node);
 		}
 
 		return false;
