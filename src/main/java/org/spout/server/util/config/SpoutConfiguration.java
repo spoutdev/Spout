@@ -39,7 +39,7 @@ public class SpoutConfiguration extends Configuration {
 	private static final String[] banlist = {"satan"};
 	public static final ConfigurationNode WORLDS = new ConfigurationNode("worlds", "default");
 	public static final ConfigurationNode WHITELIST = new ConfigurationNode("whitelist", Arrays.asList(whitelist));
-	public static final ConfigurationNode BANLIST = new ConfigurationNode("banlist", banlist);
+	public static final ConfigurationNode BANLIST = new ConfigurationNode("banlist", Arrays.asList(banlist));
 	public static final ConfigurationNode ALLOW_FLIGHT = new ConfigurationNode("allow-flight", false);
 	public static final ConfigurationNode USE_WHITELIST = new ConfigurationNode("use-whitelist", false);
 	public static final ConfigurationNode WORLD_CONTAINER = new ConfigurationNode("world-container", ".");
@@ -57,7 +57,12 @@ public class SpoutConfiguration extends Configuration {
 				try {
 					Object f = field.get(null);
 					if (f instanceof ConfigurationNode) {
-						this.addNode((ConfigurationNode) f);
+						ConfigurationNode node = (ConfigurationNode) f;
+						Object value = getValue(node.getPath());
+						if (value != null) {
+							node.setValue(value);
+						}
+						this.addNode(node);
 					}
 				} catch (IllegalArgumentException e) {
 				} catch (IllegalAccessException e) {
