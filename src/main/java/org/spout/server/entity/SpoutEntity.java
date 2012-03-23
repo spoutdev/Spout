@@ -154,7 +154,7 @@ public class SpoutEntity implements Entity {
 	 */
 	public void resolve() {
 		//Don't need to do collisions if we have no collision volume
-		if(this.collision == null) return;
+		if(this.collision == null || this.getWorld() == null) return;
 		
 		//Resolve Collisions Here
 		final Point location = this.transform.getPosition();
