@@ -66,10 +66,7 @@ public class SpoutBlock implements Block {
 
 	public Chunk getChunk() {
 		if (this.chunk == null || !this.chunk.isLoaded()) {
-			int cx = this.x >> Chunk.CHUNK_SIZE_BITS;
-			int cy = this.y >> Chunk.CHUNK_SIZE_BITS;
-			int cz = this.z >> Chunk.CHUNK_SIZE_BITS;
-			this.chunk = this.world.getChunk(cx, cy, cz, true);
+			recalculateChunk();
 		}
 		return this.chunk;
 	}
@@ -92,16 +89,19 @@ public class SpoutBlock implements Block {
 
 	public Block setX(int x) {
 		this.x = x;
+		recalculateChunk();
 		return this;
 	}
 
 	public Block setY(int y) {
 		this.y = y;
+		recalculateChunk();
 		return this;
 	}
 
 	public Block setZ(int z) {
 		this.z = z;
+		recalculateChunk();
 		return this;
 	}
 
@@ -117,6 +117,7 @@ public class SpoutBlock implements Block {
 		this.x += dx;
 		this.y += dy;
 		this.z += dz;
+		recalculateChunk();
 		return this;
 	}
 
@@ -254,5 +255,12 @@ public class SpoutBlock implements Block {
 	@Override
 	public void setBlock(MaterialSource blocksource, boolean update) {
 		this.setMaterial(blocksource.getMaterial(), blocksource.getData(), update);
+	}
+	
+	private void recalculateChunk() {
+		int cx = this.x >> Chunk.CHUNK_SIZE_BITS;
+		int cy = this.y >> Chunk.CHUNK_SIZE_BITS;
+		int cz = this.z >> Chunk.CHUNK_SIZE_BITS;
+		this.chunk = this.world.getChunk(cx, cy, cz, true);
 	}
 }
