@@ -80,4 +80,12 @@ public final class BiomeMap {
 		biomes.addAll(biomeOverrides.getValues());
 		return biomes;
 	}
+	
+	public int indexOf(BiomeType biome) {
+		if(map.reverseGet(biome) != null) {
+			return map.reverseGet(biome);
+		} else {
+			return -1;
+		}
+	}
 }
