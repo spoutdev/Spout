@@ -38,6 +38,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.player.Player;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -46,7 +47,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, BlockAccess {
+public interface World extends Source, AreaBlockAccess {
 	/**
 	 * Gets the name of the world
 	 *
@@ -66,6 +67,22 @@ public interface World extends Source, BlockAccess {
 
 	/**
 	 * Gets a {@link Block} representing a particular location in the world
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param source of any changes done by this block
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(int x, int y, int z, Source source);
+
+	/**
+	 * Gets a {@link Block} representing a particular location in the world
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 *
 	 * @return the Block
 	 */
@@ -314,6 +331,4 @@ public interface World extends Source, BlockAccess {
 	 * @return all players on this world
 	 */
 	public Set<Player> getPlayers();
-
-
 }

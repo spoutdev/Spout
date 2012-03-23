@@ -19,7 +19,7 @@ package org.spout.api.geo;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.thread.LiveRead;
 
-public interface BlockData {
+public interface AreaBlockSource {
 	/**
 	 * Gets the snapshot material for the block at (x, y, z)
 	 *
@@ -30,17 +30,6 @@ public interface BlockData {
 	 */
 	@LiveRead
 	public BlockMaterial getBlockMaterial(int x, int y, int z);
-
-	/**
-	 * Gets the snapshot id for the block at (x, y, z)
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return the block's material from the snapshot
-	 */
-	@LiveRead
-	public short getBlockId(int x, int y, int z);
 
 	/**
 	 * Gets the data for the block at (x, y, z)

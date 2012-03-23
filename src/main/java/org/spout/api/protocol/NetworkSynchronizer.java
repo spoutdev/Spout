@@ -35,6 +35,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.InventoryViewer;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.player.Player;
 
 public abstract class NetworkSynchronizer implements InventoryViewer {
@@ -360,7 +361,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * @param z coordinate
 	 */
 	public void updateBlock(Chunk chunk, int x, int y, int z) {
-		updateBlock(chunk, x, y, z, chunk.getBlockId(x, y, z), chunk.getBlockData(x, y, z));
+		updateBlock(chunk, x, y, z, chunk.getBlockMaterial(x, y, z), chunk.getBlockData(x, y, z));
 	}
 
 	/**
@@ -376,7 +377,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * @param id to send in the update
 	 * @param data to send in the update
 	 */
-	public void updateBlock(Chunk chunk, int x, int y, int z, short id, short data) {
+	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
 	}
 
 	/**

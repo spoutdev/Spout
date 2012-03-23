@@ -28,7 +28,7 @@ package org.spout.api.geo.cuboid;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.geo.BlockAccess;
+import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.util.thread.DelayedWrite;
@@ -38,7 +38,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents a cube containing 16x16x16 Blocks
  */
-public abstract class Chunk extends Cube implements BlockAccess {
+public abstract class Chunk extends Cube implements AreaBlockAccess {
 	/**
 	 * Internal size of a side of a chunk
 	 */

@@ -27,6 +27,7 @@ package org.spout.api.geo.discrete;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 
 /**
@@ -61,6 +62,18 @@ public class Point extends Vector3 {
 	@Override
 	public Point add(Vector3 other) {
 		return new Point(Vector3.add(this, other), world);
+	}
+	
+	public int getBlockX() {
+		return MathHelper.floor(this.getX());
+	}
+
+	public int getBlockY() {
+		return MathHelper.floor(this.getY());
+	}
+
+	public int getBlockZ() {
+		return MathHelper.floor(this.getZ());
 	}
 
 	/**

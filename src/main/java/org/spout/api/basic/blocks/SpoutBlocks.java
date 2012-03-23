@@ -26,10 +26,11 @@
 package org.spout.api.basic.blocks;
 
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.GenericBlockMaterial;
 
 public final class SpoutBlocks {
-	public static final BlockMaterial air = new SpoutBlock("air", 0).setOpacity((byte)15);
-	public static final BlockMaterial solid = new SpoutBlock("solid", 1).setHardness(1.f);
-	public static final BlockMaterial unbreakable = new SpoutBlock("Unbreakable", 2).setHardness(100.f);
-	public static final BlockMaterial skybox = new SpoutBlock("Skybox", 3);
+	public static final BlockMaterial air = new GenericBlockMaterial("air", 0).setOpacity((byte)15);
+	public static final BlockMaterial solid = new GenericBlockMaterial("solid", 1).setHardness(1.f);
+	public static final BlockMaterial unbreakable = new GenericBlockMaterial("Unbreakable", 2).setHardness(100.f);
+	public static final BlockMaterial skybox = new GenericBlockMaterial("Skybox", 3);
 }

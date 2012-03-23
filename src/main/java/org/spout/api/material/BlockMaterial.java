@@ -26,86 +26,200 @@
 package org.spout.api.material;
 
 import org.spout.api.Source;
+import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 
-public interface BlockMaterial extends ItemMaterial {
+public abstract class BlockMaterial extends Material {
 
-	public float getFriction();
+	public static final BlockMaterial AIR = new GenericBlockMaterial("Air", 0).setFriction(0.0F).setHardness(0.0F).setOpacity((byte) 0);
 
-	public BlockMaterial setFriction(float slip);
+	public BlockMaterial(String name, int typeId) {
+		super(name, typeId);
+	}
 
-	public float getHardness();
-
-	public BlockMaterial setHardness(float hardness);
-
-	public byte getLightLevel();
-
-	public BlockMaterial setLightLevel(byte level);
+	public BlockMaterial(String name, int typeId, int data, Material parent) {
+		super(name, typeId, data, parent);
+	}
 
 	/**
-	 * True if no light can pass through this block
+	 * Gets the block at the given id, or null if none found
 	 * 
-	 * @return opacity
+	 * @param id to get
+	 * @return block, or null if none found
 	 */
-	public boolean isOpaque();
-	
+	public static BlockMaterial get(short id) {
+		Material mat = Material.get(id);
+		if (mat instanceof BlockMaterial) {
+			return (BlockMaterial) mat;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the associated block material with it's name. Case-insensitive.
+	 * 
+	 * @param name to lookup
+	 * @return material, or null if none found
+	 */
+	public static BlockMaterial get(String name) {
+		Material mat = Material.get(name);
+		if (mat instanceof BlockMaterial) {
+			return (BlockMaterial) mat;
+		} else {
+			return null;
+		}
+	}
+
+	private final BoundingBox area = new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F);
+	private float hardness = 0F;
+	private float friction = 0F;
+	private byte opacity = 0xF;
+	private byte lightLevel = 0;
+
+	/**
+	 * Gets the friction of this block
+	 * 
+	 * @return friction value
+	 */
+	public float getFriction() {
+		return this.friction;
+	}
+
+	/**
+	 * Sets the friction of this block
+	 * 
+	 * @param slip friction value
+	 * @return this material
+	 */
+	public BlockMaterial setFriction(float slip) {
+		this.friction = slip;
+		return this;
+	}
+
+	/**
+	 * Gets the hardness of this block
+	 * 
+	 * @return hardness value
+	 */
+	public float getHardness() {
+		return this.hardness;
+	}
+
+	/**
+	 * Sets the hardness of this block
+	 * 
+	 * @param hardness hardness value
+	 * @return this material
+	 */
+	public BlockMaterial setHardness(float hardness) {
+		this.hardness = hardness;
+		return this;
+	}
+
+	/**
+	 * Gets the amount of light this block emits
+	 * 
+	 * @return light level
+	 */
+	public byte getLightLevel() {
+		return this.lightLevel;
+	}
+
+	/**
+	 * Sets the amount of light this block emits
+	 * 
+	 * @param level
+	 * @return this material
+	 */
+	public BlockMaterial setLightLevel(byte level) {
+		this.lightLevel = level;
+		return this;
+	}
+
+	/**
+	 * True if this block is a type of liquid
+	 * 
+	 * @return liquidity
+	 */
+	public abstract boolean isLiquid();
+
 	/**
 	 * Gets the amount of light blocked by this block.
 	 * 
 	 * 0xF (15) represents a fully opaque block.
+	 * 
 	 * @return opacity
 	 */
-	public byte getOpacity();
+	public byte getOpacity() {
+		return this.opacity;
+	}
 
 	/**
-	 * Sets the amount of light blocked  by this block.
+	 * Sets the amount of light blocked by this block.
 	 * 
 	 * 0xF (15) represents a fully opaque block.
+	 * 
 	 * @param level of opacity
 	 * @return this material
 	 */
-	public BlockMaterial setOpacity(byte level);
+	public BlockMaterial setOpacity(byte level) {
+		this.opacity = level;
+		return this;
+	}
 
 	/**
 	 * Gets the bounding box area of this material
-	 *
+	 * 
 	 * @return area
 	 */
-	public CollisionVolume getBoundingArea();
+	public CollisionVolume getBoundingArea() {
+		return this.area;
+	}
+
+	/**
+	 * True if this block acts as an obstacle when placing a block on it false
+	 * if not.
+	 * 
+	 * If the block is not an obstacle, placement will replace this block.
+	 * 
+	 * @return if this block acts as a placement obstacle
+	 */
+	public abstract boolean isPlacementObstacle();
 
 	/**
 	 * True if this block requires physic updates when a neighbor block changes,
 	 * false if not.
-	 *
+	 * 
 	 * @return if this block requires physics updates
 	 */
-	public boolean hasPhysics();
+	public abstract boolean hasPhysics();
 
 	/**
 	 * Called when a block adjacent to this material is changed.
-	 *
+	 * 
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
 	 */
-	public void onUpdate(World world, int x, int y, int z);
+	public abstract void onUpdate(World world, int x, int y, int z);
 
 	/**
 	 * Called when this block has been destroyed.
-	 *
+	 * 
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
 	 */
-	public void onDestroy(World world, int x, int y, int z);
-	
+	public abstract void onDestroy(World world, int x, int y, int z);
+
 	/**
 	 * Called when this block is placed.
-	 *
+	 * 
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material
@@ -115,6 +229,7 @@ public interface BlockMaterial extends ItemMaterial {
 	 * @param source source of this placement
 	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source);
-	
+	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source) {
+		return world.setBlockMaterial(x, y, z, this, data, true, source);
+	}
 }

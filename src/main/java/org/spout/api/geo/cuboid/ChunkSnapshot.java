@@ -19,12 +19,12 @@ package org.spout.api.geo.cuboid;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.geo.BlockData;
+import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.util.thread.SnapshotRead;
 
-public abstract class ChunkSnapshot extends Cube implements BlockData {
+public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	/**
 	 * Internal size of a side of a chunk
 	 */

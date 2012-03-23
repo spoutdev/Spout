@@ -20,7 +20,7 @@ package org.spout.api.util;
  * Represents a set of utility functions for squashing and separating primitive datatypes.
  */
 public abstract class HashUtil {
-	
+		
 	/**
 	 * Returns the most significant bits in the long value.
 	 * 
@@ -39,6 +39,19 @@ public abstract class HashUtil {
 	 */
 	public static int longToInt2(long composite) {
 		return (int) (composite & 0xFFFFFFFFL);
+	}
+
+	/**
+	 * Squashes 2 short values into 1 int, with the first value in
+	 * the most significant bits and the second value in the least
+	 * significant bits.
+	 * 
+	 * @param key1 to sqaush
+	 * @param key2 to sqaush
+	 * @return squashed int
+	 */
+	public static int shortToInt(short key1, short key2) {
+		return (int) key1 << 16 | key2 & 0xFFFF;
 	}
 
 	/**
