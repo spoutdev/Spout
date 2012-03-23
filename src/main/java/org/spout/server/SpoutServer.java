@@ -563,7 +563,6 @@ public class SpoutServer extends AsyncManager implements Server {
 		this.whitelist = whitelist;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void updateWhitelist() {
 		List<String> whitelist = SpoutConfiguration.WHITELIST.getStringList();
