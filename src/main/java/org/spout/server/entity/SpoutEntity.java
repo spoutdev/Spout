@@ -93,6 +93,13 @@ public class SpoutEntity implements Entity {
 		this.transform.set(transform);
 
 
+		if (transform != null) {
+			this.chunkLive = transform.getPosition().getWorld().getChunk(transform.getPosition());  	
+			Region newRegion = this.chunkLive.getRegion();
+			EntityManager newEntityManager = ((SpoutRegion) newRegion).getEntityManager();
+			entityManagerLive = newEntityManager;
+		}
+
 		map = new SpoutDatatableMap();
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
