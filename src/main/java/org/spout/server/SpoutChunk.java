@@ -443,7 +443,6 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void unload(boolean save) {
-		checkChunkLoaded();
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
