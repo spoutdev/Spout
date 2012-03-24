@@ -27,6 +27,7 @@ package org.spout.server.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
@@ -43,7 +44,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.math.*;
+import org.spout.api.math.MathHelper;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
@@ -57,8 +60,8 @@ import org.spout.server.datatable.value.SpoutDatatableBool;
 import org.spout.server.datatable.value.SpoutDatatableFloat;
 import org.spout.server.datatable.value.SpoutDatatableInt;
 import org.spout.server.datatable.value.SpoutDatatableObject;
-import org.spout.server.player.SpoutPlayer;
 import org.spout.server.net.SpoutSession;
+import org.spout.server.player.SpoutPlayer;
 
 
 public class SpoutEntity implements Entity {
@@ -75,6 +78,7 @@ public class SpoutEntity implements Entity {
 	private EntityManager entityManagerLive;
 	private Controller controller = null;
 	private Controller controllerLive = null;
+	// TODO - shouldn't live be atomic reference?
 	private Chunk chunk;
 	private Chunk chunkLive;
 	private boolean justSpawned = true;
@@ -85,7 +89,8 @@ public class SpoutEntity implements Entity {
 	Model model;
 	CollisionModel collision;
 	SpoutDatatableMap map;
-	boolean observer = false;
+	private boolean observer = false;
+	private AtomicBoolean observerLive = new AtomicBoolean(false);
 	Thread owningThread = null;
 	float pitch, yaw, roll;
 
@@ -497,20 +502,39 @@ public class SpoutEntity implements Entity {
 				entityManagerLive.allocate(this);
 			}
 		}
+
 		if (chunkLive != chunk) {
 			if (chunkLive != null) {
 				((SpoutChunk) chunkLive).addEntity(this);
+				if (observer) {
+					((SpoutChunk) chunkLive).refreshObserver(this);
+				}
 			}
 			if (chunk != null && chunk.isLoaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
+				if (observer) {
+					((SpoutChunk) chunk).removeObserver(this);
+				}
 			}
 			if (chunkLive == null) {
 				if (chunk != null && chunk.isLoaded()) {
 					((SpoutChunk) chunk).removeEntity(this);
+					if (observer) {
+						((SpoutChunk) chunk).removeObserver(this);
+					}
 				}
 				if (entityManagerLive != null) {
 					entityManagerLive.deallocate(this);
 				}
+			}
+		}
+		
+		if (observerLive.get() != observer) {
+			observer = !observer;
+			if (observer) {
+				((SpoutChunk)chunkLive).refreshObserver(this);
+			} else {
+				((SpoutChunk)chunkLive).removeObserver(this);
 			}
 		}
 	}
@@ -688,14 +712,20 @@ public class SpoutEntity implements Entity {
 	}
 
 
+	// TODO - needs to make this handle mobile observers
 	@Override
 	public void setObserver(boolean obs) {
-		this.observer = obs;
+		observerLive.set(obs);
 	}
 
 	@Override
 	public boolean isObserver() {
 		return observer;
+	}
+	
+	@Override
+	public boolean isObserverLive() {
+		return observerLive.get();
 	}
 
 	public void setOwningThread(Thread thread){
