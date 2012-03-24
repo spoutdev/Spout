@@ -206,6 +206,16 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public boolean isObserver();
+	
+	/**
+	 * Tells whether or not the entity is an Observer.
+	 * 
+	 * an entity that is an observer will keep chunks loaded in memory.
+	 * 
+	 * @return true if the entity is an observer, false if not
+	 */
+	@LiveRead
+	public boolean isObserverLive();
 
 
 	/**
