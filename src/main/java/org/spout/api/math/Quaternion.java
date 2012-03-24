@@ -128,6 +128,22 @@ public class Quaternion implements Cloneable{
 	public float getW() {
 		return w;
 	}
+	
+	
+	public float getPitch(){
+		return getAxisAngles().getX();
+	
+	}
+	public float getYaw(){
+		return getAxisAngles().getY();
+	
+	}
+	public float getRoll(){
+		return getAxisAngles().getZ();
+	
+	}
+
+
 
 	/**
 	 * Returns the length squared of the quaternion

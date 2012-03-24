@@ -199,8 +199,8 @@ public class QuaternionTest {
 		float ang = 20;
 		r = new Quaternion(ang, new Vector3(1, 0, 0));
 		res = r.getAxisAngles();
-		if (res.getX() - ang >= eps) {
-			fail("Expected angle" + ang + ", got " + res.getX());
+		if (res.getZ() - ang >= eps) {
+			fail("Expected angle" + ang + ", got " + res.getZ());
 		}
 
 		ang = 40;
@@ -213,8 +213,8 @@ public class QuaternionTest {
 		ang = 140;
 		r = new Quaternion(ang, new Vector3(0, 0, 1));
 		res = r.getAxisAngles();
-		if (Math.abs(res.getZ() - ang) >= eps) {
-			fail("Expected angle " + ang + ", got " + res.getZ());
+		if (Math.abs(res.getX() - ang) >= eps) {
+			fail("Expected angle " + ang + ", got " + res.getX());
 		}
 	}
 }
