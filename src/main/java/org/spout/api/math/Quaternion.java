@@ -299,6 +299,14 @@ public class Quaternion {
 		return new Quaternion(x, y, z, w);
 	}
 
+	public static Quaternion rotation(float pitch, float yaw, float roll) {
+		final Quaternion qpitch = new Quaternion(pitch, Vector3.RIGHT);
+		final Quaternion qyaw = new Quaternion(yaw, Vector3.UP);
+		final Quaternion qroll = new Quaternion(roll, Vector3.FORWARD);
+
+		return qyaw.multiply(qpitch).multiply(qroll);
+	}
+
 	/**
 	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
@@ -339,13 +347,21 @@ public class Quaternion {
 	 * @return axis angles
 	 */
 	public static Vector3 getAxisAngles(Quaternion a) {
-		//Forward is 1,0,0
-		float yaw = (float) Math.toDegrees(Math.atan2(2 * (a.getX() * a.getY() + a.getZ() * a.getW()), 1 - 2 * (a.getY() * a.getY() + a.getZ() * a.getZ())));
-		//According to this calculation, {0, 1, 0} is down, so we need to multiply by -1
-		float pitch = -1 * (float) Math.toDegrees(Math.asin(2 * (a.getX() * a.getZ() - a.getW() * a.getY())));
-		//Our left and right are swapped from this calculation, so we need to subtract the angle from 180.
-		float roll = 180 - (float) Math.toDegrees(Math.atan2(2 * (a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW())));
+		// Map to Euler angles
+		final float q0 = a.w;
+		final float q1 = a.z; // roll
+		final float q2 = a.x; // pitch
+		final float q3 = a.y; // yaw
 
-		return new Vector3(yaw, pitch, roll);
+		final double r1 = Math.atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
+		final double r2 = Math.asin(2*(q0*q2-q3*q1));
+		final double r3 = Math.atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3));
+
+		// ...and back to Tait-Bryan
+		final float roll = (float) Math.toDegrees(r1);
+		final float pitch = (float) Math.toDegrees(r2);
+		final float yaw = (float) Math.toDegrees(r3);
+
+		return new Vector3(pitch, yaw, roll);
 	}
 }

@@ -25,7 +25,7 @@
  */
 package org.spout.api.math;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -194,27 +194,26 @@ public class QuaternionTest {
 
 	@Test
 	public void testGetAxisAngles() {
-		Quaternion r;
-		Vector3 res;
-		float ang = 20;
-		r = new Quaternion(ang, new Vector3(1, 0, 0));
-		res = r.getAxisAngles();
-		if (res.getZ() - ang >= eps) {
-			fail("Expected angle" + ang + ", got " + res.getZ());
-		}
+		final float pitch = 20;
+		final Quaternion qpitch = new Quaternion(pitch, Vector3.RIGHT);
+		assertEquals(qpitch.getPitch(), pitch, eps);
 
-		ang = 40;
-		r = new Quaternion(ang, new Vector3(0, 1, 0));
-		res = r.getAxisAngles();
-		if (Math.abs(res.getY() - ang) >= eps) {
-			fail("Expected angle" + ang + ", got " + res.getY());
-		}
+		final float yaw = 40;
+		final Quaternion qyaw = new Quaternion(yaw, Vector3.UP);
+		assertEquals(qyaw.getYaw(), yaw, eps);
 
-		ang = 140;
-		r = new Quaternion(ang, new Vector3(0, 0, 1));
-		res = r.getAxisAngles();
-		if (Math.abs(res.getX() - ang) >= eps) {
-			fail("Expected angle " + ang + ", got " + res.getX());
-		}
+		final float roll = 140;
+		final Quaternion qroll = new Quaternion(roll, Vector3.FORWARD);
+		assertEquals(qroll.getRoll(), roll, eps);
+
+		final Quaternion q = qyaw.multiply(qpitch).multiply(qroll);
+		assertEquals(q.getPitch(), pitch, eps);
+		assertEquals(q.getYaw(), yaw, eps);
+		assertEquals(q.getRoll(), roll, eps);
+
+		final Quaternion q2 = Quaternion.rotation(pitch, yaw, roll);
+		assertEquals(q2.getPitch(), pitch, eps);
+		assertEquals(q2.getYaw(), yaw, eps);
+		assertEquals(q2.getRoll(), roll, eps);
 	}
 }
