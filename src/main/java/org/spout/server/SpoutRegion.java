@@ -71,17 +71,10 @@ public class SpoutRegion extends Region {
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
 
 	/**
-	 * Region coordinates of the lower, left start of the region. Add
-	 * {@link Region#REGION_SIZE} to the coords to get the upper right end of
-	 * the region.
-	 */
-	private final int x, y, z;
-
-	/**
 	 * The maximum number of chunks that will be processed for population each tick.
 	 */
 	private static final int POPULATE_PER_TICK = 20;
-	
+
 	/**
 	 * The maximum number of chunks that will be processed for lighting updates each tick.
 	 */
@@ -125,7 +118,7 @@ public class SpoutRegion extends Region {
 	private final int blockCoordMask;
 
 	private final int blockShifts;
-	
+
 	/**
 	 * A queue of chunks that have columns of light that need to be recalculated
 	 */
@@ -145,15 +138,12 @@ public class SpoutRegion extends Region {
 	}
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, boolean load) {
-		super(world, x, y, z);
-		this.x = (int) Math.floor(x);
-		this.y = (int) Math.floor(y);
-		this.z = (int) Math.floor(z);
+		super(world, x * Region.EDGE, y * Region.EDGE, z * Region.EDGE);
 		this.source = source;
 		blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
 		blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
 		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getServer());
-		
+
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
@@ -187,9 +177,9 @@ public class SpoutRegion extends Region {
 			boolean success = false;
 
 			while (!success) {
-				int cx = (this.x << Region.REGION_SIZE_BITS) + x;
-				int cy = (this.y << Region.REGION_SIZE_BITS) + y;
-				int cz = (this.z << Region.REGION_SIZE_BITS) + z;
+				int cx = (getX() << Region.REGION_SIZE_BITS) + x;
+				int cy = (getY() << Region.REGION_SIZE_BITS) + y;
+				int cz = (getZ() << Region.REGION_SIZE_BITS) + z;
 
 				CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
 
@@ -403,7 +393,7 @@ public class SpoutRegion extends Region {
 			populationQueue.add(c);
 		}
 	}
-	
+
 	protected void queueLighting(SpoutChunk c) {
 		if (!lightingQueue.contains(c)) {
 			lightingQueue.add(c);
@@ -480,11 +470,11 @@ public class SpoutRegion extends Region {
 						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
 						if (material.hasPhysics()) {
 							//switch region block coords (0-255) to world block coords
-							material.onUpdate(world, x + (this.x << blockShifts), y + (this.y << blockShifts), z + (this.z << blockShifts));
+							material.onUpdate(world, x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts));
 						}
 					}
 				}
-				
+
 				for(int i = 0; i < LIGHT_PER_TICK; i++) {
 					SpoutChunk toLight = lightingQueue.poll();
 					if (toLight == null) break;
@@ -564,11 +554,11 @@ public class SpoutRegion extends Region {
 							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
 						} catch (Exception e) {
 							Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-	
+
 						}
 					}
 				}
-	
+
 			} else {
 				synchronizer.sendChunk(chunk);
 			}
@@ -670,9 +660,9 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public String toString() {
-		return "SpoutRegion{ ( " + x + ", " + y + ", " + z + "), World: " + this.getWorld() + "}";
+		return "SpoutRegion{ ( " + getX() + ", " + getY() + ", " + getZ() + "), World: " + this.getWorld() + "}";
 	}
-	
+
 	public Thread getExceutionThread(){
 
 		return ((ThreadAsyncExecutor)manager.getExecutor());
