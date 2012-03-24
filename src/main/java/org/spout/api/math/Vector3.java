@@ -40,9 +40,9 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 */
 	public final static Vector3 UNIT_X = new Vector3(1, 0, 0);
 	/**
-	 * Unit Vector facing Forward. (1, 0, 0)
+	 * Unit Vector pointing Right. (1, 0, 0)
 	 */
-	public final static Vector3 Forward = UNIT_X;
+	public final static Vector3 Right = UNIT_X;
 	/**
 	 * Unit Vector in the Y direction. (0, 1, 0)
 	 */
@@ -55,10 +55,11 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * Unit Vector in the Z direction. (0, 0, 1)
 	 */
 	public final static Vector3 UNIT_Z = new Vector3(0, 0, 1);
+
 	/**
-	 * Unit Vector pointing Right. (0, 0, 1)
+	 * Unit Vector facing Forward. (0, 0, 1)
 	 */
-	public final static Vector3 Right = UNIT_Z;
+	public final static Vector3 Forward = UNIT_Z;
 	/**
 	 * Unit Vector with all elements set to 1. (1, 1, 1)
 	 */

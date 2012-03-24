@@ -307,9 +307,9 @@ public class Quaternion implements Cloneable{
 	 * Returns the angles, in degrees, about each axis of this quaternion stored
 	 * in a Vector3 <br/> <br/>
 	 *
-	 * vect.X = Rotation about the X axis (Roll) <br/>
+	 * vect.X = Rotation about the X axis (Pitch) <br/>
 	 * vect.Y = Rotation about the Y axis (Yaw) <br/>
-	 * vect.Z = Rotation about the Z axis (Pitch) <br/>
+	 * vect.Z = Rotation about the Z axis (Roll) <br/>
 	 *
 	 * @param a
 	 * @return axis angles
@@ -322,6 +322,6 @@ public class Quaternion implements Cloneable{
 		//Our left and right are swapped from this calculation, so we need to subtract the angle from 180.
 		float roll = 180 - (float) Math.toDegrees(Math.atan2(2 * (a.getX() * a.getW() + a.getY() * a.getZ()), 1 - 2 * (a.getZ() * a.getZ() + a.getW() * a.getW())));
 
-		return new Vector3(roll, pitch, yaw);
+		return new Vector3(yaw, pitch, roll);
 	}
 }
