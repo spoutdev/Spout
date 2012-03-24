@@ -108,4 +108,8 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	public void setBiome(Vector3 loc, BiomeType type) {
 		biomes.setBiome(loc, type);
 	}
+	
+	public int indexOf(BiomeType biome) {
+		return biomes.indexOf(biome);
+	}
 }
