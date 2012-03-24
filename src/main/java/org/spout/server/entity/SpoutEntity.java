@@ -177,10 +177,11 @@ public class SpoutEntity implements Entity {
 				if (collision.getZ() != 0F) {
 					offset = new Vector3(offset.getX(), offset.getY(), collision.getZ());
 				}
+				
+				this.setPosition(location.add(offset));
 			}
 		}
 
-//		this.setPosition(location.add(offset));
 		//Check to see if we should fire off a Move event
 	}
 
