@@ -51,11 +51,15 @@ public class Vector3Test {
 		testValue(Vector3.ONE, 1, 1, 1);
 		testValue(Vector3.ZERO, 0, 0, 0);
 		testValue(Vector3.UNIT_X, 1, 0, 0);
-		testValue(Vector3.Forward, Vector3.UNIT_Z);
+		testValue(Vector3.FORWARD, Vector3.UNIT_Z);
 		testValue(Vector3.UNIT_Y, 0, 1, 0);
-		testValue(Vector3.Up, Vector3.UNIT_Y);
+		testValue(Vector3.UP, Vector3.UNIT_Y);
 		testValue(Vector3.UNIT_Z, 0, 0, 1);
-		testValue(Vector3.Right, Vector3.UNIT_X);
+		testValue(Vector3.RIGHT, Vector3.UNIT_X);
+
+		assertEquals(Vector3.RIGHT.getRight(), 1, 0);
+		assertEquals(Vector3.UP.getUp(), 1, 0);
+		assertEquals(Vector3.FORWARD.getForward(), 1, 0);
 	}
 
 	@Test

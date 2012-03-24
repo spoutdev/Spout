@@ -37,7 +37,22 @@ public class Quaternion implements Cloneable{
 	/**
 	 * Represents no rotation
 	 */
-	public static Quaternion identity = new Quaternion(0, 0, 0, 1);
+	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1);
+
+	/**
+	 * Represents 90 degrees rotation around the x axis
+	 */
+	public static final Quaternion UNIT_X = new Quaternion(1, 0, 0, 0);
+
+	/**
+	 * Represents 90 degrees rotation around the < axis
+	 */
+	public static final Quaternion UNIT_Y = new Quaternion(0, 1, 0, 0);
+
+	/**
+	 * Represents 90 degrees rotation around the z axis
+	 */
+	public static final Quaternion UNIT_Z = new Quaternion(0, 0, 1, 0);
 
 	/**
 	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a

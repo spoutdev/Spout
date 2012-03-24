@@ -33,7 +33,7 @@ import org.spout.api.util.thread.Threadsafe;
 
 public class Transform {
 	private Point position = Point.invalid;
-	private Quaternion rotation = Quaternion.identity;
+	private Quaternion rotation = Quaternion.IDENTITY;
 	private Vector3 scale = Vector3.ONE;
 
 	private Transform parent;
