@@ -33,7 +33,7 @@ import org.spout.api.material.block.BlockFace;
 
 public abstract class BlockMaterial extends Material {
 
-	public static final BlockMaterial AIR = new GenericBlockMaterial("Air", 0).setFriction(0.0F).setHardness(0.0F).setOpacity((byte) 0);
+	public static final BlockMaterial AIR = register(new GenericBlockMaterial("Air", 0).setFriction(0.0F).setHardness(0.0F).setOpacity((byte) 0));
 
 	public BlockMaterial(String name, int typeId) {
 		super(name, typeId);

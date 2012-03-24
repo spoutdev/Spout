@@ -120,15 +120,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			return null;
 		}
 	}
-	
-	/**
-	 * Registers this material in the material lookup service
-	 */
-	public <T extends Material> T register() {
-		T material = register((T) this);
-		
-		return material;
-	}
 
 	/**
 	 * Registers the sub material for this material
