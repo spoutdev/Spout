@@ -48,27 +48,27 @@ public class Transform {
 	}
 
 	public Point getPosition() {
-		return position.clone();
+		return position;
 	}
 
 	public void setPosition(Point position) {
-		this.position = position.clone();
+		this.position = position;
 	}
 
 	public Quaternion getRotation() {
-		return rotation.clone();
+		return rotation;
 	}
 
 	public void setRotation(Quaternion rotation) {
-		this.rotation = rotation.clone();
+		this.rotation = rotation;
 	}
 
 	public Vector3 getScale() {
-		return scale.clone();
+		return scale;
 	}
 
 	public void setScale(Vector3 scale) {
-		this.scale = scale.clone();
+		this.scale = scale;
 	}
 
 	/**

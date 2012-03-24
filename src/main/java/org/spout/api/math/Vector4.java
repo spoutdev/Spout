@@ -33,7 +33,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Note, this is the Immutable form of Vector4. All operations will construct a
  * new Vector4.
  */
-public class Vector4 implements Comparable<Vector4>, Cloneable {
+public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Represents the Zero vector (0, 0, 0, 0)
 	 */
@@ -523,11 +523,6 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	 */
 	public Vector4 normalize() {
 		return Vector4.normalize(this);
-	}
-
-	@Override
-	public Vector4 clone() {
-		return new Vector4(x, y, z, w);
 	}
 
 	/**

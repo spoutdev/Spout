@@ -108,7 +108,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		if (currentPosition != null) {
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
-				lastChunkCheck = currentPosition.clone();
+				lastChunkCheck = currentPosition;
 			}
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {

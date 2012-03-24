@@ -34,7 +34,7 @@ import org.spout.api.math.Vector3;
  * Represents a position in a World
  */
 public class Point extends Vector3 {
-	protected World world;
+	protected final World world;
 	public static final Point invalid = new Point(null, 0, 0, 0);
 
 	public Point(Point point) {
@@ -172,9 +172,5 @@ public class Point extends Vector3 {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
-	}
-
-	public Point clone() {
-		return new Point(this);
 	}
 }

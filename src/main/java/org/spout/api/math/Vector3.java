@@ -30,7 +30,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 /**
  * Represents a 3d vector.
  */
-public class Vector3 implements Comparable<Vector3>, Cloneable {
+public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
@@ -593,11 +593,6 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";
-	}
-
-	@Override
-	public Vector3 clone() {
-		return new Vector3(x, y, z);
 	}
 
 	/**
