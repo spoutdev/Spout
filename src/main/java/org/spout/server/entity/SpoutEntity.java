@@ -65,7 +65,7 @@ public class SpoutEntity implements Entity {
 
 	private static final long serialVersionUID = 1L;
 	public final static int NOTSPAWNEDID = -1;
-	private final static Transform DEAD = new Transform(Point.invalid, Quaternion.identity, Vector3.ZERO);
+	private final static Transform DEAD = new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO);
 	// TODO - needs to have a world based version too?
 	public static final StringMap entityStringMap = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
@@ -117,7 +117,7 @@ public class SpoutEntity implements Entity {
 	}
 
 	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
-		this(server, new Transform(point, Quaternion.identity, Vector3.ONE), controller);
+		this(server, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
 	}
 
 	/**
