@@ -26,11 +26,8 @@
 package org.spout.api.entity;
 
 public abstract class EntityComponent {
-	
 	private Entity parent;
 
-
-	
 	/**
 	 * Called when this controller is attached to an entity.
 	 * @param e entity this controller will be attached to.
@@ -38,17 +35,18 @@ public abstract class EntityComponent {
 	public void attachToEntity(Entity e) {
 		this.parent = e;
 	}
+
 	/**
 	 * Gets the parent Entity associated with this controller.
 	 *
 	 * @return parent Entity
 	 */
-	public Entity getParent(){ 
-		return this.parent; 
+	public Entity getParent() {
+		return this.parent;
 	}
-	
+
 	public abstract void onTick(float dt);
-	
+
 	public abstract void onAttached();
 
 	/** 

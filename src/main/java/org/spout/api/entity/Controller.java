@@ -27,15 +27,14 @@ package org.spout.api.entity;
 
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.Inventory;
-import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.protocol.EntityProtocol;
-import org.spout.api.protocol.EntityProtocolStore;
-import org.spout.api.util.StringMap;
 
 public abstract class Controller extends EntityComponent {
-	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
-	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
-	
+	private final ControllerType type;
+
+	protected Controller(ControllerType type) {
+		this.type = type;
+	}
+
 	/**
 	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
 	 * Occurs before the Pre-Snapshot of the tick.
@@ -56,29 +55,6 @@ public abstract class Controller extends EntityComponent {
 		return new Inventory(size);
 	}
 
-	public EntityProtocol getEntityProtocol(int protocolId) {
-		return entityProtocolStore.getEntityProtocol(this.getClass(), protocolId);
-	}
-
-	/**
-	 *
-	 * @param controller
-	 * @param protocolId
-	 * @param protocol
-	 */
-	public static void setEntityProtocol(Class<? extends Controller> controller, int protocolId, EntityProtocol protocol) {
-		entityProtocolStore.setEntityProtocol(controller, protocolId, protocol);
-	}
-
-	/**
-	 *
-	 * @param protocolName
-	 * @return
-	 */
-	public static int getProtocolId(String protocolName) {
-		return protocolMap.register(protocolName);
-	}
-
 	/**
 	 * TODO: These methods should be given the appropriate annotation that makes it clear they shouldn't be used by plugins.
 	 */
@@ -96,14 +72,16 @@ public abstract class Controller extends EntityComponent {
 	 */
 	public void finalizeTick() {
 	}
-	
+
 	public void onCollide(Entity other) {
-		
+
 	}
-	
-	public void onCollide(Block other){
-		
+
+	public void onCollide(Block other) {
+
 	}
-	
-	
+
+	public ControllerType getType() {
+		return type;
+	}
 }
