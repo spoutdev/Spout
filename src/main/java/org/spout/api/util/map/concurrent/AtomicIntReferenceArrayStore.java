@@ -356,8 +356,10 @@ public final class AtomicIntReferenceArrayStore<T> {
 					unlock(lockedIndexes);
 					return false;
 				} else {
-					fails++;
 					seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
+					if (seq == DatatableSequenceNumber.UNSTABLE) {
+						fails++;
+					}
 				}
 			} while (seq == DatatableSequenceNumber.UNSTABLE);
 			lockedIndexes++;
@@ -390,10 +392,11 @@ public final class AtomicIntReferenceArrayStore<T> {
 		boolean locked = false;
 		while (needsResize() && !(locked = tryLock(MAX_FAIL_THRESHOLD)))
 			;
-
+		
 		if (!locked) {
 			return;
 		}
+		int lockedIndexes = length.get();
 		try {
 			// Calculate new length
 			int newLength = length.get() << 1;
@@ -436,7 +439,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				}
 			}
 		} finally {
-			unlock();
+			unlock(lockedIndexes);
 		}
 
 	}
