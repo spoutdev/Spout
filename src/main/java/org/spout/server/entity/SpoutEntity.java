@@ -124,9 +124,6 @@ public class SpoutEntity implements Entity {
 	 * @param dt milliseconds since the last tick
 	 */
 	public void onTick(float dt) {
-		if (health.get() <= 0) {
-			kill();
-		}
 		lastTransform = transform.copy();
 		Vector3 ang = this.transform.getRotation().getAxisAngles();
 		pitch = ang.getZ();
