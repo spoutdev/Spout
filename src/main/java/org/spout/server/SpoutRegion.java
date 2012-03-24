@@ -577,6 +577,8 @@ public class SpoutRegion extends Region {
 
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
+		
+		long worldAge = getWorld().getAge();
 
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
@@ -594,6 +596,10 @@ public class SpoutRegion extends Region {
 						spoutChunk.resetDirtyArrays();
 					}
 					spoutChunk.preSnapshot();
+					
+					if (spoutChunk.isReapable(worldAge)) {
+						spoutChunk.unload(true);
+					}
 
 				}
 			}

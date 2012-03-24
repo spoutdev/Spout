@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -62,6 +63,11 @@ import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
 
+	/**
+	 * Time in ms between chunk reaper unload checks
+	 */
+	private static final long UNLOAD_PERIOD = 30000;
+	
 	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.
@@ -124,7 +130,9 @@ public class SpoutChunk extends Chunk {
 	
 	private final SpoutColumn column;
 	
-	private final AtomicBoolean columnRegistered;
+	private final AtomicBoolean columnRegistered = new AtomicBoolean(true);
+	
+	private final AtomicLong lastUnloadCheck = new AtomicLong();
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
@@ -145,7 +153,8 @@ public class SpoutChunk extends Chunk {
 		blockLightQueue  = new TByteHashSet();
 		column = world.getColumn(((int)x) << Chunk.CHUNK_SIZE_BITS, ((int)z) << Chunk.CHUNK_SIZE_BITS, true);
 		column.registerChunk();
-		columnRegistered = new AtomicBoolean(true);
+		columnRegistered.set(true);
+		lastUnloadCheck.set(world.getAge());
 	}
 
 	public SpoutWorld getWorld() {
@@ -849,6 +858,19 @@ public class SpoutChunk extends Chunk {
 			column.deregisterChunk();
 		} else {
 			throw new IllegalStateException("Chunk at " + getX() + ", " + getZ() + " deregistered from column more than once");
+		}
+	}
+	
+	public boolean isReapable() {
+		return isReapable(getWorld().getAge());
+	}
+	
+	public boolean isReapable(long worldAge) {
+		if (lastUnloadCheck.get() + UNLOAD_PERIOD < worldAge) {
+			lastUnloadCheck.set(worldAge);
+			return this.observers.getLive().size() <= 0  && this.observers.get().size() <= 0;
+		} else {
+			return false;
 		}
 	}
 

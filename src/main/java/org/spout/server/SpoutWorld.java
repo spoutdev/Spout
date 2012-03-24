@@ -296,6 +296,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
+		if (stage == 0) {
+			age.set(age.get() + delta);
+		}
 		switch (stage) {
 			case 0: {
 				float dt = delta / 1000.f;
