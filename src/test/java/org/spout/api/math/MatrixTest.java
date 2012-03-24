@@ -111,7 +111,7 @@ public class MatrixTest {
 
 		//LookAt Test
 		Vector3 center = new Vector3(5, 0, 5);
-		Vector3 up = Vector3.Up;
+		Vector3 up = Vector3.UP;
 		Vector3 at = Vector3.ZERO;
 
 		Vector3 f = center.subtract(at).normalize();
@@ -216,7 +216,7 @@ public class MatrixTest {
 		Matrix m;
 		Quaternion rot;
 
-		rot = Quaternion.identity;
+		rot = Quaternion.IDENTITY;
 		m = Matrix.rotate(rot);
 
 		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};

@@ -38,11 +38,11 @@ public class Plane implements CollisionVolume {
 	}
 
 	public Plane(Vector3 point) {
-		this(point, Vector3.Up);
+		this(point, Vector3.UP);
 	}
 
 	public Plane() {
-		this(Vector3.ZERO, Vector3.Up);
+		this(Vector3.ZERO, Vector3.UP);
 	}
 
 	public float distance(Vector3 b) {

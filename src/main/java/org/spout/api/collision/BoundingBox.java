@@ -102,8 +102,8 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox set(Vector3 min, Vector3 max) {
-		this.min = min.clone();
-		this.max = max.clone();
+		this.min = min;
+		this.max = max;
 		return this;
 	}
 	
