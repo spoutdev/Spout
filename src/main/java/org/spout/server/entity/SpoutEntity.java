@@ -173,7 +173,6 @@ public class SpoutEntity implements Entity {
 			Vector3 collision = this.collision.resolve(box);
 			if (collision != null) {
 				collision = collision.subtract(location);
-				System.out.println("Collision: " + collision);
 				
 				if (collision.getX() != 0F) {
 					offset = new Vector3(collision.getX(), offset.getY(), offset.getZ());
