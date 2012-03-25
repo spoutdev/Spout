@@ -28,7 +28,7 @@ package org.spout.api.collision;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 
-public class Ray implements CollisionVolume {
+public class Ray extends CollisionVolume {
 	/**
 	 * Maximum length for a ray. Calculated as BlockLength*BlocksPerChunk* 10
 	 * chunks

@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class BoundingSphere implements CollisionVolume {
+public class BoundingSphere extends CollisionVolume {
 	Vector3 center;
 
 	double radius;

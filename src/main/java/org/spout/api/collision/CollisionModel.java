@@ -33,7 +33,7 @@ import org.spout.api.math.Vector3;
  * Defines a Heirachial Collision Volume
  *
  */
-public class CollisionModel implements CollisionVolume {
+public class CollisionModel extends CollisionVolume {
 	CollisionVolume area;
 	
 	ArrayList<CollisionModel> children = new ArrayList<CollisionModel>();
@@ -49,7 +49,7 @@ public class CollisionModel implements CollisionVolume {
 		if(base instanceof CollisionModel) throw new IllegalArgumentException("Cannot create a collision model with a collision model as an area");
 		area = base;
 	}
-	
+		
 	
 	public void addChild(CollisionVolume child){
 		if(child instanceof CollisionModel){

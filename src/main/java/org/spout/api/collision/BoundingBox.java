@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class BoundingBox implements CollisionVolume, Cloneable {
+public class BoundingBox extends CollisionVolume implements Cloneable {
 	protected Vector3 min;
 	protected Vector3 max;
 

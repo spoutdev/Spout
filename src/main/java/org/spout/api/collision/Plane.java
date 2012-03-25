@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class Plane implements CollisionVolume {
+public class Plane extends CollisionVolume {
 	Vector3 point;
 
 	Vector3 normal;
