@@ -38,6 +38,7 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -186,8 +187,8 @@ public class SpoutEntity implements Entity {
 				
 				this.setPosition(location.add(offset));
 				if(this.getController() != null){
-					Material m = this.transform.getPosition().getWorld().getBlockMaterial((int)box.getPosition().getX(), (int)box.getPosition().getY(), (int)box.getPosition().getZ());
-					this.getController().onCollide(m);
+					Block b = this.transform.getPosition().getWorld().getBlock((int) box.getPosition().getX(), (int) box.getPosition().getY(), (int) box.getPosition().getZ());
+					this.getController().onCollide(b.clone());
 				}
 			}
 		}
