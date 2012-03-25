@@ -27,6 +27,7 @@ package org.spout.api.entity;
 
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.material.Material;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.util.StringMap;
@@ -119,4 +120,14 @@ public abstract class Controller implements EntityComponent {
 	 */
 	public void finalizeTick() {
 	}
+	
+	public void onCollide(Entity other) {
+		
+	}
+	
+	public void onCollide(Material other){
+		
+	}
+	
+	
 }
