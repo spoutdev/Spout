@@ -74,6 +74,11 @@ public class SpoutRegion extends Region {
 	 * The maximum number of chunks that will be processed for population each tick.
 	 */
 	private static final int POPULATE_PER_TICK = 20;
+	
+	/**
+	 * The maximum number of chunks that will be reaped by the chunk reaper each tick.
+	 */
+	private static final int REAP_PER_TICK = 20;
 
 	/**
 	 * The maximum number of chunks that will be processed for lighting updates each tick.
@@ -529,12 +534,21 @@ public class SpoutRegion extends Region {
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
+		int reaped = 0;
+		
+		long worldAge = getWorld().getAge();
+		
 		for (int dx = 0; dx < Region.REGION_SIZE && !chunkCompressed; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE && !chunkCompressed; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE && !chunkCompressed; dz++) {
 					Chunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
 						chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
+						
+						if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
+							((SpoutChunk) chunk).unload(true);
+							reaped++;
+						}
 					}
 				}
 			}
@@ -569,8 +583,6 @@ public class SpoutRegion extends Region {
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
 		
-		long worldAge = getWorld().getAge();
-
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
@@ -587,11 +599,6 @@ public class SpoutRegion extends Region {
 						spoutChunk.resetDirtyArrays();
 					}
 					spoutChunk.preSnapshot();
-					
-					if (spoutChunk.isReapable(worldAge)) {
-						spoutChunk.unload(true);
-					}
-
 				}
 			}
 		}
