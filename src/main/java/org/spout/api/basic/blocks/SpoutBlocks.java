@@ -33,4 +33,5 @@ public final class SpoutBlocks {
 	public static final BlockMaterial solid = new GenericBlockMaterial("solid", 1).setHardness(1.f);
 	public static final BlockMaterial unbreakable = new GenericBlockMaterial("Unbreakable", 2).setHardness(100.f);
 	public static final BlockMaterial skybox = new GenericBlockMaterial("Skybox", 3);
+	public static final BlockMaterial noid = new GenericBlockMaterial("Missing Plugin", 4).setHardness((100.f));
 }
