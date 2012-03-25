@@ -44,6 +44,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.material.Material;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -168,6 +169,7 @@ public class SpoutEntity implements Entity {
 
 		Vector3 offset = this.lastTransform.getPosition().subtract(location);
 		for (CollisionVolume box : colliding) {
+		
 			Vector3 collision = this.collision.resolve(box);
 			if (collision != null) {
 				collision = collision.subtract(location);
@@ -184,6 +186,10 @@ public class SpoutEntity implements Entity {
 				}
 				
 				this.setPosition(location.add(offset));
+				if(this.getController() != null){
+					Material m = this.transform.getPosition().getWorld().getBlockMaterial((int)box.getPosition().getX(), (int)box.getPosition().getY(), (int)box.getPosition().getZ());
+					this.getController().onCollide(m);
+				}
 			}
 		}
 
