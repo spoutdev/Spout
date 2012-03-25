@@ -106,7 +106,11 @@ public class ItemStack implements MaterialContainer {
 	 * @return the aux data
 	 */
 	public List<Tag> getAuxData() {
-		return new ArrayList<Tag>(auxData);
+		if (auxData == null) {
+			return null;
+		} else {
+			return new ArrayList<Tag>(auxData);
+		}
 	}
 
 	/**
