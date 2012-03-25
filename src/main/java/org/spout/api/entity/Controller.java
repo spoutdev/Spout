@@ -25,16 +25,12 @@
  */
 package org.spout.api.entity;
 
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.material.Material;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.util.StringMap;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public abstract class Controller implements EntityComponent {
 	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
@@ -125,7 +121,7 @@ public abstract class Controller implements EntityComponent {
 		
 	}
 	
-	public void onCollide(Material other){
+	public void onCollide(Block other){
 		
 	}
 	
