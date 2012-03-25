@@ -35,46 +35,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class Controller {
+public abstract class Controller implements EntityComponent {
 	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
 	private Entity parent;
 
-	/**
-	 * Called when this controller has been attached to an entity. Occurs in stage 1 of the tick.
-	 */
-	public abstract void onAttached();
 
-	private List<EntityAction<Controller>> activeActions = new ArrayList<EntityAction<Controller>>();
-
-	@SuppressWarnings("unchecked")
-	public void registerAction(EntityAction<?> ai) {
-		activeActions.add((EntityAction<Controller>) ai);
-	}
-
-	public void unregisterAction(Class<? extends EntityAction<?>> type) {
-		for (Iterator<EntityAction<Controller>> i = activeActions.iterator(); i.hasNext();) {
-			if (type.isAssignableFrom(i.next().getClass())) {
-				i.remove();
-			}
-		}
-	}
-
-	/**
-	 * Called for each tick this controller isn't detached.
-	 * @param dt the number of ticks since the prior call of onTick.
-	 */
-	public void onTick(float dt) {
-		if (parent == null || parent.getWorld() == null) {
-			return;
-		}
-		for (EntityAction<Controller> ai : activeActions) {
-			if (ai.shouldRun(parent, this)) {
-				ai.run(parent, this);
-			}
-		}
-	}
-
+	
 	/**
 	 * Called when this controller is attached to an entity.
 	 * @param e entity this controller will be attached to.
