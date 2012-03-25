@@ -30,7 +30,7 @@ public abstract class ActionController extends Controller {
 		}
 		for (EntityAction<Controller> ai : activeActions) {
 			if (ai.shouldRun(getParent(), this)) {
-				ai.run(getParent(), this);
+				ai.run(getParent(), this, dt);
 			}
 		}
 		
