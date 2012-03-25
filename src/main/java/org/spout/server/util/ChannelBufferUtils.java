@@ -209,7 +209,7 @@ public final class ChannelBufferUtils {
 		return new String(bytes, CHARSET_UTF8);
 	}
 
-	public static Map<String, Tag> readCompound(ChannelBuffer buf) {
+	public static List<Tag> readCompound(ChannelBuffer buf) {
 		int len = buf.readShort();
 		if (len >= 0) {
 			byte[] bytes = new byte[len];
@@ -234,7 +234,7 @@ public final class ChannelBufferUtils {
 		return null;
 	}
 
-	public static void writeCompound(ChannelBuffer buf, Map<String, Tag> data) {
+	public static void writeCompound(ChannelBuffer buf, List<Tag> data) {
 		if (data == null) {
 			buf.writeShort(-1);
 			return;

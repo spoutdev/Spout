@@ -27,6 +27,8 @@ package org.spout.server;
 
 import gnu.trove.set.hash.TByteHashSet;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -55,6 +57,9 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+import org.spout.nbt.ByteTag;
+import org.spout.nbt.CompoundTag;
+import org.spout.nbt.Tag;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableBoolean;
@@ -534,7 +539,9 @@ public class SpoutChunk extends Chunk {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		// TODO
+		List<Tag> chunkTags = new ArrayList<Tag>();
+		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
+		chunkTags.add(new ByteTag("format", (byte) 0));
 	}
 
 	@Override
