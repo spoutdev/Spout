@@ -55,7 +55,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	public final static int BASE_MASK = -CHUNK_SIZE;
 
 	public Chunk(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), CHUNK_SIZE);
+		super(new Point(world, x, y, z), CHUNK_SIZE, true);
 	}
 
 	/**

@@ -36,10 +36,22 @@ import org.spout.api.math.Vector3;
 public class Cuboid {
 	protected Point base;
 	protected Vector3 size;
-
+	private final boolean immutable;
+	private final int x;
+	private final int y;
+	private final int z;
+	
 	public Cuboid(Point base, Vector3 size) {
+		this(base, size, false);
+	}
+
+	public Cuboid(Point base, Vector3 size, boolean immutable) {
 		this.base = new Point(base);
 		this.size = new Vector3(size);
+		this.immutable = immutable;
+		this.x = getXRaw();
+		this.y = getYRaw();
+		this.z = getZRaw();
 	}
 
 	public Point getBase() {
@@ -51,14 +63,38 @@ public class Cuboid {
 	}
 
 	public int getX() {
+		if (immutable) {
+			return x;
+		} else {
+			return getXRaw();
+		}
+	}
+	
+	private int getXRaw() {
 		return (int) (base.getX() / size.getX());
 	}
 
 	public int getY() {
+		if (immutable) {
+			return y;
+		} else {
+			return getYRaw();
+		}
+	}
+	
+	private int getYRaw() {
 		return (int) (base.getY() / size.getY());
 	}
 
 	public int getZ() {
+		if (immutable) {
+			return z;
+		} else {
+			return getZRaw();
+		}
+	}
+	
+	private int getZRaw() {
 		return (int) (base.getZ() / size.getZ());
 	}
 
