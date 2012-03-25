@@ -25,6 +25,8 @@
  */
 package org.spout.api.inventory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.spout.api.material.Material;
@@ -42,7 +44,7 @@ public class ItemStack implements MaterialContainer {
 	private Material material;
 	private int amount;
 	private short data;
-	private Map<String, Tag> auxData;
+	private List<Tag> auxData;
 
 	/**
 	 * Creates a new ItemStack from the specified Material of the specified
@@ -103,8 +105,8 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @return the aux data
 	 */
-	public Map<String, Tag> getAuxData() {
-		return Tag.cloneMap(auxData);
+	public List<Tag> getAuxData() {
+		return new ArrayList<Tag>(auxData);
 	}
 
 	/**
@@ -112,11 +114,11 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @return the item stack
 	 */
-	public ItemStack setAuxData(Map<String, Tag> auxData) {
+	public ItemStack setAuxData(List<Tag> auxData) {
 		if (auxData == null) {
 			this.auxData = null;
 		} else {
-			this.auxData = Tag.cloneMap(auxData);
+			this.auxData = new ArrayList<Tag>(auxData);
 		}
 		return this;
 	}
