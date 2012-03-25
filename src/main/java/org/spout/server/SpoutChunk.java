@@ -191,6 +191,9 @@ public class SpoutChunk extends Chunk {
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
+		
+		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
+
 		return true;
 	}
 
@@ -219,6 +222,9 @@ public class SpoutChunk extends Chunk {
 			updatePhysics(x, y + 1, z);
 			updatePhysics(x, y - 1, z);
 		}
+		
+		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
+		
 		boolean sky = previous.getOpacity() != material.getOpacity();
 		boolean block = previous.getLightLevel() != material.getLightLevel();
 		if (sky || block) {
@@ -877,6 +883,20 @@ public class SpoutChunk extends Chunk {
 			return this.observers.getLive().size() <= 0  && this.observers.get().size() <= 0;
 		} else {
 			return false;
+		}
+	}
+	
+	public void notifyColumn() {
+		for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
+			for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
+				notifyColumn(x, z);
+			}
+		}
+	}
+	
+	private void notifyColumn(int x, int z) {
+		if (columnRegistered.get()) {
+			column.notifyChunkAdded(this, x, z);
 		}
 	}
 

@@ -28,6 +28,7 @@ package org.spout.server;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
 
 public class SpoutColumn {
@@ -35,7 +36,7 @@ public class SpoutColumn {
 	/**
 	 * Internal size of a side of a column
 	 */
-	public final static int COLUMN_SIZE = 16;
+	public final static int COLUMN_SIZE = Chunk.CHUNK_SIZE;
 
 	/**
 	 * Internal size of a side of a column
@@ -45,7 +46,7 @@ public class SpoutColumn {
 	/**
 	 * Number of bits on the side of a column
 	 */
-	public final static int COLUMN_SIZE_BITS = 4;
+	public final static int COLUMN_SIZE_BITS = Chunk.CHUNK_SIZE_BITS;
 
 	private final World world;
 	private final int x;
@@ -89,32 +90,47 @@ public class SpoutColumn {
 		AtomicInteger v = getAtomicInteger(x, z);
 		return v.get();
 	}
-
-	public void notifyBlockAdded(int x, int y, int z) {
-		boolean success = false;
+	
+	public void notifyChunkAdded(Chunk c, int x, int z) {
+		int y = c.getY() << Chunk.CHUNK_SIZE_BITS;
+		
 		AtomicInteger v = getAtomicInteger(x, z);
-		while (!success) {
-			int value = v.get();
-			if (y > value) {
-				success = v.compareAndSet(value, y);
-			} else {
+		int maxY = y + Chunk.CHUNK_SIZE - 1;
+		
+		if (maxY < v.get()) {
+			return;
+		}
+		
+		for (int yy = maxY; yy >= y; yy--) {
+			if (!isAir(c, x, yy, z)) {
+				notifyBlockChange(v, x, yy, z);
 				return;
 			}
 		}
 	}
-
-	public void notifyBlockRemoved(int x, int y, int z) {
+	
+	public void notifyBlockChange(int x, int y, int z) {
+		//System.out.println("Notify block change:       " + x + ", " + y + ", " + z);
 		AtomicInteger v = getAtomicInteger(x, z);
-		int value = v.get();
-		if (y >= value) {
-			return;
-		} else {
-			falling(x, y, z);
-		}
+		notifyBlockChange(v, x, y, z);
+		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);
 	}
 	
-	private void falling(int x, int y, int z) {
-		AtomicInteger v = getAtomicInteger(x, z);
+	private void notifyBlockChange(AtomicInteger v, int x, int y, int z) {
+		int value = v.get();
+		if (y < value) {
+			return;
+		} else if (y == value) {
+			falling(x, v, z);
+		} else {
+			if (!isAir(x, y, z)) {
+				v.set(y);
+				falling(x, v, z);
+			}
+		}
+	}
+
+	private void falling(int x, AtomicInteger v, int z) {
 		while (true) {
 			int value = v.get();
 			if (!isAir(x, value, z)) {
@@ -126,7 +142,18 @@ public class SpoutColumn {
 	}
 
 	private boolean isAir(int x, int y, int z) {
-		BlockMaterial m = world.getBlockMaterial(x, y, z);
+		int xx = (this.x << COLUMN_SIZE_BITS) + (x & BIT_MASK);
+		int yy = y;
+		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
+		return isAir(world.getBlockMaterial(xx, yy, zz));
+		
+	}
+	
+	private boolean isAir(Chunk c, int x, int y, int z) {
+		return isAir(c.getBlockMaterial(x, y, z));
+	}
+	
+	private boolean isAir(BlockMaterial m) {
 		if (m == null) {
 			return false;
 		} else {

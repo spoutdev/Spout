@@ -190,6 +190,7 @@ public class SpoutRegion extends Region {
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {
+					newChunk.notifyColumn();
 					numberActiveChunks.incrementAndGet();
 					if (!newChunk.isPopulated()) {
 						nonPopulatedChunks.add(newChunk);

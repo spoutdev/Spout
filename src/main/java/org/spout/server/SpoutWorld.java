@@ -517,10 +517,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	public SpoutColumn getColumn(int x, int z, boolean create) {
-		long key = HashUtil.intToLong(x >> SpoutColumn.COLUMN_SIZE_BITS,  z >> SpoutColumn.COLUMN_SIZE_BITS);
+		int colX = x >> SpoutColumn.COLUMN_SIZE_BITS;
+		int colZ = z >> SpoutColumn.COLUMN_SIZE_BITS;
+		long key = HashUtil.intToLong(colX, colZ);
 		SpoutColumn column = columns.get(key);
 		if (create && column == null) {
-			SpoutColumn newColumn = new SpoutColumn(this, x, z);
+			SpoutColumn newColumn = new SpoutColumn(this, colX, colZ);
 			column = columns.putIfAbsent(key, newColumn);
 			if (column == null) {
 				column = newColumn;
