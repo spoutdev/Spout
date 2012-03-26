@@ -24,7 +24,7 @@
  * including the MIT license.
  */
 
-package org.spout.server;
+package org.spout.server.command;
 
 import org.spout.api.Game;
 import org.spout.api.Spout;
@@ -32,6 +32,8 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.exception.CommandException;
+import org.spout.server.SpoutServer;
+import org.spout.server.world.SpoutWorld;
 
 public class TestCommands {
 

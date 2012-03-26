@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.server;
+package org.spout.server.world;
 
 import org.spout.api.Game;
 import org.spout.server.util.thread.AsyncExecutor;

@@ -62,18 +62,22 @@ import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.util.config.Configuration;
 import org.spout.server.command.AdministrationCommands;
 import org.spout.server.command.MessagingCommands;
+import org.spout.server.command.TestCommands;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.net.SpoutSessionRegistry;
 import org.spout.server.player.SpoutPlayer;
 import org.spout.server.scheduler.SpoutScheduler;
+import org.spout.server.util.ConsoleManager;
 import org.spout.server.util.config.SpoutConfiguration;
 import org.spout.server.util.thread.AsyncManager;
 import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableReference;
+import org.spout.server.world.SpoutRegion;
+import org.spout.server.world.SpoutWorld;
 
 public class SpoutEngine extends AsyncManager implements Game {
 	private volatile int maxPlayers = 20;

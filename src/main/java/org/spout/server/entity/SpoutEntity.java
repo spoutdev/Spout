@@ -54,10 +54,7 @@ import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
-import org.spout.server.SpoutChunk;
 import org.spout.server.SpoutEngine;
-import org.spout.server.SpoutRegion;
-import org.spout.server.SpoutWorld;
 import org.spout.server.datatable.SpoutDatatableMap;
 import org.spout.server.datatable.value.SpoutDatatableBool;
 import org.spout.server.datatable.value.SpoutDatatableFloat;
@@ -65,6 +62,9 @@ import org.spout.server.datatable.value.SpoutDatatableInt;
 import org.spout.server.datatable.value.SpoutDatatableObject;
 import org.spout.server.net.SpoutSession;
 import org.spout.server.player.SpoutPlayer;
+import org.spout.server.world.SpoutChunk;
+import org.spout.server.world.SpoutRegion;
+import org.spout.server.world.SpoutWorld;
 
 
 public class SpoutEntity implements Entity {

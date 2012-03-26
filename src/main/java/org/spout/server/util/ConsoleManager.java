@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.server;
+package org.spout.server.util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -76,6 +76,7 @@ import org.spout.api.Server;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.server.data.RetrieveIntDataEvent;
 import org.spout.api.geo.World;
+import org.spout.server.SpoutServer;
 
 /**
  * A meta-class to handle all logging and input-related console improvements.

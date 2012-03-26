@@ -51,8 +51,8 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.server.SpoutServer;
-import org.spout.server.SpoutWorld;
 import org.spout.server.player.SpoutPlayer;
+import org.spout.server.world.SpoutWorld;
 
 /**
  * A single connection to the server, which may or may not be associated with a

@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.server;
+package org.spout.server.world;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,6 +57,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.player.Player;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
+import org.spout.server.SpoutServer;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
 import org.spout.server.util.thread.AsyncManager;

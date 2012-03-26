@@ -39,12 +39,12 @@ import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
-import org.spout.server.SpoutRegion;
 import org.spout.server.datatable.SpoutDatatableMap;
 import org.spout.server.player.SpoutPlayer;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableHashSet;
+import org.spout.server.world.SpoutRegion;
 
 /**
  * A class which manages all of the entities within a world.

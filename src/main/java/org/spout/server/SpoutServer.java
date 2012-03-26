@@ -80,6 +80,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	
 	@Override
 	public void init() {
+		super.init();
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
 		bootstrap.setFactory(factory);
 
