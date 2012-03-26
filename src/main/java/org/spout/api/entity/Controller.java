@@ -25,6 +25,8 @@
  */
 package org.spout.api.entity;
 
+import org.spout.api.entity.component.EntityComponent;
+import org.spout.api.entity.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.Inventory;
 

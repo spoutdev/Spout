@@ -23,11 +23,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.entity.action;
 
-public abstract class EntityAction<T extends Controller> {
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.Entity;
 
-    public abstract boolean shouldRun(Entity entity, T controller);
 
-    public abstract void run(Entity entity, T controller, float dt);
+public abstract class TimedAction<T extends Controller> extends EntityAction<T> {
+    private int delayCounter = 0;
+    private int tickDelay = 1;
+
+    public TimedAction(int tickDelay) {
+        this.tickDelay = tickDelay;
+    }
+
+    public boolean shouldRun(Entity entity, T controller) {
+        if (++delayCounter % tickDelay == 0) {
+            delayCounter = 0;
+            return true;
+        }
+        return false;
+    }
 }

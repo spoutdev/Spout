@@ -12,56 +12,25 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful,
+ * Vanilla is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev License Version 1 along with this program.
+ * the MIT license and the SpoutDev license version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.entity.action;
 
-import org.spout.api.entity.component.EntityComponent;
-import org.spout.api.math.Matrix;
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.Entity;
 
-public class CameraComponent extends EntityComponent implements Camera {
+public abstract class EntityAction<T extends Controller> {
 
-	Matrix projection;
-	Matrix view;
-	
-	
-	@Override
-	public Matrix getProjection() {
-		return projection;
-	}
+    public abstract boolean shouldRun(Entity entity, T controller);
 
-	@Override
-	public Matrix getView() {
-		return view;
-	}
-
-	@Override
-	public void updateView() {
-		view = Matrix.rotate(getParent().getRotation()).multiply(Matrix.translate(getParent().getPosition()));
-		
-	}
-
-	@Override
-	public void onTick(float dt) {
-		updateView();
-		
-	}
-
-	@Override
-	public void onAttached() {
-		// TODO Get FOV
-		projection = Matrix.createPerspective(90f, 4.0f/3.0f, .001f, 1000f);
-		updateView();
-		
-	}
-
+    public abstract void run(Entity entity, T controller, float dt);
 }

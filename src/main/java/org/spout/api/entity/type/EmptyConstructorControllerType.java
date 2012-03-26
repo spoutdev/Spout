@@ -23,45 +23,49 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.entity.type;
 
-import org.spout.api.entity.component.EntityComponent;
-import org.spout.api.math.Matrix;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-public class CameraComponent extends EntityComponent implements Camera {
+import org.spout.api.entity.Controller;
 
-	Matrix projection;
-	Matrix view;
-	
-	
-	@Override
-	public Matrix getProjection() {
-		return projection;
+/**
+ *
+ * @author zml2008
+ */
+public class EmptyConstructorControllerType extends ControllerType {
+	private Constructor<? extends Controller> constructor;
+
+	public EmptyConstructorControllerType(Class<? extends Controller> controllerClass, String name) {
+		super(controllerClass, name);
+		try {
+			constructor = controllerClass.getDeclaredConstructor();
+			constructor.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			constructor = null;
+		}
 	}
 
 	@Override
-	public Matrix getView() {
-		return view;
+	public boolean canCreateController() {
+		return constructor != null;
 	}
 
 	@Override
-	public void updateView() {
-		view = Matrix.rotate(getParent().getRotation()).multiply(Matrix.translate(getParent().getPosition()));
-		
+	public Controller createController() {
+		if (constructor == null) {
+			return null;
+		}
+		try {
+			return constructor.newInstance();
+		} catch (InstantiationException e) {
+			return null;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace(); // This should never happen - print the stack trace if it does
+			return null;
+		} catch (InvocationTargetException e) {
+			return null;
+		}
 	}
-
-	@Override
-	public void onTick(float dt) {
-		updateView();
-		
-	}
-
-	@Override
-	public void onAttached() {
-		// TODO Get FOV
-		projection = Matrix.createPerspective(90f, 4.0f/3.0f, .001f, 1000f);
-		updateView();
-		
-	}
-
 }

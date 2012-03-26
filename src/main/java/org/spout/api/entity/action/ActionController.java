@@ -23,36 +23,45 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.entity.action;
 
-public abstract class EntityComponent {
-	private Entity parent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-	/**
-	 * Called when this controller is attached to an entity.
-	 * @param e entity this controller will be attached to.
-	 */
-	public void attachToEntity(Entity e) {
-		this.parent = e;
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.type.ControllerType;
+
+public abstract class ActionController extends Controller {
+	private List<EntityAction<Controller>> activeActions = new ArrayList<EntityAction<Controller>>();
+
+	protected ActionController(ControllerType type) {
+		super(type);
 	}
 
-	/**
-	 * Gets the parent Entity associated with this controller.
-	 *
-	 * @return parent Entity
-	 */
-	public Entity getParent() {
-		return this.parent;
+	@SuppressWarnings("unchecked")
+	public void registerAction(EntityAction<?> ai) {
+		activeActions.add((EntityAction<Controller>) ai);
 	}
 
-	public abstract void onTick(float dt);
+	public void unregisterAction(Class<? extends EntityAction<?>> type) {
+		for (Iterator<EntityAction<Controller>> i = activeActions.iterator(); i.hasNext();) {
+			if (type.isAssignableFrom(i.next().getClass())) {
+				i.remove();
+			}
+		}
+	}
 
-	public abstract void onAttached();
+	@Override
+	public void onTick(float dt) {
+		if (getParent() == null || getParent().getWorld() == null) {
+			return;
+		}
+		for (EntityAction<Controller> ai : activeActions) {
+			if (ai.shouldRun(getParent(), this)) {
+				ai.run(getParent(), this, dt);
+			}
+		}
 
-	/** 
-	 * Called when this component is detached from an entity
-	 */
-	public void onDetached(){
-		
 	}
 }
