@@ -26,6 +26,7 @@
 package org.spout.server.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,6 +37,7 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityComponent;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
@@ -78,6 +80,7 @@ public class SpoutEntity implements Entity {
 	private Transform lastTransform  = transform;
 	private EntityManager entityManager;
 	private EntityManager entityManagerLive;
+	private ArrayList<EntityComponent> components = new ArrayList<EntityComponent>(); //TODO make therad safe
 	private Controller controller = null;
 	private Controller controllerLive = null;
 	// TODO - shouldn't live be atomic reference?
@@ -741,5 +744,24 @@ public class SpoutEntity implements Entity {
 	@Override
 	public String toString() {
 		return "SpoutEntity - ID: " + this.getId() + " Controller: " + this.getController() + " Position: " + this.getPosition();
+	}
+
+	@Override
+	public void attachComponent(EntityComponent component) {
+		component.attachToEntity(this);
+		component.onAttached();
+		components.add(component);
+		
+	}
+
+	@Override
+	public void removeComponent(EntityComponent component) {
+		if(components.remove(component)) component.onDetached();
+		
+	}
+
+	@Override
+	public boolean hasComponent(EntityComponent component) {
+		return components.contains(component);
 	}
 }
