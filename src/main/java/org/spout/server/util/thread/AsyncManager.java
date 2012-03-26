@@ -27,6 +27,7 @@ package org.spout.server.util.thread;
 
 import java.util.WeakHashMap;
 
+import org.spout.api.Game;
 import org.spout.api.Server;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.server.SpoutServer;
@@ -35,22 +36,22 @@ import org.spout.server.scheduler.SpoutScheduler;
 public abstract class AsyncManager {
 
 	private final int maxStage;
-	private final Server server; // null means that this AsyncManager is the Server
+	private final Game engine; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
 	private final WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
 	private final ManagementTask[] singletonCache = new ManagementTask[ManagementTaskEnum.getMaxId()];
 
 	public AsyncManager(int maxStage, AsyncExecutor executor) {
 		this.executor = executor;
-		server = null;
+		engine = null;
 		this.maxStage = maxStage;
 		executor.setManager(this);
 		
 	}
 
-	public AsyncManager(int maxStage, AsyncExecutor executor, Server server) {
+	public AsyncManager(int maxStage, AsyncExecutor executor, Game server) {
 		this.executor = executor;
-		this.server = server;
+		this.engine = server;
 		this.maxStage = maxStage;
 		executor.setManager(this);
 		registerWithScheduler(((SpoutServer) server).getScheduler());
@@ -60,15 +61,15 @@ public abstract class AsyncManager {
 		((SpoutScheduler) scheduler).addAsyncExecutor(executor);
 	}
 
-	public Server getServer() {
-		if (server == null) {
+	public Game getServer() {
+		if (engine == null) {
 			if (!(this instanceof Server)) {
 				throw new IllegalStateException("Only the Server object itself should have a null server reference");
 			} else {
 				return (Server) this;
 			}
 		} else {
-			return server;
+			return engine;
 		}
 	}
 

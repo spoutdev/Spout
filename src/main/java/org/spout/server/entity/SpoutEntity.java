@@ -47,7 +47,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.material.Material;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -56,8 +55,8 @@ import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.server.SpoutChunk;
+import org.spout.server.SpoutEngine;
 import org.spout.server.SpoutRegion;
-import org.spout.server.SpoutServer;
 import org.spout.server.SpoutWorld;
 import org.spout.server.datatable.SpoutDatatableMap;
 import org.spout.server.datatable.value.SpoutDatatableBool;
@@ -99,7 +98,7 @@ public class SpoutEntity implements Entity {
 	Thread owningThread = null;
 	float pitch, yaw, roll;
 
-	public SpoutEntity(SpoutServer server, Transform transform, Controller controller, int viewDistance) {
+	public SpoutEntity(SpoutEngine server, Transform transform, Controller controller, int viewDistance) {
 		this.transform.set(transform);
 
 
@@ -122,11 +121,11 @@ public class SpoutEntity implements Entity {
 
 	}
 
-	public SpoutEntity(SpoutServer server, Transform transform, Controller controller) {
+	public SpoutEntity(SpoutEngine server, Transform transform, Controller controller) {
 		this(server, transform, controller, 64);
 	}
 
-	public SpoutEntity(SpoutServer server, Point point, Controller controller) {
+	public SpoutEntity(SpoutEngine server, Point point, Controller controller) {
 		this(server, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
 	}
 

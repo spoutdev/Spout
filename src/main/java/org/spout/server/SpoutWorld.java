@@ -71,7 +71,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The server of this world.
 	 */
-	private final Server server;
+	private final Game server;
 
 	/**
 	 * The name of this world.
@@ -124,7 +124,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Server server, long seed, WorldGenerator generator) {
+	public SpoutWorld(String name, Game server, long seed, WorldGenerator generator) {
 		super(1, new ThreadAsyncExecutor(), server);
 		uid = UUID.randomUUID();
 		this.server = server;

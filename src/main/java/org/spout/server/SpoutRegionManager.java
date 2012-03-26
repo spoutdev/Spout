@@ -25,7 +25,7 @@
  */
 package org.spout.server;
 
-import org.spout.api.Server;
+import org.spout.api.Game;
 import org.spout.server.util.thread.AsyncExecutor;
 import org.spout.server.util.thread.AsyncManager;
 
@@ -36,7 +36,7 @@ public class SpoutRegionManager extends AsyncManager {
 
 	private final SpoutRegion parent;
 
-	public SpoutRegionManager(SpoutRegion parent, int maxStage, AsyncExecutor executor, Server server) {
+	public SpoutRegionManager(SpoutRegion parent, int maxStage, AsyncExecutor executor, Game server) {
 		super(maxStage, executor, server);
 		this.parent = parent;
 		

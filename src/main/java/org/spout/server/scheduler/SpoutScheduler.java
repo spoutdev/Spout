@@ -34,6 +34,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
+import org.spout.api.Game;
+import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.SnapshotLock;
@@ -97,7 +99,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * The server this scheduler is managing for.
 	 */
-	private final SpoutServer server;
+	private final Game server;
 
 	/**
 	 * A list of new tasks to be added.
@@ -135,7 +137,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Creates a new task scheduler.
 	 */
-	public SpoutScheduler(SpoutServer server) {
+	public SpoutScheduler(Game server) {
 		this.server = server;
 
 		mainThread = new MainThread();
@@ -162,7 +164,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 					lastTick = startTime;
 				} catch (Exception ex) {
-					SpoutServer.logger.log(Level.SEVERE, "Error while pulsing: {0}", ex.getMessage());
+					Spout.getLogger().log(Level.SEVERE, "Error while pulsing: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
 				long finishTime = System.currentTimeMillis();
@@ -194,7 +196,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshot(asyncExecutors.get());
 			} catch (InterruptedException ex) {
-				SpoutServer.logger.log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
+				Spout.getLogger().log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
 			}
 
 			asyncExecutors.copySnapshot();
