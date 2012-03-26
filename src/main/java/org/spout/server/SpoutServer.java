@@ -44,7 +44,19 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The server's ban manager
 	 */
 	private BanManager banManager;
+	
+	/**
+	 * The {@link ServerBootstrap} used to initialize Netty.
+	 */
+	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
+
+	public static void main(String[] args) {
+		SpoutServer server = new SpoutServer(args);
+		server.init();
+		server.start();
+
+	}
 
 
 	
@@ -53,13 +65,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		
 	}
 
-	public static void main(String[] args) {
-
-
-		SpoutServer server = new SpoutServer(args);
-		server.start();
-
-	}
 
 	@Override
 	public void start() {
@@ -90,10 +95,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	
 
-	/**
-	 * The {@link ServerBootstrap} used to initialize Netty.
-	 */
-	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
 	/**
 	 * Binds this server to the specified address.

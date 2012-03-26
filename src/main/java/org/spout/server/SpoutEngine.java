@@ -200,7 +200,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 			if(s.equals("-debug")) debugMode = true;
 		}
 		registerWithScheduler(scheduler);
-		init();
 		if (!getExecutor().startExecutor()) {
 			throw new IllegalStateException("SpoutServer's executor was already started");
 		}
