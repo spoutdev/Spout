@@ -51,4 +51,10 @@ public abstract class EntityComponent {
 	
 	public abstract void onAttached();
 
+	/** 
+	 * Called when this component is detached from an entity
+	 */
+	public void onDetached(){
+		
+	}
 }

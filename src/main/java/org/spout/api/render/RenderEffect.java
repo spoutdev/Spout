@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model.renderer;
+package org.spout.api.render;
 
 /**
  * Renderer to attach to a Mesh to change the way the mesh renders
@@ -35,7 +35,7 @@ public interface RenderEffect {
 	 *
 	 * Used for setting the shader or texture.
 	 */
-	public void preBatch();
+	public void preBatch(Renderer batcher);
 
 	/**
 	 * Called after the mesh has been batched but before the batch has been
@@ -43,18 +43,18 @@ public interface RenderEffect {
 	 *
 	 * Used to add additional verticies to the model
 	 */
-	public void postBatch();
+	public void postBatch(Renderer batcher);
 
 	/**
 	 * Called before the mesh is drawn to the scene. Used to set GPU modes
 	 * and/or effects
 	 */
-	public void preDraw();
+	public void preDraw(Renderer batcher);
 
 	/**
 	 * Called after the mesh is drawn to the scene
 	 *
 	 * Used to clean up things done in preDraw()
 	 */
-	public void postDraw();
+	public void postDraw(Renderer batcher);
 }

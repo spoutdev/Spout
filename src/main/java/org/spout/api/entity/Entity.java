@@ -346,4 +346,23 @@ public interface Entity extends Datatable, Source {
 	 * Gets the max health of the entity
 	 */
 	public int getMaxHealth();
+	
+	
+	/**
+	 * Attaches a component to this entity.  If it's already attached, it will fail silently
+	 * @param component
+	 */
+	public void attachComponent(EntityComponent component);
+	
+	/**
+	 * removes a component from an entity.  Fails silently if component doesnt exist
+	 * @param component
+	 */
+	public void removeComponent(EntityComponent component);
+	/**
+	 * True if component is attached.  False if not
+	 * @param component
+	 */
+	public boolean hasComponent(EntityComponent component);
+	
 }
