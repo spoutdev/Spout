@@ -25,27 +25,20 @@
  */
 package org.spout.api;
 
-import java.io.File;
-import java.net.SocketAddress;
 
-import org.spout.api.geo.World;
+import java.net.SocketAddress;
+import java.util.Collection;
+
+
+import org.jboss.netty.channel.Channel;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.SnapshotRead;
 
 /**
  * Represents the server-specific implementation of Minecraft.
  */
 public interface Server extends Game {
-	/**
-	 * Returns the name this server, if set.
-	 *
-	 * @return server name
-	 */
-
-	public String getName();
-
-	/**
+		/**
 	 * Returns true if this server is using a whitelist.
 	 *
 	 * @return whitelist enabled
@@ -86,69 +79,9 @@ public interface Server extends Game {
 	 */
 	public void unWhitelist(String player);
 
-	/**
-	 * Unloads this world from memory. <br/>
-	 * <br/>
-	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
-	 *
-	 * @param name of the world to unload
-	 * @param save whether or not to save the world state to file
-	 * @return true if the world was unloaded, false if not
-	 */
-	public boolean unloadWorld(String name, boolean save);
 
-	/**
-	 * Unloads this world from memory. <br/>
-	 * <br/>
-	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
-	 *
-	 * @param world to unload
-	 * @param save whether or not to save the world state to file
-	 * @return true if the world was unloaded, false if not
-	 */
-	public boolean unloadWorld(World world, boolean save);
-
-	/**
-	 * Sets the default world.
-	 *
-	 * The first loaded world will be set as the default world automatically.
-	 *
-	 * New players start in the default world.
-	 *
-	 * @param world the default world
-	 * @return true on success
-	 */
-	@DelayedWrite
-	public boolean setDefaultWorld(World world);
-
-	/**
-	 * Gets the default world.
-	 *
-	 * @return the default world
-	 */
-	@SnapshotRead
-	public World getDefaultWorld();
-
-	/**
-	 * Gets the server's configuration directory
-	 *
-	 * @return the config directory
-	 */
-	public File getConfigDirectory();
-
-	/**
-	 * Gets the server's log file
-	 *
-	 * @return the log filename
-	 */
-	public String getLogFile();
-
-	/**
-	 * Gets a list of available commands from the command map.
-	 *
-	 * @return A list of all commands at the time.
-	 */
-	public String[] getAllCommands();
+	
+	
 
 	/**
 	 * True if this server does not check if players are flying or not.
@@ -169,4 +102,94 @@ public interface Server extends Game {
 	 * @return true if successful
 	 */
 	public boolean bind(SocketAddress address, BootstrapProtocol bootstrapProtocol);
+	/**
+	 * Bans the specified player
+	 * 
+	 * @param Player to ban
+	 */
+	public void banPlayer(String player);
+	
+	/**
+	 * Unbans the specified player
+	 * 
+	 * @param Player to ban
+	 */
+	public void unbanPlayer(String player);
+	
+	/**
+	 * Bans the specified IP
+	 * 
+	 * @param Player to ban
+	 */
+	public void banIp(String address);
+	
+	/**
+	 * Unbans the specified IP
+	 * 
+	 * @param Player to ban
+	 */
+	public void unbanIp(String address);
+	
+	/**
+	 * Gets a collection of all banned IP's, in string format.
+	 *
+	 * @return banned IP addresses
+	 */
+	public Collection<String> getIPBans();
+	
+	/**
+	 * Returns a collection of all banned players
+	 *
+	 * @return banned players
+	 */
+	public Collection<String> getBannedPlayers();
+	
+	/**
+	 * Returns true if the player or address is banned.
+	 * 
+	 * @param Player name to check
+	 * @param Address to check
+	 * @return If either is banned
+	 */
+	public boolean isBanned(String player, String address);
+	
+	/**
+	 * Returns true if the address is banned.
+	 * 
+	 * @param Address to check
+	 * @return If the address is banned
+	 */
+	public boolean isIpBanned(String address);
+	
+	/**
+	 * Returns true if the player is banned.
+	 * 
+	 * @param Player name to check
+	 * @return If the player is banned
+	 */
+	public boolean isPlayerBanned(String player);
+	
+	/**
+	 * Gets the ban message for the player
+	 * 
+	 * @return the ban message
+	 */
+	public String getBanMessage(String player);
+	
+	/**
+	 * Gets the ban message for the IP
+	 * 
+	 * @return the ban message
+	 */
+	public String getIpBanMessage(String address);
+	
+	/**
+	 * Creates a new Session
+	 *
+	 * @param channel the associated channel
+	 * @return the session
+	 */
+	public Session newSession(Channel channel);
+
+	
 }

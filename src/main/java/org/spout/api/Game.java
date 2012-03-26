@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.jboss.netty.channel.group.ChannelGroup;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.EventManager;
@@ -42,15 +43,13 @@ import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.util.Named;
+import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.group.ChannelGroup;
 
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
@@ -271,6 +270,28 @@ public interface Game extends Named {
 	 */
 	@LiveRead
 	public World loadWorld(String name, WorldGenerator generator);
+	
+	/**
+	 * Unloads this world from memory. <br/>
+	 * <br/>
+	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
+	 *
+	 * @param name of the world to unload
+	 * @param save whether or not to save the world state to file
+	 * @return true if the world was unloaded, false if not
+	 */
+	public boolean unloadWorld(String name, boolean save);
+
+	/**
+	 * Unloads this world from memory. <br/>
+	 * <br/>
+	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
+	 *
+	 * @param world to unload
+	 * @param save whether or not to save the world state to file
+	 * @return true if the world was unloaded, false if not
+	 */
+	public boolean unloadWorld(World world, boolean save);
 
 	/**
 	 * Initiates a save of the server state, including configuration files. <br/>
@@ -337,14 +358,7 @@ public interface Game extends Named {
 	 */
 	public Platform getPlatform();
 
-	/**
-	 * Creates a new Session
-	 *
-	 * @param channel the associated channel
-	 * @return the session
-	 */
-	public Session newSession(Channel channel);
-
+	
 	/**
 	 * Gets the network channel group.
 	 *
@@ -403,86 +417,6 @@ public interface Game extends Named {
 	 */
 	public boolean debugMode();
 	
-	/**
-	 * Bans the specified player
-	 * 
-	 * @param Player to ban
-	 */
-	public void banPlayer(String player);
-	
-	/**
-	 * Unbans the specified player
-	 * 
-	 * @param Player to ban
-	 */
-	public void unbanPlayer(String player);
-	
-	/**
-	 * Bans the specified IP
-	 * 
-	 * @param Player to ban
-	 */
-	public void banIp(String address);
-	
-	/**
-	 * Unbans the specified IP
-	 * 
-	 * @param Player to ban
-	 */
-	public void unbanIp(String address);
-	
-	/**
-	 * Gets a collection of all banned IP's, in string format.
-	 *
-	 * @return banned IP addresses
-	 */
-	public Collection<String> getIPBans();
-	
-	/**
-	 * Returns a collection of all banned players
-	 *
-	 * @return banned players
-	 */
-	public Collection<String> getBannedPlayers();
-	
-	/**
-	 * Returns true if the player or address is banned.
-	 * 
-	 * @param Player name to check
-	 * @param Address to check
-	 * @return If either is banned
-	 */
-	public boolean isBanned(String player, String address);
-	
-	/**
-	 * Returns true if the address is banned.
-	 * 
-	 * @param Address to check
-	 * @return If the address is banned
-	 */
-	public boolean isIpBanned(String address);
-	
-	/**
-	 * Returns true if the player is banned.
-	 * 
-	 * @param Player name to check
-	 * @return If the player is banned
-	 */
-	public boolean isPlayerBanned(String player);
-	
-	/**
-	 * Gets the ban message for the player
-	 * 
-	 * @return the ban message
-	 */
-	public String getBanMessage(String player);
-	
-	/**
-	 * Gets the ban message for the IP
-	 * 
-	 * @return the ban message
-	 */
-	public String getIpBanMessage(String address);
 	
 	/**
 	 * Gets the main thread that is used to manage all execution on the server. <br/>
@@ -491,5 +425,47 @@ public interface Game extends Named {
 	 * @return main thread
 	 */
 	public Thread getMainThread();
+	
+	/**
+	 * Sets the default world.
+	 *
+	 * The first loaded world will be set as the default world automatically.
+	 *
+	 * New players start in the default world.
+	 *
+	 * @param world the default world
+	 * @return true on success
+	 */
+	@DelayedWrite
+	public boolean setDefaultWorld(World world);
+
+	/**
+	 * Gets the default world.
+	 *
+	 * @return the default world
+	 */
+	@SnapshotRead
+	public World getDefaultWorld();
+
+	/**
+	 * Gets the server's configuration directory
+	 *
+	 * @return the config directory
+	 */
+	public File getConfigDirectory();
+
+	/**
+	 * Gets the server's log file
+	 *
+	 * @return the log filename
+	 */
+	public String getLogFile();
+
+	/**
+	 * Gets a list of available commands from the command map.
+	 *
+	 * @return A list of all commands at the time.
+	 */
+	public String[] getAllCommands();
 	
 }
