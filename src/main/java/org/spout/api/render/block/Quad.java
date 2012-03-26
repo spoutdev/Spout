@@ -23,7 +23,10 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.block;
+
+import org.spout.api.render.SubTexture;
+import org.spout.api.render.Vertex;
 
 public class Quad {
 	private int index;

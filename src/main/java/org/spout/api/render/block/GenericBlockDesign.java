@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.block;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -35,6 +35,8 @@ import org.spout.api.material.ItemMaterial;
 import org.spout.api.math.Vector3;
 import org.spout.api.packet.PacketUtil;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.render.Texture;
+import org.spout.api.render.Vertex;
 
 public class GenericBlockDesign implements BlockDesign {
 	protected boolean reset = false;

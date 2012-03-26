@@ -23,7 +23,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.block;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -34,6 +34,8 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.ItemMaterial;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.render.Texture;
+import org.spout.api.render.Vertex;
 
 public interface BlockDesign {
 	/**

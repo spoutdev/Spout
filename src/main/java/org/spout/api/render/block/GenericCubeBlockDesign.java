@@ -23,9 +23,10 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.block;
 
 import org.spout.api.plugin.Plugin;
+import org.spout.api.render.Texture;
 
 public class GenericCubeBlockDesign extends GenericBlockDesign {
 	/**

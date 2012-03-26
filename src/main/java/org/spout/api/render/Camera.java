@@ -23,32 +23,30 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
 
-public abstract class EntityComponent {
-	
-	private Entity parent;
+package org.spout.api.render;
 
+import org.spout.api.math.Matrix;
 
+/**
+ * Represents a Camera to be used for rendering.
+ *
+ */
+public interface Camera {
+	/**
+	 * Get the projection matrix associated with this camera
+	 * @return 4x4 matrix representing the projection
+	 */
+	public Matrix getProjection();
 	
 	/**
-	 * Called when this controller is attached to an entity.
-	 * @param e entity this controller will be attached to.
+	 * Gets the view matrix
+	 * @return
 	 */
-	public void attachToEntity(Entity e) {
-		this.parent = e;
-	}
+	public Matrix getView();
+	
 	/**
-	 * Gets the parent Entity associated with this controller.
-	 *
-	 * @return parent Entity
+	 * Update the view matrix.  
 	 */
-	public Entity getParent(){ 
-		return this.parent; 
-	}
-	
-	public abstract void onTick(float dt);
-	
-	public abstract void onAttached();
-
+	public void updateView();
 }

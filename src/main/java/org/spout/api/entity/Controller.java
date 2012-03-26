@@ -32,21 +32,10 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.util.StringMap;
 
-public abstract class Controller implements EntityComponent {
+public abstract class Controller extends EntityComponent {
 	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
-	private Entity parent;
-
-
 	
-	/**
-	 * Called when this controller is attached to an entity.
-	 * @param e entity this controller will be attached to.
-	 */
-	public void attachToEntity(Entity e) {
-		this.parent = e;
-	}
-
 	/**
 	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
 	 * Occurs before the Pre-Snapshot of the tick.
@@ -65,15 +54,6 @@ public abstract class Controller implements EntityComponent {
 	 */
 	public Inventory createInventory(int size) {
 		return new Inventory(size);
-	}
-
-	/**
-	 * Gets the parent Entity associated with this controller.
-	 *
-	 * @return parent Entity
-	 */
-	public Entity getParent() {
-		return parent;
 	}
 
 	public EntityProtocol getEntityProtocol(int protocolId) {
