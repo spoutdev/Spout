@@ -50,6 +50,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.bytearrayarray.BAAClosedException;
+import org.spout.api.io.bytearrayarray.BAAOpenInProgress;
 import org.spout.api.io.bytearrayarray.ByteArrayArray;
 import org.spout.api.io.regionfile.SimpleRegionFile;
 import org.spout.api.material.BlockMaterial;
@@ -130,7 +131,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * Chunk store is set to this value when file opening is in progress
 	 */
-	private final static ByteArrayArray chunkStoreOpenInProgress = (ByteArrayArray)new Object();
+	private final static ByteArrayArray chunkStoreOpenInProgress = new BAAOpenInProgress();
 	
 	/**
 	 * File that references the ByteArrayArray file where chunk data is stored
