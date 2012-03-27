@@ -25,6 +25,10 @@
  */
 package org.spout.server.world;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
@@ -45,6 +49,9 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.io.bytearrayarray.BAAClosedException;
+import org.spout.api.io.bytearrayarray.ByteArrayArray;
+import org.spout.api.io.regionfile.SimpleRegionFile;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
@@ -59,7 +66,7 @@ import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 
 public class SpoutRegion extends Region {
-
+	
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 
 	// Can't extend AsyncManager and Region
@@ -84,6 +91,21 @@ public class SpoutRegion extends Region {
 	 * The maximum number of chunks that will be processed for lighting updates each tick.
 	 */
 	private static final int LIGHT_PER_TICK = 20;
+	
+	/**
+	 * The segment size to use for chunk storage.  The actual size is 2^(SEGMENT_SIZE)
+	 */
+	private final int SEGMENT_SIZE = 9;
+	
+	/**
+	 * The number of chunks in a region
+	 */
+	private final int REGION_SIZE_CUBED = REGION_SIZE * REGION_SIZE * REGION_SIZE;
+	
+	/**
+	 * The timeout for the chunk storage in ms.  If the store isn't accessed within that time, it can be automatically shutdown
+	 */
+	private final int TIMEOUT = 30000;
 
 	/**
 	 * The source of this region
@@ -99,6 +121,21 @@ public class SpoutRegion extends Region {
 	 * Holds all of the entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager();
+	
+	/**
+	 * Reference to the persistent ByteArrayArray that stores chunk data
+	 */
+	private final AtomicReference<ByteArrayArray> chunkStore;
+
+	/**
+	 * Chunk store is set to this value when file opening is in progress
+	 */
+	private final static ByteArrayArray chunkStoreOpenInProgress = (ByteArrayArray)new Object();
+	
+	/**
+	 * File that references the ByteArrayArray file where chunk data is stored
+	 */
+	private final File regionFile;
 
 	/**
 	 * Holds all not populated chunks
@@ -156,6 +193,12 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
+
+		File worldDirectory = world.getDirectory();
+		File regionDirectory = new File(worldDirectory, "region");
+		regionDirectory.mkdirs();
+		regionFile = new File(regionDirectory, "reg" + getX() + "_" + getY() + "_" + getZ() + ".spr");
+		chunkStore = new AtomicReference<ByteArrayArray>(null);
 	}
 
 	public SpoutWorld getWorld() {
@@ -680,5 +723,136 @@ public class SpoutRegion extends Region {
 	public Thread getExceutionThread(){
 
 		return ((ThreadAsyncExecutor)manager.getExecutor());
+	}
+	
+	/**
+	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.<br>
+	 * <br>
+	 * It will only close the array if no block OutputStreams are open and the last access occured more than the timeout previously
+	 */
+	public void byteArrayArrayTimeoutCheck() {
+		ByteArrayArray baa = chunkStore.get();
+		if (baa != null) {
+			try {
+				baa.closeIfTimedOut();
+			} catch (IOException ioe) {
+			}
+			if (baa.isClosed()) {
+				chunkStore.compareAndSet(baa, null);
+			}
+		}
+	}
+	
+	/**
+	 * Gets the DataOutputStream corresponding to a given Chunk.<br>
+	 * <br>
+	 * WARNING: This block will be locked until the stream is closed
+	 * 
+	 * @param c the chunk
+	 * @return the DataOutputStream
+	 */
+	public DataOutputStream getChunkOutputStream(Chunk c) {
+		int key = getChunkKey(c);
+		while (true) {
+			ByteArrayArray baa = getByteArrayArray();
+			if (baa == null) {
+				return null;
+			}
+			DataOutputStream out;
+			try {
+				out = baa.getOutputStream(key);
+			} catch (BAAClosedException e) {
+				continue;
+			} catch (IOException e) {
+				return null;
+			}
+			return out;
+		}
+	}
+	
+	/**
+	 * Gets the DataInputStream corresponding to a given Chunk.<br>
+	 * <br>
+	 * The stream is based on a snapshot of the array.
+	 * 
+	 * @param c the chunk
+	 * @return the DataInputStream
+	 */
+	public DataInputStream getChunkInputStream(Chunk c) {
+		int key = getChunkKey(c);
+		while (true) {
+			ByteArrayArray baa = getByteArrayArray();
+			if (baa == null) {
+				return null;
+			}
+			DataInputStream in;
+			try {
+				in = baa.getInputStream(key);
+			} catch (BAAClosedException e) {
+				continue;
+			} catch (IOException e) {
+				return null;
+			}
+			return in;
+		}
+	}
+	
+	private ByteArrayArray getByteArrayArray() {
+		int count = 0;
+		while (true) {
+			ByteArrayArray baa = chunkStore.get();
+			
+			// If the baa exists and isn't closed return it
+			if (baa != null) {
+				if (baa.isClosed()) {
+					chunkStore.compareAndSet(baa, null);
+					continue;
+				} else {
+					return baa;
+				}
+			// Some other thread is trying to open the file
+			// Spinning lock, then yield and then sleep
+			} else if (!chunkStore.compareAndSet(null, chunkStoreOpenInProgress)) {
+				count++;
+				if (count > 10 ){
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+
+					}
+				} else if (count > 0) {
+					Thread.yield();
+				}
+			// Successfully claimed the right to open a new file
+			// Attempt to open the file.  If an IOException is throw return null
+			} else {
+				baa = null;
+				try {
+					try {
+						baa = new SimpleRegionFile(regionFile, SEGMENT_SIZE, REGION_SIZE_CUBED, TIMEOUT);
+					} catch (IOException e) {
+						baa = null;
+					}
+					return baa;
+				} finally {
+					if (!chunkStore.compareAndSet(chunkStoreOpenInProgress, baa)) {
+						throw new IllegalStateException("chunkStore variable changed outside locking scheme");
+					}				
+				}
+			}
+		}
+	}
+	
+	private int getChunkKey(Chunk c) {
+		int x = c.getX() & (Region.REGION_SIZE - 1);
+		int y = c.getY() & (Region.REGION_SIZE - 1);
+		int z = c.getZ() & (Region.REGION_SIZE - 1);
+		
+		int key = 0;
+		key |= x;
+		key |= y << (Region.REGION_SIZE_BITS);
+		key |= z << (Region.REGION_SIZE_BITS << 1);
+		
+		return key;
 	}
 }

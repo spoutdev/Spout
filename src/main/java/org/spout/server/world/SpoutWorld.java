@@ -25,6 +25,7 @@
  */
 package org.spout.server.world;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,10 +33,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Game;
-import org.spout.api.Server;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.basic.blocks.BlockFullState;
@@ -123,6 +123,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * A map of the loaded columns
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
+	
+	/**
+	 * The directory where the world data is stored
+	 */
+	private final File worldDirectory;
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Game server, long seed, WorldGenerator generator) {
@@ -134,6 +139,12 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.generator = generator;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
+		File worldsDirectory = new File("worlds");
+		worldsDirectory.mkdirs();
+		File world = new File(worldsDirectory, name);
+		world.mkdirs();
+		worldDirectory = new File(world, generator.getName());
+		worldDirectory.mkdirs();	
 	}
 
 	// TODO need world that loads from disk
@@ -539,6 +550,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";
+	}
+
+	@Override
+	public File getDirectory() {
+		return worldDirectory;
 	}
 
 }
