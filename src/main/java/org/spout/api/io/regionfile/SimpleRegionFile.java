@@ -38,11 +38,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-public class SimpleRegionFile {
+import org.spout.api.io.persistentbytearraymap.PersistentByteArrayArray;
+
+public class SimpleRegionFile implements PersistentByteArrayArray {
 	
 	private static final int VERSION = 1;
 	private static final int TIMEOUT = 120000; // timeout delay
@@ -56,7 +57,7 @@ public class SimpleRegionFile {
 	private final AtomicInteger[] blockSegmentStart;
 	private final AtomicInteger[] blockSegmentLength;
 	private final AtomicInteger[] blockActualLength;
-	private final ReentrantReadWriteLock[] blockLock;
+	private final SRFReentrantReadWriteLock[] blockLock;
 	private final AtomicInteger numberBlocksLocked;
 	
 	private final AtomicBoolean closed;
@@ -101,7 +102,7 @@ public class SimpleRegionFile {
 			this.file = new RandomAccessFile(this.filePath, "rw");
 		} catch (FileNotFoundException e) {
 			this.closed.set(true);
-			throw new SimpleRegionFileException("Unable to open region file " + this.filePath, e);
+			throw new SRFException("Unable to open region file " + this.filePath, e);
 		}
 		
 		int headerSize = getHeaderSize(entries);
@@ -125,7 +126,7 @@ public class SimpleRegionFile {
 		if (entries != this.entries) {
 			file.close();
 			this.closed.set(true);
-			throw new SimpleRegionFileException("Number of entries mismatch for file " + this.filePath + ", expected " + entries + " got " + this.entries);
+			throw new SRFException("Number of entries mismatch for file " + this.filePath + ", expected " + entries + " got " + this.entries);
 		}
 		
 		inuse = new AtomicReference<AtomicBoolean[]>(new AtomicBoolean[0]);
@@ -134,46 +135,38 @@ public class SimpleRegionFile {
 		
 		int segmentsLocked = reserveSegments(0, headerSegments);
 		if (segmentsLocked != headerSegments) {
-			throw new SimpleRegionFileException("Unabled to lock header segments");
+			throw new SRFException("Unabled to lock header segments");
 		}
 		
 		blockSegmentStart = new AtomicInteger[entries];
 		blockSegmentLength = new AtomicInteger[entries];
 		blockActualLength = new AtomicInteger[entries];
-		blockLock = new ReentrantReadWriteLock[entries];
+		blockLock = new SRFReentrantReadWriteLock[entries];
 		numberBlocksLocked = new AtomicInteger(0);
 		
 		for (int i = 0; i < entries; i++) {
 			blockSegmentStart[i] = new AtomicInteger(file.readInt());
 			blockActualLength[i] = new AtomicInteger(file.readInt());
 			blockSegmentLength[i] = new AtomicInteger(sizeToSegments(blockActualLength[i].get()));
-			blockLock[i] = new ReentrantReadWriteLock();
+			blockLock[i] = new SRFReentrantReadWriteLock(numberBlocksLocked);
 			int length = reserveSegments(blockSegmentStart[i].get(), blockSegmentLength[i].get());
 			if (length != blockSegmentLength[i].get()) {
-				throw new SimpleRegionFileException("Reserved segments for Block " + i + " overlap with another block");
+				throw new SRFException("Reserved segments for Block " + i + " overlap with another block");
 			}
 		}
 		
 	}
 	
-	/**
-	 * Gets a DataInputStream for reading a block.<br>
-	 * 
-	 * This method read locks the block, creates a snapshot of the block and then releases the lock.
-	 * 
-	 * @param i the index of the block
-	 * @return a DataInputStream for the block
-	 * @throws IOException on error
-	 */
+	@Override
 	public DataInputStream getInputStream(int i) throws IOException {
 		if (i < 0 || i > entries) {
-			throw new SimpleRegionFileException("Read block index out of range");
+			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
 		Lock lock = blockLock[i].readLock();
 		lock.lock();
-		if (this.isFileClosed()) {
-			throw new SimpleRegionFileClosedException("File closed");
+		if (this.isClosed()) {
+			throw new SRFClosedException("File closed");
 		}
 		try {
 			int start = blockSegmentStart[i].get() << segmentSize;
@@ -189,26 +182,18 @@ public class SimpleRegionFile {
 		}
 	}
 	
-	/**
-	 * Gets a DataOutputStream for writing to a block.<br>
-	 * <br>
-	 * WARNING:  This locks the block until the output stream is closed.<br>
-	 * 
-	 * @param i the block index
-	 * @return a DataOutputStream for the block
-	 * @throws IOException
-	 */
+	@Override
 	public DataOutputStream getOutputStream(int i) throws IOException {
 		if (i < 0 || i > entries) {
-			throw new SimpleRegionFileException("Read block index out of range");
+			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
 		Lock lock = blockLock[i].writeLock();
 		lock.lock();
-		if (this.isFileClosed()) {
-			throw new SimpleRegionFileClosedException("File closed");
+		if (this.isClosed()) {
+			throw new SRFClosedException("File closed");
 		}
-		return new DataOutputStream(new DeflaterOutputStream(new SimpleRegionFileOutputStream(this, i, this.segmentMask + 1, lock)));
+		return new DataOutputStream(new DeflaterOutputStream(new SRFOutputStream(this, i, this.segmentMask + 1, lock)));
 	}
 	
 	/**
@@ -231,33 +216,30 @@ public class SimpleRegionFile {
 		}
 	}
 	
-	/**
-	 * Gets if the access timeout has expired
-	 */
+	@Override
 	public boolean isTimedOut() {
 		return this.lastAccess.get() + this.timeout < System.currentTimeMillis();
 	}
 	
-	/**
-	 * Gets if the file is closed
-	 * 
-	 * @return true if the file is closed
-	 */
-	public boolean isFileClosed() {
+	@Override
+	public void closeIfTimedOut() throws IOException {
+		if (isTimedOut()) {
+			attemptClose();
+		}
+	}
+	
+	@Override
+	public boolean isClosed() {
 		return this.numberBlocksLocked.get() == FILE_CLOSED;
 	}
 	
-	
-	/**
-	 * Attempts to close the file.  This method will only succeed if no block locks are active
-	 * 
-	 * @return true on success
-	 * @throws IOException 
-	 */
-	public boolean attemptFileClose() throws IOException {
+	@Override
+	public boolean attemptClose() throws IOException {
 		refreshAccess();
 		if (this.numberBlocksLocked.compareAndSet(0, FILE_CLOSED)) {
-			file.close();
+			synchronized(file) {
+				file.close();
+			}
 			return true;
 		} else {
 			return false;
@@ -305,7 +287,7 @@ public class SimpleRegionFile {
 	 */
 	private int sizeToSegments(int size) {
 		if (size <= 0) {
-			return 1;
+			return 0;
 		} else {
 			return ((size - 1) >> segmentSize) + 1;
 		}
@@ -328,7 +310,7 @@ public class SimpleRegionFile {
 	 * @param i the segment index
 	 * @return true on success
 	 */
-	public boolean reserveSegment(int i) {
+	private boolean reserveSegment(int i) {
 		boolean oldUsed = setInUse(i, true);
 		return !oldUsed;
 	}
@@ -345,9 +327,9 @@ public class SimpleRegionFile {
 		int end = start + length;
 		for (int i = start; i < end; i++) {
 			if (!reserveSegment(i)) {
-				for (int j = i - i; j >= start; j--) {
+				for (int j = i - 1; j >= start; j--) {
 					if (!releaseSegment(j)) {
-						throw new SimpleRegionFileException("Release error when releasing a group of segments that had just been locked");
+						throw new SRFException("Release error when releasing a group of segments that had just been locked");
 					}
 				}
 				return i - start;
@@ -375,9 +357,10 @@ public class SimpleRegionFile {
 	private int reserveBlockSegments(int i, int length) throws IOException {
 		AtomicInteger blockStart = this.blockSegmentStart[i];
 		AtomicInteger blockLength = this.blockSegmentLength[i];
+		AtomicInteger blockBytes = this.blockActualLength[i];
 		
-		int oldStart = blockStart.get() << this.segmentSize;
-		int oldLength = blockLength.get() << this.segmentSize;
+		int oldStart = blockStart.get();
+		int oldLength = blockLength.get();
 		int oldEnd = oldStart + oldLength;
 		
 		int newLength = sizeToSegments(length);
@@ -385,8 +368,12 @@ public class SimpleRegionFile {
 		
 		if (newLength <= oldLength) { // file has shrunk
 			for (int j = newEnd; j < oldEnd; j++) {
-				this.releaseSegment(j);
+				if (!this.releaseSegment(j)) {
+					throw new SRFException("Unable to unlock blocks due to file shrinking");
+				}
 			}
+			blockLength.set(newLength);
+			blockBytes.set(length);
 			return oldStart;
 		}
 		
@@ -394,6 +381,8 @@ public class SimpleRegionFile {
 		int lockedSegments = this.reserveSegments(oldEnd, extraLength);
 		
 		if (lockedSegments == extraLength) {
+			blockLength.set(newLength);
+			blockBytes.set(length);
 			return oldStart;
 		}
 		
@@ -407,14 +396,23 @@ public class SimpleRegionFile {
 			}
 		}
 		
+		for (int j = oldStart; j < oldEnd; j++) {
+			releaseSegment(j);
+		}
+		
+		blockStart.set(newStart);
+		blockLength.set(newLength);
+		blockBytes.set(length);
 		return newStart;
 	}
 	
 	private void writeFAT(int i, int start, int actualLength) throws IOException {
 		int FATEntryPosition = getFATOffset() + (i << 3);
-		file.seek(FATEntryPosition);
-		file.writeInt(start);
-		file.writeInt(actualLength);
+		synchronized(file) {
+			file.seek(FATEntryPosition);
+			file.writeInt(start);
+			file.writeInt(actualLength);
+		}
 	}
 	
 	/**
@@ -430,6 +428,8 @@ public class SimpleRegionFile {
 		if (localArray.length <= i) {
 			expandInUseArray(Math.max(i+1, localArray.length * 3 / 2));
 		}
+		
+		localArray = inuse.get();
 		
 		return localArray[i].getAndSet(used);
 	}

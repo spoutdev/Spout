@@ -4,22 +4,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SimpleRegionReentrantReadWriteLock {
+public class SRFReentrantReadWriteLock {
 
 	private final Lock readLock;
 	private final Lock writeLock;
 	
-	public SimpleRegionReentrantReadWriteLock(AtomicInteger lockCounter) {
+	public SRFReentrantReadWriteLock(AtomicInteger lockCounter) {
 		ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-		this.readLock = new SimpleRegionFileBlockLock(lock.readLock(), lockCounter);
-		this.writeLock = new SimpleRegionFileBlockLock(lock.writeLock(), lockCounter);
+		this.readLock = new SRFBlockLock(lock.readLock(), lockCounter);
+		this.writeLock = new SRFBlockLock(lock.writeLock(), lockCounter);
 	}
 	
-	public Lock readlock() {
+	public Lock readLock() {
 		return readLock;
 	}
 	
-	public Lock writelock() {
+	public Lock writeLock() {
 		return writeLock;
 	}
 	

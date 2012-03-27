@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
-public class SimpleRegionFileOutputStream extends ByteArrayOutputStream  {
+public class SRFOutputStream extends ByteArrayOutputStream  {
 
 	private final SimpleRegionFile srf;
 	private final int index;
 	private final Lock lock;
 	private final AtomicBoolean lockUnlocked;
 	
-	SimpleRegionFileOutputStream(SimpleRegionFile srf, int index, int estimatedSize, Lock lock) {
+	SRFOutputStream(SimpleRegionFile srf, int index, int estimatedSize, Lock lock) {
 		super(estimatedSize);
 		this.srf = srf;
 		this.index = index;
@@ -29,7 +29,7 @@ public class SimpleRegionFileOutputStream extends ByteArrayOutputStream  {
 				lock.unlock();
 			}
 		} else {
-			throw new SimpleRegionFileException("Attempt made to close a block output stream twice");
+			throw new SRFException("Attempt made to close a block output stream twice");
 		}
 	}
 	

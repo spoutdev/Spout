@@ -5,12 +5,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class SimpleRegionFileBlockLock implements Lock {
+public class SRFBlockLock implements Lock {
 	
 	private final AtomicInteger lockCounter;
 	private final Lock lock;
 
-	public SimpleRegionFileBlockLock(Lock lock, AtomicInteger lockCounter) {
+	public SRFBlockLock(Lock lock, AtomicInteger lockCounter) {
 		this.lock = lock;
 		this.lockCounter = lockCounter;
 	}
