@@ -1,18 +1,18 @@
-package org.spout.api.io.persistentbytearraymap;
+package org.spout.api.io.bytearrayarray;
 
 import java.io.IOException;
 
 /**
  * This exception is thrown when by a PersistentByteArrayMap.
  */
-public class PBAAException extends IOException {
+public class BAAException extends IOException {
 	private static final long serialVersionUID = 1L;
 
-	public PBAAException(String message, Throwable t) {
+	public BAAException(String message, Throwable t) {
 		super(message, t);
 	}
 	
-	public PBAAException(String message) {
+	public BAAException(String message) {
 		super(message);
 	}
 }

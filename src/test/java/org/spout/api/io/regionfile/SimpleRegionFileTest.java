@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.junit.Test;
-import org.spout.api.io.persistentbytearraymap.PBAAClosedException;
-import org.spout.api.io.persistentbytearraymap.PersistentByteArrayArray;
+import org.spout.api.io.bytearrayarray.BAAClosedException;
+import org.spout.api.io.bytearrayarray.ByteArrayArray;
 
 public class SimpleRegionFileTest {
 	
@@ -20,7 +20,7 @@ public class SimpleRegionFileTest {
 	private static String filename = "regionfile.dat";
 	
 	private byte[][] dataCache = new byte[desiredEntries][];
-	private PersistentByteArrayArray srf;
+	private ByteArrayArray srf;
 	
 	@Test
 	public void test() throws IOException {
@@ -82,7 +82,7 @@ public class SimpleRegionFileTest {
 		boolean exceptionThrown = false;
 		try {
 			out = srf.getOutputStream(entry);
-		} catch (PBAAClosedException e) {
+		} catch (BAAClosedException e) {
 			exceptionThrown = true;
 		}
 		
@@ -93,7 +93,7 @@ public class SimpleRegionFileTest {
 		exceptionThrown = false;
 		try {
 			srf.getInputStream(entry);
-		} catch (PBAAClosedException e) {
+		} catch (BAAClosedException e) {
 			exceptionThrown = true;
 		}
 		

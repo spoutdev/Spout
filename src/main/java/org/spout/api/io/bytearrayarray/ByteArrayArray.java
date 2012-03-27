@@ -1,4 +1,4 @@
-package org.spout.api.io.persistentbytearraymap;
+package org.spout.api.io.bytearrayarray;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,7 +11,7 @@ import java.io.IOException;
  * <br>
  * The number of blocks in the array is determined at creation.
  */
-public interface PersistentByteArrayArray {
+public interface ByteArrayArray {
 
 	/**
 	 * Gets a DataInputStream for reading a block.<br>

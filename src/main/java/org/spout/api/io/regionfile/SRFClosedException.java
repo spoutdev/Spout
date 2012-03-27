@@ -1,9 +1,9 @@
 package org.spout.api.io.regionfile;
 
-import org.spout.api.io.persistentbytearraymap.PBAAClosedException;
+import org.spout.api.io.bytearrayarray.BAAClosedException;
 
 
-public class SRFClosedException extends PBAAClosedException {
+public class SRFClosedException extends BAAClosedException {
 
 	private static final long serialVersionUID = 1L;
 

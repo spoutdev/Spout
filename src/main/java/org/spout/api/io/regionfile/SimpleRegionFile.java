@@ -41,9 +41,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-import org.spout.api.io.persistentbytearraymap.PersistentByteArrayArray;
+import org.spout.api.io.bytearrayarray.ByteArrayArray;
 
-public class SimpleRegionFile implements PersistentByteArrayArray {
+public class SimpleRegionFile implements ByteArrayArray {
 	
 	private static final int VERSION = 1;
 	private static final int TIMEOUT = 120000; // timeout delay

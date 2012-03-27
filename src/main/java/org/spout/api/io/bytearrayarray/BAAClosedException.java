@@ -1,16 +1,16 @@
-package org.spout.api.io.persistentbytearraymap;
+package org.spout.api.io.bytearrayarray;
 
 /**
  * This exception is thrown when a PersistentByteArrayMap is accessed after it has been closed.
  */
-public class PBAAClosedException extends PBAAException {
+public class BAAClosedException extends BAAException {
 	private static final long serialVersionUID = 1L;
 
-	public PBAAClosedException(String message, Throwable t) {
+	public BAAClosedException(String message, Throwable t) {
 		super(message, t);
 	}
 	
-	public PBAAClosedException(String message) {
+	public BAAClosedException(String message) {
 		super(message);
 	}
 }
