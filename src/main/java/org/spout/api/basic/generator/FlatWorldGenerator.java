@@ -40,4 +40,8 @@ public class FlatWorldGenerator implements WorldGenerator {
 	public Populator[] getPopulators() {
 		return new Populator[0];
 	}
+	
+	public String getName() {
+		return "FlatWorld";
+	}
 }

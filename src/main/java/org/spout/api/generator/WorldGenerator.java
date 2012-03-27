@@ -50,4 +50,9 @@ public interface WorldGenerator {
 	 * @return the Populator array
 	 */
 	public Populator[] getPopulators();
+	
+	/**
+	 * Gets the name of the generator.  This name should be unique to prevent two generators overwriting the same world
+	 */
+	public String getName();
 }

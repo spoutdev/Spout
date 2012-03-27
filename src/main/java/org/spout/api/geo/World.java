@@ -25,6 +25,7 @@
  */
 package org.spout.api.geo;
 
+import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,7 +39,6 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.player.Player;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -331,4 +331,9 @@ public interface World extends Source, AreaBlockAccess {
 	 * @return all players on this world
 	 */
 	public Set<Player> getPlayers();
+	
+	/**
+	 * Gets the directory where world data is stored
+	 */
+	public File getDirectory();
 }
