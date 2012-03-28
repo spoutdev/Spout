@@ -671,7 +671,7 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		inventorySize = newsize;
-		if (getInventory().getSize() != inventorySize) {
+		if (inventory != null && getInventory().getSize() != inventorySize) {
 			inventory = null;
 			setData("inventory", null);
 		}
