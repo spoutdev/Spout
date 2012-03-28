@@ -57,6 +57,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.player.Player;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
+import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.server.SpoutServer;
 import org.spout.server.entity.EntityManager;
 import org.spout.server.entity.SpoutEntity;
@@ -135,6 +136,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
+		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
+			name = Long.toHexString(System.currentTimeMillis());
+			Spout.getGame().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+		}
 		this.name = name;
 		this.generator = generator;
 		entityManager = new EntityManager();
@@ -143,7 +148,12 @@ public class SpoutWorld extends AsyncManager implements World {
 		worldsDirectory.mkdirs();
 		File world = new File(worldsDirectory, name);
 		world.mkdirs();
-		worldDirectory = new File(world, generator.getName());
+		String generatorName = generator.getName();
+		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
+			generatorName = Long.toHexString(System.currentTimeMillis());
+			Spout.getGame().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
+		}
+		worldDirectory = new File(world, generatorName);
 		worldDirectory.mkdirs();	
 	}
 
