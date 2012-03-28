@@ -28,7 +28,6 @@ package org.spout.server.world;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
@@ -49,10 +48,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.io.bytearrayarray.BAAClosedException;
-import org.spout.api.io.bytearrayarray.BAAOpenInProgress;
-import org.spout.api.io.bytearrayarray.ByteArrayArray;
-import org.spout.api.io.regionfile.SimpleRegionFile;
+import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
@@ -126,17 +122,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
-	private final AtomicReference<ByteArrayArray> chunkStore;
-
-	/**
-	 * Chunk store is set to this value when file opening is in progress
-	 */
-	private final static ByteArrayArray chunkStoreOpenInProgress = new BAAOpenInProgress();
-	
-	/**
-	 * File that references the ByteArrayArray file where chunk data is stored
-	 */
-	private final File regionFile;
+	private final BAAWrapper chunkStore;
 
 	/**
 	 * Holds all not populated chunks
@@ -198,8 +184,8 @@ public class SpoutRegion extends Region {
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
 		regionDirectory.mkdirs();
-		regionFile = new File(regionDirectory, "reg" + getX() + "_" + getY() + "_" + getZ() + ".spr");
-		chunkStore = new AtomicReference<ByteArrayArray>(null);
+		File regionFile = new File(regionDirectory, "reg" + getX() + "_" + getY() + "_" + getZ() + ".spr");
+		this.chunkStore = new BAAWrapper(regionFile, SEGMENT_SIZE, REGION_SIZE_CUBED, TIMEOUT);
 	}
 
 	public SpoutWorld getWorld() {
@@ -727,21 +713,12 @@ public class SpoutRegion extends Region {
 	}
 	
 	/**
-	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.<br>
+	 * This method should be called periodically in order to see if the Chunk Store ByteArrayArray has timed out.<br>
 	 * <br>
-	 * It will only close the array if no block OutputStreams are open and the last access occured more than the timeout previously
+	 * It will only close the array if no block OutputStreams are open and the last access occurred more than the timeout previously
 	 */
-	public void byteArrayArrayTimeoutCheck() {
-		ByteArrayArray baa = chunkStore.get();
-		if (baa != null) {
-			try {
-				baa.closeIfTimedOut();
-			} catch (IOException ioe) {
-			}
-			if (baa.isClosed()) {
-				chunkStore.compareAndSet(baa, null);
-			}
-		}
+	public void chunkStoreTimeoutCheck() {
+		chunkStore.timeoutCheck();
 	}
 	
 	/**
@@ -754,21 +731,7 @@ public class SpoutRegion extends Region {
 	 */
 	public DataOutputStream getChunkOutputStream(Chunk c) {
 		int key = getChunkKey(c);
-		while (true) {
-			ByteArrayArray baa = getByteArrayArray();
-			if (baa == null) {
-				return null;
-			}
-			DataOutputStream out;
-			try {
-				out = baa.getOutputStream(key);
-			} catch (BAAClosedException e) {
-				continue;
-			} catch (IOException e) {
-				return null;
-			}
-			return out;
-		}
+		return chunkStore.getBlockOutputStream(key);
 	}
 	
 	/**
@@ -781,67 +744,7 @@ public class SpoutRegion extends Region {
 	 */
 	public DataInputStream getChunkInputStream(Chunk c) {
 		int key = getChunkKey(c);
-		while (true) {
-			ByteArrayArray baa = getByteArrayArray();
-			if (baa == null) {
-				return null;
-			}
-			DataInputStream in;
-			try {
-				in = baa.getInputStream(key);
-			} catch (BAAClosedException e) {
-				continue;
-			} catch (IOException e) {
-				return null;
-			}
-			return in;
-		}
-	}
-	
-	private ByteArrayArray getByteArrayArray() {
-		int count = 0;
-		while (true) {
-			ByteArrayArray baa = chunkStore.get();
-			
-			// If the baa exists and isn't closed return it
-			if (baa != null) {
-				if (baa.isClosed()) {
-					chunkStore.compareAndSet(baa, null);
-					continue;
-				} else {
-					return baa;
-				}
-			// Some other thread is trying to open the file
-			// Spinning lock, then yield and then sleep
-			} else if (!chunkStore.compareAndSet(null, chunkStoreOpenInProgress)) {
-				count++;
-				if (count > 10 ){
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-
-					}
-				} else if (count > 0) {
-					Thread.yield();
-				}
-			// Successfully claimed the right to open a new file
-			// Attempt to open the file.  If an IOException is throw return null
-			} else {
-				baa = null;
-				try {
-					try {
-						baa = new SimpleRegionFile(regionFile, SEGMENT_SIZE, REGION_SIZE_CUBED, TIMEOUT);
-					} catch (IOException e) {
-						baa = null;
-					}
-					return baa;
-				} finally {
-					if (!chunkStore.compareAndSet(chunkStoreOpenInProgress, baa)) {
-						throw new IllegalStateException("chunkStore variable changed outside locking scheme");
-					}				
-				}
-			}
-		}
+		return chunkStore.getBlockInputStream(key);
 	}
 	
 	private int getChunkKey(Chunk c) {
