@@ -44,8 +44,6 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * Represents the unit vector (1 at 0 degrees)
 	 */
 	public final static Vector2Polar UNIT = new Vector2Polar(1, 0);
-	private final static float twoPi = (float) (Math.PI * 2);
-	private final static float ninetyDegrees = (float) (Math.PI / 4);
 	
 	protected final float r;
 	protected final float theta;
@@ -547,7 +545,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2Polar cross(Vector2Polar o) {
-		return new Vector2Polar(o.r, o.theta + ninetyDegrees);
+		return new Vector2Polar(o.r, o.theta + MathHelper.QUARTER_PI);
 	}
 
 	/**
@@ -611,7 +609,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar rand() {
-		return new Vector2Polar(Math.random(), Math.random() * twoPi);
+		return new Vector2Polar(Math.random(), Math.random() * MathHelper.TWO_PI);
 	}
 
 	/**
@@ -660,18 +658,10 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static float getRealAngle(float theta) {
-		float out = 0;
+		theta %= MathHelper.TWO_PI;
 		if (theta < 0) {
-			for (float i = theta; i <= twoPi; i = i + twoPi) {
-				out = i;
-			}
-		} else if (theta < twoPi) {
-			return theta;
-		} else {
-			for (float i = theta; i > 0; i = i - twoPi) {
-				out = i;
-			}
+			theta += MathHelper.TWO_PI;
 		}
-		return out;
+		return theta;
 	}
 }

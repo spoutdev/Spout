@@ -454,6 +454,16 @@ public class Vector2 implements Comparable<Vector2>{
 	}
 
 	/**
+	 * Gets the squared distance between this Vector2 and a given Vector2.
+	 *
+	 * @param a
+	 * @return
+	 */
+	public double distanceSquared(Vector2 a) {
+		return Vector2.distanceSquared(a, this);
+	}
+
+	/**
 	 * Raises the X and Y values of this Vector2 to the given power.
 	 *
 	 * @param power
@@ -783,8 +793,18 @@ public class Vector2 implements Comparable<Vector2>{
 	 * @return
 	 */
 	public static double distance(Vector2 a, Vector2 b) {
-		Vector2 tempVector = Vector2.pow(Vector2.subtract(a, b), 2);
-		return Math.sqrt(tempVector.getX() + tempVector.getY());
+		return MathHelper.length(a.x - b.x, a.y - b.y);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector2.
+	 *
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double distanceSquared(Vector2 a, Vector2 b) {
+		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y);
 	}
 
 	/**

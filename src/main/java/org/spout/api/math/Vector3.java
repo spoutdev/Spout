@@ -478,6 +478,16 @@ public class Vector3 implements Comparable<Vector3> {
 	}
 
 	/**
+	 * Gets the squared distance between this Vector3 and a given Vector3.
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public double distanceSquared(Vector3 a) {
+		return Vector3.distanceSquared(a, this);
+	}
+
+	/**
 	 * Raises the X, Y, and Z values of this Vector3 to the given power.
 	 * 
 	 * @param power
@@ -616,7 +626,7 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static float fastLength(Vector3 a) {
-		return (float) Math.sqrt(lengthSquared(a));
+		return (float) MathHelper.sqrt(lengthSquared(a));
 	}
 
 	/**
@@ -792,8 +802,18 @@ public class Vector3 implements Comparable<Vector3> {
 	 * @return
 	 */
 	public static double distance(Vector3 a, Vector3 b) {
-		double xzDist = Vector2.distance(a.toVector2(), b.toVector2());
-		return Math.sqrt(Math.pow(xzDist, 2) + Math.pow(Math.abs(Vector3.subtract(a, b).y), 2));
+		return MathHelper.length(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector3.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double distanceSquared(Vector3 a, Vector3 b) {
+		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
 	/**

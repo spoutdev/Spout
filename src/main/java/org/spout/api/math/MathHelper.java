@@ -27,8 +27,9 @@ package org.spout.api.math;
 
 import java.awt.Color;
 
-
-
+/**
+ * Class containing various mathematical functions
+ */
 public class MathHelper {
 	/**
 	 * A "close to zero" double epsilon value for use
@@ -46,16 +47,114 @@ public class MathHelper {
 
 	public static final double HALF_PI = 0.5 * PI;
 
-	public static final double QUATER_PI = 0.5 * HALF_PI;
+	public static final double QUARTER_PI = 0.5 * HALF_PI;
 
 	public static final double TWO_PI = 2.0 * PI;
 
 	public static final double THREE_PI_HALVES = TWO_PI - HALF_PI;
 
-	
+	public static final double DEGTORAD = PI / 180.0;
 
+	public static final double RADTODEG = 180.0 / PI;
+
+	public static final double SQRTOFTWO = Math.sqrt(2.0);
 	
-	
+	public static final double HALF_SQRTOFTWO = 0.5 * SQRTOFTWO;
+
+	/**
+	 * Calculates the squared length of all axis offsets given
+	 * 
+	 * @param values of the axis to get the squared length of
+	 * @return the squared length
+	 */
+	public static double lengthSquared(double... values) {
+		double rval = 0;
+		for (double value : values) {
+			rval += value * value;
+		}
+		return rval;
+	}
+
+	/**
+	 * Calculates the length of all axis offsets given
+	 * 
+	 * @param values of the axis to get the length of
+	 * @return the length
+	 */
+	public static double length(double... values) {
+		return Math.sqrt(lengthSquared(values));
+	}
+
+	/**
+	 * Gets the difference between two angles
+	 * This value is always positive (0 - 180)
+	 * 
+	 * @param angle1
+	 * @param angle2
+	 * @return the positive angle difference
+	 */
+	public static float getAngleDifference(float angle1, float angle2) {
+		return Math.abs(wrapAngle(angle1 - angle2));
+	}
+
+	/**
+	 * Gets the difference between two radians
+	 * This value is always positive (0 - PI)
+	 * 
+	 * @param radian1
+	 * @param radian2
+	 * @return the positive radian difference
+	 */
+	public static double getRadianDifference(double radian1, double radian2) {
+		return Math.abs(wrapRadian(radian1 - radian2));
+	}
+
+	/**
+	 * Wraps the angle between -180 and 180 degrees
+	 * 
+	 * @param angle to wrap
+	 * @return -180 > angle <= 180
+	 */
+	public static float wrapAngle(float angle) {
+		angle %= 360f;
+		if (angle <= -180) {
+			return angle + 360;
+		} else if (angle > 180) {
+			return angle - 360;
+		} else {
+			return angle;
+		}
+	}
+
+	/**
+	 * Wraps the radian between -PI and PI
+	 * 
+	 * @param radian to wrap
+	 * @return -PI > radian <= PI
+	 */
+	public static double wrapRadian(double radian) {
+		radian %= TWO_PI;
+		if (radian <= -PI) {
+			return radian + TWO_PI;
+		} else if (radian > PI) {
+			return radian - TWO_PI;
+		} else {
+			return radian;
+		}
+	}
+
+	/**
+	 * Rounds a number to the amount of decimals specified
+	 * 
+	 * @param input to round
+	 * @param decimals to round to
+	 * @return the rounded number
+	 */
+	public static double round(double input, int decimals) {
+		double p = Math.pow(10, decimals);
+		return Math.round(input * p) / p;
+	}
+
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
