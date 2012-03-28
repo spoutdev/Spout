@@ -27,7 +27,6 @@ package org.spout.api.inventory;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +147,7 @@ public class Inventory implements Serializable {
 
 	public boolean containsExactly(ItemStack item) {
 		for (int i = 0; i < contents.length; i++) {
-			if (contents[i].equals(item)) {
+			if (contents[i]!=null && contents[i].equals(item)) {
 				return true;
 			}
 		}
@@ -161,7 +160,7 @@ public class Inventory implements Serializable {
 		}
 		int neededAmount = item.getAmount();
 		for (int i = 0; i < contents.length; i++) {
-			if (contents[i].equalsIgnoreSize(item)) {
+			if (contents[i] != null && contents[i].equalsIgnoreSize(item)) {
 				neededAmount -= contents[i].getAmount();
 				if (neededAmount <= 0) {
 					return true;
