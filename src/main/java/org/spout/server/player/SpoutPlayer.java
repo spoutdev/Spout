@@ -360,7 +360,7 @@ public class SpoutPlayer implements Player {
 		if (reason == null) {
 			throw new IllegalArgumentException("reason cannot be null");
 		}
-		entity.kill();
+		getEntity().kill();
 		session.disconnect(reason);
 	}
 
