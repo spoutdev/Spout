@@ -223,7 +223,7 @@ public class MatrixTest {
 
 		compareMatrixToArray(m, id);
 
-		rot = new Quaternion(4, 3, 2, 0);
+		rot = new Quaternion(4, 3, 2, 0, true);
 		m = Matrix.rotate(rot);
 
 		id = new double[][] { {0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};

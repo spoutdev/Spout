@@ -37,22 +37,22 @@ public class Quaternion {
 	/**
 	 * Represents no rotation
 	 */
-	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1);
+	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1, true);
 
 	/**
 	 * Represents 90 degrees rotation around the x axis
 	 */
-	public static final Quaternion UNIT_X = new Quaternion(1, 0, 0, 0);
+	public static final Quaternion UNIT_X = new Quaternion(1, 0, 0, 0, true);
 
 	/**
 	 * Represents 90 degrees rotation around the < axis
 	 */
-	public static final Quaternion UNIT_Y = new Quaternion(0, 1, 0, 0);
+	public static final Quaternion UNIT_Y = new Quaternion(0, 1, 0, 0, true);
 
 	/**
 	 * Represents 90 degrees rotation around the z axis
 	 */
-	public static final Quaternion UNIT_Z = new Quaternion(0, 0, 1, 0);
+	public static final Quaternion UNIT_Z = new Quaternion(0, 0, 1, 0, true);
 
 	/**
 	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
@@ -63,8 +63,9 @@ public class Quaternion {
 	 * @param y
 	 * @param z
 	 * @param w
+	 * @param ignore Ignored.  This is because float float float float should be for angle/x,y,z
 	 */
-	public Quaternion(float x, float y, float z, float w) {
+	public Quaternion(float x, float y, float z, float w, boolean ignore) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -78,10 +79,9 @@ public class Quaternion {
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param x-axis
 	 * @param y-axis
-	 * @param z-axis
-	 * @param ignore
+	 * @param z-axis	
 	 */
-	public Quaternion(float angle, float x, float y, float z, boolean ignore) {
+	public Quaternion(float angle, float x, float y, float z) {
 		double rads = Math.toRadians(angle);
 		double halfAngle = Math.sin(rads / 2);
 		this.x = (float) (x * halfAngle);
@@ -98,7 +98,7 @@ public class Quaternion {
 	 * @param axis
 	 */
 	public Quaternion(float angle, Vector3 axis) {
-		this(angle, axis.getX(), axis.getY(), axis.getZ(), true);
+		this(angle, axis.getX(), axis.getY(), axis.getZ());
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class Quaternion {
 	 */
 	public static Quaternion normalize(Quaternion a) {
 		float length = length(a);
-		return new Quaternion(a.x / length, a.y / length, a.z / length, a.w / length);
+		return new Quaternion(a.x / length, a.y / length, a.z / length, a.w / length, true);
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class Quaternion {
 
 		float w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
 
-		return new Quaternion(x, y, z, w);
+		return new Quaternion(x, y, z, w, true);
 	}
 
 	public static Quaternion rotation(float pitch, float yaw, float roll) {
@@ -332,7 +332,7 @@ public class Quaternion {
 	 * @return rotated Quaternion
 	 */
 	public static Quaternion rotate(Quaternion a, float angle, float x, float y, float z) {
-		return multiply(new Quaternion(angle, x, y, z, true), a);
+		return multiply(new Quaternion(angle, x, y, z), a);
 	}
 
 	/**

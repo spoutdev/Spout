@@ -41,9 +41,9 @@ public class QuaternionTest {
 
 	@Test
 	public void testQuaternionDoubleDoubleDoubleDouble() {
-		Quaternion q = new Quaternion(1, 0, 0, 0);
+		Quaternion q = new Quaternion(1, 0, 0, 0, true);
 		testValues(q, 1, 0, 0, 0);
-		q = new Quaternion(4, 2, 6, 8);
+		q = new Quaternion(4, 2, 6, 8, true);
 		testValues(q, 4, 2, 6, 8);
 	}
 
@@ -73,19 +73,19 @@ public class QuaternionTest {
 
 	@Test
 	public void testLengthSquaredQuaternion() {
-		Quaternion rot = new Quaternion(1, 0, 0, 0);
+		Quaternion rot = new Quaternion(1, 0, 0, 0, true);
 		float ls = rot.lengthSquared();
 		if (Math.abs(ls - 1.0f) >= eps) {
 			fail("Length Squared of " + rot + " Should be 1.f, got " + ls);
 		}
 
-		rot = new Quaternion(6, 4, 3, 2);
+		rot = new Quaternion(6, 4, 3, 2, true);
 		ls = rot.lengthSquared();
 		if (Math.abs(ls - 65.0f) >= eps) {
 			fail("Length Squared of " + rot + " Should be 65.f, got " + ls);
 		}
 
-		rot = new Quaternion(6, -1, 0, 2);
+		rot = new Quaternion(6, -1, 0, 2, true);
 		ls = rot.lengthSquared();
 		if (Math.abs(ls - 41.0f) >= eps) {
 			fail("Length Squared of " + rot + " Should be 41.f, got " + ls);
@@ -94,19 +94,19 @@ public class QuaternionTest {
 
 	@Test
 	public void testLengthQuaternion() {
-		Quaternion rot = new Quaternion(1, 0, 0, 0);
+		Quaternion rot = new Quaternion(1, 0, 0, 0, true);
 		float ls = rot.length();
 		if (Math.abs(ls - 1.0f) >= eps) {
 			fail("Length of " + rot + " Should be 1.f, got " + ls);
 		}
 
-		rot = new Quaternion(6, 4, 3, 2);
+		rot = new Quaternion(6, 4, 3, 2, true);
 		ls = rot.length();
 		if (Math.abs(ls - Math.sqrt(65.0f)) >= eps) {
 			fail("Length of " + rot + " Should be 65.f, got " + ls);
 		}
 
-		rot = new Quaternion(6, -1, 0, 2);
+		rot = new Quaternion(6, -1, 0, 2, true);
 		ls = rot.length();
 		if (Math.abs(ls - Math.sqrt(41.0f)) >= eps) {
 			fail("Length of " + rot + " Should be 41.f, got " + ls);
@@ -115,19 +115,19 @@ public class QuaternionTest {
 
 	@Test
 	public void testNormalizeQuaternion() {
-		Quaternion rot = new Quaternion(1, 0, 0, 0);
+		Quaternion rot = new Quaternion(1, 0, 0, 0, true);
 		Quaternion norm = rot.normalize();
 		if (Math.abs(norm.length() - 1.f) >= eps) {
 			fail("Normalized form of " + rot + " Should be length 1 but got " + norm.length());
 		}
 
-		rot = new Quaternion(6, 4, 3, 2);
+		rot = new Quaternion(6, 4, 3, 2, true);
 		norm = rot.normalize();
 		if (Math.abs(norm.length() - 1.f) >= eps) {
 			fail("Normalized form of " + rot + " Should be length 1 but got " + norm.length());
 		}
 
-		rot = new Quaternion(6, -1, 0, 2);
+		rot = new Quaternion(6, -1, 0, 2, true);
 		norm = rot.normalize();
 		if (Math.abs(norm.length() - 1.f) >= eps) {
 			fail("Normalized form of " + rot + " Should be length 1 but got " + norm.length());
@@ -136,23 +136,23 @@ public class QuaternionTest {
 
 	@Test
 	public void testMultiplyQuaternionQuaternion() {
-		Quaternion a = new Quaternion(1, 0, 0, 0);
-		Quaternion b = new Quaternion(1, 0, 0, 0);
+		Quaternion a = new Quaternion(1, 0, 0, 0, true);
+		Quaternion b = new Quaternion(1, 0, 0, 0, true);
 		Quaternion res = a.multiply(b);
 		testValues(res, 0, 0, 0, -1);
 
-		a = new Quaternion(0, 0, 0, 1);
-		b = new Quaternion(0, 0, 0, 1);
+		a = new Quaternion(0, 0, 0, 1, true);
+		b = new Quaternion(0, 0, 0, 1, true);
 		res = a.multiply(b);
 		testValues(res, 0, 0, 0, 1);
 
-		a = new Quaternion(5, 3, 1, 1);
-		b = new Quaternion(0, 0, 0, 1);
+		a = new Quaternion(5, 3, 1, 1, true);
+		b = new Quaternion(0, 0, 0, 1, true);
 		res = a.multiply(b);
 		testValues(res, 5, 3, 1, 1);
 
-		a = new Quaternion(5, 3, 1, 1);
-		b = new Quaternion(-5, 2, 1, 0);
+		a = new Quaternion(5, 3, 1, 1, true);
+		b = new Quaternion(-5, 2, 1, 0, true);
 		res = a.multiply(b);
 		testValues(res, -4, -8, 26, 18);
 	}
@@ -165,13 +165,13 @@ public class QuaternionTest {
 		float z = 0;
 		float ang = 0;
 
-		Quaternion a = new Quaternion(0, 0, 0, 1);
+		Quaternion a = new Quaternion(0, 0, 0, 1, true);
 		Quaternion res = a.rotate(ang, new Vector3(x, y, z));
 		testValues(res, 0, 0, 0, 1);
 
 		x = 1;
 		ang = 45;
-		a = new Quaternion(0, 0, 0, 1);
+		a = new Quaternion(0, 0, 0, 1, true);
 		res = a.rotate(ang, new Vector3(x, y, z));
 		qx = x * (float) Math.sin((Math.toRadians(ang) / 2));
 		qy = y * (float) Math.sin((Math.toRadians(ang) / 2));
@@ -183,7 +183,7 @@ public class QuaternionTest {
 		y = 4.f;
 		z = -3.f;
 		ang = 120;
-		a = new Quaternion(0, 0, 0, 1);
+		a = new Quaternion(0, 0, 0, 1, true);
 		res = a.rotate(ang, new Vector3(x, y, z));
 		qx = x * (float) Math.sin((Math.toRadians(ang) / 2));
 		qy = y * (float) Math.sin((Math.toRadians(ang) / 2));

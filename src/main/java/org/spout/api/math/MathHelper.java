@@ -295,7 +295,7 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Vector3 getDirectionVector(Quaternion rot) {
-		return Vector3.transform(Vector3.UNIT_X, Matrix.rotate(rot));
+		return Vector3.transform(Vector3.FORWARD, Matrix.rotate(rot));
 	}
 
 	//Fast Math Implementation
