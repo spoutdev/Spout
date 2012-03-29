@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>org.spout</groupId>
 			<artifactId>spoutnbt</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
