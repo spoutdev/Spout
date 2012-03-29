@@ -488,6 +488,16 @@ public class Vector4 implements Comparable<Vector4> {
 	}
 
 	/**
+	 * Gets the distance between this Vector4 and a given Vector4.
+	 *
+	 * @param a
+	 * @return
+	 */
+	public double distanceSquared(Vector4 a) {
+		return Vector4.distanceSquared(a, this);
+	}
+
+	/**
 	 * Raises the values of this Vector4 to the given power.
 	 *
 	 * @param power
@@ -772,8 +782,18 @@ public class Vector4 implements Comparable<Vector4> {
 	 * @return
 	 */
 	public static double distance(Vector4 a, Vector4 b) {
-		double xyzDist = Vector3.distance(a.toVector3(), b.toVector3());
-		return Math.sqrt(Math.pow(xyzDist, 2) + Math.pow(Vector4.subtract(a, b).getW(), 2));
+		return MathHelper.length(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector4.
+	 *
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double distanceSquared(Vector4 a, Vector4 b) {
+		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
 	}
 
 	/**
