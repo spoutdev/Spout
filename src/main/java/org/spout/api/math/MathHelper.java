@@ -237,6 +237,17 @@ public class MathHelper {
 		return new Color(red, green, blue, alpha);
 	}
 	
+	public static Quaternion lerp(Quaternion a, Quaternion b, float percent){
+		float x = lerp(a.getX(), b.getX(), percent);
+		float y = lerp(a.getY(), b.getY(), percent);
+		float z = lerp(a.getZ(), b.getZ(), percent);
+		float w = lerp(a.getW(), b.getW(), percent);
+		return new Quaternion(x,y,z,w, true);
+		
+	
+	}
+	
+	
 	public static Color blend(Color a, Color b){
 		int red = lerp(a.getRed(), b.getRed(), (a.getAlpha()/255.0));
 		int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha()/255.0));
