@@ -39,13 +39,14 @@ public class SpoutWorker implements Worker, Runnable {
 		id = task.getTaskId();
 		owner = task.getOwner();
 		this.task = task;
+		String name = "Spout Worker{Owner:" + ((owner != null) ? owner.getName() : "none") + ", id:" + id + "}";
 		thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				task.pulse();
 				scheduler.workerComplete(SpoutWorker.this);
 			}
-		});
+		}, name);
 		thread.start();
 	}
 

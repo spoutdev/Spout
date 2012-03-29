@@ -76,6 +76,7 @@ import org.spout.server.util.thread.ThreadAsyncExecutor;
 import org.spout.server.util.thread.snapshotable.SnapshotManager;
 import org.spout.server.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.server.util.thread.snapshotable.SnapshotableReference;
+import org.spout.server.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.server.world.SpoutRegion;
 import org.spout.server.world.SpoutWorld;
 
@@ -139,7 +140,7 @@ public class SpoutEngine extends AsyncManager implements Game {
 	 * The network executor service - Netty dispatches events to this thread
 	 * pool.
 	 */
-	protected final ExecutorService executor = Executors.newCachedThreadPool();
+	protected final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutEngine"));
 
 	/**
 	 * A list of all the active {@link SpoutSession}s.
@@ -529,13 +530,11 @@ public class SpoutEngine extends AsyncManager implements Game {
 
 		getPluginManager().clearPlugins();
 
-		// And finally kill the console
 		consoleManager.stop();
 		scheduler.stop();
-
 		group.close();
 		bootstrapProtocols.clear();
-		
+		executor.shutdown();
 	}
 
 

@@ -45,6 +45,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -61,8 +62,6 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 
-import com.grahamedgecombe.jterminal.JTerminal;
-
 import jline.ArgumentCompletor;
 import jline.Completor;
 import jline.ConsoleOperations;
@@ -72,11 +71,12 @@ import jline.SimpleCompletor;
 
 import org.spout.api.ChatColor;
 import org.spout.api.Game;
-import org.spout.api.Server;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.server.data.RetrieveIntDataEvent;
 import org.spout.api.geo.World;
 import org.spout.server.SpoutServer;
+
+import com.grahamedgecombe.jterminal.JTerminal;
 
 /**
  * A meta-class to handle all logging and input-related console improvements.
@@ -246,7 +246,14 @@ public final class ConsoleManager {
 		}
 	}
 
+	private AtomicInteger serverShutdownThreadCount = new AtomicInteger(1);
+	
 	private class ServerShutdownThread extends Thread {
+		
+		public ServerShutdownThread() {
+			super("ServerShutdownThread-" + serverShutdownThreadCount.getAndIncrement());
+		}
+		
 		@Override
 		public void run() {
 			server.stop();
