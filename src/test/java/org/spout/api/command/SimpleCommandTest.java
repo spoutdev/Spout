@@ -28,7 +28,7 @@ package org.spout.api.command;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.event.server.data.RetrieveIntDataEvent;
+import org.spout.api.data.DataValue;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
 import org.spout.api.geo.World;
@@ -42,6 +42,7 @@ public class SimpleCommandTest implements Named, CommandSource {
 		testCommand = new SimpleCommand(this, "test1", "test2");
 	}
 
+	@Override
 	public String getName() {
 		return getClass().getName();
 	}
@@ -51,81 +52,45 @@ public class SimpleCommandTest implements Named, CommandSource {
 		testCommand.execute(this, new String[] {"test1", "hellothere"}, -1, false);
 	}
 
+	@Override
 	public boolean sendMessage(String message) {
 		System.out.println(message);
 		return true;
 	}
 
+	@Override
 	public boolean sendRawMessage(String message) {
 		System.out.println(message);
 		return true;
 	}
 
+	@Override
 	public boolean hasPermission(String node) {
 		return true;
 	}
 
+	@Override
 	public boolean isInGroup(String group) {
 		return false;
 	}
 
+	@Override
 	public String[] getGroups() {
 		return new String[0];
 	}
 
+	@Override
 	public boolean isGroup() {
 		return false;
 	}
 
+	@Override
 	public boolean hasPermission(World world, String node) {
 		return true;
 	}
 
-	public Object getData(String node) {
+	@Override
+	public DataValue getData(String node) {
 		return null;
-	}
-
-	public Object getData(String node, Object defaultValue) {
-		return defaultValue;
-	}
-
-	public Object getData(World world, String node) {
-		return null;
-	}
-
-	public Object getData(World world, String node, Object defaultValue) {
-		return defaultValue;
-	}
-
-	public int getInt(String node) {
-		return RetrieveIntDataEvent.DEFAULT_VALUE;
-	}
-
-	public int getInt(String node, int defaultValue) {
-		return defaultValue;
-	}
-
-	public int getInt(World world, String node) {
-		return RetrieveIntDataEvent.DEFAULT_VALUE;
-	}
-
-	public int getInt(World world, String node, int defaultValue) {
-		return defaultValue;
-	}
-
-	public String getString(String node) {
-		return null;
-	}
-
-	public String getString(String node, String defaultValue) {
-		return defaultValue;
-	}
-
-	public String getString(World world, String node) {
-		return null;
-	}
-
-	public String getString(World world, String node, String defaultValue) {
-		return defaultValue;
 	}
 }
