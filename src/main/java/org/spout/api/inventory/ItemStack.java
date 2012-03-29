@@ -78,8 +78,9 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @param material the material
 	 */
-	public void setMaterial(Material material) {
+	public ItemStack setMaterial(Material material) {
 		this.material = material;
+		return this;
 	}
 
 	/**
@@ -96,8 +97,9 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @param amount the amount
 	 */
-	public void setAmount(int amount) {
+	public ItemStack setAmount(int amount) {
 		this.amount = amount;
+		return this;
 	}
 
 	/**

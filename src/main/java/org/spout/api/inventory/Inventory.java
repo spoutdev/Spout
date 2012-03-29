@@ -100,14 +100,18 @@ public class Inventory implements Serializable {
 			}
 
 			if (contents[i] == null && toFirstOpenSlot) {
-				setItem(item, i);
+				setItem(item.clone(), i);
+				item.setAmount(0);
 				return true;
+			} else if (contents[i] == null) {
+				continue;
 			} else if (contents[i].equalsIgnoreSize(item)) {
 				boolean full = false;
 				final int combinedSize = contents[i].getAmount() + item.getAmount();
 				final int maxSize = item.getMaterial().getMaxStackSize();
 				if (combinedSize <= maxSize) {
 					contents[i].setAmount(combinedSize);
+					item.setAmount(0);
 					full = true;
 				} else {
 					contents[i].setAmount(maxSize);
@@ -119,12 +123,14 @@ public class Inventory implements Serializable {
 				}
 
 				if (full) {
+					item.setAmount(0);
 					return true;
 				}
 			}
 		}
-		if(toFirstOpenSlot)
+		if (toFirstOpenSlot) {
 			return false;
+		}
 		return addItem(item, true);
 	}
 
@@ -149,7 +155,7 @@ public class Inventory implements Serializable {
 
 	public boolean containsExactly(ItemStack item) {
 		for (int i = 0; i < contents.length; i++) {
-			if (contents[i]!=null && contents[i].equals(item)) {
+			if (contents[i] != null && contents[i].equals(item)) {
 				return true;
 			}
 		}
