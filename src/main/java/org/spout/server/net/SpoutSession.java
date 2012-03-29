@@ -366,7 +366,7 @@ public final class SpoutSession implements Session {
 						user.getNetworkSynchronizer().destroyEntity(getPlayer().getEntity());
 					}
 				}
-				((SpoutPlayer) player).disconnect();
+				((SpoutPlayer) player).disconnect("");
 			} catch (Exception e) { }
 			player = null; // in case we are disposed twice
 		}

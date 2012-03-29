@@ -129,9 +129,10 @@ public class SpoutPlayer implements Player {
 	}
 
 	@DelayedWrite
-	public boolean disconnect() {
+	public boolean disconnect(String reason) {
 		if (onlineLive.compareAndSet(true, false)) {
-			entityLive.get().kill();
+			session.disconnect(reason);
+			entityLive.get().kill();			
 			sessionLive.set(null);
 			entityLive.set(null);
 			synchronizerLive.set(null);
@@ -360,7 +361,6 @@ public class SpoutPlayer implements Player {
 		if (reason == null) {
 			throw new IllegalArgumentException("reason cannot be null");
 		}
-		getEntity().kill();
 		session.disconnect(reason);
 	}
 
