@@ -372,8 +372,8 @@ public class Vector2PolarTest {
 		Vector2Polar y = new Vector2Polar(5, -3);
 		System.out.println(x.hashCode());
 		System.out.println(y.hashCode());
-		doAssertDouble(617563713, x.hashCode());
-		doAssertDouble(624059315, y.hashCode());
+		doAssertDouble(617563731, x.hashCode());
+		doAssertDouble(624059314, y.hashCode());
 	}
 
 	@Test
