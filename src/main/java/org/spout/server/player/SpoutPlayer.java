@@ -361,7 +361,7 @@ public class SpoutPlayer implements Player {
 		if (reason == null) {
 			throw new IllegalArgumentException("reason cannot be null");
 		}
-		session.disconnect(reason);
+		disconnect(reason);
 	}
 
 	@Override
