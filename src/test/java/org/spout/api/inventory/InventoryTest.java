@@ -39,7 +39,7 @@ public class InventoryTest {
 
 	@Before
 	public void setUp() {
-		subject.addItem(testing);
+		subject.addItem(testing, true);
 	}
 
 	@Test

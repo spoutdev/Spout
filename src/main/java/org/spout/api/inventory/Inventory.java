@@ -93,13 +93,13 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	public boolean addItem(ItemStack item) {
+	public boolean addItem(ItemStack item, boolean toFirstOpenSlot) {
 		for (int i = 0; i < contents.length; ++i) {
 			if (hidden.contains(i)) {
 				continue;
 			}
 
-			if (contents[i] == null) {
+			if (contents[i] == null && toFirstOpenSlot) {
 				setItem(item, i);
 				return true;
 			} else if (contents[i].equalsIgnoreSize(item)) {
@@ -123,7 +123,9 @@ public class Inventory implements Serializable {
 				}
 			}
 		}
-		return false;
+		if(toFirstOpenSlot)
+			return false;
+		return addItem(item, true);
 	}
 
 	public int getSize() {
