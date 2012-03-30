@@ -26,31 +26,66 @@
 package org.spout.api.event.server.data;
 
 import org.spout.api.data.DataSubject;
+import org.spout.api.data.DataValue;
+import org.spout.api.event.HandlerList;
 import org.spout.api.event.server.NodeBasedEvent;
 import org.spout.api.geo.World;
 
 /**
  * This event is called when DataSubject.getData*() is called.
  */
-public abstract class RetrieveDataEvent extends NodeBasedEvent {
-	private final World world;
+public class RetrieveDataEvent extends NodeBasedEvent {
 	private final DataSubject subject;
+	private DataValue result;
+	private static final HandlerList handlers = new HandlerList();
 
-	public RetrieveDataEvent(World world, DataSubject subject, String node) {
+	public RetrieveDataEvent(DataSubject subject, String node) {
 		super(node);
-		this.world = world;
 		this.subject = subject;
 	}
 
+	/**
+	 * Gets the subject the data is being taken from.
+	 *
+	 * @return subject of data
+	 */
 	public DataSubject getSubject() {
 		return subject;
 	}
 
-	public World getWorld() {
-		return world;
+	/**
+	 * Returns the raw result of the event.
+	 *
+	 * @return object
+	 */
+	public DataValue getResult() {
+		return result;
 	}
 
-	public String getWorldName() {
-		return world == null ? null : world.getName();
+	/**
+	 * Sets the result of the event.
+	 *
+	 * @param result
+	 */
+	public void setResult(DataValue result) {
+		this.result = result;
+	}
+
+	/**
+	 * Sets the result of the event.
+	 *
+	 * @param result
+	 */
+	public void setResult(Object result) {
+		setResult(new DataValue(result));
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }
