@@ -102,7 +102,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * The timeout for the chunk storage in ms.  If the store isn't accessed within that time, it can be automatically shutdown
 	 */
-	private final int TIMEOUT = 30000;
+	public static final int TIMEOUT = 30000;
 
 	/**
 	 * The source of this region

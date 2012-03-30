@@ -26,6 +26,9 @@
 package org.spout.server.world;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,10 +55,12 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
 import org.spout.api.player.Player;
 import org.spout.api.util.HashUtil;
+import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.server.SpoutServer;
@@ -126,6 +131,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
 	
 	/**
+	 * A map of column height map files
+	 */
+	private final TSyncIntPairObjectHashMap<BAAWrapper> heightMapBAAs;
+	
+	/**
 	 * The directory where the world data is stored
 	 */
 	private final File worldDirectory;
@@ -155,6 +165,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		worldDirectory = new File(world, generatorName);
 		worldDirectory.mkdirs();	
+		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 	}
 
 	// TODO need world that loads from disk
@@ -538,6 +549,24 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 	}
 
+	/**
+	 * Removes a column corresponding to the given Column coordinates
+	 * @param x the x coordinate
+	 * @param z the z coordinate
+	 */
+	public void removeColumn(int x, int z) {
+		long key = HashUtil.intToLong(x, z);
+		columns.remove(key);
+	}
+	
+	/**
+	 * Gets the column corresponding to the given Block coordinates
+	 * 
+	 * @param x the x block coordinate
+	 * @param z the z block coordinate
+	 * @param create true to create the column if it doesn't exist
+	 * @return the column or null if it doesn't exist
+	 */
 	public SpoutColumn getColumn(int x, int z, boolean create) {
 		int colX = x >> SpoutColumn.COLUMN_SIZE_BITS;
 		int colZ = z >> SpoutColumn.COLUMN_SIZE_BITS;
@@ -556,7 +585,49 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutColumn getColumn(int x, int z) {
 		return getColumn(x, z, false);
 	}
+	
+	private BAAWrapper getColumnHeightMapBAA(int x, int z) {
+		int cx = x >> Region.REGION_SIZE_BITS;
+		int cz = z >> Region.REGION_SIZE_BITS;
 
+		BAAWrapper baa = null;
+
+		baa = heightMapBAAs.get(cx,  cz);
+		
+		if (baa == null) {
+			File columnDirectory = new File(worldDirectory, "col");
+			columnDirectory.mkdirs();
+			File file = new File(columnDirectory, "col" + cx + "_" + cz + ".scl");
+			baa = new BAAWrapper(file, 1024, 256, SpoutRegion.TIMEOUT);
+			BAAWrapper oldBAA = heightMapBAAs.putIfAbsent(cx, cz,  baa);
+			if (oldBAA != null) {
+				baa = oldBAA;
+			}
+		}
+		
+		return baa;
+	}
+	
+	public InputStream getHeightMapInputStream(int x, int z) {
+
+		BAAWrapper baa = getColumnHeightMapBAA(x, z);
+		
+		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
+		
+		return baa.getBlockInputStream(key);
+		
+	}
+	
+	public OutputStream getHeightMapOutputStream(int x, int z) {
+
+		BAAWrapper baa = getColumnHeightMapBAA(x, z);
+		
+		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
+		
+		return baa.getBlockOutputStream(key);
+		
+	}
+	
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";

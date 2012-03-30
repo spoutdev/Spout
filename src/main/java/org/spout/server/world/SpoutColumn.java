@@ -25,11 +25,19 @@
  */
 package org.spout.server.world;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
 
@@ -55,21 +63,19 @@ public class SpoutColumn {
 	private final AtomicInteger[][] heightMap;
 
 	public SpoutColumn(World world, int x, int z) {
-		this(world, x, z, null);
-	}
-
-	public SpoutColumn(World world, int x, int z, int[][] initial) {
 		this.world = world;
 		this.x = x;
 		this.z = z;
 		this.heightMap = new AtomicInteger[COLUMN_SIZE][COLUMN_SIZE];
+		
 		for (int xx = 0; xx < COLUMN_SIZE; xx++) {
 			for (int zz = 0; zz < COLUMN_SIZE; zz++) {
-				int value = initial == null ? Integer.MIN_VALUE : initial[xx][zz];
-				heightMap[xx][zz] = new AtomicInteger(value);
+				heightMap[xx][zz] = new AtomicInteger(0);
 			}
 		}
 
+		readHeightMap(((SpoutWorld)world).getHeightMapInputStream(x, z));
+		
 	}
 
 	public void registerChunk() {
@@ -77,8 +83,18 @@ public class SpoutColumn {
 	}
 
 	public void deregisterChunk() {
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		if (activeChunks.decrementAndGet() == 0) {
-			System.out.println("All chunks in column " + x + ", " + z + " are unloaded");
+			OutputStream out = ((SpoutWorld)world).getHeightMapOutputStream(x, z);
+			try {
+				writeHeightMap(out);
+			} finally {
+				try {
+					out.close();
+				} catch (IOException e) {
+				}
+			}
+			((SpoutWorld)world).removeColumn(x, z);
 		}
 	}
 
@@ -163,6 +179,38 @@ public class SpoutColumn {
 
 	private AtomicInteger getAtomicInteger(int x, int z) {
 		return heightMap[x & BIT_MASK][z & BIT_MASK];
+	}
+
+	private void readHeightMap(InputStream in) {
+		DataInputStream dataStream = new DataInputStream(in);
+		try {
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
+					getAtomicInteger(x, z).set(dataStream.readInt());
+				}
+			}
+		} catch (EOFException e) {
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
+					getAtomicInteger(x, z).set(Integer.MIN_VALUE);
+				}
+			}
+		} catch (IOException e) {
+			Spout.getLogger().severe("Error reading column height-map for column" + x + ", " + z);
+		}
+	}
+	
+	private void writeHeightMap(OutputStream out) {
+		DataOutputStream dataStream = new DataOutputStream(out);
+		try {
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
+					dataStream.writeInt(getAtomicInteger(x, z).get());
+				}
+			}
+		} catch (IOException e) {
+			Spout.getLogger().severe("Error writing column height-map for column" + x + ", " + z);
+		}
 	}
 
 }

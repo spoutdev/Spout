@@ -634,6 +634,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public void setUnloaded() {
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		saveState.set(SaveState.UNLOADED);
 		blockStore = null;
 		deregisterFromColumn();
