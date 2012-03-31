@@ -94,7 +94,7 @@ public class SpoutColumn {
 				} catch (IOException e) {
 				}
 			}
-			((SpoutWorld)world).removeColumn(x, z);
+			((SpoutWorld)world).removeColumn(x, z, this);
 		}
 	}
 

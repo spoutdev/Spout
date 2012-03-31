@@ -554,9 +554,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
-	public void removeColumn(int x, int z) {
+	public void removeColumn(int x, int z, SpoutColumn column) {
 		long key = HashUtil.intToLong(x, z);
-		columns.remove(key);
+		columns.remove(key, column);
 	}
 	
 	/**
