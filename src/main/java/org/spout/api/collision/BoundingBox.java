@@ -78,6 +78,53 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	}
 	
 	/**
+	 * Gets the size vector for this bounding box.
+	 * 
+	 * @return size
+	 */
+	public Vector3 getSize() {
+		return max.subtract(min);
+	}
+
+	/**
+	 * Scales this bounding box
+	 * 
+	 * @param scale
+	 * @return this bounding box
+	 */
+	public BoundingBox scale(float scale) {
+		min = min.multiply(scale);
+		max = max.multiply(scale);
+		return this;
+	}
+
+	/**
+	 * Scales this bounding box
+	 * 
+	 * @param scale
+	 * @return this bounding box
+	 */
+	public BoundingBox scale(Vector3 scale) {
+		min = min.multiply(scale);
+		max = max.multiply(scale);
+		return this;
+	}
+
+	/**
+	 * Scales this bounding box
+	 * 
+	 * @param scaleX
+	 * @param scaleY
+	 * @param scaleZ
+	 * @return this bounding box
+	 */
+	public BoundingBox scale(float scaleX, float scaleY, float scaleZ) {
+		min = min.multiply(scaleX, scaleY, scaleZ);
+		max = max.multiply(scaleX, scaleY, scaleZ);
+		return this;
+	}
+
+	/**
 	 * Sets the location of the bounding box edges
 	 * 
 	 * @param minX
@@ -313,5 +360,18 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		return min;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof BoundingBox) {
+			if (other == this) {
+				return true;
+			} else {
+				BoundingBox b = (BoundingBox) other;
+				return b.min.equals(this.min) && b.max.equals(this.max);
+			}
+		} else {
+			return false;
+		}
+	}
 	
 }
