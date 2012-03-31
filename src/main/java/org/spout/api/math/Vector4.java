@@ -26,6 +26,7 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
 
 /**
  * A 4-dimensional vector represented by float-precision x,y,z,w coordinates
@@ -573,7 +574,7 @@ public class Vector4 implements Comparable<Vector4> {
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+		return StringUtil.toString(this.x, this.y, this.z, this.w);
 	}
 
 	/**

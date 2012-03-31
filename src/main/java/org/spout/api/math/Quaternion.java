@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import org.spout.api.util.StringUtil;
+
 /**
  * Represents a rotation around a unit 4d circle.
  *
@@ -243,7 +245,7 @@ public class Quaternion {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "{" + x + "," + y + "," + z + "," + w + "}";
+		return getClass().getSimpleName() + StringUtil.toString(this.x, this.y, this.z, this.w);
 	}
 
 	/**

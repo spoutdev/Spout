@@ -26,6 +26,7 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by float-precision x,y coordinates
@@ -541,7 +542,7 @@ public class Vector2 implements Comparable<Vector2>{
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")";
+		return StringUtil.toString(this.x, this.y);
 	}
 
 	/**

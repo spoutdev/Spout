@@ -26,6 +26,7 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
 
 /**
  * Represents a 3d vector.
@@ -607,7 +608,7 @@ public class Vector3 implements Comparable<Vector3> {
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ", " + z + ")";
+		return StringUtil.toString(this.x, this.y, this.z);
 	}
 
 	/**

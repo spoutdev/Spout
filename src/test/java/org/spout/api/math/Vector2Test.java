@@ -395,7 +395,7 @@ public class Vector2Test {
 	@Test
 	public void testToString() {
 		Vector2 x = new Vector2(3, 5);
-		assertEquals("(3.0, 5.0)", x.toString());
+		assertEquals("{3.0, 5.0}", x.toString());
 	}
 
 	@Test

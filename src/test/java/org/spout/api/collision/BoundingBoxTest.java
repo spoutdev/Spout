@@ -23,20 +23,40 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.spout.api.math.TestUtils.eps;
 
 public class BoundingBoxTest {
 
+	private void testValue(String name, Vector3 min1, Vector3 min2) {
+		Vector3 diff = min1.subtract(min2).abs();
+		if (diff.getX() >= eps || diff.getY() >= eps || diff.getZ() >= eps) {
+			fail("Test Fail! Expected " + name + " " + min1 + " but got " + min2);
+		}
+	}
+	
+	private void testValue(BoundingBox b1, BoundingBox b2) {
+		testValue("Min", b1.min, b2.min);
+		testValue("MAx", b1.max, b2.max);
+	}
+	
 	/**
-	 * Test of testScale method, of class BoundingBoxTest.
+	 * Test of equals method, of class BoundingBox.
+	 */
+	@Test
+	public void testEquals() {
+		BoundingBox a = new BoundingBox(-1.5f, -1.44f, -0.002f, 1.544f, 1.111111f, 1.662f);
+		BoundingBox b = new BoundingBox(-1.5f, -1.44f, -0.002f, 1.544f, 1.111111f, 1.662f);
+		
+		assertTrue(a.equals(b));
+	}
+	
+	/**
+	 * Test of scale method, of class BoundingBox.
 	 */
 	@Test
 	public void testScale() {
@@ -45,23 +65,24 @@ public class BoundingBoxTest {
 		a.scale(1.5f);
 		b.scale(0.1f);
 		
-		assertTrue(a.equals(b));
+		
+		testValue(a, b);
 		
 		a.scale(new Vector3(0.6f, 0.6f, 0.6f));
 		b.scale(-0.3f, -0.3f, -0.3f).scale(-2.0f);
 		
-		assertTrue(a.equals(b));
+		testValue(a, b);
 	}
 	
 	/**
-	 * Test of testSize method, of class BoundingBoxTest.
+	 * Test of size method, of class BoundingBox.
 	 */
 	@Test
 	public void testSize() {
 		BoundingBox a = new BoundingBox(-2f, -3f, -4f, 6f, 8f, 4f);
 		Vector3 b = new Vector3(8f, 11f, 8f);
 		
-		assertTrue(a.getSize().equals(b));
+		testValue("Size", a.getSize(), b);
 	}
 	
 }

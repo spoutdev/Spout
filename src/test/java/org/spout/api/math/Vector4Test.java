@@ -407,7 +407,7 @@ public class Vector4Test {
 	@Test
 	public void testToString() {
 		Vector4 x = new Vector4(3, 5, 0, 1);
-		assertEquals("(3.0, 5.0, 0.0, 1.0)", x.toString());
+		assertEquals("{3.0, 5.0, 0.0, 1.0}", x.toString());
 	}
 
 	@Test
