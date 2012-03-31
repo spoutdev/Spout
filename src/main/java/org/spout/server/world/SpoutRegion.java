@@ -82,7 +82,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * The maximum number of chunks that will be reaped by the chunk reaper each tick.
 	 */
-	private static final int REAP_PER_TICK = 20;
+	private static final int REAP_PER_TICK = 5;
 
 	/**
 	 * The maximum number of chunks that will be processed for lighting updates each tick.
