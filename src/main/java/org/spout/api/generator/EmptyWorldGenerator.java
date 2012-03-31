@@ -23,15 +23,22 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.basic.blocks;
+package org.spout.api.generator;
+
 
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.GenericBlockMaterial;
+import org.spout.api.util.cuboid.CuboidShortBuffer;
 
-public final class SpoutBlocks {
-	public static final BlockMaterial air = new GenericBlockMaterial("air", 0).setOpacity((byte)15);
-	public static final BlockMaterial solid = new GenericBlockMaterial("solid", 1).setHardness(1.f);
-	public static final BlockMaterial unbreakable = new GenericBlockMaterial("Unbreakable", 2).setHardness(100.f);
-	public static final BlockMaterial skybox = new GenericBlockMaterial("Skybox", 3);
-	public static final BlockMaterial noid = new GenericBlockMaterial("Missing Plugin", 4).setHardness((100.f));
+public class EmptyWorldGenerator implements WorldGenerator {
+	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
+		blockData.flood(BlockMaterial.AIR.getId());
+	}
+
+	public Populator[] getPopulators() {
+		return new Populator[0];
+	}
+	
+	public String getName() {
+		return "EmptyWorld";
+	}
 }

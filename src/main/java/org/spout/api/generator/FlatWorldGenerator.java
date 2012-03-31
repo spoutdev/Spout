@@ -23,16 +23,16 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.basic.generator;
+package org.spout.api.generator;
 
-import org.spout.api.basic.blocks.SpoutBlocks;
-import org.spout.api.generator.Populator;
-import org.spout.api.generator.WorldGenerator;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
-public class EmptyWorldGenerator implements WorldGenerator {
+public class FlatWorldGenerator implements WorldGenerator {
 	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
-		blockData.flood(SpoutBlocks.air.getId());
+		if (chunkY < 0) {
+			blockData.flood(BlockMaterial.UNBREAKABLE.getId());
+		}
 	}
 
 	public Populator[] getPopulators() {
@@ -40,6 +40,6 @@ public class EmptyWorldGenerator implements WorldGenerator {
 	}
 	
 	public String getName() {
-		return "EmptyWorld";
+		return "FlatWorld";
 	}
 }

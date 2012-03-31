@@ -26,10 +26,10 @@
 package org.spout.api.geo;
 
 import org.spout.api.Source;
-import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.thread.LiveWrite;
 
 public interface AreaBlockAccess extends AreaBlockSource {

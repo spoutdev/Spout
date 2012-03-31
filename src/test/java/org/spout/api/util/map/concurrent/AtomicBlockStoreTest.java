@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import org.junit.Test;
-import org.spout.api.basic.blocks.BlockFullState;
+import org.spout.api.material.block.BlockFullState;
 
 public class AtomicBlockStoreTest {
 	private final static int MAX_SIZE = 4096;

@@ -34,7 +34,12 @@ import org.spout.api.material.block.BlockFace;
 public abstract class BlockMaterial extends Material {
 
 	public static final BlockMaterial AIR = register(new GenericBlockMaterial("Air", 0).setFriction(0.0F).setHardness(0.0F).setOpacity((byte) 0));
-
+	public static final BlockMaterial SOLID = register(new GenericBlockMaterial("solid", 1).setHardness(1.f));
+	public static final BlockMaterial UNBREAKABLE = register(new GenericBlockMaterial("Unbreakable", 2).setHardness(100.f));
+	public static final BlockMaterial SKYBOX = register(new GenericBlockMaterial("Skybox", 3));
+	public static final BlockMaterial ERROR = register(new GenericBlockMaterial("Missing Plugin", 4).setHardness((100.f)));
+	
+	
 	public BlockMaterial(String name, int typeId) {
 		super(name, typeId);
 	}
