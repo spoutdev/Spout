@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
+import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.entity.Controller;
@@ -187,7 +188,7 @@ public class SpoutEntity implements Entity {
 					offset = new Vector3(offset.getX(), offset.getY(), collision.getZ());
 				}
 				
-				this.setPosition(location.add(offset));
+				if(this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) this.setPosition(location.add(offset));
 				if(this.getController() != null){
 					Block b = this.transform.getPosition().getWorld().getBlock((int) box.getPosition().getX(), (int) box.getPosition().getY(), (int) box.getPosition().getZ());
 					this.getController().onCollide(b.clone());
