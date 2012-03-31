@@ -588,6 +588,11 @@ public class Vector3 implements Comparable<Vector3> {
 		return xT.x == yT.x && xT.y == yT.y && xT.z == yT.z;
 	}
 
+	
+	public Quaternion rotationTo(Vector3 other){
+		return Vector3.rotationTo(this, other);
+	}
+	
 	// All of the below methods use .x, .y, .z instead of .getX() on purpose. Changing them will break AtomicPoint!
 
 	/**
@@ -885,5 +890,19 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public static boolean equals(Vector3 a, Vector3 b) {
 		return a.equals(b);
+	}
+	
+	
+	/**
+	 * Returns the rotation between two vectors
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static Quaternion rotationTo(Vector3 a, Vector3 b){
+		if(a == b || a.equals(b)){
+			return Quaternion.IDENTITY;
+		}
+		return new Quaternion((float)Math.acos(a.dot(b)), a.cross(b));
 	}
 }
