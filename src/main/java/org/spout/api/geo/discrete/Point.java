@@ -29,6 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringUtil;
 
 /**
  * Represents a position in a World
@@ -276,6 +277,6 @@ public class Point extends Vector3 {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
+		return getClass().getSimpleName() + StringUtil.toString(world, x, y, z);
 	}
 }

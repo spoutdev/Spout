@@ -379,7 +379,7 @@ public class Vector2PolarTest {
 	@Test
 	public void testToString() {
 		Vector2Polar x = new Vector2Polar(3, 5);
-		assertEquals("(3.0, 5.0 radians)", x.toString());
+		assertEquals("{3.0, 5.0 radians}", x.toString());
 	}
 
 	@Test

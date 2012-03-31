@@ -374,4 +374,9 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return "(min=" + this.min + ", max=" + this.max + ')';
+	}
+	
 }

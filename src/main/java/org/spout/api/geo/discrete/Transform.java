@@ -29,6 +29,7 @@ package org.spout.api.geo.discrete;
 import org.spout.api.geo.World;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringUtil;
 import org.spout.api.util.thread.Threadsafe;
 
 public class Transform {
@@ -201,11 +202,8 @@ public class Transform {
 	 */
 	@Override
 	@Threadsafe
-	public String toString() {		
-		String s = getClass().getSimpleName() + "{" + position + ", " + rotation + ", " + scale + "}";		
-		return s;
-			
+	public String toString() {	
+		return getClass().getSimpleName() + StringUtil.toString(position, rotation, scale);
 	}
-
 
 }

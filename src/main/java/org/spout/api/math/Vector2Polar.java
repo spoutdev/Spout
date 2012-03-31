@@ -26,6 +26,7 @@
 package org.spout.api.math;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
@@ -470,7 +471,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 
 	@Override
 	public String toString() {
-		return "(" + r + ", " + theta + " radians)";
+		return StringUtil.toString(this.r, this.theta + " radians");
 	}
 
 	/**
