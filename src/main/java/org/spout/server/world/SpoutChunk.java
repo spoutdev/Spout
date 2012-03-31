@@ -563,13 +563,19 @@ public class SpoutChunk extends Chunk {
 		
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 		
-		NBTOutputStream os;
+		NBTOutputStream os = null;
 		try {
 			os = new NBTOutputStream(parentRegion.getChunkOutputStream(this), false);
 			os.writeTag(chunkCompound);
-			os.close();
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Error saving chunk " + toString(), e);
+		} finally {
+			if(os != null) {
+				try {
+					os.close();
+				} catch (IOException ignore) {
+				}
+			}
 		}
 	}
 
