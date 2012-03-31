@@ -82,20 +82,25 @@ public class SpoutColumn {
 		activeChunks.incrementAndGet();
 	}
 
-	public void deregisterChunk() {
-		TickStage.checkStage(TickStage.SNAPSHOT);
-		if (activeChunks.decrementAndGet() == 0) {
-			OutputStream out = ((SpoutWorld)world).getHeightMapOutputStream(x, z);
-			try {
-				writeHeightMap(out);
-			} finally {
+	public void deregisterChunk(boolean save) {
+		if (save) {
+			TickStage.checkStage(TickStage.SNAPSHOT);
+			if (activeChunks.decrementAndGet() == 0) {
+				OutputStream out = ((SpoutWorld)world).getHeightMapOutputStream(x, z);
 				try {
-					out.close();
-				} catch (IOException e) {
+					writeHeightMap(out);
+				} finally {
+					try {
+						out.close();
+					} catch (IOException e) {
+					}
 				}
+				((SpoutWorld)world).removeColumn(x, z, this);
 			}
-			((SpoutWorld)world).removeColumn(x, z, this);
+		} else {
+			activeChunks.decrementAndGet();
 		}
+
 	}
 
 	public boolean activeChunks() {

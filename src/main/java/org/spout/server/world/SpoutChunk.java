@@ -28,7 +28,6 @@ package org.spout.server.world;
 import gnu.trove.set.hash.TByteHashSet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -865,10 +864,13 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 	}
-	
+
 	public void deregisterFromColumn() {
+		deregisterFromColumn(true);
+	}
+	public void deregisterFromColumn(boolean save) {
 		if (columnRegistered.compareAndSet(true, false)) {
-			column.deregisterChunk();
+			column.deregisterChunk(save);
 		} else {
 			throw new IllegalStateException("Chunk at " + getX() + ", " + getZ() + " deregistered from column more than once");
 		}

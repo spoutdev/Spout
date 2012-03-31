@@ -232,7 +232,7 @@ public class SpoutRegion extends Region {
 					}
 					return newChunk;
 				} else {
-					newChunk.setUnloaded();
+					newChunk.deregisterFromColumn(false);
 					SpoutChunk oldChunk = ref.get();
 					if (oldChunk != null) {
 						return oldChunk;
