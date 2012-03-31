@@ -903,6 +903,9 @@ public class Vector3 implements Comparable<Vector3> {
 		if(a == b || a.equals(b)){
 			return Quaternion.IDENTITY;
 		}
+		//Normalize the input vectors before doing math on them.
+		a = a.normalize();
+		b = b.normalize();
 		return new Quaternion((float)Math.acos(a.dot(b)), a.cross(b));
 	}
 }
