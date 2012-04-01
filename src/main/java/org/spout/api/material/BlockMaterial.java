@@ -242,6 +242,16 @@ public class BlockMaterial extends Material {
 	}
 	
 	/**
+	 * True if this block is a solid block
+	 * false if not.
+	 * 
+	 * @return if this block has collision
+	 */
+	public boolean isSolid() {
+		return this.collision.getStrategy() == CollisionStrategy.SOLID;
+	}
+	
+	/**
 	 * Sets the collision strategy to use for this block
 	 * 
 	 * @param strategy
