@@ -27,18 +27,19 @@ package org.spout.api.material;
 
 import org.spout.api.Source;
 import org.spout.api.collision.BoundingBox;
+import org.spout.api.collision.CollisionModel;
+import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 
-public abstract class BlockMaterial extends Material {
+public class BlockMaterial extends Material {
 
-	public static final BlockMaterial AIR = register(new GenericBlockMaterial("Air", 0).setFriction(0.0F).setHardness(0.0F).setOpacity((byte) 0));
-	public static final BlockMaterial SOLID = register(new GenericBlockMaterial("solid", 10000).setHardness(1.f));
-	public static final BlockMaterial UNBREAKABLE = register(new GenericBlockMaterial("Unbreakable", 10001).setHardness(100.f));
-	public static final BlockMaterial SKYBOX = register(new GenericBlockMaterial("Skybox", 10002));
-	public static final BlockMaterial ERROR = register(new GenericBlockMaterial("Missing Plugin", 10003).setHardness((100.f)));
-	
+	public static final BlockMaterial AIR = register(new BlockMaterial("Air", 0).setCollision(CollisionStrategy.NOCOLLIDE).setOpacity((byte) 0));
+	public static final BlockMaterial SOLID = register(new BlockMaterial("solid", 10000).setHardness(1.f));
+	public static final BlockMaterial UNBREAKABLE = register(new BlockMaterial("Unbreakable", 10001).setHardness(100.f));
+	public static final BlockMaterial SKYBOX = register(new BlockMaterial("Skybox", 10002)).setCollision(CollisionStrategy.NOCOLLIDE);
+	public static final BlockMaterial ERROR = register(new BlockMaterial("Missing Plugin", 10003).setHardness((100.f)));
 	
 	public BlockMaterial(String name, int typeId) {
 		super(name, typeId);
@@ -78,11 +79,11 @@ public abstract class BlockMaterial extends Material {
 		}
 	}
 
-	private final BoundingBox area = new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F);
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
 	private byte lightLevel = 0;
+	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 
 	/**
 	 * Gets the friction of this block
@@ -145,13 +146,6 @@ public abstract class BlockMaterial extends Material {
 	}
 
 	/**
-	 * True if this block is a type of liquid
-	 * 
-	 * @return liquidity
-	 */
-	public abstract boolean isLiquid();
-
-	/**
 	 * Gets the amount of light blocked by this block.
 	 * 
 	 * 0xF (15) represents a fully opaque block.
@@ -176,15 +170,6 @@ public abstract class BlockMaterial extends Material {
 	}
 
 	/**
-	 * Gets the bounding box area of this material
-	 * 
-	 * @return area
-	 */
-	public CollisionVolume getBoundingArea() {
-		return this.area;
-	}
-
-	/**
 	 * True if this block acts as an obstacle when placing a block on it false
 	 * if not.
 	 * 
@@ -192,15 +177,19 @@ public abstract class BlockMaterial extends Material {
 	 * 
 	 * @return if this block acts as a placement obstacle
 	 */
-	public abstract boolean isPlacementObstacle();
-
+	public boolean isPlacementObstacle() {
+		return false;
+	}
+	
 	/**
 	 * True if this block requires physic updates when a neighbor block changes,
 	 * false if not.
 	 * 
 	 * @return if this block requires physics updates
 	 */
-	public abstract boolean hasPhysics();
+	public boolean hasPhysics() {
+		return false;
+	}
 
 	/**
 	 * Called when a block adjacent to this material is changed.
@@ -210,7 +199,8 @@ public abstract class BlockMaterial extends Material {
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
 	 */
-	public abstract void onUpdate(World world, int x, int y, int z);
+	public void onUpdate(World world, int x, int y, int z) {
+	}
 
 	/**
 	 * Called when this block has been destroyed.
@@ -220,10 +210,67 @@ public abstract class BlockMaterial extends Material {
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
 	 */
-	public abstract void onDestroy(World world, int x, int y, int z);
+	public void onDestroy(World world, int x, int y, int z) {
+	}
 
 	/**
-	 * Called when this block is placed.
+	 * Gets the bounding box area of this material
+	 * 
+	 * @return area
+	 */
+	public CollisionVolume getBoundingArea() {
+		return this.collision.getVolume();
+	}
+	
+	/**
+	 * Gets the collision model associated with this block material
+	 * 
+	 * @return the collision model
+	 */
+	public CollisionModel getCollisionModel() {
+		return this.collision;
+	}
+		
+	/**
+	 * True if this block has collision,
+	 * false if not.
+	 * 
+	 * @return if this block has collision
+	 */
+	public boolean hasCollision() {
+		return this.collision.getStrategy() != CollisionStrategy.NOCOLLIDE;
+	}
+	
+	/**
+	 * Sets the collision strategy to use for this block
+	 * 
+	 * @param strategy
+	 * @return this block material
+	 */
+	public BlockMaterial setCollision(CollisionStrategy strategy) {
+		this.collision.setStrategy(strategy);
+		return this;
+	}
+
+	/**
+	 * Called when this block is about to be placed (before {@link onPlacement}), 
+	 * checking if placement is allowed or not.
+	 * 
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 * @param data block data to use during placement
+	 * @param against face against the block is placed
+	 * @param source source of this placement
+	 * @return true if placement is allowed
+	 */
+	public boolean canPlace(World world, int x, int y, int z, short data, BlockFace against, Source source) {
+		return true;
+	}
+	
+	/**
+	 * Called when this block is placed, handles the actual placement.
 	 * 
 	 * @param world that the material is in
 	 * @param x coordinate for this material
