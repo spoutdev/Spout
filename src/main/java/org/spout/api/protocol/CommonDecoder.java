@@ -65,7 +65,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		catch (Error e) {
 			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
 		}
-
+		
 		MessageCodec<?> codec = codecLookup.find(opcode);
 		if (codec == null) {
 			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
@@ -82,8 +82,8 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		Message message = codec.decode(buf);
 
 		if (bootstrapProtocol != null) {
-			long id = bootstrapProtocol.detectProtocolDefinition(message);
-			if (id != -1L) {
+			String id = bootstrapProtocol.detectProtocolDefinition(message);
+			if (id != null) {
 				Protocol protocol = Protocol.getProtocol(id);
 
 				if (protocol != null) {

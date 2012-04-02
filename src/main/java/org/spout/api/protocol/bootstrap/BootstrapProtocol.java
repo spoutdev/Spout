@@ -39,5 +39,5 @@ public abstract class BootstrapProtocol extends Protocol {
 		super(name, codecLookup, handlerLookup, new NullPlayerProtocol());
 	}
 
-	public abstract long detectProtocolDefinition(Message message);
+	public abstract String detectProtocolDefinition(Message message);
 }
