@@ -31,14 +31,16 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.geo.World;
+import org.spout.api.material.basic.BasicAir;
+import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
 
 public class BlockMaterial extends Material {
 
-	public static final BlockMaterial AIR = register(new BlockMaterial("Air", 0).setCollision(CollisionStrategy.NOCOLLIDE).setOpacity((byte) 0));
+	public static final BlockMaterial AIR = register(new BasicAir());
 	public static final BlockMaterial SOLID = register(new BlockMaterial("solid", 10000).setHardness(1.f));
 	public static final BlockMaterial UNBREAKABLE = register(new BlockMaterial("Unbreakable", 10001).setHardness(100.f));
-	public static final BlockMaterial SKYBOX = register(new BlockMaterial("Skybox", 10002)).setCollision(CollisionStrategy.NOCOLLIDE);
+	public static final BlockMaterial SKYBOX = register(new BasicSkyBox());
 	public static final BlockMaterial ERROR = register(new BlockMaterial("Missing Plugin", 10003).setHardness((100.f)));
 	
 	public BlockMaterial(String name, int typeId) {
@@ -178,7 +180,7 @@ public class BlockMaterial extends Material {
 	 * @return if this block acts as a placement obstacle
 	 */
 	public boolean isPlacementObstacle() {
-		return false;
+		return true;
 	}
 	
 	/**
