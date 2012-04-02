@@ -7,21 +7,26 @@ import org.spout.api.Spout;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.common.message.CustomDataMessage;
 
 public class CommonBootstrapProtocol extends BootstrapProtocol {
+	
+	private final Protocol defaultProtocol;
 
-	public CommonBootstrapProtocol() {
-		this("CommonBootstrap");
+	public CommonBootstrapProtocol(Protocol defaultProtocol) {
+		this("CommonBootstrap", defaultProtocol);
+	}
+
+	
+	public CommonBootstrapProtocol(String name, Protocol defaultProtocol) {
+		this(name, new CommonBootstrapCodecLookupService(), new CommonBootstrapHandlerLookupService(), defaultProtocol);
 	}
 	
-	public CommonBootstrapProtocol(String name) {
-		this(name, new CommonBootstrapCodecLookupService(), new CommonBootstrapHandlerLookupService());
-	}
-	
-	public CommonBootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
+	public CommonBootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, Protocol defaultProtocol) {
 		super(name, codecLookup, handlerLookup);
+		this.defaultProtocol = defaultProtocol;
 	}
 
 	@Override
@@ -41,6 +46,11 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public Protocol getDefaultProtocol() {
+		return defaultProtocol;
 	}
 	
 	/**

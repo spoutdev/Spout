@@ -40,4 +40,6 @@ public abstract class BootstrapProtocol extends Protocol {
 	}
 
 	public abstract String detectProtocolDefinition(Message message);
+	
+	public abstract Protocol getDefaultProtocol();
 }

@@ -68,7 +68,16 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		
 		MessageCodec<?> codec = codecLookup.find(opcode);
 		if (codec == null) {
-			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
+			if (bootstrapProtocol != null) {
+				Protocol protocol = bootstrapProtocol.getDefaultProtocol();
+				if (protocol != null) {
+					setProtocol(protocol);
+					codec = codecLookup.find(opcode);
+				}
+			}
+			if (codec == null) {
+				throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
+			}
 		}
 
 		if (codec.isExpanded()) {
@@ -87,10 +96,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 				Protocol protocol = Protocol.getProtocol(id);
 
 				if (protocol != null) {
-					codecLookup = protocol.getCodecLookupService();
-					encoder.setProtocol(protocol);
-					handler.setProtocol(protocol);
-					bootstrapProtocol = null;
+					setProtocol(protocol);
 				} else {
 					throw new IllegalStateException("No protocol associated with an id of " + id);
 				}
@@ -98,5 +104,12 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		}
 
 		return message;
+	}
+	
+	private void setProtocol(Protocol protocol) {
+		codecLookup = protocol.getCodecLookupService();
+		encoder.setProtocol(protocol);
+		handler.setProtocol(protocol);
+		bootstrapProtocol = null;
 	}
 }
