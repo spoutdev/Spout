@@ -39,6 +39,7 @@ import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
+import org.spout.api.exception.ConfigurationException;
 import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.generator.EmptyWorldGenerator;
@@ -70,7 +71,6 @@ import org.spout.engine.net.SpoutSessionRegistry;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.ConsoleManager;
-import org.spout.engine.util.config.SpoutConfiguration;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -93,7 +93,7 @@ public class SpoutEngine extends AsyncManager implements Game {
 
 	private final File dataDirectory = new File("data");
 
-	private String logFile = "logs/log-%D.txt";
+	private String logFile = "logs" + File.separator + "log-%D.txt";
 
 	private String name = "Spout Server";
 
@@ -151,7 +151,7 @@ public class SpoutEngine extends AsyncManager implements Game {
 	 * The scheduler for the server.
 	 */
 	private final SpoutScheduler scheduler = new SpoutScheduler(this);
-	
+
 	/**
 	 * A folder that holds all of the world data folders inside of it. By
 	 * default, it does not exist ('.'), meant for organizational purposes.
@@ -191,35 +191,32 @@ public class SpoutEngine extends AsyncManager implements Game {
 
 	private boolean debugMode = false;
 
-	
 	/**
 	 * Cached copy of the server configuration, can be used instead of
 	 * re-parsing the config file for each access
 	 */
 	protected SpoutConfiguration config = new SpoutConfiguration();
 
-	
-	public SpoutEngine(String[] args){
+	public SpoutEngine(String[] args) {
 		super(1, new ThreadAsyncExecutor());
-		for(String s : args){
-			if(s.equals("-debug")) debugMode = true;
+		for (String s : args) {
+			if (s.equals("-debug")) debugMode = true;
 		}
 		registerWithScheduler(scheduler);
 		if (!getExecutor().startExecutor()) {
 			throw new IllegalStateException("SpoutServer's executor was already started");
 		}
 	}
-	
-	public void init(){
-		
+
+	public void init() {
+
 	}
-	
-	public void start(){
+
+	public void start() {
 		Spout.setGame(this);
 
-		if(debugMode()){
+		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
-
 		}
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
@@ -227,12 +224,17 @@ public class SpoutEngine extends AsyncManager implements Game {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		if(Spout.getGame().debugMode()) getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
+		if (Spout.getGame().debugMode())
+			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 
 		consoleManager.setupConsole();
 
-		config.load();
-		
+		try {
+			config.load();
+		} catch (ConfigurationException e) {
+			getLogger().log(Level.SEVERE, "Error loading config: {0}", e);
+		}
+
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
@@ -242,24 +244,16 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 		//If we don't have a default world set, just grab one.
 		getDefaultWorld();
-		
 
 		if (bootstrapProtocols.size() == 0) {
 			getLogger().warning("No bootstrap protocols registered! Clients will not be able to connect to the server.");
 		}
 
-		
-		
 		scheduler.startMainThread();
-
-		
 	}
-	
-	
+
 	public void loadPlugins() {
-
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
-
 		pluginManager.clearPlugins();
 
 		if (!pluginDirectory.exists()) {
@@ -273,7 +267,7 @@ public class SpoutEngine extends AsyncManager implements Game {
 				//Technically unsafe.  This should call the security manager
 				plugin.onLoad();
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[] {plugin.getDescription().getName(), ex.getMessage()});
+				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[]{plugin.getDescription().getName(), ex.getMessage()});
 				ex.printStackTrace();
 			}
 		}
@@ -283,21 +277,15 @@ public class SpoutEngine extends AsyncManager implements Game {
 		for (Plugin plugin : pluginManager.getPlugins()) {
 			pluginManager.enablePlugin(plugin);
 		}
-
 	}
-	
-	
 
 	public Collection<Player> rawGetAllOnlinePlayers() {
 		return players.get().values();
 	}
 
-	
-
 	public Configuration getConfiguration() {
 		return config;
 	}
-	
 
 	@Override
 	public String getName() {
@@ -326,7 +314,7 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 		return onlinePlayers.toArray(emptyPlayerArray);
 	}
-	
+
 	@Override
 	public int getMaxPlayers() {
 		return maxPlayers;
@@ -336,7 +324,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 	public String getAddress() {
 		return SpoutConfiguration.ADDRESS.getString();
 	}
-
 
 	@Override
 	public String[] getAllAddresses() {
@@ -360,7 +347,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 	public Logger getLogger() {
 		return logger;
 	}
-
 
 	@Override
 	public void processCommand(CommandSource source, String commandLine) {
@@ -396,7 +382,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		return updateDirectory;
 	}
 
-
 	@Override
 	public File getConfigFolder() {
 		if (!configDirectory.exists()) {
@@ -405,15 +390,12 @@ public class SpoutEngine extends AsyncManager implements Game {
 		return configDirectory;
 	}
 
-	
 	@Override
 	public File getDataFolder() {
 		return dataDirectory;
 	}
 
-
 	private Player[] emptyPlayerArray = new Player[0];
-
 
 	@Override
 	public Player getPlayer(String name, boolean exact) {
@@ -439,7 +421,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 		return null;
 	}
-	
 
 	@Override
 	public Collection<Player> matchPlayer(String name) {
@@ -472,8 +453,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		return null;
 	}
 
-
-
 	@Override
 	public Collection<World> getWorlds() {
 		Collection<World> w = new ArrayList<World>();
@@ -485,18 +464,16 @@ public class SpoutEngine extends AsyncManager implements Game {
 
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
-		if(loadedWorlds.get().containsKey((name))) return loadedWorlds.get().get(name);
-		if(loadedWorlds.getLive().containsKey(name)) return loadedWorlds.getLive().get(name);
+		if (loadedWorlds.get().containsKey((name))) return loadedWorlds.get().get(name);
+		if (loadedWorlds.getLive().containsKey(name))
+			return loadedWorlds.getLive().get(name);
 
 		// TODO - should include generator (and non-zero seed)
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
 
-
 		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
-
-
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 
 		if (oldWorld != null) {
@@ -511,11 +488,9 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 	}
 
-
 	@Override
 	public void save(boolean worlds, boolean players) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -536,7 +511,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		bootstrapProtocols.clear();
 		executor.shutdown();
 	}
-
 
 	@Override
 	public File getWorldFolder() {
@@ -568,7 +542,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		return sessions;
 	}
 
-
 	public SpoutScheduler getScheduler() {
 		return scheduler;
 	}
@@ -577,7 +550,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 	public WorldGenerator getDefaultGenerator() {
 		return defaultGenerator;
 	}
-
 
 	@Override
 	public BootstrapProtocol getBootstrapProtocol(SocketAddress socketAddress) {
@@ -599,7 +571,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 		return proto;
 	}
-	
 
 	@Override
 	public ServiceManager getServiceManager() {
@@ -624,13 +595,13 @@ public class SpoutEngine extends AsyncManager implements Game {
 	@Override
 	public void finalizeRun() throws InterruptedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -645,18 +616,16 @@ public class SpoutEngine extends AsyncManager implements Game {
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
-		case 0:
-			sessions.pulse();
-			break;
+			case 0:
+				sessions.pulse();
+				break;
 		}
 	}
-
 
 	@Override
 	public void haltRun() throws InterruptedException {
 		logger.info("Server halting");
 	}
-
 
 	@Override
 	public boolean setDefaultWorld(World world) {
@@ -684,18 +653,15 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 	}
 
-
-	
 	@Override
 	public File getConfigDirectory() {
 		return configDirectory;
 	}
+
 	@Override
 	public String getLogFile() {
 		return logFile;
 	}
-
-
 
 	@Override
 	public String[] getAllCommands() {
@@ -703,7 +669,6 @@ public class SpoutEngine extends AsyncManager implements Game {
 		return result.toArray(new String[result.size()]);
 	}
 
-	
 	@Override
 	public boolean unloadWorld(String name, boolean save) {
 		return unloadWorld(loadedWorlds.getLive().get(name), save);
@@ -740,11 +705,9 @@ public class SpoutEngine extends AsyncManager implements Game {
 		return ((SpoutWorld) world).getEntityManager();
 	}
 
-	
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
-
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession session) {
@@ -782,6 +745,4 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 		return player;
 	}
-
-
 }

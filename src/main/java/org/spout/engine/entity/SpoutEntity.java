@@ -104,7 +104,7 @@ public class SpoutEntity implements Entity {
 
 
 		if (transform != null) {
-			this.chunkLive = transform.getPosition().getWorld().getChunk(transform.getPosition());  	
+			this.chunkLive = transform.getPosition().getWorld().getChunk(transform.getPosition());
 			Region newRegion = this.chunkLive.getRegion();
 			EntityManager newEntityManager = ((SpoutRegion) newRegion).getEntityManager();
 			entityManagerLive = newEntityManager;
@@ -146,7 +146,7 @@ public class SpoutEntity implements Entity {
 		this.rotate(roll, 1, 0, 0);
 		this.rotate(yaw, 0, 1, 0);
 		this.rotate(pitch, 0, 0, 1);
-		
+
 		if (controllerLive instanceof PlayerController) {
 			Player player = ((PlayerController)controllerLive).getPlayer();
 			if (player != null && player.getSession() != null) {
@@ -162,7 +162,7 @@ public class SpoutEntity implements Entity {
 	public void resolve() {
 		//Don't need to do collisions if we have no collision volume
 		if(this.collision == null || this.getWorld() == null) return;
-		
+
 		//Resolve Collisions Here
 		final Point location = this.transform.getPosition();
 
@@ -173,11 +173,11 @@ public class SpoutEntity implements Entity {
 
 		Vector3 offset = this.lastTransform.getPosition().subtract(location);
 		for (CollisionVolume box : colliding) {
-		
+
 			Vector3 collision = this.collision.resolve(box);
 			if (collision != null) {
 				collision = collision.subtract(location);
-				
+
 				if (collision.getX() != 0F) {
 					offset = new Vector3(collision.getX(), offset.getY(), offset.getZ());
 				}
@@ -187,7 +187,7 @@ public class SpoutEntity implements Entity {
 				if (collision.getZ() != 0F) {
 					offset = new Vector3(offset.getX(), offset.getY(), collision.getZ());
 				}
-				
+
 				if(this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) this.setPosition(location.add(offset));
 				if(this.getController() != null){
 					Block b = this.transform.getPosition().getWorld().getBlock((int) box.getPosition().getX(), (int) box.getPosition().getY(), (int) box.getPosition().getZ());
@@ -428,18 +428,21 @@ public class SpoutEntity implements Entity {
 	@Override
 	public void setController(Controller controller) {
 
-		if (controller != null){
-
+		if (controller != null) {
 			controller.attachToEntity(this);
 		}
+
 		int seq = lock.writeLock();
 		try {
 			controllerLive = controller;
 		} finally {
 			lock.writeUnlock(seq);
 		}
+
 		if (controller != null) {
-			if(controller instanceof PlayerController) setObserver(true);
+			if (controller instanceof PlayerController){
+				setObserver(true);
+			}
 			controller.onAttached();
 		}
 	}
@@ -447,18 +450,18 @@ public class SpoutEntity implements Entity {
 
 	// TODO - make actually atomic, rather than just threadsafe
 	@Override
-	public boolean kill() {		
+	public boolean kill() {
 		Point p = transform.getPosition();
 		boolean alive = p.getWorld() != null;
 		transform.set(DEAD);
 		chunkLive = null;
 		entityManagerLive = null;
-		return alive;	
+		return alive;
 	}
 
 	@Override
 	public boolean isDead() {
-		return id != NOTSPAWNEDID && transform.getPosition().getWorld() == null;			
+		return id != NOTSPAWNEDID && transform.getPosition().getWorld() == null;
 	}
 
 	// TODO - needs to be made thread safe
@@ -537,7 +540,7 @@ public class SpoutEntity implements Entity {
 				}
 			}
 		}
-		
+
 		if (observerLive.get() != observer) {
 			observer = !observer;
 			if (observer) {
@@ -731,7 +734,7 @@ public class SpoutEntity implements Entity {
 	public boolean isObserver() {
 		return observer;
 	}
-	
+
 	@Override
 	public boolean isObserverLive() {
 		return observerLive.get();
@@ -740,7 +743,7 @@ public class SpoutEntity implements Entity {
 	public void setOwningThread(Thread thread){
 		this.owningThread = thread;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SpoutEntity - ID: " + this.getId() + " Controller: " + this.getController() + " Position: " + this.getPosition();
@@ -751,13 +754,13 @@ public class SpoutEntity implements Entity {
 		component.attachToEntity(this);
 		component.onAttached();
 		components.add(component);
-		
+
 	}
 
 	@Override
 	public void removeComponent(EntityComponent component) {
 		if(components.remove(component)) component.onDetached();
-		
+
 	}
 
 	@Override

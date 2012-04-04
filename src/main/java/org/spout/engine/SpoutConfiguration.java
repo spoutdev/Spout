@@ -23,53 +23,44 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.util.config;
+package org.spout.engine;
+
+import org.spout.api.util.config.ConfigurationHolder;
+import org.spout.api.util.config.yaml.YamlConfiguration;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.List;
 
-import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.ConfigurationNode;
+public class SpoutConfiguration extends YamlConfiguration {
 
-public class SpoutConfiguration extends Configuration {
-
-	private static final String[] whitelist = {"Notch", "ez", "jeb"};
-	private static final String[] banlist = {"satan"};
-	public static final ConfigurationNode WORLDS = new ConfigurationNode("worlds", "default");
-	public static final ConfigurationNode WHITELIST = new ConfigurationNode("whitelist", Arrays.asList(whitelist));
-	public static final ConfigurationNode BANLIST = new ConfigurationNode("banlist", Arrays.asList(banlist));
-	public static final ConfigurationNode ALLOW_FLIGHT = new ConfigurationNode("allow-flight", false);
-	public static final ConfigurationNode USE_WHITELIST = new ConfigurationNode("use-whitelist", false);
-	public static final ConfigurationNode WORLD_CONTAINER = new ConfigurationNode("world-container", ".");
-	public static final ConfigurationNode ADDRESS = new ConfigurationNode("address", "0.0.0.0:25565");
+	private static final List<String> whitelist = Arrays.asList("Notch", "ez", "jeb");
+	private static final List<String> banlist = Arrays.asList("Satan");
+	public static final ConfigurationHolder WORLDS = new ConfigurationHolder("default", "worlds");
+	public static final ConfigurationHolder WHITELIST = new ConfigurationHolder(whitelist, "whitelist");
+	public static final ConfigurationHolder BANLIST = new ConfigurationHolder(banlist, "banlist");
+	public static final ConfigurationHolder ALLOW_FLIGHT = new ConfigurationHolder(false, "allow-flight");
+	public static final ConfigurationHolder USE_WHITELIST = new ConfigurationHolder(false, "use-whitelist");
+	public static final ConfigurationHolder WORLD_CONTAINER = new ConfigurationHolder(".", "world-container");
+	public static final ConfigurationHolder ADDRESS = new ConfigurationHolder("0.0.0.0:25565", "address");
 
 	public SpoutConfiguration() {
-		super(new File("config/spout.yml"));
-	}
-
-	@Override
-	public void load() {
-		super.load();
+		super(new File("config", "spout.yml"));
 		for (Field field : SpoutConfiguration.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				try {
+					field.setAccessible(true);
 					Object f = field.get(null);
-					if (f instanceof ConfigurationNode) {
-						ConfigurationNode node = (ConfigurationNode) f;
-						Object value = getValue(node.getPath());
-						if (value != null) {
-							node.setValue(value);
-						}
-						this.addNode(node);
+					if (f instanceof ConfigurationHolder) {
+						ConfigurationHolder node = (ConfigurationHolder) f;
+						node.setConfiguration(this);
 					}
 				} catch (IllegalArgumentException e) {
 				} catch (IllegalAccessException e) {
 				}
 			}
 		}
-
-		this.save();
 	}
 }

@@ -139,6 +139,7 @@ public abstract class PulsableThread extends Thread {
 					throw ie;
 				} catch (Throwable t) {
 					logger.log(Level.SEVERE, "Error while pulsing thread " + getName() + ":  " + t.getMessage(), t);
+					t.printStackTrace();
 				} finally {
 					synchronized (pulsing) {
 						pulsing.set(false);

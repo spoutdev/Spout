@@ -1,6 +1,5 @@
 package org.spout.engine;
 
-
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,15 +15,12 @@ import org.spout.api.Server;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-import org.spout.api.util.config.ConfigurationNode;
 import org.spout.engine.net.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
-import org.spout.engine.util.config.SpoutConfiguration;
-
 
 public class SpoutServer extends SpoutEngine implements Server {
-	
+
 	/**
 	 * If the server has a whitelist or not.
 	 */
@@ -44,27 +40,21 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The server's ban manager
 	 */
 	private BanManager banManager;
-	
+
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
-
 	public static void main(String[] args) {
 		SpoutServer server = new SpoutServer(args);
 		server.init();
 		server.start();
-
 	}
 
-
-	
 	public SpoutServer(String[] args) {
 		super(args);
-		
 	}
-
 
 	@Override
 	public void start() {
@@ -73,11 +63,10 @@ public class SpoutServer extends SpoutEngine implements Server {
 		banManager = new FlatFileBanManager(this);
 
 		getEventManager().registerEvents(new InternalEventListener(this), this);
-		
+
 		getLogger().info("Done Loading, ready for players.");
 	}
 
-	
 	@Override
 	public void init() {
 		super.init();
@@ -87,15 +76,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
 		bootstrap.setPipelineFactory(pipelineFactory);
 	}
-	
+
 	@Override
 	public void stop() {
 		super.stop();
 		bootstrap.getFactory().releaseExternalResources();
 	}
-
-	
-
 
 	/**
 	 * Binds this server to the specified address.
@@ -115,11 +101,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		return true;
 	}
 
-	
-
-
-
-
 	@Override
 	public void save(boolean worlds, boolean players) {
 		// TODO Auto-generated method stub
@@ -136,7 +117,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public boolean allowFlight() {
 		return allowFlight;
 	}
-
 
 	@Override
 	public boolean isWhitelist() {
@@ -176,7 +156,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		} else {
 			whitelist.add(player);
 		}
-		config.addNode(new ConfigurationNode("whitelist", whitelist));
+		SpoutConfiguration.WHITELIST.setValue(whitelist);
 	}
 
 	@Override
@@ -184,8 +164,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		whitelistedPlayers.remove(player);
 	}
 
-
-	
 	@Override
 	public Collection<String> getIPBans() {
 		return banManager.getIpBans();
@@ -231,8 +209,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		return banManager.getIpBanMessage(address);
 	}
 
-	
-
 	@Override
 	public Collection<String> getBannedPlayers() {
 		return banManager.getBans();
@@ -243,8 +219,4 @@ public class SpoutServer extends SpoutEngine implements Server {
 		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
 		return new SpoutSession(this, channel, protocol);
 	}
-
-
-
-
 }

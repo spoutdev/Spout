@@ -1,39 +1,31 @@
 package org.spout.engine;
 
-import java.io.File;
-
 import org.spout.api.Client;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;
 
-public class SpoutClient extends SpoutEngine implements Client {
-	
-	private Camera activeCamera;
-	
-	
+import java.io.File;
 
-	public static void main(String[] args){
+public class SpoutClient extends SpoutEngine implements Client {
+
+	private Camera activeCamera;
+
+	public static void main(String[] args) {
 		System.out.println("Client Main!");
-		
-		
 	}
-	
-	
+
 	public SpoutClient(String[] args) {
 		super(args);
 		// TODO Auto-generated constructor stub
 	}
-
-	
 
 	@Override
 	public File getTemporaryCache() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public File getStatsFolder() {
@@ -60,7 +52,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void setActiveCamera(Camera activeCamera) {
-		this.activeCamera = activeCamera;		
+		this.activeCamera = activeCamera;
 	}
 
 	@Override
@@ -69,15 +61,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return null;
 	}
 
-
-
 	@Override
 	public File getResourcePackFolder() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
-	
-
 }

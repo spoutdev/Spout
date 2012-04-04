@@ -50,17 +50,17 @@ public class AsyncExecutorUtils {
 		while (i.hasNext()) {
 			Entry<Thread, StackTraceElement[]> entry = i.next();
 			Thread thread = entry.getKey();
-			log.info(LINE);
+			log.finest(LINE);
 			
-			log.info("Current Thread: " + thread.getName());
-			log.info("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
-			log.info("    Stack:");
+			log.finest("Current Thread: " + thread.getName());
+			log.finest("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
+			log.finest("    Stack:");
 			StackTraceElement[] stack = entry.getValue();
 			for (int line = 0; line < stack.length; line++) {
-				log.info("        " + stack[line].toString());
+				log.finest("        " + stack[line].toString());
 			}
 		}
-		log.info(LINE);
+		log.finest(LINE);
 	}
 	
 	/**
@@ -83,7 +83,7 @@ public class AsyncExecutorUtils {
 	/**
 	 * Waits for a list of ManagedThreads to complete a pulse
 	 *
-	 * @param threads the threads to join for
+	 * @param executors the threads to join for
 	 * @param timeout how long to wait, or 0 to wait forever
 	 */
 	public static void pulseJoinAll(List<AsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
