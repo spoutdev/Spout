@@ -13,6 +13,10 @@ public class Filesystem {
 	public static final File worldsDirectory = new File("worlds");
 	
 	
+	
+	
+	
+	
 	static {
 		if(!resourceFolder.exists()) resourceFolder.mkdirs();
 		if(!cacheFolder.exists()) cacheFolder.mkdirs();
@@ -21,6 +25,10 @@ public class Filesystem {
 		if(!updateDirectory.exists()) updateDirectory.mkdirs();
 		if(!dataDirectory.exists()) dataDirectory.mkdirs();
 		if(!worldsDirectory.exists()) worldsDirectory.mkdirs();
+		
+		
+		
+		
 	}
 	
 	
