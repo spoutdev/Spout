@@ -38,7 +38,7 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final World world;
 	private final PermissionsSubject subject;
-	private Result result = Result.DENY;
+	private Result result = Result.DEFAULT;
 
 	public PermissionNodeEvent(World world, PermissionsSubject subject, String node) {
 		super(node);

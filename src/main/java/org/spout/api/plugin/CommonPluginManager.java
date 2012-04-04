@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Game;
+import org.spout.api.event.HandlerList;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
@@ -235,9 +236,10 @@ public class CommonPluginManager implements PluginManager {
 
 			try {
 				plugin.getPluginLoader().disablePlugin(plugin);
+				HandlerList.unregisterAll(plugin);
 				game.getServiceManager().unregisterAll(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				safelyLog(Level.SEVERE, new StringBuilder().append("An error occurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
 			if (!locked) {

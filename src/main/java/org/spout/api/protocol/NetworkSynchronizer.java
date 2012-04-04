@@ -25,18 +25,28 @@
  */
 package org.spout.api.protocol;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.EventHandler;
+import org.spout.api.exception.EventException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Quaternion;
 import org.spout.api.player.Player;
+import org.spout.api.protocol.event.ProtocolEvent;
+import org.spout.api.protocol.event.ProtocolEventExecutor;
+import org.spout.api.protocol.event.ProtocolEventListener;
 
 public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
@@ -76,10 +86,57 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	private volatile boolean teleported = false;
 	private Point lastPosition = null;
 	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
+	private Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
+
+	public void setPositionDirty() {
+		teleported = true;
+	}
 
 	public void setEntity(Entity entity) {
 		this.entity = entity;
 		entity.setObserver(true);
+	}
+
+	protected void registerProtocolEvents(final ProtocolEventListener listener) {
+		for (final Method method : listener.getClass().getDeclaredMethods()) {
+			if (!method.isAnnotationPresent(EventHandler.class) || method.getParameterTypes().length == 0) {
+				Class<?> clazz = method.getParameterTypes()[0];
+				if (!clazz.isAssignableFrom(ProtocolEvent.class)) {
+					session.getGame().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
+					continue;
+				}
+				method.setAccessible(true);
+				protocolEventMapping.put(clazz.asSubclass(ProtocolEvent.class), new ProtocolEventExecutor() {
+					@Override
+					public void execute(ProtocolEvent event) throws EventException {
+						try {
+							method.invoke(listener, event);
+						} catch (InvocationTargetException e) {
+							throw new EventException(e.getCause());
+						} catch (IllegalAccessException e) {
+							throw new EventException(e);
+						}
+					}
+				});
+			}
+		}
+	}
+
+	public <T extends ProtocolEvent> T callProtocolEvent(T event) {
+		ProtocolEventExecutor executor = protocolEventMapping.get(event.getClass());
+		if (executor != null) {
+			try {
+				executor.execute(event);
+			} catch (EventException e) {
+				if (e.getCause() != null) {
+					Throwable t = e.getCause();
+					session.getGame().getLogger().severe("Error occurred while firing protocol event"
+							+ event.getName() + " for player " + owner.getName() + ": " + t.getMessage());
+					t.printStackTrace();
+				}
+			}
+		}
+		return event;
 	}
 
 	public void onDeath() {
@@ -189,7 +246,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			if (teleported && entity != null) {
-				sendPosition(entity.getPosition(), entity.getYaw(), entity.getPitch());
+				sendPosition(entity.getPosition(), entity.getRotation());
 				first = false;
 				teleported = false;
 			}
@@ -328,10 +385,9 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * be made to the chunk
 	 *
 	 * @param p position to send
-	 * @param yaw to send
-	 * @param pitch to send
+	 * @param rot rotation to send
 	 */
-	protected void sendPosition(Point p, float yaw, float pitch) {
+	protected void sendPosition(Point p, Quaternion rot) {
 		//TODO: Implement Spout Protocol
 	}
 
@@ -374,7 +430,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * @param x coordinate
 	 * @param y coordinate
 	 * @param z coordinate
-	 * @param id to send in the update
+	 * @param material to send in the update
 	 * @param data to send in the update
 	 */
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
