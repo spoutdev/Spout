@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  * @author zml2008
  */
 public class ConfigurationTest {
-	private Configuration config;
+	private MapConfiguration config;
 
 	@Before
 	public void setUp() throws ConfigurationException {
@@ -47,14 +47,24 @@ public class ConfigurationTest {
 		config.load();
 	}
 
-	public Configuration createConfiguration() {
+	public Map<Object, Object> getConfigMap() {
 		Map<Object, Object> newData = new HashMap<Object, Object>();
 		newData.put("string-type", "someString");
 		newData.put("int-type", 45);
 		Map<Object, Object> testNested = new HashMap<Object, Object>();
 		testNested.put("bar", "baz");
 		newData.put("foo", testNested);
-		return new MapConfiguration(newData);
+		return newData;
+	}
+
+	public MapConfiguration createConfiguration() {
+		return new MapConfiguration(getConfigMap());
+	}
+
+	public void testLoadSave() throws ConfigurationException {
+		config.load();
+		config.save();
+		assertEquals(getConfigMap(), config.getMap());
 	}
 
 	@Test

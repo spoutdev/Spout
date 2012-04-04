@@ -40,6 +40,7 @@ public class MapConfiguration extends Configuration {
 		super();
 		this.map = map;
 	}
+
 	@Override
 	protected Map<?, ?> loadToMap() throws ConfigurationException {
 		return map;
@@ -48,5 +49,9 @@ public class MapConfiguration extends Configuration {
 	@Override
 	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
 		this.map = map;
+	}
+
+	public Map<?, ?> getMap() {
+		return map;
 	}
 }
