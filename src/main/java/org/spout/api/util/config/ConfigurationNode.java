@@ -25,301 +25,303 @@
  */
 package org.spout.api.util.config;
 
-import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.spout.api.math.MathHelper;
+/**
+ *
+ * @author zml2008
+ */
+public abstract class ConfigurationNode extends AbstractConfigurationNodeSource {
+	private String[] path;
+	private boolean attached;
+	private ConfigurationNodeSource parent;
 
-public class ConfigurationNode {
-
-	private final String path;
-	protected MemoryConfiguration config;
-	private Object value;
-	private Object def;
-	private final Set<String> keys = new HashSet<String>();
-
-	public ConfigurationNode(String path, Object def) {
+	public ConfigurationNode(Configuration config, String... path) {
+		super(config);
 		this.path = path;
-		this.def = def;
-		this.value = def;
 	}
 
 	/**
-	 * Gets the final path of the node.
+	 * Return this node's value as a boolean
 	 *
-	 * @return
-	 */
-	public String getPath() {
-		return path;
-	}
-
-	/**
-	 * Gets the current value of the node.
-	 *
-	 * @return the value of the node.
-	 */
-	public Object getValue() {
-		if (value != null) {
-			return value;
-		}
-
-		return def;
-	}
-
-	/**
-	 * Sets the un-staged value of the node. The actually configuration will not be updated until 'MemoryConfiguration.setProperty()'
-	 *
-	 * @param value
-	 */
-	public void setValue(Object value) {
-		this.value = value;
-		if (config != null) {
-			config.addNode(this);
-		}
-	}
-
-	/**
-	 * Sets the default value of the node.
-	 *
-	 * @param def object
-	 */
-	public void setDefaultValue(Object def) {
-		this.def = def;
-		if (value == null) {
-			this.value = def;
-		}
-	}
-
-	/**
-	 * Sets the configuration the node will be saved to.
-	 *
-	 * @param config
-	 */
-	public void setConfiguration(MemoryConfiguration config) {
-		this.config = config;
-	}
-
-	/**
-	 * Returns a string from the value.
-	 *
-	 * @return string
-	 */
-	public String getString() {
-		return value.toString();
-	}
-
-	/**
-	 * Returns a integer from the value, null if not a integer.
-	 *
-	 * @return integer
-	 */
-	public int getInteger() {
-		return getInteger(0);
-	}
-
-	/**
-	 * Returns a integer from the value, default value if not a integer.
-	 *
-	 * @return integer
-	 */
-	public int getInteger(int def) {
-		Integer i = MathHelper.castInt(value);
-		if (i != null) {
-			return i;
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a double from the value, null if not a double.
-	 *
-	 * @return double
-	 */
-	public double getDouble() {
-		return getDouble(0);
-	}
-
-	/**
-	 * Returns a double from the value, default value if not a double.
-	 *
-	 * @return double
-	 */
-	public double getDouble(double def) {
-		Double d = MathHelper.castDouble(value);
-		if (d != null) {
-			return d;
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a boolean from the value, null if not a boolean.
-	 *
-	 * @return boolean
+	 * @return the boolean value
+	 * @see #getBoolean(boolean)
+	 * @see #getValue()
 	 */
 	public boolean getBoolean() {
 		return getBoolean(false);
 	}
 
 	/**
-	 * Returns a boolean from the value, default value if not a boolean.
+	 * Return this node's value as a boolean
 	 *
-	 * @return boolean
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean
+	 * @return the boolean value
+	 * @see #getValue(Object)
 	 */
-	public boolean getBoolean(boolean def) {
-		Boolean b = MathHelper.castBoolean(value);
-		if (b != null) {
-			return b;
-		}
-
-		return def;
-	}
-
+	public abstract boolean getBoolean(boolean def);
 
 	/**
-	 * Returns a list from the value, null if not a list.
+	 * Return this node's value as an integer
 	 *
-	 * @return list
+	 * @return the integer value
+	 * @see #getInt(int)
+	 * @see #getValue()
 	 */
-	public List<Object> getList() {
+	public int getInt() {
+		return getInt(0);
+	}
+
+	/**
+	 * Return this node's value as an integer
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't an integer
+	 * @return the integer value
+	 * @see #getValue(Object)
+	 */
+	public abstract int getInt(int def);
+
+	/**
+	 * Return this node's value as a long
+	 *
+	 * @return the long value
+	 * @see #getLong(long)
+	 * @see #getValue()
+	 */
+	public long getLong() {
+		return getLong(0);
+	}
+
+	/**
+	 * Return this node's value as a long
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a long
+	 * @return the long value
+	 * @see #getValue(Object)
+	 */
+	public abstract long getLong(long def);
+
+	/**
+	 * Return this node's value as a double
+	 *
+	 * @return the double value
+	 * @see #getDouble(double)
+	 * @see #getValue()
+	 */
+	public double getDouble() {
+		return getDouble(0);
+	}
+
+	/**
+	 * Return this node's value as a double
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a double
+	 * @return the double value
+	 * @see #getValue(Object)
+	 */
+	public abstract double getDouble(double def);
+
+	/**
+	 * Return this node's value as a String
+	 *
+	 * @return the String value
+	 * @see #getString(String)
+	 * @see #getValue()
+	 */
+	public String getString() {
+		return getString(null);
+	}
+
+	/**
+	 * Return this node's value as a String
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value
+	 * @return the String value
+	 * @see #getValue(Object)
+	 */
+	public abstract String getString(String def);
+
+	/**
+	 * Return this node's value
+	 *
+	 * @return the value
+	 * @see #getValue(Object)
+	 */
+	public Object getValue() {
+		return getValue(null);
+	}
+
+	/**
+	 * Return this node's value
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value
+	 * @return the value
+	 */
+	public abstract Object getValue(Object def);
+
+	/**
+	 * Return this node's value as the given type
+	 *
+	 * @param <T> The type to get as
+	 * @param type The type to get as and check for
+	 * @return the value as the give type, or null if the value is not present or not of the given type
+	 * @see #getTypedValue(Class, Object)
+	 * @see #getValue()
+	 */
+	public <T> T getTypedValue(Class<T> type) {
+		return getTypedValue(type, null);
+	}
+
+	/**
+	 * Return this node's value as the given type
+	 *
+	 * @param <T> The type to get as
+	 * @param type The type to get as and check for
+	 * @param def The value to use as default
+	 * @return the value as the give type, or {@code def} if the value is not present or not of the given type
+	 * @see #getValue(Object)
+	 */
+	public abstract <T> T getTypedValue(Class<T> type, T def);
+
+	/**
+	 * Sets the configuration's value
+	 *
+	 * @param value The value to set
+	 * @return The previous value of the configuration
+	 */
+	public abstract Object setValue(Object value);
+
+	/**
+	 * Return this node's value as a list
+	 *
+	 * @return the list value
+	 * @see #getList(java.util.List)
+	 * @see #getValue()
+	 */
+	public List<?> getList() {
 		return getList(null);
 	}
 
 	/**
-	 * Returns a list from the value, default value if not a list.
+	 * Return this node's value as a list
 	 *
-	 * @return list
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
+	 * @return the List value
+	 * @see #getValue(Object)
 	 */
-	public List<Object> getList(List<Object> def) {
-		if (value != null && value instanceof List) {
-			return (List<Object>) value;
-		}
-
-		return def;
-	}
+	public abstract List<?> getList(List<?> def);
 
 	/**
-	 * Returns a string list from the value, null if not a string list.
+	 * Return this node's value as a string list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
 	 *
-	 * @return string list
+	 * @return the string list value
+	 * @see #getStringList(java.util.List)
+	 * @see #getValue()
 	 */
 	public List<String> getStringList() {
 		return getStringList(null);
 	}
 
 	/**
-	 * Returns a string list from the value, default value if not a string list.
+	 * Return this node's value as a string list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
 	 *
-	 * @return string list
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
+	 * @return the string list value
+	 * @see #getValue(Object)
 	 */
-	public List<String> getStringList(List<String> def) {
-		List<Object> raw = this.getList();
-		if (raw != null) {
-			List<String> list = new ArrayList<String>();
-			for (Object obj : raw) {
-				list.add(obj.toString());
-			}
-
-			return list;
-		}
-
-		return def;
-	}
+	public abstract List<String> getStringList(List<String> def);
 
 	/**
-	 * Returns a integer list from the value, null if not a integer list.
+	 * Return this node's value as an integer list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
 	 *
-	 * @return integer list
+	 * @return the integer list value
+	 * @see #getStringList(java.util.List)
+	 * @see #getValue()
 	 */
 	public List<Integer> getIntegerList() {
 		return getIntegerList(null);
 	}
 
 	/**
-	 * Returns a integer list from the value, default value if not a integer list.
+	 * Return this node's value as a string list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
 	 *
-	 * @return integer list
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
+	 * @return the string list value
+	 * @see #getValue(Object)
 	 */
-	public List<Integer> getIntegerList(List<Integer> def) {
-		List<Object> raw = this.getList();
-		if (raw != null) {
-			List<Integer> list = new ArrayList<Integer>();
-			for (Object o : raw) {
-				Integer i = MathHelper.castInt(o);
-				if (i != null) {
-					list.add(i);
-				}
-			}
+	public abstract List<Integer> getIntegerList(List<Integer> def);
 
-			return list;
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a double list from the value, null if not a double list.
-	 *
-	 * @return double list
-	 */
 	public List<Double> getDoubleList() {
 		return getDoubleList(null);
 	}
 
-	/**
-	 * Returns a double list from the value, default value if not a double list.
-	 *
-	 * @return double list
-	 */
-	public List<Double> getDoubleList(List<Double> def) {
-		List<Object> raw = this.getList();
-		if (raw != null) {
-			List<Double> list = new ArrayList<Double>();
-			for (Object o : raw) {
-				Double i = MathHelper.castDouble(o);
-				if (i != null) {
-					list.add(i);
-				}
-			}
+	public abstract List<Double> getDoubleList(List<Double> def);
 
-			return list;
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a boolean list from the value, null if not a boolean list.
-	 *
-	 * @return boolean list
-	 */
 	public List<Boolean> getBooleanList() {
 		return getBooleanList(null);
 	}
 
+	public abstract List<Boolean> getBooleanList(List<Boolean> def);
+
 	/**
-	 * Returns a boolean list from the value, default value if not a boolean list.
-	 *
-	 * @return boolean list
+	 * Return whether a ConfigurationNode is attached to any configuration
+	 * @return if this node is attached to any configuration
 	 */
-	public List<Boolean> getBooleanList(List<Boolean> def) {
-		List<Object> raw = this.getList();
-		if (raw != null) {
-			List<Boolean> list = new ArrayList<Boolean>();
-			for (Object o : raw) {
-				Boolean b = MathHelper.castBoolean(o);
-				if (b != null) {
-					list.add(b);
-				}
-			}
+	protected boolean isAttached() {
+		return attached;
+	}
 
-			return list;
+	protected void setAttached(boolean value) {
+		this.attached = value;
+	}
+
+	public ConfigurationNodeSource getParent() {
+		return parent;
+	}
+
+	protected void setParent(ConfigurationNodeSource parent) {
+		if (parent == this) {
+			throw new IllegalArgumentException("Attempted circular inheritance between child" + getPath() + " and parent.");
 		}
+		Set<ConfigurationNodeSource> visited = new HashSet<ConfigurationNodeSource>();
+		ConfigurationNodeSource oldParent = getParent();
+		while (oldParent != null) {
+			if (visited.contains(oldParent)) {
+				throw new IllegalArgumentException("Attempted circular inheritance between child " + getPath() + " and parent " +
+						(oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getPath() : "root") + ".");
+			}
+			visited.add(oldParent);
+		}
+		this.parent = parent;
+	}
 
-		return def;
+	/**
+	 * @return The path, joined by the {@link Configuration#getPathSeparator()} of the attached configuration
+	 * @see #getPathEntries()
+	 */
+	public String getPath() {
+		return StringUtils.join(path, getConfiguration().getPathSeparator());
+	}
+
+	/**
+	 * @return the elements of this node's path, unjoined
+	 */
+	public String[] getPathEntries() {
+		return path;
 	}
 }

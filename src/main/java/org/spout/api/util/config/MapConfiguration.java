@@ -25,36 +25,28 @@
  */
 package org.spout.api.util.config;
 
-import java.io.File;
-import org.junit.Test;
+import org.spout.api.exception.ConfigurationException;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+/**
+ *
+ * @author zml2008
+ */
+public class MapConfiguration extends Configuration {
+	private Map<?, ?> map;
 
-public class MemoryConfigurationTest {
-
-	@Test
-	public void testValue() {
-		MemoryConfiguration config = new MemoryConfiguration(new HashMap<String, Object>(), new HashSet<ConfigurationNode>());
-		config.setValue("foo.bar", "baz");
-		String value = config.getString("foo.bar");
-		config.setPathSeparator("/");
-		String value1 = config.getString("foo/bar");
-		assertEquals(value, value1);
+	public MapConfiguration(Map<?, ?> map) {
+		super();
+		this.map = map;
 	}
-	
-	@Test
-	public void testNode() {
-		File testFile = new File("test.yml");
-		Configuration config = new Configuration(testFile);
-		ConfigurationNode node = new ConfigurationNode("foo.bar", "baz");
-		ConfigurationNode node1 = new ConfigurationNode("bar.baz", "qux");
-		config.addNodes(node, node1);
-		config.save();
-		assertEquals(node, config.getNode("foo.bar"));
-		assertEquals(node1, config.getNode("bar.baz"));
-		testFile.delete();
+	@Override
+	protected Map<?, ?> loadToMap() throws ConfigurationException {
+		return map;
+	}
+
+	@Override
+	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
+		this.map = map;
 	}
 }

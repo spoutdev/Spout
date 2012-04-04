@@ -25,22 +25,25 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author zml2008
  */
-public class MemoryConfiguration extends Configuration {
-	@Override
-	protected Map<?, ?> loadToMap() throws ConfigurationException {
-		return Collections.emptyMap();
+public class ConfigurationNodeBaseTest {
+	private Configuration base;
+	@Before
+	public void setUp() {
+		base = new MemoryConfiguration();
 	}
 
-	@Override
-	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
+	@Test
+	public void testGetPath() throws Exception {
+		ConfigurationNodeBase config = new ConfigurationNodeBase(base, null, "a", "b", "c");
+		assertEquals("a.b.c", config.getPath());
 	}
 }

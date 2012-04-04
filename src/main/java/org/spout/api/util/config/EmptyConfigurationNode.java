@@ -25,22 +25,35 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  *
  * @author zml2008
  */
-public class MemoryConfiguration extends Configuration {
-	@Override
-	protected Map<?, ?> loadToMap() throws ConfigurationException {
-		return Collections.emptyMap();
+public class EmptyConfigurationNode extends ConfigurationNodeBase {
+
+	public EmptyConfigurationNode(Configuration config, Object value, String... path) {
+		super(config, value, path);
 	}
 
 	@Override
-	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
+	public ConfigurationNode addChild(ConfigurationNode node) {
+		ConfigurationNode ret = super.addChild(node);
+		checkAdded();
+		return ret;
+	}
+
+	@Override
+	public Object setValue(Object value) {
+		Object ret = super.setValue(value);
+		checkAdded();
+		return ret;
+	}
+
+	private void checkAdded() {
+		if (isAttached()) {
+			getConfiguration().setNode(this);
+			setAttached(true);
+		}
 	}
 }

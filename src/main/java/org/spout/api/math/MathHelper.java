@@ -58,12 +58,12 @@ public class MathHelper {
 	public static final double RADTODEG = 180.0 / PI;
 
 	public static final double SQRTOFTWO = Math.sqrt(2.0);
-	
+
 	public static final double HALF_SQRTOFTWO = 0.5 * SQRTOFTWO;
 
 	/**
 	 * Calculates the squared length of all axis offsets given
-	 * 
+	 *
 	 * @param values of the axis to get the squared length of
 	 * @return the squared length
 	 */
@@ -77,7 +77,7 @@ public class MathHelper {
 
 	/**
 	 * Calculates the length of all axis offsets given
-	 * 
+	 *
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
@@ -88,7 +88,7 @@ public class MathHelper {
 	/**
 	 * Gets the difference between two angles
 	 * This value is always positive (0 - 180)
-	 * 
+	 *
 	 * @param angle1
 	 * @param angle2
 	 * @return the positive angle difference
@@ -100,7 +100,7 @@ public class MathHelper {
 	/**
 	 * Gets the difference between two radians
 	 * This value is always positive (0 - PI)
-	 * 
+	 *
 	 * @param radian1
 	 * @param radian2
 	 * @return the positive radian difference
@@ -111,7 +111,7 @@ public class MathHelper {
 
 	/**
 	 * Wraps the angle between -180 and 180 degrees
-	 * 
+	 *
 	 * @param angle to wrap
 	 * @return -180 > angle <= 180
 	 */
@@ -128,7 +128,7 @@ public class MathHelper {
 
 	/**
 	 * Wraps the radian between -PI and PI
-	 * 
+	 *
 	 * @param radian to wrap
 	 * @return -PI > radian <= PI
 	 */
@@ -145,7 +145,7 @@ public class MathHelper {
 
 	/**
 	 * Rounds a number to the amount of decimals specified
-	 * 
+	 *
 	 * @param input to round
 	 * @param decimals to round to
 	 * @return the rounded number
@@ -236,18 +236,17 @@ public class MathHelper {
 		int alpha = lerp(a.getAlpha(), b.getAlpha(), percent);
 		return new Color(red, green, blue, alpha);
 	}
-	
+
 	public static Quaternion lerp(Quaternion a, Quaternion b, float percent){
 		float x = lerp(a.getX(), b.getX(), percent);
 		float y = lerp(a.getY(), b.getY(), percent);
 		float z = lerp(a.getZ(), b.getZ(), percent);
 		float w = lerp(a.getW(), b.getW(), percent);
 		return new Quaternion(x,y,z,w, true);
-		
-	
+
+
 	}
-	
-	
+
 	public static Color blend(Color a, Color b){
 		int red = lerp(a.getRed(), b.getRed(), (a.getAlpha()/255.0));
 		int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha()/255.0));
@@ -290,8 +289,7 @@ public class MathHelper {
 	/**
 	 * Returns the forward vector transformed by the provided quaternion
 	 *
-	 * @param pitch
-	 * @param yaw
+	 * @param rot
 	 * @return
 	 */
 	public static Vector3 getDirectionVector(Quaternion rot) {
@@ -390,7 +388,7 @@ public class MathHelper {
 			return x;
 		}
 	}
-	
+
 	/**
 	 * Casts a value to an integer. May return null.
 	 *
@@ -398,11 +396,19 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Integer castInt(Object o) {
+		if (o == null) {
+			return null;
+		}
+
 		if (o instanceof Number) {
 			return ((Number)o).intValue();
+		} else {
+			try {
+				return Integer.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				return null;
+			}
 		}
-		
-		return null;
 	}
 
 	/**
@@ -412,11 +418,41 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Double castDouble(Object o) {
+		if (o == null) {
+			return null;
+		}
+
 		if (o instanceof Number) {
 			return ((Number)o).doubleValue();
+		} else {
+			try {
+				return Double.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				return null;
+			}
 		}
-		
-		return null;
+	}
+
+	/**
+	 * Casts a value to a double. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Long castLong(Object o) {
+		if (o == null) {
+			return null;
+		}
+
+		if (o instanceof Number) {
+			return ((Number)o).longValue();
+		} else {
+			try {
+				return Long.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		}
 	}
 
 	/**
@@ -426,6 +462,10 @@ public class MathHelper {
 	 * @return
 	 */
 	public static Boolean castBoolean(Object o) {
+		if (o == null) {
+			return null;
+		}
+
 		if (o instanceof Boolean) {
 			return (Boolean) o;
 		} else if (o instanceof String) {
@@ -435,7 +475,7 @@ public class MathHelper {
 				return null;
 			}
 		}
-		
+
 		return null;
 	}
 }

@@ -25,22 +25,52 @@
  */
 package org.spout.api.util.config;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.spout.api.exception.ConfigurationException;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author zml2008
  */
-public class MemoryConfiguration extends Configuration {
-	@Override
-	protected Map<?, ?> loadToMap() throws ConfigurationException {
-		return Collections.emptyMap();
+public class ConfigurationTest {
+	private Configuration config;
+
+	@Before
+	public void setUp() throws ConfigurationException {
+		config = createConfiguration();
+		config.load();
 	}
 
-	@Override
-	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
+	public Configuration createConfiguration() {
+		Map<Object, Object> newData = new HashMap<Object, Object>();
+		newData.put("string-type", "someString");
+		newData.put("int-type", 45);
+		Map<Object, Object> testNested = new HashMap<Object, Object>();
+		testNested.put("bar", "baz");
+		newData.put("foo", testNested);
+		return new MapConfiguration(newData);
+	}
+
+	@Test
+	public void testGetNode() {
+		ConfigurationNode node = config.getNode("string-type");
+		assertEquals("someString", node.getValue());
+		node = config.getNode("foo.bar");
+		assertEquals("baz", node.getValue());
+	}
+
+	@Test
+	public void testPathSeparator() {
+		String value = config.getNode("foo.bar").getString();
+		assertEquals("baz", value);
+		config.setPathSeparator("/");
+		value = config.getNode("foo/bar").getString();
+		assertEquals("baz", value);
 	}
 }

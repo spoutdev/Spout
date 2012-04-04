@@ -25,22 +25,47 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
-
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
  * @author zml2008
  */
-public class MemoryConfiguration extends Configuration {
-	@Override
-	protected Map<?, ?> loadToMap() throws ConfigurationException {
-		return Collections.emptyMap();
-	}
+public interface ConfigurationNodeSource {
+	public ConfigurationNode getChild(String name);
+	public ConfigurationNode addChild(ConfigurationNode node);
+	public ConfigurationNode removeChild(String key);
+	public ConfigurationNode removeChild(ConfigurationNode node);
+	public Map<String, ConfigurationNode> getChildren();
+	public Map<String, Object> getValues();
+	public Set<String> getKeys(boolean deep);
 
-	@Override
-	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
-	}
+	/**
+	 *
+	 * @param path
+	 * @return
+	 */
+	public ConfigurationNode getNode(String path);
+
+	/**
+	 * Get a child node of this node source, going across multiple levels.
+	 * @param path The path elements to get to the requested node.
+	 * @return The child node. Never null.
+	 */
+	public ConfigurationNode getNode(String... path);
+
+	/**
+	 * Returns whether this node source has children.
+	 * This is the same as running {@code getChildren.size() > 0}
+	 * @return whether this node source has children
+	 */
+	public boolean hasChildren();
+
+	/**
+	 * Returns the configuration this node source is attached to.
+	 * This may return the same object if this {@link ConfigurationNodeSource} is a Configuration.
+	 * @return the attached configuration.
+	 */
+	public Configuration getConfiguration();
 }
