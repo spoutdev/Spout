@@ -145,7 +145,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>org.spout.server.SpoutServer</Main-Class>
+							<Main-Class>org.spout.engine.SpoutServer</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
 							<Implementation-Version>${describe}</Implementation-Version>
 							<Implementation-Vendor>SpoutDev</Implementation-Vendor>
@@ -156,7 +156,7 @@
 						</manifestEntries>
 						<manifestSections>
 							<manifestSection>
-								<name>org/spout/server/</name>
+								<name>org/spout/engine/</name>
 								<manifestEntries>
 									<Sealed>true</Sealed>
 								</manifestEntries>
