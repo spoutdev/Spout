@@ -66,6 +66,7 @@ import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.filesystem.Filesystem;
 import org.spout.engine.net.SpoutSession;
 import org.spout.engine.net.SpoutSessionRegistry;
 import org.spout.engine.player.SpoutPlayer;
@@ -85,13 +86,13 @@ public class SpoutEngine extends AsyncManager implements Game {
 
 	private volatile String[] allAddresses;
 
-	private final File pluginDirectory = new File("plugins");
+	private final File pluginDirectory = Filesystem.pluginDirectory;
 
-	private final File configDirectory = new File("config");
+	private final File configDirectory = Filesystem.configDirectory;
 
-	private final File updateDirectory = new File("update");
+	private final File updateDirectory = Filesystem.updateDirectory;
 
-	private final File dataDirectory = new File("data");
+	private final File dataDirectory = Filesystem.dataDirectory;
 
 	private String logFile = "logs" + File.separator + "log-%D.txt";
 
