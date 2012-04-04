@@ -1,1 +1,1 @@
-java -cp spout-dev-SNAPSHOT.jar org.spout.server.SpoutClient -debug
+java -cp spout-dev-SNAPSHOT.jar org.spout.engine.SpoutClient -debug
