@@ -147,10 +147,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.server = server;
 		this.seed = seed;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
-			name = Long.toHexString(System.currentTimeMillis());
-			Spout.getGame().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+			this.name = StringSanitizer.asHex(name);
+			Spout.getGame().getLogger().severe("World name " + name + " is not valid, using " + this.name + " instead");
+		}else{
+			this.name = name;
 		}
-		this.name = name;
 		this.generator = generator;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
@@ -160,8 +161,9 @@ public class SpoutWorld extends AsyncManager implements World {
 		world.mkdirs();
 		String generatorName = generator.getName();
 		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
-			generatorName = Long.toHexString(System.currentTimeMillis());
-			Spout.getGame().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
+			String generatorNameBad = generatorName;
+			generatorName = StringSanitizer.asHex(generatorName);
+			Spout.getGame().getLogger().severe("Generator name " + generatorNameBad + " is not valid, using " + generatorName + " instead");
 		}
 		worldDirectory = new File(world, generatorName);
 		worldDirectory.mkdirs();	
