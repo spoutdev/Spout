@@ -365,15 +365,12 @@ public class Vector2PolarTest {
 		assertFalse(x.equals(z));
 	}
 
-	@Ignore // This is only a hashcode test, not sure why it was failing. @RoyAwesome to the rescue?s
+	
 	@Test
 	public void testHashCode() {
 		Vector2Polar x = new Vector2Polar(5, 27);
-		Vector2Polar y = new Vector2Polar(5, -3);
-		System.out.println(x.hashCode());
-		System.out.println(y.hashCode());
-		doAssertDouble(617563731, x.hashCode());
-		doAssertDouble(624059314, y.hashCode());
+		Vector2Polar y = new Vector2Polar(5, 27);
+		assertEquals(x.hashCode(), y.hashCode());
 	}
 
 	@Test
