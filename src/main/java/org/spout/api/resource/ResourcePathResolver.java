@@ -25,13 +25,13 @@
  */
 package org.spout.api.resource;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URI;
 
 public interface ResourcePathResolver {
 	public boolean existsInPath(String file, String path);
 	public boolean existsInPath(URI path);
 	
-	public FileInputStream getStream(String file, String path);
-	public FileInputStream getStream(URI path);
+	public InputStream getStream(String file, String path);
+	public InputStream getStream(URI path);
 }
