@@ -354,6 +354,8 @@ public class SimpleCommand implements Command {
 						removeAliases.put(alias, aliasCmd);
 					}
 				}
+			} else {
+				cmd.removeChildren(owner);
 			}
 		}
 		for (Map.Entry<String, Command> entry : removeAliases.entrySet()) {

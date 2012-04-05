@@ -221,7 +221,7 @@ public class CommonPluginManager implements PluginManager {
 			try {
 				plugin.getPluginLoader().enablePlugin(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while enabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				safelyLog(Level.SEVERE, "An error ocurred in the Plugin Loader while enabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
 
 			if (!locked) {
@@ -238,8 +238,9 @@ public class CommonPluginManager implements PluginManager {
 				plugin.getPluginLoader().disablePlugin(plugin);
 				HandlerList.unregisterAll(plugin);
 				game.getServiceManager().unregisterAll(plugin);
+				game.getRootCommand().removeChildren(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, new StringBuilder().append("An error occurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				safelyLog(Level.SEVERE, "An error occurred in the Plugin Loader while disabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
 
 			if (!locked) {
