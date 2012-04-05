@@ -66,7 +66,7 @@ import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.Filesystem;
+import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -155,7 +155,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.generator = generator;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
-		File world = new File(Filesystem.worldsDirectory, name);
+		File world = new File(FileSystem.worldsDirectory, name);
 		world.mkdirs();
 		String generatorName = generator.getName();
 		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {

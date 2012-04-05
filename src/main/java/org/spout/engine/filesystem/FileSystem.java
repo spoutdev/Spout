@@ -2,7 +2,7 @@ package org.spout.engine.filesystem;
 
 import java.io.File;
 
-public class Filesystem {
+public class FileSystem {
 
 	public static final File resourceFolder = new File("resources");
 	public static final File cacheFolder = new File("cache");	

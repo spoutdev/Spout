@@ -3,6 +3,7 @@ package org.spout.engine.filesystem;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URI;
 
 import org.spout.api.resource.ResourcePathResolver;
@@ -28,7 +29,7 @@ public class FilepathResolver implements ResourcePathResolver  {
 	}
 
 	@Override
-	public FileInputStream getStream(String file, String path) {
+	public InputStream getStream(String file, String path) {
 		try {
 			return new FileInputStream(new File(path + File.pathSeparator + file));
 		} catch (FileNotFoundException e) {
@@ -39,7 +40,7 @@ public class FilepathResolver implements ResourcePathResolver  {
 	}
 
 	@Override
-	public FileInputStream getStream(URI path) {
+	public InputStream getStream(URI path) {
 		return this.getStream(path.getPath(), directory + File.pathSeparator + path.getHost());
 	}
 
