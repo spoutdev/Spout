@@ -27,8 +27,11 @@ package org.spout.api.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -110,12 +113,16 @@ public class SimpleEventManager implements EventManager {
 
 	public Map<Class<? extends Event>, Set<ListenerRegistration>> createRegisteredListeners(final Listener listener, Object plugin) {
 		Map<Class<? extends Event>, Set<ListenerRegistration>> ret = new HashMap<Class<? extends Event>, Set<ListenerRegistration>>();
-		Method[] methods;
-		try {
-			methods = listener.getClass().getDeclaredMethods();
-		} catch (NoClassDefFoundError e) {
-			Spout.getEngine().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listener.getClass());
-			return ret;
+		List<Method> methods = new ArrayList<Method>();
+		Class<?> listenerClass = listener.getClass();
+		while (listenerClass != null && !listenerClass.equals(Object.class) && !listenerClass.equals(Listener.class)) {
+			try {
+				methods.addAll(Arrays.asList(listenerClass.getDeclaredMethods()));
+			} catch (NoClassDefFoundError e) {
+				Spout.getEngine().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listenerClass);
+				return ret;
+			}
+			listenerClass = listenerClass.getSuperclass();
 		}
 		for (final Method method : methods) {
 			final EventHandler eh = method.getAnnotation(EventHandler.class);
