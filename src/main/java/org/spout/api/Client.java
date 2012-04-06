@@ -36,7 +36,7 @@ import org.spout.api.render.Camera;
 /**
  * Represents the client-specific implementation of Minecraft.
  */
-public interface Client extends Game {
+public interface Client extends Engine {
 	
 	/**
 	 * Gets the location of the temporary general cache (used for non-texture

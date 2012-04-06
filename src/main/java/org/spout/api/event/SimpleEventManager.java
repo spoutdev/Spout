@@ -39,7 +39,7 @@ import org.spout.api.exception.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {
 	public <T extends Event> void callDelayedEvent(final T event) {
-		Spout.getGame().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
+		Spout.getEngine().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
 			public void run() {
 				callEvent(event);
 			}
@@ -57,7 +57,7 @@ public class SimpleEventManager implements EventManager {
 						listener.getExecutor().execute(event);
 					}
 				} catch (Throwable ex) {
-					Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
 				}
 			}
 		}
@@ -68,7 +68,7 @@ public class SimpleEventManager implements EventManager {
 		for (Map.Entry<Class<? extends Event>, Set<ListenerRegistration>> entry : createRegisteredListeners(listener, owner).entrySet()) {
 			Class<? extends Event> delegatedClass = getRegistrationClass(entry.getKey());
 			if (!entry.getKey().equals(delegatedClass)) {
-				Spout.getGame().getLogger().severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
+				Spout.getEngine().getLogger().severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
 				continue;
 			}
 			getEventListeners(delegatedClass).registerAll(entry.getValue());
@@ -114,7 +114,7 @@ public class SimpleEventManager implements EventManager {
 		try {
 			methods = listener.getClass().getDeclaredMethods();
 		} catch (NoClassDefFoundError e) {
-			Spout.getGame().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listener.getClass());
+			Spout.getEngine().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listener.getClass());
 			return ret;
 		}
 		for (final Method method : methods) {
@@ -125,7 +125,7 @@ public class SimpleEventManager implements EventManager {
 			final Class<?> checkClass = method.getParameterTypes()[0];
 			Class<? extends Event> eventClass;
 			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
-				Spout.getGame().getLogger().severe("Wrong method arguments used for event type registered");
+				Spout.getEngine().getLogger().severe("Wrong method arguments used for event type registered");
 				continue;
 			} else {
 				eventClass = checkClass.asSubclass(Event.class);

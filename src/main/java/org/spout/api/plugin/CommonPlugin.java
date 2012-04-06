@@ -28,7 +28,7 @@ package org.spout.api.plugin;
 import java.io.File;
 import java.util.logging.Logger;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
 
@@ -36,7 +36,7 @@ public abstract class CommonPlugin implements Plugin {
 	private PluginDescriptionFile description;
 	private CommonClassLoader classLoader;
 	private CommonPluginLoader pluginLoader;
-	private Game game;
+	private Engine game;
 	private File dataFolder;
 	private File file;
 	private boolean enabled;
@@ -76,7 +76,7 @@ public abstract class CommonPlugin implements Plugin {
 		return description;
 	}
 
-	public final void initialize(CommonPluginLoader commonsPluginLoader, Game game, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
+	public final void initialize(CommonPluginLoader commonsPluginLoader, Engine game, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
 		description = desc;
 		classLoader = loader;
 		this.game = game;
@@ -98,7 +98,7 @@ public abstract class CommonPlugin implements Plugin {
 		return file;
 	}
 
-	public final Game getGame() {
+	public final Engine getGame() {
 		return game;
 	}
 

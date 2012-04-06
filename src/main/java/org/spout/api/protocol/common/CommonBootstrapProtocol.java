@@ -63,7 +63,7 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 		int len = buf.readUnsignedShort();
 		
 		if (len > maxLength) {
-			Spout.getGame().getLogger().severe("Maximum string length of " + maxLength + " exceeded (" + len + ")");
+			Spout.getEngine().getLogger().severe("Maximum string length of " + maxLength + " exceeded (" + len + ")");
 			return null;
 		}
 		len = Math.min(maxLength, len);

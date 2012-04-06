@@ -29,7 +29,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -290,7 +290,7 @@ public interface World extends Source, AreaBlockAccess {
 	 *
 	 * @return the game
 	 */
-	public Game getGame();
+	public Engine getGame();
 
 	/**
 	 * Gets the height of this world in blocks.

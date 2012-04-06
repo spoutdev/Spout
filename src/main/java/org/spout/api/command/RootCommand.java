@@ -25,12 +25,12 @@
  */
 package org.spout.api.command;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.SpoutRuntimeException;
 
 public class RootCommand extends SimpleCommand {
-	public RootCommand(Game owner) {
+	public RootCommand(Engine owner) {
 		super(owner, "root");
 	}
 

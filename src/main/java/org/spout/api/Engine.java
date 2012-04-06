@@ -54,7 +54,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents the abstract, non-specific implementation of Minecraft.
  */
-public interface Game extends Named {
+public interface Engine extends Named {
 	/**
 	 * Gets the name of this game's implementation
 	 *
@@ -339,7 +339,7 @@ public interface Game extends Named {
 	 * <br/>
 	 * All command registration and execution is performed through here.
 	 *
-	 * @return the {@link Game}'s root {@link Command}
+	 * @return the {@link Engine}'s root {@link Command}
 	 */
 	public Command getRootCommand();
 

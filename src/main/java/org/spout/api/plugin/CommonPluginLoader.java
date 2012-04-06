@@ -38,7 +38,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
@@ -51,7 +51,7 @@ public class CommonPluginLoader implements PluginLoader {
 	public static final String YAML_SPOUT = "spoutplugin.yml";
 	public static final String YAML_OTHER = "plugin.yml";
 
-	protected final Game game;
+	protected final Engine game;
 	private final CommonClassLoader loader;
 	private final Pattern[] patterns;
 	private final CommonSecurityManager manager;
@@ -59,7 +59,7 @@ public class CommonPluginLoader implements PluginLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final Map<String, CommonClassLoader> loaders = new HashMap<String, CommonClassLoader>();
 
-	public CommonPluginLoader(final Game game, final CommonSecurityManager manager, final double key) {
+	public CommonPluginLoader(final Engine game, final CommonSecurityManager manager, final double key) {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;

@@ -53,7 +53,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
 		if (codecLookup == null) {
-			bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
+			bootstrapProtocol = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress());
 			codecLookup = bootstrapProtocol.getCodecLookupService();
 		}
 

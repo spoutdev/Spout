@@ -27,7 +27,7 @@ package org.spout.api.protocol;
 
 import java.net.InetSocketAddress;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 
 public interface Session {
 	/**
@@ -129,5 +129,5 @@ public interface Session {
 		GAME
 	}
 
-	public Game getGame();
+	public Engine getGame();
 }

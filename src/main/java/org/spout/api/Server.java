@@ -37,7 +37,7 @@ import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 /**
  * Represents the server-specific implementation of Minecraft.
  */
-public interface Server extends Game {
+public interface Server extends Engine {
 		/**
 	 * Returns true if this server is using a whitelist.
 	 *

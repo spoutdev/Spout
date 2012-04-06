@@ -32,17 +32,17 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.Scheduler;
 
 /**
- * Represents the Spout core, to get singleton {@link Game} instance
+ * Represents the Spout core, to get singleton {@link Engine} instance
  *
  */
 public final class Spout {
-	private static Game instance = null;
+	private static Engine instance = null;
 
 	private Spout() {
 		throw new IllegalStateException("Can not construct Spout instance");
 	}
 
-	public static void setGame(Game game) {
+	public static void setEngine(Engine game) {
 		if (instance == null) {
 			instance = game;
 		} else {
@@ -50,7 +50,7 @@ public final class Spout {
 		}
 	}
 
-	public static Game getGame() {
+	public static Engine getEngine() {
 		return instance;
 	}
 

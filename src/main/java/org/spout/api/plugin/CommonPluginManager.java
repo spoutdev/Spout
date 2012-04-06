@@ -41,7 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.event.HandlerList;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
@@ -49,7 +49,7 @@ import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginManager implements PluginManager {
-	private final Game game;
+	private final Engine game;
 	private final CommonSecurityManager manager;
 	private final double key;
 	private File updateDir;
@@ -57,7 +57,7 @@ public class CommonPluginManager implements PluginManager {
 	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
 
-	public CommonPluginManager(final Game game, final CommonSecurityManager manager, final double key) {
+	public CommonPluginManager(final Engine game, final CommonSecurityManager manager, final double key) {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;
@@ -67,7 +67,7 @@ public class CommonPluginManager implements PluginManager {
 		PluginLoader instance = null;
 
 		try {
-			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Game.class, CommonSecurityManager.class, double.class});
+			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Engine.class, CommonSecurityManager.class, double.class});
 
 			instance = constructor.newInstance(game, manager, key);
 		} catch (Exception e) {
