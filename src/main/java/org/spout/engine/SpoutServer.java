@@ -74,10 +74,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public static void main(String[] args) {
-		FileSystem.init();
-		
 		SpoutServer server = new SpoutServer();
 		Spout.setEngine(server);
+		FileSystem.init();
 		server.init(args);
 		server.start();
 	}
