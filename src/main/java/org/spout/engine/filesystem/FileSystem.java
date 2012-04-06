@@ -26,6 +26,8 @@
 package org.spout.engine.filesystem;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
 
 import org.spout.api.plugin.Platform;
 import org.spout.api.resource.ResourcePathResolver;
@@ -70,6 +72,13 @@ public class FileSystem {
 		
 	}
 	
+	
+	protected static InputStream getResourceStream(URI path){
+		for(int i = 0; i < searchpaths.length; i++){
+			if(searchpaths[i].existsInPath(path)) return searchpaths[i].getStream(path);
+		}
+		return null;
+	}
 
 	
 	

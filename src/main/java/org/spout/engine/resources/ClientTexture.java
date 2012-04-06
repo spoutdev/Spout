@@ -1,0 +1,77 @@
+package org.spout.engine.resources;
+
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.spout.api.render.Texture;
+
+public class ClientTexture extends Texture {
+
+	int textureID;
+	
+	public ClientTexture(BufferedImage baseImage) {
+		super(baseImage);
+		
+	}
+
+	@Override
+	public Texture subTexture(int x, int y, int w, int h) {
+		return new ClientTexture(image.getSubimage(x, y, w, h));
+	}
+
+	@Override
+	public void bind() {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		
+	}
+
+	@Override
+	public void load() {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		
+		textureID = GL11.glGenTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		
+		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+		
+		//Use Mipmaps
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		
+		//Bilinear Filter the closest mipmap
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		
+		//Wrap the texture
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+		
+		
+		 int[] pixels = new int[image.getWidth() * image.getHeight()];
+	        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+	        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+	        
+	        for(int y = 0; y < image.getHeight(); y++){
+	            for(int x = 0; x < image.getWidth(); x++){
+	                int pixel = pixels[y * image.getWidth() + x];
+	                buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
+	                buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
+	                buffer.put((byte) (pixel & 0xFF));               // Blue component
+	                buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
+	            }
+	        }
+
+	        buffer.flip(); 
+	                
+	        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+	        //EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
+			
+	}
+
+}
