@@ -11,7 +11,7 @@ import org.spout.api.render.Texture;
 
 public class ClientTexture extends Texture {
 
-	int textureID;
+	int textureID = -1;
 	
 	public ClientTexture(BufferedImage baseImage) {
 		super(baseImage);
@@ -25,14 +25,27 @@ public class ClientTexture extends Texture {
 
 	@Override
 	public void bind() {
+		if(textureID == -1) throw new IllegalStateException("Cannot bind an unloaded texture!");
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		
 	}
+	
+	
+	public void unload(){
+		if(textureID == -1) throw new IllegalStateException("Cannot delete an unloaded texture!");
+		
+		GL11.glDeleteTextures(textureID);
+		textureID = -1;
+		
+	}
+	
 
 	@Override
 	public void load() {
+		if(textureID != -1) throw new IllegalStateException("Cannot load an already loaded texture!");
+		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
 		textureID = GL11.glGenTextures();
