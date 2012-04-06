@@ -166,7 +166,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		EntityDespawnEvent event = new EntityDespawnEvent(entity);
-		Spout.getGame().getEventManager().callEvent(event);
+		Spout.getEngine().getEventManager().callEvent(event);
 		if (event.isCancelled()) {
 			return;
 		}

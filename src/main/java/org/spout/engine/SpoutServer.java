@@ -77,7 +77,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		FileSystem.init();
 		
 		SpoutServer server = new SpoutServer();
-		Spout.setGame(server);
+		Spout.setEngine(server);
 		server.init(args);
 		server.start();
 	}

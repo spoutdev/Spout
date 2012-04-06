@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
@@ -99,7 +99,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * The server this scheduler is managing for.
 	 */
-	private final Game server;
+	private final Engine server;
 
 	/**
 	 * A list of new tasks to be added.
@@ -137,7 +137,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Creates a new task scheduler.
 	 */
-	public SpoutScheduler(Game server) {
+	public SpoutScheduler(Engine server) {
 		this.server = server;
 
 		mainThread = new MainThread();

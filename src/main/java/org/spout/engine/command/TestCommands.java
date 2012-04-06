@@ -26,7 +26,7 @@
 
 package org.spout.engine.command;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
@@ -39,7 +39,7 @@ public class TestCommands {
 
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandContext args, CommandSource source) throws CommandException {
-		 SpoutServer server = (SpoutServer)Spout.getGame();
+		 SpoutServer server = (SpoutServer)Spout.getEngine();
 		 SpoutWorld world = (SpoutWorld)server.getWorld("world");
 		 Spout.getLogger().info("World Entity size: " + world.getAll().size());
 

@@ -713,7 +713,7 @@ public class SpoutChunk extends Chunk {
 			try {
 				populator.populate(this, random);
 			} catch(Exception e) {
-				Spout.getGame().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 				e.printStackTrace();
 			}
 		}

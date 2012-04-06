@@ -85,7 +85,7 @@ public class AdministrationCommands {
 			message = args.getJoinedString(1);
 		}
 
-		Player player = Spout.getGame().getPlayer(playerName, true);
+		Player player = Spout.getEngine().getPlayer(playerName, true);
 		if (player != null) {
 			player.kick(message);
 			source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));

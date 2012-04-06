@@ -70,7 +70,7 @@ import jline.NullCompletor;
 import jline.SimpleCompletor;
 
 import org.spout.api.ChatColor;
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.DataValue;
 import org.spout.api.geo.World;
@@ -83,7 +83,7 @@ import com.grahamedgecombe.jterminal.JTerminal;
  * Portions are heavily based on CraftBukkit.
  */
 public final class ConsoleManager {
-	private final Game server;
+	private final Engine server;
 
 	private ConsoleReader reader;
 	private ColoredCommandSource source;
@@ -98,7 +98,7 @@ public final class ConsoleManager {
 	private boolean running = true;
 	private boolean jLine = false;
 
-	public ConsoleManager(Game server, String mode) {
+	public ConsoleManager(Engine server, String mode) {
 		this.server = server;
 
 		if (mode.equalsIgnoreCase("gui")) {

@@ -465,7 +465,7 @@ public class SpoutRegion extends Region {
 					while ((e = (SpoutEntity)spawnQueue.poll()) != null) {
 						this.allocate(e);
 						EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPosition());
-						Spout.getGame().getEventManager().callEvent(event);
+						Spout.getEngine().getEventManager().callEvent(event);
 						if (event.isCancelled()) {
 							this.deallocate((SpoutEntity) e);
 						}
@@ -485,7 +485,7 @@ public class SpoutRegion extends Region {
 					try {
 						ent.onTick(dt);
 					} catch (Exception e) {
-						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
 						e.printStackTrace();
 					}
 				}
@@ -542,7 +542,7 @@ public class SpoutRegion extends Region {
 					try {
 						ent.resolve();
 					} catch (Exception e) {
-						Spout.getGame().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
+						Spout.getEngine().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
 						e.printStackTrace();
 					}
 				}
@@ -598,7 +598,7 @@ public class SpoutRegion extends Region {
 						try {
 							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
 						} catch (Exception e) {
-							Spout.getGame().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
+							Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
 
 						}
 					}

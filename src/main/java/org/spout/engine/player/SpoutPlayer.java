@@ -154,9 +154,9 @@ public class SpoutPlayer implements Player {
 	@Override
 	public void chat(final String message) {
 		if (message.startsWith("/")) {
-			Spout.getGame().processCommand(this, message.substring(1));
+			Spout.getEngine().processCommand(this, message.substring(1));
 		} else {
-			PlayerChatEvent event = Spout.getGame().getEventManager().callEvent(new PlayerChatEvent(this, message));
+			PlayerChatEvent event = Spout.getEngine().getEventManager().callEvent(new PlayerChatEvent(this, message));
 			if (event.isCancelled()) {
 				return;
 			}
@@ -166,7 +166,7 @@ public class SpoutPlayer implements Player {
 			} catch (Throwable t) {
 				return;
 			}
-			Spout.getGame().broadcastMessage(formattedMessage);
+			Spout.getEngine().broadcastMessage(formattedMessage);
 		}
 	}
 
@@ -232,7 +232,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = Spout.getGame().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
+		PermissionNodeEvent event = Spout.getEngine().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
 		if (event.getResult() == Result.DEFAULT) {
 			return false;
 		}
@@ -248,7 +248,7 @@ public class SpoutPlayer implements Player {
 			world = entity.getWorld();
 		}
 
-		PermissionGroupEvent event = Spout.getGame().getEventManager().callEvent(new PermissionGroupEvent(world, this, group));
+		PermissionGroupEvent event = Spout.getEngine().getEventManager().callEvent(new PermissionGroupEvent(world, this, group));
 		return event.getResult();
 	}
 
@@ -260,7 +260,7 @@ public class SpoutPlayer implements Player {
 			world = entity.getWorld();
 		}
 
-		PermissionGetGroupsEvent event = Spout.getGame().getEventManager().callEvent(new PermissionGetGroupsEvent(world, this));
+		PermissionGetGroupsEvent event = Spout.getEngine().getEventManager().callEvent(new PermissionGetGroupsEvent(world, this));
 		return event.getGroups();
 	}
 
@@ -271,7 +271,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public DataValue getData(String node) {
-		RetrieveDataEvent event = Spout.getGame().getEventManager().callEvent(new RetrieveDataEvent(this, node));
+		RetrieveDataEvent event = Spout.getEngine().getEventManager().callEvent(new RetrieveDataEvent(this, node));
 		return event.getResult();
 	}
 

@@ -38,7 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
@@ -79,7 +79,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The server of this world.
 	 */
-	private final Game server;
+	private final Engine server;
 
 	/**
 	 * The name of this world.
@@ -142,14 +142,14 @@ public class SpoutWorld extends AsyncManager implements World {
 	private final File worldDirectory;
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Game server, long seed, WorldGenerator generator) {
+	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator) {
 		super(1, new ThreadAsyncExecutor(), server);
 		uid = UUID.randomUUID();
 		this.server = server;
 		this.seed = seed;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
 			name = Long.toHexString(System.currentTimeMillis());
-			Spout.getGame().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+			Spout.getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
 		}
 		this.name = name;
 		this.generator = generator;
@@ -160,7 +160,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		String generatorName = generator.getName();
 		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
 			generatorName = Long.toHexString(System.currentTimeMillis());
-			Spout.getGame().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
+			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
 		}
 		worldDirectory = new File(world, generatorName);
 		worldDirectory.mkdirs();	
@@ -339,7 +339,7 @@ public class SpoutWorld extends AsyncManager implements World {
 					try {
 						ent.onTick(dt);
 					} catch (Exception e) {
-						Spout.getGame().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
 						e.printStackTrace();
 					}
 				}
@@ -351,7 +351,7 @@ public class SpoutWorld extends AsyncManager implements World {
 					try {
 						ent.resolve();
 					} catch (Exception e) {
-						Spout.getGame().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
+						Spout.getEngine().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
 						e.printStackTrace();
 					}
 				}
@@ -374,7 +374,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Game getGame() {
+	public Engine getGame() {
 		return server;
 	}
 

@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.spout.api.ChatColor;
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -106,7 +106,7 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
-public class SpoutEngine extends AsyncManager implements Game {
+public class SpoutEngine extends AsyncManager implements Engine {
 	private volatile int maxPlayers = 20;
 
 	private volatile String[] allAddresses;
@@ -249,7 +249,7 @@ public class SpoutEngine extends AsyncManager implements Game {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		if (Spout.getGame().debugMode())
+		if (Spout.getEngine().debugMode())
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 
 		consoleManager.setupConsole();

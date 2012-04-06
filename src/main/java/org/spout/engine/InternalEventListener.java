@@ -54,11 +54,11 @@ public class InternalEventListener implements Listener {
 		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession());
 
 		if (player != null) {
-			PlayerLoadEvent loadEvent = Spout.getGame().getEventManager().callEvent(new PlayerLoadEvent(player));
+			PlayerLoadEvent loadEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoadEvent(player));
 			if (!loadEvent.isLoaded()) {
 
 			}
-			PlayerLoginEvent loginEvent = Spout.getGame().getEventManager().callEvent(new PlayerLoginEvent(player));
+			PlayerLoginEvent loginEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
 					player.kick(loginEvent.getMessage());
@@ -66,7 +66,7 @@ public class InternalEventListener implements Listener {
 					player.kick();
 				}
 			} else {
-				Spout.getGame().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
+				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");

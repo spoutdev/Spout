@@ -27,7 +27,7 @@ package org.spout.engine.util.thread;
 
 import java.util.WeakHashMap;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Server;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.engine.SpoutServer;
@@ -36,7 +36,7 @@ import org.spout.engine.scheduler.SpoutScheduler;
 public abstract class AsyncManager {
 
 	private final int maxStage;
-	private final Game engine; // null means that this AsyncManager is the Server
+	private final Engine engine; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
 	private final WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
 	private final ManagementTask[] singletonCache = new ManagementTask[ManagementTaskEnum.getMaxId()];
@@ -49,7 +49,7 @@ public abstract class AsyncManager {
 		
 	}
 
-	public AsyncManager(int maxStage, AsyncExecutor executor, Game server) {
+	public AsyncManager(int maxStage, AsyncExecutor executor, Engine server) {
 		this.executor = executor;
 		this.engine = server;
 		this.maxStage = maxStage;
@@ -61,7 +61,7 @@ public abstract class AsyncManager {
 		((SpoutScheduler) scheduler).addAsyncExecutor(executor);
 	}
 
-	public Game getServer() {
+	public Engine getServer() {
 		if (engine == null) {
 			if (!(this instanceof Server)) {
 				throw new IllegalStateException("Only the Server object itself should have a null server reference");

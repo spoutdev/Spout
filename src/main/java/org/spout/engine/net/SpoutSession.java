@@ -38,7 +38,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 
 import org.spout.api.ChatColor;
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
@@ -228,7 +228,7 @@ public final class SpoutSession implements Session {
 				try {
 					handler.handle(this, player, message);
 				} catch (Exception e) {
-					Spout.getGame().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
 					disconnect("Message handler exception for " + message.getClass().getSimpleName());
 				}
@@ -399,7 +399,7 @@ public final class SpoutSession implements Session {
 		return protocol == null ? null : protocol.getPlayerProtocol();
 	}
 
-	public Game getGame() {
+	public Engine getGame() {
 		return server;
 	}
 }
