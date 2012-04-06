@@ -223,8 +223,13 @@ public class SpoutEngine extends AsyncManager implements Game {
 	 */
 	protected SpoutConfiguration config = new SpoutConfiguration();
 
-	public SpoutEngine(String[] args) {
+	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor());
+		Spout.setGame(this);
+	}
+
+	public void init(String[] args) {
+		FileSystem.init();
 		for (String s : args) {
 			if (s.equals("-debug")) debugMode = true;
 		}
@@ -234,12 +239,8 @@ public class SpoutEngine extends AsyncManager implements Game {
 		}
 	}
 
-	public void init() {
-
-	}
-
 	public void start() {
-		Spout.setGame(this);
+		
 
 		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");

@@ -51,11 +51,10 @@ public class FileSystem {
 	
 	
 	
-	static final ResourcePathResolver[] searchpaths;
+	static ResourcePathResolver[] searchpaths;
 	
-	
-	
-	static {
+	public static void init()
+	{
 		if(Spout.getPlatform() == Platform.CLIENT && !resourceFolder.exists()) resourceFolder.mkdirs();
 		if(Spout.getPlatform() == Platform.CLIENT && !cacheFolder.exists()) cacheFolder.mkdirs();
 		if(!pluginDirectory.exists()) pluginDirectory.mkdirs();
@@ -69,11 +68,9 @@ public class FileSystem {
 													new ZipfileResolver(),
 													new JarfileResolver() };
 		
-		
-		
-		
-		
 	}
+	
+
 	
 	
 }

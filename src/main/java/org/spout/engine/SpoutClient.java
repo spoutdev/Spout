@@ -8,16 +8,21 @@ import org.spout.api.render.Camera;
 
 import java.io.File;
 
+import javax.imageio.ImageIO;
+
 public class SpoutClient extends SpoutEngine implements Client {
 
 	private Camera activeCamera;
 
 	public static void main(String[] args) {
 		System.out.println("Client Main!");
+		for(String s : ImageIO.getReaderFormatNames()){
+			System.out.println(s);
+		}
+	
 	}
 
-	public SpoutClient(String[] args) {
-		super(args);
+	public SpoutClient() {
 		// TODO Auto-generated constructor stub
 	}
 

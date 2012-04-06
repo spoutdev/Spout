@@ -37,6 +37,7 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
@@ -72,14 +73,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public static void main(String[] args) {
-		SpoutServer server = new SpoutServer(args);
-		server.init();
+		SpoutServer server = new SpoutServer();
+		Spout.setGame(server);
+		server.init(args);
 		server.start();
 	}
 
-	public SpoutServer(String[] args) {
-		super(args);
+	public SpoutServer() {
 	}
+	
+
 
 	@Override
 	public void start() {
@@ -93,8 +96,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void init() {
-		super.init();
+	public void init(String[] args) {
+		super.init(args);
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
 		bootstrap.setFactory(factory);
 
