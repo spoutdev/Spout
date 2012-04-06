@@ -1,0 +1,66 @@
+﻿<!-- Spout Model Format -->
+<!-- Template version 1.0 -->
+<!-- Exporter by RoyAwesome -->
+<Templates>
+  <Info>
+    <Filter>Spout-model|*.sptm</Filter>
+    <DefaultExtension>sptm</DefaultExtension>
+  </Info>
+  <Template>
+    <Prefix></Prefix>
+    <Content>
+      <!--Get rid of that ToStringCrap-->
+      <![CDATA[//Created using Techne Spout Exporter v1.0
+//@(DateTime.Now.ToString())
+@using Techne.Plugins.Interfaces;
+@using Techne.Model;
+@functions
+{
+  string ToString(object o)
+  {
+    return o.ToString().Replace(',', '.').Replace(' ', '_');
+  }
+  double ToRad(double p)
+  {
+    return p * Math.PI / 180;
+  }
+  IEnumerable<string> GetFQN(ITechneVisual visual, bool first = false)
+  {
+    if (visual.Parent != null && !first)
+    {
+      foreach (var name in GetFQN(visual.Parent, true))
+        yield return name;
+    }
+    yield return visual.Name;
+  }
+}
+@helper CreateFields(ITechneVisual visual)
+{
+  if (visual is ITechneVisualCollection && !((ITechneVisualCollection)visual).ChildrenInheritProperties)
+  {
+    foreach (ITechneVisual child in ((ITechneVisualCollection)visual).Children)
+    {
+      @CreateFields(child)
+    }
+  }
+  else
+  {
+    @:@(ToString("\"" + visual.Name + "\""))
+	@:@(ToString("{"))
+	@:@(ToString("\tVertex Data Here"))
+	@:@(ToString("}"))
+  }
+}
+"@(Model.Name)"
+{
+  
+  @foreach (ITechneVisual visual in @Model.Geometry)
+  {
+    @CreateFields(visual)
+  }
+  
+}
+]]>
+    </Content>
+  </Template>
+</Templates>
