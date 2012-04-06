@@ -28,14 +28,18 @@ package org.spout.engine.filesystem;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.HashMap;
 
 import org.spout.api.plugin.Platform;
+import org.spout.api.resource.Resource;
+import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourcePathResolver;
 
 import org.spout.api.Spout;
 import org.spout.engine.filesystem.path.FilepathResolver;
 import org.spout.engine.filesystem.path.JarfileResolver;
 import org.spout.engine.filesystem.path.ZipfileResolver;
+import org.spout.engine.resources.TextureLoader;
 
 public class FileSystem {
 
@@ -55,6 +59,8 @@ public class FileSystem {
 	
 	static ResourcePathResolver[] searchpaths;
 	
+	static HashMap<String, ResourceLoader> loaders = new HashMap<String, ResourceLoader>();
+	
 	public static void init()
 	{
 		if(Spout.getPlatform() == Platform.CLIENT && !resourceFolder.exists()) resourceFolder.mkdirs();
@@ -70,6 +76,8 @@ public class FileSystem {
 													new ZipfileResolver(),
 													new JarfileResolver() };
 		
+		registerLoader("texture", new TextureLoader());
+		
 	}
 	
 	
@@ -79,7 +87,16 @@ public class FileSystem {
 		}
 		return null;
 	}
-
 	
+	public static void registerLoader(String protocol, ResourceLoader loader){
+		if(loaders.containsKey(protocol)) return;
+		loaders.put(protocol, loader);
+	}
+
+	public static Resource precacheResource(URI path){
+		String protocol = path.getScheme();
+		if(!loaders.containsKey(protocol)) throw new IllegalArgumentException("Unknown resource type: " + protocol);
+		return loaders.get(protocol).getResource(path);
+	}
 	
 }
