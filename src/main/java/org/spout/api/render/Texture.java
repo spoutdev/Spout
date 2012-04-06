@@ -25,62 +25,33 @@
  */
 package org.spout.api.render;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.spout.api.plugin.Plugin;
+import java.awt.image.BufferedImage;
 
-public class Texture {
-	public String texture;
-	public Plugin addon;
-	public int width;
-	public int height;
-	public int spriteSize;
+import org.spout.api.ClientOnly;
+import org.spout.api.resource.Resource;
 
-	public List<SubTexture> subTextures;
-
-	public Texture(Plugin addon, String texture, int width, int height, int spriteSize) {
-		this.texture = texture;
-		this.addon = addon;
-		this.width = width;
-		this.height = height;
-		this.spriteSize = spriteSize;
-
-		int amount = width / spriteSize * (height / spriteSize);
-
-		subTextures = new ArrayList<SubTexture>(amount);
-
-		int count = 0;
-		for (int y = height / spriteSize - 1; y >= 0; y--) {
-			for (int x = 0; x < width / spriteSize; x++) {
-				subTextures.add(count, new SubTexture(this, x * spriteSize, y * spriteSize, spriteSize));
-				count++;
-			}
-		}
+public abstract class Texture extends Resource {
+	
+	protected BufferedImage image;
+	
+	public Texture(BufferedImage baseImage){
+		this.image = baseImage;
 	}
-
-	public SubTexture getSubTexture(int textureId) {
-
-		return subTextures.get(textureId);
+	
+	public int getHeight(){
+		return image.getHeight();
 	}
-
-	public String getTexture() {
-		return texture;
+	public int getWidth(){
+		return image.getWidth();
 	}
-
-	public int getSpriteSize() {
-		return spriteSize;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public Plugin getAddon() {
-		return addon;
-	}
+	
+	public abstract Texture subTexture(int x, int y, int w, int h);
+	
+	@ClientOnly
+	public abstract void load();
+	
+	@ClientOnly
+	public abstract void bind();
+	
 }

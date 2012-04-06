@@ -25,10 +25,10 @@
  */
 package org.spout.api.resource;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URI;
 
 public interface ResourceLoader<E extends Resource> {
-	public E getResource(FileInputStream stream);
+	public E getResource(InputStream stream);
 	public E getResource(URI resource);
 }
