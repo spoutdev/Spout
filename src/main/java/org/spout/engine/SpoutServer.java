@@ -41,6 +41,7 @@ import org.spout.api.Spout;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.net.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
@@ -73,6 +74,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public static void main(String[] args) {
+		FileSystem.init();
+		
 		SpoutServer server = new SpoutServer();
 		Spout.setGame(server);
 		server.init(args);

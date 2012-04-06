@@ -225,11 +225,9 @@ public class SpoutEngine extends AsyncManager implements Game {
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor());
-		Spout.setGame(this);
 	}
 
 	public void init(String[] args) {
-		FileSystem.init();
 		for (String s : args) {
 			if (s.equals("-debug")) debugMode = true;
 		}

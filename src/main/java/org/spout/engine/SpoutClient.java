@@ -5,6 +5,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;
+import org.spout.engine.filesystem.FileSystem;
 
 import java.io.File;
 
@@ -15,6 +16,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private Camera activeCamera;
 
 	public static void main(String[] args) {
+		FileSystem.init();
+		
 		System.out.println("Client Main!");
 		for(String s : ImageIO.getReaderFormatNames()){
 			System.out.println(s);
