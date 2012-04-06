@@ -23,68 +23,50 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.filesystem.path;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.net.URI;
 
-public class ZipfileResolver extends FilepathResolver {
+import org.spout.api.resource.ResourcePathResolver;
 
-	public ZipfileResolver() {
-		super(FileSystem.resourceFolder.getPath());
-		
+public class FilepathResolver implements ResourcePathResolver  {
+
+	protected final String directory;
+	
+	public FilepathResolver(String path){
+		this.directory = path;
 	}
-
+	
 	
 	@Override
 	public boolean existsInPath(String file, String path) {
-		boolean has = false;
-		ZipFile f = null;
-		try {
-			f = new ZipFile(directory + path);
-			ZipEntry entry = f.getEntry(file);
-			has = entry != null;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally{
-			if(f != null)
-				try {
-					f.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			
-		}
-		return has;
+		File f = new File(path + File.pathSeparator + file);
+		return f.exists();
 	}
 
+	@Override
+	public boolean existsInPath(URI path) {
+		return this.existsInPath(path.getPath(), directory + File.pathSeparator + path.getHost());
+	}
 
 	@Override
 	public InputStream getStream(String file, String path) {
-		ZipFile f = null;
-		FileInputStream stream = null;
 		try {
-			f = new ZipFile(directory + path);
-			ZipEntry entry = f.getEntry(file);
-			InputStream s = f.getInputStream(entry);
-			return s; //TODO close the jar.
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally{
-			if(f != null)
-				try {
-					f.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			return new FileInputStream(new File(path + File.pathSeparator + file));
+		} catch (FileNotFoundException e) {
 			
+			e.printStackTrace();
+			return null;
 		}
-		return stream;
+	}
+
+	@Override
+	public InputStream getStream(URI path) {
+		return this.getStream(path.getPath(), directory + File.pathSeparator + path.getHost());
 	}
 
 }

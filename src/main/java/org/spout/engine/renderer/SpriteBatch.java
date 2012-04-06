@@ -4,7 +4,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.lwjgl.opengl.GL11;
 import org.spout.api.render.Renderer;
-import org.spout.engine.texture.Texture;
+import org.spout.api.render.Texture;
 
 
 public class SpriteBatch {

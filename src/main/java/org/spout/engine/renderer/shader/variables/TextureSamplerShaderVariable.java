@@ -3,7 +3,7 @@ package org.spout.engine.renderer.shader.variables;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
-import org.spout.engine.texture.Texture;
+import org.spout.api.render.Texture;
 
 public class TextureSamplerShaderVariable extends ShaderVariable {
 	int textureID;
@@ -12,12 +12,12 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 	
 	public TextureSamplerShaderVariable(int program, String name, Texture texture, int bindNum) {
 		super(program, name);
-		textureID = texture.getTextureID();
+		//textureID = texture.getTextureID();
 		this.textureNumber = bindNum;
 	}
 	
 	public void set(Texture texture){
-		textureID = texture.getTextureID();
+		//textureID = texture.getTextureID();
 	}
 
 	@Override

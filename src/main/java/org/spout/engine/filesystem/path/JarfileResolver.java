@@ -23,50 +23,76 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.filesystem.path;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
-import org.spout.api.resource.ResourcePathResolver;
+import org.spout.engine.filesystem.FileSystem;
 
-public class FilepathResolver implements ResourcePathResolver  {
-
-	protected final String directory;
-	
-	public FilepathResolver(String path){
-		this.directory = path;
+public class JarfileResolver extends FilepathResolver  {
+	public JarfileResolver() {
+		super(FileSystem.pluginDirectory.getPath());
+		// TODO Auto-generated constructor stub
 	}
-	
-	
+
+	File pluginsFolder = FileSystem.pluginDirectory;
+
 	@Override
 	public boolean existsInPath(String file, String path) {
-		File f = new File(path + File.pathSeparator + file);
-		return f.exists();
+		boolean has = false;
+		JarFile f = null;
+		try {
+			f = new JarFile(directory + path);
+			JarEntry entry = f.getJarEntry(file);
+			has = entry != null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally{
+			if(f != null)
+				try {
+					f.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			
+		}
+		return has;
 	}
 
-	@Override
-	public boolean existsInPath(URI path) {
-		return this.existsInPath(path.getPath(), directory + File.pathSeparator + path.getHost());
-	}
 
 	@Override
 	public InputStream getStream(String file, String path) {
+		JarFile f = null;
+		FileInputStream stream = null;
 		try {
-			return new FileInputStream(new File(path + File.pathSeparator + file));
-		} catch (FileNotFoundException e) {
-			
+			f = new JarFile(directory + path);
+			JarEntry entry = f.getJarEntry(file);
+			InputStream s = f.getInputStream(entry);
+			return s; //TODO close the jar.
+		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
 		}
+		finally{
+			if(f != null)
+				try {
+					f.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			
+		}
+		return stream;
 	}
 
-	@Override
-	public InputStream getStream(URI path) {
-		return this.getStream(path.getPath(), directory + File.pathSeparator + path.getHost());
-	}
-
+	
+	
+	
+	
 }

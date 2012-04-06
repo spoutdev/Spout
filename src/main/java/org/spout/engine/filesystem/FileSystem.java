@@ -28,14 +28,22 @@ package org.spout.engine.filesystem;
 import java.io.File;
 
 import org.spout.api.plugin.Platform;
+import org.spout.api.resource.ResourcePathResolver;
 
 import org.spout.api.Spout;
+import org.spout.engine.filesystem.path.FilepathResolver;
+import org.spout.engine.filesystem.path.JarfileResolver;
+import org.spout.engine.filesystem.path.ZipfileResolver;
 
 public class FileSystem {
 
+	/**
+	 * Plugins live in this folder (SERVER and CLIENT)
+	 */
+	public static final File pluginDirectory = new File("plugins"); 
+	
 	public static final File resourceFolder = new File("resources");
 	public static final File cacheFolder = new File("cache");	
-	public static final File pluginDirectory = new File("plugins");
 	public static final File configDirectory = new File("config");
 	public static final File updateDirectory = new File("update");
 	public static final File dataDirectory = new File("data");	
@@ -43,6 +51,7 @@ public class FileSystem {
 	
 	
 	
+	static final ResourcePathResolver[] searchpaths;
 	
 	
 	
@@ -54,6 +63,12 @@ public class FileSystem {
 		if(Spout.getPlatform() == Platform.SERVER && !updateDirectory.exists()) updateDirectory.mkdirs();
 		if(!dataDirectory.exists()) dataDirectory.mkdirs();
 		if(!worldsDirectory.exists()) worldsDirectory.mkdirs();
+		
+		
+		searchpaths = new ResourcePathResolver[] { new FilepathResolver("cache"), 
+													new ZipfileResolver(),
+													new JarfileResolver() };
+		
 		
 		
 		
