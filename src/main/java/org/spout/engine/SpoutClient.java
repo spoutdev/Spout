@@ -90,8 +90,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	Renderer renderer;
 	
 	public void render(float dt){
-		System.out.println("Tick: " + dt);
-		
 		
 		
 		renderer.getShader().setUniform("View", activeCamera.getView());

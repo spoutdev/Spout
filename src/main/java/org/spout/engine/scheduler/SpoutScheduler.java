@@ -34,6 +34,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
+import org.lwjgl.opengl.Display;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
@@ -175,7 +176,7 @@ public final class SpoutScheduler implements Scheduler {
 				c.render(delta / 1000f);	
 				
 				
-				
+				Display.update();
 				
 				lastTick = System.currentTimeMillis();
 				if(rate - delta > 0)
