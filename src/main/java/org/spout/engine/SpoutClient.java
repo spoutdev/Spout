@@ -55,6 +55,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void init(String[] args){
 		super.init(args);
 		
+		
+		
+		scheduler.startRenderThread();
+		
+		
+	}
+	
+	public void initRenderer()
+	{
 		try {
 			Display.setDisplayMode(new DisplayMode((int)resolution.getX(), (int)resolution.getY()));
 			Display.create();
@@ -75,15 +84,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Shader shader = new BasicShader();
 		renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		renderer.setShader(shader);
-		
-		scheduler.startRenderThread();
-		
-		
 	}
+	
+	
 	Renderer renderer;
 	
-	public void render(){
-		
+	public void render(float dt){
+		System.out.println("Tick: " + dt);
 		
 		
 		

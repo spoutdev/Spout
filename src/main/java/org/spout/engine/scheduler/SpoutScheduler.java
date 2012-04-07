@@ -160,6 +160,10 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		
 		public void run(){
+			SpoutClient c = (SpoutClient)Spout.getEngine();
+			c.initRenderer();
+			
+			
 			
 			int rate = (int)((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
@@ -167,8 +171,8 @@ public final class SpoutScheduler implements Scheduler {
 				long startTime = System.currentTimeMillis();
 				long delta = startTime - lastTick;				
 				
-				SpoutClient c = (SpoutClient)Spout.getEngine();
-				c.render();	
+				
+				c.render(delta / 1000f);	
 				
 				
 				
