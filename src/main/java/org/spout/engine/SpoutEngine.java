@@ -176,7 +176,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	/**
 	 * The scheduler for the server.
 	 */
-	private final SpoutScheduler scheduler = new SpoutScheduler(this);
+	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 
 	/**
 	 * A folder that holds all of the world data folders inside of it. By

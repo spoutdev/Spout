@@ -43,6 +43,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
@@ -95,6 +96,11 @@ public final class SpoutScheduler implements Scheduler {
 	 * The number of milliseconds between pulses.
 	 */
 	private static final int PULSE_EVERY = 50;
+	
+	/**
+	 * Target Frames per Second for the renderer
+	 */
+	private static final int TARGET_FPS = 60; 
 
 	/**
 	 * The server this scheduler is managing for.
@@ -133,6 +139,8 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
 
 	private final Thread mainThread;
+	
+	private Thread renderThread;
 
 	/**
 	 * Creates a new task scheduler.
@@ -141,7 +149,46 @@ public final class SpoutScheduler implements Scheduler {
 		this.server = server;
 
 		mainThread = new MainThread();
+		renderThread  = new RenderThread();
 	}
+	
+	
+	private class RenderThread extends Thread {
+		
+		public RenderThread(){
+			
+		}
+		
+		public void run(){
+			
+			int rate = (int)((1f / TARGET_FPS) * 1000);
+			long lastTick = System.currentTimeMillis();
+			while(!shutdown){
+				long startTime = System.currentTimeMillis();
+				long delta = startTime - lastTick;				
+				
+				SpoutClient c = (SpoutClient)Spout.getEngine();
+				c.render();	
+				
+				
+				
+				
+				lastTick = System.currentTimeMillis();
+				if(rate - delta > 0)
+					try {
+						Thread.sleep(rate - delta);
+					} catch (InterruptedException e) {
+						Spout.log("[Severe] Interrupted while sleeping!");
+					}
+						
+			}
+			
+			
+			
+		}
+		
+	}
+	
 
 	private class MainThread extends Thread {
 
@@ -229,6 +276,16 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
+	
+	public void startRenderThread() {
+		if(!(Spout.getEngine() instanceof SpoutClient)) throw new IllegalStateException("Cannot start the rendering thread unless on the client");
+		if(renderThread.isAlive()){
+			throw new IllegalStateException("Attempt was made to start the render thread twice");
+		}
+		renderThread.start();
+	
+	}
+	
 	/**
 	 * Adds an async manager to the scheduler
 	 */

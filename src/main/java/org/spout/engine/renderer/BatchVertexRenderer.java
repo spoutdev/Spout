@@ -171,13 +171,13 @@ public abstract class BatchVertexRenderer implements Renderer {
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.Renderer#AddVertex(org.spout.api.math.Vector2)
 	 */
-	public void AddVertex(Vector2 vertex){
+	public void addVertex(Vector2 vertex){
 		addVertex(vertex.getX(), vertex.getY());
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.Renderer#AddVertex(org.spout.api.math.Vector4)
 	 */
-	public void AddVertex(Vector4 vertex){
+	public void addVertex(Vector4 vertex){
 		addVertex(vertex.getX(), vertex.getY(), vertex.getZ(), vertex.getZ());
 	}
 	
@@ -191,6 +191,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * @see org.spout.client.renderer.Renderer#addColor(float, float, float, float)
 	 */
 	public void addColor(float r, float g, float b, float a){
+		if(!useColors) this.enableColors();
 		colorBuffer.add(r);
 		colorBuffer.add(g);
 		colorBuffer.add(b);
@@ -212,6 +213,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * @see org.spout.client.renderer.Renderer#addNormal(float, float, float, float)
 	 */
 	public void addNormal(float x, float y, float z, float w){
+		if(!useNormals) this.enableNormals();
 		normalBuffer.add(x);
 		normalBuffer.add(y);
 		normalBuffer.add(z);
@@ -241,6 +243,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * @see org.spout.client.renderer.Renderer#addTexCoord(float, float)
 	 */
 	public void addTexCoord(float u, float v){
+		if(this.useTextures) this.enableTextures();
 		uvBuffer.add(u);
 		uvBuffer.add(v);
 	}
@@ -266,6 +269,11 @@ public abstract class BatchVertexRenderer implements Renderer {
 			}
 		}
 		else activeShader = shader;
+	}
+	
+	@Override
+	public Shader getShader(){
+		return activeShader;		
 	}
 	
 	
