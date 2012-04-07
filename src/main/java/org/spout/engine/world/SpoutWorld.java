@@ -63,6 +63,7 @@ import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -297,7 +298,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public Entity createEntity(Point point, Controller controller) {
-		return new SpoutEntity((SpoutServer) server, point, controller);
+		return new SpoutEntity((SpoutEngine) server, point, controller);
 	}
 
 	/**

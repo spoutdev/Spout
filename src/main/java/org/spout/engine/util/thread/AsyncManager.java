@@ -30,7 +30,7 @@ import java.util.WeakHashMap;
 import org.spout.api.Engine;
 import org.spout.api.Server;
 import org.spout.api.scheduler.Scheduler;
-import org.spout.engine.SpoutServer;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.scheduler.SpoutScheduler;
 
 public abstract class AsyncManager {
@@ -54,7 +54,7 @@ public abstract class AsyncManager {
 		this.engine = server;
 		this.maxStage = maxStage;
 		executor.setManager(this);
-		registerWithScheduler(((SpoutServer) server).getScheduler());
+		registerWithScheduler(((SpoutEngine) server).getScheduler());
 	}
 
 	public void registerWithScheduler(Scheduler scheduler) {

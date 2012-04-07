@@ -15,7 +15,7 @@ import org.spout.engine.renderer.shader.EmptyShader;
 
 public abstract class BatchVertexRenderer implements Renderer {
 
-	public static BatchModes GLMode = BatchModes.GL11;
+	public static BatchModes GLMode = BatchModes.GL30;
 	
 	public static Renderer constructNewBatch(int renderMode){
 		if(GLMode == BatchModes.GL11) return new GL11BatchVertexRenderer(renderMode);
