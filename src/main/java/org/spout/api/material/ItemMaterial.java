@@ -30,7 +30,7 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
 
-public abstract class ItemMaterial extends Material {
+public class ItemMaterial extends Material {
 
 	public ItemMaterial(String name, int type, int data, Material parent) {
 		super(name, type, data, parent);
@@ -74,7 +74,8 @@ public abstract class ItemMaterial extends Material {
 	 * Fired when this item is being rendered in the inventory
 	 * 
 	 */
-	public abstract void onInventoryRender();
+	public void onInventoryRender() {
+	}
 
 	/**
 	 * Fired when an entity interacts with the world
@@ -83,7 +84,8 @@ public abstract class ItemMaterial extends Material {
 	 * @param position of the interaction
 	 * @param type of interaction
 	 */
-	public abstract void onInteract(Entity entity, Point position, Action type, BlockFace clickedFace);
+	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedFace) {
+	}
 
 	/**
 	 * Fired when an entity interacts with another entity
@@ -91,5 +93,15 @@ public abstract class ItemMaterial extends Material {
 	 * @param entity that is interacting with the world
 	 * @param other entity that was interacted with
 	 */
-	public abstract void onInteract(Entity entity, Entity other);
+	public void onInteract(Entity entity, Entity other) {
+	}
+	
+	/**
+	 * Fired when an entity interacts with nothing (air)
+	 * 
+	 * @param entity that is interacting with the world
+	 * @param type of interaction
+	 */
+	public void onInteract(Entity entity, Action type) {
+	}
 }

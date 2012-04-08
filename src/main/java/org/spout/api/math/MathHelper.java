@@ -127,6 +127,20 @@ public class MathHelper {
 	}
 
 	/**
+	 * Wraps a byte between 0 and 256
+	 * 
+	 * @param value to wrap
+	 * @return 0 >= byte < 256
+	 */
+	public static byte wrapByte(int value) {
+		value %= 256;
+		if (value < 0) {
+			value += 256;
+		}
+		return (byte) value;
+	}
+	
+	/**
 	 * Wraps the radian between -PI and PI
 	 *
 	 * @param radian to wrap
