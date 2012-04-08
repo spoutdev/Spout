@@ -43,7 +43,9 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 
 	public ConfigurationNodeBase(Configuration config, Object value, String... path) {
 		super(config, path);
-		setValue(value);
+		if (value != null) {
+			setValue(value);
+		}
 	}
 
 	@Override
@@ -81,6 +83,9 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 		if (hasChildren()) {
 			return getValues();
 		} else {
+			if (def != null && value == null && getConfiguration().doesWriteDefaults()) {
+				setValue(def);
+			}
 			return value == null ? def : value;
 		}
 	}
@@ -96,14 +101,24 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 		Object old = this.getValue();
 		if (value instanceof Map<?, ?>) {
 			this.value = null;
-			this.children.clear();
+			removeChildren();
 			for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
 				addChild(new ConfigurationNodeBase(getConfiguration(), entry.getValue(), ArrayUtils.add(getPathEntries(), entry.getKey().toString())));
 			}
 		} else {
+			if (value != null) {
+				removeChildren();
+			}
 			this.value = value;
 		}
 		return old;
+	}
+
+	private void removeChildren() {
+		for (ConfigurationNode node : children.values()) {
+			detachChild(node);
+		}
+		children.clear();
 	}
 
 	@Override

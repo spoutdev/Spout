@@ -27,6 +27,7 @@ package org.spout.api.util.config;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -68,6 +69,18 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 
 	}
 
+	protected void detachChild(ConfigurationNode node) {
+		if (node.getParent() != this) {
+			return;
+		}
+		node.setAttached(false);
+		node.setParent(null);
+		for (Iterator<ConfigurationNode> i = node.children.values().iterator(); i.hasNext();) {
+			node.detachChild(i.next());
+			i.remove();
+		}
+	}
+
 	@Override
 	public ConfigurationNode removeChild(ConfigurationNode node) {
 		if (node != null) {
@@ -77,11 +90,7 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 			if (children.remove(node.getPathEntries()[node.getPathEntries().length - 1]) == null) {
 				return null;
 			}
-			node.setAttached(false);
-			node.setParent(null);
-			for (ConfigurationNode child : node.getChildren().values()) {
-				node.removeChild(child);
-			}
+			detachChild(node);
 		}
 		return node;
 	}
@@ -125,15 +134,23 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 
 	public ConfigurationNode getNode(String... path) {
 		if (path.length == 0) {
-			return new EmptyConfigurationNode(getConfiguration(), path);
+			return createConfigurationNode(path, null, true);
 		}
 
 		ConfigurationNode node = getChild(path[0]);
-		for (int i = 1; i < path.length && node != null && !(node instanceof EmptyConfigurationNode); ++i) {
+		for (int i = 1; i < path.length && node != null && node.isAttached(); ++i) {
 			node = node.getChild(path[i]);
 		}
 
-		return node == null ? new EmptyConfigurationNode(getConfiguration(), path) : node;
+		return node == null ? createConfigurationNode(path, null, true) : node;
+	}
+
+	public ConfigurationNode createConfigurationNode(String[] path, Object value, boolean empty) {
+		if (empty) {
+			return new EmptyConfigurationNode(getConfiguration(), value, path);
+		} else {
+			return new ConfigurationNodeBase(getConfiguration(), value, path);
+		}
 	}
 
 	@Override

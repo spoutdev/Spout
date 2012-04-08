@@ -30,6 +30,7 @@ import org.spout.api.util.config.Configuration;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -106,6 +107,8 @@ public class YamlConfiguration extends Configuration {
 			if (val instanceof Map<?, ?>) {
 				return (Map<?, ?>) val;
 			}
+		} catch (YAMLException e) {
+			throw new ConfigurationException(e);
 		} catch (FileNotFoundException ignore) {
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
@@ -139,6 +142,8 @@ public class YamlConfiguration extends Configuration {
 			}
 
 			yaml.dump(map, writer);
+		} catch (YAMLException e) {
+			throw new ConfigurationException(e);
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		} finally {
@@ -153,6 +158,9 @@ public class YamlConfiguration extends Configuration {
 
 	public void setHeader(String... headerLines) {
 		StringBuilder header = new StringBuilder();
+		if (headerLines.length == 1) {
+			headerLines = headerLines[0].split(LINE_BREAK);
+		}
 
 		for (String line : headerLines) {
 			if (header.length() > 0) {
