@@ -770,4 +770,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 		return player;
 	}
+	
+	protected Collection<SpoutWorld> getLiveWorlds(){
+		return loadedWorlds.getLive().values();
+	}
 }

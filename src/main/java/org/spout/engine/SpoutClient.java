@@ -11,6 +11,8 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -21,6 +23,7 @@ import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.BasicShader;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
@@ -59,12 +62,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	@Override
 	public void init(String[] args){
-		super.init(args);
-		
-		
-		
+		super.init(args);		
+	}
+	
+	@Override
+	public void start(){
 		scheduler.startRenderThread();
-		
 		
 	}
 	
@@ -103,7 +106,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			e.printStackTrace();
 		}
 		
-		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(-10, 10, 10), Vector3.ZERO, Vector3.UP));
+		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(-20, 20, 20), Vector3.ZERO, Vector3.UP));
 		Shader shader = new BasicShader();
 		renderer = new PrimitiveBatch();
 		renderer.getRenderer().setShader(shader);
@@ -119,9 +122,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.getRenderer().getShader().setUniform("View", activeCamera.getView());
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
-		//Collection<World> worlds = this.getWorlds();
+		Object[] worlds = this.getLiveWorlds().toArray();
+		SpoutWorld world = (SpoutWorld)worlds[0];
+		
+		SpoutChunk c = world.getChunk(0, 0, 0);
 		
 		renderer.begin();
+		/*for(int x = 0; x > 16; x++){
+			for(int y = 0; y > 16; y++){
+				for(int z = 0; z > 16; z++){
+					BlockMaterial m = c.getBlockMaterial(x, y, z);
+					Color col = Color.getHSBColor(m.getId() % 360, 1, 1);
+					renderer.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
+				}
+			}
+		}*/
 		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
 		renderer.end();
 		
