@@ -1,5 +1,9 @@
 package org.spout.engine;
 
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -11,6 +15,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.math.Matrix;
@@ -67,6 +72,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	@Override
 	public void start(){
+		super.start();
 		scheduler.startRenderThread();
 		
 	}
@@ -117,27 +123,34 @@ public class SpoutClient extends SpoutEngine implements Client {
 	final boolean[] sides  = { true, true, true, true, true, true };
 	
 	public void render(float dt){
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GL11.glClearColor(0, 0, 0, 1);
 		
 		
 		renderer.getRenderer().getShader().setUniform("View", activeCamera.getView());
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
-		Object[] worlds = this.getLiveWorlds().toArray();
-		SpoutWorld world = (SpoutWorld)worlds[0];
 		
-		SpoutChunk c = world.getChunk(0, 0, 0);
 		
 		renderer.begin();
-		/*for(int x = 0; x > 16; x++){
-			for(int y = 0; y > 16; y++){
-				for(int z = 0; z > 16; z++){
-					BlockMaterial m = c.getBlockMaterial(x, y, z);
-					Color col = Color.getHSBColor(m.getId() % 360, 1, 1);
-					renderer.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
+		if(this.getLiveWorlds().size() > 0){
+			Object[] worlds = this.getWorlds().toArray();
+			SpoutWorld world = (SpoutWorld)worlds[0];
+			SpoutChunk c = world.getChunk(0, 4, 0);
+			ChunkSnapshot snap = c.getSnapshot();
+			for(int x = 0; x < 16; x++){
+				for(int y = 0; y < 16; y++){
+					for(int z = 0; z < 16; z++){
+						BlockMaterial m = snap.getBlockMaterial(x, y, z);
+						Color col = Color.getHSBColor(m.getId() % 360, 1, 1);
+						if(m.isSolid()) renderer.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
+					}
 				}
 			}
-		}*/
-		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
+		}
+		else{
+			renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
+		}
 		renderer.end();
 		
 		
