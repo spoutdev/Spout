@@ -103,7 +103,7 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 			this.value = null;
 			removeChildren();
 			for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-				addChild(new ConfigurationNodeBase(getConfiguration(), entry.getValue(), ArrayUtils.add(getPathEntries(), entry.getKey().toString())));
+				addChild(createConfigurationNode(ArrayUtils.add(getPathElements(), entry.getKey().toString()), entry.getValue(), false));
 			}
 		} else {
 			if (value != null) {

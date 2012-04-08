@@ -51,7 +51,7 @@ public class EmptyConfigurationNode extends ConfigurationNodeBase {
 	}
 
 	private void checkAdded() {
-		if (isAttached()) {
+		if (!isAttached()) {
 			getConfiguration().setNode(this);
 			setAttached(true);
 		}

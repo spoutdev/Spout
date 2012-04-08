@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -76,11 +77,32 @@ public class ConfigurationTest {
 	}
 
 	@Test
+	public void testGetNewNode() {
+		ConfigurationNode node = config.getNode("unknown.node");
+		assertTrue(node != null);
+		assertEquals(null, node.getValue());
+	}
+
+	private static final String TEST_PATH = "another.unknown.node";
+	private static final String TEST_VALUE = "Never gonna give you up!";
+
+	@Test
+	public void testSetNewNode() {
+		ConfigurationNode node = config.getNode(TEST_PATH);
+		node.setValue(TEST_VALUE);
+		assertEquals(TEST_VALUE, node.getString());
+		assertEquals(node, config.getNode(TEST_PATH));
+		assertEquals(TEST_VALUE, config.getNode(TEST_PATH).getString());
+
+	}
+
+	@Test
 	public void testPathSeparator() {
 		String value = config.getNode("foo.bar").getString();
 		assertEquals("baz", value);
 		config.setPathSeparator("/");
 		value = config.getNode("foo/bar").getString();
 		assertEquals("baz", value);
+		config.setPathSeparator(".");
 	}
 }

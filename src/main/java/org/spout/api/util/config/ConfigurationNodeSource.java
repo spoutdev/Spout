@@ -34,6 +34,7 @@ import java.util.Set;
  */
 public interface ConfigurationNodeSource {
 	public ConfigurationNode getChild(String name);
+	public ConfigurationNode getChild(String name, boolean add);
 	public ConfigurationNode addChild(ConfigurationNode node);
 	public ConfigurationNode removeChild(String key);
 	public ConfigurationNode removeChild(ConfigurationNode node);
@@ -68,4 +69,11 @@ public interface ConfigurationNodeSource {
 	 * @return the attached configuration.
 	 */
 	public Configuration getConfiguration();
+
+	/**
+	 * Returns the elements of the configuration path going to this node source. Can return
+	 * an empty array if we are at the root of the tree.
+	 * @return the elements to here
+	 */
+	public String[] getPathElements();
 }

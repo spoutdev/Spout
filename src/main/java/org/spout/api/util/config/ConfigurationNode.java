@@ -312,16 +312,16 @@ public abstract class ConfigurationNode extends AbstractConfigurationNodeSource 
 
 	/**
 	 * @return The path, joined by the {@link Configuration#getPathSeparator()} of the attached configuration
-	 * @see #getPathEntries()
+	 * @see #getPathElements
 	 */
 	public String getPath() {
-		return StringUtils.join(path, getConfiguration().getPathSeparator());
+		return StringUtils.join(getPathElements(), getConfiguration().getPathSeparator());
 	}
 
 	/**
 	 * @return the elements of this node's path, unjoined
 	 */
-	public String[] getPathEntries() {
+	public String[] getPathElements() {
 		return path;
 	}
 }

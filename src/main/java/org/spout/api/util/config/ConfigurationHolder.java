@@ -47,7 +47,7 @@ public class ConfigurationHolder extends ConfigurationNode {
 	}
 
 	private ConfigurationNode getNode() {
-		return getConfiguration().getNode(getPathEntries());
+		return getConfiguration().getNode(getPathElements());
 	}
 
 	public Configuration getConfiguration() {

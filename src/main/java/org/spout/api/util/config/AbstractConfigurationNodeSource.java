@@ -25,6 +25,8 @@
  */
 package org.spout.api.util.config;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,7 +39,7 @@ import java.util.Set;
  *
  * @author zml2008
  */
-public class AbstractConfigurationNodeSource implements ConfigurationNodeSource {
+public abstract class AbstractConfigurationNodeSource implements ConfigurationNodeSource {
 	protected final Map<String, ConfigurationNode> children = new LinkedHashMap<String, ConfigurationNode>();
 	protected Configuration config;
 
@@ -52,12 +54,23 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 
 	@Override
 	public ConfigurationNode getChild(String name) {
-		return children.get(name);
+		return getChild(name, false);
+	}
+
+	public ConfigurationNode getChild(String name, boolean add) {
+		ConfigurationNode node = children.get(name);
+		if (node == null) {
+			node = createConfigurationNode(ArrayUtils.add(getPathElements(), name), null, !add);
+			if (add) {
+				addChild(node);
+			}
+		}
+		return node;
 	}
 
 	@Override
 	public ConfigurationNode addChild(ConfigurationNode node) {
-		ConfigurationNode ret = children.put(node.getPathEntries()[node.getPathEntries().length - 1], node);
+		ConfigurationNode ret = children.put(node.getPathElements()[node.getPathElements().length - 1], node);
 		node.setAttached(true);
 		node.setParent(this);
 		return ret;
@@ -66,7 +79,6 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 	@Override
 	public ConfigurationNode removeChild(String key) {
 		return removeChild(children.get(key));
-
 	}
 
 	protected void detachChild(ConfigurationNode node) {
@@ -87,7 +99,7 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 			if (node.getParent() != this) {
 				return null;
 			}
-			if (children.remove(node.getPathEntries()[node.getPathEntries().length - 1]) == null) {
+			if (children.remove(node.getPathElements()[node.getPathElements().length - 1]) == null) {
 				return null;
 			}
 			detachChild(node);
@@ -126,7 +138,8 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 	@Override
 	public ConfigurationNode getNode(String path) {
 		if (path.contains(getConfiguration().getPathSeparator())) {
-			return getNode(getConfiguration().getPathSeparatorPattern().split(path));
+			String[] pathSplit = getConfiguration().getPathSeparatorPattern().split(path);
+			return getNode(pathSplit);
 		} else {
 			return getChild(path);
 		}
@@ -134,7 +147,7 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 
 	public ConfigurationNode getNode(String... path) {
 		if (path.length == 0) {
-			return createConfigurationNode(path, null, true);
+			throw new IllegalArgumentException("Path must not be empty!");
 		}
 
 		ConfigurationNode node = getChild(path[0]);
@@ -142,7 +155,7 @@ public class AbstractConfigurationNodeSource implements ConfigurationNodeSource 
 			node = node.getChild(path[i]);
 		}
 
-		return node == null ? createConfigurationNode(path, null, true) : node;
+		return node == null || !node.isAttached() ? createConfigurationNode(path, null, true) : node;
 	}
 
 	public ConfigurationNode createConfigurationNode(String[] path, Object value, boolean empty) {

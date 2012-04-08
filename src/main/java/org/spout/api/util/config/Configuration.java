@@ -25,6 +25,7 @@
  */
 package org.spout.api.util.config;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.spout.api.exception.ConfigurationException;
 
 import java.util.Map;
@@ -57,6 +58,7 @@ public abstract class Configuration extends AbstractConfigurationNodeSource {
 		super(null);
 		this.config = this;
 		setPathSeparator(".");
+		setWritesDefaults(true);
 	}
 
 	public void load() throws ConfigurationException {
@@ -75,27 +77,23 @@ public abstract class Configuration extends AbstractConfigurationNodeSource {
 	}
 
 	public void setNode(ConfigurationNode node) {
-		String[] path = node.getPathEntries();
+		String[] path = node.getPathElements();
 		if (path == null || path.length == 0) {
 			throw new IllegalArgumentException("Path must be specified!");
 		}
 
-		ConfigurationNode parent = null;
-		ConfigurationNodeSource oldParent = this;
-		for (String item : path) {
-			if (parent == null) {
-				parent = getChild(item);
-			} else {
-				oldParent = parent;
-				parent = oldParent.getChild(item);
-			}
+		ConfigurationNode parent = getChild(path[0], true);
+		ConfigurationNodeSource oldParent;
+		for (int i = 1; i < path.length - 1; ++i) {
+			oldParent = parent;
+			parent = oldParent.getChild(path[i], true);
 
-			if (!parent.isAttached()) {
+			if (i != path.length - 2 && !parent.isAttached()) {
 				oldParent.addChild(parent);
 			}
 		}
 
-		oldParent.addChild(node);
+		parent.addChild(node);
 	}
 
 	public String getPathSeparator() {
@@ -117,5 +115,10 @@ public abstract class Configuration extends AbstractConfigurationNodeSource {
 
 	public void setWritesDefaults(boolean writesDefaults) {
 		this.writesDefaults = writesDefaults;
+	}
+
+	@Override
+	public String[] getPathElements() {
+		return ArrayUtils.EMPTY_STRING_ARRAY;
 	}
 }
