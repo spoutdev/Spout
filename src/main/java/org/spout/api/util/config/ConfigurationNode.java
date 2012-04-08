@@ -306,6 +306,7 @@ public abstract class ConfigurationNode extends AbstractConfigurationNodeSource 
 						(oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getPath() : "root") + ".");
 			}
 			visited.add(oldParent);
+			oldParent = oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getParent() : null;
 		}
 		this.parent = parent;
 	}

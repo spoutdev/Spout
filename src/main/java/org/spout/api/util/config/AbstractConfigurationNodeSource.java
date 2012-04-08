@@ -60,7 +60,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	public ConfigurationNode getChild(String name, boolean add) {
 		ConfigurationNode node = children.get(name);
 		if (node == null) {
-			node = createConfigurationNode(ArrayUtils.add(getPathElements(), name), null, !add);
+			node = createConfigurationNode(ArrayUtils.add(getPathElements(), name), null);
 			if (add) {
 				addChild(node);
 			}
@@ -155,15 +155,11 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 			node = node.getChild(path[i]);
 		}
 
-		return node == null || !node.isAttached() ? createConfigurationNode(path, null, true) : node;
+		return node == null || !node.isAttached() ? createConfigurationNode(path, null) : node;
 	}
 
-	public ConfigurationNode createConfigurationNode(String[] path, Object value, boolean empty) {
-		if (empty) {
-			return new EmptyConfigurationNode(getConfiguration(), value, path);
-		} else {
-			return new ConfigurationNodeBase(getConfiguration(), value, path);
-		}
+	public ConfigurationNode createConfigurationNode(String[] path, Object value) {
+		return new ConfigurationNodeBase(getConfiguration(), value, path);
 	}
 
 	@Override

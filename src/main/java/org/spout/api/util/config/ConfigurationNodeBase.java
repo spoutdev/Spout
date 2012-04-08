@@ -97,13 +97,20 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 	}
 
 	@Override
+	public ConfigurationNode addChild(ConfigurationNode node) {
+		checkAdded();
+		return super.addChild(node);
+	}
+
+	@Override
 	public Object setValue(Object value) {
+		checkAdded();
 		Object old = this.getValue();
 		if (value instanceof Map<?, ?>) {
 			this.value = null;
 			removeChildren();
 			for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-				addChild(createConfigurationNode(ArrayUtils.add(getPathElements(), entry.getKey().toString()), entry.getValue(), false));
+				addChild(createConfigurationNode(ArrayUtils.add(getPathElements(), entry.getKey().toString()), entry.getValue()));
 			}
 		} else {
 			if (value != null) {
@@ -119,6 +126,13 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 			detachChild(node);
 		}
 		children.clear();
+	}
+
+	private void checkAdded() {
+		if (!isAttached()) {
+			getConfiguration().setNode(this);
+			setAttached(true);
+		}
 	}
 
 	@Override

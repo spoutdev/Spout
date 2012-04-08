@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -81,6 +82,8 @@ public class ConfigurationTest {
 		ConfigurationNode node = config.getNode("unknown.node");
 		assertTrue(node != null);
 		assertEquals(null, node.getValue());
+		assertFalse(node.isAttached());
+		assertEquals(null, node.getParent());
 	}
 
 	private static final String TEST_PATH = "another.unknown.node";

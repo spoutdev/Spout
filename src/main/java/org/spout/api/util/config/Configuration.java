@@ -64,7 +64,7 @@ public abstract class Configuration extends AbstractConfigurationNodeSource {
 	public void load() throws ConfigurationException {
 		Map<?, ?> rawValues = loadToMap();
 		for (Map.Entry<?, ?> entry : rawValues.entrySet()) {
-			addChild(createConfigurationNode(new String[] {entry.getKey().toString()}, entry.getValue(), false));
+			addChild(createConfigurationNode(new String[] {entry.getKey().toString()}, entry.getValue()));
 		}
 	}
 
