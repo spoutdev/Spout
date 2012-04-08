@@ -28,6 +28,7 @@ import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.BasicShader;
+import org.spout.engine.renderer.shader.ClientShader;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.batcher.PrimitiveBatch;
@@ -115,7 +116,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		
 		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(-20, 20, 20), Vector3.ZERO, Vector3.UP));
-		Shader shader = new BasicShader();
+		//Shader shader = new BasicShader();
+		Shader shader = new ClientShader("fallback.330.vert", "fallback.330.frag");
 		renderer = new PrimitiveBatch();
 		renderer.getRenderer().setShader(shader);
 		
@@ -163,9 +165,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private void renderVisibleChunks(SpoutWorld world){
 		renderer.begin();
 		
-		for(int x = -1; x < 1; x++){
+		for(int x = 0; x < 1; x++){
 			for(int y = 4; y < 5; y++){
-				for(int z = -1; z < 1; z++){
+				for(int z = 0; z < 1; z++){
 					SpoutChunk c = world.getChunk(x, y, z);
 					ChunkSnapshot snap = c.getSnapshot();
 					renderChunk(snap, renderer);
