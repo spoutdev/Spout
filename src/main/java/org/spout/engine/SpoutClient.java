@@ -11,6 +11,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
+import org.spout.api.math.Vector3;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
@@ -18,6 +19,7 @@ import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.BasicShader;
+import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
 
 
@@ -79,33 +81,28 @@ public class SpoutClient extends SpoutEngine implements Client {
 			e.printStackTrace();
 		}
 		
-		activeCamera = new BasicCamera(Matrix.createIdentity(), Matrix.createIdentity());
+		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(-10, 10, 10), Vector3.ZERO, Vector3.UP));
 		Shader shader = new BasicShader();
-		renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		renderer.setShader(shader);
+		renderer = new PrimitiveBatch();
+		renderer.getRenderer().setShader(shader);
 	}
 	
 	
-	Renderer renderer;
+	PrimitiveBatch renderer;
 	
 	public void render(float dt){
 		
 		
-		renderer.getShader().setUniform("View", activeCamera.getView());
-		renderer.getShader().setUniform("Projection", activeCamera.getProjection());
+		renderer.getRenderer().getShader().setUniform("View", activeCamera.getView());
+		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
 		
 		renderer.begin();
-		renderer.addColor(Color.RED);
-		renderer.addVertex(0,0);
-		renderer.addColor(Color.BLUE);
-		renderer.addVertex(-1, 1);
-		renderer.addColor(Color.GREEN);
-		renderer.addVertex(1, 1);	
+		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, null);
 		renderer.end();
 		
 		
-		renderer.render();	
+		renderer.draw();
 		
 		
 		
