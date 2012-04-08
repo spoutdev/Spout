@@ -28,6 +28,7 @@ import org.spout.engine.filesystem.FileSystem;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.Collection;
 
 
 public class SpoutClient extends SpoutEngine implements Client {
@@ -75,7 +76,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			
 			if(System.getProperty("os.name").toLowerCase().contains("mac")){
 				String[] ver = System.getProperty("os.version").split("\\.");
-				if(Integer.parseInt(ver[1]) > 7){
+				if(Integer.parseInt(ver[1]) >= 7){
 					ContextAttribs ca  = new ContextAttribs(3, 2).withProfileCore(true);
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}
@@ -118,8 +119,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.getRenderer().getShader().setUniform("View", activeCamera.getView());
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
-		//SpoutWorld[] worlds = (SpoutWorld[])this.getWorlds().toArray();
-		//Chunk[] chunks = worlds[0].
+		//Collection<World> worlds = this.getWorlds();
 		
 		renderer.begin();
 		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
