@@ -18,13 +18,17 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 			BufferedImage image = ImageIO.read(stream);
 			t = new ClientTexture(image);
 		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		finally{
 			try {
 				stream.close();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			e.printStackTrace();
+			
 		}
 		return t;
 	}
