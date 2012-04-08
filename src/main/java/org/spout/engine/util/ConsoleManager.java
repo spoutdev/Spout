@@ -237,7 +237,7 @@ public final class ConsoleManager {
 						continue;
 					}
 
-					((SpoutServer) server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
+					server.getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (Exception ex) {
 					server.getLogger().severe("Impossible exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
@@ -247,13 +247,13 @@ public final class ConsoleManager {
 	}
 
 	private AtomicInteger serverShutdownThreadCount = new AtomicInteger(1);
-	
+
 	private class ServerShutdownThread extends Thread {
-		
+
 		public ServerShutdownThread() {
 			super("ServerShutdownThread-" + serverShutdownThreadCount.getAndIncrement());
 		}
-		
+
 		@Override
 		public void run() {
 			server.stop();
@@ -269,17 +269,7 @@ public final class ConsoleManager {
 
 		@Override
 		public void run() {
-			//command = EventFactory.onServerCommand(sender, command).getCommand();
-
-			/*if (*/
-			server.processCommand(source, command);/*) {
-				String firstword = command;
-				if (command.indexOf(' ') >= 0) {
-					firstword = command.substring(0, command.indexOf(' '));
-				}
-
-				System.out.println("Command not found: " + firstword);*/
-			//}
+			server.processCommand(source, command);
 		}
 	}
 
