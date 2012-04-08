@@ -21,6 +21,7 @@ import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.BasicShader;
+import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
 
@@ -72,7 +73,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		try {
 			Display.setDisplayMode(new DisplayMode((int)resolution.getX(), (int)resolution.getY()));
 			
-			if(System.getProperty("os.name").toLowerCase().equals("mac")){
+			if(System.getProperty("os.name").toLowerCase().contains("mac")){
 				String[] ver = System.getProperty("os.version").split("\\.");
 				if(Integer.parseInt(ver[1]) > 7){
 					ContextAttribs ca  = new ContextAttribs(3, 2).withProfileCore(true);
@@ -117,6 +118,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.getRenderer().getShader().setUniform("View", activeCamera.getView());
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
+		//SpoutWorld[] worlds = (SpoutWorld[])this.getWorlds().toArray();
+		//Chunk[] chunks = worlds[0].
 		
 		renderer.begin();
 		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
