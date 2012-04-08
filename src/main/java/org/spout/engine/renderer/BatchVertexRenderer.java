@@ -19,6 +19,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	public static Renderer constructNewBatch(int renderMode){
 		if(GLMode == BatchModes.GL11) return new GL11BatchVertexRenderer(renderMode);
+		if(GLMode == BatchModes.GL20) return new GL20BatchVertexRenderer(renderMode);
 		if(GLMode == BatchModes.GL30) return new GL30BatchVertexRenderer(renderMode);
 		if(GLMode == BatchModes.GLES20) return new GLES20BatchVertexRenderer(renderMode);
 		throw new IllegalArgumentException("GL Mode:" + GLMode + " Not reconized");

@@ -99,6 +99,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				Display.create();
 				
 			}
+			Display.setTitle("Spout Client");
 			
 			
 			System.out.println("OpenGL Information");
