@@ -147,6 +147,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * Creates a new task scheduler.
 	 */
 	public SpoutScheduler(Engine server) {
+	
 		this.server = server;
 
 		mainThread = new MainThread();
@@ -157,7 +158,7 @@ public final class SpoutScheduler implements Scheduler {
 	private class RenderThread extends Thread {
 		
 		public RenderThread(){
-			
+			super("Render Thread");
 		}
 		
 		public void run(){

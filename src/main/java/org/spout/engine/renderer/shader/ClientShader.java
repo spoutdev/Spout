@@ -230,7 +230,8 @@ public class ClientShader implements Shader {
 		
 	}
 	
-	String fallbackVertexShader = "attribute vec4 vPosition;\n" +
+	String fallbackVertexShader = "#version 120" +
+								  "attribute vec4 vPosition;\n" +
 								  "attribute vec4 vColor;\n" +
 								  "attribute vec2 vTexCoord; \n"+
 								  "varying vec4 color;\n" +
@@ -243,7 +244,8 @@ public class ClientShader implements Shader {
 								  "color = vColor; \n"+
 								  "} \n";
  
-	String fallbackFragmentShader = "varying vec4 color;  //in \n" +
+	String fallbackFragmentShader = "#version 120" +
+									"varying vec4 color;  //in \n" +
 									"varying vec2 uvcoord; \n" +
 									"uniform sampler2D texture; \n" +
 									"void main()\n{\n" +
