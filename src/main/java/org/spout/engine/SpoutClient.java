@@ -107,6 +107,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
 			System.out.println("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 			System.out.println("Extensions Supported: " + GL11.glGetString(GL11.GL_EXTENSIONS));
+			System.out.println("Max Texture Units: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 			
 		} catch (LWJGLException e) {
 			// TODO Auto-generated catch block
@@ -142,27 +143,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		
-		renderer.begin();
 		if(this.getLiveWorlds().size() > 0){
 			Object[] worlds = this.getWorlds().toArray();
 			SpoutWorld world = (SpoutWorld)worlds[0];
-			SpoutChunk c = world.getChunk(0, 4, 0);
-			ChunkSnapshot snap = c.getSnapshot();
-			for(int x = 0; x < 16; x++){
-				for(int y = 0; y < 16; y++){
-					for(int z = 0; z < 16; z++){
-						BlockMaterial m = snap.getBlockMaterial(x, y, z);
-						
-						Color col = Color.getHSBColor((float)Math.random() * 360f, 1, 1);
-						if(m.isSolid()) renderer.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
-					}
-				}
-			}
-		}
+			renderVisibleChunks(world);
+			
+		}			
 		else{
 			renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
 		}
-		renderer.end();
 		
 		
 		renderer.draw();
@@ -170,6 +159,38 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 	}
+	
+	private void renderVisibleChunks(SpoutWorld world){
+		renderer.begin();
+		
+		for(int x = -1; x < 1; x++){
+			for(int y = 4; y < 5; y++){
+				for(int z = -1; z < 1; z++){
+					SpoutChunk c = world.getChunk(x, y, z);
+					ChunkSnapshot snap = c.getSnapshot();
+					renderChunk(snap, renderer);
+				}
+			}
+		}
+		renderer.end();
+		
+		
+	}
+	
+	private void renderChunk (ChunkSnapshot snap, PrimitiveBatch batch){
+		for(int x = 0; x < 16; x++){
+			for(int y = 0; y < 16; y++){
+				for(int z = 0; z < 16; z++){
+					BlockMaterial m = snap.getBlockMaterial(x, y, z);
+					
+					Color col = Color.getHSBColor((float)Math.random() * 360f, 1, 1);
+					if(m.isSolid()) batch.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
+				}
+			}
+		}
+	
+	}
+	
 
 	@Override
 	public File getTemporaryCache() {

@@ -59,7 +59,10 @@ public class FileSystem {
 	
 	static ResourcePathResolver[] searchpaths;
 	
-	static HashMap<String, ResourceLoader> loaders = new HashMap<String, ResourceLoader>();
+	static HashMap<String, ResourceLoader<? extends Resource>> loaders = new HashMap<String, ResourceLoader<? extends Resource>>();
+	
+	static HashMap<URI, Resource> loadedResource = new HashMap<URI, Resource>();
+	
 	
 	public static void init()
 	{
@@ -88,15 +91,23 @@ public class FileSystem {
 		return null;
 	}
 	
-	public static void registerLoader(String protocol, ResourceLoader loader){
+	public static void registerLoader(String protocol, ResourceLoader<? extends Resource> loader){
 		if(loaders.containsKey(protocol)) return;
 		loaders.put(protocol, loader);
 	}
 
-	public static Resource precacheResource(URI path){
+	public static void loadResource(URI path){
 		String protocol = path.getScheme();
 		if(!loaders.containsKey(protocol)) throw new IllegalArgumentException("Unknown resource type: " + protocol);
-		return loaders.get(protocol).getResource(path);
+		Resource r =  loaders.get(protocol).getResource(path);
+		loadedResource.put(path, r);
 	}
 	
+	public static Resource getResource(URI path){
+		if(!loadedResource.containsKey(path)){
+			Spout.log("Warning: Late Precache of resource: " + path.toString());
+			loadResource(path);
+		}
+		return loadedResource.get(path);
+	}
 }
