@@ -116,18 +116,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Shader shader = new BasicShader();
 		renderer = new PrimitiveBatch();
 		renderer.getRenderer().setShader(shader);
+		
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
 	
 	PrimitiveBatch renderer;
 	final boolean[] sides  = { true, true, true, true, true, true };
 	
+	long ticks = 0;
+	
 	public void render(float dt){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
 		
-		
-		renderer.getRenderer().getShader().setUniform("View", activeCamera.getView());
+		ticks++;
+		double cx = 20 * Math.sin(Math.toRadians(ticks));
+		double cz = 20 * Math.cos(Math.toRadians(ticks));
+		double cy = 20 * Math.sin(Math.toRadians(ticks));
+
+		Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
+		renderer.getRenderer().getShader().setUniform("View", view);
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
 		
@@ -142,7 +151,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 				for(int y = 0; y < 16; y++){
 					for(int z = 0; z < 16; z++){
 						BlockMaterial m = snap.getBlockMaterial(x, y, z);
-						Color col = Color.getHSBColor(m.getId() % 360, 1, 1);
+						
+						Color col = Color.getHSBColor((float)Math.random() * 360f, 1, 1);
 						if(m.isSolid()) renderer.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
 					}
 				}
