@@ -29,21 +29,14 @@ public class PrimitiveBatch {
 	}
 	
 	public void addCube(Vector3 location, Vector3 scale, Color c, boolean[] sides){
-		/*
-		batch.addQuad(corners[0], corners[1], corners[2], corners[3]); //draws
-		batch.addQuad(corners[7], corners[6], corners[5], corners[4]);
-		batch.addQuad(corners[3], corners[2], corners[6], corners[7]);
-		batch.addQuad(corners[4], corners[5], corners[1], corners[0]); //draws
-		batch.addQuad(corners[1], corners[5], corners[6], corners[2]);
-		batch.addQuad(corners[4], corners[0], corners[3], corners[7]);
-		*/
-		addQuad(cubeCorners[0].multiply(scale).add(location), cubeCorners[1].multiply(scale).add(location), cubeCorners[2].multiply(scale).add(location), cubeCorners[3].multiply(scale).add(location), c);
-		addQuad(cubeCorners[7].multiply(scale).add(location), cubeCorners[6].multiply(scale).add(location), cubeCorners[5].multiply(scale).add(location), cubeCorners[4].multiply(scale).add(location), c);
-		addQuad(cubeCorners[3].multiply(scale).add(location), cubeCorners[2].multiply(scale).add(location), cubeCorners[6].multiply(scale).add(location), cubeCorners[7].multiply(scale).add(location), c);
+		if(sides.length != 6) throw new IllegalStateException("Must have 6 sides!");
+		if(sides[0])addQuad(cubeCorners[0].multiply(scale).add(location), cubeCorners[1].multiply(scale).add(location), cubeCorners[2].multiply(scale).add(location), cubeCorners[3].multiply(scale).add(location), c);
+		if(sides[1])addQuad(cubeCorners[7].multiply(scale).add(location), cubeCorners[6].multiply(scale).add(location), cubeCorners[5].multiply(scale).add(location), cubeCorners[4].multiply(scale).add(location), c);
+		if(sides[2])addQuad(cubeCorners[3].multiply(scale).add(location), cubeCorners[2].multiply(scale).add(location), cubeCorners[6].multiply(scale).add(location), cubeCorners[7].multiply(scale).add(location), c);
 		
-		addQuad(cubeCorners[4].multiply(scale).add(location), cubeCorners[5].multiply(scale).add(location), cubeCorners[1].multiply(scale).add(location), cubeCorners[0].multiply(scale).add(location), c);
-		addQuad(cubeCorners[1].multiply(scale).add(location), cubeCorners[5].multiply(scale).add(location), cubeCorners[6].multiply(scale).add(location), cubeCorners[2].multiply(scale).add(location), c);
-		addQuad(cubeCorners[4].multiply(scale).add(location), cubeCorners[0].multiply(scale).add(location), cubeCorners[3].multiply(scale).add(location), cubeCorners[7].multiply(scale).add(location), c);
+		if(sides[3])addQuad(cubeCorners[4].multiply(scale).add(location), cubeCorners[5].multiply(scale).add(location), cubeCorners[1].multiply(scale).add(location), cubeCorners[0].multiply(scale).add(location), c);
+		if(sides[4])addQuad(cubeCorners[1].multiply(scale).add(location), cubeCorners[5].multiply(scale).add(location), cubeCorners[6].multiply(scale).add(location), cubeCorners[2].multiply(scale).add(location), c);
+		if(sides[5])addQuad(cubeCorners[4].multiply(scale).add(location), cubeCorners[0].multiply(scale).add(location), cubeCorners[3].multiply(scale).add(location), cubeCorners[7].multiply(scale).add(location), c);
 		
 		
 		
@@ -68,33 +61,7 @@ public class PrimitiveBatch {
 		renderer.addVertex(d);
 		
 	}
-	public void addQuad(PositionColor a, PositionColor b, PositionColor c, PositionColor d){
-		Vector3 normal = (a.getPosition().subtract(b.getPosition())).cross(b.getPosition().subtract(c.getPosition()));
-		renderer.addColor(a.getColor());
-		renderer.addNormal(normal);
-		renderer.addVertex(a.getPosition());
-		
-		renderer.addColor(b.getColor());
-		renderer.addNormal(normal);
-		renderer.addVertex(b.getPosition());
-		
-		renderer.addColor(c.getColor());
-		renderer.addNormal(normal);		
-		renderer.addVertex(c.getPosition());
-		
-		renderer.addColor(c.getColor());
-		renderer.addNormal(normal);		
-		renderer.addVertex(c.getPosition());
-		
-		renderer.addColor(d.getColor());
-		renderer.addNormal(normal);		
-		renderer.addVertex(d.getPosition());
-		
-		renderer.addColor(a.getColor());
-		renderer.addNormal(normal);		
-		renderer.addVertex(a.getPosition());
-		
-	}
+	
 	
 	public void end(){
 		renderer.end();

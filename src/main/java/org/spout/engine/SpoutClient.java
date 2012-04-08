@@ -1,10 +1,12 @@
 package org.spout.engine;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
@@ -66,9 +68,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	public void initRenderer()
 	{
+		
 		try {
 			Display.setDisplayMode(new DisplayMode((int)resolution.getX(), (int)resolution.getY()));
-			Display.create();
+			
+			if(System.getProperty("os.name").toLowerCase().equals("mac")){
+				String[] ver = System.getProperty("os.version").split("\\.");
+				if(Integer.parseInt(ver[1]) > 7){
+					ContextAttribs ca  = new ContextAttribs(3, 2).withProfileCore(true);
+					Display.create(new PixelFormat(8, 24, 0), ca);
+				}
+				else{
+					Display.create();
+				}
+			
+				
+			}
+			else{
+				Display.create();
+				
+			}
+			
 			
 			System.out.println("OpenGL Information");
 			System.out.println("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
@@ -89,6 +109,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	
 	PrimitiveBatch renderer;
+	final boolean[] sides  = { true, true, true, true, true, true };
 	
 	public void render(float dt){
 		
@@ -98,7 +119,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		renderer.begin();
-		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, null);
+		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
 		renderer.end();
 		
 		
