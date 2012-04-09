@@ -57,12 +57,18 @@ public class FlatFileBanManager implements BanManager {
 
 	@Override
 	public boolean setBanned(String player, boolean banned) {
-		boolean alreadyBanned = !(isBanned(player) == banned);
-		if (banned) {
-			bannedNames.add(player);
-		} else {
-			bannedNames.remove(player);
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.PLAYER, player, banned));
+
+		boolean alreadyBanned = !(isBanned(player) == event.isBanned());
+		
+		if(!event.isCancelled()) {
+			if (banned) {
+				bannedNames.add(player);
+			} else {
+				bannedNames.remove(player);
+			}
 		}
+		
 		return alreadyBanned;
 	}
 
@@ -83,12 +89,18 @@ public class FlatFileBanManager implements BanManager {
 
 	@Override
 	public boolean setIpBanned(String address, boolean banned) {
-		boolean alreadyBanned = !(isIpBanned(address) == banned);
-		if (banned) {
-			bannedIps.add(address);
-		} else {
-			bannedIps.remove(address);
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.IP, address, banned));
+		
+		boolean alreadyBanned = !(isIpBanned(address) == event.isBanned());
+		
+		if(!event.isCancelled()) {
+			if (banned) {
+				bannedIps.add(address);
+			} else {
+				bannedIps.remove(address);
+			}
 		}
+		
 		return alreadyBanned;
 	}
 
