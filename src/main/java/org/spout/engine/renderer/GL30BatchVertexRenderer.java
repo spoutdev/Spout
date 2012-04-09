@@ -24,12 +24,9 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	 */
 	public GL30BatchVertexRenderer(int renderMode){
 		super(renderMode);
-		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		vao = GL30.glGenVertexArrays();
 		GL30.glBindVertexArray(vao);
-		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-		
-		
+				
 	}
 	
 
