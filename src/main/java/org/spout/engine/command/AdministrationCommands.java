@@ -37,6 +37,7 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
+import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutServer;
 
 /**
@@ -89,6 +90,34 @@ public class AdministrationCommands {
 		if (player != null) {
 			player.kick(message);
 			source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
+		}
+	}
+
+	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload server and/or plugins", max = 1)
+	@CommandPermissions("spout.command.reload")
+	public void reload(CommandContext args, CommandSource source) throws CommandException {
+		if (args.length() == 0) {
+			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloading server...");
+
+			for (Plugin plugin : Spout.getEngine().getPluginManager().getPlugins()) {
+				if (plugin.getDescription().allowsReload()) {
+					plugin.onReload();
+				}
+			}
+
+			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloaded.");
+		} else {
+			String pluginName = args.getString(0);
+			if (Spout.getEngine().getPluginManager().getPlugin(pluginName) == null) {
+				throw new CommandException("'" + pluginName + "' is not a valid plugin name.");
+			}
+
+			Plugin plugin = Spout.getEngine().getPluginManager().getPlugin(pluginName);
+			if (!plugin.getDescription().allowsReload()) {
+				throw new CommandException("The plugin '" + pluginName + "' does not allow reloads.");
+			}
+			plugin.onReload();
+			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloaded '" + pluginName + "'.");
 		}
 	}
 }
