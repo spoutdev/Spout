@@ -10,6 +10,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -17,17 +18,13 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.Material;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
-import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
-import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
@@ -37,7 +34,6 @@ import org.spout.engine.filesystem.FileSystem;
 
 import java.awt.Color;
 import java.io.File;
-import java.util.Collection;
 
 
 public class SpoutClient extends SpoutEngine implements Client {
@@ -107,7 +103,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			System.out.println("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
 			System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
 			System.out.println("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-			System.out.println("Extensions Supported: " + GL11.glGetString(GL11.GL_EXTENSIONS));
+			String extensions = "Extensions Supported: ";
+			for(int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
+				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
+			}
+			System.out.println(extensions);
 			System.out.println("Max Texture Units: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 			
 		} catch (LWJGLException e) {
@@ -185,7 +185,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				for(int z = 0; z < 16; z++){
 					BlockMaterial m = snap.getBlockMaterial(x, y, z);
 					
-					Color col = Color.getHSBColor((float)Math.random() * 360f, 1, 1);
+					Color col = getColor(m);
 					if(m.isSolid()) batch.addCube(new Vector3(x,y,z), Vector3.ONE, col, sides);
 				}
 			}
@@ -238,5 +238,39 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public File getResourcePackFolder() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private Color getColor(BlockMaterial m) {
+		if(!m.isSolid()) return new Color(0,0,0);
+		switch(m.getId()) {
+		case 78:
+			return new Color(255,255,255);
+		case 24:
+		case 12:
+			return new Color(210,210,150);
+		case 10:
+			return new Color(200,50,50);
+		case 9:
+		case 8:
+			return new Color(150,150,200);
+		case 7:
+			return new Color(50,50,50);
+		case 4:
+			return new Color(100,100,100);
+		case 17:
+		case 3:
+			return new Color(110,75,35);
+		case 18:
+		case 2:
+			return new Color(55,140,55);
+		case 21:
+		case 16:
+		case 15:
+		case 14:
+		case 13:
+		case 1:
+			default:
+				return new Color(150,150,150);
+		}
 	}
 }
