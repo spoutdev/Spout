@@ -77,13 +77,18 @@ public class InternalEventListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SpoutPlayer p = (SpoutPlayer) event.getPlayer();
 
+		PlayerBanKickEvent banEvent = null;
+		
 		if(server.isPlayerBanned(p.getName())) {
-			p.kick(server.getBanMessage(p.getName()));
-			return;
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage(p.getName())));
 		}
 		
 		if(server.isIpBanned(p.getAddress().getHostAddress())) {
-			p.kick(server.getIpBanMessage(p.getAddress().getHostAddress()));
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getBanMessage(p.getAddress().getHostAddress())));
+		}
+		
+		if(banEvent != null && !banEvent.isCancelled()) {
+			p.kick(!banEvent.getMessage().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage(p.getName()) : server.getIpBanMessage(p.getAddress().getHostAddress()));
 			return;
 		}
 		
