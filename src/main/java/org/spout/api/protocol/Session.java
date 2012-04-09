@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 import java.net.InetSocketAddress;
 
 import org.spout.api.Engine;
+import org.spout.api.player.Player;
 
 public interface Session {
 	/**
@@ -110,6 +111,21 @@ public interface Session {
 	 */
 	public String getSessionId();
 
+	/**
+	 * Gets the player associated with this session.
+	 * @return Player
+	 */
+	public Player getPlayer();
+
+	/**
+	 * Sets the player associated with this session.
+	 *
+	 * @param player The new player.
+	 * @throws IllegalStateException if there is already a player associated
+	 *             with this session.
+	 */
+	public void setPlayer(Player player);
+	
 	public enum State {
 		/**
 		 * In the exchange handshake state, the server is waiting for the client
