@@ -30,10 +30,11 @@ import java.util.logging.Logger;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
+import org.spout.api.datatable.Datatable;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.util.Named;
 
-public interface Plugin extends Source, Named {
+public interface Plugin extends Source, Named, Datatable {
 	/**
 	 * Called when the plugin is enabled
 	 */
