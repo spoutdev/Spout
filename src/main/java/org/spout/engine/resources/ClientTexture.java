@@ -70,14 +70,16 @@ public class ClientTexture extends Texture {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		
 		
-		 int[] pixels = new int[image.getWidth() * image.getHeight()];
-	        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+		int width = image.getWidth();
+		int height = image.getHeight();
+		
+		 int[] pixels = new int[width * height];
+	        image.getRGB(0, 0, width, height, pixels, 0, width);
 
-	        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
-	        
-	        for(int y = 0; y < image.getHeight(); y++){
-	            for(int x = 0; x < image.getWidth(); x++){
-	                int pixel = pixels[y * image.getWidth() + x];
+	        ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
+	        for(int x = 0; x < width; x++){		           
+	        	for(int y = 0; y < height; y++){
+	                int pixel = pixels[y * width + x];
 	                buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
 	                buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
 	                buffer.put((byte) (pixel & 0xFF));               // Blue component
@@ -87,7 +89,7 @@ public class ClientTexture extends Texture {
 
 	        buffer.flip(); 
 	                
-	        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+	        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 	        //EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 			
 	}
