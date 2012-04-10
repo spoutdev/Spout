@@ -23,6 +23,11 @@ public class ClientTexture extends Texture {
 		return new ClientTexture(image.getSubimage(x, y, w, h));
 	}
 
+	public int getTextureID(){
+		if(textureID == -1) throw new IllegalStateException("Cannot use an unloaded texture");
+		return textureID;
+	}
+	
 	@Override
 	public void bind() {
 		if(textureID == -1) throw new IllegalStateException("Cannot bind an unloaded texture!");
