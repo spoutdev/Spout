@@ -44,19 +44,21 @@ public class FilepathResolver implements ResourcePathResolver  {
 	
 	@Override
 	public boolean existsInPath(String file, String path) {
-		File f = new File(path + File.pathSeparator + file);
+		File f = new File(path + File.separator + file);
+		System.out.println(f.getPath());
+		System.out.println(f.exists());
 		return f.exists();
 	}
 
 	@Override
 	public boolean existsInPath(URI path) {
-		return this.existsInPath(path.getPath(), directory + File.pathSeparator + path.getHost());
+		return this.existsInPath(path.getPath(), directory + File.separator + (path.getHost() == null ? "/" : path.getHost()));
 	}
 
 	@Override
 	public InputStream getStream(String file, String path) {
 		try {
-			return new FileInputStream(new File(path + File.pathSeparator + file));
+			return new FileInputStream(new File(path + File.separator + file));
 		} catch (FileNotFoundException e) {
 			
 			e.printStackTrace();
@@ -66,7 +68,7 @@ public class FilepathResolver implements ResourcePathResolver  {
 
 	@Override
 	public InputStream getStream(URI path) {
-		return this.getStream(path.getPath(), directory + File.pathSeparator + path.getHost());
+		return this.getStream(path.getPath(), directory + File.separatorChar + (path.getHost() == null ? "/" : path.getHost()));
 	}
 
 }
