@@ -238,7 +238,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public void start() {
-		
+
 
 		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");

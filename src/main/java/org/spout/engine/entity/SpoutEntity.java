@@ -36,6 +36,11 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DatatableTuple;
+import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.value.DatatableBool;
+import org.spout.api.datatable.value.DatatableFloat;
+import org.spout.api.datatable.value.DatatableInt;
+import org.spout.api.datatable.value.DatatableObject;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
@@ -56,11 +61,6 @@ import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.datatable.SpoutDatatableMap;
-import org.spout.engine.datatable.value.SpoutDatatableBool;
-import org.spout.engine.datatable.value.SpoutDatatableFloat;
-import org.spout.engine.datatable.value.SpoutDatatableInt;
-import org.spout.engine.datatable.value.SpoutDatatableObject;
 import org.spout.engine.net.SpoutSession;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.world.SpoutChunk;
@@ -93,7 +93,7 @@ public class SpoutEntity implements Entity {
 	public int id = NOTSPAWNEDID;
 	Model model;
 	CollisionModel collision;
-	SpoutDatatableMap map;
+	GenericDatatableMap map;
 	private boolean observer = false;
 	private AtomicBoolean observerLive = new AtomicBoolean(false);
 	Thread owningThread = null;
@@ -110,7 +110,7 @@ public class SpoutEntity implements Entity {
 			entityManagerLive = newEntityManager;
 		}
 
-		map = new SpoutDatatableMap();
+		map = new GenericDatatableMap();
 		viewDistanceLive.set(viewDistance);
 		this.viewDistance = viewDistance;
 
@@ -629,26 +629,26 @@ public class SpoutEntity implements Entity {
 	@Override
 	public void setData(String key, int value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableInt(ikey, value));
+		map.set(ikey, new DatatableInt(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, float value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableFloat(ikey, value));
+		map.set(ikey, new DatatableFloat(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, boolean value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableBool(ikey, value));
+		map.set(ikey, new DatatableBool(ikey, value));
 
 	}
 
 	@Override
 	public void setData(String key, Serializable value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new SpoutDatatableObject(ikey, value));
+		map.set(ikey, new DatatableObject(ikey, value));
 	}
 
 	@Override

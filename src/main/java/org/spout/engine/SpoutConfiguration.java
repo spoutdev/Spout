@@ -25,6 +25,7 @@
  */
 package org.spout.engine;
 
+import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
@@ -63,5 +64,11 @@ public class SpoutConfiguration extends YamlConfiguration {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void load() throws ConfigurationException {
+		super.load();
+		super.save();
 	}
 }

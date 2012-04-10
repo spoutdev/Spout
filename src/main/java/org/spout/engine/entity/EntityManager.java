@@ -33,13 +33,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
-import org.spout.engine.datatable.SpoutDatatableMap;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -71,7 +71,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
 
-	private final StringMap entityMap = SpoutDatatableMap.getStringMap();
+	private final StringMap entityMap = GenericDatatableMap.getStringMap();
 
 	private SnapshotableHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
 		SnapshotableHashSet<SpoutEntity> set = groupedEntities.get(type);
@@ -188,18 +188,18 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			e.finalizeRun();
 			Controller controller = e.getController();
 			if (controller == null) continue;
-			
+
 			controller.finalizeTick();
-			
+
 			if (! (controller instanceof PlayerController)) continue;
-			
+
 			Player p = ((PlayerController) controller).getPlayer();
 			NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
 			if (n != null) {
 				n.finalizeTick();
 			}
-			
-			
+
+
 		}
 	}
 
