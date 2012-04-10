@@ -56,6 +56,7 @@ public class SpoutConfiguration extends YamlConfiguration {
 					if (f instanceof ConfigurationHolder) {
 						ConfigurationHolder node = (ConfigurationHolder) f;
 						node.setConfiguration(this);
+						node.getValue();
 					}
 				} catch (IllegalArgumentException e) {
 				} catch (IllegalAccessException e) {
