@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import gnu.trove.list.array.*;
 
 
+import org.lwjgl.opengl.GL11;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
@@ -244,7 +245,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * @see org.spout.client.renderer.Renderer#addTexCoord(float, float)
 	 */
 	public void addTexCoord(float u, float v){
-		if(this.useTextures) this.enableTextures();
+		if(!this.useTextures) this.enableTextures();
 		uvBuffer.add(u);
 		uvBuffer.add(v);
 	}
@@ -299,4 +300,17 @@ public abstract class BatchVertexRenderer implements Renderer {
 		useTextures = true;
 	}
 	
+	
+	public void dumpBuffers(){
+		System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVerticies + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
+		for(int i = 0; i < numVerticies; i++){
+			int index = i *4;
+			
+			if(useColors) System.out.print("Color: {" +colorBuffer.get(index)+ " " + colorBuffer.get(index+1) + " " + colorBuffer.get(index+2) + " " + colorBuffer.get(index+3) + "}\t");
+			if(useNormals) System.out.print("Normal : {" +normalBuffer.get(index) + " " + normalBuffer.get(index + 1) + " " + normalBuffer.get(index + 2) + "}");
+			if(useTextures) System.out.print("TexCoord0 : {" + uvBuffer.get((i*2)) + " " + uvBuffer.get((i*2) + 1) + "}");
+			System.out.println("Vertex : {" + vertexBuffer.get(index) + " " + vertexBuffer.get(index+1) + " " + vertexBuffer.get(index+2) + " " + vertexBuffer.get(index+3) + "}");
+		}
+		
+	}
 }

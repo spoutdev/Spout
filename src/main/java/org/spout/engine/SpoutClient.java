@@ -25,7 +25,11 @@ import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Shader;
+import org.spout.api.render.Texture;
+import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
+import org.spout.engine.resources.ClientTexture;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.batcher.PrimitiveBatch;
@@ -34,6 +38,7 @@ import org.spout.engine.filesystem.FileSystem;
 
 import java.awt.Color;
 import java.io.File;
+import java.net.URI;
 
 
 public class SpoutClient extends SpoutEngine implements Client {
@@ -96,6 +101,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				Display.create();
 				
 			}
+			
 			Display.setTitle("Spout Client");
 			
 			
@@ -115,20 +121,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 			e.printStackTrace();
 		}
 		
-		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(-20, 20, 20), Vector3.ZERO, Vector3.UP));
+		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(0,0, -2), Vector3.ZERO, Vector3.UP));
 		//Shader shader = new BasicShader();
 		Shader shader = new ClientShader("fallback.330.vert", "fallback.330.frag");
 		renderer = new PrimitiveBatch();
-		renderer.getRenderer().setShader(shader);
+		//renderer.getRenderer().setShader(shader);
 		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		
+		texture = (Texture)FileSystem.getResource("texture://Vanilla/terrain.png");
+		texture.load(); //Loads texture to GPU
+		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		textureTest.setShader(shader);
 	}
 	
-	
+	Texture texture;
 	PrimitiveBatch renderer;
 	final boolean[] sides  = { true, true, true, true, true, true };
 	
 	long ticks = 0;
+	
+	BatchVertexRenderer textureTest;
 	
 	public void render(float dt){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -139,11 +152,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cz = 20 * Math.cos(Math.toRadians(ticks));
 		double cy = 20 * Math.sin(Math.toRadians(ticks));
 
-		Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
-		renderer.getRenderer().getShader().setUniform("View", view);
-		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
+		//Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
+		//renderer.getRenderer().getShader().setUniform("View", view);
+		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
 		
+		/*
 		
 		if(this.getLiveWorlds().size() > 0){
 			Object[] worlds = this.getWorlds().toArray();
@@ -157,7 +171,46 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		renderer.draw();
+		*/
 		
+		textureTest.getShader().setUniform("View", activeCamera.getView());
+		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
+		textureTest.getShader().setUniform("tex", texture);
+		
+		/*
+		 * renderer.addColor(col);
+		renderer.addVertex(a);
+		renderer.addColor(col);		
+		renderer.addVertex(b);
+		renderer.addColor(col);		
+		renderer.addVertex(c);
+		
+		renderer.addColor(col);		
+		renderer.addVertex(c);
+		renderer.addColor(col);
+		renderer.addVertex(a);
+		renderer.addColor(col);
+		renderer.addVertex(d);
+		*/
+		
+		textureTest.begin();
+		//texture.bind();
+		textureTest.addTexCoord(0, 0);
+		textureTest.addVertex(0,0);
+		textureTest.addTexCoord(1,0);
+		textureTest.addVertex(1,0);
+		textureTest.addTexCoord(0,1);
+		textureTest.addVertex(0,1);
+		
+		textureTest.addTexCoord(0,1);
+		textureTest.addVertex(0,1);
+		textureTest.addTexCoord(1, 1);
+		textureTest.addVertex(1,1);
+		textureTest.addTexCoord(1, 0);
+		textureTest.addVertex(1,0);
+		textureTest.end();
+		//textureTest.dumpBuffers();
+		textureTest.render();
 		
 		
 	}

@@ -28,6 +28,7 @@ package org.spout.engine.filesystem;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import org.spout.api.plugin.Platform;
@@ -103,11 +104,32 @@ public class FileSystem {
 		loadedResource.put(path, r);
 	}
 	
+	public static void loadResource(String path){
+		try {
+			URI upath = new URI(path);
+			loadResource(upath);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public static Resource getResource(URI path){
 		if(!loadedResource.containsKey(path)){
 			Spout.log("Warning: Late Precache of resource: " + path.toString());
 			loadResource(path);
 		}
 		return loadedResource.get(path);
+	}
+	public static Resource getResource(String path){
+		try {
+			URI upath = new URI(path);
+			return getResource(upath);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
