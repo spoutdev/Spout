@@ -38,8 +38,8 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
-import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
+import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.Populator;
@@ -50,6 +50,8 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.math.MathHelper;
+import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
@@ -168,61 +170,27 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
+	public boolean setBlockData(int x, int y, int z, short data, Source source) {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
 		checkChunkLoaded();
 		
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, getBlockMaterial(x, y, z).getId(), data, null);
-		
-		//do neighbor updates
-		if (updatePhysics) {
-			updatePhysics(x, y, z);
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, getBlockMaterial(x, y, z).getId(), data);
 
-			//South and North
-			updatePhysics(x + 1, y, z);
-			updatePhysics(x - 1, y, z);
-
-			//West and East
-			updatePhysics(x, y, z + 1);
-			updatePhysics(x, y, z - 1);
-
-			//Above and Below
-			updatePhysics(x, y + 1, z);
-			updatePhysics(x, y - 1, z);
-		}
-		
 		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
 
 		return true;
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, boolean updatePhysics, Source source) {
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
 		checkChunkLoaded();
 		BlockMaterial previous = getBlockMaterial(x, y, z);
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), data, null);
-		
-		//do neighbor updates
-		if (updatePhysics) {
-			updatePhysics(x, y, z);
-
-			//South and North
-			updatePhysics(x + 1, y, z);
-			updatePhysics(x - 1, y, z);
-
-			//West and East
-			updatePhysics(x, y, z + 1);
-			updatePhysics(x, y, z - 1);
-
-			//Above and Below
-			updatePhysics(x, y + 1, z);
-			updatePhysics(x, y - 1, z);
-		}
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), data);
 		
 		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
 		
@@ -237,7 +205,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState<DatatableMap> fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
+		BlockFullState fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
 		short id = fullState.getId();
 		BlockMaterial mat = BlockMaterial.get(id);
 		return mat == null ? BlockMaterial.AIR : mat;
@@ -248,11 +216,43 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		return (short) blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
 	}
+	
+	@Override
+	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
+		if (source == null) {
+			throw new NullPointerException("Source can not be null");
+		}
+		checkChunkLoaded();
+		int index = getBlockIndex(x, y, z);
+		byte old = blockLight[index / 2];
+		if ((index & 1) == 0) {
+			blockLight[index / 2] = HashUtil.nibbleToByte(light, old);
+		} else {
+			blockLight[index / 2] = HashUtil.nibbleToByte(old, light);
+		}
+		return true;
+	}
 
 	@Override
-	public byte getSkyLight(int x, int y, int z) {
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
+		if (source == null) {
+			throw new NullPointerException("Source can not be null");
+		}
 		checkChunkLoaded();
-		int index = toIndex(x & coordMask, y & coordMask, z & coordMask);
+		int index = getBlockIndex(x, y, z);
+		byte old = skyLight[index / 2];
+		if ((index & 1) == 0) {
+			skyLight[index / 2] = HashUtil.nibbleToByte(light, old);
+		} else {
+			skyLight[index / 2] = HashUtil.nibbleToByte(old, light);
+		}
+		return true;
+	}
+	
+	@Override
+	public byte getBlockSkyLight(int x, int y, int z) {
+		checkChunkLoaded();
+		int index = getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
 			return (byte)((light >> 4) & 0xF);
@@ -263,7 +263,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public byte getBlockLight(int x, int y, int z) {
 		checkChunkLoaded();
-		int index = toIndex(x & coordMask, y & coordMask, z & coordMask);
+		int index = getBlockIndex(x, y, z);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
 			return (byte)((light >> 4) & 0xF);
@@ -272,16 +272,12 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public void updatePhysics(int x, int y, int z) {
+	public void updateBlockPhysics(int x, int y, int z) {
 		checkChunkLoaded();
 		SpoutRegion region = parentRegion.getWorld().getRegionFromBlock(x, y, z);
 		if (region != null) {
 			region.queuePhysicsUpdate(x, y, z);
 		}
-	}
-
-	private int toIndex(int x, int y, int z) {
-		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
 	}
 	
 	/**
@@ -294,15 +290,19 @@ public class SpoutChunk extends Chunk {
 	 */
 	private byte getSkyBrightness(int x, int y, int z) {
 		if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE) {
-			return getSkyLight(x, y, z);
+			return getBlockSkyLight(x, y, z);
 		}
 		SpoutChunk chunk = getWorld().getChunk(getX() + (x >> 4), getY() + (y >> 4), getZ() + (z >> 4), false);
 		if (chunk != null) {
-			return chunk.getBlockLight(x & coordMask, y & coordMask, z & coordMask);
+			return chunk.getBlockLight(x, y, z);
 		}
 		return 0;
 	}
 
+	private int getBlockIndex(int x, int y, int z) {
+		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
+	}
+	
 	/**
 	 * Recalculates the sky light in the x, z column.
 	 * 
@@ -317,7 +317,7 @@ public class SpoutChunk extends Chunk {
 		byte prevValue;
 		if (aboveChunk != null) {
 			//find the sunlight shining through the bottom of the chunk above us
-			prevValue = aboveChunk.getSkyLight(x, 0, z);
+			prevValue = aboveChunk.getBlockSkyLight(x, 0, z);
 		} else {
 			//assume the sun is shining through ungenerated air
 			prevValue = 0xF;
@@ -340,19 +340,12 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 
-			int index = toIndex(x, y, z);
-			byte old = skyLight[index / 2];
-			
-			if ((index & 1) == 0) {
-				skyLight[index / 2] = HashUtil.nibbleToByte(prevValue, old);
-			} else {
-				skyLight[index / 2] = HashUtil.nibbleToByte(old, prevValue);
-			}
+			this.setBlockSkyLight(x, y, z, prevValue, world);
 		}
 
 		SpoutChunk belowChunk = world.getChunk(getX(), getY() - 1, getZ(), false);
 		if (belowChunk != null) {
-			if (belowChunk.getSkyLight(x, CHUNK_SIZE - 1, z) != prevValue) {
+			if (belowChunk.getBlockSkyLight(x, CHUNK_SIZE - 1, z) != prevValue) {
 				belowChunk.queueLightUpdate(x, z, true, false); 
 			}
 		}
@@ -426,32 +419,6 @@ public class SpoutChunk extends Chunk {
 			int z = HashUtil.byteToNibble2(b);
 			recalculateBlockLighting(x, z);
 		}
-	}
-
-	@Override
-	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
-		throw new UnsupportedOperationException("TBD");
-	}
-
-	@Override
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data) {
-		throw new UnsupportedOperationException("TBD");
-		//return blockStore.compareAndSetData(x & coordMask, y & coordMask, z & coordMask, expect, data);
-	}
-
-	@Override
-	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
-		throw new UnsupportedOperationException("TBD");
-		/*while (true) {
-			BlockFullState<DatatableMap> fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
-			if (!fullState.equals(expect)) {
-				return false;
-			}
-			BlockFullState<DatatableMap> newFullState = fullState.shallowClone();
-			if (newFullState.getAuxData() == null) {
-				newFullState.setAuxData(new SpoutDatatableMap());
-			}
-		}*/
 	}
 
 	@Override
@@ -926,4 +893,50 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 
+	@Override
+	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public BlockController getBlockController(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Block getBlock(int x, int y, int z) {
+		return this.getBlock(x, y, z, this.getWorld());
+	}
+
+	@Override
+	public Block getBlock(int x, int y, int z, Source source) {
+		return new SpoutBlock(this.getWorld(), x, y, z, this, source);
+	}
+
+	@Override
+	public Block getBlock(float x, float y, float z) {
+		return this.getBlock(x, y, z, this.getWorld());
+	}
+
+	@Override
+	public Block getBlock(float x, float y, float z, Source source) {
+		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
+	}
+
+	@Override
+	public Block getBlock(Vector3 position) {
+		return getBlock(position, this.getWorld());
+	}
+
+	@Override
+	public Block getBlock(Vector3 position, Source source) {
+		return getBlock(position.getX(), position.getY(), position.getZ(), source);
+	}
+
+	@Override
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+		return this.blockStore.compareAndSetBlock(x & coordMask, y & coordMask, z & coordMask, expect.getId(), expect.getData(), expect.getId(), data);
+	}
 }
