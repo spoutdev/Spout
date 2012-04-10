@@ -37,7 +37,7 @@ public interface ConfigurationNodeSource {
 	public ConfigurationNode getChild(String name);
 	public ConfigurationNode getChild(String name, boolean add);
 	public ConfigurationNode addChild(ConfigurationNode node);
-	public void addChildren(Collection<ConfigurationNode> add);
+	public void addChildren(ConfigurationNode... nodes);
 	public ConfigurationNode removeChild(String key);
 	public ConfigurationNode removeChild(ConfigurationNode node);
 	public Map<String, ConfigurationNode> getChildren();

@@ -78,7 +78,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	}
 
 	@Override
-	public void addChildren(Collection<ConfigurationNode> nodes) {
+	public void addChildren(ConfigurationNode... nodes) {
 		for (ConfigurationNode child : nodes) {
 			addChild(child);
 		}
