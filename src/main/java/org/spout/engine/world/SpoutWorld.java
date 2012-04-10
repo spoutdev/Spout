@@ -54,6 +54,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.io.ChunkFileManager;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
@@ -121,7 +122,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
-
+	
+	/**
+	 * Manages the loading and saving of chunks to/from the file system
+	 */
+	private final ChunkFileManager chunkFileManager;
+	
 	/**
 	 * A set of all players currently connected to this world
 	 */
@@ -154,6 +160,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		this.name = name;
 		this.generator = generator;
+		this.chunkFileManager = null; //TODO: Add as parameter and implement our own manager
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
 		File world = new File(FileSystem.worldsDirectory, name);
@@ -636,6 +643,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public File getDirectory() {
 		return worldDirectory;
+	}
+
+	@Override
+	public ChunkFileManager getChunkFileManager() {
+		return this.chunkFileManager;
 	}
 
 }
