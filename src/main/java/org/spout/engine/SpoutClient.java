@@ -132,7 +132,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	public void render(float dt){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0, 0, 1);
+		GL11.glClearColor(1, 1, 1, 1);
 		
 		ticks++;
 		double cx = 20 * Math.sin(Math.toRadians(ticks));
