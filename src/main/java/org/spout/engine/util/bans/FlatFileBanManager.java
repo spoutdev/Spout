@@ -29,6 +29,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.spout.api.Spout;
+import org.spout.api.event.server.BanChangeEvent;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.util.PlayerListFile;
 
