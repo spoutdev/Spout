@@ -76,6 +76,9 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 		String[] path = node.getPathElements();
 		if (path == null || path.length == 0) {
 			throw new IllegalArgumentException("Path must be specified!");
+		} else if (path.length == 1) {
+			addChild(node);
+			return;
 		}
 
 		ConfigurationNode parent = getChild(path[0], true);
@@ -88,7 +91,6 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 				oldParent.addChild(parent);
 			}
 		}
-
 		parent.addChild(node);
 	}
 
