@@ -64,7 +64,7 @@ public class CommonPluginLoader implements PluginLoader {
 		this.manager = manager;
 		this.key = key;
 		patterns = new Pattern[] {Pattern.compile("\\.jar$")};
-		
+
 		loader = game.getPlatform() == Platform.CLIENT ? new ClientClassLoader(this, getClass().getClassLoader()) : new CommonClassLoader(this, getClass().getClassLoader());
 	}
 
@@ -88,7 +88,7 @@ public class CommonPluginLoader implements PluginLoader {
 			try {
 				cp.setEnabled(true);
 				cp.onEnable();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
@@ -112,8 +112,8 @@ public class CommonPluginLoader implements PluginLoader {
 			try {
 				cp.setEnabled(false);
 				cp.onDisable();
-			} catch (Exception e) {
-				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(e.getMessage()).toString(), e);
+			} catch (Throwable t) {
+				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(t.getMessage()).toString(), t);
 			}
 
 			// TODO call PluginDisableEvent
@@ -205,9 +205,9 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	/**
-	 * @param param File Plugin file object
-	 * @return The current plugins description element.
-	 * 
+	 * @param paramFile Plugin file object
+	 * @return The current plugin's description element.
+	 *
 	 * @throws InvalidPluginException
 	 * @throws InvalidDescriptionFileException
 	 */

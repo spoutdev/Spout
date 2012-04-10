@@ -101,7 +101,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		for (final Method method : listener.getClass().getDeclaredMethods()) {
 			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
 				Class<?> clazz = method.getParameterTypes()[0];
-				if (!clazz.isAssignableFrom(ProtocolEvent.class)) {
+				if (!ProtocolEvent.class.isAssignableFrom(ProtocolEvent.class)) {
 					session.getGame().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
 					continue;
 				}
