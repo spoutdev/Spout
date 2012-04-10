@@ -23,51 +23,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.block;
+package org.spout.api.util.flag;
 
-import org.spout.api.math.Vector3;
-import org.spout.api.util.flag.ByteFlagMask;
-
-/**
- * Indicates the face of a Block
- */
-public enum BlockFace implements ByteFlagMask {
-	TOP(0x0, 0, 1, 0),
-	BOTTOM(0x1, 0, -1, 0, TOP),
-	NORTH(0x2, -1, 0, 0),
-	SOUTH(0x4, 1, 0, 0, NORTH),
-	EAST(0x8, 0, 0, -1),
-	WEST(0xf, 0, 0, 1, EAST),
-	THIS(0x20, 0, 0, 0);
+public interface ByteFlagMask {
 	
-	public static final byte MASK_ALL = 0x3f;
-	public static final byte MASK_NONE = 0x0;
+	/**
+	 * Gets the bit byte mask for this object
+	 * @return the bit mask
+	 */
+	public byte getMask();
 
-	private final byte mask;
-	private Vector3 offset;
-	private BlockFace opposite = this;
-
-	private BlockFace(int mask, int dx, int dy, int dz, BlockFace opposite) {
-		this(mask, dx, dy, dz);
-		this.opposite = opposite;
-		opposite.opposite = this;
-	}
-
-	private BlockFace(int mask, int dx, int dy, int dz) {
-		this.offset = new Vector3(dx, dy, dz);
-		this.mask = (byte) mask;
-	}
-
-	public Vector3 getOffset() {
-		return this.offset;
-	}
-
-	public BlockFace getOpposite() {
-		return this.opposite;
-	}
-
-	@Override
-	public byte getMask() {
-		return this.mask;
-	}
 }
