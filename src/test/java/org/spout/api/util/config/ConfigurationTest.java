@@ -63,6 +63,7 @@ public class ConfigurationTest {
 		return new MapConfiguration(getConfigMap());
 	}
 
+	@Test
 	public void testLoadSave() throws ConfigurationException {
 		config.load();
 		config.save();
@@ -92,6 +93,7 @@ public class ConfigurationTest {
 	@Test
 	public void testSetNewNode() {
 		ConfigurationNode node = config.getNode(TEST_PATH);
+		assertEquals(null, node.getValue());
 		node.setValue(TEST_VALUE);
 		assertEquals(TEST_VALUE, node.getString());
 		assertEquals(node, config.getNode(TEST_PATH));

@@ -23,37 +23,15 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.config;
+package org.spout.api.util.config.commented;
 
-import org.spout.api.exception.ConfigurationException;
-
-import java.util.regex.Pattern;
+import org.spout.api.util.config.Configuration;
 
 /**
  * @author zml2008
  */
-public interface Configuration extends ConfigurationNodeSource {
-	void load() throws ConfigurationException;
-
-	/**
-	 * Save the configuration's values
-	 * @throws org.spout.api.exception.ConfigurationException when an error occurs
-	 */
-	void save() throws ConfigurationException;
-
-	void setNode(ConfigurationNode node);
-
-	String getPathSeparator();
-
-	void setPathSeparator(String pathSeparator);
-
-	Pattern getPathSeparatorPattern();
-
-	boolean doesWriteDefaults();
-
-	void setWritesDefaults(boolean writesDefaults);
-
-	String[] splitNodePath(String path);
-
-	String[] ensureCorrectPath(String[] rawPath);
+public interface CommentedConfiguration extends Configuration {
+	public CommentedConfigurationNodeBase createConfigurationNode(String[] path, Object value);
+	public CommentedConfigurationNodeBase getNode(String... node);
+	public CommentedConfigurationNodeBase getNode(String path);
 }

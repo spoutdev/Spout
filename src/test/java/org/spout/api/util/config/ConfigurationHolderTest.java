@@ -25,35 +25,35 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
-
-import java.util.regex.Pattern;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author zml2008
  */
-public interface Configuration extends ConfigurationNodeSource {
-	void load() throws ConfigurationException;
+public class ConfigurationHolderTest {
 
-	/**
-	 * Save the configuration's values
-	 * @throws org.spout.api.exception.ConfigurationException when an error occurs
-	 */
-	void save() throws ConfigurationException;
+	@Test
+	public void testGetWithDefaultValue() {
+		Configuration config = new MemoryConfiguration();
+		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)"hello", "unknown", "path");
+		assertEquals("hello", subject.getString());
+	}
 
-	void setNode(ConfigurationNode node);
+	@Test
+	public void testGetExistingValue() {
+		Configuration config = new MemoryConfiguration();
+		config.getNode("path", "with", "value").setValue("valuehere");
+		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)null, "path", "with", "value");
+		assertEquals("valuehere", subject.getValue());
 
-	String getPathSeparator();
+	}
 
-	void setPathSeparator(String pathSeparator);
-
-	Pattern getPathSeparatorPattern();
-
-	boolean doesWriteDefaults();
-
-	void setWritesDefaults(boolean writesDefaults);
-
-	String[] splitNodePath(String path);
-
-	String[] ensureCorrectPath(String[] rawPath);
+	@Test
+	public void testGettingNewValueWritesToConfig() {
+		Configuration config = new MemoryConfiguration();
+		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)"hello", "unknown", "path");
+		subject.getValue();
+		assertEquals("hello", config.getNode("unknown", "path").getString());
+	}
 }

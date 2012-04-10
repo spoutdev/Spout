@@ -26,13 +26,15 @@
 package org.spout.api.util.config.yaml;
 
 import org.spout.api.exception.ConfigurationException;
-import org.spout.api.util.config.Configuration;
+import org.spout.api.util.config.FileConfiguration;
+import org.spout.api.util.config.MapBasedConfiguration;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,7 +44,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +58,7 @@ import java.util.regex.Pattern;
  *
  * @author zml2008
  */
-public class YamlConfiguration extends Configuration {
+public class YamlConfiguration extends MapBasedConfiguration implements FileConfiguration {
 	public static final String LINE_BREAK = DumperOptions.LineBreak.getPlatformLineBreak().getString();
 	public static final char COMMENT_CHAR = '#';
 	public static final Pattern COMMENT_REGEX = Pattern.compile(COMMENT_CHAR + " ?(.*)");
@@ -82,7 +86,7 @@ public class YamlConfiguration extends Configuration {
 				file.createNewFile();
 			}
 
-			in = new BufferedReader(new InputStreamReader(getInputStream(), "UTF-8"));
+			in = new BufferedReader(getReader());
 			List<String> header = new ArrayList<String>();
 			boolean inHeader = true;
 			String str;
@@ -125,7 +129,7 @@ public class YamlConfiguration extends Configuration {
 
 	@Override
 	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
-		OutputStream stream = null;
+		BufferedWriter writer = null;
 
 		File parent = file.getParentFile();
 
@@ -134,8 +138,7 @@ public class YamlConfiguration extends Configuration {
 		}
 
 		try {
-			stream = getOutputStream();
-			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+			writer = new BufferedWriter(getWriter());
 			if (getHeader() != null) {
 				writer.append(getHeader());
 				writer.append(LINE_BREAK);
@@ -148,8 +151,9 @@ public class YamlConfiguration extends Configuration {
 			throw new ConfigurationException(e);
 		} finally {
 			try {
-				if (stream != null) {
-					stream.close();
+				if (writer != null) {
+					writer.flush();
+					writer.close();
 				}
 			} catch (IOException e) {
 			}
@@ -187,11 +191,11 @@ public class YamlConfiguration extends Configuration {
 		return file;
 	}
 
-	protected InputStream getInputStream() throws IOException {
-		return new FileInputStream(file);
+	protected Reader getReader() throws IOException {
+		return new InputStreamReader(new FileInputStream(file), "UTF-8");
 	}
 
-	protected OutputStream getOutputStream() throws IOException {
-		return new FileOutputStream(file);
+	protected Writer getWriter() throws IOException {
+		return new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
 	}
 }

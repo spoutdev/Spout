@@ -41,7 +41,7 @@ import java.util.Map;
 public class ConfigurationNodeBase extends ConfigurationNode {
 	private Object value;
 
-	public ConfigurationNodeBase(Configuration config, Object value, String... path) {
+	public ConfigurationNodeBase(Configuration config, Object value, String[] path) {
 		super(config, path);
 		if (value != null) {
 			setValue(value);
@@ -75,7 +75,7 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 	@Override
 	public String getString(String def) {
 		final Object val = getValue(def);
-		return val == null ? null : val.toString();
+		return val == null ? def : val.toString();
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 		children.clear();
 	}
 
-	private void checkAdded() {
+	protected void checkAdded() {
 		if (!isAttached()) {
 			getConfiguration().setNode(this);
 			setAttached(true);

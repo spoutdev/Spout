@@ -25,6 +25,8 @@
  */
 package org.spout.api.util.config;
 
+import org.spout.api.math.MathHelper;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +41,7 @@ public class ConfigurationHolder extends ConfigurationNode {
 
 	public ConfigurationHolder(Configuration config, Object def, String... path) {
 		super(config, path);
+		this.configuration = config;
 		this.def = def;
 	}
 
@@ -56,6 +59,40 @@ public class ConfigurationHolder extends ConfigurationNode {
 
 	public void setConfiguration(Configuration config) {
 		this.configuration = config;
+	}
+
+	@Override
+	public boolean getBoolean() {
+		Boolean val = MathHelper.castBoolean(def);
+		return getNode().getBoolean(val == null ? false : val);
+	}
+
+	@Override
+	public int getInt() {
+		Integer val = MathHelper.castInt(def);
+		return getNode().getInt(val == null ? 0 : val);
+	}
+
+	@Override
+	public long getLong() {
+		Long val = MathHelper.castLong(def);
+		return getNode().getLong(val == null ? 0 : val);
+	}
+
+	@Override
+	public double getDouble() {
+		Double val = MathHelper.castDouble(def);
+		return getNode().getDouble(val == null ? 0 : val);
+	}
+
+	@Override
+	public String getString() {
+		return getNode().getString(def == null ? null : def.toString());
+	}
+
+	@Override
+	public Object getValue() {
+		return getNode().getValue(this.def);
 	}
 
 	@Override
@@ -85,7 +122,7 @@ public class ConfigurationHolder extends ConfigurationNode {
 
 	@Override
 	public Object getValue(Object def) {
-		return getNode().getValue(this.def);
+		return getNode().getValue(def);
 	}
 
 	@Override

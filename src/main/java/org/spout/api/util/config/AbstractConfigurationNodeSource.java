@@ -27,6 +27,7 @@ package org.spout.api.util.config;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -74,6 +75,13 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		node.setAttached(true);
 		node.setParent(this);
 		return ret;
+	}
+
+	@Override
+	public void addChildren(Collection<ConfigurationNode> nodes) {
+		for (ConfigurationNode child : nodes) {
+			addChild(child);
+		}
 	}
 
 	@Override
@@ -138,8 +146,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	@Override
 	public ConfigurationNode getNode(String path) {
 		if (path.contains(getConfiguration().getPathSeparator())) {
-			String[] pathSplit = getConfiguration().getPathSeparatorPattern().split(path);
-			return getNode(pathSplit);
+			return getNode(getConfiguration().splitNodePath(path));
 		} else {
 			return getChild(path);
 		}
@@ -149,7 +156,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		if (path.length == 0) {
 			throw new IllegalArgumentException("Path must not be empty!");
 		}
-
+		path = getConfiguration().ensureCorrectPath(path);
 		ConfigurationNode node = getChild(path[0]);
 		for (int i = 1; i < path.length && node != null && node.isAttached(); ++i) {
 			node = node.getChild(path[i]);

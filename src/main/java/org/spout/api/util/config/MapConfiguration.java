@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * @author zml2008
  */
-public class MapConfiguration extends Configuration {
+public class MapConfiguration extends MapBasedConfiguration {
 	private Map<?, ?> map;
 
 	public MapConfiguration(Map<?, ?> map) {

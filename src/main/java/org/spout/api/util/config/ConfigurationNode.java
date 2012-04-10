@@ -39,7 +39,7 @@ public abstract class ConfigurationNode extends AbstractConfigurationNodeSource 
 	private boolean attached;
 	private ConfigurationNodeSource parent;
 
-	public ConfigurationNode(Configuration config, String... path) {
+	public ConfigurationNode(Configuration config, String[] path) {
 		super(config);
 		this.path = path;
 	}
@@ -312,7 +312,7 @@ public abstract class ConfigurationNode extends AbstractConfigurationNodeSource 
 	}
 
 	/**
-	 * @return The path, joined by the {@link Configuration#getPathSeparator()} of the attached configuration
+	 * @return The path, joined by the {@link AbstractConfiguration#getPathSeparator()} of the attached configuration
 	 * @see #getPathElements
 	 */
 	public String getPath() {

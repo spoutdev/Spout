@@ -43,7 +43,7 @@ public class ConfigurationNodeBaseTest {
 
 	@Test
 	public void testGetPath() throws Exception {
-		ConfigurationNodeBase config = new ConfigurationNodeBase(base, null, "a", "b", "c");
+		ConfigurationNodeBase config = new ConfigurationNodeBase(base, null, new String[] {"a", "b", "c"});
 		assertEquals("a.b.c", config.getPath());
 	}
 }

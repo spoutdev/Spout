@@ -27,18 +27,42 @@ package org.spout.api.util.config;
 
 import org.spout.api.exception.ConfigurationException;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
  * @author zml2008
  */
-public class MemoryConfiguration extends AbstractConfiguration {
+public abstract class MapBasedConfiguration extends AbstractConfiguration {
+	/**
+	 * Implementations can use this method to provide the necessary data for calls of load.
+	 * @return A map with raw configuration data
+	 * @throws ConfigurationException when an error occurs while loading.
+	 */
+	protected abstract Map<?, ?> loadToMap() throws ConfigurationException;
+
+	/**
+	 * Save the  data from this configuration. This method is called from {@link #save()}
+	 * @param map Configuration as a set of nested Maps
+	 * @throws ConfigurationException When an error occurs while saving the given data.
+	 */
+	protected abstract void saveFromMap(Map<?, ?> map) throws ConfigurationException;
+
 	protected Map<String, ConfigurationNode> loadToNodes() throws ConfigurationException {
-		return Collections.emptyMap();
+		Map<?, ?> items = loadToMap();
+		Map<String, ConfigurationNode> children = new LinkedHashMap<String, ConfigurationNode>();
+		for (Map.Entry<?, ?> entry : items.entrySet()) {
+			children.put(entry.getKey().toString(), createConfigurationNode(new String[] {entry.getKey().toString()}, entry.getValue()));
+		}
+		return children;
 	}
 
 	protected void saveFromNodes(Map<String, ConfigurationNode> nodes) throws ConfigurationException {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		for (Map.Entry<String, ConfigurationNode> entry : getChildren().entrySet()) {
+			ret.put(entry.getKey(), entry.getValue().getValue());
+		}
+		saveFromMap(ret);
 	}
 }

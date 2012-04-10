@@ -25,6 +25,7 @@
  */
 package org.spout.api.util.config;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ public interface ConfigurationNodeSource {
 	public ConfigurationNode getChild(String name);
 	public ConfigurationNode getChild(String name, boolean add);
 	public ConfigurationNode addChild(ConfigurationNode node);
+	public void addChildren(Collection<ConfigurationNode> add);
 	public ConfigurationNode removeChild(String key);
 	public ConfigurationNode removeChild(ConfigurationNode node);
 	public Map<String, ConfigurationNode> getChildren();

@@ -25,35 +25,11 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
-
-import java.util.regex.Pattern;
+import java.io.File;
 
 /**
  * @author zml2008
  */
-public interface Configuration extends ConfigurationNodeSource {
-	void load() throws ConfigurationException;
-
-	/**
-	 * Save the configuration's values
-	 * @throws org.spout.api.exception.ConfigurationException when an error occurs
-	 */
-	void save() throws ConfigurationException;
-
-	void setNode(ConfigurationNode node);
-
-	String getPathSeparator();
-
-	void setPathSeparator(String pathSeparator);
-
-	Pattern getPathSeparatorPattern();
-
-	boolean doesWriteDefaults();
-
-	void setWritesDefaults(boolean writesDefaults);
-
-	String[] splitNodePath(String path);
-
-	String[] ensureCorrectPath(String[] rawPath);
+public interface FileConfiguration extends Configuration {
+	public File getFile();
 }
