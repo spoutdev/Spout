@@ -2,6 +2,8 @@ package org.spout.api.gui;
 
 import java.awt.Rectangle;
 
+import org.spout.api.plugin.Plugin;
+
 public interface Widget {
 	/**
 	 * Gets the applied geometry of the widget
@@ -50,4 +52,29 @@ public interface Widget {
 	 * @return the instance for chained calls
 	 */
 	public Widget setMaximumSize(Rectangle maximum);
+
+	/**
+	 * Sets the layout
+	 * @param layout
+	 * @return the instance for chained calls
+	 */
+	public Widget setLayout(Layout layout);
+	
+	/**
+	 * Gets the layout
+	 * @return the layout
+	 */
+	public Layout getLayout();
+
+	/**
+	 * Renders the widget.
+	 * The OpenGL drawing position is already transformed to the widgets coordinates
+	 */
+	public void render();
+	
+	/**
+	 * Gets the plugin that created the widget
+	 * @return the plugin
+	 */
+	public Plugin getPlugin();
 }
