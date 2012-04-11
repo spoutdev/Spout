@@ -1,6 +1,6 @@
 package org.spout.api.gui;
 
-public interface Control extends Widget, MouseEventHandler {
+public interface Control extends Widget, MouseEventHandler, KeyboardEventHandler {
 	
 	/**
 	 * Sets the focus with FocusReason.GENERIC_REASON

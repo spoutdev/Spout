@@ -38,8 +38,6 @@ public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 
 	private boolean pressed;
 
-	private ScreenType screenType;
-
 	public PlayerKeyEvent(Player p) {
 		super(p);
 	}
@@ -50,14 +48,6 @@ public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 
 	public void setKey(Keyboard key) {
 		this.key = key;
-	}
-
-	public ScreenType getScreenType() {
-		return screenType;
-	}
-
-	public void setScreenType(ScreenType screenType) {
-		this.screenType = screenType;
 	}
 
 	public boolean isPressed() {
