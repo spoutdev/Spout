@@ -1,17 +1,12 @@
 package org.spout.api.gui;
 
-public interface Layout extends MouseEventHandler {
+public interface Layout extends MouseEventHandler, Renderable {
 	/**
 	 * Called whenever the size of the underlying container changes.
 	 * The implementation has to set new geometry of the contained widgets when that happens
 	 * In some cases, it might be useful to update the containers minimum and maximum size
 	 */
 	public void relayout();
-	
-	/**
-	 * Renders the contained widgets
-	 */
-	public void render();
 	
 	/**
 	 * Gets all attached widgets

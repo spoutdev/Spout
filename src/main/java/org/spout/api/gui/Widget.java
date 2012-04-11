@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 
 import org.spout.api.plugin.Plugin;
 
-public interface Widget {
+public interface Widget extends Renderable {
 	/**
 	 * Gets the applied geometry of the widget
 	 * @return the geometry
@@ -65,12 +65,6 @@ public interface Widget {
 	 * @return the layout
 	 */
 	public Layout getParent();
-
-	/**
-	 * Renders the widget.
-	 * The OpenGL drawing position is already transformed to the widgets coordinates
-	 */
-	public void render();
 	
 	/**
 	 * Gets the plugin that created the widget
