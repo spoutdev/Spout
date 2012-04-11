@@ -48,6 +48,10 @@
 			<id>spout-repo</id>
 			<url>http://repo.spout.org</url>
 		</repository>
+		<repository>
+  			<id>slick-repo</id>
+  			<url>http://slick.cokeandcode.com/mavenrepo/</url>
+  		</repository>
 	</repositories>
 
 	<!-- Dependencies -->
