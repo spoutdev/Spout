@@ -1,6 +1,5 @@
 package org.spout.api.gui.layout;
 
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.LinkedList;
 

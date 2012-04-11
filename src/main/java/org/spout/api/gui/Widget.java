@@ -71,4 +71,17 @@ public interface Widget extends Renderable {
 	 * @return the plugin
 	 */
 	public Plugin getPlugin();
+	
+	/**
+	 * Gets the screen the widget is on
+	 * @return the screen
+	 */
+	public Screen getScreen();
+	
+	/**
+	 * Sets the screen the widget is on
+	 * @param screen the screen to set
+	 * @return the instance for chained calls
+	 */
+	public Widget setScreen(Screen screen);
 }

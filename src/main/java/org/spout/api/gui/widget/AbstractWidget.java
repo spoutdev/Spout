@@ -3,6 +3,7 @@ package org.spout.api.gui.widget;
 import java.awt.Rectangle;
 
 import org.spout.api.gui.Layout;
+import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.plugin.Plugin;
 
@@ -10,7 +11,8 @@ public abstract class AbstractWidget implements Widget {
 	
 	private Rectangle geometry = null, minimumSize = null, maximumSize = null;
 	private Plugin plugin;
-	private Layout layout = null;;
+	private Layout layout = null;
+	private Screen screen = null;
 	
 	public AbstractWidget(Plugin plugin) {
 		this.plugin = plugin;
@@ -54,7 +56,8 @@ public abstract class AbstractWidget implements Widget {
 
 	@Override
 	public Widget setParent(Layout layout) {
-		this.layout  = layout;
+		this.layout = layout;
+		setScreen(getParent().getParent().getScreen());	//works even when the container IS a screen, because GenericScreen returns itself in that case.
 		return this;
 	}
 
@@ -68,4 +71,14 @@ public abstract class AbstractWidget implements Widget {
 		return plugin;
 	}
 
+	@Override
+	public Screen getScreen() {
+		return screen;
+	}
+
+	@Override
+	public Widget setScreen(Screen screen) {
+		this.screen = screen;
+		return this;
+	}
 }
