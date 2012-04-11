@@ -27,7 +27,6 @@ package org.spout.api.event.player;
 
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.gui.ScreenType;
 import org.spout.api.keyboard.Keyboard;
 import org.spout.api.player.Player;
 
