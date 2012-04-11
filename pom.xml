@@ -145,7 +145,7 @@
 			<groupId>slick</groupId>
 			<artifactId>slick</artifactId>
 			<version>274</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
