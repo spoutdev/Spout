@@ -1,6 +1,6 @@
 package org.spout.api.gui;
 
-public interface Layout {
+public interface Layout extends MouseEventHandler {
 	/**
 	 * Called whenever the size of the underlying container changes.
 	 * The implementation has to set new geometry of the contained widgets when that happens

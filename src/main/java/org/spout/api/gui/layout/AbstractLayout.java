@@ -1,10 +1,14 @@
 package org.spout.api.gui.layout;
 
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.LinkedList;
 
 import org.lwjgl.opengl.GL11;
 import org.spout.api.gui.Container;
 import org.spout.api.gui.Layout;
+import org.spout.api.gui.MouseButton;
+import org.spout.api.gui.MouseEventHandler;
 import org.spout.api.gui.Widget;
 
 public abstract class AbstractLayout implements Layout {
@@ -19,7 +23,7 @@ public abstract class AbstractLayout implements Layout {
 	@Override
 	public void addWidgets(Widget... widgets) {
 		for (Widget widget : widgets) {
-			widget.setLayout(this);
+			widget.setParent(this);
 			attachedWidgets.addLast(widget);
 		}
 		relayout();
@@ -28,7 +32,7 @@ public abstract class AbstractLayout implements Layout {
 	@Override
 	public void clear() {
 		for (Widget widget : attachedWidgets) {
-			widget.setLayout(null);
+			widget.setParent(null);
 		}
 		attachedWidgets.clear();
 		relayout();
@@ -37,7 +41,7 @@ public abstract class AbstractLayout implements Layout {
 	@Override
 	public void removeWidgets(Widget... widgets) {
 		for (Widget widget : widgets) {
-			widget.setLayout(null);
+			widget.setParent(null);
 			attachedWidgets.remove(widget);
 		}
 		relayout();
@@ -65,5 +69,38 @@ public abstract class AbstractLayout implements Layout {
 			GL11.glPopMatrix();
 			GL11.glTranslated(-x, -y, 0);
 		}
+	}
+
+	@Override
+	public void onMouseDown(Point position, MouseButton button) {
+		Widget clicked = getWidgetAt(position);
+		if(clicked instanceof MouseEventHandler) {
+			((MouseEventHandler) clicked).onMouseDown(position, button);
+		}
+	}
+
+	@Override
+	public void onMouseMove(Point position) {
+		Widget clicked = getWidgetAt(position);
+		if(clicked instanceof MouseEventHandler) {
+			((MouseEventHandler) clicked).onMouseMove(position);
+		}
+	}
+
+	@Override
+	public void onMouseUp(Point position, MouseButton button) {
+		Widget clicked = getWidgetAt(position);
+		if(clicked instanceof MouseEventHandler) {
+			((MouseEventHandler) clicked).onMouseUp(position, button);
+		}
+	}
+	
+	public Widget getWidgetAt(Point position) {
+		for(Widget widget : attachedWidgets) {
+			if(widget.getGeometry().contains(position)) {
+				return widget;
+			}
+		}
+		return null;
 	}
 }

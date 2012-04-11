@@ -58,13 +58,13 @@ public interface Widget {
 	 * @param layout
 	 * @return the instance for chained calls
 	 */
-	public Widget setLayout(Layout layout);
+	public Widget setParent(Layout layout);
 	
 	/**
 	 * Gets the layout
 	 * @return the layout
 	 */
-	public Layout getLayout();
+	public Layout getParent();
 
 	/**
 	 * Renders the widget.
