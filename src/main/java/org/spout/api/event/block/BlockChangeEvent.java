@@ -26,6 +26,7 @@
 package org.spout.api.event.block;
 
 import org.spout.api.Source;
+import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockSnapshot;
@@ -33,7 +34,9 @@ import org.spout.api.material.block.BlockSnapshot;
 /**
  * Called when a block changes its state.
  */
-public class BlockChangeEvent extends BlockEvent {
+public class BlockChangeEvent extends BlockEvent implements Cancellable {
+	private static HandlerList handlers = new HandlerList();
+
 	public BlockChangeEvent(Block block, Source source) {
 		super(block, source);
 	}
@@ -52,7 +55,7 @@ public class BlockChangeEvent extends BlockEvent {
 	/**
 	 * Sets the final block state.
 	 *
-	 * @param state to set
+	 * @param newState to set
 	 */
 	public void setNewState(BlockSnapshot newState) {
 		snapshot = newState;
@@ -65,7 +68,10 @@ public class BlockChangeEvent extends BlockEvent {
 
 	@Override
 	public HandlerList getHandlers() {
-		// TODO Auto-generated method stub
-		return null;
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

@@ -17,6 +17,7 @@ public class EntityProtocolStore {
 	public EntityProtocol getEntityProtocol(int id) {
 		while (true) {
 			int seq = lock.readLock();
+
 			EntityProtocol[] protocols = entityProtocols.get();
 			EntityProtocol protocol;
 			if (protocols == null || id < 0 || id >= protocols.length) {

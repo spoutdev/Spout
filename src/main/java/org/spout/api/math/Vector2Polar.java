@@ -25,6 +25,9 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
+
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
  *
@@ -42,10 +45,9 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * Represents the unit vector (1 at 0 degrees)
 	 */
 	public final static Vector2Polar UNIT = new Vector2Polar(1, 0);
-	private final static float twoPi = (float) (Math.PI * 2);
-	private final static float ninetyDegrees = (float) (Math.PI / 4);
-	protected float r;
-	protected float theta;
+	
+	protected final float r;
+	protected final float theta;
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta
@@ -381,15 +383,6 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Returns a Vector2m with the same x, y coordinates as this vector
-	 *
-	 * @return
-	 */
-	public Vector2m toVector2m() {
-		return Vector2Polar.toVector2m(this);
-	}
-
-	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
 	 *
@@ -473,15 +466,12 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 59 * hash + Float.floatToIntBits(r);
-		hash = 59 * hash + Float.floatToIntBits(theta);
-		return hash;
+		return new HashCodeBuilder(5, 59).append(r).append(theta).toHashCode();
 	}
 
 	@Override
 	public String toString() {
-		return "(" + r + ", " + theta + " radians)";
+		return StringUtil.toString(this.r, this.theta + " radians");
 	}
 
 	/**
@@ -550,23 +540,13 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	}
 
 	/**
-	 * Returns a Vector2m object at the same coordinate.
-	 *
-	 * @param o Vector2Polar to use as the x/z values
-	 * @return
-	 */
-	public static Vector2m toVector2m(Vector2Polar o) {
-		return new Vector2m(o.getX(), o.getY());
-	}
-
-	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
 	 *
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2Polar cross(Vector2Polar o) {
-		return new Vector2Polar(o.r, o.theta + ninetyDegrees);
+		return new Vector2Polar(o.r, o.theta + MathHelper.QUARTER_PI);
 	}
 
 	/**
@@ -630,7 +610,7 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static Vector2Polar rand() {
-		return new Vector2Polar(Math.random(), Math.random() * twoPi);
+		return new Vector2Polar(Math.random(), Math.random() * MathHelper.TWO_PI);
 	}
 
 	/**
@@ -679,18 +659,10 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 * @return
 	 */
 	public static float getRealAngle(float theta) {
-		float out = 0;
+		theta %= MathHelper.TWO_PI;
 		if (theta < 0) {
-			for (float i = theta; i <= twoPi; i = i + twoPi) {
-				out = i;
-			}
-		} else if (theta < twoPi) {
-			return theta;
-		} else {
-			for (float i = theta; i > 0; i = i - twoPi) {
-				out = i;
-			}
+			theta += MathHelper.TWO_PI;
 		}
-		return out;
+		return theta;
 	}
 }

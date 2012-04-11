@@ -29,10 +29,10 @@ import java.util.Iterator;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Pointm;
-import org.spout.api.geo.discrete.atomic.Transform;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
-import org.spout.api.math.Vector3m;
+import org.spout.api.math.Vector3;
 
 /**
  * This class performs ray tracing and iterates along blocks on a line
@@ -40,9 +40,9 @@ import org.spout.api.math.Vector3m;
 public class BlockIterator implements Iterator<Block> {
 	// TODO -- need to actually code this :)
 
-	@SuppressWarnings("unused")
-	private final Pointm position;
-	private final Vector3m direction;
+	
+	private final Point position;
+	private final Vector3 direction;
 	private final Block[] blockBuffer = new Block[3];
 	private int bufferSize = 0;
 	private int blocksRead;
@@ -62,8 +62,8 @@ public class BlockIterator implements Iterator<Block> {
 	 *
 	 */
 	public BlockIterator(World world, Transform pos, int maxDistance) {
-		position = new Pointm(pos.getPosition());
-		direction = new Vector3m(MathHelper.getDirectionVector(pos.getRotation()));
+		position = new Point(pos.getPosition());
+		direction = new Vector3(MathHelper.getDirectionVector(pos.getRotation()));
 
 		float max = Math.abs(direction.getX());
 		max = Math.abs(direction.getY()) > max ? Math.abs(direction.getY()) : max;

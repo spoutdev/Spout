@@ -25,75 +25,65 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.protocol.EntityProtocol;
-import org.spout.api.protocol.EntityProtocolStore;
-import org.spout.api.util.StringMap;
+import org.spout.api.entity.component.EntityComponent;
+import org.spout.api.entity.type.ControllerType;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.inventory.Inventory;
 
-public abstract class Controller {
+public abstract class Controller extends EntityComponent {
+	private final ControllerType type;
 
-	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
-
-	private static final EntityProtocolStore entityProtocolStore = new EntityProtocolStore();
-
-	public EntityProtocol getEntityProtocol(int protocolId) {
-		return entityProtocolStore.getEntityProtocol(protocolId);
+	protected Controller(ControllerType type) {
+		this.type = type;
 	}
-
-	public static void setEntityProtocol(int protocolId, EntityProtocol protocol) {
-		entityProtocolStore.setEntityProtocol(protocolId, protocol);
-	}
-
-	public static int getProtocolId(String protocolName) {
-		return protocolMap.register(protocolName);
-	}
-
-	protected Entity parent;
-
-	public void attachToEntity(Entity e) {
-		parent = e;
-	}
-
-	public abstract void onAttached();
 
 	/**
-	 * Called when the entity dies.
-	 *
-	 * Called just before the preSnapshot method.
+	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
+	 * Occurs before the Pre-Snapshot of the tick.
 	 */
 	public void onDeath() {
 	}
 
 	/**
-	 *
-	 * @param dt the number of seconds since last update
-	 */
-	public abstract void onTick(float dt);
-
-	/**
-	 * Called when this controller is being synced with the client.
+	 * Called when this controller is being synced with the client. Occurs before Pre-Snapshot of the tick.
 	 */
 	public void onSync() {
-
 	}
 
 	/**
-	 * Called just before a snapshot update.
-	 *
-	 * This is intended purely as a monitor based step.
-	 *
-	 * NO updates should be made to the entity at this stage.
-	 *
-	 * It can be used to send packets for network update.
+	 * TODO: This method needs to be moved to a more appropriate place.
+	 */
+	public Inventory createInventory(int size) {
+		return new Inventory(size);
+	}
+
+	/**
+	 * TODO: These methods should be given the appropriate annotation that makes it clear they shouldn't be used by plugins.
+	 */
+	/**
+	 * Called just before a snapshot update. This is intended purely as a monitor based step.
+	 * NO updates should be made to the entity at this stage. It can be used to send packets for network update.
 	 */
 	public void preSnapshot() {
 	}
 
 	/**
-	 * Called just before the pre-snapshot stage.<br>
+	 * Called just before the pre-snapshot stage.
 	 * This stage can make changes but they should be checked to make sure they
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
+	}
+
+	public void onCollide(Entity other) {
+
+	}
+
+	public void onCollide(Block other) {
+
+	}
+
+	public ControllerType getType() {
+		return type;
 	}
 }

@@ -26,6 +26,25 @@
 package org.spout.api.util;
 
 public class StringUtil {
+	/**
+	 * Wraps all components in between brackets delimited by ','-signs
+	 * 
+	 * @param components to turn into a String
+	 * @return a String representation of the input
+	 */
+	public static String toString(Object... components) {
+		StringBuilder b = new StringBuilder(components.length * 5 + 2);
+		b.append('{');
+		for (int i = 0; i < components.length; i++) {
+			if (i != 0) {
+				b.append(", ");
+			}
+			b.append(components[i]);
+		}
+		b.append('}');
+		return b.toString();
+	}
+	
 	public static int getLevenshteinDistance(String s, String t) {
 		if (s == null || t == null) {
 			throw new IllegalArgumentException("Strings must not be null");

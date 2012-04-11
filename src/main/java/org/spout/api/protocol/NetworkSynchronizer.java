@@ -25,19 +25,30 @@
  */
 package org.spout.api.protocol;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.EventHandler;
+import org.spout.api.exception.EventException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
+import org.spout.api.inventory.InventoryViewer;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Quaternion;
 import org.spout.api.player.Player;
+import org.spout.api.protocol.event.ProtocolEvent;
+import org.spout.api.protocol.event.ProtocolEventExecutor;
+import org.spout.api.protocol.event.ProtocolEventListener;
 
-public class NetworkSynchronizer {
+public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
 	protected Entity entity;
 	protected final Session session;
@@ -49,6 +60,7 @@ public class NetworkSynchronizer {
 	public NetworkSynchronizer(Player owner, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
+		entity.setObserver(true);
 		session = owner.getSession();
 	}
 
@@ -58,7 +70,7 @@ public class NetworkSynchronizer {
 	private final int viewDistance = 5;
 	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
 
-	private final Pointm lastChunkCheck = new Pointm();
+	private Point lastChunkCheck =  Point.invalid;
 
 	// Base points used so as not to load chunks unnecessarily
 	private final Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
@@ -74,9 +86,57 @@ public class NetworkSynchronizer {
 	private volatile boolean teleported = false;
 	private Point lastPosition = null;
 	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
+	private Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
+
+	public void setPositionDirty() {
+		teleported = true;
+	}
 
 	public void setEntity(Entity entity) {
 		this.entity = entity;
+		entity.setObserver(true);
+	}
+
+	protected void registerProtocolEvents(final ProtocolEventListener listener) {
+		for (final Method method : listener.getClass().getDeclaredMethods()) {
+			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
+				Class<?> clazz = method.getParameterTypes()[0];
+				if (!ProtocolEvent.class.isAssignableFrom(ProtocolEvent.class)) {
+					session.getGame().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
+					continue;
+				}
+				method.setAccessible(true);
+				protocolEventMapping.put(clazz.asSubclass(ProtocolEvent.class), new ProtocolEventExecutor() {
+					@Override
+					public void execute(ProtocolEvent event) throws EventException {
+						try {
+							method.invoke(listener, event);
+						} catch (InvocationTargetException e) {
+							throw new EventException(e.getCause());
+						} catch (IllegalAccessException e) {
+							throw new EventException(e);
+						}
+					}
+				});
+			}
+		}
+	}
+
+	public <T extends ProtocolEvent> T callProtocolEvent(T event) {
+		ProtocolEventExecutor executor = protocolEventMapping.get(event.getClass());
+		if (executor != null) {
+			try {
+				executor.execute(event);
+			} catch (EventException e) {
+				if (e.getCause() != null) {
+					Throwable t = e.getCause();
+					session.getGame().getLogger().severe("Error occurred while firing protocol event"
+							+ event.getName() + " for player " + owner.getName() + ": " + t.getMessage());
+					t.printStackTrace();
+				}
+			}
+		}
+		return event;
 	}
 
 	public void onDeath() {
@@ -101,11 +161,11 @@ public class NetworkSynchronizer {
 		}
 
 		// TODO teleport smoothing
-		Point currentPosition = entity.getPoint();
+		Point currentPosition = entity.getPosition();
 		if (currentPosition != null) {
 			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
-				lastChunkCheck.set(currentPosition);
+				lastChunkCheck = currentPosition;
 			}
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
@@ -186,7 +246,7 @@ public class NetworkSynchronizer {
 			}
 
 			if (teleported && entity != null) {
-				sendPosition(entity.getPoint(), entity.getYaw(), entity.getPitch());
+				sendPosition(entity.getPosition(), entity.getRotation());
 				first = false;
 				teleported = false;
 			}
@@ -196,12 +256,12 @@ public class NetworkSynchronizer {
 
 	private void addObserver(Chunk c) {
 		observed.add(c);
-		c.refreshObserver(owner);
+		c.refreshObserver(owner.getEntity());
 	}
 
 	private void removeObserver(Chunk c) {
 		observed.remove(c);
-		c.removeObserver(owner);
+		c.removeObserver(owner.getEntity());
 	}
 
 	private void checkChunkUpdates(Point currentPosition) {
@@ -251,10 +311,10 @@ public class NetworkSynchronizer {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns a copy of all currently active sent chunks to this player
-	 * 
+	 *
 	 * @return active chunks
 	 */
 	public Set<Chunk> getActiveChunks() {
@@ -325,10 +385,9 @@ public class NetworkSynchronizer {
 	 * be made to the chunk
 	 *
 	 * @param p position to send
-	 * @param yaw to send
-	 * @param pitch to send
+	 * @param rot rotation to send
 	 */
-	protected void sendPosition(Point p, float yaw, float pitch) {
+	protected void sendPosition(Point p, Quaternion rot) {
 		//TODO: Implement Spout Protocol
 	}
 
@@ -340,12 +399,12 @@ public class NetworkSynchronizer {
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
 	 *
-	 * @param t the transform
+	 * @param world the world
 	 */
 	protected void worldChanged(World world) {
 		//TODO: Implement Spout Protocol
 	}
-	
+
 	/**
 	 * Called when a block in a chunk that the player is observing changes.<br>
 	 * <br>
@@ -358,7 +417,7 @@ public class NetworkSynchronizer {
 	 * @param z coordinate
 	 */
 	public void updateBlock(Chunk chunk, int x, int y, int z) {
-		updateBlock(chunk, x, y, z, chunk.getBlockId(x, y, z), chunk.getBlockData(x, y, z));
+		updateBlock(chunk, x, y, z, chunk.getBlockMaterial(x, y, z), chunk.getBlockData(x, y, z));
 	}
 
 	/**
@@ -371,10 +430,10 @@ public class NetworkSynchronizer {
 	 * @param x coordinate
 	 * @param y coordinate
 	 * @param z coordinate
-	 * @param id to send in the update
+	 * @param material to send in the update
 	 * @param data to send in the update
 	 */
-	public void updateBlock(Chunk chunk, int x, int y, int z, short id, short data) {
+	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
 	}
 
 	/**

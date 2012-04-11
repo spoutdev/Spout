@@ -47,12 +47,12 @@ public class HandlerList {
 	 * unregister() and are automatically baked to the handlers array any time
 	 * they have changed.
 	 */
-	private final EnumMap<Order, ArrayList<ListenerRegistration>> handlerslots;
+	private final EnumMap<Order, List<ListenerRegistration>> handlerSlots;
 
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
 	 */
-	private static ArrayList<HandlerList> alllists = new ArrayList<HandlerList>();
+	private static final ArrayList<HandlerList> ALL_LISTS = new ArrayList<HandlerList>();
 
 	/**
 	 * Bake all handler lists. Best used just after all normal event
@@ -60,14 +60,15 @@ public class HandlerList {
 	 * using fevents in a plugin system.
 	 */
 	public static void bakeAll() {
-		for (HandlerList h : alllists) {
+		for (HandlerList h : ALL_LISTS) {
 			h.bake();
 		}
 	}
 
-	public static void unregisterAll() {
-		for (HandlerList h : alllists) {
-			for (List<ListenerRegistration> regs : h.handlerslots.values()) {
+	@SuppressWarnings("unchecked")
+	public static <T> void unregisterAll() {
+		for (HandlerList h : ALL_LISTS) {
+			for (List<ListenerRegistration> regs : h.handlerSlots.values()) {
 				regs.clear();
 			}
 			h.handlers = null;
@@ -75,7 +76,7 @@ public class HandlerList {
 	}
 
 	public static void unregisterAll(Object plugin) {
-		for (HandlerList h : alllists) {
+		for (HandlerList h : ALL_LISTS) {
 			h.unregister(plugin);
 		}
 	}
@@ -85,11 +86,11 @@ public class HandlerList {
 	 * HandlerList is then added to meta-list for use in bakeAll()
 	 */
 	public HandlerList() {
-		handlerslots = new EnumMap<Order, ArrayList<ListenerRegistration>>(Order.class);
+		handlerSlots = new EnumMap<Order, List<ListenerRegistration>>(Order.class);
 		for (Order o : Order.values()) {
-			handlerslots.put(o, new ArrayList<ListenerRegistration>());
+			handlerSlots.put(o, new ArrayList<ListenerRegistration>());
 		}
-		alllists.add(this);
+		ALL_LISTS.add(this);
 	}
 
 	/**
@@ -98,11 +99,11 @@ public class HandlerList {
 	 * @param listener listener to register
 	 */
 	public void register(ListenerRegistration listener) {
-		if (handlerslots.get(listener.getOrder()).contains(listener)) {
+		if (handlerSlots.get(listener.getOrder()).contains(listener)) {
 			throw new IllegalStateException("This listener is already registered to priority " + listener.getOrder().toString());
 		}
 		handlers = null;
-		handlerslots.get(listener.getOrder()).add(listener);
+		handlerSlots.get(listener.getOrder()).add(listener);
 	}
 
 	public void registerAll(Collection<ListenerRegistration> listeners) {
@@ -117,15 +118,15 @@ public class HandlerList {
 	 * @param listener listener to remove
 	 */
 	public void unregister(ListenerRegistration listener) {
-		if (handlerslots.get(listener.getOrder()).contains(listener)) {
+		if (handlerSlots.get(listener.getOrder()).contains(listener)) {
 			handlers = null;
-			handlerslots.get(listener.getOrder()).remove(listener);
+			handlerSlots.get(listener.getOrder()).remove(listener);
 		}
 	}
 
 	public void unregister(Object plugin) {
 		boolean changed = false;
-		for (List<ListenerRegistration> list : handlerslots.values()) {
+		for (List<ListenerRegistration> list : handlerSlots.values()) {
 			for (ListIterator<ListenerRegistration> i = list.listIterator(); i.hasNext();) {
 				if (i.next().getOwner().equals(plugin)) {
 					i.remove();
@@ -140,27 +141,27 @@ public class HandlerList {
 
 	/**
 	 * Bake HashMap and ArrayLists to 2d array - does nothing if not necessary
+	 * @return The baked array of ListenerRegistrations
 	 */
-	public void bake() {
+	@SuppressWarnings("unchecked")
+	public ListenerRegistration[] bake() {
+		ListenerRegistration[] handlers = this.handlers;
 		if (handlers != null) {
-			return; // don't re-bake when still valid
+			return handlers; // don't re-bake when still valid
 		}
 		List<ListenerRegistration> entries = new ArrayList<ListenerRegistration>();
-		for (Entry<Order, ArrayList<ListenerRegistration>> entry : handlerslots.entrySet()) {
+		for (Entry<Order, List<ListenerRegistration>> entry : handlerSlots.entrySet()) {
 			entries.addAll(entry.getValue());
 		}
-		handlers = entries.toArray(new ListenerRegistration[entries.size()]);
-	}
-
-	public ListenerRegistration[] getRegisteredListeners() {
-		if (handlers == null) {
-			bake();
-		}
-
+		this.handlers = handlers = entries.toArray(new ListenerRegistration[entries.size()]);
 		return handlers;
 	}
 
-	public static HandlerList create() {
-		return new HandlerList();
+	public ListenerRegistration[] getRegisteredListeners() {
+		ListenerRegistration[] handlers = this.handlers;
+		if (handlers == null) {
+			handlers = bake();
+		}
+		return handlers;
 	}
 }

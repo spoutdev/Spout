@@ -28,9 +28,9 @@ package org.spout.api.util.map.concurrent;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.basic.blocks.BlockFullState;
 import org.spout.api.datatable.DatatableSequenceNumber;
-import org.spout.api.geo.cuboid.Blockm;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.block.BlockFullState;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -54,16 +54,30 @@ public class AtomicBlockStore<T> {
 	public AtomicBlockStore(int shift) {
 		this(shift, 10);
 	}
-
+	
+	public AtomicBlockStore(int shift, short[] initial) {
+		this(shift, 10, initial);
+	}
+	
 	public AtomicBlockStore(int shift, int dirtySize) {
+		this(shift, dirtySize, null);
+	}
+
+	public AtomicBlockStore(int shift, int dirtySize, short[] initial) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
-		blockIds = new AtomicShortArray(side * side * side);
-		auxStore = new AtomicIntReferenceArrayStore<T>(side * side * side);
+		int size = side * side * side;
+		blockIds = new AtomicShortArray(size);
+		auxStore = new AtomicIntReferenceArrayStore<T>(size);
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
+		if (initial != null) {
+			for (int i = 0; i < Math.min(initial.length, size); i++) {
+				blockIds.set(i, initial[i]);
+			}
+		}
 	}
 
 	/**
@@ -680,7 +694,7 @@ public class AtomicBlockStore<T> {
 	 * @param block
 	 * @return
 	 */
-	public Blockm getDirtyBlock(int i, Blockm block) {
+	public Block getDirtyBlock(int i, Block block) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
 		}
@@ -691,7 +705,7 @@ public class AtomicBlockStore<T> {
 	}
 
 	private final int getIndex(int x, int y, int z) {
-		return (x << doubleShift) + (z << shift) + y;
+		return (y << doubleShift) + (z << shift) + x;
 	}
 
 	/**

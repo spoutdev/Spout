@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class BoundingSphere implements CollisionVolume {
+public class BoundingSphere extends CollisionVolume {
 	Vector3 center;
 
 	double radius;
@@ -118,8 +118,19 @@ public class BoundingSphere implements CollisionVolume {
 		return other instanceof Plane && intersects((Plane) other);
 	}
 
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+	public Vector3 resolve(CollisionVolume start) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public CollisionVolume offset(Vector3 ammount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector3 getPosition() {
+		return center;
 	}
 }

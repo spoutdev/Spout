@@ -47,7 +47,7 @@ public class CommonEncoder extends OneToOneEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
 			if (codecLookup == null) {
-				codecLookup = Spout.getGame().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
+				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
 			}
 			Message message = (Message) msg;
 

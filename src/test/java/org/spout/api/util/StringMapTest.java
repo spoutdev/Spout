@@ -26,49 +26,219 @@
 package org.spout.api.util;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
-import org.spout.api.io.store.simple.MemoryStore;
+import java.io.File;
+import java.util.HashMap;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.spout.api.io.store.simple.FlatFileStore;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.io.store.simple.SimpleStore;
 
 public class StringMapTest {
-	private StringMap subject;
-	private MemoryStore<Integer> store;
+	private StringMap serverMap;
+	private SimpleStore<Integer> serverStore;
+	
+	private StringMap world1Map;
+	private SimpleStore<Integer> world1Store;
+	
+	private StringMap world2Map;
+	private SimpleStore<Integer> world2Store;
+	
+	private File world1File = new File("world1.dat");
+	private File world2File = new File("world2.dat");
+	
+	private HashMap<String, Integer> serverCache = new HashMap<String, Integer>();
+	private HashMap<String, Integer> world1Cache = new HashMap<String, Integer>();
+	private HashMap<String, Integer> world2Cache = new HashMap<String, Integer>();
+	
 	private final String firstKey = "firstKey";
 	private final String lastKey = "lastKey";
 	private final int minValue = 0;
 	private final int maxValue = 100;
-
+	
 	@Before
 	public void setUp() {
-		store = new MemoryStore<Integer>();
-		subject = new StringMap(null, store, minValue, maxValue);
-
-		subject.register(firstKey);
-		for (int i = 0; i < (maxValue - 2); i++) {
-			subject.register("middle" + i);
-		}
-		subject.register(lastKey);
+		
+		world1File.delete();
+		world2File.delete();
+		
+		serverStore = new MemoryStore<Integer>();
+		serverMap = new StringMap(null, serverStore, minValue, maxValue);
+		
+		readWorldFiles();
+		
 	}
 
 	@Test
 	public void getNonexistingReturnsNull() {
-		assertNull(store.get("unusedKey"));
+		fillServerMap();
+		assertNull(serverStore.get("unusedKey"));
 	}
 
 	@Test
 	public void firstKeyReturnsMinValue() {
-		assertThat(store.get(firstKey), is(minValue));
+		fillServerMap();
+		assertThat(serverStore.get(firstKey), is(minValue));
 	}
 
 	@Test
 	public void lastKeyReturnsMaxValue() {
-		assertThat(store.get(lastKey), is(maxValue - 1));
+		fillServerMap();
+		assertThat(serverStore.get(lastKey), is(maxValue - 1));
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void mapOverflow() {
+		fillServerMap();
+		serverMap.register("overflowKey");
+	}
+	
+	@Test
+	public void consistentRegistration() {
+		fillServerMap();
+		fillServerMap();
+	}
+	
+	@Test 
+	public void worldToServerSameKeys() {
+		
+		int numKeys = maxValue / 4;
+		
+		for (int i = 0; i < numKeys; i++) {
+			registerWithWorld1Map("key" + i);
+			registerWithWorld2Map("key" + i);
+		}
+		
+		checkWorldToServer(numKeys, "key", world1Map);
+		checkWorldToServer(numKeys, "key", world2Map);
+		
+	}
+	
+	@Test 
+	public void worldToServerDiffKeys() {
+		
+		int numKeys = maxValue / 4;
+		
+		for (int i = 0; i < numKeys; i++) {
+			registerWithWorld1Map("key1" + i);
+			registerWithWorld2Map("key2" + i);
+		}
+		
+		checkWorldToServer(numKeys, "key1", world1Map);
+		checkWorldToServer(numKeys, "key2", world2Map);
+		
+	}
+	
+	@Test 
+	public void worldToWorld() {
+		
+		int numKeys = maxValue / 4;
+		
+		for (int i = 0; i < numKeys; i++) {
+			registerWithWorld1Map("key" + i);
+		}
+		
+		checkWorldToServer(numKeys, "key", world1Map);
+		checkServerToWorld(numKeys, "key", world2Map);
+		checkWorldToServer(numKeys, "key", world2Map);
+		
+	}
+	
+	@Test
+	public void persistTest() {
+		int numKeys = maxValue / 4;
+		
+		for (int i = 0; i < numKeys; i++) {
+			registerWithWorld1Map("key1" + i);
+			registerWithWorld2Map("key2" + i);
+		}
+		
+		world1Map.save();
+		world2Map.save();
+		
+		readWorldFiles();
+		
+		for (int i = numKeys - 1; i >= 0; i--) {
+			registerWithWorld1Map("key1" + i);
+			registerWithWorld2Map("key2" + i);
+		}
+		
+		world1File.delete();
+		world2File.delete();
+	}
+	
+	private void checkWorldToServer(int numKeys, String prefix, StringMap map) {
+		for (int i = 0; i < numKeys; i++) {
+			String key = prefix + i;
+			Integer worldId = map.register(key);
+			assertNotNull(worldId);
+			Integer serverId = map.convertTo(serverMap, worldId);
+			assertNotNull(serverId);
+			Integer getId = registerWithServerMap(key);
+			assertThat(serverId, is(getId));
+		}
+	}
+	
+	private void checkServerToWorld(int numKeys, String prefix, StringMap map) {
+		for (int i = 0; i < numKeys; i++) {
+			String key = prefix + i;
+			Integer serverId = registerWithServerMap(key);
+			assertNotNull(serverId);
+			Integer worldId = map.convertFrom(serverMap, serverId);
+			assertNotNull(worldId);
+			Integer getId = map.register(key);
+			assertThat(serverId, is(getId));
+		}
+	}
+	
+	private void readWorldFiles() {
+		world1Store = new FlatFileStore<Integer>(world1File, Integer.class);
+		world1Store.load();
+		world1Map = new StringMap(serverMap, world1Store, minValue, maxValue);
+		
+		world2Store = new FlatFileStore<Integer>(world2File, Integer.class);
+		world2Store.load();
+		world2Map = new StringMap(serverMap, world2Store, minValue, maxValue);
+	}
+	
+	private void fillServerMap() {
+		registerWithServerMap(firstKey);
+		for (int i = 0; i < (maxValue - 2); i++) {
+			registerWithServerMap("middle" + i);
+		}
+		registerWithServerMap(lastKey);
+		assertThat(serverStore.get(lastKey), is(maxValue - 1));
+	}
+	
+	private int registerWithServerMap(String key) {
+		Integer newId = serverMap.register(key);
+		Integer oldId = serverCache.put(key, newId);
+		if (oldId != null && oldId != newId) {
+			throw new IllegalStateException("Registering the same key with the server map gave 2 different results");
+		}
+		return newId;
+	}
+	
+	private int registerWithWorld1Map(String key) {
+		Integer newId = world1Map.register(key);
+		Integer oldId = world1Cache.put(key, newId);
+		if (oldId != null && oldId != newId) {
+			throw new IllegalStateException("Registering the same key with the world1 map gave 2 different results");
+		}
+		return newId;
 	}
 
-	//TODO: @raphfrk Please write some tests here in the same format for moving between maps.
-	//Stuff like convertTo, convertFrom, and parent map functionality should be in unit tests
-	//Then we will notice immediately should they ever break.
+	private int registerWithWorld2Map(String key) {
+		Integer newId = world2Map.register(key);
+		Integer oldId = world2Cache.put(key, newId);
+		if (oldId != null && oldId != newId) {
+			throw new IllegalStateException("Registering the same key with the world2 map gave 2 different results");
+		}
+		return newId;
+	}
 }

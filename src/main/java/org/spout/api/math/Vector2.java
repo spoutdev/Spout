@@ -25,13 +25,16 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
+
 /**
  * A 2-dimensional vector represented by float-precision x,y coordinates
  *
  * Note, this is the Immutable form of Vector2. All operations will construct a
  * new Vector2.
  */
-public class Vector2 implements Comparable<Vector2>, Cloneable{
+public class Vector2 implements Comparable<Vector2>{
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
@@ -48,8 +51,10 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * Represents a unit vector (1,1)
 	 */
 	public final static Vector2 ONE = new Vector2(1, 1);
-	protected float x;
-	protected float y;
+	
+	
+	protected final float x;
+	protected final float y;
 
 	/**
 	 * Constructs and initializes a Vector2 from the given x, y
@@ -371,17 +376,6 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	}
 
 	/**
-	 * Returns a Vector3m object with a y-value of 0. The x of this Vector2
-	 * becomes the x of the Vector3m, the y of this Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @return
-	 */
-	public Vector3m toVector3m() {
-		return Vector2.toVector3m(this);
-	}
-
-	/**
 	 * Returns a Vector2Polar object with the same value as this Vector2
 	 *
 	 * @return
@@ -400,18 +394,6 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 */
 	public Vector3 toVector3(float y) {
 		return Vector2.toVector3(this, y);
-	}
-
-	/**
-	 * Returns a Vector3m object with the given y value. The x of this Vector2
-	 * becomes the x of the Vector3m, the y of this Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @param y Y value to use in the new Vector3m.
-	 * @return
-	 */
-	public Vector3m toVector3m(float y) {
-		return Vector2.toVector3m(this, y);
 	}
 
 	/**
@@ -470,6 +452,16 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 */
 	public double distance(Vector2 a) {
 		return Vector2.distance(a, this);
+	}
+
+	/**
+	 * Gets the squared distance between this Vector2 and a given Vector2.
+	 *
+	 * @param a
+	 * @return
+	 */
+	public double distanceSquared(Vector2 a) {
+		return Vector2.distanceSquared(a, this);
 	}
 
 	/**
@@ -545,20 +537,12 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 59 * hash + Float.floatToIntBits(x);
-		hash = 59 * hash + Float.floatToIntBits(y);
-		return hash;
+		return new HashCodeBuilder(5, 59).append(x).append(y).toHashCode();
 	}
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")";
-	}
-
-	@Override
-	public Vector2 clone() {
-		return new Vector2(x, y);
+		return StringUtil.toString(this.x, this.y);
 	}
 
 	/**
@@ -674,18 +658,6 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	}
 
 	/**
-	 * Returns a Vector3m object with a y-value of 0. The x of the Vector2
-	 * becomes the x of the Vector3m, the y of the Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @param o Vector2 to use as the x/z values
-	 * @return
-	 */
-	public static Vector3m toVector3m(Vector2 o) {
-		return new Vector3m(o.getX(), 0, o.getY());
-	}
-
-	/**
 	 * Returns a Vector2Polar object with the same value as the given Vector2
 	 *
 	 * @param o Vector2 to use
@@ -706,19 +678,6 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 */
 	public static Vector3 toVector3(Vector2 o, float y) {
 		return new Vector3(o.getX(), y, o.getY());
-	}
-
-	/**
-	 * Returns a Vector3m object with the given y-value. The x of the Vector2
-	 * becomes the x of the Vector3m, the y of the Vector2 becomes the z of the
-	 * Vector3m.
-	 *
-	 * @param o Vector2 to use as the x/z values
-	 * @param y Y value of the new Vector3
-	 * @return
-	 */
-	public static Vector3m toVector3m(Vector2 o, float y) {
-		return new Vector3m(o.getX(), y, o.getY());
 	}
 
 	/**
@@ -835,8 +794,18 @@ public class Vector2 implements Comparable<Vector2>, Cloneable{
 	 * @return
 	 */
 	public static double distance(Vector2 a, Vector2 b) {
-		Vector2 tempVector = Vector2.pow(Vector2.subtract(a, b), 2);
-		return Math.sqrt(tempVector.getX() + tempVector.getY());
+		return MathHelper.length(a.x - b.x, a.y - b.y);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector2.
+	 *
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double distanceSquared(Vector2 a, Vector2 b) {
+		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y);
 	}
 
 	/**

@@ -25,22 +25,33 @@
  */
 package org.spout.api.geo.cuboid;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
 
 /**
  * Represents a Cuboid shaped volume that is located somewhere in a world.
  */
 public class Cuboid {
-	protected Pointm base;
-	protected Vector3m size;
-
+	protected Point base;
+	protected Vector3 size;
+	private final boolean immutable;
+	private final int x;
+	private final int y;
+	private final int z;
+	
 	public Cuboid(Point base, Vector3 size) {
-		this.base = new Pointm(base);
-		this.size = new Vector3m(size);
+		this(base, size, false);
+	}
+
+	public Cuboid(Point base, Vector3 size, boolean immutable) {
+		this.base = new Point(base);
+		this.size = new Vector3(size);
+		this.immutable = immutable;
+		this.x = getXRaw();
+		this.y = getYRaw();
+		this.z = getZRaw();
 	}
 
 	public Point getBase() {
@@ -52,14 +63,38 @@ public class Cuboid {
 	}
 
 	public int getX() {
+		if (immutable) {
+			return x;
+		} else {
+			return getXRaw();
+		}
+	}
+	
+	private int getXRaw() {
 		return (int) (base.getX() / size.getX());
 	}
 
 	public int getY() {
+		if (immutable) {
+			return y;
+		} else {
+			return getYRaw();
+		}
+	}
+	
+	private int getYRaw() {
 		return (int) (base.getY() / size.getY());
 	}
 
 	public int getZ() {
+		if (immutable) {
+			return z;
+		} else {
+			return getZRaw();
+		}
+	}
+	
+	private int getZRaw() {
 		return (int) (base.getZ() / size.getZ());
 	}
 
@@ -69,12 +104,7 @@ public class Cuboid {
 
 	@Override
 	public int hashCode() {
-		int hash = getX();
-		hash += (hash << 5) + getY();
-		hash += (hash << 5) + getZ();
-		hash += (hash << 5) + getWorld().getUID().getLeastSignificantBits();
-		hash += (hash << 5) + getWorld().getUID().getMostSignificantBits();
-		return hash;
+		return new HashCodeBuilder(563, 21).append(base).append(size).toHashCode();
 	}
 
 	@Override

@@ -25,38 +25,48 @@
  */
 package org.spout.api.inventory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.spout.api.material.Material;
+import org.spout.api.material.source.DataSource;
+import org.spout.api.material.source.MaterialContainer;
+import org.spout.api.material.source.MaterialData;
+import org.spout.api.material.source.MaterialSource;
+import org.spout.api.util.LogicUtil;
 import org.spout.nbt.Tag;
 
 /**
  * Represents a stack of items
  */
-public class ItemStack {
+public class ItemStack implements MaterialContainer {
 	private Material material;
 	private int amount;
-	private short damage;
-	private Map<String, Tag> auxData;
+	private short data;
+	private List<Tag> auxData;
 
 	/**
 	 * Creates a new ItemStack from the specified Material of the specified
 	 * amount
-	 *
 	 */
 	public ItemStack(Material material, int amount) {
-		this(material, amount, (short) 0);
+		this(material, material.getData(), amount);
 	}
 
-	public ItemStack(Material material, int amount, short damage) {
-		this.material = material;
+	/**
+	 * Creates a new ItemStack from the specified Material and data of the
+	 * specified amount
+	 */
+	public ItemStack(Material material, short data, int amount) {
+		this.setMaterial(material);
 		this.amount = amount;
-		this.damage = damage;
+		this.data = data;
 	}
 
 	/**
 	 * Gets the Material of the stack
-	 *
+	 * 
 	 * @return the material
 	 */
 	public Material getMaterial() {
@@ -65,16 +75,17 @@ public class ItemStack {
 
 	/**
 	 * Sets the Material for the stack
-	 *
+	 * 
 	 * @param material the material
 	 */
-	public void setMaterial(Material material) {
+	public ItemStack setMaterial(Material material) {
 		this.material = material;
+		return this;
 	}
 
 	/**
 	 * Gets the amount of the Material contained in the item stack
-	 *
+	 * 
 	 * @return the amount
 	 */
 	public int getAmount() {
@@ -83,57 +94,44 @@ public class ItemStack {
 
 	/**
 	 * Sets amount of the Material contained in the item stack
-	 *
+	 * 
 	 * @param amount the amount
 	 */
-	public void setAmount(int amount) {
+	public ItemStack setAmount(int amount) {
 		this.amount = amount;
-	}
-
-	/**
-	 * Gets the damage value for the item
-	 *
-	 * @return the damage
-	 */
-	public short getDamage() {
-		return damage;
-	}
-
-	/**
-	 * Sets the damage for the item stack
-	 *
-	 * @param damage the damage
-	 */
-	public void setDamage(short damage) {
-		this.damage = damage;
+		return this;
 	}
 
 	/**
 	 * returns a copy of the map containing the aux data for this stack
-	 *
+	 * 
 	 * @return the aux data
 	 */
-	public Map<String, Tag> getAuxData() {
-		return Tag.cloneMap(auxData);
+	public List<Tag> getAuxData() {
+		if (auxData == null) {
+			return null;
+		} else {
+			return new ArrayList<Tag>(auxData);
+		}
 	}
 
 	/**
 	 * Sets the aux data for this stack
-	 *
+	 * 
 	 * @return the item stack
 	 */
-	public ItemStack setAuxData(Map<String, Tag> auxData) {
+	public ItemStack setAuxData(List<Tag> auxData) {
 		if (auxData == null) {
 			this.auxData = null;
 		} else {
-			this.auxData = Tag.cloneMap(auxData);
+			this.auxData = new ArrayList<Tag>(auxData);
 		}
 		return this;
 	}
 
 	@Override
 	public ItemStack clone() {
-		ItemStack newStack = new ItemStack(material, amount, damage);
+		ItemStack newStack = new ItemStack(material, data, amount);
 		newStack.setAuxData(auxData);
 		return newStack;
 	}
@@ -144,21 +142,56 @@ public class ItemStack {
 			return false;
 		}
 		ItemStack stack = (ItemStack) other;
-		return material.equals(stack.material) && amount == stack.amount && damage == stack.damage && potentialNullEquals(auxData, stack.auxData);
+		return equalsIgnoreSize(stack) && amount == stack.amount;
 	}
 
-	public static boolean potentialNullEquals(Object a, Object b) {
-		if (a == null && b == null) {
-			return true;
-		} else if (a == null || b == null) {
-			return false;
-		} else {
-			return a.equals(b);
-		}
+	public boolean equalsIgnoreSize(ItemStack other) {
+		return material.equals(other.material) && data == other.data && LogicUtil.bothNullOrEqual(auxData, other.auxData);
 	}
 
 	@Override
 	public String toString() {
-		return "ItemStack{" + "material=" + material + ",id=" + material.getId() + ",amount=" + amount + ",damage=" + damage + ",auxData=" + auxData + '}';
+		return "ItemStack{" + "material=" + material + ",id=" + material.getId() + ",data=" + data + ",amount=" + amount + ",auxData=" + auxData + '}';
+	}
+
+	@Override
+	public void setMaterial(MaterialSource material) {
+		Material mat = material == null ? null : material.getMaterial();
+		if (mat == null) {
+			throw new IllegalArgumentException("Material can not be null!");
+		} else {
+			this.material = material.getMaterial();
+		}
+	}
+
+	@Override
+	public void setMaterial(MaterialSource material, DataSource datasource) {
+		this.setMaterial(material, datasource.getData());
+	}
+
+	@Override
+	public void setMaterial(MaterialSource material, short data) {
+		this.setMaterial(material);
+		this.data = data;
+	}
+
+	@Override
+	public void setData(DataSource datasource) {
+		this.setData(datasource.getData());
+	}
+
+	@Override
+	public void setData(short data) {
+		this.data = data;
+	}
+
+	@Override
+	public short getData() {
+		return this.data;
+	}
+
+	@Override
+	public MaterialData createData() {
+		return this.material.createData(this.data);
 	}
 }

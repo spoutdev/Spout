@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.io.store.simple.FlatFileStore;
 
@@ -138,6 +139,8 @@ public class CRCStore {
 
 	private static ConcurrentHashMap<String, Thread> CRCDownloads = new ConcurrentHashMap<String, Thread>();
 
+	private static AtomicInteger urlCheckCount = new AtomicInteger(0);
+	
 	public static class URLCheck extends Thread {
 
 		final String url;
@@ -145,6 +148,7 @@ public class CRCStore {
 		final byte[] buffer;
 
 		public URLCheck(String url, byte[] buffer, CRCStoreRunnable runnable) {
+			super("URLCheck-" + urlCheckCount.getAndIncrement());
 			this.url = url;
 			this.runnable = runnable;
 			this.buffer = buffer;

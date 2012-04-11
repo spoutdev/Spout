@@ -25,10 +25,11 @@
  */
 package org.spout.api.geo;
 
+import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -37,7 +38,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.atomic.Transform;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.player.Player;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -46,7 +47,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, BlockAccess {
+public interface World extends Source, AreaBlockAccess {
 	/**
 	 * Gets the name of the world
 	 *
@@ -66,6 +67,22 @@ public interface World extends Source, BlockAccess {
 
 	/**
 	 * Gets a {@link Block} representing a particular location in the world
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param source of any changes done by this block
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(int x, int y, int z, Source source);
+
+	/**
+	 * Gets a {@link Block} representing a particular location in the world
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 *
 	 * @return the Block
 	 */
@@ -131,7 +148,7 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Region getRegion(Point point, boolean load);
-	
+
 	/**
 	 * Gets the {@link Region} at block coordinates (x, y, z)
 	 *
@@ -184,7 +201,7 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunk(int x, int y, int z, boolean load);
-	
+
 	/**
 	 * Gets the {@link Chunk} at block coordinates (x, y, z)
 	 *
@@ -195,6 +212,18 @@ public interface World extends Source, BlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunkFromBlock(int x, int y, int z);
+	
+	/**
+	 * Gets the height of the highest block in the given (x, z) column.<br>
+	 * <br>
+	 * Blocks which are completely transparent are ignored.
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @return the highest of the 
+	 */
+	@LiveRead
+	public int getSurfaceHeight(int x, int z);
 
 	/**
 	 * Create a new Entity for initialization
@@ -204,20 +233,20 @@ public interface World extends Source, BlockAccess {
 	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The controller that will be attached to the Entity
-	 * @return
+	 * @return The created entity
 	 */
 	public Entity createEntity(Point point, Controller controller);
 
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 *
-	 * @param e
+	 * @param e The entity to spawn
 	 */
 	public void spawnEntity(Entity e);
 
 	/**
 	 * Creates and Spawns an entity at the given point and with the given
-	 * Controller This is the same as {@link #createEntity()} and
+	 * Controller This is the same as {@link #createEntity(Point, Controller)} and
 	 * {@link #spawnEntity(Entity)} together.
 	 *
 	 * @param point The point to spawn the Entity
@@ -261,7 +290,7 @@ public interface World extends Source, BlockAccess {
 	 *
 	 * @return the game
 	 */
-	public Game getGame();
+	public Engine getGame();
 
 	/**
 	 * Gets the height of this world in blocks.
@@ -274,7 +303,6 @@ public interface World extends Source, BlockAccess {
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.
-	 * @param <T> The type of entity.
 	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
@@ -289,11 +317,23 @@ public interface World extends Source, BlockAccess {
 	public Set<Entity> getAll();
 
 	/**
+	 * Gets an entity by its id.
+	 *
+	 * @param id The id.
+	 * @return The entity, or {@code null} if it could not be found.
+	 */
+	@SnapshotRead
+	public Entity getEntity(int id);
+
+	/**
 	 * Gets a set of all players on active on this world
-	 * 
+	 *
 	 * @return all players on this world
 	 */
 	public Set<Player> getPlayers();
-
 	
+	/**
+	 * Gets the directory where world data is stored
+	 */
+	public File getDirectory();
 }

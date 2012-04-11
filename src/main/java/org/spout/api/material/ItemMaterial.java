@@ -28,10 +28,55 @@ package org.spout.api.material;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.block.BlockFace;
 
-public interface ItemMaterial extends Material {
-	public void onInventoryRender();
-	
+public class ItemMaterial extends Material {
+
+	public ItemMaterial(String name, int type, int data, Material parent) {
+		super(name, type, data, parent);
+	}
+
+	public ItemMaterial(String name, int type) {
+		super(name, type);
+	}
+
+	/**
+	 * Gets the item at the given id, or null if none found
+	 * 
+	 * @param id to get
+	 * @return item or null if none found
+	 */
+	public static ItemMaterial get(short id) {
+		Material mat = Material.get(id);
+		if (mat instanceof ItemMaterial) {
+			return (ItemMaterial) mat;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the associated item material with it's name. Case-insensitive.
+	 * 
+	 * @param name to lookup
+	 * @return material, or null if none found
+	 */
+	public static ItemMaterial get(String name) {
+		Material mat = Material.get(name);
+		if (mat instanceof ItemMaterial) {
+			return (ItemMaterial) mat;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Fired when this item is being rendered in the inventory
+	 * 
+	 */
+	public void onInventoryRender() {
+	}
+
 	/**
 	 * Fired when an entity interacts with the world
 	 * 
@@ -39,5 +84,24 @@ public interface ItemMaterial extends Material {
 	 * @param position of the interaction
 	 * @param type of interaction
 	 */
-	public void onInteract(Entity entity, Point position, Action type);
+	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedFace) {
+	}
+
+	/**
+	 * Fired when an entity interacts with another entity
+	 * 
+	 * @param entity that is interacting with the world
+	 * @param other entity that was interacted with
+	 */
+	public void onInteract(Entity entity, Entity other) {
+	}
+	
+	/**
+	 * Fired when an entity interacts with nothing (air)
+	 * 
+	 * @param entity that is interacting with the world
+	 * @param type of interaction
+	 */
+	public void onInteract(Entity entity, Action type) {
+	}
 }

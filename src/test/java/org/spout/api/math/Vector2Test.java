@@ -211,58 +211,6 @@ public class Vector2Test {
 	}
 
 	@Test
-	public void testDivideVector2() {
-		Vector2 a = new Vector2(4, -36);
-		Vector2 b = new Vector2(2, 6);
-		Vector2 c = a.divide(b);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -6", -6, c.y);
-	}
-
-	@Test
-	public void testDivideFloat() {
-		Vector2 a = new Vector2(4, -36);
-		Vector2 b = a.divide(2.0F, 6.0F);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-
-		Vector2 c = a.divide(2.0F);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-	}
-
-	@Test
-	public void testDivideDouble() {
-		Vector2 a = new Vector2(4, -36);
-		Vector2 b = a.divide(2.0D, 6.0D);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-
-		Vector2 c = a.divide(2.0D);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-	}
-
-	@Test
-	public void testDivideInt() {
-		Vector2 a = new Vector2(4, -36);
-		Vector2 b = a.divide(2, 6);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-
-		Vector2 c = a.divide(2);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-	}
-
-	@Test
 	public void testDot() {
 		Vector2 x = new Vector2(2, 3);
 		doAssertDouble("x dot x should be 13", 13, x.dot(x));
@@ -282,15 +230,6 @@ public class Vector2Test {
 		assertTrue(x.toVector3(6).equals(y2));
 	}
 
-	@Test
-	public void testToVector3m() {
-		Vector2 x = new Vector2(3, 5);
-		Vector3 y = new Vector3m(3, 0, 5);
-		Vector3 y2 = new Vector3m(3, 6, 5);
-
-		assertTrue(x.toVector3m().equals(y));
-		assertTrue(x.toVector3m(6).equals(y2));
-	}
 
 	@Test
 	public void testCross() {
@@ -456,7 +395,7 @@ public class Vector2Test {
 	@Test
 	public void testToString() {
 		Vector2 x = new Vector2(3, 5);
-		assertEquals("(3.0, 5.0)", x.toString());
+		assertEquals("{3.0, 5.0}", x.toString());
 	}
 
 	@Test

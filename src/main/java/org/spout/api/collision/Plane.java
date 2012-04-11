@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class Plane implements CollisionVolume {
+public class Plane extends CollisionVolume {
 	Vector3 point;
 
 	Vector3 normal;
@@ -38,11 +38,11 @@ public class Plane implements CollisionVolume {
 	}
 
 	public Plane(Vector3 point) {
-		this(point, Vector3.Up);
+		this(point, Vector3.UP);
 	}
 
 	public Plane() {
-		this(Vector3.ZERO, Vector3.Up);
+		this(Vector3.ZERO, Vector3.UP);
 	}
 
 	public float distance(Vector3 b) {
@@ -121,8 +121,19 @@ public class Plane implements CollisionVolume {
 		return other instanceof Plane && intersects((Plane) other);
 	}
 
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+	public Vector3 resolve(CollisionVolume start) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public CollisionVolume offset(Vector3 ammount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector3 getPosition() {
+		return point;
 	}
 }

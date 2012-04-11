@@ -25,13 +25,16 @@
  */
 package org.spout.api.math;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
+
 /**
  * A 4-dimensional vector represented by float-precision x,y,z,w coordinates
  *
  * Note, this is the Immutable form of Vector4. All operations will construct a
  * new Vector4.
  */
-public class Vector4 implements Comparable<Vector4>, Cloneable {
+public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Represents the Zero vector (0, 0, 0, 0)
 	 */
@@ -57,10 +60,10 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	 */
 	public final static Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
 
-	protected float x;
-	protected float y;
-	protected float z;
-	protected float w;
+	protected final float x;
+	protected final float y;
+	protected final float z;
+	protected final float w;
 
 	/**
 	 * Constructs and initializes a Vector4 from the given x, y, z, w
@@ -431,31 +434,12 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	}
 
 	/**
-	 * Returns a Vector3m object with the x, y, z values from this Vector4
-	 * object.
-	 *
-	 * @return
-	 */
-	public Vector3m toVector3m() {
-		return Vector4.toVector3m(this);
-	}
-
-	/**
 	 * Returns a Vector2 object with the x, y values from this Vector4 object.
 	 *
 	 * @return
 	 */
 	public Vector2 toVector2() {
 		return Vector4.toVector2(this);
-	}
-
-	/**
-	 * Returns a Vector2m object with the x, y values from this Vector4 object.
-	 *
-	 * @return
-	 */
-	public Vector2m toVector2m() {
-		return Vector4.toVector2m(this);
 	}
 
 	/**
@@ -505,6 +489,16 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	}
 
 	/**
+	 * Gets the distance between this Vector4 and a given Vector4.
+	 *
+	 * @param a
+	 * @return
+	 */
+	public double distanceSquared(Vector4 a) {
+		return Vector4.distanceSquared(a, this);
+	}
+
+	/**
 	 * Raises the values of this Vector4 to the given power.
 	 *
 	 * @param power
@@ -542,11 +536,6 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 		return Vector4.normalize(this);
 	}
 
-	@Override
-	public Vector4 clone() {
-		return new Vector4(x, y, z, w);
-	}
-
 	/**
 	 * Returns this Vector4 in an array. Element 0 contains x Element 1 contains
 	 * y
@@ -580,17 +569,12 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 53 * hash + Float.floatToIntBits(x);
-		hash = 53 * hash + Float.floatToIntBits(y);
-		hash = 53 * hash + Float.floatToIntBits(z);
-		hash = 53 * hash + Float.floatToIntBits(w);
-		return hash;
+		return new HashCodeBuilder(7, 53).append(x).append(y).append(z).append(w).toHashCode();
 	}
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+		return StringUtil.toString(this.x, this.y, this.z, this.w);
 	}
 
 	/**
@@ -691,31 +675,12 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	}
 
 	/**
-	 * Returns a Vector3m object with the x, y, z values from this Vector4
-	 * object.
-	 *
-	 * @return
-	 */
-	public static Vector3m toVector3m(Vector4 o) {
-		return new Vector3m(o.x, o.y, o.z);
-	}
-
-	/**
 	 * Returns a Vector2 object with the x, y values from this Vector4 object.
 	 *
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector4 o) {
 		return new Vector2(o.x, o.y);
-	}
-
-	/**
-	 * Returns a Vector2m object with the x, y values from this Vector4 object.
-	 *
-	 * @return
-	 */
-	public static Vector2m toVector2m(Vector4 o) {
-		return new Vector2m(o.x, o.y);
 	}
 
 	/**
@@ -818,8 +783,18 @@ public class Vector4 implements Comparable<Vector4>, Cloneable {
 	 * @return
 	 */
 	public static double distance(Vector4 a, Vector4 b) {
-		double xyzDist = Vector3.distance(a.toVector3(), b.toVector3());
-		return Math.sqrt(Math.pow(xyzDist, 2) + Math.pow(Vector4.subtract(a, b).getW(), 2));
+		return MathHelper.length(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector4.
+	 *
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double distanceSquared(Vector4 a, Vector4 b) {
+		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
 	}
 
 	/**

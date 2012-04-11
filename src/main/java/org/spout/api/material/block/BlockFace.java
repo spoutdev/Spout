@@ -33,30 +33,30 @@ import org.spout.api.math.Vector3;
 public enum BlockFace {
 	TOP(0, 1, 0),
 	BOTTOM(0, -1, 0, TOP),
-	NORTH(0, 0, -1),
-	SOUTH(0, 0, 1, NORTH),
-	EAST(1, 0, 0),
-	WEST(-1, 0, 0, EAST),
+	NORTH(-1, 0, 0),
+	SOUTH(1, 0, 0, NORTH),
+	EAST(0, 0, -1),
+	WEST(0, 0, 1, EAST),
 	THIS(0, 0, 0);
 
 	private Vector3 offset;
 	private BlockFace opposite = this;
 
 	private BlockFace(int dx, int dy, int dz) {
-		offset = new Vector3(dx, dy, dz);
+		this.offset = new Vector3(dx, dy, dz);
 	}
 
 	private BlockFace(int dx, int dy, int dz, BlockFace opposite) {
-		offset = new Vector3(dx, dy, dz);
+		this.offset = new Vector3(dx, dy, dz);
 		this.opposite = opposite;
 		opposite.opposite = this;
 	}
 
 	public Vector3 getOffset() {
-		return offset;
+		return this.offset;
 	}
 
 	public BlockFace getOpposite() {
-		return opposite;
+		return this.opposite;
 	}
 }

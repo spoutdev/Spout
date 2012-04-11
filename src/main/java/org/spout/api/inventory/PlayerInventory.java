@@ -26,10 +26,10 @@
 package org.spout.api.inventory;
 
 public class PlayerInventory extends Inventory {
+
 	private static final long serialVersionUID = 1L;
 
 	public PlayerInventory(int size) {
 		super(size);
-		// TODO Auto-generated constructor stub
 	}
 }

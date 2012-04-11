@@ -28,7 +28,7 @@ package org.spout.api.collision;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 
-public class Segment implements CollisionVolume {
+public class Segment extends CollisionVolume {
 	/**
 	 * Maximum length for a ray. Calculated as BlockLength*BlocksPerChunk* 10
 	 * chunks
@@ -127,8 +127,19 @@ public class Segment implements CollisionVolume {
 		return CollisionHelper.contains(this, b);
 	}
 
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
+	public Vector3 resolve(CollisionVolume start) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public CollisionVolume offset(Vector3 ammount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector3 getPosition() {
+		return origin;
 	}
 }

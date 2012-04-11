@@ -56,6 +56,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	private final T EMPTY = (T) new Object();
 
 	private final int SPINS = 10;
+	private final int MAX_FAIL_THRESHOLD = 256;
 
 	private final int maxLength;
 	private AtomicInteger length = new AtomicInteger(0);
@@ -309,6 +310,78 @@ public final class AtomicIntReferenceArrayStore<T> {
 			}
 		}
 	}
+	
+	/**
+	 * Attempts to lock the store.<br>
+	 * <br>
+	 * The lock will fail if the first element is already locked.  Once the first element is locked, it will keep attempting to lock the rest of the store until all elements are locked.
+	 * <br>
+	 * NOTE:  The store using spinning locks, so it must only be locked for a very short period of time
+	 * 
+	 * @return true if the store is locked
+	 */
+	public boolean tryLock() {
+		return tryLock(-1);
+	}
+	
+	/**
+	 * Attempts to lock the store.<br>
+	 * <br>
+	 * The lock will fail if the first element is already locked.  <br>
+	 * <br>
+	 * Once the first element is successfully locked, it will keep attempting to lock the rest of the store until all elements are locked, or the number of times it fails to lock exceeds maxFails.
+	 * <br>
+	 * NOTE:  The store using spinning locks, so it must only be locked for a very short period of time
+	 * 
+	 * @param maxFails the maximum number of lock failures before the method returns false
+	 * @return true if the store is locked
+	 */
+	public boolean tryLock(int maxFails) {
+		int lockedIndexes = 0;
+		// Lock the first element
+		int firstSeq;
+		firstSeq = seqArray.get().getAndSet(0, DatatableSequenceNumber.UNSTABLE);
+		if (firstSeq == DatatableSequenceNumber.UNSTABLE) {
+			return false;
+		}
+		lockedIndexes++;
+
+		int fails = 0;
+		
+		// Lock the remaining elements
+		for (int i = 1; i < length.get(); i++) {
+			int seq;
+			do {
+				if (fails > maxFails && maxFails > 0) {
+					unlock(lockedIndexes);
+					return false;
+				} else {
+					seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
+					if (seq == DatatableSequenceNumber.UNSTABLE) {
+						fails++;
+					}
+				}
+			} while (seq == DatatableSequenceNumber.UNSTABLE);
+			lockedIndexes++;
+		}
+		return true;
+	}
+	
+	/**
+	 * Unlocks the store.
+	 */
+	public void unlock() {
+		unlock(length.get());
+	}
+	
+	private void unlock(int lockedIndexes) {
+		for (int i = 0; i < lockedIndexes; i++) {
+			if (!seqArray.get().compareAndSet(i, DatatableSequenceNumber.UNSTABLE, DatatableSequenceNumber.get())) {
+				throw new IllegalStateException("Element " + i + " + was not locked when released by unlock");
+			}
+		}
+		atomicNotify();
+	}
 
 	/**
 	 * Resizes the arrays, if required.
@@ -316,31 +389,15 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * The array length is doubled if needsResize returns true.
 	 */
 	private void resizeArrays() {
-		int lockedIndexes = 0;
+		boolean locked = false;
+		while (needsResize() && !(locked = tryLock(MAX_FAIL_THRESHOLD)))
+			;
+		
+		if (!locked) {
+			return;
+		}
+		int lockedIndexes = length.get();
 		try {
-			// Lock the first element
-			int firstSeq;
-			do {
-				if (!needsResize()) {
-					return;
-				}
-				firstSeq = seqArray.get().getAndSet(0, DatatableSequenceNumber.UNSTABLE);
-			} while (firstSeq == DatatableSequenceNumber.UNSTABLE);
-			lockedIndexes++;
-			// Once locked, no other thread can do the resize operation
-
-			// Lock the remaining elements
-			for (int i = 1; i < length.get(); i++) {
-				int seq;
-				do {
-					if (!needsResize()) {
-						return;
-					}
-					seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
-				} while (seq == DatatableSequenceNumber.UNSTABLE);
-				lockedIndexes++;
-			}
-
 			// Calculate new length
 			int newLength = length.get() << 1;
 			if (newLength > maxLength || !needsResize()) {
@@ -382,13 +439,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 				}
 			}
 		} finally {
-			// Set the bottom half of array to new sequence numbers (from UNSTABLE)
-			for (int i = 0; i < lockedIndexes; i++) {
-				if (!seqArray.get().compareAndSet(i, DatatableSequenceNumber.UNSTABLE, DatatableSequenceNumber.get())) {
-					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
-				}
-			}
-			atomicNotify();
+			unlock(lockedIndexes);
 		}
 
 	}

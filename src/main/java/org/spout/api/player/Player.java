@@ -123,4 +123,10 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @param reason the message to send to the player.
 	 */
 	public void kick(String reason);
+	
+	/**
+	 * Gets the current input state of the player
+	 * @return current input state
+	 */
+	public PlayerInputState input();
 }

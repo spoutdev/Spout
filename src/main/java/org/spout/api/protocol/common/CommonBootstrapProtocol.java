@@ -1,0 +1,98 @@
+package org.spout.api.protocol.common;
+
+import java.io.UnsupportedEncodingException;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.spout.api.Spout;
+import org.spout.api.protocol.CodecLookupService;
+import org.spout.api.protocol.HandlerLookupService;
+import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+import org.spout.api.protocol.common.message.CustomDataMessage;
+
+public class CommonBootstrapProtocol extends BootstrapProtocol {
+	
+	private final Protocol defaultProtocol;
+
+	public CommonBootstrapProtocol(Protocol defaultProtocol) {
+		this("CommonBootstrap", defaultProtocol);
+	}
+
+	
+	public CommonBootstrapProtocol(String name, Protocol defaultProtocol) {
+		this(name, new CommonBootstrapCodecLookupService(), new CommonBootstrapHandlerLookupService(), defaultProtocol);
+	}
+	
+	public CommonBootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, Protocol defaultProtocol) {
+		super(name, codecLookup, handlerLookup);
+		this.defaultProtocol = defaultProtocol;
+	}
+
+	@Override
+	public String detectProtocolDefinition(Message message) {
+		if (message instanceof CustomDataMessage) {
+			return detectProtocolDefinition((CustomDataMessage)message);
+		} else {
+			return null;
+		}
+	}
+
+	private String detectProtocolDefinition(CustomDataMessage message) {
+		if (message.getType().equals("AutoProto:HShake")) {
+			try {
+				return new String(message.getData(), "UTF8");
+			} catch (UnsupportedEncodingException e) {
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public Protocol getDefaultProtocol() {
+		return defaultProtocol;
+	}
+	
+	/**
+	 * Reads a string from the buffer.
+	 * @param buf The buffer.
+	 * @param maxLength the maximum length of the string
+	 * @return The string.
+	 */
+	public static String readString(ChannelBuffer buf, int maxLength) {
+		int len = buf.readUnsignedShort();
+		
+		if (len > maxLength) {
+			Spout.getEngine().getLogger().severe("Maximum string length of " + maxLength + " exceeded (" + len + ")");
+			return null;
+		}
+		len = Math.min(maxLength, len);
+
+		char[] characters = new char[len];
+		for (int i = 0; i < len; i++) {
+			characters[i] = buf.readChar();
+		}
+
+		return new String(characters);
+	}
+	
+	/**
+	 * Writes a string to the buffer.
+	 * @param buf The buffer.
+	 * @param str The string.
+	 * @throws IllegalArgumentException if the string is too long
+	 *                                  <em>after</em> it is encoded.
+	 */
+	public static void writeString(ChannelBuffer buf, String str) {
+		int len = str.length();
+		if (len >= 0x7FFF) {
+			throw new IllegalArgumentException("String too long.");
+		}
+
+		buf.writeShort(len);
+		for (int i = 0; i < len; ++i) {
+			buf.writeChar(str.charAt(i));
+		}
+	}
+
+}

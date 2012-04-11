@@ -31,28 +31,13 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.plugin.PluginStore;
+import org.spout.api.render.Camera;
 
 /**
  * Represents the client-specific implementation of Minecraft.
  */
-public interface Client extends Game {
-	/**
-	 * Gets the base addons folder.
-	 *
-	 * @return addon folder
-	 */
-	public File getAddonFolder();
-
-	/**
-	 * Gets the location of the temporary audio cache. This cache is intended
-	 * for ogg, wav, and midi type files.
-	 *
-	 * This cache is purged when the game shuts down.
-	 *
-	 * @return temporary audio cache.
-	 */
-	public File getAudioCache();
-
+public interface Client extends Engine {
+	
 	/**
 	 * Gets the location of the temporary general cache (used for non-texture
 	 * and non-audio files).
@@ -63,13 +48,6 @@ public interface Client extends Game {
 	 */
 	public File getTemporaryCache();
 
-	/**
-	 * Gets the location of the temporary image cache. This cache is intended
-	 * for png type files.
-	 *
-	 * @return temporary texture cache
-	 */
-	public File getTextureCache();
 
 	/**
 	 * Gets the location of the texture pack directory. This directory is used
@@ -77,18 +55,9 @@ public interface Client extends Game {
 	 *
 	 * @return texture pack directory
 	 */
-	public File getTexturePackFolder();
+	public File getResourcePackFolder();
 
-	/**
-	 * Gets the actively used texture pack zip, or null if no texture pack has
-	 * been selected (default mc texture pack).
-	 *
-	 * If the file exists, it will be a zip type file.
-	 *
-	 * @return selected texture pack
-	 */
-	public File getSelectedTexturePackZip();
-
+	
 	/**
 	 * Gets the location of the achievement and statistic folder for the local
 	 * player.
@@ -112,44 +81,24 @@ public interface Client extends Game {
 	public World getWorld();
 
 	/**
-	 * The camera property holds the position and view of the camera. You can
-	 * set it to a new location to influence it and to provide camera cutscenes.
+	 * The Camera object is the viewport into the scene
+	 * 
 	 *
 	 * @return the location and view of the camera
 	 */
-	public Point getCamera();
+	public Camera getActiveCamera();
 
 	/**
-	 * The camera property holds the position and view of the camera. You can
-	 * set it to a new location to influence it and to provide camera cutscenes.
-	 * Detaching the camera is mandatory before doing a cut scene, otherwise,
-	 * the players movement will override your cutscene.
-	 *
-	 * @see detachCamera(boolean)
-	 * @param loc the location and view of the camera
+	 * Sets the camera to the active camera.
+	 * There can only be one camera active at a time
 	 */
-	public void setCamera(Point loc);
+	public void setActiveCamera(Camera activeCamera);
 
-	/**
-	 * The detach property decides if player movements will influence the camera
-	 * or not. If the camera is detached, player movements will be ignored.
-	 *
-	 * @param detach if the camera should be detached
-	 */
-	public void detachCamera(boolean detach);
-
-	/**
-	 * The detach property decides if player movements will influence the camera
-	 * or not. If the camera is detached, player movements will be ignored.
-	 *
-	 * @return if the camera is detached
-	 */
-	public boolean isCameraDetached();
 
 	/**
 	 * Gets client specific information for plugins.
 	 *
 	 * @return plugin store
 	 */
-	public PluginStore getAddonStore();
+	public PluginStore getPluginStore();
 }

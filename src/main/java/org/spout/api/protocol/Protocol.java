@@ -28,7 +28,7 @@ package org.spout.api.protocol;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Protocol {
-	private static final ConcurrentHashMap<Long, Protocol> map = new ConcurrentHashMap<Long, Protocol>();
+	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
 
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
@@ -81,10 +81,10 @@ public class Protocol {
 	/**
 	 * Registers a Protocol for a particular id value
 	 *
-	 * @param id the id
+	 * @param id the id of the protocol
 	 * @param protocol the Protocol
 	 */
-	public static void registerProtocol(long id, Protocol protocol) {
+	public static void registerProtocol(String id, Protocol protocol) {
 		map.put(id, protocol);
 	}
 
@@ -94,7 +94,7 @@ public class Protocol {
 	 * @param id the id
 	 * @return the Protocol
 	 */
-	public static Protocol getProtocol(long id) {
+	public static Protocol getProtocol(String id) {
 		return map.get(id);
 	}
 }

@@ -25,60 +25,275 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.Source;
 import org.spout.api.collision.BoundingBox;
+import org.spout.api.collision.CollisionModel;
+import org.spout.api.collision.CollisionStrategy;
+import org.spout.api.collision.CollisionVolume;
 import org.spout.api.geo.World;
+import org.spout.api.material.basic.BasicAir;
+import org.spout.api.material.basic.BasicSkyBox;
+import org.spout.api.material.block.BlockFace;
 
-public interface BlockMaterial extends ItemMaterial {
-	public void onWorldRender();
+public class BlockMaterial extends Material {
 
-	public float getFriction();
-
-	public BlockMaterial setFriction(float slip);
-
-	public float getHardness();
-
-	public BlockMaterial setHardness(float hardness);
-
-	public boolean isOpaque();
-
-	public BlockMaterial setOpaque(boolean opaque);
-
-	public int getLightLevel();
-
-	public BlockMaterial setLightLevel(int level);
+	public static final BlockMaterial AIR = register(new BasicAir());
+	public static final BlockMaterial SOLID = register(new BlockMaterial("solid", 10000).setHardness(1.f));
+	public static final BlockMaterial UNBREAKABLE = register(new BlockMaterial("Unbreakable", 10001).setHardness(100.f));
+	public static final BlockMaterial SKYBOX = register(new BasicSkyBox());
+	public static final BlockMaterial ERROR = register(new BlockMaterial("Missing Plugin", 10003).setHardness((100.f)));
 	
+	public BlockMaterial(String name, int typeId) {
+		super(name, typeId);
+	}
+
+	public BlockMaterial(String name, int typeId, int data, Material parent) {
+		super(name, typeId, data, parent);
+	}
+
+	/**
+	 * Gets the block at the given id, or null if none found
+	 * 
+	 * @param id to get
+	 * @return block, or null if none found
+	 */
+	public static BlockMaterial get(short id) {
+		Material mat = Material.get(id);
+		if (mat instanceof BlockMaterial) {
+			return (BlockMaterial) mat;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the associated block material with it's name. Case-insensitive.
+	 * 
+	 * @param name to lookup
+	 * @return material, or null if none found
+	 */
+	public static BlockMaterial get(String name) {
+		Material mat = Material.get(name);
+		if (mat instanceof BlockMaterial) {
+			return (BlockMaterial) mat;
+		} else {
+			return null;
+		}
+	}
+
+	private float hardness = 0F;
+	private float friction = 0F;
+	private byte opacity = 0xF;
+	private byte lightLevel = 0;
+	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
+
+	/**
+	 * Gets the friction of this block
+	 * 
+	 * @return friction value
+	 */
+	public float getFriction() {
+		return this.friction;
+	}
+
+	/**
+	 * Sets the friction of this block
+	 * 
+	 * @param slip friction value
+	 * @return this material
+	 */
+	public BlockMaterial setFriction(float slip) {
+		this.friction = slip;
+		return this;
+	}
+
+	/**
+	 * Gets the hardness of this block
+	 * 
+	 * @return hardness value
+	 */
+	public float getHardness() {
+		return this.hardness;
+	}
+
+	/**
+	 * Sets the hardness of this block
+	 * 
+	 * @param hardness hardness value
+	 * @return this material
+	 */
+	public BlockMaterial setHardness(float hardness) {
+		this.hardness = hardness;
+		return this;
+	}
+
+	/**
+	 * Gets the amount of light this block emits
+	 * 
+	 * @return light level
+	 */
+	public byte getLightLevel() {
+		return this.lightLevel;
+	}
+
+	/**
+	 * Sets the amount of light this block emits
+	 * 
+	 * @param level
+	 * @return this material
+	 */
+	public BlockMaterial setLightLevel(byte level) {
+		this.lightLevel = level;
+		return this;
+	}
+
+	/**
+	 * Gets the amount of light blocked by this block.
+	 * 
+	 * 0xF (15) represents a fully opaque block.
+	 * 
+	 * @return opacity
+	 */
+	public byte getOpacity() {
+		return this.opacity;
+	}
+
+	/**
+	 * Sets the amount of light blocked by this block.
+	 * 
+	 * 0xF (15) represents a fully opaque block.
+	 * 
+	 * @param level of opacity
+	 * @return this material
+	 */
+	public BlockMaterial setOpacity(byte level) {
+		this.opacity = level;
+		return this;
+	}
+
+	/**
+	 * True if this block acts as an obstacle when placing a block on it false
+	 * if not.
+	 * 
+	 * If the block is not an obstacle, placement will replace this block.
+	 * 
+	 * @return if this block acts as a placement obstacle
+	 */
+	public boolean isPlacementObstacle() {
+		return true;
+	}
+	
+	/**
+	 * True if this block requires physic updates when a neighbor block changes,
+	 * false if not.
+	 * 
+	 * @return if this block requires physics updates
+	 */
+	public boolean hasPhysics() {
+		return false;
+	}
+
+	/**
+	 * Called when a block adjacent to this material is changed.
+	 * 
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 */
+	public void onUpdate(World world, int x, int y, int z) {
+	}
+
+	/**
+	 * Called when this block has been destroyed.
+	 * 
+	 * @param world that the material is in
+	 * @param x coordinate for this material
+	 * @param y coordinate for this material
+	 * @param z coordinate for this material
+	 */
+	public void onDestroy(World world, int x, int y, int z) {
+	}
+
 	/**
 	 * Gets the bounding box area of this material
 	 * 
 	 * @return area
 	 */
-	public BoundingBox getBoundingArea();
-
+	public CollisionVolume getBoundingArea() {
+		return this.collision.getVolume();
+	}
+	
 	/**
-	 * True if this block requires physic updates when a neighbor block changes,
+	 * Gets the collision model associated with this block material
+	 * 
+	 * @return the collision model
+	 */
+	public CollisionModel getCollisionModel() {
+		return this.collision;
+	}
+		
+	/**
+	 * True if this block has collision,
 	 * false if not.
-	 *
-	 * @return if this block requires physics updates
+	 * 
+	 * @return if this block has collision
 	 */
-	public boolean hasPhysics();
+	public boolean hasCollision() {
+		return this.collision.getStrategy() != CollisionStrategy.NOCOLLIDE;
+	}
+	
+	/**
+	 * True if this block is a solid block
+	 * false if not.
+	 * 
+	 * @return if this block has collision
+	 */
+	public boolean isSolid() {
+		return this.collision.getStrategy() == CollisionStrategy.SOLID;
+	}
+	
+	/**
+	 * Sets the collision strategy to use for this block
+	 * 
+	 * @param strategy
+	 * @return this block material
+	 */
+	public BlockMaterial setCollision(CollisionStrategy strategy) {
+		this.collision.setStrategy(strategy);
+		return this;
+	}
 
 	/**
-	 * Called when a block adjacent to this material is changed.
-	 *
+	 * Called when this block is about to be placed (before {@link onPlacement}), 
+	 * checking if placement is allowed or not.
+	 * 
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
+	 * @param data block data to use during placement
+	 * @param against face against the block is placed
+	 * @param source source of this placement
+	 * @return true if placement is allowed
 	 */
-	public void onUpdate(World world, int x, int y, int z);
-
+	public boolean canPlace(World world, int x, int y, int z, short data, BlockFace against, Source source) {
+		return true;
+	}
+	
 	/**
-	 * Called when this block has been destroyed.
-	 *
+	 * Called when this block is placed, handles the actual placement.
+	 * 
 	 * @param world that the material is in
 	 * @param x coordinate for this material
 	 * @param y coordinate for this material
 	 * @param z coordinate for this material
+	 * @param data block data to use during placement
+	 * @param against face against the block is placed
+	 * @param source source of this placement
+	 * @return true if placement is handled
 	 */
-	public void onDestroy(World world, int x, int y, int z);
+	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source) {
+		return world.setBlockMaterial(x, y, z, this, data, true, source);
+	}
 }

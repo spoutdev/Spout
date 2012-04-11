@@ -25,102 +25,118 @@
  */
 package org.spout.api.geo.cuboid;
 
+import org.spout.api.Source;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.source.DataSource;
+import org.spout.api.material.source.MaterialContainer;
+import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.Vector3;
 
-/**
- * Represents a cube with an edge length of 1.
- */
-public abstract class Block extends Cube {
-	private final static float EDGE = 1.0f;
+public interface Block extends MaterialContainer, Cloneable {
 
-	public Block(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), EDGE);
-	}
+	public Point getPosition();
+
+	public Chunk getChunk();
+	
+	public World getWorld();
+
+	public int getX();
+
+	public int getY();
+
+	public int getZ();
+
+	public Block setX(int x);
+	
+	public Block setY(int y);
+	
+	public Block setZ(int z);
+	
+	public Block move(BlockFace offset);
+
+	public Block move(Vector3 offset);
+
+	public Block move(int dx, int dy, int dz);
+	
+	/**
+	 * Gets the source this block represents
+	 * 
+	 * @return the source
+	 */
+	public Source getSource();
+	
+	/**
+	 * Sets the source this block represents
+	 * 
+	 * @param source
+	 */
+	public void setSource(Source source);
+	
+	/**
+	 * Sets the material
+	 * @param material to set to
+	 * @param update whether players nearby should be notified of the block change
+	 */
+	public void setMaterial(MaterialSource material, boolean update);
+	
+	/**
+	 * Gets the block material
+	 * 
+	 * @return the block material
+	 */
+	@Override
+	public BlockMaterial getMaterial();
+	
+	/**
+	 * Sets the material and data to the one of the source block
+	 * @param blocksource to set to
+	 */
+	public void setBlock(MaterialSource block);
+	
+	/**
+	 * Sets the material and data to the one of the source block
+	 * @param blocksource to set to
+	 * @param update whether players nearby should be notified of the block change
+	 */
+	public void setBlock(MaterialSource blocksource, boolean update);
+	
+	/**
+	 * Sets the material and data
+	 * @param material to set to
+	 * @param datasource of the data to set to
+	 * @param update whether players nearby should be notified of the block change
+	 */
+	public void setMaterial(MaterialSource material, DataSource datasource, boolean update);
 
 	/**
-	 * Sets the block to the given material type and returns the snapshot value
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
-	 * @param material
-	 * @return the block's material from the snapshot
+	 * Sets the material and data
+	 * @param material to set to
+	 * @param data value to set to
+	 * @param update whether players nearby should be notified of the block change
 	 */
-	@SnapshotRead
-	@DelayedWrite
-	public abstract BlockMaterial setBlockMaterial(BlockMaterial material);
+	public void setMaterial(MaterialSource material, short data, boolean update);
 
 	/**
-	 * Sets the id for the block to the given id and returns the snapshot value
-	 *
-	 * For ids greater than 255, the id must represent a value custom id
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
-	 * @param material
-	 * @return the block's material from the snapshot
+	 * Sets the data
+	 * @param datasource of the data to set to
+	 * @param update whether players nearby should be notified of the block change
 	 */
-	@SnapshotRead
-	@DelayedWrite
-	public abstract short setBlockId(short id);
+	public void setData(DataSource datasource, boolean update);
 
 	/**
-	 * Gets the snapshot material for the block
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
-	 * @param material
-	 * @return the block's material from the snapshot
+	 * Sets the data
+	 * @param data value to set to
+	 * @param update whether players nearby should be notified of the block change
 	 */
-	@SnapshotRead
-	public abstract BlockMaterial getBlockMaterial();
-
+	public void setData(short data, boolean update);
+	
 	/**
-	 * Gets the snapshot id for the block
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
-	 * @param material
-	 * @return the block's material id from the snapshot
+	 * Clones this block
+	 * 
+	 * @return a new instance of this block
 	 */
-	@SnapshotRead
-	public abstract short getBlockId();
-
-	/**
-	 * Gets the live material for the block
-	 *
-	 * Note: this may have a negative performance impact, relative to reading
-	 * the snapshot value
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
-	 * @param material
-	 * @return the block's material from the snapshot
-	 */
-	@LiveRead
-	public abstract BlockMaterial getLiveBlockMaterial();
-
-	/**
-	 * Gets the live id for the block
-	 *
-	 * Note: this may have a negative performance impact, relative to reading
-	 * the snapshot value
-	 *
-	 * @param x the x coordinate
-	 * @param y the x coordinate
-	 * @param z the x coordinate
-	 * @param material
-	 * @return the block's material id from the snapshot
-	 */
-	@LiveRead
-	public abstract short getLiveBlockId();
+	public Block clone();
 }

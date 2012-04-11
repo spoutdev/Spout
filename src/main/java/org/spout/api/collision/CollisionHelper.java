@@ -27,7 +27,6 @@ package org.spout.api.collision;
 
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector3m;
 
 public class CollisionHelper {
 	/**
@@ -141,8 +140,19 @@ public class CollisionHelper {
 
 	public static boolean checkCollision(BoundingBox a, Plane b) {
 		boolean pos = b.distance(a.min) > 0;
-		return pos != b.distance(a.max) > 0 //Planes that are axis-aligned. most cases
-				|| pos != b.distance(new Vector3(a.max.getX(), a.min.getY(), a.min.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.max.getY(), a.min.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.min.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.min.getX(), a.max.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.max.getX(), a.min.getY(), a.max.getZ())) > 0 || pos != b.distance(new Vector3(a.max.getX(), a.max.getY(), a.min.getZ())) > 0;
+		Vector3 v1 = new Vector3(a.max.getX(), a.min.getY(), a.min.getZ());
+		Vector3 v2 = new Vector3(a.min.getX(), a.max.getY(), a.min.getZ());
+		Vector3 v3 = new Vector3(a.min.getX(), a.min.getY(), a.max.getZ());
+		Vector3 v4 = new Vector3(a.min.getX(), a.max.getY(), a.max.getZ());
+		Vector3 v5 = new Vector3(a.max.getX(), a.min.getY(), a.max.getZ());
+		Vector3 v6 = new Vector3(a.max.getX(), a.max.getY(), a.min.getZ());
+		
+		boolean intersects = pos != b.distance(a.max) > 0 //Planes that are axis-aligned. most cases
+				|| pos != b.distance(v1) > 0 || pos != b.distance(v2) > 0 ||
+				pos != b.distance(v3) > 0 || pos != b.distance(v4) > 0 || pos != b.distance(v5) > 0 
+				|| pos != b.distance(v6) > 0;
+				
+		return intersects;
 	}
 
 	/**
@@ -341,7 +351,7 @@ public class CollisionHelper {
 		if (intersection == null) {
 			return null;
 		}
-		Vector3m ret = new Vector3m(intersection.min);
+		Vector3 ret = new Vector3(intersection.min);
 		ret.add(intersection.max);
 		ret.multiply(0.5f);
 		return ret;

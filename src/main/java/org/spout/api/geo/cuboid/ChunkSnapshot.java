@@ -19,12 +19,12 @@ package org.spout.api.geo.cuboid;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.geo.BlockData;
+import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.util.thread.SnapshotRead;
 
-public abstract class ChunkSnapshot extends Cube implements BlockData {
+public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	/**
 	 * Internal size of a side of a chunk
 	 */
@@ -44,9 +44,35 @@ public abstract class ChunkSnapshot extends Cube implements BlockData {
 		super(new Point(world, x, y, z), CHUNK_SIZE);
 	}
 
+	/**
+	 * Gets the raw block ids
+	 * 
+	 * @return raw block ids
+	 */
 	public abstract short[] getBlockIds();
 
+	/**
+	 * Gets the raw block data.
+	 * 
+	 * @return block data
+	 */
 	public abstract short[] getBlockData();
+
+	/**
+	 * Gets the raw block light data. <br/><br/> 
+	 * 
+	 * Light is stored in nibbles, with the first index even, the second odd.
+	 * @return raw block light data
+	 */
+	public abstract byte[] getBlockLight();
+
+	/**
+	 * Gets the raw sky light data. <br/><br/> 
+	 * 
+	 * Light is stored in nibbles, with the first index even, the second odd.
+	 * @return raw skylight data
+	 */
+	public abstract byte[] getSkyLight();
 
 	/**
 	 * Gets the region that this chunk is located in

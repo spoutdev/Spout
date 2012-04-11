@@ -53,11 +53,8 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
 		if (codecLookup == null) {
-			System.out.println("Setting codec lookup service");
-			bootstrapProtocol = Spout.getGame().getBootstrapProtocol(c.getLocalAddress());
-			System.out.println("Bootstrap protocol is: " + bootstrapProtocol);
+			bootstrapProtocol = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress());
 			codecLookup = bootstrapProtocol.getCodecLookupService();
-			System.out.println("Codec lookup service is: " + codecLookup);
 		}
 
 		int opcode;
@@ -68,10 +65,19 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		catch (Error e) {
 			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
 		}
-
+		
 		MessageCodec<?> codec = codecLookup.find(opcode);
 		if (codec == null) {
-			throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
+			if (bootstrapProtocol != null) {
+				Protocol protocol = bootstrapProtocol.getDefaultProtocol();
+				if (protocol != null) {
+					setProtocol(protocol);
+					codec = codecLookup.find(opcode);
+				}
+			}
+			if (codec == null) {
+				throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
+			}
 		}
 
 		if (codec.isExpanded()) {
@@ -85,17 +91,12 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		Message message = codec.decode(buf);
 
 		if (bootstrapProtocol != null) {
-			//TODO: Why is this never printed??????
-			System.out.println("Checking for protocol definition");
-			long id = bootstrapProtocol.detectProtocolDefinition(message);
-			if (id != -1L) {
+			String id = bootstrapProtocol.detectProtocolDefinition(message);
+			if (id != null) {
 				Protocol protocol = Protocol.getProtocol(id);
 
 				if (protocol != null) {
-					codecLookup = protocol.getCodecLookupService();
-					encoder.setProtocol(protocol);
-					handler.setProtocol(protocol);
-					bootstrapProtocol = null;
+					setProtocol(protocol);
 				} else {
 					throw new IllegalStateException("No protocol associated with an id of " + id);
 				}
@@ -103,5 +104,12 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		}
 
 		return message;
+	}
+	
+	private void setProtocol(Protocol protocol) {
+		codecLookup = protocol.getCodecLookupService();
+		encoder.setProtocol(protocol);
+		handler.setProtocol(protocol);
+		bootstrapProtocol = null;
 	}
 }

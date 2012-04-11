@@ -25,478 +25,304 @@
  */
 package org.spout.api.util.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
- * Represents a configuration node.
  *
- * @author sk89q
+ * @author zml2008
  */
-public class ConfigurationNode {
-	protected Map<String, Object> root;
+public abstract class ConfigurationNode extends AbstractConfigurationNodeSource {
+	private String[] path;
+	private boolean attached;
+	private ConfigurationNodeSource parent;
 
-	protected ConfigurationNode(Map<String, Object> root) {
-		this.root = root;
+	public ConfigurationNode(Configuration config, String[] path) {
+		super(config);
+		this.path = path;
 	}
 
 	/**
-	 * Gets a property at a location. This will either return an Object or null,
-	 * with null meaning that no configuration value exists at that location.
-	 * This could potentially return a default value (not yet implemented) as
-	 * defined by a plugin, if this is a plugin-tied configuration.
+	 * Return this node's value as a boolean
 	 *
-	 * @param path path to node (dot notation)
-	 * @return object or null
+	 * @return the boolean value
+	 * @see #getBoolean(boolean)
+	 * @see #getValue()
 	 */
-	@SuppressWarnings("unchecked")
-	public Object getProperty(String path) {
-		if (!path.contains(".")) {
-			Object val = root.get(path);
-			if (val == null) {
-				return null;
+	public boolean getBoolean() {
+		return getBoolean(false);
+	}
+
+	/**
+	 * Return this node's value as a boolean
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean
+	 * @return the boolean value
+	 * @see #getValue(Object)
+	 */
+	public abstract boolean getBoolean(boolean def);
+
+	/**
+	 * Return this node's value as an integer
+	 *
+	 * @return the integer value
+	 * @see #getInt(int)
+	 * @see #getValue()
+	 */
+	public int getInt() {
+		return getInt(0);
+	}
+
+	/**
+	 * Return this node's value as an integer
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't an integer
+	 * @return the integer value
+	 * @see #getValue(Object)
+	 */
+	public abstract int getInt(int def);
+
+	/**
+	 * Return this node's value as a long
+	 *
+	 * @return the long value
+	 * @see #getLong(long)
+	 * @see #getValue()
+	 */
+	public long getLong() {
+		return getLong(0);
+	}
+
+	/**
+	 * Return this node's value as a long
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a long
+	 * @return the long value
+	 * @see #getValue(Object)
+	 */
+	public abstract long getLong(long def);
+
+	/**
+	 * Return this node's value as a double
+	 *
+	 * @return the double value
+	 * @see #getDouble(double)
+	 * @see #getValue()
+	 */
+	public double getDouble() {
+		return getDouble(0);
+	}
+
+	/**
+	 * Return this node's value as a double
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a double
+	 * @return the double value
+	 * @see #getValue(Object)
+	 */
+	public abstract double getDouble(double def);
+
+	/**
+	 * Return this node's value as a String
+	 *
+	 * @return the String value
+	 * @see #getString(String)
+	 * @see #getValue()
+	 */
+	public String getString() {
+		return getString(null);
+	}
+
+	/**
+	 * Return this node's value as a String
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value
+	 * @return the String value
+	 * @see #getValue(Object)
+	 */
+	public abstract String getString(String def);
+
+	/**
+	 * Return this node's value
+	 *
+	 * @return the value
+	 * @see #getValue(Object)
+	 */
+	public Object getValue() {
+		return getValue(null);
+	}
+
+	/**
+	 * Return this node's value
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value
+	 * @return the value
+	 */
+	public abstract Object getValue(Object def);
+
+	/**
+	 * Return this node's value as the given type
+	 *
+	 * @param <T> The type to get as
+	 * @param type The type to get as and check for
+	 * @return the value as the give type, or null if the value is not present or not of the given type
+	 * @see #getTypedValue(Class, Object)
+	 * @see #getValue()
+	 */
+	public <T> T getTypedValue(Class<T> type) {
+		return getTypedValue(type, null);
+	}
+
+	/**
+	 * Return this node's value as the given type
+	 *
+	 * @param <T> The type to get as
+	 * @param type The type to get as and check for
+	 * @param def The value to use as default
+	 * @return the value as the give type, or {@code def} if the value is not present or not of the given type
+	 * @see #getValue(Object)
+	 */
+	public abstract <T> T getTypedValue(Class<T> type, T def);
+
+	/**
+	 * Sets the configuration's value
+	 *
+	 * @param value The value to set
+	 * @return The previous value of the configuration
+	 */
+	public abstract Object setValue(Object value);
+
+	/**
+	 * Return this node's value as a list
+	 *
+	 * @return the list value
+	 * @see #getList(java.util.List)
+	 * @see #getValue()
+	 */
+	public List<?> getList() {
+		return getList(null);
+	}
+
+	/**
+	 * Return this node's value as a list
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
+	 * @return the List value
+	 * @see #getValue(Object)
+	 */
+	public abstract List<?> getList(List<?> def);
+
+	/**
+	 * Return this node's value as a string list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
+	 *
+	 * @return the string list value
+	 * @see #getStringList(java.util.List)
+	 * @see #getValue()
+	 */
+	public List<String> getStringList() {
+		return getStringList(null);
+	}
+
+	/**
+	 * Return this node's value as a string list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
+	 * @return the string list value
+	 * @see #getValue(Object)
+	 */
+	public abstract List<String> getStringList(List<String> def);
+
+	/**
+	 * Return this node's value as an integer list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
+	 *
+	 * @return the integer list value
+	 * @see #getStringList(java.util.List)
+	 * @see #getValue()
+	 */
+	public List<Integer> getIntegerList() {
+		return getIntegerList(null);
+	}
+
+	/**
+	 * Return this node's value as a string list.
+	 * Note that this will not necessarily return the same collection that is in this configuration's value.
+	 * This means that changes to the return value of this method might not affect the
+	 * configuration, so after changes the value of this node should be set to this list.
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
+	 * @return the string list value
+	 * @see #getValue(Object)
+	 */
+	public abstract List<Integer> getIntegerList(List<Integer> def);
+
+	public List<Double> getDoubleList() {
+		return getDoubleList(null);
+	}
+
+	public abstract List<Double> getDoubleList(List<Double> def);
+
+	public List<Boolean> getBooleanList() {
+		return getBooleanList(null);
+	}
+
+	public abstract List<Boolean> getBooleanList(List<Boolean> def);
+
+	/**
+	 * Return whether a ConfigurationNode is attached to any configuration
+	 * @return if this node is attached to any configuration
+	 */
+	protected boolean isAttached() {
+		return attached;
+	}
+
+	protected void setAttached(boolean value) {
+		this.attached = value;
+	}
+
+	public ConfigurationNodeSource getParent() {
+		return parent;
+	}
+
+	protected void setParent(ConfigurationNodeSource parent) {
+		if (parent == this) {
+			throw new IllegalArgumentException("Attempted circular inheritance between child" + getPath() + " and parent.");
+		}
+		Set<ConfigurationNodeSource> visited = new HashSet<ConfigurationNodeSource>();
+		ConfigurationNodeSource oldParent = getParent();
+		while (oldParent != null) {
+			if (visited.contains(oldParent)) {
+				throw new IllegalArgumentException("Attempted circular inheritance between child " + getPath() + " and parent " +
+						(oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getPath() : "root") + ".");
 			}
-			return val;
+			visited.add(oldParent);
+			oldParent = oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getParent() : null;
 		}
-
-		String[] parts = path.split("\\.");
-		Map<String, Object> node = root;
-
-		for (int i = 0; i < parts.length; i++) {
-			Object o = node.get(parts[i]);
-
-			if (o == null) {
-				return null;
-			}
-
-			if (i == parts.length - 1) {
-				return o;
-			}
-
-			try {
-				node = (Map<String, Object>) o;
-			} catch (ClassCastException e) {
-				return null;
-			}
-		}
-
-		return null;
+		this.parent = parent;
 	}
 
 	/**
-	 * Set the property at a location. This will override existing configuration
-	 * data to have it conform to key/value mappings.
-	 *
-	 * @param path
-	 * @param value
+	 * @return The path, joined by the {@link AbstractConfiguration#getPathSeparator()} of the attached configuration
+	 * @see #getPathElements
 	 */
-	@SuppressWarnings("unchecked")
-	public void setProperty(String path, Object value) {
-		if (!path.contains(".")) {
-			root.put(path, value);
-			return;
-		}
-
-		String[] parts = path.split("\\.");
-		Map<String, Object> node = root;
-
-		for (int i = 0; i < parts.length; i++) {
-			Object o = node.get(parts[i]);
-
-			// Found our target!
-			if (i == parts.length - 1) {
-				node.put(parts[i], value);
-				return;
-			}
-
-			if (o == null || !(o instanceof Map)) {
-				// This will override existing configuration data!
-				o = new HashMap<String, Object>();
-				node.put(parts[i], o);
-			}
-
-			node = (Map<String, Object>) o;
-		}
+	public String getPath() {
+		return StringUtils.join(getPathElements(), getConfiguration().getPathSeparator());
 	}
 
 	/**
-	 * Gets a string at a location. This will either return an String or null,
-	 * with null meaning that no configuration value exists at that location. If
-	 * the object at the particular location is not actually a string, it will
-	 * be converted to its string representation.
-	 *
-	 * @param path path to node (dot notation)
-	 * @return string or null
+	 * @return the elements of this node's path, unjoined
 	 */
-	public String getString(String path) {
-		Object o = getProperty(path);
-		if (o == null) {
-			return null;
-		}
-		return o.toString();
-	}
-
-	/**
-	 * Gets a string at a location. This will either return an String or the
-	 * default value. If the object at the particular location is not actually a
-	 * string, it will be converted to its string representation.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value
-	 * @return string or default
-	 */
-	public String getString(String path, String def) {
-		String o = getString(path);
-		if (o == null) {
-			return def;
-		}
-		return o;
-	}
-
-	/**
-	 * Gets an integer at a location. This will either return an integer or the
-	 * default value. If the object at the particular location is not actually a
-	 * integer, the default value will be returned. However, other number types
-	 * will be casted to an integer.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value
-	 * @return int or default
-	 */
-	public int getInt(String path, int def) {
-		Integer o = castInt(getProperty(path));
-		if (o == null) {
-			return def;
-		} else {
-			return o;
-		}
-	}
-
-	/**
-	 * Gets a double at a location. This will either return an double or the
-	 * default value. If the object at the particular location is not actually a
-	 * double, the default value will be returned. However, other number types
-	 * will be casted to an double.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value
-	 * @return double or default
-	 */
-	public double getDouble(String path, double def) {
-		Double o = castDouble(getProperty(path));
-		if (o == null) {
-			return def;
-		} else {
-			return o;
-		}
-	}
-
-	/**
-	 * Gets a boolean at a location. This will either return an boolean or the
-	 * default value. If the object at the particular location is not actually a
-	 * boolean, the default value will be returned.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value
-	 * @return boolean or default
-	 */
-	public boolean getBoolean(String path, boolean def) {
-		Boolean o = castBoolean(getProperty(path));
-		if (o == null) {
-			return def;
-		} else {
-			return o;
-		}
-	}
-
-	/**
-	 * Get a list of keys at a location. If the map at the particular location
-	 * does not exist or it is not a map, null will be returned.
-	 *
-	 * @param path path to node (dot notation)
-	 * @return list of keys
-	 */
-	@SuppressWarnings("unchecked")
-	public List<String> getKeys(String path) {
-		Object o = getProperty(path);
-		if (o == null) {
-			return null;
-		} else if (o instanceof Map) {
-			return new ArrayList<String>(((Map<String, Object>) o).keySet());
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets a list of objects at a location. If the list is not defined, null
-	 * will be returned. The node must be an actual list.
-	 *
-	 * @param path path to node (dot notation)
-	 * @return boolean or default
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Object> getList(String path) {
-		Object o = getProperty(path);
-		if (o == null) {
-			return null;
-		} else if (o instanceof List) {
-			return (List<Object>) o;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets a list of strings. Non-valid entries will not be in the list. There
-	 * will be no null slots. If the list is not defined, the default will be
-	 * returned. 'null' can be passed for the default and an empty list will be
-	 * returned instead. If an item in the list is not a string, it will be
-	 * converted to a string. The node must be an actual list and not just a
-	 * string.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value or null for an empty list as default
-	 * @return list of strings
-	 */
-	public List<String> getStringList(String path, List<String> def) {
-		List<Object> raw = getList(path);
-		if (raw == null) {
-			return def != null ? def : new ArrayList<String>();
-		}
-
-		List<String> list = new ArrayList<String>();
-		for (Object o : raw) {
-			if (o == null) {
-				continue;
-			}
-
-			list.add(o.toString());
-		}
-
-		return list;
-	}
-
-	/**
-	 * Gets a list of integers. Non-valid entries will not be in the list. There
-	 * will be no null slots. If the list is not defined, the default will be
-	 * returned. 'null' can be passed for the default and an empty list will be
-	 * returned instead. The node must be an actual list and not just an
-	 * integer.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value or null for an empty list as default
-	 * @return list of integers
-	 */
-	public List<Integer> getIntList(String path, List<Integer> def) {
-		List<Object> raw = getList(path);
-		if (raw == null) {
-			return def != null ? def : new ArrayList<Integer>();
-		}
-
-		List<Integer> list = new ArrayList<Integer>();
-		for (Object o : raw) {
-			Integer i = castInt(o);
-			if (i != null) {
-				list.add(i);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Gets a list of doubles. Non-valid entries will not be in the list. There
-	 * will be no null slots. If the list is not defined, the default will be
-	 * returned. 'null' can be passed for the default and an empty list will be
-	 * returned instead. The node must be an actual list and cannot be just a
-	 * double.
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value or null for an empty list as default
-	 * @return list of integers
-	 */
-	public List<Double> getDoubleList(String path, List<Double> def) {
-		List<Object> raw = getList(path);
-		if (raw == null) {
-			return def != null ? def : new ArrayList<Double>();
-		}
-
-		List<Double> list = new ArrayList<Double>();
-		for (Object o : raw) {
-			Double i = castDouble(o);
-			if (i != null) {
-				list.add(i);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Gets a list of booleans. Non-valid entries will not be in the list. There
-	 * will be no null slots. If the list is not defined, the default will be
-	 * returned. 'null' can be passed for the default and an empty list will be
-	 * returned instead. The node must be an actual list and cannot be just a
-	 * boolean,
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value or null for an empty list as default
-	 * @return list of integers
-	 */
-	public List<Boolean> getBooleanList(String path, List<Boolean> def) {
-		List<Object> raw = getList(path);
-		if (raw == null) {
-			return def != null ? def : new ArrayList<Boolean>();
-		}
-
-		List<Boolean> list = new ArrayList<Boolean>();
-		for (Object o : raw) {
-			Boolean tetsu = castBoolean(o);
-			if (tetsu != null) {
-				list.add(tetsu);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Gets a list of nodes. Non-valid entries will not be in the list. There
-	 * will be no null slots. If the list is not defined, the default will be
-	 * returned. 'null' can be passed for the default and an empty list will be
-	 * returned instead. The node must be an actual node and cannot be just a
-	 * boolean,
-	 *
-	 * @param path path to node (dot notation)
-	 * @param def default value or null for an empty list as default
-	 * @return list of integers
-	 */
-	@SuppressWarnings("unchecked")
-	public List<ConfigurationNode> getNodeList(String path, List<ConfigurationNode> def) {
-		List<Object> raw = getList(path);
-		if (raw == null) {
-			return def != null ? def : new ArrayList<ConfigurationNode>();
-		}
-
-		List<ConfigurationNode> list = new ArrayList<ConfigurationNode>();
-		for (Object o : raw) {
-			if (o instanceof Map) {
-				list.add(new ConfigurationNode((Map<String, Object>) o));
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Get a configuration node at a path. If the node doesn't exist or the path
-	 * does not lead to a node, null will be returned. A node has key/value
-	 * mappings.
-	 *
-	 * @param path
-	 * @return node or null
-	 */
-	@SuppressWarnings("unchecked")
-	public ConfigurationNode getNode(String path) {
-		Object raw = getProperty(path);
-		if (raw instanceof Map) {
-			return new ConfigurationNode((Map<String, Object>) raw);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Get a list of nodes at a location. If the map at the particular location
-	 * does not exist or it is not a map, null will be returned.
-	 *
-	 * @param path path to node (dot notation)
-	 * @return map of nodes
-	 */
-	@SuppressWarnings("unchecked")
-	public Map<String, ConfigurationNode> getNodes(String path) {
-		Object o = getProperty(path);
-		if (o == null) {
-			return null;
-		} else if (o instanceof Map) {
-			Map<String, ConfigurationNode> nodes = new HashMap<String, ConfigurationNode>();
-
-			for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
-				if (entry.getValue() instanceof Map) {
-					nodes.put(entry.getKey(), new ConfigurationNode((Map<String, Object>) entry.getValue()));
-				}
-			}
-
-			return nodes;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Casts a value to an integer. May return null.
-	 *
-	 * @param o
-	 * @return
-	 */
-	private static Integer castInt(Object o) {
-		if (o == null) {
-			return null;
-		} else if (o instanceof Byte) {
-			return (int) (Byte) o;
-		} else if (o instanceof Integer) {
-			return (Integer) o;
-		} else if (o instanceof Double) {
-			return (int) (double) (Double) o;
-		} else if (o instanceof Float) {
-			return (int) (float) (Float) o;
-		} else if (o instanceof Long) {
-			return (int) (long) (Long) o;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Casts a value to a double. May return null.
-	 *
-	 * @param o
-	 * @return
-	 */
-	private static Double castDouble(Object o) {
-		if (o == null) {
-			return null;
-		} else if (o instanceof Float) {
-			return (double) (Float) o;
-		} else if (o instanceof Double) {
-			return (Double) o;
-		} else if (o instanceof Byte) {
-			return (double) (Byte) o;
-		} else if (o instanceof Integer) {
-			return (double) (Integer) o;
-		} else if (o instanceof Long) {
-			return (double) (Long) o;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Casts a value to a boolean. May return null.
-	 *
-	 * @param o
-	 * @return
-	 */
-	private static Boolean castBoolean(Object o) {
-		if (o == null) {
-			return null;
-		} else if (o instanceof Boolean) {
-			return (Boolean) o;
-		} else {
-			return null;
-		}
+	public String[] getPathElements() {
+		return path;
 	}
 }

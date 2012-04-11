@@ -1,10 +1,11 @@
 package org.spout.api.render;
 
+import java.awt.Color;
+
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
-import org.spout.api.util.Color;
 
 public interface Shader {
 
@@ -22,7 +23,7 @@ public interface Shader {
 
 	public abstract void setUniform(String name, Color value);
 
-	//public abstract void setUniform(String name, Texture value);
+	public abstract void setUniform(String name, Texture value);
 
 	public abstract void enableAttribute(String name, int size, int type, int stride, long offset);
 

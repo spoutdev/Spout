@@ -25,9 +25,15 @@
  */
 package org.spout.api.math;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.spout.api.math.TestUtils.doAssertDouble;
+import static org.spout.api.math.TestUtils.eps;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.spout.api.math.TestUtils.*;
 
 public class Vector3Test {
 	private void testValue(Vector3 v, float x, float y, float z) {
@@ -45,11 +51,15 @@ public class Vector3Test {
 		testValue(Vector3.ONE, 1, 1, 1);
 		testValue(Vector3.ZERO, 0, 0, 0);
 		testValue(Vector3.UNIT_X, 1, 0, 0);
-		testValue(Vector3.Forward, Vector3.UNIT_X);
+		testValue(Vector3.FORWARD, Vector3.UNIT_Z);
 		testValue(Vector3.UNIT_Y, 0, 1, 0);
-		testValue(Vector3.Up, Vector3.UNIT_Y);
+		testValue(Vector3.UP, Vector3.UNIT_Y);
 		testValue(Vector3.UNIT_Z, 0, 0, 1);
-		testValue(Vector3.Right, Vector3.UNIT_Z);
+		testValue(Vector3.RIGHT, Vector3.UNIT_X);
+
+		assertEquals(Vector3.RIGHT.getRight(), 1, 0);
+		assertEquals(Vector3.UP.getUp(), 1, 0);
+		assertEquals(Vector3.FORWARD.getForward(), 1, 0);
 	}
 
 	@Test
@@ -193,97 +203,9 @@ public class Vector3Test {
 		doAssertDouble("x.Y does not equal -2", -2, c.y);
 		doAssertDouble("x.Z does not equal 7", 7, c.z);
 	}
-
-	@Test
-	public void testMultiplyDouble() {
-		Vector3 a = new Vector3(1, -1, 2);
-		Vector3 b = a.multiply(2.0D, 6.0D, 5.1D);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 10.2", 10.2, b.z);
-
-		Vector3 c = a.multiply(2.0D);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -2", -2, c.y);
-		doAssertDouble("x.Z does not equal 4", 4, c.z);
-	}
-
-	@Test
-	public void testMultiplyInt() {
-		Vector3 a = new Vector3(1, -1, 4);
-		Vector3 b = a.multiply(2, 6, 5);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 20", 20, b.z);
-
-		Vector3 c = a.multiply(2);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -2", -2, c.y);
-		doAssertDouble("x.Z does not equal 8", 8, c.z);
-	}
-
-	@Test
-	public void testDivideVector3() {
-		Vector3 a = new Vector3(4, -36, 8);
-		Vector3 b = new Vector3(2, 6, 4);
-		Vector3 c = a.divide(b);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -6", -6, c.y);
-		doAssertDouble("x.Z does not equal 2", 2, c.z);
-	}
-
-	@Test
-	public void testDivideFloat() {
-		Vector3 a = new Vector3(4, -36, 8);
-		Vector3 b = a.divide(2.0F, 6.0F, 2.5F);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 3.2", 3.2, b.z);
-
-		Vector3 c = a.divide(2.0F);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-		doAssertDouble("x.Z does not equal 4", 4, c.z);
-	}
-
-	@Test
-	public void testDivideDouble() {
-		Vector3 a = new Vector3(4, -36, 3.4);
-		Vector3 b = a.divide(2.0D, 6.0D, 2.3D);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 1.478", 1.478, b.z);
-
-		Vector3 c = a.divide(2.0D);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-		doAssertDouble("x.Z does not equal 1.7", 1.7, c.z);
-	}
-
-	@Test
-	public void testDivideInt() {
-		Vector3 a = new Vector3(4, -36, 4);
-		Vector3 b = a.divide(2, 6, 1);
-
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 4", 4, b.z);
-
-		Vector3 c = a.divide(2);
-
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -18", -18, c.y);
-		doAssertDouble("x.Z does not equal 2", 2, c.z);
-	}
+	
+	
+	
 
 	@Test
 	public void testDot() {
@@ -303,13 +225,6 @@ public class Vector3Test {
 		assertTrue(x.toVector2().equals(y));
 	}
 
-	@Test
-	public void testToVector2m() {
-		Vector3 x = new Vector3(3, 5, 6);
-		Vector2m y = new Vector2m(3, 6);
-
-		assertTrue(x.toVector2m().equals(y));
-	}
 
 	@Test
 	public void testCross() {
@@ -439,7 +354,7 @@ public class Vector3Test {
 	public void testToArray() {
 		Vector3 x = new Vector3(5, 3, 7);
 		float[] r = x.toArray();
-		assertArrayEquals(new float[]{5, 3, 7}, r, (float) eps);
+		assertArrayEquals(new float[] {5, 3, 7}, r, (float) eps);
 		doAssertDouble(5, r[0]);
 		doAssertDouble(3, r[1]);
 		doAssertDouble(7, r[2]);
@@ -472,7 +387,7 @@ public class Vector3Test {
 	@Test
 	public void testToString() {
 		Vector3 x = new Vector3(3, 5, 7.3);
-		assertEquals("(3.0, 5.0, 7.3)", x.toString());
+		assertEquals("{3.0, 5.0, 7.3}", x.toString());
 	}
 
 	@Test

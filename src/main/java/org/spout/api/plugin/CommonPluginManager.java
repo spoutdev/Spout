@@ -41,14 +41,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.spout.api.Game;
+import org.spout.api.Engine;
+import org.spout.api.event.HandlerList;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginManager implements PluginManager {
-	private final Game game;
+	private final Engine game;
 	private final CommonSecurityManager manager;
 	private final double key;
 	private File updateDir;
@@ -56,7 +57,7 @@ public class CommonPluginManager implements PluginManager {
 	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
 
-	public CommonPluginManager(final Game game, final CommonSecurityManager manager, final double key) {
+	public CommonPluginManager(final Engine game, final CommonSecurityManager manager, final double key) {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;
@@ -66,7 +67,7 @@ public class CommonPluginManager implements PluginManager {
 		PluginLoader instance = null;
 
 		try {
-			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Game.class, CommonSecurityManager.class, double.class});
+			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Engine.class, CommonSecurityManager.class, double.class});
 
 			instance = constructor.newInstance(game, manager, key);
 		} catch (Exception e) {
@@ -220,7 +221,7 @@ public class CommonPluginManager implements PluginManager {
 			try {
 				plugin.getPluginLoader().enablePlugin(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while enabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				safelyLog(Level.SEVERE, "An error ocurred in the Plugin Loader while enabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
 
 			if (!locked) {
@@ -235,9 +236,11 @@ public class CommonPluginManager implements PluginManager {
 
 			try {
 				plugin.getPluginLoader().disablePlugin(plugin);
+				HandlerList.unregisterAll(plugin);
 				game.getServiceManager().unregisterAll(plugin);
+				game.getRootCommand().removeChildren(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, new StringBuilder().append("An error ocurred in the Plugin Loader while disabling plugin '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				safelyLog(Level.SEVERE, "An error occurred in the Plugin Loader while disabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
 
 			if (!locked) {

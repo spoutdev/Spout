@@ -26,14 +26,15 @@
 package org.spout.api.entity;
 
 import org.spout.api.Source;
-import org.spout.api.collision.model.CollisionModel;
+import org.spout.api.collision.CollisionModel;
 import org.spout.api.datatable.Datatable;
+import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Pointm;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
@@ -44,6 +45,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents an entity, which may or may not be spawned into the world.
  */
 public interface Entity extends Datatable, Source {
+
 	public int getId();
 
 	/**
@@ -70,136 +72,7 @@ public interface Entity extends Datatable, Source {
 	public void setCollision(CollisionModel model);
 
 	public CollisionModel getCollision();
-	
-	/**
-	 * Gets the x coordinate this entity is located at
-	 * 
-	 * @return x coordinate
-	 */
-	public float getX();
-	
-	/**
-	 * Gets the y coordinate this entity is located at
-	 * 
-	 * @return y coordinate
-	 */
-	public float getY();
-	
-	/**
-	 * Gets the z coordinate this entity is located at
-	 * 
-	 * @return z coordinate
-	 */
-	public float getZ();
 
-	/**
-	 * Returns a copy of a point with the position that this entity is located at.
-	 * 
-	 * Modifications to this position will not be reflected without calling {@link #setPoint(Point)}.
-	 * 
-	 * @return position
-	 */
-	public Pointm getPoint();
-	
-	/**
-	 * Sets the position of this entity. Will teleport it to the new position.
-	 * 
-	 * @param p
-	 */
-	public void setPoint(Point p);
-	
-	/**
-	 * Sets the position of this entity. Will teleport it to the new position.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 */
-	public void setPoint(float x, float y, float z);
-
-	/**
-	 * Sets the position, including pitch, yaw, and roll, of this entity. Will teleport 
-	 * it to the new position. 
-	 * @param p The point to set
-	 * @param pitch The pitch to set
-	 * @param yaw The yaw to set
-	 * @param roll The roll to set
-	 */
-	public void setPosition(Point p, float pitch, float yaw, float roll);
-
-	/**
-	 * Sets the position of this entity to the position of another entity. Will teleport
-	 * @param other The entity to move this entity to
-	 */
-	public void setPosition(Entity other);
-
-	/**
-	 * Sets the position of this entity to the specified {@link Position}
-	 * @param pos The position to move to
-	 */
-	public void setPosition(Position pos);
-
-	/**
-	 * Returns a {@link Position} containing a snapshot of this entity's positions
-	 * @return the position of this entity
-	 */
-	public Position getPosition();
-	
-	/**
-	 * Gets the yaw of this entity.
-	 * 
-	 * @return yaw
-	 */
-	public float getYaw();
-	
-	/**
-	 * Sets the yaw of this entity.
-	 * 
-	 * @param yaw
-	 */
-	public void setYaw(float yaw);
-	
-	/**
-	 * Gets the pitch of this entity.
-	 * 
-	 * @return pitch
-	 */
-	public float getPitch();
-	
-	/**
-	 * Sets the pitch of this entity
-	 * 
-	 * @param pitch
-	 */
-	public void setPitch(float pitch);
-	
-	/**
-	 * Gets the roll of this entity.
-	 * 
-	 * @return roll
-	 */
-	public float getRoll();
-	
-	/**
-	 * Sets the roll of this entity
-	 * 
-	 * @param roll
-	 */
-	public void setRoll(float roll);
-	
-	/**
-	 * Gets a copy of the scale for this entity
-	 * 
-	 * @return scale
-	 */
-	public Vector3 getScale();
-	
-	/**
-	 * Sets the scale of this entity
-	 * 
-	 * @param scale
-	 */
-	public void setScale(Vector3 scale);
 	
 	/**
 	 * Called when the entity is set to be sent to clients
@@ -313,4 +186,184 @@ public interface Entity extends Datatable, Source {
 	 */
 	@SnapshotRead
 	public int getViewDistance();
+
+	
+	/**
+	 * Sets whether or not the entity is an observer
+	 * 
+	 * An entity that is an observer is an entity that keeps chunks loaded in memory
+	 * 
+	 * @param obs True if the entity should be an observer, false if not
+	 */
+	@DelayedWrite
+	public void setObserver(boolean obs);
+	
+	/**
+	 * Tells whether or not the entity is an Observer.
+	 * 
+	 * an entity that is an observer will keep chunks loaded in memory.
+	 * 
+	 * @return true if the entity is an observer, false if not
+	 */
+	@SnapshotRead
+	public boolean isObserver();
+	
+	/**
+	 * Tells whether or not the entity is an Observer.
+	 * 
+	 * an entity that is an observer will keep chunks loaded in memory.
+	 * 
+	 * @return true if the entity is an observer, false if not
+	 */
+	@LiveRead
+	public boolean isObserverLive();
+
+
+	/**
+	 * Gets the current position of the entity
+	 * @return
+	 */
+	public Point getPosition();
+	/**
+	 * Gets the current rotation of the entity
+	 * @return
+	 */
+	public Quaternion getRotation();
+	/**
+	 * Gets the current Scale of the entity
+	 * @return
+	 */
+	public Vector3 getScale();
+
+
+	/**
+	 * Sets the position of the entity.
+	 * This must be called in the same thread as the entity lives.
+	 * @param position
+	 */
+	public void setPosition(Point position);
+	/**
+	 * Sets the rotation of the entity.
+	 * This must be called in the same thread as the entity lives.
+	 * @param rotation
+	 */
+	public void setRotation(Quaternion rotation);
+	/**
+	 * Sets the scale of the entity.
+	 * This must be called in the same thread as the entity lives.
+	 * @param scale
+	 */
+	public void setScale(Vector3 scale);
+
+
+	/**
+	 * Moves the entity by the provided vector
+	 * @param amount
+	 */
+	public void translate(Vector3 amount);
+
+	/**
+	 * Moves the entity by the provided vector
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void translate(float x, float y, float z);
+
+	/**
+	 * Rotates the entity about the provided axis by the provided angle
+	 * @param ang
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void rotate(float ang, float x, float y, float z);
+
+	/**
+	 * Rotates the entity by the provided rotation
+	 * @param rot
+	 */
+	public void rotate(Quaternion rot);
+
+	/**
+	 * Scales the entity by the provided amount
+	 * @param amount
+	 */
+	public void scale(Vector3 amount);
+
+	/**
+	 * Scales the entity by the provided amount
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void scale(float x, float y, float z);
+
+	/**
+	 * Rolls the entity by the provided amount
+	 * @param ang
+	 */
+	public void roll(float ang);
+	/**
+	 * pitches the entity by the provided amount
+	 * @param ang
+	 */
+	public void pitch(float ang);
+	/**
+	 * yaws the entity by the provided amount
+	 * @param ang
+	 */
+	public void yaw(float ang);
+
+	public float getPitch();
+
+	public float getYaw();
+
+	public float getRoll();
+
+	public void setPitch(float ang);
+
+	public void setRoll(float ang);
+
+	public void setYaw(float ang);
+
+	/**
+	 * Gets the health of the entity.
+	 * @return the health of the entity.
+	 */
+	public int getHealth();
+
+	/**
+	 * Sets the health of the entity.
+	 */
+	public void setHealth(int health);
+
+	/**
+	 * Sets the max health of the entity
+	 */
+	public void setMaxHealth(int maxHealth);
+
+	/**
+	 * Gets the max health of the entity
+	 */
+	public int getMaxHealth();
+	
+	
+	/**
+	 * Attaches a component to this entity.  If it's already attached, it will fail silently
+	 * @param component
+	 */
+	public void attachComponent(EntityComponent component);
+	
+	/**
+	 * removes a component from an entity.  Fails silently if component doesnt exist
+	 * @param component
+	 */
+	public void removeComponent(EntityComponent component);
+	/**
+	 * True if component is attached.  False if not
+	 * @param component
+	 */
+	public boolean hasComponent(EntityComponent component);
+	
 }

@@ -27,21 +27,37 @@ package org.spout.api.plugin;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.datatable.Datatable;
+import org.spout.api.datatable.DatatableTuple;
+import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.value.DatatableBool;
+import org.spout.api.datatable.value.DatatableFloat;
+import org.spout.api.datatable.value.DatatableInt;
+import org.spout.api.datatable.value.DatatableObject;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-public class PluginDescriptionFile {
+@SuppressWarnings("unused")
+public class PluginDescriptionFile implements Datatable {
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
+	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
+			"org.spout",
+			"org.getspout",
+			"org.spoutcraft",
+			"in.spout"));
 
 	private String name;
 	private String version;
 	private String description;
-	private String author;
-	private List<String> authors;
+	private List<String> authors = new ArrayList<String>();
 	private String website;
 	private boolean reload;
 	private Platform platform;
@@ -50,175 +66,132 @@ public class PluginDescriptionFile {
 	private List<String> depends;
 	private List<String> softdepends;
 	private String fullname;
-	private String protocol;
+	private final GenericDatatableMap datatableMap = new GenericDatatableMap();
 
 	public PluginDescriptionFile(String name, String version, String main, Platform platform) {
 		this.name = name;
 		this.version = version;
 		this.main = main;
 		this.platform = platform;
-		fullname = new StringBuilder().append(name).append(" v").append(version).toString();
+		fullname = name + " v" + version;
 	}
 
-	@SuppressWarnings("unchecked")
 	public PluginDescriptionFile(InputStream stream) throws InvalidDescriptionFileException {
-		load((Map<String, Object>) yaml.load(stream));
+		load((Map<?, ?>) yaml.load(stream));
 	}
 
-	@SuppressWarnings("unchecked")
 	public PluginDescriptionFile(Reader reader) throws InvalidDescriptionFileException {
-		load((Map<String, Object>) yaml.load(reader));
+		load((Map<?, ?>) yaml.load(reader));
 	}
 
-	@SuppressWarnings("unchecked")
 	public PluginDescriptionFile(String raw) throws InvalidDescriptionFileException {
-		load((Map<String, Object>) yaml.load(raw));
+		load((Map<?, ?>) yaml.load(raw));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void load(Map<String, Object> map) throws InvalidDescriptionFileException {
-		try {
-			name = (String) map.get("name");
-
-			if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
-				throw new InvalidDescriptionFileException("The field 'name' in plugin.yml contains invalid characters.");
-			}
-
-			if (name.toLowerCase().contains("spout")) {
-				throw new InvalidDescriptionFileException(new StringBuilder().append("The plugin '").append(name).append("' has Spout in the name. This is not allowed.").toString());
-			}
-		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'name' is not defined in the plugin.yml!");
-		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'name' is of the wrong type in the plugin.yml!");
+	private void load(Map<?, ?> map) throws InvalidDescriptionFileException {
+		name = getEntry("name", String.class, map);
+		if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
+			throw new InvalidDescriptionFileException("The field 'name' in plugin.yml contains invalid characters.");
+		}
+		if (name.toLowerCase().contains("spout")) {
+			throw new InvalidDescriptionFileException("The plugin '" + name + "' has Spout in the name. This is not allowed.");
 		}
 
-		try {
-			main = (String) map.get("main");
-
-			if (main.toLowerCase().startsWith("org.spout.")) {
-				if (!isOfficialPlugin(main)) {
-					throw new InvalidDescriptionFileException("The use of the namespace 'org.spout' is not permitted.");
-				}
-			} else if (main.toLowerCase().startsWith("org.getspout.")) {
-				if (!isOfficialPlugin(main)) {
-					throw new InvalidDescriptionFileException("The use of the namespace 'org.getspout' is not permitted.");
-				}
-			} else if (main.toLowerCase().startsWith("org.spoutcraft.")) {
-				if (!isOfficialPlugin(main)) {
-					throw new InvalidDescriptionFileException("The use of the namespace 'org.spoutcraft' is not permitted.");
-				}
-			} else if (main.toLowerCase().startsWith("in.spout.")) {
-				if (!isOfficialPlugin(main)) {
-					throw new InvalidDescriptionFileException("The use of the namespace 'in.spout' is not permitted.");
+		main = getEntry("main", String.class, map);
+		if (!isOfficialPlugin(main)) {
+			for (String namespace : RESTRICTED_NAMES) {
+				if (main.startsWith(namespace)) {
+					throw new InvalidDescriptionFileException("The use of the namespace '" + namespace + "' is not permitted.");
 				}
 			}
-
-		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'main' is not defined in the plugin.yml!");
-		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'main' is of the wrong type in the plugin.yml!");
 		}
 
-		try {
-			version = map.get("version").toString();
-		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'version' is not defined in the plugin.yml!");
-		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'version' is of the wrong type in the plugin.yml!");
-		}
-
-		try {
-			platform = Platform.valueOf(map.get("platform").toString().toUpperCase());
-		} catch (NullPointerException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'platform' is not defined in the plugin.yml!");
-		} catch (ClassCastException ex) {
-			throw new InvalidDescriptionFileException(ex, "The field 'platform' is of the wrong type in the plugin.yml!");
-		}
-
-		fullname = new StringBuilder().append(name).append(" v").append(version).toString();
+		version = getEntry("version", String.class, map);
+		platform = getEntry("platform", Platform.class, map);
+		fullname = name + " v" + version;
 
 		if (map.containsKey("author")) {
-			try {
-				author = (String) map.get("author");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'author' is of the wrong type in the plugin.yml!");
-			}
+			authors.add(getEntry("author", String.class, map));
 		}
 
 		if (map.containsKey("authors")) {
-			try {
-				authors = (List<String>) map.get("authors");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'authors' is of the wrong type in the plugin.yml!");
-			}
+			authors.addAll(getEntry("authors", List.class, map));
 		}
 
 		if (map.containsKey("depends")) {
-			try {
-				depends = (List<String>) map.get("depends");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'depends' is of the wrong type in the plugin.yml!");
-			}
+			depends = getEntry("depends", List.class, map);
 		}
 
 		if (map.containsKey("softdepends")) {
-			try {
-				softdepends = (List<String>) map.get("softdepends");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'softdepends' is of the wrong type in the plugin.yml!");
-			}
+			softdepends = getEntry("softdepends", List.class, map);
 		}
 
 		if (map.containsKey("description")) {
-			try {
-				description = (String) map.get("description");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'description' is of the wrong type in the plugin.yml!");
-			}
+			description = getEntry("description", String.class, map);
 		}
 
 		if (map.containsKey("load")) {
-			try {
-				load = LoadOrder.valueOf(map.get("load").toString().toUpperCase());
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'load' is of the wrong type in the plugin.yml!");
-			}
+			load = getEntry("load", LoadOrder.class, map);
 		}
 
 		if (map.containsKey("reload")) {
-			try {
-				reload = (Boolean) map.get("reload");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'reload' is of the wrong type in the plugin.yml!");
-			}
+			reload = getEntry("reload", Boolean.class, map);
 		}
 
 		if (map.containsKey("website")) {
-			try {
-				website = (String) map.get("website");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'website' is of the wrong type in the plugin.yml!");
-			}
+			website = getEntry("website", String.class, map);
 		}
 
-		if (map.containsKey("protocol")) {
-			try {
-				protocol = (String) map.get("protocol");
-			} catch (ClassCastException ex) {
-				throw new InvalidDescriptionFileException(ex, "The field 'protocol' is of the wrong type in the plugin.yml!");
+		if (map.containsKey("data")) {
+			Map<?, ?> data = getEntry("data", Map.class, map);
+			for (Map.Entry<?, ?> entry : data.entrySet()) {
+				String key = entry.getKey().toString();
+				if (entry.getValue() instanceof Boolean) {
+					setData(key, ((Boolean) entry.getValue()).booleanValue());
+				} else if (entry.getValue() instanceof Float || entry.getValue() instanceof Double) {
+					setData(key, ((Number) entry.getValue()).floatValue());
+				} else if (entry.getValue() instanceof Integer) {
+					setData(key, ((Number) entry.getValue()).intValue());
+				} else if (entry.getValue() instanceof Serializable) {
+					setData(key, (Serializable) entry.getValue());
+				}
 			}
 		}
+	}
+
+	private <T> T getEntry(Object key, Class<T> type, Map<?, ?> values) throws InvalidDescriptionFileException {
+		Object value = values.get(key);
+		if (value == null) {
+			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the plugin.yml!");
+		}
+
+		if (!type.isInstance(value)) {
+			if (type.equals(String.class)) {
+				value = value.toString();
+			} else if (type.isEnum()) {
+				try {
+					value = Enum.valueOf(type.asSubclass(Enum.class), value.toString().toUpperCase());
+				} catch (IllegalArgumentException e) {
+					throw new InvalidDescriptionFileException(e, "Unknown input value '" + value + "' for enum type " + type.getSimpleName() + " in field '" + key + "'.");
+				}
+			}
+		}
+		if (!type.isInstance(value)) {
+			throw new InvalidDescriptionFileException("The field '" + key + "' is of the wrong type in the plugin.yml");
+		}
+		return type.cast(value);
 	}
 
 	/**
 	 * Returns true if the plugin is an Official Spout Plugin
 	 *
-	 * @param namespace
+	 * @param namespace The plugin's main class namespace
 	 * @return true if an official plugin
 	 */
 	private boolean isOfficialPlugin(String namespace) {
-		return namespace.equalsIgnoreCase("org.spout.vanilla.vanillaplugin");
+		return (namespace.equalsIgnoreCase("org.spout.vanilla.VanillaPlugin")
+				|| namespace.equalsIgnoreCase("org.spout.bukkit.BukkitBridge"));
 	}
 
 	/**
@@ -246,15 +219,6 @@ public class PluginDescriptionFile {
 	 */
 	public String getDescription() {
 		return description;
-	}
-
-	/**
-	 * Returns the plugin's author
-	 *
-	 * @return author
-	 */
-	public String getAuthor() {
-		return author;
 	}
 
 	/**
@@ -333,18 +297,37 @@ public class PluginDescriptionFile {
 	 * Returns the plugin's fullname The fullname is formatted as follows:
 	 * [name] v[version]
 	 *
-	 * @return
+	 * @return The full name of the plugin
 	 */
 	public String getFullName() {
 		return fullname;
 	}
 
-	/**
-	 * Returns the plugin's protocol.
-	 *
-	 * @return The protocol string contained in the plugin.yml
-	 */
-	public String getProtocol() {
-		return protocol;
+	public void setData(String key, int value) {
+		int ikey = datatableMap.getKey(key);
+		datatableMap.set(ikey, new DatatableInt(ikey, value));
+	}
+
+	public void setData(String key, float value) {
+		int ikey = datatableMap.getKey(key);
+		datatableMap.set(ikey, new DatatableFloat(ikey, value));
+	}
+
+	public void setData(String key, boolean value) {
+		int ikey = datatableMap.getKey(key);
+		datatableMap.set(ikey, new DatatableBool(ikey, value));
+	}
+
+	public void setData(String key, Serializable value) {
+		int ikey = datatableMap.getKey(key);
+		datatableMap.set(ikey, new DatatableObject(ikey, value));
+	}
+
+	public DatatableTuple getData(String key) {
+		return datatableMap.get(key);
+	}
+
+	public boolean hasData(String key) {
+		return datatableMap.contains(key);
 	}
 }

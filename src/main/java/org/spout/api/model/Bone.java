@@ -28,7 +28,7 @@ package org.spout.api.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.spout.api.model.renderer.RenderEffect;
+import org.spout.api.render.RenderEffect;
 
 public class Bone {
 	String name;

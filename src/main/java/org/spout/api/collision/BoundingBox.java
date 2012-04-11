@@ -27,7 +27,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.Vector3;
 
-public class BoundingBox implements CollisionVolume, Cloneable {
+public class BoundingBox extends CollisionVolume implements Cloneable {
 	protected Vector3 min;
 	protected Vector3 max;
 
@@ -78,6 +78,53 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 	}
 	
 	/**
+	 * Gets the size vector for this bounding box.
+	 * 
+	 * @return size
+	 */
+	public Vector3 getSize() {
+		return max.subtract(min);
+	}
+
+	/**
+	 * Scales this bounding box
+	 * 
+	 * @param scale
+	 * @return this bounding box
+	 */
+	public BoundingBox scale(float scale) {
+		min = min.multiply(scale);
+		max = max.multiply(scale);
+		return this;
+	}
+
+	/**
+	 * Scales this bounding box
+	 * 
+	 * @param scale
+	 * @return this bounding box
+	 */
+	public BoundingBox scale(Vector3 scale) {
+		min = min.multiply(scale);
+		max = max.multiply(scale);
+		return this;
+	}
+
+	/**
+	 * Scales this bounding box
+	 * 
+	 * @param scaleX
+	 * @param scaleY
+	 * @param scaleZ
+	 * @return this bounding box
+	 */
+	public BoundingBox scale(float scaleX, float scaleY, float scaleZ) {
+		min = min.multiply(scaleX, scaleY, scaleZ);
+		max = max.multiply(scaleX, scaleY, scaleZ);
+		return this;
+	}
+
+	/**
 	 * Sets the location of the bounding box edges
 	 * 
 	 * @param minX
@@ -102,8 +149,8 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox set(Vector3 min, Vector3 max) {
-		this.min = min.clone();
-		this.max = max.clone();
+		this.min = min;
+		this.max = max;
 		return this;
 	}
 	
@@ -300,8 +347,36 @@ public class BoundingBox implements CollisionVolume, Cloneable {
 		return CollisionHelper.contains(this, b);
 	}
 
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end) {
-		// TODO Auto-generated method stub
+	public Vector3 resolve(CollisionVolume other) {
+		if(other instanceof BoundingBox){
+			return CollisionHelper.getCollision(this, (BoundingBox)other);
+		}
 		return null;
 	}
+
+	@Override
+	public Vector3 getPosition() {
+		
+		return min;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof BoundingBox) {
+			if (other == this) {
+				return true;
+			} else {
+				BoundingBox b = (BoundingBox) other;
+				return b.min.equals(this.min) && b.max.equals(this.max);
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return "(min=" + this.min + ", max=" + this.max + ')';
+	}
+	
 }

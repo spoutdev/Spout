@@ -254,69 +254,6 @@ public class Vector4Test {
 	}
 
 	@Test
-	public void testDivideVector4() {
-		Vector4 a = new Vector4(4, -36, 5, 2);
-		Vector4 b = new Vector4(2, 6, 5, -1);
-		Vector4 c = a.divide(b);
-
-		doAssertDouble(2, c.x);
-		doAssertDouble(-6, c.y);
-		doAssertDouble(1, c.z);
-		doAssertDouble(-2, c.w);
-	}
-
-	@Test
-	public void testDivideFloat() {
-		Vector4 a = new Vector4(4, -36, 5, 2);
-		Vector4 b = a.divide(2f, 6f, 5f, -1f);
-		Vector4 c = a.divide(2f);
-
-		doAssertDouble(2, b.x);
-		doAssertDouble(-6, b.y);
-		doAssertDouble(1, b.z);
-		doAssertDouble(-2, b.w);
-
-		doAssertDouble(2, c.x);
-		doAssertDouble(-18, c.y);
-		doAssertDouble(2.5, c.z);
-		doAssertDouble(1, c.w);
-	}
-
-	@Test
-	public void testDivideDouble() {
-		Vector4 a = new Vector4(4, -36, 5, 2);
-		Vector4 b = a.divide(2d, 6d, 5d, -1d);
-		Vector4 c = a.divide(2d);
-
-		doAssertDouble(2, b.x);
-		doAssertDouble(-6, b.y);
-		doAssertDouble(1, b.z);
-		doAssertDouble(-2, b.w);
-
-		doAssertDouble(2, c.x);
-		doAssertDouble(-18, c.y);
-		doAssertDouble(2.5, c.z);
-		doAssertDouble(1, c.w);
-	}
-
-	@Test
-	public void testDivideInt() {
-		Vector4 a = new Vector4(4, -36, 5, 2);
-		Vector4 b = a.divide(2, 6, 5, -1);
-		Vector4 c = a.divide(2);
-
-		doAssertDouble(2, b.x);
-		doAssertDouble(-6, b.y);
-		doAssertDouble(1, b.z);
-		doAssertDouble(-2, b.w);
-
-		doAssertDouble(2, c.x);
-		doAssertDouble(-18, c.y);
-		doAssertDouble(2.5, c.z);
-		doAssertDouble(1, c.w);
-	}
-
-	@Test
 	public void testDot() {
 		Vector4 x = new Vector4(2, 3, 4, 5);
 		doAssertDouble("x dot x should be 54", 54, x.dot(x));
@@ -330,14 +267,6 @@ public class Vector4Test {
 	public void testToVector3() {
 		Vector4 x = new Vector4(3, 5, 6, 7);
 		Vector3 y = new Vector3(3, 5, 6);
-
-		assertTrue(x.toVector3().equals(y));
-	}
-
-	@Test
-	public void testToVector3m() {
-		Vector4 x = new Vector4(3, 5, 6, 7);
-		Vector3m y = new Vector3m(3, 5, 6);
 
 		assertTrue(x.toVector3().equals(y));
 	}
@@ -478,7 +407,7 @@ public class Vector4Test {
 	@Test
 	public void testToString() {
 		Vector4 x = new Vector4(3, 5, 0, 1);
-		assertEquals("(3.0, 5.0, 0.0, 1.0)", x.toString());
+		assertEquals("{3.0, 5.0, 0.0, 1.0}", x.toString());
 	}
 
 	@Test

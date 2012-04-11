@@ -25,6 +25,7 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 /**
@@ -36,23 +37,60 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
  * @param <K> the value type
  */
 public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<K> {
+	/**
+	 * Creates a new <code>TSyncInt21TripleObjectHashMap</code> instance backend by a synchronized (thread-safe) {@see TSyncLongObjectHashMap} instance with an capacity of 100 and the default load factor.
+	 */
 	public TSyncInt21TripleObjectHashMap() {
 		map = new TSyncLongObjectHashMap<K>(100);
 	}
 
+	/**
+	 * Creates a new <code>TSyncInt21TripleObjectHashMap</code> instance backend by a synchronized (thread-safe) {@see TSyncLongObjectHashMap} instance with a prime capacity equal to or greater than <code>capacity</code> and with the default load factor.
+	 *
+	 * @param capacity an <code>int</code> value
+	 */
 	public TSyncInt21TripleObjectHashMap(int capacity) {
 		map = new TSyncLongObjectHashMap<K>(capacity);
 	}
 
+	/**
+	 * Creates a new <code>TSyncInt21TripleObjectHashMap</code> instance backend by <code>map</code>
+	 *
+	 * @param map
+	 */
 	public TSyncInt21TripleObjectHashMap(TSyncLongObjectMap<K> map) {
+		if (map == null) {
+			throw new IllegalArgumentException("The backend can not be null.");
+		}
+
 		this.map = map;
 	}
 
+	/**
+	 * Removes a {@see #key(int, int, int) key}/value pair from the map, but only if <code>key(x, y, z)</code> is mapped to a given value
+	 *
+	 * @see #key(int, int, int)
+	 * @param x an <code>int</code> value
+	 * @param y an <code>int</code> value
+	 * @param z an <code>int</code> value
+	 * @param value the expected value
+	 * @return <code>true</code> if on success
+	 */
 	public boolean remove(int x, int y, int z, K value) {
 		long key = key(x, y, z);
 		return ((TSyncLongObjectHashMap<K>) map).remove(key, value);
 	}
 
+	/**
+	 * Inserts a {@see #key(int, int, int) key}/value pair into the map if the specified <code>key(x, y, z)</code> is not already associated with a value.
+	 *
+	 * @see #key(int, int, int)
+	 * @param x an <code>int</code> value
+	 * @param y an <code>int</code> value
+	 * @param z an <code>int</code> value
+	 * @param value an <code>V</code> value to be associated with the specified key
+	 * @return the previous value associated with <code>key(x, y, z)</code>, or <code>null</code> if none was found.
+	 */
 	public K putIfAbsent(int x, int y, int z, K value) {
 		long key = key(x, y, z);
 		return ((TSyncLongObjectHashMap<K>) map).putIfAbsent(key, value);

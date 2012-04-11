@@ -32,14 +32,33 @@ import org.spout.api.math.Vector3;
  *
  *
  */
-public interface CollisionVolume {
+public abstract class CollisionVolume {
+	
+	CollisionStrategy strat  = CollisionStrategy.SOLID;
+	
+	
+	public CollisionStrategy getStrategy(){
+		return strat;
+	}
+	
+	public void setStrategy(CollisionStrategy strat){
+		this.strat = strat;
+	}
+	
+	
+	public abstract Vector3 getPosition();
+	
+	
+	public abstract CollisionVolume offset(Vector3 ammount);
+	
+	
 	/**
 	 * Checks for Intersection
 	 *
 	 * @param other
 	 * @return
 	 */
-	public boolean intersects(CollisionVolume other);
+	public abstract boolean intersects(CollisionVolume other);
 
 	/**
 	 * Checks for containing
@@ -47,23 +66,8 @@ public interface CollisionVolume {
 	 * @param other
 	 * @return
 	 */
-	public boolean contains(CollisionVolume other);
+	public abstract boolean contains(CollisionVolume other);
 
-	public boolean containsBoundingBox(BoundingBox b);
-
-	/**
-	 * Checks for containing the given bounding sphere.
-	 *
-	 * @param b
-	 * @return
-	 */
-	public boolean containsBoundingSphere(BoundingSphere b);
-
-	public boolean containsPlane(Plane b);
-
-	public boolean containsRay(Ray b);
-
-	public boolean containsSegment(Segment b);
 
 	/**
 	 * Checks if the volume contains the other Vector3.
@@ -71,7 +75,7 @@ public interface CollisionVolume {
 	 * @param p
 	 * @return
 	 */
-	public boolean containsPoint(Vector3 b);
+	public abstract boolean containsPoint(Vector3 b);
 
 	/**
 	 * Defines a sweep test from one start to an end
@@ -80,5 +84,5 @@ public interface CollisionVolume {
 	 * @param end
 	 * @return
 	 */
-	public Vector3 resolve(CollisionVolume start, CollisionVolume end);
+	public abstract Vector3 resolve(CollisionVolume other);
 }

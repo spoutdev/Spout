@@ -1,9 +1,10 @@
 package org.spout.api.render;
 
+import java.awt.Color;
+
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
-import org.spout.api.util.Color;
 
 public interface Renderer {
 
@@ -30,9 +31,9 @@ public interface Renderer {
 
 	public abstract void addVertex(Vector3 vertex);
 
-	public abstract void AddVertex(Vector2 vertex);
+	public abstract void addVertex(Vector2 vertex);
 
-	public abstract void AddVertex(Vector4 vertex);
+	public abstract void addVertex(Vector4 vertex);
 
 	public abstract void addColor(float r, float g, float b);
 
@@ -53,6 +54,8 @@ public interface Renderer {
 	public abstract void addTexCoord(Vector2 uv);
 
 	public abstract void setShader(Shader shader);
+	
+	public abstract Shader getShader();
 
 	public abstract void enableColors();
 

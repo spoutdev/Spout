@@ -37,10 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author simplyianm
- */
+
 public class CollisionHelperTest {
 	public CollisionHelperTest() {
 	}
@@ -175,7 +172,7 @@ public class CollisionHelperTest {
 
 		Plane b = new Plane(
 			new Vector3(0, 0, 0),
-			Vector3.Up);
+			Vector3.UP);
 
 		boolean result = CollisionHelper.checkCollision(a, b);
 
@@ -195,7 +192,7 @@ public class CollisionHelperTest {
 
 		b = new Plane(
 			new Vector3(-2, -2, -2),
-			Vector3.Up);
+			Vector3.UP);
 
 		result = CollisionHelper.checkCollision(a, b);
 
@@ -290,7 +287,7 @@ public class CollisionHelperTest {
 
 		Ray b = new Ray(
 			new Vector3(0, 10, 0),
-			Vector3.Up.multiply(-1));
+			Vector3.UP.multiply(-1));
 
 		boolean result = CollisionHelper.checkCollision(a, b);
 
@@ -330,7 +327,7 @@ public class CollisionHelperTest {
 
 		Plane b = new Plane(
 			new Vector3(0, 0, 0),
-			Vector3.Up);
+			Vector3.UP);
 
 		boolean result = CollisionHelper.checkCollision(a, b);
 
@@ -340,7 +337,7 @@ public class CollisionHelperTest {
 
 		b = new Plane(
 			new Vector3(-1, -1, -1),
-			Vector3.Up);
+			Vector3.UP);
 
 		result = CollisionHelper.checkCollision(a, b);
 
@@ -386,7 +383,7 @@ public class CollisionHelperTest {
 
 		Plane b = new Plane(
 			new Vector3(0, 0, 0),
-			Vector3.Up);
+			Vector3.UP);
 
 		boolean result = CollisionHelper.checkCollision(a, b);
 
@@ -396,7 +393,7 @@ public class CollisionHelperTest {
 
 		b = new Plane(
 			new Vector3(0, 2, 0),
-			Vector3.Up);
+			Vector3.UP);
 
 		result = CollisionHelper.checkCollision(a, b);
 
@@ -410,11 +407,11 @@ public class CollisionHelperTest {
 	public void testCheckCollision_Plane_Plane() {
 		Plane a = new Plane(
 			new Vector3(0, 0, 0),
-			Vector3.Up);
+			Vector3.UP);
 
 		Plane b = new Plane(
 			new Vector3(1, 1, 1),
-			Vector3.Right);
+			Vector3.RIGHT);
 
 		boolean result = CollisionHelper.checkCollision(a, b);
 
@@ -424,7 +421,7 @@ public class CollisionHelperTest {
 
 		b = new Plane(
 			new Vector3(1, 1, 1),
-			Vector3.Up);
+			Vector3.UP);
 
 		result = CollisionHelper.checkCollision(a, b);
 

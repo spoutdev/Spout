@@ -26,6 +26,8 @@
 package org.spout.api.math;
 
 import static org.junit.Assert.*;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -286,13 +288,6 @@ public class Vector2PolarTest {
 		assertTrue(x.toVector2().equals(y));
 	}
 
-	@Test
-	public void testToVector2m() {
-		Vector2Polar x = new Vector2Polar(5, Math.toRadians(53.13));
-		Vector2m y = new Vector2m(3, 4);
-
-		assertTrue(x.toVector2m().equals(y));
-	}
 
 	@Test
 	public void testCeil() {
@@ -370,20 +365,18 @@ public class Vector2PolarTest {
 		assertFalse(x.equals(z));
 	}
 
+	
 	@Test
 	public void testHashCode() {
 		Vector2Polar x = new Vector2Polar(5, 27);
-		Vector2Polar y = new Vector2Polar(5, -3);
-		System.out.println(x.hashCode());
-		System.out.println(y.hashCode());
-		doAssertDouble(617563713, x.hashCode());
-		doAssertDouble(624059315, y.hashCode());
+		Vector2Polar y = new Vector2Polar(5, 27);
+		assertEquals(x.hashCode(), y.hashCode());
 	}
 
 	@Test
 	public void testToString() {
 		Vector2Polar x = new Vector2Polar(3, 5);
-		assertEquals("(3.0, 5.0 radians)", x.toString());
+		assertEquals("{3.0, 5.0 radians}", x.toString());
 	}
 
 	@Test

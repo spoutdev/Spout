@@ -26,11 +26,10 @@
 package org.spout.api.permissions;
 
 import org.spout.api.data.DataSubject;
+import org.spout.api.data.DataValue;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.Result;
-import org.spout.api.event.server.data.RetrieveIntDataEvent;
-import org.spout.api.event.server.data.RetrieveObjectDataEvent;
-import org.spout.api.event.server.data.RetrieveStringDataEvent;
+import org.spout.api.event.server.data.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
@@ -51,10 +50,12 @@ public class PermissionsGroup implements PermissionsSubject, DataSubject {
 		this.name = name;
 	}
 
+	@Override
 	public boolean hasPermission(String node) {
 		return hasPermission(null, node);
 	}
 
+	@Override
 	public boolean hasPermission(World world, String node) {
 		PermissionNodeEvent event = manager.callEvent(new PermissionNodeEvent(world, this, node));
 		if (event.getResult() == Result.DEFAULT) {
@@ -64,81 +65,27 @@ public class PermissionsGroup implements PermissionsSubject, DataSubject {
 		return event.getResult().getResult();
 	}
 
+	@Override
 	public boolean isInGroup(String group) {
 		PermissionGroupEvent event = manager.callEvent(new PermissionGroupEvent(null, this, group));
 		return event.getResult();
 	}
 
+	@Override
 	public String[] getGroups() {
 		PermissionGetGroupsEvent event = manager.callEvent(new PermissionGetGroupsEvent(null, this));
 		return event.getGroups();
 	}
 
+	@Override
 	public boolean isGroup() {
 		return false;
 	}
 
-	public Object getData(String node) {
-		return getData(node, null);
-	}
-
-	public Object getData(String node, Object defaultValue) {
-		return getData(null, node, defaultValue);
-	}
-
-	public Object getData(World world, String node) {
-		return getData(world, node, null);
-	}
-
-	public Object getData(World world, String node, Object defaultValue) {
-		RetrieveObjectDataEvent event = manager.callEvent(new RetrieveObjectDataEvent(world, this, node));
-		Object res = event.getResult();
-		if (res == null) {
-			return defaultValue;
-		}
-		return res;
-	}
-
-	public int getInt(String node) {
-		return getInt(node, RetrieveIntDataEvent.DEFAULT_VALUE);
-	}
-
-	public int getInt(String node, int defaultValue) {
-		return getInt(null, node, defaultValue);
-	}
-
-	public int getInt(World world, String node) {
-		return getInt(world, node, RetrieveIntDataEvent.DEFAULT_VALUE);
-	}
-
-	public int getInt(World world, String node, int defaultValue) {
-		RetrieveIntDataEvent event = manager.callEvent(new RetrieveIntDataEvent(world, this, node));
-		int res = event.getResult();
-		if (res == RetrieveIntDataEvent.DEFAULT_VALUE) {
-			return defaultValue;
-		}
-		return res;
-	}
-
-	public String getString(String node) {
-		return getString(node, null);
-	}
-
-	public String getString(String node, String defaultValue) {
-		return getString(null, node, defaultValue);
-	}
-
-	public String getString(World world, String node) {
-		return getString(world, node, null);
-	}
-
-	public String getString(World world, String node, String defaultValue) {
-		RetrieveStringDataEvent event = manager.callEvent(new RetrieveStringDataEvent(world, this, node));
-		String res = event.getResult();
-		if (res == null) {
-			return defaultValue;
-		}
-		return res;
+	@Override
+	public DataValue getData(String node) {
+		RetrieveDataEvent event = manager.callEvent(new RetrieveDataEvent(this, node));
+		return event.getResult();
 	}
 
 	public String getName() {

@@ -25,11 +25,12 @@
  */
 package org.spout.api.util.map;
 
-import java.util.Collection;
-
 import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
+
+import java.util.Collection;
 
 /**
  * A simplistic map that supports a pair of integers for keys, using a trove
@@ -39,7 +40,7 @@ import gnu.trove.set.TLongSet;
  *
  */
 public class TIntPairObjectHashMap<K> {
-	private TLongObjectHashMap<K> map;
+	protected TLongObjectMap<K> map;
 
 	public TIntPairObjectHashMap() {
 		map = new TLongObjectHashMap<K>(100);
@@ -50,17 +51,17 @@ public class TIntPairObjectHashMap<K> {
 	}
 
 	public K put(int key1, int key2, K value) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		long key = key(key1, key2);
 		return map.put(key, value);
 	}
 
 	public K get(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		long key = key(key1, key2);
 		return map.get(key);
 	}
 
 	public boolean containsKey(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		long key = key(key1, key2);
 		return map.containsKey(key);
 	}
 
@@ -89,7 +90,7 @@ public class TIntPairObjectHashMap<K> {
 	}
 
 	public K remove(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		long key = key(key1, key2);
 		return map.remove(key);
 	}
 
@@ -103,5 +104,16 @@ public class TIntPairObjectHashMap<K> {
 
 	public K[] values() {
 		return map.values();
+	}
+	
+	/**
+	 * Creates a long key from 2 ints
+	 *
+	 * @param key1 an <code>int</code> value
+	 * @param key2 an <code>int</code> value
+	 * @return a long which is the concatenation of key1 and key2
+	 */
+	protected static final long key(int key1, int key2) {
+		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 }

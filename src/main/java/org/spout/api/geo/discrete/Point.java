@@ -25,14 +25,18 @@
  */
 package org.spout.api.geo.discrete;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringUtil;
 
 /**
  * Represents a position in a World
  */
 public class Point extends Vector3 {
-	protected World world;
+	protected final World world;
+	public static final Point invalid = new Point(null, 0, 0, 0);
 
 	public Point(Point point) {
 		super(point);
@@ -49,6 +53,76 @@ public class Point extends Vector3 {
 		this.world = world;
 	}
 
+	@Override
+	public Point divide(int val) {
+		return new Point(super.divide(val), world);
+	}
+
+	@Override
+	public Point divide(float val) {
+		return new Point(super.divide(val), world);
+	}
+
+	@Override
+	public Point divide(double val) {
+		return new Point(super.divide(val), world);
+	}
+	
+	@Override
+	public Point divide(Vector3 other) {
+		return new Point(super.divide(other), world);
+	}
+
+	@Override
+	public Point divide(double x, double y, double z) {
+		return new Point(super.divide(x, y, z), world);
+	}
+
+	@Override
+	public Point divide(float x, float y, float z) {
+		return new Point(super.divide(x, y, z), world);
+	}
+
+	@Override
+	public Point divide(int x, int y, int z) {
+		return new Point(super.divide(x, y, z), world);
+	}
+
+	@Override
+	public Point multiply(int val) {
+		return new Point(super.multiply(val), world);
+	}
+
+	@Override
+	public Point multiply(float val) {
+		return new Point(super.multiply(val), world);
+	}
+
+	@Override
+	public Point multiply(double val) {
+		return new Point(super.multiply(val), world);
+	}
+	
+	@Override
+	public Point multiply(Vector3 other) {
+		return new Point(super.multiply(other), world);
+	}
+
+	@Override
+	public Point multiply(double x, double y, double z) {
+		return new Point(super.multiply(x, y, z), world);
+	}
+
+	@Override
+	public Point multiply(float x, float y, float z) {
+		return new Point(super.multiply(x, y, z), world);
+	}
+
+	@Override
+	public Point multiply(int x, int y, int z) {
+		return new Point(super.multiply(x, y, z), world);
+	}
+
 	public Point add(Point other) {
 		if (world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
@@ -58,7 +132,54 @@ public class Point extends Vector3 {
 
 	@Override
 	public Point add(Vector3 other) {
-		return new Point(Vector3.add(this, other), world);
+		return new Point(super.add(other), world);
+	}
+
+	@Override
+	public Point add(float x, float y, float z) {
+		return new Point(super.add(x, y, z), world);
+	}
+
+	@Override
+	public Point add(double x, double y, double z) {
+		return new Point(super.add(x, y, z), world);
+	}
+
+	@Override
+	public Point add(int x, int y, int z) {
+		return new Point(super.add(x, y, z), world);
+	}
+	
+	@Override
+	public Point subtract(Vector3 other) {
+		return new Point(super.subtract(other), world);
+	}
+	
+	@Override
+	public Point subtract(float x, float y, float z) {
+		return new Point(super.subtract(x, y, z), world);
+	}
+
+	@Override
+	public Point subtract(double x, double y, double z) {
+		return new Point(super.subtract(x, y, z), world);
+	}
+
+	@Override
+	public Point subtract(int x, int y, int z) {
+		return new Point(super.subtract(x, y, z), world);
+	}
+
+	public int getBlockX() {
+		return MathHelper.floor(this.getX());
+	}
+
+	public int getBlockY() {
+		return MathHelper.floor(this.getY());
+	}
+
+	public int getBlockZ() {
+		return MathHelper.floor(this.getZ());
 	}
 
 	/**
@@ -136,17 +257,7 @@ public class Point extends Vector3 {
 
 	@Override
 	public int hashCode() {
-		int hash = (int) world.getUID().getLeastSignificantBits();
-		hash += (hash << 5) + (int) world.getUID().getMostSignificantBits();
-
-		int xx = (int) (x * 1024);
-		int yy = (int) (y * 1024);
-		int zz = (int) (z * 1024);
-
-		hash += (hash << 5) + xx;
-		hash += (hash << 5) + yy;
-		hash += (hash << 5) + zz;
-		return hash;
+		return new HashCodeBuilder(5033, 61).appendSuper(super.hashCode()).append(world).toHashCode();
 	}
 
 	@Override
@@ -166,6 +277,6 @@ public class Point extends Vector3 {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "{" + world + ", " + super.toString() + "}";
+		return getClass().getSimpleName() + StringUtil.toString(world, x, y, z);
 	}
 }

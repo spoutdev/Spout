@@ -1,34 +1,37 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
- *
- * SpoutAPI is licensed under the SpoutDev License Version 1.
- *
- * SpoutAPI is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition, 180 days after any changes are published, you can use the
- * software, incorporating those changes, under the terms of the MIT license,
- * as described in the SpoutDev License Version 1.
- *
- * SpoutAPI is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev License Version 1 along with this program.
- * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
- * including the MIT license.
- */
+* This file is part of SpoutAPI (http://www.spout.org/).
+*
+* SpoutAPI is licensed under the SpoutDev License Version 1.
+*
+* SpoutAPI is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* In addition, 180 days after any changes are published, you can use the
+* software, incorporating those changes, under the terms of the MIT license,
+* as described in the SpoutDev License Version 1.
+*
+* SpoutAPI is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License,
+* the MIT license and the SpoutDev License Version 1 along with this program.
+* If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+* License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+* including the MIT license.
+*/
 package org.spout.api.math;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.util.StringUtil;
 
 /**
  * Represents a 3d vector.
  */
-public class Vector3 implements Comparable<Vector3>, Cloneable {
+public class Vector3 implements Comparable<Vector3> {
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */
@@ -38,9 +41,9 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 */
 	public final static Vector3 UNIT_X = new Vector3(1, 0, 0);
 	/**
-	 * Unit Vector facing Forward. (1, 0, 0)
+	 * Unit Vector pointing Right. (1, 0, 0)
 	 */
-	public final static Vector3 Forward = UNIT_X;
+	public final static Vector3 RIGHT = UNIT_X;
 	/**
 	 * Unit Vector in the Y direction. (0, 1, 0)
 	 */
@@ -48,26 +51,29 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Unit Vector pointing Up. (0, 1, 0)
 	 */
-	public final static Vector3 Up = UNIT_Y;
+	public final static Vector3 UP = UNIT_Y;
 	/**
 	 * Unit Vector in the Z direction. (0, 0, 1)
 	 */
 	public final static Vector3 UNIT_Z = new Vector3(0, 0, 1);
+
 	/**
-	 * Unit Vector pointing Right. (0, 0, 1)
+	 * Unit Vector facing Forward. (0, 0, 1)
 	 */
-	public final static Vector3 Right = UNIT_Z;
+	public final static Vector3 FORWARD = UNIT_Z;
 	/**
 	 * Unit Vector with all elements set to 1. (1, 1, 1)
 	 */
 	public final static Vector3 ONE = new Vector3(1, 1, 1);
-	protected float x;
-	protected float y;
-	protected float z;
+	
+	
+	protected final float x;
+	protected final float y;
+	protected final float z;
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 *
+	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -80,7 +86,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 *
+	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -91,7 +97,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 *
+	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -102,7 +108,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Constructs and initializes a Vector3 from an old Vector3
-	 *
+	 * 
 	 * @param o
 	 */
 	public Vector3(Vector3 o) {
@@ -128,9 +134,29 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 		return z;
 	}
 
+	public final float getRight() {
+		return getX();
+	}
+
+	public final float getUp() {
+		return getY();
+	}
+
+	public final float getForward() {
+		return getZ();
+	}
+
+	public final float getSouth() {
+		return getX();
+	}
+
+	public final float getWest() {
+		return getZ();
+	}
+
 	/**
 	 * Adds this Vector3 to the value of the Vector3 argument
-	 *
+	 * 
 	 * @param that The Vector3 to add
 	 * @return the new Vector3
 	 */
@@ -140,7 +166,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -152,7 +178,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -164,7 +190,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -176,7 +202,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Subtracts the given Vector3 from this Vector3
-	 *
+	 * 
 	 * @param that The Vector3 to subtract
 	 * @return the new Vector3
 	 */
@@ -186,7 +212,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -198,7 +224,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -210,7 +236,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -222,7 +248,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies this Vector3 by the value of the Vector3 argument
-	 *
+	 * 
 	 * @param that The Vector3 to multiply
 	 * @return the new Vector3
 	 */
@@ -232,7 +258,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -244,7 +270,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -256,7 +282,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -268,7 +294,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 *
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -278,7 +304,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 *
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -288,7 +314,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 *
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -298,7 +324,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides the given Vector3 from this Vector3
-	 *
+	 * 
 	 * @param that The Vector3 to divide
 	 * @return the new Vector3
 	 */
@@ -308,7 +334,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -320,7 +346,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -332,7 +358,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -344,7 +370,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides a Vector3 by the given value
-	 *
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -354,7 +380,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides a Vector3 by the given value
-	 *
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -364,7 +390,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Divides a Vector3 by the given value
-	 *
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -374,7 +400,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Takes the dot product of two vectors
-	 *
+	 * 
 	 * @param that
 	 * @return
 	 */
@@ -386,7 +412,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 * Returns a Vector2 object using the X and Z values of this Vector3. The x
 	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
 	 * becomes the y of the Vector2.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector2 toVector2() {
@@ -394,19 +420,8 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	}
 
 	/**
-	 * Returns a Vector2m object using the X and Z values of this Vector3. The x
-	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
-	 * becomes the y of the Vector2m.
-	 *
-	 * @return
-	 */
-	public Vector2m toVector2m() {
-		return Vector3.toVector2m(this);
-	}
-
-	/**
 	 * Takes the cross product of two vectors
-	 *
+	 * 
 	 * @param that
 	 * @return
 	 */
@@ -417,7 +432,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 ceil() {
@@ -427,7 +442,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 floor() {
@@ -437,7 +452,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 round() {
@@ -446,7 +461,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 abs() {
@@ -455,7 +470,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Gets the distance between this Vector3 and a given Vector3.
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -464,8 +479,18 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	}
 
 	/**
+	 * Gets the squared distance between this Vector3 and a given Vector3.
+	 * 
+	 * @param a
+	 * @return
+	 */
+	public double distanceSquared(Vector3 a) {
+		return Vector3.distanceSquared(a, this);
+	}
+
+	/**
 	 * Raises the X, Y, and Z values of this Vector3 to the given power.
-	 *
+	 * 
 	 * @param power
 	 * @return
 	 */
@@ -475,7 +500,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * returns the squared length of the vector
-	 *
+	 * 
 	 * @return
 	 */
 	public float lengthSquared() {
@@ -485,7 +510,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * returns the length of this vector. Note: makes use of Math.sqrt and is
 	 * not cached.
-	 *
+	 * 
 	 * @return
 	 */
 	public float length() {
@@ -494,7 +519,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Returns a fast approximation of this vector's length.
-	 *
+	 * 
 	 * @return
 	 */
 	public float fastLength() {
@@ -503,7 +528,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * returns the vector with a length of 1
-	 *
+	 * 
 	 * @return
 	 */
 	public Vector3 normalize() {
@@ -512,7 +537,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * returns the vector as [x,y,z]
-	 *
+	 * 
 	 * @return
 	 */
 	public float[] toArray() {
@@ -522,7 +547,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
-	 *
+	 * 
 	 * @param transformation
 	 * @return
 	 */
@@ -533,7 +558,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
-	 *
+	 * 
 	 * @param transformation
 	 * @return
 	 */
@@ -561,42 +586,38 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 		}
 		Vector3 xT = this;
 		Vector3 yT = (Vector3) b;
-		return xT.getX() == yT.getX() && xT.getY() == yT.getY() && xT.getZ() == yT.getZ();
+		return xT.x == yT.x && xT.y == yT.y && xT.z == yT.z;
 	}
 
-	// TODO - all the methods below need to use .getX(), .getY() etc, for all "other" vectors.
+	
+	public Quaternion rotationTo(Vector3 other){
+		return Vector3.rotationTo(this, other);
+	}
+	
+	// All of the below methods use .x, .y, .z instead of .getX() on purpose. Changing them will break AtomicPoint!
 
 	/**
 	 * Generates a unique hash code for this set of values
-	 *
+	 * 
 	 * @return
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 37 * hash + Float.floatToIntBits(x);
-		hash = 37 * hash + Float.floatToIntBits(y);
-		hash = 37 * hash + Float.floatToIntBits(z);
-		return hash;
+		return new HashCodeBuilder(7, 37).append(x).append(y).append(z).toHashCode();
 	}
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ", " + z + ")";
-	}
-
-	@Override
-	public Vector3 clone() {
-		return new Vector3(x, y, z);
+		return StringUtil.toString(this.x, this.y, this.z);
 	}
 
 	/**
 	 * Returns the length of the given vector.
-	 *
+	 * 
 	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
-	 *
+	 * 
 	 * Also known as norm. ||a||
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -606,17 +627,17 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Returns an approximate length of the given vector.
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
 	public static float fastLength(Vector3 a) {
-		return (float) Math.sqrt(lengthSquared(a));
+		return (float) MathHelper.sqrt(lengthSquared(a));
 	}
 
 	/**
 	 * returns the length squared to the given vector
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -626,7 +647,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Returns a new vector that is the given vector but length 1
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
@@ -636,139 +657,139 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Creates a new Vector that is A + B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector3 add(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() + b.getX(), a.getY() + b.getY(), a.getZ() + b.getZ());
+		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
 
 	/**
 	 * Creates a new vector that is A - B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector3 subtract(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() - b.getX(), a.getY() - b.getY(), a.getZ() - b.getZ());
+		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
 	/**
 	 * Multiplies one Vector3 by the other Vector3
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector3 multiply(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() * b.getX(), a.getY() * b.getY(), a.getZ() * b.getZ());
+		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 
 	/**
 	 * Divides one Vector3 by the other Vector3
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector3 divide(Vector3 a, Vector3 b) {
-		return new Vector3(a.getX() / b.getX(), a.getY() / b.getY(), a.getZ() / b.getZ());
+		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
 	}
 
 	/**
 	 * Returns the dot product of A and B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static float dot(Vector3 a, Vector3 b) {
-		return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
+		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
 
 	/**
 	 * Creates a new Vector that is the A x B The Cross Product is the vector
 	 * orthogonal to both A and B
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static Vector3 cross(Vector3 a, Vector3 b) {
-		return new Vector3(a.getY() * b.getZ() - a.getZ() * b.getY(), a.getZ() * b.getX() - a.getX() * b.getZ(), a.getX() * b.getY() - a.getY() * b.getX());
+		return new Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
 
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 up to the nearest
 	 * integer value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
 	public static Vector3 ceil(Vector3 o) {
-		return new Vector3(Math.ceil(o.getX()), Math.ceil(o.getY()), Math.ceil(o.getZ()));
+		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
 	}
 
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 down to the nearest
 	 * integer value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
 	public static Vector3 floor(Vector3 o) {
-		return new Vector3(Math.floor(o.getX()), Math.floor(o.getY()), Math.floor(o.getZ()));
+		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
 	}
 
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 to the nearest integer
 	 * value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
 	public static Vector3 round(Vector3 o) {
-		return new Vector3(Math.round(o.getX()), Math.round(o.getY()), Math.round(o.getZ()));
+		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
 	}
 
 	/**
 	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
-	 *
+	 * 
 	 * @param o Vector3 to use
 	 * @return
 	 */
 	public static Vector3 abs(Vector3 o) {
-		return new Vector3(Math.abs(o.getX()), Math.abs(o.getY()), Math.abs(o.getZ()));
+		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
 	}
 
 	/**
 	 * Returns a Vector3 containing the smallest X, Y, and Z values.
-	 *
+	 * 
 	 * @param o1
 	 * @param o2
 	 * @return
 	 */
 	public static Vector3 min(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.min(o1.getX(), o2.getX()), Math.min(o1.getY(), o2.getY()), Math.min(o1.getZ(), o2.getZ()));
+		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
 	}
 
 	/**
 	 * Returns a Vector3 containing the largest X, Y, and Z values.
-	 *
+	 * 
 	 * @param o1
 	 * @param o2
 	 * @return
 	 */
 	public static Vector3 max(Vector3 o1, Vector3 o2) {
-		return new Vector3(Math.max(o1.getX(), o2.getX()), Math.max(o1.getY(), o2.getY()), Math.max(o1.getZ(), o2.getZ()));
+		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
 	}
 
 	/**
 	 * Returns a Vector3 with random X, Y, and Z values (between 0 and 1)
-	 *
+	 * 
 	 * @return
 	 */
 	public static Vector3 rand() {
@@ -781,65 +802,63 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Gets the distance between two Vector3.
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	public static double distance(Vector3 a, Vector3 b) {
-		double xzDist = Vector2.distance(a.toVector2(), b.toVector2());
-		return Math.sqrt(Math.pow(xzDist, 2) + Math.pow(Math.abs(Vector3.subtract(a, b).getY()), 2));
+		return MathHelper.length(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector3.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double distanceSquared(Vector3 a, Vector3 b) {
+		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
 	/**
 	 * Raises the X, Y, and Z values of a Vector3 to the given power.
-	 *
+	 * 
 	 * @param o
 	 * @param power
 	 * @return
 	 */
 	public static Vector3 pow(Vector3 o, double power) {
-		return new Vector3(Math.pow(o.getX(), power), Math.pow(o.getY(), power), Math.pow(o.getZ(), power));
+		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
 	}
 
 	/**
 	 * Returns a Vector2 object using the X and Z values of the given Vector3.
 	 * The x of the Vector3 becomes the x of the Vector2, and the z of this
 	 * Vector3 becomes the y of the Vector2m.
-	 *
+	 * 
 	 * @param o Vector3 object to use
 	 * @return
 	 */
 	public static Vector2 toVector2(Vector3 o) {
-		return new Vector2(o.getX(), o.getZ());
-	}
-
-	/**
-	 * Returns a Vector2m object using the X and Z values of the given Vector3.
-	 * The x of the Vector3 becomes the x of the Vector2m, and the z of this
-	 * Vector3 becomes the y of the Vector2m.
-	 *
-	 * @param o Vector3 object to use
-	 * @return
-	 */
-	public static Vector2m toVector2m(Vector3 o) {
-		return new Vector2m(o.getX(), o.getZ());
+		return new Vector2(o.x, o.z);
 	}
 
 	/**
 	 * Returns a new float array that is {x, y, z}
-	 *
+	 * 
 	 * @param a
 	 * @return
 	 */
 	public static float[] toArray(Vector3 a) {
-		return new float[] {a.getX(), a.getY(), a.getZ()};
+		return new float[] {a.x, a.y, a.z};
 	}
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the transformation
 	 * matrix
-	 *
+	 * 
 	 * @param vector the vector to transform
 	 * @param transformation the transformation matrix
 	 * @return
@@ -851,7 +870,7 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
-	 *
+	 * 
 	 * @param vector
 	 * @param rot
 	 * @return
@@ -872,5 +891,22 @@ public class Vector3 implements Comparable<Vector3>, Cloneable {
 	 */
 	public static boolean equals(Vector3 a, Vector3 b) {
 		return a.equals(b);
+	}
+	
+	
+	/**
+	 * Returns the rotation between two vectors
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static Quaternion rotationTo(Vector3 a, Vector3 b){
+		if(a == b || a.equals(b)){
+			return Quaternion.IDENTITY;
+		}
+		//Normalize the input vectors before doing math on them.
+		a = a.normalize();
+		b = b.normalize();
+		return new Quaternion((float)Math.acos(a.dot(b)), a.cross(b));
 	}
 }

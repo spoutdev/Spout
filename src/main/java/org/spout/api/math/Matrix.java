@@ -233,7 +233,7 @@ public class Matrix {
 	 * @param ammount
 	 * @return
 	 */
-	public static Matrix scale(float ammount) {
+	public static Matrix multiply(float ammount) {
 		Matrix res = createIdentity();
 		res.set(0, 0, ammount);
 		res.set(1, 1, ammount);
@@ -242,13 +242,13 @@ public class Matrix {
 	}
 
 	/**
-	 * Creates and returns a 4x4 scalar matrix that scales each axis given by
+	 * Creates and returns a 4x4 scalar matrix that multiplys each axis given by
 	 * the provided Vector3
 	 *
 	 * @param ammount
 	 * @return
 	 */
-	public static Matrix scale(Vector3 ammount) {
+	public static Matrix multiply(Vector3 ammount) {
 		Matrix res = createIdentity();
 		res.set(0, 0, ammount.getX());
 		res.set(1, 1, ammount.getY());

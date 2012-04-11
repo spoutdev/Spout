@@ -29,7 +29,9 @@ import org.spout.api.plugin.ServiceManager.ServicePriority;
 
 /**
  * Constructs a service provider from an abstract class or interface.
- *
+ * Plugins shout NOT be constructing their own ServiceProviders, they should be getting providers
+ * from the ServiceManager dependent on the implementing class.
+ * 
  * @param <T> Service
  */
 public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {

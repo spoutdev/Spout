@@ -25,9 +25,13 @@
  */
 package org.spout.api.event;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -38,7 +42,7 @@ import org.spout.api.exception.IllegalPluginAccessException;
 
 public class SimpleEventManager implements EventManager {
 	public <T extends Event> void callDelayedEvent(final T event) {
-		Spout.getGame().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
+		Spout.getEngine().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
 			public void run() {
 				callEvent(event);
 			}
@@ -56,7 +60,7 @@ public class SimpleEventManager implements EventManager {
 						listener.getExecutor().execute(event);
 					}
 				} catch (Throwable ex) {
-					Spout.getGame().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
 				}
 			}
 		}
@@ -67,7 +71,7 @@ public class SimpleEventManager implements EventManager {
 		for (Map.Entry<Class<? extends Event>, Set<ListenerRegistration>> entry : createRegisteredListeners(listener, owner).entrySet()) {
 			Class<? extends Event> delegatedClass = getRegistrationClass(entry.getKey());
 			if (!entry.getKey().equals(delegatedClass)) {
-				Spout.getGame().getLogger().severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
+				Spout.getEngine().getLogger().severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
 				continue;
 			}
 			getEventListeners(delegatedClass).registerAll(entry.getValue());
@@ -109,12 +113,16 @@ public class SimpleEventManager implements EventManager {
 
 	public Map<Class<? extends Event>, Set<ListenerRegistration>> createRegisteredListeners(final Listener listener, Object plugin) {
 		Map<Class<? extends Event>, Set<ListenerRegistration>> ret = new HashMap<Class<? extends Event>, Set<ListenerRegistration>>();
-		Method[] methods;
-		try {
-			methods = listener.getClass().getDeclaredMethods();
-		} catch (NoClassDefFoundError e) {
-			Spout.getGame().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listener.getClass());
-			return ret;
+		List<Method> methods = new ArrayList<Method>();
+		Class<?> listenerClass = listener.getClass();
+		while (listenerClass != null && !listenerClass.equals(Object.class) && !listenerClass.equals(Listener.class)) {
+			try {
+				methods.addAll(Arrays.asList(listenerClass.getDeclaredMethods()));
+			} catch (NoClassDefFoundError e) {
+				Spout.getEngine().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listenerClass);
+				return ret;
+			}
+			listenerClass = listenerClass.getSuperclass();
 		}
 		for (final Method method : methods) {
 			final EventHandler eh = method.getAnnotation(EventHandler.class);
@@ -124,7 +132,7 @@ public class SimpleEventManager implements EventManager {
 			final Class<?> checkClass = method.getParameterTypes()[0];
 			Class<? extends Event> eventClass;
 			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
-				Spout.getGame().getLogger().severe("Wrong method arguments used for event type registered");
+				Spout.getEngine().getLogger().severe("Wrong method arguments used for event type registered");
 				continue;
 			} else {
 				eventClass = checkClass.asSubclass(Event.class);
@@ -143,6 +151,12 @@ public class SimpleEventManager implements EventManager {
 							throw new EventException("Wrong event type passed to registered method");
 						}
 						method.invoke(listener, event);
+					} catch (InvocationTargetException e) {
+						if (e.getCause() instanceof EventException) {
+							throw (EventException)e.getCause();
+						} else {
+							throw new EventException(e.getCause());
+						}
 					} catch (Throwable t) {
 						throw new EventException(t);
 					}

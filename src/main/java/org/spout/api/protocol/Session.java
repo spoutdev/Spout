@@ -27,7 +27,8 @@ package org.spout.api.protocol;
 
 import java.net.InetSocketAddress;
 
-import org.spout.api.Game;
+import org.spout.api.Engine;
+import org.spout.api.player.Player;
 
 public interface Session {
 	/**
@@ -78,6 +79,14 @@ public interface Session {
 	 * @param message The message.
 	 */
 	public void send(Message message);
+	
+	/**
+	 * Sends a message to the client.
+	 *
+	 * @param message The message.
+	 * @param force if this message is used in the identification stages of communication
+	 */
+	public void send(Message message, boolean force);
 
 	/**
 	 * Disconnects the session with the specified reason. This causes a
@@ -102,6 +111,21 @@ public interface Session {
 	 */
 	public String getSessionId();
 
+	/**
+	 * Gets the player associated with this session.
+	 * @return Player
+	 */
+	public Player getPlayer();
+
+	/**
+	 * Sets the player associated with this session.
+	 *
+	 * @param player The new player.
+	 * @throws IllegalStateException if there is already a player associated
+	 *             with this session.
+	 */
+	public void setPlayer(Player player);
+	
 	public enum State {
 		/**
 		 * In the exchange handshake state, the server is waiting for the client
@@ -121,5 +145,5 @@ public interface Session {
 		GAME
 	}
 
-	public Game getGame();
+	public Engine getGame();
 }

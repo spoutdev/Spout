@@ -25,13 +25,11 @@
  */
 package org.spout.api.plugin;
 
-import java.net.URL;
-
 import org.spout.api.exception.RestrictedClassException;
 
 public class ClientClassLoader extends CommonClassLoader {
-	public ClientClassLoader(CommonPluginLoader loader, URL[] urls, ClassLoader parent) {
-		super(loader, urls, parent);
+	public ClientClassLoader(CommonPluginLoader loader, ClassLoader parent) {
+		super(loader, parent);
 	}
 
 	@Override
