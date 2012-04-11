@@ -57,7 +57,9 @@ public abstract class AbstractWidget implements Widget {
 	@Override
 	public Widget setParent(Layout layout) {
 		this.layout = layout;
-		setScreen(getParent().getParent().getScreen());	//works even when the container IS a screen, because GenericScreen returns itself in that case.
+		if(layout != null) {
+			setScreen(getParent().getParent().getScreen());	//works even when the container IS a screen, because GenericScreen returns itself in that case.
+		}
 		return this;
 	}
 
