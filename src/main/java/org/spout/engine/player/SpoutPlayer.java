@@ -26,6 +26,7 @@
 package org.spout.engine.player;
 
 import java.net.InetAddress;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -39,6 +40,7 @@ import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
+import org.spout.api.gui.Screen;
 import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
@@ -63,6 +65,7 @@ public class SpoutPlayer implements Player {
 	private boolean online;
 	private final int hashcode;
 	private final PlayerInputState inputState = new PlayerInputState();
+	private Stack<Screen> screenStack = new Stack<Screen>();
 
 	public SpoutPlayer(String name) {
 		this.name = name;
@@ -310,5 +313,25 @@ public class SpoutPlayer implements Player {
 	@Override
 	public PlayerInputState input() {
 		return inputState;
+	}
+	
+	public Stack<Screen> getScreenStack() {
+		return screenStack;
+	}
+	
+	public void openScreen(Screen screen) {
+		screenStack.add(screen);
+	}
+	
+	public void closeScreen() {
+		screenStack.pop();
+	}
+	
+	public void closeScreen(Screen screen) {
+		screenStack.remove(screen);
+	}
+	
+	public Screen getFocussedScreen() {
+		return screenStack.firstElement();
 	}
 }
