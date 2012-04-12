@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import org.lwjgl.opengl.GL11;
 import org.spout.api.gui.Container;
+import org.spout.api.gui.Control;
 import org.spout.api.gui.Layout;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.MouseEventHandler;
@@ -73,7 +74,7 @@ public abstract class AbstractLayout implements Layout {
 	@Override
 	public void onMouseDown(Point position, MouseButton button) {
 		Widget clicked = getWidgetAt(position);
-		if(clicked instanceof MouseEventHandler) {
+		if(canReceiveClick(clicked)) {
 			((MouseEventHandler) clicked).onMouseDown(position, button);
 		}
 	}
@@ -81,7 +82,7 @@ public abstract class AbstractLayout implements Layout {
 	@Override
 	public void onMouseMove(Point position) {
 		Widget clicked = getWidgetAt(position);
-		if(clicked instanceof MouseEventHandler) {
+		if(canReceiveClick(clicked)) {
 			((MouseEventHandler) clicked).onMouseMove(position);
 		}
 	}
@@ -89,9 +90,18 @@ public abstract class AbstractLayout implements Layout {
 	@Override
 	public void onMouseUp(Point position, MouseButton button) {
 		Widget clicked = getWidgetAt(position);
-		if(clicked instanceof MouseEventHandler) {
+		if(canReceiveClick(clicked)) {
 			((MouseEventHandler) clicked).onMouseUp(position, button);
 		}
+	}
+	
+	protected static boolean canReceiveClick(Widget w) {
+		if(w instanceof Control) {
+			return ((Control) w).isEnabled();
+		} else if(w instanceof MouseEventHandler) {
+			return true;
+		}
+		return false;
 	}
 	
 	public Widget getWidgetAt(Point position) {

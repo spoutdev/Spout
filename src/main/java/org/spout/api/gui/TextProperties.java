@@ -2,13 +2,17 @@ package org.spout.api.gui;
 
 import java.awt.Font;
 
-import org.newdawn.slick.Color;
+import java.awt.Color;
 import org.newdawn.slick.UnicodeFont;
 
 public class TextProperties {
 	private int align = Align.ALIGN_CENTER_MIDDLE;
 	private UnicodeFont font = new UnicodeFont(new Font("SansSerif", Font.PLAIN, 12));
 	private Color color = Color.white;
+	
+	public TextProperties() {
+		
+	}
 
 	public TextProperties(int align, UnicodeFont font, Color color) {
 		this.align = align;

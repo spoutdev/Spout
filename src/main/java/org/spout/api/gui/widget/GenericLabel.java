@@ -1,15 +1,19 @@
 package org.spout.api.gui.widget;
 
 import java.awt.Font;
+import java.awt.Rectangle;
 
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.UnicodeFont;
+import org.spout.api.gui.GuiRenderUtils;
+import org.spout.api.gui.TextProperties;
 import org.spout.api.plugin.Plugin;
 
 public class GenericLabel extends AbstractWidget implements Label {
 
 	private String text;
-	private UnicodeFont font = new UnicodeFont(new Font("SansSerif", Font.PLAIN, 12));
-
+	private TextProperties textProperties = new TextProperties();
+	
 	public GenericLabel(String text, Plugin plugin) {
 		super(plugin);
 		setText(text);
@@ -21,7 +25,7 @@ public class GenericLabel extends AbstractWidget implements Label {
 
 	@Override
 	public void render() {
-		font.drawString(0, 0, getText());
+		GuiRenderUtils.renderText(getText(), getTextProperties(), new Rectangle(0, 0, getGeometry().width, getGeometry().height));
 	}
 
 	@Override
@@ -33,6 +37,17 @@ public class GenericLabel extends AbstractWidget implements Label {
 	@Override
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public TextProperties getTextProperties() {
+		return textProperties;
+	}
+
+	@Override
+	public Label setTextProperties(TextProperties p) {
+		this.textProperties = p;
+		return this;
 	}
 
 }

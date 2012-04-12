@@ -26,11 +26,13 @@
 package org.spout.api.player;
 
 import java.net.InetAddress;
+import java.util.Stack;
 
 import org.spout.api.Source;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
+import org.spout.api.gui.Screen;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
@@ -129,4 +131,32 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @return current input state
 	 */
 	public PlayerInputState input();
+	
+	/**
+	 * @return the stack of the screens.
+	 */
+	public Stack<Screen> getScreenStack();
+	
+	/**
+	 * Puts the given screen on the stack.
+	 * @param screen the screen to put on the stack
+	 */
+	public void openScreen(Screen screen);
+	
+	/**
+	 * Removes the screen in focus from the stack.
+	 */
+	public void closeScreen();
+	
+	/**
+	 * Removes the given screen from the stack. Useful if the screen you want to close is not in focus.
+	 * @param screen
+	 */
+	public void closeScreen(Screen screen);
+	
+	/**
+	 * Gets the screen in focus. This is the screen that is in the front of the stack.
+	 * @return the screen in focus.
+	 */
+	public Screen getFocussedScreen();
 }
