@@ -18,6 +18,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jlibnoiseVersion>dev-SNAPSHOT</jlibnoiseVersion>
 		<nbtVersion>1.0.2-SNAPSHOT</nbtVersion>
 	</properties>
 
@@ -60,6 +61,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.royawesome</groupId>
+			<artifactId>jlibnoise</artifactId>
+			<version>${jlibnoiseVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 			<version>3.3.1.Final</version>
@@ -69,12 +76,6 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.16.1-GA</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.royawesome</groupId>
-			<artifactId>jlibnoise</artifactId>
-			<version>dev-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -123,7 +124,7 @@
 		<dependency>
 			<groupId>slick</groupId>
 			<artifactId>slick</artifactId>
-			<version>0.3</version>
+			<version>274</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -186,8 +187,8 @@
 						<configuration>
 							<artifactSet>
 								<excludes>
-									<exclude>junit:*</exclude>
-									<exclude>org.hamcrest:*</exclude>
+									<exclude>junit:junit</exclude>
+									<exclude>org.hamcrest:hamcrest-library</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>
