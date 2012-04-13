@@ -114,28 +114,4 @@ public abstract class CommonPlugin implements Plugin {
 	public String getName() {
 		return getDescription().getName();
 	}
-
-	public void setData(String key, int value) {
-		getDescription().setData(key, value);
-	}
-
-	public void setData(String key, float value) {
-		getDescription().setData(key, value);
-	}
-
-	public void setData(String key, boolean value) {
-		getDescription().setData(key, value);
-	}
-
-	public void setData(String key, Serializable value) {
-		getDescription().setData(key, value);
-	}
-
-	public DatatableTuple getData(String key) {
-		return getDescription().getData(key);
-	}
-
-	public boolean hasData(String key) {
-		return getDescription().hasData(key);
-	}
 }
