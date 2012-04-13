@@ -27,6 +27,7 @@ package org.spout.api.util.config;
 
 import org.spout.api.exception.ConfigurationException;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,9 +37,13 @@ import java.util.Map;
 public class MapConfiguration extends MapBasedConfiguration {
 	private Map<?, ?> map;
 
+	public MapConfiguration() {
+		this(Collections.emptyMap());
+	}
+
 	public MapConfiguration(Map<?, ?> map) {
 		super();
-		this.map = map;
+		this.map = map == null ? Collections.emptyMap() : map;
 	}
 
 	@Override

@@ -35,14 +35,14 @@ public class ConfigurationHolderTest {
 
 	@Test
 	public void testGetWithDefaultValue() {
-		Configuration config = new MemoryConfiguration();
+		Configuration config = new MapConfiguration();
 		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)"hello", "unknown", "path");
 		assertEquals("hello", subject.getString());
 	}
 
 	@Test
 	public void testGetExistingValue() {
-		Configuration config = new MemoryConfiguration();
+		Configuration config = new MapConfiguration();
 		config.getNode("path", "with", "value").setValue("valuehere");
 		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)null, "path", "with", "value");
 		assertEquals("valuehere", subject.getValue());
@@ -51,7 +51,7 @@ public class ConfigurationHolderTest {
 
 	@Test
 	public void testGettingNewValueWritesToConfig() {
-		Configuration config = new MemoryConfiguration();
+		Configuration config = new MapConfiguration();
 		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)"hello", "unknown", "path");
 		subject.getValue();
 		assertEquals("hello", config.getNode("unknown", "path").getString());

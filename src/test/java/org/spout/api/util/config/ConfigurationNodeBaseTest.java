@@ -38,7 +38,7 @@ public class ConfigurationNodeBaseTest {
 	private Configuration base;
 	@Before
 	public void setUp() {
-		base = new MemoryConfiguration();
+		base = new MapConfiguration();
 	}
 
 	@Test
