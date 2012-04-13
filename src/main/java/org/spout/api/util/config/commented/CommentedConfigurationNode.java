@@ -26,12 +26,12 @@
 package org.spout.api.util.config.commented;
 
 import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.ConfigurationNodeBase;
+import org.spout.api.util.config.ConfigurationNode;
 
 /**
  * @author zml2008
  */
-public class CommentedConfigurationNodeBase extends ConfigurationNodeBase {
+public class CommentedConfigurationNode extends ConfigurationNode {
 	public static final String LINE_SEPARATOR;
 	static {
 		String sep = System.getProperty("line.separator");
@@ -42,8 +42,8 @@ public class CommentedConfigurationNodeBase extends ConfigurationNodeBase {
 	}
 	private String[] comment;
 
-	public CommentedConfigurationNodeBase(Configuration config, Object value, String[] path) {
-		super(config, value, path);
+	public CommentedConfigurationNode(Configuration config, String[] path, Object value) {
+		super(config, path, value);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class CommentedConfigurationNodeBase extends ConfigurationNodeBase {
 	}
 
 	@Override
-	public CommentedConfigurationNodeBase createConfigurationNode(String[] path, Object value) {
-		return new CommentedConfigurationNodeBase(getConfiguration(), value, path);
+	public CommentedConfigurationNode createConfigurationNode(String[] path, Object value) {
+		return new CommentedConfigurationNode(getConfiguration(), path, value);
 	}
 }

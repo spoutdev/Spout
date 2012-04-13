@@ -26,7 +26,7 @@
 package org.spout.api.permissions;
 
 import org.spout.api.data.DataSubject;
-import org.spout.api.data.DataValue;
+import org.spout.api.data.ValueHolder;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.Result;
 import org.spout.api.event.server.data.RetrieveDataEvent;
@@ -83,7 +83,7 @@ public class PermissionsGroup implements PermissionsSubject, DataSubject {
 	}
 
 	@Override
-	public DataValue getData(String node) {
+	public ValueHolder getData(String node) {
 		RetrieveDataEvent event = manager.callEvent(new RetrieveDataEvent(this, node));
 		return event.getResult();
 	}

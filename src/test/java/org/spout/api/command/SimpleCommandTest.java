@@ -28,7 +28,7 @@ package org.spout.api.command;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.data.DataValue;
+import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
 import org.spout.api.geo.World;
@@ -90,7 +90,7 @@ public class SimpleCommandTest implements Named, CommandSource {
 	}
 
 	@Override
-	public DataValue getData(String node) {
+	public ValueHolder getData(String node) {
 		return null;
 	}
 }

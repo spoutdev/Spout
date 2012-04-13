@@ -31,7 +31,7 @@ import org.spout.api.util.config.Configuration;
  * @author zml2008
  */
 public interface CommentedConfiguration extends Configuration {
-	public CommentedConfigurationNodeBase createConfigurationNode(String[] path, Object value);
-	public CommentedConfigurationNodeBase getNode(String... node);
-	public CommentedConfigurationNodeBase getNode(String path);
+	public CommentedConfigurationNode createConfigurationNode(String[] path, Object value);
+	public CommentedConfigurationNode getNode(String... node);
+	public CommentedConfigurationNode getNode(String path);
 }

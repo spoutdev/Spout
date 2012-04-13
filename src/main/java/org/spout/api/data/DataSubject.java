@@ -34,5 +34,5 @@ public interface DataSubject extends Named {
 	 * @param node
 	 * @return null if the data is not set
 	 */
-	public DataValue getData(String node);
+	public ValueHolder getData(String node);
 }

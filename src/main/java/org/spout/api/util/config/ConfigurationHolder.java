@@ -25,9 +25,8 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.data.ValueHolderBase;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,12 +34,13 @@ import java.util.Set;
  *
  * @author zml2008
  */
-public class ConfigurationHolder extends ConfigurationNode {
+public class ConfigurationHolder extends ValueHolderBase implements ConfigurationNodeSource {
 	private Configuration configuration;
+	private final String[] path;
 	private Object def;
 
 	public ConfigurationHolder(Configuration config, Object def, String... path) {
-		super(config, path);
+		this.path = path;
 		this.configuration = config;
 		this.def = def;
 	}
@@ -61,33 +61,8 @@ public class ConfigurationHolder extends ConfigurationNode {
 		this.configuration = config;
 	}
 
-	@Override
-	public boolean getBoolean() {
-		Boolean val = MathHelper.castBoolean(def);
-		return getNode().getBoolean(val == null ? false : val);
-	}
-
-	@Override
-	public int getInt() {
-		Integer val = MathHelper.castInt(def);
-		return getNode().getInt(val == null ? 0 : val);
-	}
-
-	@Override
-	public long getLong() {
-		Long val = MathHelper.castLong(def);
-		return getNode().getLong(val == null ? 0 : val);
-	}
-
-	@Override
-	public double getDouble() {
-		Double val = MathHelper.castDouble(def);
-		return getNode().getDouble(val == null ? 0 : val);
-	}
-
-	@Override
-	public String getString() {
-		return getNode().getString(def == null ? null : def.toString());
+	public String[] getPathElements() {
+		return path;
 	}
 
 	@Override
@@ -95,137 +70,59 @@ public class ConfigurationHolder extends ConfigurationNode {
 		return getNode().getValue(this.def);
 	}
 
-	@Override
-	public boolean getBoolean(boolean def) {
-		return getNode().getBoolean(def);
-	}
-
-	@Override
-	public int getInt(int def) {
-		return getNode().getInt(def);
-	}
-
-	@Override
-	public long getLong(long def) {
-		return getNode().getLong(def);
-	}
-
-	@Override
-	public double getDouble(double def) {
-		return getNode().getDouble(def);
-	}
-
-	@Override
-	public String getString(String def) {
-		return getNode().getString(def);
-	}
-
-	@Override
 	public Object getValue(Object def) {
-		return getNode().getValue(def);
+		return getNode().getValue(this.def);
 	}
 
-	@Override
-	public <T> T getTypedValue(Class<T> type, T def) {
-		return getNode().getTypedValue(type, def);
-	}
-
-	@Override
 	public Object setValue(Object value) {
 		return getNode().setValue(value);
 	}
 
-	@Override
-	public List<?> getList(List<?> def) {
-		return getNode().getList(def);
-	}
-
-	@Override
-	public List<String> getStringList(List<String> def) {
-		return getNode().getStringList(def);
-	}
-
-	@Override
-	public List<Integer> getIntegerList(List<Integer> def) {
-		return getNode().getIntegerList(def);
-	}
-
-	@Override
-	public List<Double> getDoubleList(List<Double> def) {
-		return getNode().getDoubleList(def);
-	}
-
-	@Override
-	public List<Boolean> getBooleanList(List<Boolean> def) {
-		return getNode().getBooleanList(def);
-	}
-
-	@Override
 	public ConfigurationNode getChild(String name) {
 		return getNode().getChild(name);
 	}
 
-	@Override
+	public ConfigurationNode getChild(String name, boolean add) {
+		return getNode().getChild(name, add);
+	}
+
 	public ConfigurationNode addChild(ConfigurationNode node) {
 		return getNode().addChild(node);
 	}
 
-	@Override
+	public void addChildren(ConfigurationNode... nodes) {
+		getNode().addChildren(nodes);
+	}
+
 	public ConfigurationNode removeChild(String key) {
 		return getNode().removeChild(key);
 	}
 
-	@Override
 	public ConfigurationNode removeChild(ConfigurationNode node) {
 		return getNode().removeChild(node);
 	}
 
-	@Override
 	public Map<String, ConfigurationNode> getChildren() {
 		return getNode().getChildren();
 	}
 
-	@Override
 	public Map<String, Object> getValues() {
 		return getNode().getValues();
 	}
 
-	@Override
 	public Set<String> getKeys(boolean deep) {
 		return getNode().getKeys(deep);
 	}
 
-	@Override
 	public ConfigurationNode getNode(String path) {
 		return getNode().getNode(path);
 	}
 
-	@Override
 	public ConfigurationNode getNode(String... path) {
 		return getNode().getNode(path);
 	}
 
-	@Override
 	public boolean hasChildren() {
 		return getNode().hasChildren();
-	}
-
-	protected boolean isAttached() {
-		return getNode().isAttached();
-	}
-
-	protected void setAttached(boolean value) {
-		getNode().setAttached(value);
-	}
-
-	public ConfigurationNodeSource getParent() {
-		return getNode().getParent();
-	}
-
-	protected void setParent(ConfigurationNodeSource parent) {
-		if (parent == this) {
-			throw new IllegalArgumentException("Attempted inheritance involving a ConfigurationHolder!");
-		}
-		getNode().setParent(parent);
 	}
 }

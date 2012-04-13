@@ -25,166 +25,142 @@
  */
 package org.spout.api.util.config;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.spout.api.data.ValueHolder;
+import org.spout.api.data.ValueHolderBase;
+
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  *
  * @author zml2008
  */
-public abstract class ConfigurationNode extends AbstractConfigurationNodeSource {
-	private String[] path;
+public class ConfigurationNode extends AbstractConfigurationNodeSource implements ValueHolder {
+	private Object value;
 	private boolean attached;
 	private ConfigurationNodeSource parent;
 
-	public ConfigurationNode(Configuration config, String[] path) {
+	private final String[] path;
+	private final ValueHolderBase valueHolder = new ValueHolderBase(this);
+
+	public ConfigurationNode(Configuration config, String[] path, Object value) {
 		super(config);
 		this.path = path;
+		if (value != null) {
+			setValue(value);
+		}
 	}
 
-	/**
-	 * Return this node's value as a boolean
-	 *
-	 * @return the boolean value
-	 * @see #getBoolean(boolean)
-	 * @see #getValue()
-	 */
+	// Delegated methods
+
 	public boolean getBoolean() {
-		return getBoolean(false);
+		return valueHolder.getBoolean();
 	}
 
-	/**
-	 * Return this node's value as a boolean
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean
-	 * @return the boolean value
-	 * @see #getValue(Object)
-	 */
-	public abstract boolean getBoolean(boolean def);
+	public boolean getBoolean(boolean def) {
+		return valueHolder.getBoolean(def);
+	}
 
-	/**
-	 * Return this node's value as an integer
-	 *
-	 * @return the integer value
-	 * @see #getInt(int)
-	 * @see #getValue()
-	 */
 	public int getInt() {
-		return getInt(0);
+		return valueHolder.getInt();
 	}
 
-	/**
-	 * Return this node's value as an integer
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't an integer
-	 * @return the integer value
-	 * @see #getValue(Object)
-	 */
-	public abstract int getInt(int def);
+	public int getInt(int def) {
+		return valueHolder.getInt(def);
+	}
 
-	/**
-	 * Return this node's value as a long
-	 *
-	 * @return the long value
-	 * @see #getLong(long)
-	 * @see #getValue()
-	 */
 	public long getLong() {
-		return getLong(0);
+		return valueHolder.getLong();
 	}
 
-	/**
-	 * Return this node's value as a long
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a long
-	 * @return the long value
-	 * @see #getValue(Object)
-	 */
-	public abstract long getLong(long def);
+	public long getLong(long def) {
+		return valueHolder.getLong(def);
+	}
 
-	/**
-	 * Return this node's value as a double
-	 *
-	 * @return the double value
-	 * @see #getDouble(double)
-	 * @see #getValue()
-	 */
 	public double getDouble() {
-		return getDouble(0);
+		return valueHolder.getDouble();
 	}
 
-	/**
-	 * Return this node's value as a double
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a double
-	 * @return the double value
-	 * @see #getValue(Object)
-	 */
-	public abstract double getDouble(double def);
+	public double getDouble(double def) {
+		return valueHolder.getDouble(def);
+	}
 
-	/**
-	 * Return this node's value as a String
-	 *
-	 * @return the String value
-	 * @see #getString(String)
-	 * @see #getValue()
-	 */
 	public String getString() {
-		return getString(null);
+		return valueHolder.getString();
 	}
 
-	/**
-	 * Return this node's value as a String
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value
-	 * @return the String value
-	 * @see #getValue(Object)
-	 */
-	public abstract String getString(String def);
+	public String getString(String def) {
+		return valueHolder.getString(def);
+	}
 
-	/**
-	 * Return this node's value
-	 *
-	 * @return the value
-	 * @see #getValue(Object)
-	 */
+	public <T> T getTypedValue(Class<T> type) {
+		return valueHolder.getTypedValue(type);
+	}
+
+	public <T> T getTypedValue(Class<T> type, T def) {
+		return valueHolder.getTypedValue(type, def);
+	}
+
+	public List<?> getList() {
+		return valueHolder.getList();
+	}
+
+	public List<?> getList(List<?> def) {
+		return valueHolder.getList(def);
+	}
+
+	public List<String> getStringList() {
+		return valueHolder.getStringList();
+	}
+
+	public List<String> getStringList(List<String> def) {
+		return valueHolder.getStringList(def);
+	}
+
+	public List<Integer> getIntegerList() {
+		return valueHolder.getIntegerList();
+	}
+
+	public List<Integer> getIntegerList(List<Integer> def) {
+		return valueHolder.getIntegerList(def);
+	}
+
+	public List<Double> getDoubleList() {
+		return valueHolder.getDoubleList();
+	}
+
+	public List<Double> getDoubleList(List<Double> def) {
+		return valueHolder.getDoubleList(def);
+	}
+
+	public List<Boolean> getBooleanList() {
+		return valueHolder.getBooleanList();
+	}
+
+	public List<Boolean> getBooleanList(List<Boolean> def) {
+		return valueHolder.getBooleanList(def);
+	}
+
+	// Actual value access
+
 	public Object getValue() {
 		return getValue(null);
 	}
 
-	/**
-	 * Return this node's value
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value
-	 * @return the value
-	 */
-	public abstract Object getValue(Object def);
-
-	/**
-	 * Return this node's value as the given type
-	 *
-	 * @param <T> The type to get as
-	 * @param type The type to get as and check for
-	 * @return the value as the give type, or null if the value is not present or not of the given type
-	 * @see #getTypedValue(Class, Object)
-	 * @see #getValue()
-	 */
-	public <T> T getTypedValue(Class<T> type) {
-		return getTypedValue(type, null);
+	public Object getValue(Object def) {
+		if (hasChildren()) {
+			return getValues();
+		} else {
+			if (def != null && value == null && getConfiguration().doesWriteDefaults()) {
+				setValue(def);
+			}
+			return value == null ? def : value;
+		}
 	}
-
-	/**
-	 * Return this node's value as the given type
-	 *
-	 * @param <T> The type to get as
-	 * @param type The type to get as and check for
-	 * @param def The value to use as default
-	 * @return the value as the give type, or {@code def} if the value is not present or not of the given type
-	 * @see #getValue(Object)
-	 */
-	public abstract <T> T getTypedValue(Class<T> type, T def);
 
 	/**
 	 * Sets the configuration's value
@@ -192,97 +168,45 @@ public abstract class ConfigurationNode extends AbstractConfigurationNodeSource 
 	 * @param value The value to set
 	 * @return The previous value of the configuration
 	 */
-	public abstract Object setValue(Object value);
-
-	/**
-	 * Return this node's value as a list
-	 *
-	 * @return the list value
-	 * @see #getList(java.util.List)
-	 * @see #getValue()
-	 */
-	public List<?> getList() {
-		return getList(null);
+	public Object setValue(Object value) {
+		checkAdded();
+		Object old = this.getValue();
+		if (value instanceof Map<?, ?>) {
+			this.value = null;
+			removeChildren();
+			for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
+				addChild(createConfigurationNode(ArrayUtils.add(getPathElements(), entry.getKey().toString()), entry.getValue()));
+			}
+		} else {
+			if (value != null) {
+				removeChildren();
+			}
+			this.value = value;
+		}
+		return old;
 	}
 
-	/**
-	 * Return this node's value as a list
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
-	 * @return the List value
-	 * @see #getValue(Object)
-	 */
-	public abstract List<?> getList(List<?> def);
+	// Util methods to make sure stuff is connected properly
 
-	/**
-	 * Return this node's value as a string list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
-	 *
-	 * @return the string list value
-	 * @see #getStringList(java.util.List)
-	 * @see #getValue()
-	 */
-	public List<String> getStringList() {
-		return getStringList(null);
+	private void removeChildren() {
+		for (ConfigurationNode node : children.values()) {
+			detachChild(node);
+		}
+		children.clear();
 	}
 
-	/**
-	 * Return this node's value as a string list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
-	 * @return the string list value
-	 * @see #getValue(Object)
-	 */
-	public abstract List<String> getStringList(List<String> def);
-
-	/**
-	 * Return this node's value as an integer list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
-	 *
-	 * @return the integer list value
-	 * @see #getStringList(java.util.List)
-	 * @see #getValue()
-	 */
-	public List<Integer> getIntegerList() {
-		return getIntegerList(null);
+	protected void checkAdded() {
+		if (!isAttached()) {
+			getConfiguration().setNode(this);
+			setAttached(true);
+		}
 	}
-
-	/**
-	 * Return this node's value as a string list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
-	 *
-	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
-	 * @return the string list value
-	 * @see #getValue(Object)
-	 */
-	public abstract List<Integer> getIntegerList(List<Integer> def);
-
-	public List<Double> getDoubleList() {
-		return getDoubleList(null);
-	}
-
-	public abstract List<Double> getDoubleList(List<Double> def);
-
-	public List<Boolean> getBooleanList() {
-		return getBooleanList(null);
-	}
-
-	public abstract List<Boolean> getBooleanList(List<Boolean> def);
 
 	/**
 	 * Return whether a ConfigurationNode is attached to any configuration
 	 * @return if this node is attached to any configuration
 	 */
-	protected boolean isAttached() {
+	public boolean isAttached() {
 		return attached;
 	}
 
@@ -309,6 +233,12 @@ public abstract class ConfigurationNode extends AbstractConfigurationNodeSource 
 			oldParent = oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getParent() : null;
 		}
 		this.parent = parent;
+	}
+
+	@Override
+	public ConfigurationNode addChild(ConfigurationNode node) {
+		checkAdded();
+		return super.addChild(node);
 	}
 
 	/**

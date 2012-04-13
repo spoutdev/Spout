@@ -37,21 +37,19 @@ public class DataSubjectTest implements DataSubject {
 	public void testDataSubject() {
 		String node = "foo.bar";
 		event.setResult(20);
-		assertEquals(getData(node).toInteger(), 20);
+		assertEquals(getData(node).getInt(), 20);
 		event.setResult(20L);
-		assertEquals(getData(node).toLong(), 20L);
-		event.setResult(20.0f);
-		assertEquals(getData(node).toFloat(), 20.0, 0f);
+		assertEquals(getData(node).getLong(), 20L);
 		event.setResult(20.0d);
-		assertEquals(getData(node).toDouble(), 20.0, 0d);
+		assertEquals(getData(node).getDouble(), 20.0, 0d);
 		event.setResult(true);
-		assertEquals(getData(node).toBoolean(), true);
+		assertEquals(getData(node).getBoolean(), true);
 		event.setResult("baz");
-		assertEquals(getData(node).toString(), "baz");
+		assertEquals(getData(node).getString(), "baz");
 	}
 
 	@Override
-	public DataValue getData(String node) {
+	public ValueHolder getData(String node) {
 		return event.getResult();
 	}
 

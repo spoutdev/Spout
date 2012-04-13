@@ -23,119 +23,101 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.config;
+package org.spout.api.data;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.spout.api.math.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
- *
  * @author zml2008
  */
-public class ConfigurationNodeBase extends ConfigurationNode {
-	private Object value;
+public class ValueHolderBase implements ValueHolder {
+	private final ValueHolder actualValue;
 
-	public ConfigurationNodeBase(Configuration config, Object value, String[] path) {
-		super(config, path);
-		if (value != null) {
-			setValue(value);
-		}
+	public ValueHolderBase() {
+		this(null);
 	}
 
-	@Override
+	public ValueHolderBase(ValueHolder actualValue) {
+		this.actualValue = actualValue;
+	}
+
+	public boolean getBoolean() {
+		return getBoolean(false);
+	}
+
 	public boolean getBoolean(boolean def) {
-		Boolean val = MathHelper.castBoolean(getValue(def));
+		final Boolean val = MathHelper.castBoolean(getValue(def));
 		return val == null ? def : val;
 	}
 
-	@Override
+	public int getInt() {
+		return getInt(0);
+	}
+
 	public int getInt(int def) {
 		final Integer val = MathHelper.castInt(getValue(def));
 		return val == null ? def : val;
 	}
 
-	@Override
+	public long getLong() {
+		return getLong(0);
+	}
+
 	public long getLong(long def) {
 		final Long val = MathHelper.castLong(getValue(def));
 		return val == null ? def : val;
 	}
 
-	@Override
+	public double getDouble() {
+		return getDouble(0);
+	}
+
 	public double getDouble(double def) {
 		final Double val = MathHelper.castDouble(getValue(def));
 		return val == null ? def : val;
 	}
 
-	@Override
+	public String getString() {
+		return getString(null);
+	}
+
 	public String getString(String def) {
 		final Object val = getValue(def);
 		return val == null ? def : val.toString();
 	}
 
-	@Override
-	public Object getValue(Object def) {
-		if (hasChildren()) {
-			return getValues();
-		} else {
-			if (def != null && value == null && getConfiguration().doesWriteDefaults()) {
-				setValue(def);
-			}
-			return value == null ? def : value;
+	public Object getValue() {
+		if (actualValue == null) {
+			throw new UnsupportedOperationException("ValueHolderBase must have a reference to another ValueHolder or override getValue");
 		}
+		return actualValue.getValue();
 	}
 
-	@Override
+	public Object getValue(Object def) {
+		if (actualValue == null) {
+			throw new UnsupportedOperationException("ValueHolderBase must have a reference to another ValueHolder or override getValue");
+		}
+		return actualValue.getValue(def);
+	}
+
+	public <T> T getTypedValue(Class<T> type) {
+		return getTypedValue(type, null);
+	}
+
 	public <T> T getTypedValue(Class<T> type, T def) {
 		final Object val = getValue();
 		return type.isInstance(val) ? type.cast(val) : def;
 	}
 
-	@Override
-	public ConfigurationNode addChild(ConfigurationNode node) {
-		checkAdded();
-		return super.addChild(node);
+	public List<?> getList() {
+		return getList(null);
 	}
 
-	@Override
-	public Object setValue(Object value) {
-		checkAdded();
-		Object old = this.getValue();
-		if (value instanceof Map<?, ?>) {
-			this.value = null;
-			removeChildren();
-			for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-				addChild(createConfigurationNode(ArrayUtils.add(getPathElements(), entry.getKey().toString()), entry.getValue()));
-			}
-		} else {
-			if (value != null) {
-				removeChildren();
-			}
-			this.value = value;
-		}
-		return old;
-	}
-
-	private void removeChildren() {
-		for (ConfigurationNode node : children.values()) {
-			detachChild(node);
-		}
-		children.clear();
-	}
-
-	protected void checkAdded() {
-		if (!isAttached()) {
-			getConfiguration().setNode(this);
-			setAttached(true);
-		}
-	}
-
-	@Override
 	public List<?> getList(List<?> def) {
 		Object val = getValue();
 		if (val instanceof List<?>) {
@@ -147,17 +129,23 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 		}
 	}
 
-	@Override
+	public List<String> getStringList() {
+		return getStringList(null);
+	}
+
 	public List<String> getStringList(List<String> def) {
 		List<?> val = getList(def);
 		List<String> ret = new ArrayList<String>();
 		for (Object item : val) {
-			ret.add(item.toString());
+			ret.add(item == null ? null : item.toString());
 		}
 		return ret;
 	}
 
-	@Override
+	public List<Integer> getIntegerList() {
+		return getIntegerList(null);
+	}
+
 	public List<Integer> getIntegerList(List<Integer> def) {
 		List<?> val = getList(def);
 		List<Integer> ret = new ArrayList<Integer>();
@@ -171,7 +159,10 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 		return ret;
 	}
 
-	@Override
+	public List<Double> getDoubleList() {
+		return getDoubleList(null);
+	}
+
 	public List<Double> getDoubleList(List<Double> def) {
 		List<?> val = getList(def);
 		List<Double> ret = new ArrayList<Double>();
@@ -185,7 +176,10 @@ public class ConfigurationNodeBase extends ConfigurationNode {
 		return ret;
 	}
 
-	@Override
+	public List<Boolean> getBooleanList() {
+		return getBooleanList(null);
+	}
+
 	public List<Boolean> getBooleanList(List<Boolean> def) {
 		List<?> val = getList(def);
 		List<Boolean> ret = new ArrayList<Boolean>();

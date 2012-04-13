@@ -27,10 +27,10 @@ package org.spout.api.util.config;
 
 import org.junit.Test;
 import org.spout.api.exception.ConfigurationException;
-import org.spout.api.util.config.commented.CommentedConfigurationNodeBase;
+import org.spout.api.util.config.commented.CommentedConfigurationNode;
 import org.spout.api.util.config.ini.StringLoadingIniConfiguration;
 
-import static org.spout.api.util.config.commented.CommentedConfigurationNodeBase.LINE_SEPARATOR;
+import static org.spout.api.util.config.commented.CommentedConfigurationNode.LINE_SEPARATOR;
 import static org.junit.Assert.*;
 
 /**
@@ -69,9 +69,9 @@ public class IniConfigurationTest {
 				"node=value" + LINE_SEPARATOR);
 		subject.load();
 		ConfigurationNode node = subject.getNode("section");
-		assertArrayEquals(new String[] {"This is the first section!"}, ((CommentedConfigurationNodeBase) node).getComment());
+		assertArrayEquals(new String[] {"This is the first section!"}, ((CommentedConfigurationNode) node).getComment());
 		node = subject.getNode("section.node");
-		assertArrayEquals(new String[] {"This is a node!", "With a multiline comment!"}, ((CommentedConfigurationNodeBase) node).getComment());
+		assertArrayEquals(new String[] {"This is a node!", "With a multiline comment!"}, ((CommentedConfigurationNode) node).getComment());
 	}
 
 	@Test

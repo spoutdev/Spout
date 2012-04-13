@@ -166,7 +166,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	}
 
 	public ConfigurationNode createConfigurationNode(String[] path, Object value) {
-		return new ConfigurationNodeBase(getConfiguration(), value, path);
+		return new ConfigurationNode(getConfiguration(), path, value);
 	}
 
 	@Override

@@ -32,7 +32,7 @@ import org.spout.api.util.config.AbstractConfiguration;
 import org.spout.api.util.config.ConfigurationNode;
 import org.spout.api.util.config.FileConfiguration;
 import org.spout.api.util.config.commented.CommentedConfiguration;
-import org.spout.api.util.config.commented.CommentedConfigurationNodeBase;
+import org.spout.api.util.config.commented.CommentedConfigurationNode;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -55,7 +55,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.spout.api.util.config.commented.CommentedConfigurationNodeBase.LINE_SEPARATOR;
+import static org.spout.api.util.config.commented.CommentedConfigurationNode.LINE_SEPARATOR;
 
 /**
  * This class handles reading and writing configuration nodes in the INI format.
@@ -111,7 +111,7 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 			String line;
 			List<String> comments = new ArrayList<String>();
 			List<String> curSection = new ArrayList<String>();
-			CommentedConfigurationNodeBase node = null;
+			CommentedConfigurationNode node = null;
 			Matcher match;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
@@ -233,7 +233,7 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 			if (split.length < 2) {
 				throw new ConfigurationException("Key with no value: " + line);
 			}
-			CommentedConfigurationNodeBase node = createConfigurationNode(ArrayUtils.add(parentPath, split[0].trim()), null);
+			CommentedConfigurationNode node = createConfigurationNode(ArrayUtils.add(parentPath, split[0].trim()), null);
 			node.setValue(fromStringValue(split[1].trim()));
 			if (comment.size() > 0) {
 				node.setComment(comment.toArray(new String[comment.size()]));
@@ -258,8 +258,8 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 
 	protected String[] getComment(ConfigurationNode node) {
 		String[] comment = null;
-		if (node instanceof CommentedConfigurationNodeBase) {
-			comment = ((CommentedConfigurationNodeBase) node).getComment();
+		if (node instanceof CommentedConfigurationNode) {
+			comment = ((CommentedConfigurationNode) node).getComment();
 		}
 		return comment;
 	}
@@ -302,12 +302,12 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		}
 	}
 
-	public CommentedConfigurationNodeBase getNode(String path) {
-		return (CommentedConfigurationNodeBase) super.getNode(path);
+	public CommentedConfigurationNode getNode(String path) {
+		return (CommentedConfigurationNode) super.getNode(path);
 	}
 
-	public CommentedConfigurationNodeBase getNode(String... path) {
-		return (CommentedConfigurationNodeBase) super.getNode(path);
+	public CommentedConfigurationNode getNode(String... path) {
+		return (CommentedConfigurationNode) super.getNode(path);
 	}
 
 	@Override
@@ -325,8 +325,8 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 	}
 
 	@Override
-	public CommentedConfigurationNodeBase createConfigurationNode(String[] path, Object value) {
-		return new CommentedConfigurationNodeBase(getConfiguration(), value, path);
+	public CommentedConfigurationNode createConfigurationNode(String[] path, Object value) {
+		return new CommentedConfigurationNode(getConfiguration(), path, value);
 	}
 
 	protected Reader getReader() throws IOException {

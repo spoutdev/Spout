@@ -28,153 +28,18 @@ package org.spout.api.data;
 /**
  * An Object wrapper to provide an extra level of abstraction to DataSubjects.
  */
-public class DataValue {
+public class DataValue extends ValueHolderBase {
 	private final Object value;
-	
+
 	public DataValue(Object value) {
 		this.value = value;
 	}
 
-	/**
-	 * Returns the raw value initialized during instantiation.
-	 *
-	 * @return raw value
-	 */
 	public Object getValue() {
 		return value;
 	}
 
-	/**
-	 * Returns a integer from the parsed value, default value if no integer value.
-	 *
-	 * @param def
-	 * @return parsed value
-	 */
-	public int toInteger(int def) {
-		if (value instanceof Number) {
-			return ((Number) value).intValue();
-		}
-		
-		return def;
-	}
-
-	/**
-	 * Returns a integer from the parsed value, -1 if no integer value.
-	 *
-	 * @return parsed value
-	 */
-	public int toInteger() {
-		return toInteger(-1);
-	}
-
-	/**
-	 * Returns a long from the parsed value, default value if no long value.
-	 *
-	 * @param def
-	 * @return parsed value
-	 */
-	public long toLong(long def) {
-		if (value instanceof Number) {
-			return ((Number) value).longValue();
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a long from the parsed value, -1 if no long value.
-	 *
-	 * @return parsed value
-	 */
-	public long toLong() {
-		return toLong(-1);
-	}
-
-	/**
-	 * Returns a float from the parsed value, default value if no float value.
-	 *
-	 * @param def
-	 * @return parsed value
-	 */
-	public float toFloat(float def) {
-		if (value instanceof Number) {
-			return ((Number) value).floatValue();
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a float from the parsed value, -1 if no float value.
-	 *
-	 * @return parsed value
-	 */
-	public float toFloat() {
-		return toFloat(-1);
-	}
-
-	/**
-	 * Returns a double from the parsed value, default value if no double value.
-	 *
-	 * @param def
-	 * @return parsed value
-	 */
-	public double toDouble(double def) {
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a double from the parsed value, -1 if no double value.
-	 *
-	 * @return parsed value
-	 */
-	public double toDouble() {
-		return toDouble(-1);
-	}
-
-	/**
-	 * Returns a boolean from the parsed value, default value if no boolean value.
-	 *
-	 * @param def
-	 * @return parsed value
-	 */
-	public boolean toBoolean(boolean def) {
-		if (value instanceof Boolean) {
-			return ((Boolean) value).booleanValue();
-		}
-
-		return def;
-	}
-
-	/**
-	 * Returns a boolean from the parsed value, false if no boolean value.
-	 *
-	 * @return
-	 */
-	public boolean toBoolean() {
-		return toBoolean(false);
-	}
-
-	/**
-	 * Returns a string from the parsed value, default value if no string value.
-	 *
-	 * @param def
-	 * @return parsed value
-	 */
-	public String toString(String def) {
-		if (value instanceof String) {
-			return ((String) value);
-		}
-		
-		return def;
-	}
-
-	@Override
-	public String toString() {
-		return toString(null);
+	public Object getValue(Object def) {
+		return value == null ? def : value;
 	}
 }

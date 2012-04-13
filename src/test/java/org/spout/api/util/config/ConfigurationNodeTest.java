@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  *
  * @author zml2008
  */
-public class ConfigurationNodeBaseTest {
+public class ConfigurationNodeTest {
 	private Configuration base;
 	@Before
 	public void setUp() {
@@ -43,7 +43,7 @@ public class ConfigurationNodeBaseTest {
 
 	@Test
 	public void testGetPath() throws Exception {
-		ConfigurationNodeBase config = new ConfigurationNodeBase(base, null, new String[] {"a", "b", "c"});
+		ConfigurationNode config = new ConfigurationNode(base, new String[] {"a", "b", "c"}, null);
 		assertEquals("a.b.c", config.getPath());
 	}
 }
