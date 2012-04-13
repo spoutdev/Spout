@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
-import org.spout.api.data.DataValue;
+import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerChatEvent;
@@ -133,7 +133,7 @@ public class SpoutPlayer implements Player {
 	public boolean disconnect(String reason) {
 		if (onlineLive.compareAndSet(true, false)) {
 			session.disconnect(reason);
-			entityLive.get().kill();			
+			entityLive.get().kill();
 			sessionLive.set(null);
 			entityLive.set(null);
 			synchronizerLive.set(null);
@@ -273,7 +273,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
-	public DataValue getData(String node) {
+	public ValueHolder getData(String node) {
 		RetrieveDataEvent event = Spout.getEngine().getEventManager().callEvent(new RetrieveDataEvent(this, node));
 		return event.getResult();
 	}

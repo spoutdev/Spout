@@ -72,7 +72,7 @@ import jline.SimpleCompletor;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.command.CommandSource;
-import org.spout.api.data.DataValue;
+import org.spout.api.data.ValueHolder;
 import org.spout.api.geo.World;
 import org.spout.engine.SpoutServer;
 
@@ -317,7 +317,7 @@ public final class ConsoleManager {
 		}
 
 		@Override
-		public DataValue getData(String node) {
+		public ValueHolder getData(String node) {
 			return null;
 		}
 	}
