@@ -46,6 +46,7 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.entity.component.EntityComponent;
+import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.event.entity.EntityHealthChangeEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
@@ -435,10 +436,12 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
-	public void setController(Controller controller) {
+	public void setController(Controller controller, Source source) {
 
-		if (controller != null) {
-			controller.attachToEntity(this);
+		EntityControllerChangeEvent event = Spout.getEventManager().callEvent(new EntityControllerChangeEvent(this, source, controller));
+		Controller newController = event.getNewController();
+		if (newController != null) {
+			newController.attachToEntity(this);
 		}
 
 		int seq = lock.writeLock();
@@ -448,12 +451,18 @@ public class SpoutEntity implements Entity {
 			lock.writeUnlock(seq);
 		}
 
-		if (controller != null) {
-			if (controller instanceof PlayerController){
+		if (newController != null) {
+			if (newController instanceof PlayerController){
 				setObserver(true);
 			}
-			controller.onAttached();
+
+			newController.onAttached();
 		}
+	}
+
+	@Override
+	public void setController(Controller controller) {
+		setController(controller, null);
 	}
 
 
