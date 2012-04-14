@@ -62,6 +62,14 @@ public interface Entity extends Datatable, Source {
 	 * @param controller
 	 */
 	@DelayedWrite
+	public void setController(Controller controller, Source source);
+
+	/**
+	 * Sets the controller for the entity
+	 *
+	 * @param controller
+	 */
+	@DelayedWrite
 	public void setController(Controller controller);
 
 	// TODO - add thread timing annotations
