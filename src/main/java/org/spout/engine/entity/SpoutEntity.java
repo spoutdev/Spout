@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
@@ -45,6 +46,7 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.entity.component.EntityComponent;
+import org.spout.api.event.entity.EntityHealthChangeEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -369,12 +371,19 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
-	public void setHealth(int health) {
+	public void setHealth(int health, Source source) {
+
+		// Event handling
+		int oldHealth = this.health.get();
+		int change = health - oldHealth;
+		EntityHealthChangeEvent event = Spout.getEventManager().callEvent(new EntityHealthChangeEvent(this, source, change));
+		int newHealth = oldHealth + event.getChange();
+
 		//Enforce max health
-		if (health >= maxHealth.get()) {
+		if (newHealth >= maxHealth.get()) {
 			this.health.getAndSet(maxHealth.get());
 		} else {
-			this.health.getAndSet(health);
+			this.health.getAndSet(newHealth);
 		}
 	}
 
