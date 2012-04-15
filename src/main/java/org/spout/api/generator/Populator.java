@@ -43,7 +43,7 @@ public interface Populator {
 	 * This allows the populator to create features that cross chunk boundaries.
 	 *
 	 * @param chunk the chunk to populate
-     * @param random The RNG for this chunk
+	 * @param random The RNG for this chunk
 	 */
 	public void populate(Chunk chunk, Random random);
 }

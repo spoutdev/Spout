@@ -28,20 +28,19 @@ package org.spout.api.entity.action;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 
-
 public abstract class TimedAction<T extends Controller> extends EntityAction<T> {
-    private int delayCounter = 0;
-    private int tickDelay = 1;
+	private int delayCounter = 0;
+	private int tickDelay = 1;
 
-    public TimedAction(int tickDelay) {
-        this.tickDelay = tickDelay;
-    }
+	public TimedAction(int tickDelay) {
+		this.tickDelay = tickDelay;
+	}
 
-    public boolean shouldRun(Entity entity, T controller) {
-        if (++delayCounter % tickDelay == 0) {
-            delayCounter = 0;
-            return true;
-        }
-        return false;
-    }
+	public boolean shouldRun(Entity entity, T controller) {
+		if (++delayCounter % tickDelay == 0) {
+			delayCounter = 0;
+			return true;
+		}
+		return false;
+	}
 }

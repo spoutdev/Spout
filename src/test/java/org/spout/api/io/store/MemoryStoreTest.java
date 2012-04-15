@@ -178,8 +178,8 @@ public class MemoryStoreTest {
 		assertThat(subject.getKeys(), hasSize(0));
 		assertThat(subject.getEntrySet(), hasSize(0));
 
-        for (String key1 : keys) {
-            assertNull(subject.get(key1));
-        }
+		for (String key1 : keys) {
+			assertNull(subject.get(key1));
+		}
 	}
 }

@@ -43,10 +43,10 @@ public interface Datatable extends Serializable {
 
 	public DatatableTuple getData(String key);
 
-    /**
-     * Returns true if the given key has been set, false if not
-     * @param key
-     * @return
-     */
+	/**
+	 * Returns true if the given key has been set, false if not
+	 * @param key
+	 * @return
+	 */
 	public boolean hasData(String key);
 }

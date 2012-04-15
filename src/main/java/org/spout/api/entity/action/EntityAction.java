@@ -30,7 +30,7 @@ import org.spout.api.entity.Entity;
 
 public abstract class EntityAction<T extends Controller> {
 
-    public abstract boolean shouldRun(Entity entity, T controller);
+	public abstract boolean shouldRun(Entity entity, T controller);
 
-    public abstract void run(Entity entity, T controller, float dt);
+	public abstract void run(Entity entity, T controller, float dt);
 }
