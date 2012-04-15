@@ -29,7 +29,7 @@ import org.spout.api.Server;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.StaticChannelPipeline;
+import org.jboss.netty.channel.DefaultChannelPipeline;
 
 /**
  * A common {@link ChannelPipelineFactory}
@@ -52,6 +52,11 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	public ChannelPipeline getPipeline() throws Exception {
 		CommonHandler handler = new CommonHandler(server);
 		CommonEncoder encoder = new CommonEncoder();
-		return new StaticChannelPipeline(new CommonDecoder(handler, encoder), encoder, handler);
+		CommonDecoder decoder = new CommonDecoder(handler, encoder);
+		DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
+		pipeline.addLast("0", decoder);
+		pipeline.addLast("1", encoder);
+		pipeline.addLast("2", handler);
+		return pipeline;
 	}
 }
