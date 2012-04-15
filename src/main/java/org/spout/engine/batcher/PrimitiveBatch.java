@@ -5,7 +5,6 @@ import java.awt.Color;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.Renderer;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.vertexformat.PositionColor;
 import org.lwjgl.opengl.GL11;
 
 public class PrimitiveBatch {

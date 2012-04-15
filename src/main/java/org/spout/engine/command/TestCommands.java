@@ -26,7 +26,6 @@
 
 package org.spout.engine.command;
 
-import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;

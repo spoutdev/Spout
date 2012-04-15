@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import gnu.trove.list.array.*;
 
 
-import org.lwjgl.opengl.GL11;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
