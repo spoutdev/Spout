@@ -38,7 +38,6 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
 
 public class SpoutBlock implements Block {
-
 	protected int x, y, z;
 	private World world;
 	private Chunk chunk;
@@ -141,14 +140,14 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public int hashCode() {
-        int hash = 3;
-        hash = 53 * hash + this.world.hashCode();
-        hash = 53 * hash + (this.x ^ (this.x >> 16));
-        hash = 53 * hash + (this.y ^ (this.y >> 16));
-        hash = 53 * hash + (this.z ^ (this.z >> 16));
-        return hash;
+		int hash = 3;
+		hash = 53 * hash + this.world.hashCode();
+		hash = 53 * hash + (this.x ^ (this.x >> 16));
+		hash = 53 * hash + (this.y ^ (this.y >> 16));
+		hash = 53 * hash + (this.z ^ (this.z >> 16));
+		return hash;
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (other == this) {
@@ -160,7 +159,7 @@ public class SpoutBlock implements Block {
 			return false;
 		}
 	}
-	
+
 	public SpoutBlock clone() {
 		return new SpoutBlock(this);
 	}
@@ -256,7 +255,7 @@ public class SpoutBlock implements Block {
 	public void setBlock(MaterialSource blocksource, boolean update) {
 		this.setMaterial(blocksource.getMaterial(), blocksource.getData(), update);
 	}
-	
+
 	private void recalculateChunk() {
 		int cx = this.x >> Chunk.CHUNK_SIZE_BITS;
 		int cy = this.y >> Chunk.CHUNK_SIZE_BITS;
