@@ -25,6 +25,7 @@
  */
 package org.spout.api.protocol;
 
+import org.jboss.netty.channel.Channels;
 import org.spout.api.Server;
 
 import org.jboss.netty.channel.ChannelPipeline;
@@ -53,10 +54,6 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 		CommonHandler handler = new CommonHandler(server);
 		CommonEncoder encoder = new CommonEncoder();
 		CommonDecoder decoder = new CommonDecoder(handler, encoder);
-		DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
-		pipeline.addLast("0", decoder);
-		pipeline.addLast("1", encoder);
-		pipeline.addLast("2", handler);
-		return pipeline;
+		return Channels.pipeline(decoder, encoder, handler);
 	}
 }
