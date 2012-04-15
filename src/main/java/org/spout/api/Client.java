@@ -29,7 +29,6 @@ import java.io.File;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;
 

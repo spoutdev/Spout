@@ -51,6 +51,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 
 	private final File filePath;
 	private final RandomAccessFile file;
+	@SuppressWarnings("unused")
 	private final int version;
 	private final int timeout;
 	

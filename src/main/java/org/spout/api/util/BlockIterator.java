@@ -40,7 +40,7 @@ import org.spout.api.math.Vector3;
 public class BlockIterator implements Iterator<Block> {
 	// TODO -- need to actually code this :)
 
-	
+	@SuppressWarnings("unused")
 	private final Point position;
 	private final Vector3 direction;
 	private final Block[] blockBuffer = new Block[3];

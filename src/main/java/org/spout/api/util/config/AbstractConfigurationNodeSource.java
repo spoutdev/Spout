@@ -27,7 +27,6 @@ package org.spout.api.util.config;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;

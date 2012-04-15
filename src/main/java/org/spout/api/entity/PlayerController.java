@@ -25,7 +25,6 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.PlayerInventory;
 import org.spout.api.player.Player;
 

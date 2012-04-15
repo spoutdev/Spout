@@ -26,13 +26,10 @@
 package org.spout.api.plugin;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.generator.WorldGenerator;
 
 public abstract class CommonPlugin implements Plugin {

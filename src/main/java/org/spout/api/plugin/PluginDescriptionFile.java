@@ -45,8 +45,9 @@ import org.spout.api.exception.InvalidDescriptionFileException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-@SuppressWarnings("unused")
 public class PluginDescriptionFile implements Datatable {
+	private static final long serialVersionUID = 1L;
+
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
 			"org.spout",
@@ -160,6 +161,7 @@ public class PluginDescriptionFile implements Datatable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> T getEntry(Object key, Class<T> type, Map<?, ?> values) throws InvalidDescriptionFileException {
 		Object value = values.get(key);
 		if (value == null) {

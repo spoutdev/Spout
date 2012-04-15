@@ -25,7 +25,6 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 /**

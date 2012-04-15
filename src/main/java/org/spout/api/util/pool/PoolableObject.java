@@ -25,6 +25,7 @@
  */
 package org.spout.api.util.pool;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class PoolableObject {
 
 	boolean isPooled;

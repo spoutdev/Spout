@@ -1,10 +1,7 @@
 package org.spout.api.gui.widget;
 
-import java.awt.Font;
 import java.awt.Rectangle;
 
-import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.UnicodeFont;
 import org.spout.api.gui.GuiRenderUtils;
 import org.spout.api.gui.TextProperties;
 import org.spout.api.plugin.Plugin;

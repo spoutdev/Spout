@@ -65,7 +65,6 @@ public class HandlerList {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> void unregisterAll() {
 		for (HandlerList h : ALL_LISTS) {
 			for (List<ListenerRegistration> regs : h.handlerSlots.values()) {
@@ -143,7 +142,6 @@ public class HandlerList {
 	 * Bake HashMap and ArrayLists to 2d array - does nothing if not necessary
 	 * @return The baked array of ListenerRegistrations
 	 */
-	@SuppressWarnings("unchecked")
 	public ListenerRegistration[] bake() {
 		ListenerRegistration[] handlers = this.handlers;
 		if (handlers != null) {
