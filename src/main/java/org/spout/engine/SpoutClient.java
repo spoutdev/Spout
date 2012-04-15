@@ -27,9 +27,7 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
-import org.spout.engine.resources.ClientTexture;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.batcher.PrimitiveBatch;
@@ -38,7 +36,6 @@ import org.spout.engine.filesystem.FileSystem;
 
 import java.awt.Color;
 import java.io.File;
-import java.net.URI;
 
 
 public class SpoutClient extends SpoutEngine implements Client {
@@ -148,12 +145,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glClearColor(1, 1, 1, 1);
 		
 		ticks++;
+		/*
 		double cx = 20 * Math.sin(Math.toRadians(ticks));
 		double cz = 20 * Math.cos(Math.toRadians(ticks));
 		double cy = 20 * Math.sin(Math.toRadians(ticks));
 
-		//Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
-		//renderer.getRenderer().getShader().setUniform("View", view);
+		Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
+		renderer.getRenderer().getShader().setUniform("View", view);*/
 		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
 		
@@ -215,6 +213,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private void renderVisibleChunks(SpoutWorld world){
 		renderer.begin();
 		

@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.spout.api.render.Texture;

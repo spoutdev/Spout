@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import org.spout.api.inventory.ItemStack;
