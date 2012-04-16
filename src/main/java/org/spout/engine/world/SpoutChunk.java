@@ -64,6 +64,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
+import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.IntTag;
 import org.spout.nbt.ShortArrayTag;
@@ -158,6 +159,29 @@ public class SpoutChunk extends Chunk {
 			skyLight[i] = sky;
 		}
 		blockLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		skyLightQueue = new TByteHashSet();
+		blockLightQueue  = new TByteHashSet();
+		column = world.getColumn(((int)x) << Chunk.CHUNK_SIZE_BITS, ((int)z) << Chunk.CHUNK_SIZE_BITS, true);
+		column.registerChunk();
+		columnRegistered.set(true);
+		lastUnloadCheck.set(world.getAge());
+	}
+	
+	protected SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] blockLight, byte[] skyLight) {
+		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
+		coordMask = Chunk.CHUNK_SIZE - 1;
+		parentRegion = region;
+		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
+		this.populated = new SnapshotableBoolean(snapshotManager, populated);
+		this.skyLight = skyLight;
+		byte sky;
+		for (int i = 0; i < skyLight.length; i++) {
+			sky = 0;
+			//sky |= (initial[i * 2] == 0 ? 0xF0 : 0);
+			//sky |= (initial[i * 2 + 1] == 0 ? 0xF : 0);
+			skyLight[i] = sky;
+		}
+		this.blockLight = blockLight;
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue  = new TByteHashSet();
 		column = world.getColumn(((int)x) << Chunk.CHUNK_SIZE_BITS, ((int)z) << Chunk.CHUNK_SIZE_BITS, true);
@@ -549,17 +573,17 @@ public class SpoutChunk extends Chunk {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		List<Tag> chunkTags = new ArrayList<Tag>();
-		chunkTags.add(new ByteTag("version", (byte) 1));
-		chunkTags.add(new ByteTag("format", (byte) 0));
-		chunkTags.add(new IntTag("x", getX()));
-		chunkTags.add(new IntTag("y", getY()));
-		chunkTags.add(new IntTag("z", getZ()));
-		chunkTags.add(new ByteTag("populated", populated.get()));
-		chunkTags.add(new ShortArrayTag("blocks", blockStore.getBlockIdArray()));
-		chunkTags.add(new ShortArrayTag("data", blockStore.getDataArray()));
-		chunkTags.add(new ByteArrayTag("skyLight", skyLight));
-		chunkTags.add(new ByteArrayTag("blockLight", blockLight));
+		CompoundMap chunkTags = new CompoundMap();
+		chunkTags.put(new ByteTag("version", (byte) 1));
+		chunkTags.put(new ByteTag("format", (byte) 0));
+		chunkTags.put(new IntTag("x", getX()));
+		chunkTags.put(new IntTag("y", getY()));
+		chunkTags.put(new IntTag("z", getZ()));
+		chunkTags.put(new ByteTag("populated", populated.get()));
+		chunkTags.put(new ShortArrayTag("blocks", blockStore.getBlockIdArray()));
+		chunkTags.put(new ShortArrayTag("data", blockStore.getDataArray()));
+		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
+		chunkTags.put(new ByteArrayTag("blockLight", blockLight));
 		
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 		

@@ -41,6 +41,7 @@ import org.spout.api.material.Material;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.Parameter;
+import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
@@ -209,7 +210,7 @@ public final class ChannelBufferUtils {
 		return new String(bytes, CHARSET_UTF8);
 	}
 
-	public static List<Tag> readCompound(ChannelBuffer buf) {
+	public static CompoundMap readCompound(ChannelBuffer buf) {
 		int len = buf.readShort();
 		if (len >= 0) {
 			byte[] bytes = new byte[len];
@@ -234,7 +235,7 @@ public final class ChannelBufferUtils {
 		return null;
 	}
 
-	public static void writeCompound(ChannelBuffer buf, List<Tag> data) {
+	public static void writeCompound(ChannelBuffer buf, CompoundMap data) {
 		if (data == null) {
 			buf.writeShort(-1);
 			return;

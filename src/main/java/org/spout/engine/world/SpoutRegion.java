@@ -62,10 +62,12 @@ import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.nbt.ByteTag;
+import org.spout.nbt.CompoundTag;
 import org.spout.nbt.stream.NBTInputStream;
 
 public class SpoutRegion extends Region {
-	
+
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 
 	// Can't extend AsyncManager and Region
@@ -77,32 +79,37 @@ public class SpoutRegion extends Region {
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[Region.REGION_SIZE][Region.REGION_SIZE][Region.REGION_SIZE];
 
 	/**
-	 * The maximum number of chunks that will be processed for population each tick.
+	 * The maximum number of chunks that will be processed for population each
+	 * tick.
 	 */
 	private static final int POPULATE_PER_TICK = 20;
-	
+
 	/**
-	 * The maximum number of chunks that will be reaped by the chunk reaper each tick.
+	 * The maximum number of chunks that will be reaped by the chunk reaper each
+	 * tick.
 	 */
 	private static final int REAP_PER_TICK = 1;
 
 	/**
-	 * The maximum number of chunks that will be processed for lighting updates each tick.
+	 * The maximum number of chunks that will be processed for lighting updates
+	 * each tick.
 	 */
 	private static final int LIGHT_PER_TICK = 20;
-	
+
 	/**
-	 * The segment size to use for chunk storage.  The actual size is 2^(SEGMENT_SIZE)
+	 * The segment size to use for chunk storage. The actual size is
+	 * 2^(SEGMENT_SIZE)
 	 */
 	private final int SEGMENT_SIZE = 9;
-	
+
 	/**
 	 * The number of chunks in a region
 	 */
 	private final int REGION_SIZE_CUBED = REGION_SIZE * REGION_SIZE * REGION_SIZE;
-	
+
 	/**
-	 * The timeout for the chunk storage in ms.  If the store isn't accessed within that time, it can be automatically shutdown
+	 * The timeout for the chunk storage in ms. If the store isn't accessed
+	 * within that time, it can be automatically shutdown
 	 */
 	public static final int TIMEOUT = 30000;
 
@@ -120,7 +127,7 @@ public class SpoutRegion extends Region {
 	 * Holds all of the entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager();
-	
+
 	/**
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
@@ -253,35 +260,39 @@ public class SpoutRegion extends Region {
 		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray());
 	}
 
+	@SuppressWarnings("unused")
 	private SpoutChunk loadChunk(int x, int y, int z) {
 		SpoutChunk newChunk = null;
 		NBTInputStream is = null;
 		DataInputStream dis = null;
+
 		try {
 			dis = getChunkInputStream(x, y, z);
-			if(dis == null) {
+			if (dis == null) {
 				//The inputstream is null because no chunk data exists
 				return newChunk;
 			}
 
 			is = new NBTInputStream(dis, false);
+			CompoundTag chunkTag = (CompoundTag) is.readTag();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if(is != null) {
+			if (is != null) {
 				try {
 					is.close();
 				} catch (IOException ignore) {
 				}
 			}
 		}
+
 		return newChunk;
 	}
 
 	/**
 	 * Removes a chunk from the region and indicates if the region is empty
-	 *
+	 * 
 	 * @param c the chunk to remove
 	 * @return true if the region is now empty
 	 */
@@ -473,7 +484,8 @@ public class SpoutRegion extends Region {
 	}
 
 	public void addEntity(Entity e) {
-		if (spawnQueue.contains(e)) return;
+		if (spawnQueue.contains(e))
+			return;
 		if (removeQueue.contains(e)) {
 			throw new IllegalArgumentException("Cannot add an entity marked for removal");
 		}
@@ -482,13 +494,13 @@ public class SpoutRegion extends Region {
 	}
 
 	public void removeEntity(Entity e) {
-		if (removeQueue.contains(e)) return;
+		if (removeQueue.contains(e))
+			return;
 		if (spawnQueue.contains(e)) {
 			spawnQueue.remove(e);
 			return;
 		}
 		removeQueue.add(e);
-
 
 	}
 
@@ -496,9 +508,9 @@ public class SpoutRegion extends Region {
 		switch (stage) {
 			case 0: {
 				//Add or remove entities
-				if(!spawnQueue.isEmpty()) {
+				if (!spawnQueue.isEmpty()) {
 					SpoutEntity e;
-					while ((e = (SpoutEntity)spawnQueue.poll()) != null) {
+					while ((e = (SpoutEntity) spawnQueue.poll()) != null) {
 						this.allocate(e);
 						EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPosition());
 						Spout.getEngine().getEventManager().callEvent(event);
@@ -508,9 +520,9 @@ public class SpoutRegion extends Region {
 					}
 				}
 
-				if(!removeQueue.isEmpty()) {
+				if (!removeQueue.isEmpty()) {
 					SpoutEntity e;
-					while ((e = (SpoutEntity)removeQueue.poll()) != null) {
+					while ((e = (SpoutEntity) removeQueue.poll()) != null) {
 						this.deallocate(e);
 					}
 				}
@@ -547,28 +559,28 @@ public class SpoutRegion extends Region {
 					}
 				}
 
-				for(int i = 0; i < LIGHT_PER_TICK; i++) {
+				for (int i = 0; i < LIGHT_PER_TICK; i++) {
 					SpoutChunk toLight = lightingQueue.poll();
-					if (toLight == null) break;
+					if (toLight == null)
+						break;
 					if (toLight.isLoaded()) {
 						toLight.processQueuedLighting();
 					}
 				}
 
-				for(int i = 0; i < POPULATE_PER_TICK; i++) {
+				for (int i = 0; i < POPULATE_PER_TICK; i++) {
 					Chunk toPopulate = populationQueue.poll();
-					if (toPopulate == null) break;
+					if (toPopulate == null)
+						break;
 					if (toPopulate.isLoaded()) {
 						toPopulate.populate();
 					}
 				}
 
-
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
 					toUnload.unload(true);
 				}
-
 
 				break;
 			}
@@ -593,7 +605,6 @@ public class SpoutRegion extends Region {
 	public void haltRun() throws InterruptedException {
 	}
 
-
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
 
@@ -601,16 +612,16 @@ public class SpoutRegion extends Region {
 		boolean chunkCompressed = false;
 
 		int reaped = 0;
-		
+
 		long worldAge = getWorld().getAge();
-		
+
 		for (int dx = 0; dx < Region.REGION_SIZE && !chunkCompressed; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE && !chunkCompressed; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE && !chunkCompressed; dz++) {
 					Chunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
 						chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
-						
+
 						if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
 							((SpoutChunk) chunk).unload(true);
 							reaped++;
@@ -621,8 +632,8 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity){
-		SpoutPlayer player = (SpoutPlayer)((PlayerController) entity.getController()).getPlayer();
+	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
+		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getPlayer();
 		NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 		if (synchronizer != null) {
 			if (!chunk.isDirtyOverflow()) {
@@ -648,18 +659,20 @@ public class SpoutRegion extends Region {
 
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
-		
+
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
 					Chunk chunk = chunks[dx][dy][dz].get();
-					if (chunk == null) continue;
+					if (chunk == null)
+						continue;
 					SpoutChunk spoutChunk = (SpoutChunk) chunk;
 
 					if (spoutChunk.isDirty()) {
 						for (Entity entity : spoutChunk.getObserversLive()) {
 							//chunk.refreshObserver(entity);
-							if(!(entity.getController() instanceof PlayerController)) continue;
+							if (!(entity.getController() instanceof PlayerController))
+								continue;
 							syncChunkToPlayers(spoutChunk, entity);
 						}
 						spoutChunk.resetDirtyArrays();
@@ -689,7 +702,7 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Allocates the id for an entity.
-	 *
+	 * 
 	 * @param entity The entity.
 	 * @return The id.
 	 */
@@ -699,7 +712,7 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Deallocates the id for an entity.
-	 *
+	 * 
 	 * @param entity The entity.
 	 */
 	public void deallocate(SpoutEntity entity) {
@@ -722,7 +735,7 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Queues a block for a physic update at the next available tick.
-	 *
+	 * 
 	 * @param x, the block x coordinate
 	 * @param y, the block y coordinate
 	 * @param z, the block z coordinate
@@ -743,20 +756,22 @@ public class SpoutRegion extends Region {
 		return "SpoutRegion{ ( " + getX() + ", " + getY() + ", " + getZ() + "), World: " + this.getWorld() + "}";
 	}
 
-	public Thread getExceutionThread(){
+	public Thread getExceutionThread() {
 
-		return ((ThreadAsyncExecutor)manager.getExecutor());
+		return ((ThreadAsyncExecutor) manager.getExecutor());
 	}
-	
+
 	/**
-	 * This method should be called periodically in order to see if the Chunk Store ByteArrayArray has timed out.<br>
+	 * This method should be called periodically in order to see if the Chunk
+	 * Store ByteArrayArray has timed out.<br>
 	 * <br>
-	 * It will only close the array if no block OutputStreams are open and the last access occurred more than the timeout previously
+	 * It will only close the array if no block OutputStreams are open and the
+	 * last access occurred more than the timeout previously
 	 */
 	public void chunkStoreTimeoutCheck() {
 		chunkStore.timeoutCheck();
 	}
-	
+
 	/**
 	 * Gets the DataOutputStream corresponding to a given Chunk.<br>
 	 * <br>
@@ -769,7 +784,7 @@ public class SpoutRegion extends Region {
 		int key = getChunkKey(c.getX(), c.getY(), c.getZ());
 		return chunkStore.getBlockOutputStream(key);
 	}
-	
+
 	/**
 	 * Gets the DataInputStream corresponding to a given Chunk.<br>
 	 * <br>
@@ -782,17 +797,17 @@ public class SpoutRegion extends Region {
 		int key = getChunkKey(x, y, z);
 		return chunkStore.getBlockInputStream(key);
 	}
-	
+
 	private int getChunkKey(int chunkX, int chunkY, int chunkZ) {
 		int x = chunkX & (Region.REGION_SIZE - 1);
 		int y = chunkY & (Region.REGION_SIZE - 1);
 		int z = chunkZ & (Region.REGION_SIZE - 1);
-		
+
 		int key = 0;
 		key |= x;
 		key |= y << (Region.REGION_SIZE_BITS);
 		key |= z << (Region.REGION_SIZE_BITS << 1);
-		
+
 		return key;
 	}
 }
