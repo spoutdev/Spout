@@ -28,8 +28,11 @@ package org.spout.engine.world;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,6 +64,13 @@ import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.nbt.ByteArrayTag;
+import org.spout.nbt.ByteTag;
+import org.spout.nbt.IntTag;
+import org.spout.nbt.CompoundTag;
+import org.spout.nbt.ShortArrayTag;
+import org.spout.nbt.Tag;
+import org.spout.nbt.stream.NBTInputStream;
 
 public class SpoutRegion extends Region {
 	
@@ -211,17 +221,12 @@ public class SpoutRegion extends Region {
 
 			boolean success = false;
 
+			SpoutChunk newChunk = loadChunk(x, y, z);
+			if (newChunk == null) {
+				newChunk = generateChunk(x, y, z);
+			}
+
 			while (!success) {
-				int cx = (getX() << Region.REGION_SIZE_BITS) + x;
-				int cy = (getY() << Region.REGION_SIZE_BITS) + y;
-				int cz = (getZ() << Region.REGION_SIZE_BITS) + z;
-
-				CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
-
-				WorldGenerator generator = getWorld().getGenerator();
-				generator.generate(buffer, cx, cy, cz);
-
-				SpoutChunk newChunk = new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray());
 				success = ref.compareAndSet(null, newChunk);
 
 				if (success) {
@@ -241,6 +246,47 @@ public class SpoutRegion extends Region {
 			}
 		}
 		throw new IndexOutOfBoundsException("Invalid coordinates (" + x + ", " + y + ", " + z + ")");
+	}
+
+	private SpoutChunk generateChunk(int x, int y, int z) {
+		int cx = (getX() << Region.REGION_SIZE_BITS) + x;
+		int cy = (getY() << Region.REGION_SIZE_BITS) + y;
+		int cz = (getZ() << Region.REGION_SIZE_BITS) + z;
+
+		CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
+
+		WorldGenerator generator = getWorld().getGenerator();
+		generator.generate(buffer, cx, cy, cz);
+
+		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray());
+	}
+
+	private SpoutChunk loadChunk(int x, int y, int z) {
+		SpoutChunk newChunk = null;
+		NBTInputStream is = null;
+		DataInputStream dis = null;
+//		try {
+//			dis = getChunkInputStream(x, y, z);
+//			if(dis.available() == 0) {
+//				System.out.println("No chunk here!");
+//				return newChunk;
+//			}
+//
+//			is = new NBTInputStream(dis, false);
+//			System.out.println(is);
+//			Tag tempTag = is.readTag();
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} finally {
+//			if(is != null) {
+//				try {
+//					is.close();
+//				} catch (IOException ignore) {
+//				}
+//			}
+//		}
+		return newChunk;
 	}
 
 	/**
@@ -730,7 +776,7 @@ public class SpoutRegion extends Region {
 	 * @return the DataOutputStream
 	 */
 	public DataOutputStream getChunkOutputStream(Chunk c) {
-		int key = getChunkKey(c);
+		int key = getChunkKey(c.getX(), c.getY(), c.getZ());
 		return chunkStore.getBlockOutputStream(key);
 	}
 	
@@ -742,15 +788,15 @@ public class SpoutRegion extends Region {
 	 * @param c the chunk
 	 * @return the DataInputStream
 	 */
-	public DataInputStream getChunkInputStream(Chunk c) {
-		int key = getChunkKey(c);
+	public DataInputStream getChunkInputStream(int x, int y, int z) {
+		int key = getChunkKey(x, y, z);
 		return chunkStore.getBlockInputStream(key);
 	}
 	
-	private int getChunkKey(Chunk c) {
-		int x = c.getX() & (Region.REGION_SIZE - 1);
-		int y = c.getY() & (Region.REGION_SIZE - 1);
-		int z = c.getZ() & (Region.REGION_SIZE - 1);
+	private int getChunkKey(int chunkX, int chunkY, int chunkZ) {
+		int x = chunkX & (Region.REGION_SIZE - 1);
+		int y = chunkY & (Region.REGION_SIZE - 1);
+		int z = chunkZ & (Region.REGION_SIZE - 1);
 		
 		int key = 0;
 		key |= x;
