@@ -63,6 +63,7 @@ import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.nbt.ByteTag;
+import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.stream.NBTInputStream;
 
@@ -260,7 +261,6 @@ public class SpoutRegion extends Region {
 		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray());
 	}
 
-	@SuppressWarnings("unused")
 	private SpoutChunk loadChunk(int x, int y, int z) {
 		SpoutChunk newChunk = null;
 		NBTInputStream is = null;
@@ -275,6 +275,18 @@ public class SpoutRegion extends Region {
 
 			is = new NBTInputStream(dis, false);
 			CompoundTag chunkTag = (CompoundTag) is.readTag();
+			CompoundMap map = chunkTag.getValue();
+			int cx = (getX() << Region.REGION_SIZE_BITS) + x;
+			int cy = (getY() << Region.REGION_SIZE_BITS) + y;
+			int cz = (getZ() << Region.REGION_SIZE_BITS) + z;
+			
+			boolean populated = ((ByteTag)map.get("populated")).getBooleanValue();
+			short[] blocks = (short[]) map.get("blocks").getValue();
+			short[] data = (short[]) map.get("data").getValue();
+			byte[] skyLight = (byte[]) map.get("skyLight").getValue();
+			byte[] blockLight = (byte[]) map.get("blockLight").getValue();
+			
+			newChunk = new SpoutChunk(getWorld(), this, cx, cy, cz, populated, blocks, data, skyLight, blockLight);
 
 		} catch (IOException e) {
 			e.printStackTrace();

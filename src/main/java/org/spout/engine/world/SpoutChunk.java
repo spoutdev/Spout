@@ -28,7 +28,6 @@ package org.spout.engine.world;
 import gnu.trove.set.hash.TByteHashSet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -68,7 +67,6 @@ import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.IntTag;
 import org.spout.nbt.ShortArrayTag;
-import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class SpoutChunk extends Chunk {
@@ -167,7 +165,7 @@ public class SpoutChunk extends Chunk {
 		lastUnloadCheck.set(world.getAge());
 	}
 	
-	protected SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] blockLight, byte[] skyLight) {
+	protected SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
