@@ -29,10 +29,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,12 +62,6 @@ import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
-import org.spout.nbt.ByteArrayTag;
-import org.spout.nbt.ByteTag;
-import org.spout.nbt.IntTag;
-import org.spout.nbt.CompoundTag;
-import org.spout.nbt.ShortArrayTag;
-import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
 
 public class SpoutRegion extends Region {
@@ -265,27 +257,25 @@ public class SpoutRegion extends Region {
 		SpoutChunk newChunk = null;
 		NBTInputStream is = null;
 		DataInputStream dis = null;
-//		try {
-//			dis = getChunkInputStream(x, y, z);
-//			if(dis.available() == 0) {
-//				System.out.println("No chunk here!");
-//				return newChunk;
-//			}
-//
-//			is = new NBTInputStream(dis, false);
-//			System.out.println(is);
-//			Tag tempTag = is.readTag();
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			if(is != null) {
-//				try {
-//					is.close();
-//				} catch (IOException ignore) {
-//				}
-//			}
-//		}
+		try {
+			dis = getChunkInputStream(x, y, z);
+			if(dis == null) {
+				//The inputstream is null because no chunk data exists
+				return newChunk;
+			}
+
+			is = new NBTInputStream(dis, false);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(is != null) {
+				try {
+					is.close();
+				} catch (IOException ignore) {
+				}
+			}
+		}
 		return newChunk;
 	}
 

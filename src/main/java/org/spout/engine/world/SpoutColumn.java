@@ -27,7 +27,6 @@ package org.spout.engine.world;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -67,15 +66,15 @@ public class SpoutColumn {
 		this.x = x;
 		this.z = z;
 		this.heightMap = new AtomicInteger[COLUMN_SIZE][COLUMN_SIZE];
-		
+
 		for (int xx = 0; xx < COLUMN_SIZE; xx++) {
 			for (int zz = 0; zz < COLUMN_SIZE; zz++) {
 				heightMap[xx][zz] = new AtomicInteger(0);
 			}
 		}
 
-		readHeightMap(((SpoutWorld)world).getHeightMapInputStream(x, z));
-		
+		readHeightMap(((SpoutWorld) world).getHeightMapInputStream(x, z));
+
 	}
 
 	public void registerChunk() {
@@ -86,7 +85,7 @@ public class SpoutColumn {
 		if (save) {
 			TickStage.checkStage(TickStage.SNAPSHOT);
 			if (activeChunks.decrementAndGet() == 0) {
-				OutputStream out = ((SpoutWorld)world).getHeightMapOutputStream(x, z);
+				OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
 				try {
 					writeHeightMap(out);
 				} finally {
@@ -95,7 +94,7 @@ public class SpoutColumn {
 					} catch (IOException e) {
 					}
 				}
-				((SpoutWorld)world).removeColumn(x, z, this);
+				((SpoutWorld) world).removeColumn(x, z, this);
 			}
 		} else {
 			activeChunks.decrementAndGet();
@@ -111,17 +110,17 @@ public class SpoutColumn {
 		AtomicInteger v = getAtomicInteger(x, z);
 		return v.get();
 	}
-	
+
 	public void notifyChunkAdded(Chunk c, int x, int z) {
 		int y = c.getY() << Chunk.CHUNK_SIZE_BITS;
-		
+
 		AtomicInteger v = getAtomicInteger(x, z);
 		int maxY = y + Chunk.CHUNK_SIZE - 1;
-		
+
 		if (maxY < v.get()) {
 			return;
 		}
-		
+
 		for (int yy = maxY; yy >= y; yy--) {
 			if (!isAir(c, x, yy, z)) {
 				notifyBlockChange(v, x, yy, z);
@@ -129,14 +128,14 @@ public class SpoutColumn {
 			}
 		}
 	}
-	
+
 	public void notifyBlockChange(int x, int y, int z) {
 		//System.out.println("Notify block change:       " + x + ", " + y + ", " + z);
 		AtomicInteger v = getAtomicInteger(x, z);
 		notifyBlockChange(v, x, y, z);
 		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);
 	}
-	
+
 	private void notifyBlockChange(AtomicInteger v, int x, int y, int z) {
 		int value = v.get();
 		if (y < value) {
@@ -167,13 +166,13 @@ public class SpoutColumn {
 		int yy = y;
 		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
 		return isAir(world.getBlockMaterial(xx, yy, zz));
-		
+
 	}
-	
+
 	private boolean isAir(Chunk c, int x, int y, int z) {
 		return isAir(c.getBlockMaterial(x, y, z));
 	}
-	
+
 	private boolean isAir(BlockMaterial m) {
 		if (m == null) {
 			return false;
@@ -187,6 +186,16 @@ public class SpoutColumn {
 	}
 
 	private void readHeightMap(InputStream in) {
+		if (in == null) {
+			//The inputstream is null because no height map data exists
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
+					getAtomicInteger(x, z).set(Integer.MIN_VALUE);
+				}
+			}
+			return;
+		}
+
 		DataInputStream dataStream = new DataInputStream(in);
 		try {
 			for (int x = 0; x < COLUMN_SIZE; x++) {
@@ -194,17 +203,11 @@ public class SpoutColumn {
 					getAtomicInteger(x, z).set(dataStream.readInt());
 				}
 			}
-		} catch (EOFException e) {
-			for (int x = 0; x < COLUMN_SIZE; x++) {
-				for (int z = 0; z < COLUMN_SIZE; z++) {
-					getAtomicInteger(x, z).set(Integer.MIN_VALUE);
-				}
-			}
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error reading column height-map for column" + x + ", " + z);
 		}
 	}
-	
+
 	private void writeHeightMap(OutputStream out) {
 		DataOutputStream dataStream = new DataOutputStream(out);
 		try {
