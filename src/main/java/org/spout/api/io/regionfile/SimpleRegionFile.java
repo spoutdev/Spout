@@ -157,7 +157,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		}
 		
 	}
-	
+
 	@Override
 	public DataInputStream getInputStream(int i) throws IOException {
 		if (i < 0 || i > entries) {
@@ -166,14 +166,19 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		Lock lock = blockLock[i].readLock();
 		lock.lock();
-		if (this.isClosed()) {
-			throw new SRFClosedException("File closed");
-		}
 		try {
+			if (this.isClosed()) {
+				throw new SRFClosedException("File closed");
+			}
+			if (blockActualLength[i].get() == 0) {
+				//This block is of 0 length, and will cause EOF errors if you attempt to make a stream with it.
+				return null;
+			}
+
 			int start = blockSegmentStart[i].get() << segmentSize;
 			int actualLength = blockActualLength[i].get();
 			byte[] result = new byte[actualLength];
-			synchronized(file) {
+			synchronized (file) {
 				file.seek(start);
 				file.readFully(result);
 			}
@@ -182,7 +187,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 			lock.unlock();
 		}
 	}
-	
+
 	@Override
 	public DataOutputStream getOutputStream(int i) throws IOException {
 		if (i < 0 || i > entries) {
