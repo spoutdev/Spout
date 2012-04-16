@@ -64,6 +64,10 @@ public class AtomicBlockStore<T> {
 	}
 
 	public AtomicBlockStore(int shift, int dirtySize, short[] initial) {
+		this(shift, dirtySize, initial, null);
+	}
+	
+	public AtomicBlockStore(int shift, int dirtySize, short[] blocks, short[] data) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
@@ -73,9 +77,12 @@ public class AtomicBlockStore<T> {
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
-		if (initial != null) {
-			for (int i = 0; i < Math.min(initial.length, size); i++) {
-				blockIds.set(i, initial[i]);
+		if (blocks != null) {
+			for (int i = 0; i < Math.min(blocks.length, size); i++) {
+				blockIds.set(i, blocks[i]);
+				if(data != null) {
+					auxStore.add(blocks[i], data[i], null);
+				}
 			}
 		}
 	}

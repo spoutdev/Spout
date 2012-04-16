@@ -25,15 +25,13 @@
  */
 package org.spout.api.inventory;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.spout.api.material.Material;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialContainer;
 import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.util.LogicUtil;
-import org.spout.nbt.Tag;
+import org.spout.nbt.CompoundMap;
 
 /**
  * Represents a stack of items
@@ -42,7 +40,7 @@ public class ItemStack implements MaterialContainer {
 	private Material material;
 	private int amount;
 	private short data;
-	private List<Tag> auxData;
+	private CompoundMap auxData;
 
 	/**
 	 * Creates a new ItemStack from the specified Material of the specified
@@ -105,11 +103,11 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @return the aux data
 	 */
-	public List<Tag> getAuxData() {
+	public CompoundMap getAuxData() {
 		if (auxData == null) {
 			return null;
 		} else {
-			return new ArrayList<Tag>(auxData);
+			return new CompoundMap(auxData);
 		}
 	}
 
@@ -118,11 +116,11 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @return the item stack
 	 */
-	public ItemStack setAuxData(List<Tag> auxData) {
+	public ItemStack setAuxData(CompoundMap auxData) {
 		if (auxData == null) {
 			this.auxData = null;
 		} else {
-			this.auxData = new ArrayList<Tag>(auxData);
+			this.auxData = new CompoundMap(auxData);
 		}
 		return this;
 	}
