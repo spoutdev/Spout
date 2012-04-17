@@ -103,11 +103,12 @@ public class ConfigurationTest {
 
 	@Test
 	public void testPathSeparator() {
+		String actualValue = config.getNode("foo", "bar").getString();
 		String value = config.getNode("foo.bar").getString();
-		assertEquals("baz", value);
+		assertEquals(actualValue, value);
 		config.setPathSeparator("/");
 		value = config.getNode("foo/bar").getString();
-		assertEquals("baz", value);
+		assertEquals(actualValue, value);
 		config.setPathSeparator(".");
 	}
 }

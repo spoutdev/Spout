@@ -28,6 +28,11 @@ package org.spout.api.util.config;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 /**
@@ -42,8 +47,30 @@ public class ConfigurationNodeTest {
 	}
 
 	@Test
-	public void testGetPath() throws Exception {
+	public void testGetPath() {
 		ConfigurationNode config = new ConfigurationNode(base, new String[] {"a", "b", "c"}, null);
 		assertEquals("a.b.c", config.getPath());
+	}
+
+	@Test
+	public void testGetKeys() {
+		ConfigurationNode parent = base.getChild("a");
+		parent.getChild("a1", true).setValue("b1");
+		parent.getChild("a2", true).setValue("b2");
+		parent.getChild("a3", true).setValue("b3");
+		parent.getChild("a3").getChild("c3", true);
+		assertEquals(new HashSet<String>(Arrays.asList("a1", "a2", "a3")), parent.getKeys(false));
+		assertEquals(Arrays.asList("a"), base.getKeys(false));
+		assertEquals(new HashSet<String>(Arrays.asList("a", "a.a1", "a.a2", "a.a3", "a.a3.c3")), base.getKeys(true));
+	}
+	@Test
+	public void testGetValues() {
+		ConfigurationNode parent = base.getChild("a");
+		Map<String, Object> vals = new HashMap<String, Object>();
+		for (int i = 1; i <= 3; ++i) {
+			parent.getChild("a" + i).setValue("b" + i);
+			vals.put("a" + i, "b" + i);
+		}
+		assertEquals(vals, parent.getValues());
 	}
 }

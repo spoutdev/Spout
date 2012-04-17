@@ -79,10 +79,12 @@ public class IniConfigurationTest {
 		StringLoadingIniConfiguration subject = new StringLoadingIniConfiguration(null);
 		subject.getNode("section").setComment("Hello", "World");
 		subject.getNode("section", "node").setValue("value");
+		subject.getNode("section", "node").setComment("Node Comment");
 		subject.save();
 		assertEquals("# Hello" + LINE_SEPARATOR +
 		"# World" + LINE_SEPARATOR +
 		"[section]" + LINE_SEPARATOR +
+		"# Node Comment" + LINE_SEPARATOR +
 		"node=value" + LINE_SEPARATOR, subject.getValue());
 	}
 }
