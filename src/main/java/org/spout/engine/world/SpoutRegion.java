@@ -30,7 +30,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
+import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
@@ -49,6 +52,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -171,6 +175,8 @@ public class SpoutRegion extends Region {
 	private final Queue<Entity> spawnQueue = new ConcurrentLinkedQueue<Entity>();
 
 	private final Queue<Entity> removeQueue = new ConcurrentLinkedQueue<Entity>();
+	
+	private final Map<Point, BlockController> blockControllers = new HashMap<Point, BlockController>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, false);
@@ -496,6 +502,11 @@ public class SpoutRegion extends Region {
 	}
 
 	public void addEntity(Entity e) {
+		Controller controller = e.getController();
+		if (controller instanceof BlockController) {
+			blockControllers.put(e.getPosition(), (BlockController) controller);
+		}
+		
 		if (spawnQueue.contains(e))
 			return;
 		if (removeQueue.contains(e)) {
@@ -506,6 +517,10 @@ public class SpoutRegion extends Region {
 	}
 
 	public void removeEntity(Entity e) {
+		if (e.getController() instanceof BlockController) {
+			blockControllers.remove(e.getPosition());
+		}
+		
 		if (removeQueue.contains(e))
 			return;
 		if (spawnQueue.contains(e)) {
@@ -712,6 +727,11 @@ public class SpoutRegion extends Region {
 		return entityManager.getEntity(id);
 	}
 
+	@Override
+	public BlockController getBlockController(Point pos) {
+		return blockControllers.get(pos);
+	}
+
 	/**
 	 * Allocates the id for an entity.
 	 * 
@@ -802,7 +822,7 @@ public class SpoutRegion extends Region {
 	 * <br>
 	 * The stream is based on a snapshot of the array.
 	 * 
-	 * @param c the chunk
+	 * @param x the chunk
 	 * @return the DataInputStream
 	 */
 	public DataInputStream getChunkInputStream(int x, int y, int z) {

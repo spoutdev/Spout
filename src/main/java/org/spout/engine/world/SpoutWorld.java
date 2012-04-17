@@ -46,6 +46,7 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableMap;
+import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
@@ -197,7 +198,13 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public SpoutBlock getBlock(int x, int y, int z, Source source) {
-		return new SpoutBlock(this, x, y, z, source);
+		SpoutBlock block = new SpoutBlock(this, x, y, z, source);
+		BlockController controller = block.getChunk().getRegion().getBlockController(x, y, z);
+		if (controller != null) {
+			block.setController(controller);
+		}
+
+		return block;
 	}
 
 	@Override
