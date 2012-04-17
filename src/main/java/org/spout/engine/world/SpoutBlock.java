@@ -26,6 +26,8 @@
 package org.spout.engine.world;
 
 import org.spout.api.Source;
+import org.spout.api.entity.BlockController;
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -38,11 +40,11 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
 
 public class SpoutBlock implements Block {
-
 	protected int x, y, z;
-	private World world;
-	private Chunk chunk;
-	private Source source;
+	protected World world;
+	protected Chunk chunk;
+	protected Source source;
+	protected BlockController controller;
 
 	public SpoutBlock(Block source) {
 		this(source.getWorld(), source.getX(), source.getY(), source.getZ(), source.getSource());
@@ -53,11 +55,16 @@ public class SpoutBlock implements Block {
 	}
 
 	public SpoutBlock(World world, int x, int y, int z, Source source) {
+		this(world, x, y, z, source, null);
+	}
+	
+	public SpoutBlock(World world, int x, int y, int z, Source source, BlockController controller) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.world = world;
 		this.source = source == null ? world : source;
+		this.controller = controller;
 	}
 
 	public Point getPosition() {
@@ -225,6 +232,21 @@ public class SpoutBlock implements Block {
 	 */
 	public void setData(short data, boolean update) {
 		this.getChunk().setBlockData(this.x, this.y, this.z, data, update, this.source);
+	}
+
+	@Override
+	public BlockController getController() {
+		return controller;
+	}
+
+	@Override
+	public void setController(BlockController controller) {
+		this.controller = controller;
+	}
+
+	@Override
+	public boolean hasController() {
+		return controller != null;
 	}
 
 	@Override
