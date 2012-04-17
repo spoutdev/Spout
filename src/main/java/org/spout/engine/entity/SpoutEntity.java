@@ -674,7 +674,7 @@ public class SpoutEntity implements Entity {
 		return map.get(key);
 	}
 
-    @Override
+	@Override
 	public boolean hasData(String key) {
 		return map.contains(key);
 	}
