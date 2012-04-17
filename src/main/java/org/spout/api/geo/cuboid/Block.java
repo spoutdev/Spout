@@ -26,6 +26,8 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.Source;
+import org.spout.api.entity.BlockController;
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
@@ -92,7 +94,7 @@ public interface Block extends MaterialContainer, Cloneable {
 	
 	/**
 	 * Sets the material and data to the one of the source block
-	 * @param blocksource to set to
+	 * @param block to set to
 	 */
 	public void setBlock(MaterialSource block);
 	
@@ -132,6 +134,27 @@ public interface Block extends MaterialContainer, Cloneable {
 	 * @param update whether players nearby should be notified of the block change
 	 */
 	public void setData(short data, boolean update);
+
+	/**
+	 * Gets any controller associated with the block.
+	 *
+	 * @return block controller
+	 */
+	public BlockController getController();
+
+	/**
+	 * Sets the entity associated with the block.
+	 *
+	 * @param controller
+	 */
+	public void setController(BlockController controller);
+
+	/**
+	 * Whether or not the block is associated with an entity.
+	 *
+	 * @return true if has entity
+	 */
+	public boolean hasController();
 	
 	/**
 	 * Clones this block
