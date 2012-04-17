@@ -60,7 +60,7 @@ public class ConfigurationNodeTest {
 		parent.getChild("a3", true).setValue("b3");
 		parent.getChild("a3").getChild("c3", true);
 		assertEquals(new HashSet<String>(Arrays.asList("a1", "a2", "a3")), parent.getKeys(false));
-		assertEquals(Arrays.asList("a"), base.getKeys(false));
+		assertEquals(new HashSet<String>(Arrays.asList("a")), base.getKeys(false));
 		assertEquals(new HashSet<String>(Arrays.asList("a", "a.a1", "a.a2", "a.a3", "a.a3.c3")), base.getKeys(true));
 	}
 	@Test

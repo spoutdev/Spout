@@ -89,12 +89,35 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 			addChild(node);
 			return;
 		}
+		// Gather the parents the node already has for later reference
+		ConfigurationNode parentCollector = node;
+		ConfigurationNode[] parents = new ConfigurationNode[path.length];
+		int index = parents.length - 1;
+		parents[parents.length - 1] = node;
+		while (index > 0 && parentCollector.getParent() != null) {
+			ConfigurationNode parentNode = parentCollector.getParent() instanceof ConfigurationNode ? (ConfigurationNode) parentCollector.getParent() : null;
+			if (parentNode == null) {
+				break;
+			}
+			parents[--index] = parentNode;
+			parentCollector = parentNode;
+		}
 
-		ConfigurationNode parent = getChild(path[0], true);
+		// Try to use existing parents where they are present
+		ConfigurationNode parent;
+		if (parents[0] != null) {
+			parent = parents[0];
+			if (!parent.isAttached() || parent.getParent() != this) {
+				addChild(parents[0]);
+			}
+		} else {
+			parent = getChild(path[0]);
+		}
+
 		ConfigurationNodeSource oldParent;
 		for (int i = 1; i < path.length - 1; ++i) {
 			oldParent = parent;
-			parent = oldParent.getChild(path[i], true);
+			parent = parents[i] != null ? parents[i] : oldParent.getChild(path[i], true);
 
 			if (i != path.length - 2 && !parent.isAttached()) {
 				oldParent.addChild(parent);

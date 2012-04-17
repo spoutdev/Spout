@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.data.ValueHolderBase;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ import java.util.Set;
 public class ConfigurationNode extends AbstractConfigurationNodeSource implements ValueHolder {
 	private Object value;
 	private boolean attached;
-	private ConfigurationNodeSource parent;
+	private WeakReference<ConfigurationNodeSource> parent = new WeakReference<ConfigurationNodeSource>(null);
 
 	private final String[] path;
 	private final ValueHolderBase valueHolder = new ValueHolderBase(this);
@@ -204,7 +205,6 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 	protected void checkAdded() {
 		if (!isAttached()) {
 			getConfiguration().setNode(this);
-			//setAttached(true);
 		}
 	}
 
@@ -221,7 +221,7 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 	}
 
 	public ConfigurationNodeSource getParent() {
-		return parent;
+		return parent.get();
 	}
 
 	protected void setParent(ConfigurationNodeSource parent) {
@@ -238,7 +238,7 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 			visited.add(oldParent);
 			oldParent = oldParent instanceof ConfigurationNode ? ((ConfigurationNode) oldParent).getParent() : null;
 		}
-		this.parent = parent;
+		this.parent = new WeakReference<ConfigurationNodeSource>(parent);
 	}
 
 	@Override

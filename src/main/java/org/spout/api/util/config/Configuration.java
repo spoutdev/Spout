@@ -49,6 +49,7 @@ public interface Configuration extends ConfigurationNodeSource {
 
 	/**
 	 * Adds the given node to the configuration structure
+	 * This will attempt to use the node's existing parents in the configuration structure where possible
 	 *
 	 * @param node The node to add
 	 */

@@ -62,6 +62,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		ConfigurationNode node = children.get(name);
 		if (node == null) {
 			node = createConfigurationNode(ArrayUtils.add(getPathElements(), name), null);
+			node.setParent(this);
 			if (add) {
 				addChild(node);
 			}
