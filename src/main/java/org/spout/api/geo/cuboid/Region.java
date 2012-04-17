@@ -27,6 +27,7 @@ package org.spout.api.geo.cuboid;
 
 import java.util.Set;
 
+import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
@@ -140,7 +141,7 @@ public abstract class Region extends Cube {
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.
-	 * @param <T> The type of entity.
+	 * @param type The type of entity.
 	 * @return A set of entities with the specified type.
 	 */
 	@SnapshotRead
@@ -162,4 +163,18 @@ public abstract class Region extends Cube {
 	 */
 	@SnapshotRead
 	public abstract Entity getEntity(int id);
+
+	/**
+	 * Gets an entity mapped to a point.
+	 *
+	 * @param pos
+	 * @return block entity
+	 */
+	@SnapshotRead
+	public abstract BlockController getBlockController(Point pos);
+	
+	@SnapshotRead
+	public BlockController getBlockController(int x, int y, int z) {
+		return getBlockController(new Point(getWorld(), x, y, z));
+	}
 }
