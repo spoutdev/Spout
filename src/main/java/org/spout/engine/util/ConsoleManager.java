@@ -98,9 +98,55 @@ public final class ConsoleManager {
 	private boolean running = true;
 	private boolean jLine = false;
 
-	public ConsoleManager(Engine server, String mode) {
+	public ConsoleManager(Engine server) {
 		this.server = server;
 
+		consoleHandler = new FancyConsoleHandler();
+
+		String logFile = server.getLogFile();
+		if (new File(logFile).getParentFile() != null) {
+			new File(logFile).getParentFile().mkdirs();
+		}
+		fileHandler = new RotatingFileHandler(logFile);
+
+		consoleHandler.setFormatter(new DateOutputFormatter(new SimpleDateFormat("HH:mm:ss")));
+		fileHandler.setFormatter(new DateOutputFormatter(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")));
+
+		Logger logger = Logger.getLogger("");
+		for (Handler h : logger.getHandlers()) {
+			logger.removeHandler(h);
+		}
+		logger.addHandler(consoleHandler);
+		logger.addHandler(fileHandler);
+
+		try {
+			reader = new ConsoleReader();
+		} catch (IOException ex) {
+			server.getLogger().log(Level.SEVERE, "Exception initializing console reader: {0}", ex.getMessage());
+			ex.printStackTrace();
+		}
+
+		Runtime.getRuntime().addShutdownHook(new ServerShutdownThread());
+
+		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
+		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
+	}
+
+	public ColoredCommandSource getCommandSource() {
+		return source;
+	}
+
+	public void stop() {
+		consoleHandler.flush();
+		fileHandler.flush();
+		fileHandler.close();
+		running = false;
+		if (jFrame != null) {
+			jFrame.dispose();
+		}
+	}
+
+	public void setupConsole(String mode) {
 		if (mode.equalsIgnoreCase("gui")) {
 			JTerminalListener listener = new JTerminalListener();
 
@@ -133,7 +179,7 @@ public final class ConsoleManager {
 			ipanel.setBorder(BorderFactory.createEmptyBorder());
 			ipanel.setBackground(Color.BLACK);
 			ipanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			ipanel.setSize(jTerminal.getWidth(), ipanel.getHeight());
+			ipanel.setSize(jTerminal.getWidth(), ipanel.getHeight() * 2);
 
 			jFrame.getContentPane().add(jTerminal, BorderLayout.NORTH);
 			jFrame.getContentPane().add(ipanel, BorderLayout.SOUTH);
@@ -142,56 +188,11 @@ public final class ConsoleManager {
 			jFrame.setLocationRelativeTo(null);
 			jFrame.pack();
 			jFrame.setVisible(true);
+			consoleHandler.checkJTerminal();
 		} else if (mode.equalsIgnoreCase("jline")) {
 			jLine = true;
 		}
 
-		consoleHandler = new FancyConsoleHandler();
-
-		String logFile = server.getLogFile();
-		if (new File(logFile).getParentFile() != null) {
-			new File(logFile).getParentFile().mkdirs();
-		}
-		fileHandler = new RotatingFileHandler(logFile);
-
-		consoleHandler.setFormatter(new DateOutputFormatter(new SimpleDateFormat("HH:mm:ss")));
-		fileHandler.setFormatter(new DateOutputFormatter(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")));
-
-		Logger logger = Logger.getLogger("");
-		for (Handler h : logger.getHandlers()) {
-			logger.removeHandler(h);
-		}
-		logger.addHandler(consoleHandler);
-		logger.addHandler(fileHandler);
-
-		try {
-			reader = new ConsoleReader();
-		} catch (IOException ex) {
-			server.getLogger().log(Level.SEVERE, "Exception inintializing console reader: {0}", ex.getMessage());
-			ex.printStackTrace();
-		}
-
-		Runtime.getRuntime().addShutdownHook(new ServerShutdownThread());
-
-		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
-		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
-	}
-
-	public ColoredCommandSource getCommandSource() {
-		return source;
-	}
-
-	public void stop() {
-		consoleHandler.flush();
-		fileHandler.flush();
-		fileHandler.close();
-		running = false;
-		if (jFrame != null) {
-			jFrame.dispose();
-		}
-	}
-
-	public void setupConsole() {
 		source = new ColoredCommandSource();
 		thread = new ConsoleCommandThread();
 
@@ -217,7 +218,22 @@ public final class ConsoleManager {
 		} else if ((!jLine || !reader.getTerminal().isANSISupported()) && jTerminal == null) {
 			return ChatColor.strip(string);
 		} else {
-			return string.replace(ChatColor.RED.toString(), "\033[1;31m").replace(ChatColor.YELLOW.toString(), "\033[1;33m").replace(ChatColor.BRIGHT_GREEN.toString(), "\033[1;32m").replace(ChatColor.CYAN.toString(), "\033[1;36m").replace(ChatColor.BLUE.toString(), "\033[1;34m").replace(ChatColor.PINK.toString(), "\033[1;35m").replace(ChatColor.BLACK.toString(), "\033[0;0m").replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m").replace(ChatColor.DARK_RED.toString(), "\033[0;31m").replace(ChatColor.GOLD.toString(), "\033[0;33m").replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m").replace(ChatColor.DARK_CYAN.toString(), "\033[0;36m").replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m").replace(ChatColor.PURPLE.toString(), "\033[0;35m").replace(ChatColor.GRAY.toString(), "\033[0;37m").replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
+			return string.replace(ChatColor.RED.toString(), "\033[1;31m")
+					.replace(ChatColor.YELLOW.toString(), "\033[1;33m")
+					.replace(ChatColor.BRIGHT_GREEN.toString(), "\033[1;32m")
+					.replace(ChatColor.CYAN.toString(), "\033[1;36m")
+					.replace(ChatColor.BLUE.toString(), "\033[1;34m")
+					.replace(ChatColor.PINK.toString(), "\033[1;35m")
+					.replace(ChatColor.BLACK.toString(), "\033[0;0m")
+					.replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m")
+					.replace(ChatColor.DARK_RED.toString(), "\033[0;31m")
+					.replace(ChatColor.GOLD.toString(), "\033[0;33m")
+					.replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m")
+					.replace(ChatColor.DARK_CYAN.toString(), "\033[0;36m")
+					.replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m")
+					.replace(ChatColor.PURPLE.toString(), "\033[0;35m")
+					.replace(ChatColor.GRAY.toString(), "\033[0;37m")
+					.replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
 		}
 	}
 
@@ -345,6 +361,10 @@ public final class ConsoleManager {
 
 	private class FancyConsoleHandler extends ConsoleHandler {
 		public FancyConsoleHandler() {
+			checkJTerminal();
+		}
+
+		public void checkJTerminal() {
 			if (jTerminal != null) {
 				setOutputStream(new TerminalOutputStream());
 			}

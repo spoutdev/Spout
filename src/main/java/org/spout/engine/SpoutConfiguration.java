@@ -45,6 +45,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder USE_WHITELIST = new ConfigurationHolder(false, "use-whitelist");
 	public static final ConfigurationHolder WORLD_CONTAINER = new ConfigurationHolder(".", "world-container");
 	public static final ConfigurationHolder ADDRESS = new ConfigurationHolder("0.0.0.0:25565", "address");
+	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "console");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File("config", "spout.yml")));

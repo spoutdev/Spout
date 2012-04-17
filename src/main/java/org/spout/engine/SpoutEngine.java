@@ -150,7 +150,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	/**
 	 * The console manager of this server.
 	 */
-	private final ConsoleManager consoleManager = new ConsoleManager(this, "jline");
+	private final ConsoleManager consoleManager = new ConsoleManager(this);
 
 	/**
 	 * The logger for this class.
@@ -238,8 +238,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public void start() {
-
-
 		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
 		}
@@ -252,13 +250,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		if (Spout.getEngine().debugMode())
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 
-		consoleManager.setupConsole();
-
 		try {
 			config.load();
 		} catch (ConfigurationException e) {
 			getLogger().log(Level.SEVERE, "Error loading config: {0}", e);
 		}
+		consoleManager.setupConsole(SpoutConfiguration.CONSOLE_TYPE.getString());
 
 		// Start loading plugins
 		loadPlugins();
@@ -770,7 +767,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 		return player;
 	}
-	
+
 	protected Collection<SpoutWorld> getLiveWorlds(){
 		return loadedWorlds.getLive().values();
 	}
