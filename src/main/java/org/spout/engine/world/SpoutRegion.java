@@ -101,7 +101,7 @@ public class SpoutRegion extends Region {
 	 * The segment size to use for chunk storage. The actual size is
 	 * 2^(SEGMENT_SIZE)
 	 */
-	private final int SEGMENT_SIZE = 9;
+	private final int SEGMENT_SIZE = 8;
 
 	/**
 	 * The number of chunks in a region
