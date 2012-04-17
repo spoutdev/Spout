@@ -53,7 +53,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * A configuration that loads from a YAML file
  * @author zml2008
  */
 public class YamlConfiguration extends MapBasedConfiguration implements FileConfiguration {
@@ -159,11 +159,11 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 	}
 
 	public void setHeader(String... headerLines) {
-		StringBuilder header = new StringBuilder();
 		if (headerLines.length == 1) {
 			headerLines = headerLines[0].split(LINE_BREAK);
 		}
 
+		StringBuilder header = new StringBuilder();
 		for (String line : headerLines) {
 			if (header.length() > 0) {
 				header.append(LINE_BREAK);

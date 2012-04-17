@@ -169,6 +169,9 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 	 * @return The previous value of the configuration
 	 */
 	public Object setValue(Object value) {
+		if (value instanceof ValueHolder) {
+			value = ((ValueHolder) value).getValue();
+		}
 		checkAdded();
 		Object old = this.getValue();
 		if (value instanceof Map<?, ?>) {
@@ -188,6 +191,9 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 
 	// Util methods to make sure stuff is connected properly
 
+	/**
+	 * Detach all this node's children, making sure to remove associations both ways
+	 */
 	private void removeChildren() {
 		for (ConfigurationNode node : children.values()) {
 			detachChild(node);
@@ -198,7 +204,7 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 	protected void checkAdded() {
 		if (!isAttached()) {
 			getConfiguration().setNode(this);
-			setAttached(true);
+			//setAttached(true);
 		}
 	}
 

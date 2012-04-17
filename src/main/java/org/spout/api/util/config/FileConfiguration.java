@@ -28,8 +28,15 @@ package org.spout.api.util.config;
 import java.io.File;
 
 /**
+ * Represents a configuration that loads from a file
+ *
  * @author zml2008
  */
 public interface FileConfiguration extends Configuration {
+	/**
+	 * Returns the file that this configuration loads from.
+	 *
+	 * @return The file that this configuration loads from
+	 */
 	public File getFile();
 }

@@ -25,12 +25,15 @@
  */
 package org.spout.api.util.config;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.spout.api.data.ValueHolderBase;
 
 import java.util.Map;
 import java.util.Set;
 
 /**
+ * This object holds a reference to a ConfigurationNode and provides all the methods to
+ * get its value, but using the default provided in the constructor
  *
  * @author zml2008
  */
@@ -50,6 +53,9 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 	}
 
 	private ConfigurationNode getNode() {
+		if (getConfiguration() == null) {
+			throw new IllegalStateException("The ConfigurationHolder at path " + ArrayUtils.toString(path) + " is not attached to a Configuration!");
+		}
 		return getConfiguration().getNode(getPathElements());
 	}
 

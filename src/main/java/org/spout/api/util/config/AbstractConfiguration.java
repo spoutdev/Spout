@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
+ * A basic implementation of {@link Configuration} using {@link ConfigurationNodeSource}
+ * method implementations from {@link AbstractConfigurationNodeSource}
  *
  * @author zml2008
  */
@@ -62,7 +64,14 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 	protected abstract void saveFromNodes(Map<String, ConfigurationNode> nodes) throws ConfigurationException;
 
 	public void load() throws ConfigurationException {
+		// Kill the existing children
+		for (ConfigurationNode child : children.values()) {
+			detachChild(child);
+		}
+		children.clear();
+
 		Map<String, ConfigurationNode> rawValues = loadToNodes();
+		// Load the new children
 		for (Map.Entry<String, ConfigurationNode> entry : rawValues.entrySet()) {
 			addChild(entry.getValue());
 		}
@@ -123,7 +132,6 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 		return rawPath;
 	}
 
-	@Override
 	public String[] getPathElements() {
 		return ArrayUtils.EMPTY_STRING_ARRAY;
 	}

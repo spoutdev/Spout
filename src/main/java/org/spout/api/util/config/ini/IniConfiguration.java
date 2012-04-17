@@ -219,6 +219,14 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		}
 	}
 
+	/**
+	 * This method reads one section of INI configuration data.
+	 *
+	 * @param parentPath The path of the section containing this data
+	 * @param lines The lines of data to read
+	 * @return The configuration nodes read from the section
+	 * @throws ConfigurationException when an invalid node is specified
+	 */
 	protected List<ConfigurationNode> readNodeSection(String[] parentPath, String[] lines) throws ConfigurationException {
 		List<ConfigurationNode> nodes = new ArrayList<ConfigurationNode>();
 		List<String> comment = new ArrayList<String>();
@@ -243,11 +251,25 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		return nodes;
 	}
 
+	/**
+	 * Writes a single section of nodes to the specified Writer
+	 * The nodes passed to this method must not have children
+	 *
+	 * @param writer The Writer to write data to
+	 * @param nodes The nodes to write
+	 * @throws ConfigurationException when a node cannot be correctly written
+	 */
 	protected void writeNodeSection(Writer writer, Collection<ConfigurationNode> nodes) throws ConfigurationException {
 		try {
 			for (ConfigurationNode node : nodes) {
 				if (node.hasChildren()) {
 					throw new ConfigurationException("Nodes passed to getChildlessNodes must not have children!");
+				}
+				String[] comment = getComment(node);
+				if (comment != null) {
+					for (String line : comment) {
+						writer.append(getPreferredCommentChar()).append(" ").append(line).append(LINE_SEPARATOR);
+					}
 				}
 				writer.append(node.getPathElements()[node.getPathElements().length - 1]).append("=").append(toStringValue(node.getValue())).append(LINE_SEPARATOR);
 			}
@@ -256,7 +278,14 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		}
 	}
 
-	protected String[] getComment(ConfigurationNode node) {
+	/**
+	 * Returns the comment for a given configuration node, with a safe check to make sure
+	 * the node is a CommentedConfigurationNode
+	 *
+	 * @param node The node to get a comment from
+	 * @return The node's comment, or null if no comment is present
+	 */
+	protected static String[] getComment(ConfigurationNode node) {
 		String[] comment = null;
 		if (node instanceof CommentedConfigurationNode) {
 			comment = ((CommentedConfigurationNode) node).getComment();
@@ -264,6 +293,12 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		return comment;
 	}
 
+	/**
+	 * Converts a raw String into the correct Object representation for the Configuration node
+	 *
+	 * @param value The string value
+	 * @return The value converted into the correct Object representation
+	 */
 	public Object fromStringValue(String value) {
 		if (value.matches("^([\"']).*\\1$")) { // Quote value
 			return value.substring(1, value.length() - 1);
@@ -276,6 +311,12 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		return new ArrayList<String>(Arrays.asList(objects));
 	}
 
+	/**
+	 * Returns the String representation of a configuration value for writing to the file
+	 *
+	 * @param value
+	 * @return
+	 */
 	public String toStringValue(Object value) {
 		if (value == null) {
 			return "null";
@@ -298,7 +339,11 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 			}
 			return builder.toString();
 		} else {
-			return value.toString();
+			String strValue = value.toString();
+			if (strValue.contains(",")) {
+				strValue = '"' + strValue + '"';
+			}
+			return strValue;
 		}
 	}
 

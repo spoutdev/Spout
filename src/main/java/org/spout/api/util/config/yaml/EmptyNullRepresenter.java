@@ -35,6 +35,9 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
+/**
+ * A custom representer that represents null values as empty text instean of {@code null}
+ */
 public class EmptyNullRepresenter extends Representer {
 	public EmptyNullRepresenter() {
 		super();

@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * A basic implementation of ConfigurationNodeSource.
  *
  * @author zml2008
  */
@@ -88,6 +89,13 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		return removeChild(children.get(key));
 	}
 
+	/**
+	 * Detach a node from this node source and remove its children
+	 * If the node's parent isn't this, the method will silently return
+	 * After this method, the node will have a parent of null, no children, and be marked as detached
+	 *
+	 * @param node The node to detach
+	 */
 	protected void detachChild(ConfigurationNode node) {
 		if (node.getParent() != this) {
 			return;
@@ -130,7 +138,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 
 	@Override
 	public Set<String> getKeys(boolean deep) {
-		Set<String> keys = new LinkedHashSet<String>();
+		Set<String> keys = new LinkedHashSet<String>(deep ? children.size() * 2 : children.size());
 		for (Map.Entry<String, ConfigurationNode> entry : children.entrySet()) {
 			keys.add(entry.getKey());
 			if (deep) {
@@ -151,6 +159,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		}
 	}
 
+	@Override
 	public ConfigurationNode getNode(String... path) {
 		if (path.length == 0) {
 			throw new IllegalArgumentException("Path must not be empty!");
