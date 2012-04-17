@@ -27,15 +27,14 @@ package org.spout.engine;
 
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
+import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
-public class SpoutConfiguration extends YamlConfiguration {
+public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 
 	private static final List<String> whitelist = Arrays.asList("Notch", "ez", "jeb");
 	private static final List<String> banlist = Arrays.asList("Satan");
@@ -48,22 +47,7 @@ public class SpoutConfiguration extends YamlConfiguration {
 	public static final ConfigurationHolder ADDRESS = new ConfigurationHolder("0.0.0.0:25565", "address");
 
 	public SpoutConfiguration() {
-		super(new File("config", "spout.yml"));
-		for (Field field : SpoutConfiguration.class.getFields()) {
-			if (Modifier.isStatic(field.getModifiers())) {
-				try {
-					field.setAccessible(true);
-					Object f = field.get(null);
-					if (f instanceof ConfigurationHolder) {
-						ConfigurationHolder node = (ConfigurationHolder) f;
-						node.setConfiguration(this);
-						node.getValue();
-					}
-				} catch (IllegalArgumentException e) {
-				} catch (IllegalAccessException e) {
-				}
-			}
-		}
+		super(new YamlConfiguration(new File("config", "spout.yml")));
 	}
 
 	@Override
