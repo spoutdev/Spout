@@ -25,8 +25,6 @@
  */
 package org.spout.api.model;
 
-import java.util.ArrayList;
-
 import org.spout.api.math.Vector3;
 
 public class Mesh {

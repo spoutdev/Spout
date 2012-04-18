@@ -27,7 +27,6 @@ package org.spout.api.geo.cuboid;
 
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
-import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;

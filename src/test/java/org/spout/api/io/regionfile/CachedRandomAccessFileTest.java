@@ -2,16 +2,9 @@ package org.spout.api.io.regionfile;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
-
 import org.junit.Test;
-import org.spout.api.io.bytearrayarray.BAAClosedException;
-import org.spout.api.io.bytearrayarray.ByteArrayArray;
 
 public class CachedRandomAccessFileTest {
 	
