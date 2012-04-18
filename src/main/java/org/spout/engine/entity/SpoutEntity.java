@@ -207,6 +207,16 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
+	public Transform getTransform() {
+		return transform.copy();
+	}
+
+	@Override
+	public void setTransform(Transform transform) {
+		this.transform.set(transform);
+	}
+
+	@Override
 	public void translate(Vector3 amount) {
 		if (!isValidAccess()) {
 			if (Spout.getEngine().debugMode()) {
