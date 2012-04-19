@@ -68,6 +68,10 @@ public class AtomicBlockStore<T> {
 	}
 	
 	public AtomicBlockStore(int shift, int dirtySize, short[] blocks, short[] data) {
+		this(shift, dirtySize, blocks, data, null);
+	}
+
+	public AtomicBlockStore(int shift, int dirtySize, short[] blocks, short[] data, T[] auxData) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
@@ -78,10 +82,37 @@ public class AtomicBlockStore<T> {
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
 		if (blocks != null) {
+			int x = 0;
+			int z = 0;
+			int y = 0;
+			int max = (1 << shift) - 1;
+
 			for (int i = 0; i < Math.min(blocks.length, size); i++) {
-				blockIds.set(i, blocks[i]);
+				short d = 0;
 				if(data != null) {
-					auxStore.add(blocks[i], data[i], null);
+					d = data[i];
+				}
+				T ad = null;
+				if(auxData != null) {
+					ad = auxData[i];
+				}
+				
+				this.setBlock(x, y, z, blocks[i], d, ad);
+				
+				if (x < max) {
+					x++;
+				} else {
+					x = 0;
+					if (z < max) {
+						z++;
+					} else {
+						z = 0;
+						if (y < max) {
+							y++;
+						} else {
+							y = 0;
+						}
+					}
 				}
 			}
 		}
@@ -714,7 +745,7 @@ public class AtomicBlockStore<T> {
 	private final int getIndex(int x, int y, int z) {
 		return (y << doubleShift) + (z << shift) + x;
 	}
-
+	
 	/**
 	 * Marks a block as dirty.<br>
 	 * <br>
