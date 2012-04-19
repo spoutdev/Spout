@@ -28,7 +28,6 @@ package org.spout.engine.world;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,10 +65,6 @@ import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
-import org.spout.nbt.ByteTag;
-import org.spout.nbt.CompoundMap;
-import org.spout.nbt.CompoundTag;
-import org.spout.nbt.stream.NBTInputStream;
 
 public class SpoutRegion extends Region {
 
@@ -227,7 +222,7 @@ public class SpoutRegion extends Region {
 
 			boolean success = false;
 
-			SpoutChunk newChunk = loadChunk(x, y, z);
+			SpoutChunk newChunk = WorldIO.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z));
 			if (newChunk == null) {
 				newChunk = generateChunk(x, y, z);
 			}
@@ -265,47 +260,6 @@ public class SpoutRegion extends Region {
 		generator.generate(buffer, cx, cy, cz);
 
 		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray());
-	}
-
-	private SpoutChunk loadChunk(int x, int y, int z) {
-		SpoutChunk newChunk = null;
-		NBTInputStream is = null;
-		DataInputStream dis = null;
-
-		try {
-			dis = getChunkInputStream(x, y, z);
-			if (dis == null) {
-				//The inputstream is null because no chunk data exists
-				return newChunk;
-			}
-
-			is = new NBTInputStream(dis, false);
-			CompoundTag chunkTag = (CompoundTag) is.readTag();
-			CompoundMap map = chunkTag.getValue();
-			int cx = (getX() << Region.REGION_SIZE_BITS) + x;
-			int cy = (getY() << Region.REGION_SIZE_BITS) + y;
-			int cz = (getZ() << Region.REGION_SIZE_BITS) + z;
-			
-			boolean populated = ((ByteTag)map.get("populated")).getBooleanValue();
-			short[] blocks = (short[]) map.get("blocks").getValue();
-			short[] data = (short[]) map.get("data").getValue();
-			byte[] skyLight = (byte[]) map.get("skyLight").getValue();
-			byte[] blockLight = (byte[]) map.get("blockLight").getValue();
-			
-			newChunk = new SpoutChunk(getWorld(), this, cx, cy, cz, populated, blocks, data, skyLight, blockLight);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException ignore) {
-				}
-			}
-		}
-
-		return newChunk;
 	}
 
 	/**
