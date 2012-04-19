@@ -67,7 +67,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	private final static int TARGET_SIZE = 5 * Chunk.CHUNK_SIZE;
 	private final static int CHUNKS_PER_TICK = 200;
 
-	private final int viewDistance = 5;
+	private final int viewDistance = 10;
 	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
 
 	private Point lastChunkCheck =  Point.invalid;
