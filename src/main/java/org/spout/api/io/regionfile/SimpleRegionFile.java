@@ -26,6 +26,8 @@
 
 package org.spout.api.io.regionfile;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -182,7 +184,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 				file.seek(start);
 				file.readFully(result);
 			}
-			return new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(result)));
+			return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(result))));
 		} finally {
 			lock.unlock();
 		}
@@ -199,7 +201,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		if (this.isClosed()) {
 			throw new SRFClosedException("File closed");
 		}
-		return new DataOutputStream(new DeflaterOutputStream(new SRFOutputStream(this, i, this.segmentMask + 1, lock)));
+		return new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new SRFOutputStream(this, i, this.segmentMask + 1, lock))));
 	}
 	
 	/**
