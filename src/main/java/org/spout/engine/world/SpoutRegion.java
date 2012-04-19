@@ -663,7 +663,7 @@ public class SpoutRegion extends Region {
 		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getPlayer();
 		NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 		if (synchronizer != null) {
-			if (!chunk.isDirtyOverflow()) {
+			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
 					Block block = chunk.getDirtyBlock(i, new SpoutBlock(getWorld(), 0, 0, 0, null));
 					if (block == null) {

@@ -141,28 +141,14 @@ public class SpoutChunk extends Chunk {
 	private final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	
 	private final AtomicLong lastUnloadCheck = new AtomicLong();
+	
+	/**
+	 * True if this chunk should be resent due to light calculations
+	 */
+	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
-		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
-		coordMask = Chunk.CHUNK_SIZE - 1;
-		parentRegion = region;
-		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, initial);
-		populated = new SnapshotableBoolean(snapshotManager, false);
-		skyLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		byte sky;
-		for (int i = 0; i < skyLight.length; i++) {
-			sky = 0;
-			//sky |= (initial[i * 2] == 0 ? 0xF0 : 0);
-			//sky |= (initial[i * 2 + 1] == 0 ? 0xF : 0);
-			skyLight[i] = sky;
-		}
-		blockLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		skyLightQueue = new TByteHashSet();
-		blockLightQueue  = new TByteHashSet();
-		column = world.getColumn(((int)x) << Chunk.CHUNK_SIZE_BITS, ((int)z) << Chunk.CHUNK_SIZE_BITS, true);
-		column.registerChunk();
-		columnRegistered.set(true);
-		lastUnloadCheck.set(world.getAge());
+		this(world, region, x, y, z, false, initial, null, null, null);
 	}
 	
 	protected SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight) {
@@ -171,15 +157,11 @@ public class SpoutChunk extends Chunk {
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new SnapshotableBoolean(snapshotManager, populated);
-		this.skyLight = skyLight;
-		byte sky;
-		for (int i = 0; i < skyLight.length; i++) {
-			sky = 0;
-			//sky |= (initial[i * 2] == 0 ? 0xF0 : 0);
-			//sky |= (initial[i * 2 + 1] == 0 ? 0xF : 0);
-			skyLight[i] = sky;
+		this.skyLight = skyLight != null ? skyLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		for (int i = 0; i < this.skyLight.length; i++) {
+			this.skyLight[i] = 0;
 		}
-		this.blockLight = blockLight;
+		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];;
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue  = new TByteHashSet();
 		column = world.getColumn(((int)x) << Chunk.CHUNK_SIZE_BITS, ((int)z) << Chunk.CHUNK_SIZE_BITS, true);
@@ -432,6 +414,7 @@ public class SpoutChunk extends Chunk {
 	 */
 	protected void processQueuedLighting() {
 		byte[] queue;
+		setLightDirty(skyLightQueue.size() + blockLightQueue.size() > (CHUNK_SIZE * CHUNK_SIZE / 4));
 		synchronized(skyLightQueue) {
 			queue = skyLightQueue.toArray();
 			skyLightQueue.clear();
@@ -661,6 +644,14 @@ public class SpoutChunk extends Chunk {
 		} else {
 			return false;
 		}
+	}
+	
+	public void setLightDirty(boolean dirty) {
+		lightDirty.set(dirty);
+	}
+	
+	public boolean isLightDirty() {
+		return lightDirty.get();
 	}
 
 	public boolean isDirty() {
