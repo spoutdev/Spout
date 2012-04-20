@@ -1,8 +1,8 @@
 package org.spout.engine.world;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
@@ -18,7 +18,7 @@ import org.spout.nbt.stream.NBTOutputStream;
 
 public class WorldIO {
 
-	protected static void saveChunk(SpoutChunk c, DataOutputStream dos) {
+	protected static void saveChunk(SpoutChunk c, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
 		chunkTags.put(new ByteTag("version", (byte) 1));
 		chunkTags.put(new ByteTag("format", (byte) 0));
@@ -49,7 +49,7 @@ public class WorldIO {
 		}
 	}
 
-	protected static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, DataInputStream dis) {
+	protected static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis) {
 		SpoutChunk chunk = null;
 		NBTInputStream is = null;
 

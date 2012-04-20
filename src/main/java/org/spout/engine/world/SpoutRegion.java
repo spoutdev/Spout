@@ -25,9 +25,9 @@
  */
 package org.spout.engine.world;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -766,7 +766,7 @@ public class SpoutRegion extends Region {
 	 * @param c the chunk
 	 * @return the DataOutputStream
 	 */
-	public DataOutputStream getChunkOutputStream(Chunk c) {
+	public OutputStream getChunkOutputStream(Chunk c) {
 		int key = getChunkKey(c.getX(), c.getY(), c.getZ());
 		return chunkStore.getBlockOutputStream(key);
 	}
@@ -779,7 +779,7 @@ public class SpoutRegion extends Region {
 	 * @param x the chunk
 	 * @return the DataInputStream
 	 */
-	public DataInputStream getChunkInputStream(int x, int y, int z) {
+	public InputStream getChunkInputStream(int x, int y, int z) {
 		int key = getChunkKey(x, y, z);
 		return chunkStore.getBlockInputStream(key);
 	}
