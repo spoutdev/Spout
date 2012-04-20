@@ -52,7 +52,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	public static final int FILE_CLOSED = -1;
 
 	private final File filePath;
-	private final RandomAccessFile file;
+	private final CachedRandomAccessFile file;
 	@SuppressWarnings("unused")
 	private final int version;
 	private final int timeout;
@@ -102,7 +102,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		
 		try {
-			this.file = new RandomAccessFile(this.filePath, "rw");
+			this.file = new CachedRandomAccessFile(this.filePath, "rw");
 		} catch (FileNotFoundException e) {
 			this.closed.set(true);
 			throw new SRFException("Unable to open region file " + this.filePath, e);
