@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Random;
 
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class SimpleRegionFileTest {
 		}
 		
 		int entry = (r.nextInt() & 0x7FFFFFFF) % desiredEntries;
-		DataOutputStream out = srf.getOutputStream(entry);
+		OutputStream out = srf.getOutputStream(entry);
 		
 		System.out.println("Trying to close file with an output stream open");
 		
@@ -144,7 +145,7 @@ public class SimpleRegionFileTest {
 			return true;
 		} else {
 			//System.out.println("Checking entry " + entry);
-			DataInputStream in = srf.getInputStream(entry);
+			DataInputStream in = new DataInputStream(srf.getInputStream(entry));
 			int i = 0;
 			boolean eof = false;
 			while (!eof) {
@@ -173,7 +174,7 @@ public class SimpleRegionFileTest {
 	
 	private void updateEntry(int entry, byte[] data) throws IOException {
 		//System.out.println("Writing " + data.length + " to entry " + entry);
-		DataOutputStream out = srf.getOutputStream(entry);
+		DataOutputStream out = new DataOutputStream(srf.getOutputStream(entry));
 		out.write(data);
 		out.close();
 		dataCache[entry] = data;

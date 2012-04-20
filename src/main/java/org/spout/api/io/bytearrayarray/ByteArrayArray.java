@@ -25,9 +25,9 @@
  */
 package org.spout.api.io.bytearrayarray;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Classes which implement this interface provide thread safe persistent storage for an array of byte arrays.<br>
@@ -47,7 +47,7 @@ public interface ByteArrayArray {
 	 * @return a DataInputStream for the block
 	 * @throws IOException on error
 	 */
-	public DataInputStream getInputStream(int i) throws IOException;
+	public InputStream getInputStream(int i) throws IOException;
 	
 	/**
 	 * Gets a DataOutputStream for writing to a block.<br>
@@ -58,7 +58,7 @@ public interface ByteArrayArray {
 	 * @return a DataOutputStream for the block
 	 * @throws IOException
 	 */
-	public DataOutputStream getOutputStream(int i) throws IOException;
+	public OutputStream getOutputStream(int i) throws IOException;
 	
 	/**
 	 * Attempts to close the map.  This method will only succeed if no block DataOutputStreams are active.

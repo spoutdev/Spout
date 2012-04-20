@@ -29,12 +29,11 @@ package org.spout.api.io.regionfile;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -161,7 +160,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	}
 
 	@Override
-	public DataInputStream getInputStream(int i) throws IOException {
+	public InputStream getInputStream(int i) throws IOException {
 		if (i < 0 || i > entries) {
 			throw new SRFException("Read block index out of range");
 		}
@@ -184,7 +183,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 				file.seek(start);
 				file.readFully(result);
 			}
-			return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(result))));
+			return new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(result)));
 		} finally {
 			lock.unlock();
 		}

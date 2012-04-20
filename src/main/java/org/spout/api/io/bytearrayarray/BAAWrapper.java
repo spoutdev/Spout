@@ -25,10 +25,10 @@
  */
 package org.spout.api.io.bytearrayarray;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.io.regionfile.SimpleRegionFile;
@@ -78,13 +78,13 @@ public class BAAWrapper {
 	 * @param i the block index
 	 * @return the DataOutputStream
 	 */
-	public DataOutputStream getBlockOutputStream(int i) {
+	public OutputStream getBlockOutputStream(int i) {
 		while (true) {
 			ByteArrayArray baa = getByteArrayArray();
 			if (baa == null) {
 				return null;
 			}
-			DataOutputStream out;
+			OutputStream out;
 			try {
 				out = baa.getOutputStream(i);
 			} catch (BAAClosedException e) {
@@ -104,13 +104,13 @@ public class BAAWrapper {
 	 * @param i the block index
 	 * @return the DataInputStream
 	 */
-	public DataInputStream getBlockInputStream(int i) {
+	public InputStream getBlockInputStream(int i) {
 		while (true) {
 			ByteArrayArray baa = getByteArrayArray();
 			if (baa == null) {
 				return null;
 			}
-			DataInputStream in;
+			InputStream in;
 			try {
 				in = baa.getInputStream(i);
 			} catch (BAAClosedException e) {
