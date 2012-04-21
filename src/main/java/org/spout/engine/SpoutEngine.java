@@ -524,6 +524,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		for (Player player : getOnlinePlayers()) {
 			player.kick(message);
 		}
+		
+		for (SpoutWorld world : this.getLiveWorlds()) {
+			world.unload(true);
+		}
 
 		getPluginManager().clearPlugins();
 
@@ -709,7 +713,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 						throw new IllegalStateException("Executor was already halted when halting was attempted");
 					}
 					getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
-					//TODO Save the world, save the cheerleader
+					w.unload(save);
 				}
 				//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
 				//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
