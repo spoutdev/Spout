@@ -27,7 +27,6 @@ package org.spout.engine.world;
 
 import gnu.trove.set.hash.TByteHashSet;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -61,13 +60,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
-import org.spout.nbt.ByteArrayTag;
-import org.spout.nbt.ByteTag;
-import org.spout.nbt.CompoundMap;
-import org.spout.nbt.CompoundTag;
-import org.spout.nbt.IntTag;
-import org.spout.nbt.ShortArrayTag;
-import org.spout.nbt.stream.NBTOutputStream;
 
 public class SpoutChunk extends Chunk {
 
@@ -80,7 +72,7 @@ public class SpoutChunk extends Chunk {
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.
 	 */
-	private AtomicBlockStore<DatatableMap> blockStore;
+	protected AtomicBlockStore<DatatableMap> blockStore;
 
 	/**
 	 * Indicates that the chunk should be saved if unloaded
@@ -119,8 +111,8 @@ public class SpoutChunk extends Chunk {
 	 * Note: These do not need to be thread-safe as long as only one thread (the region)
 	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
-	private final byte[] skyLight;
-	private final byte[] blockLight;
+	protected final byte[] skyLight;
+	protected final byte[] blockLight;
 
 	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
@@ -554,34 +546,7 @@ public class SpoutChunk extends Chunk {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		CompoundMap chunkTags = new CompoundMap();
-		chunkTags.put(new ByteTag("version", (byte) 1));
-		chunkTags.put(new ByteTag("format", (byte) 0));
-		chunkTags.put(new IntTag("x", getX()));
-		chunkTags.put(new IntTag("y", getY()));
-		chunkTags.put(new IntTag("z", getZ()));
-		chunkTags.put(new ByteTag("populated", populated.get()));
-		chunkTags.put(new ShortArrayTag("blocks", blockStore.getBlockIdArray()));
-		chunkTags.put(new ShortArrayTag("data", blockStore.getDataArray()));
-		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
-		chunkTags.put(new ByteArrayTag("blockLight", blockLight));
-		
-		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
-		
-		NBTOutputStream os = null;
-		try {
-			os = new NBTOutputStream(parentRegion.getChunkOutputStream(this), false);
-			os.writeTag(chunkCompound);
-		} catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error saving chunk " + toString(), e);
-		} finally {
-			if(os != null) {
-				try {
-					os.close();
-				} catch (IOException ignore) {
-				}
-			}
-		}
+		WorldIO.saveChunk(this, this.parentRegion.getChunkOutputStream(this));
 	}
 
 	@Override
