@@ -34,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventHandler;
 import org.spout.api.exception.EventException;
@@ -219,10 +220,12 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 
 			int chunksSent = 0;
 
+			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
+			
 			Iterator<Point> i;
 
 			i = priorityChunkSendQueue.iterator();
-			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
+			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK  && tickTimeRemaining) {
 				Point p = i.next();
 				Chunk c = p.getWorld().getChunk(p, true);
 				sendChunk(c);
@@ -232,7 +235,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			i = chunkSendQueue.iterator();
-			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
+			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 				Point p = i.next();
 				Chunk c = p.getWorld().getChunk(p, true);
 				sendChunk(c);

@@ -30,6 +30,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.spout.api.plugin.Plugin;
+import org.spout.api.util.thread.Threadsafe;
 
 public interface Scheduler {
 	/**
@@ -121,4 +122,20 @@ public interface Scheduler {
 	 * @return the snapshot lock
 	 */
 	public SnapshotLock getSnapshotLock();
+	
+	/**
+	 * Gets the amount of time since the beginning of the current tick.
+	 * 
+	 * @return the time in ms since the start of the current tick
+	 */
+	@Threadsafe
+	public long getTickTime();
+	
+	/**
+	 * Gets the amount of time remaining until the tick should end.  A negative time indicates that the tick has gone over the target time.
+	 * 
+	 * @return the time in ms since the start of the current tick
+	 */
+	@Threadsafe
+	public long getRemainingTickTime();
 }
