@@ -85,8 +85,9 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	private boolean first = true;
 	private volatile boolean teleported = false;
 	private Point lastPosition = null;
-	private LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
-	private Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
+	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
+	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
+	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
 
 	public void setPositionDirty() {
 		teleported = true;
@@ -143,10 +144,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		death = true;
 		entity = null;
 		for (Point p : initializedChunks) {
-			Chunk c = p.getWorld().getChunk(p, false);
-			if (c != null) {
-				removeObserver(c);
-			}
+			removeObserver(p);
 		}
 	}
 
@@ -179,19 +177,17 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 
 		for (Point p : chunkFreeQueue) {
 			if (initializedChunks.contains(p)) {
-				Chunk c = p.getWorld().getChunk(p, false);
-				if (c != null) {
-					removeObserver(c);
-				}
+				removeObserver(p);
 			}
 		}
 
 		for (Point p : chunkInitQueue) {
 			if (!initializedChunks.contains(p)) {
-				Chunk c = p.getWorld().getChunk(p, true);
-				addObserver(c);
+				addObserver(p);
 			}
 		}
+		
+		checkObserverUpdateQueue();
 
 	}
 
@@ -253,12 +249,45 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 
 	}
+	
+	private void checkObserverUpdateQueue() {
+		Iterator<Point> i = chunksToObserve.iterator();
+		while (i.hasNext()) {
+			Point p = i.next();
+			if (!chunkInitQueue.contains(p) && !this.initializedChunks.contains(p)) {
+				i.remove();
+			} else {
+				Chunk c = p.getWorld().getChunk(p, false);
+				if (c != null) {
+					addObserver(c);
+					i.remove();
+				}
+			}
+		}
+	}
+	
+	private void addObserver(Point p) {
+		Chunk c = p.getWorld().getChunk(p, false);
+		if (c != null) {
+			addObserver(c);
+		} else {
+			chunksToObserve.add(p);
+		}
+	}
 
 	private void addObserver(Chunk c) {
 		observed.add(c);
 		c.refreshObserver(owner.getEntity());
 	}
 
+	private void removeObserver(Point p) {
+		Chunk c = p.getWorld().getChunk(p, false);
+		if (c != null) {
+			removeObserver(c);
+		}
+		chunksToObserve.remove(p);
+	}
+	
 	private void removeObserver(Chunk c) {
 		observed.remove(c);
 		c.removeObserver(owner.getEntity());
