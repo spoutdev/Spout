@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
@@ -134,6 +135,8 @@ public final class SpoutScheduler implements Scheduler {
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
+	
+	private final AtomicLong tickStartTime = new AtomicLong();
 
 	private volatile boolean shutdown = false;
 
@@ -210,6 +213,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			while (!shutdown) {
 				long startTime = System.currentTimeMillis();
+				tickStartTime.set(startTime);
 				long delta = startTime - lastTick;
 				try {
 					if (!tick(delta)) {
@@ -610,5 +614,16 @@ public final class SpoutScheduler implements Scheduler {
 	
 	public final Thread getMainThread() {
 		return mainThread;
+	}
+
+
+	@Override
+	public long getTickTime() {
+		return System.currentTimeMillis() - tickStartTime.get();
+	}
+	
+	@Override
+	public long getRemainingTickTime() {
+		return PULSE_EVERY - getTickTime();
 	}
 }
