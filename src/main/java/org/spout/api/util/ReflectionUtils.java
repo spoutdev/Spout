@@ -37,16 +37,6 @@ import java.util.List;
  */
 public class ReflectionUtils {
 	/**
-	 * Get all the public fields in a class, as well as those in its superclasses (excluding {@link Object})
-	 *
-	 * @param clazz The class to get all fields in
-	 * @return The fields in the class
-	 */
-	private static List<Field> getFieldsRecur(Class<?> clazz) {
-		return getFieldsRecur(clazz, false);
-	}
-
-	/**
 	 * Get all the public fields in a class, as well as those in its superclasses
 	 *
 	 * @see Class#getFields()

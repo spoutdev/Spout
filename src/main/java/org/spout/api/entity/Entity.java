@@ -33,6 +33,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -228,6 +229,17 @@ public interface Entity extends Datatable, Source {
 
 
 	/**
+	 * Gets a {@link Transform} representing the current position, scale and rotation of the entity.
+	 * @return
+	 */
+	public Transform getTransform();
+
+	/**
+	 * Gets the position, scale and rotation of the entity from the given a {@link Transform}.
+	 */
+	public void setTransform(Transform transform);
+
+	/**
 	 * Gets the current position of the entity
 	 * @return
 	 */
@@ -373,5 +385,4 @@ public interface Entity extends Datatable, Source {
 	 * @param component
 	 */
 	public boolean hasComponent(EntityComponent component);
-	
 }
