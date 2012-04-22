@@ -157,6 +157,14 @@ public class BlockMaterial extends Material {
 	public byte getOpacity() {
 		return this.opacity;
 	}
+	
+	/**
+	 * Returns true if the block is opaque, false if not.
+	 * @return True if opacity is 15, false if less than.
+	 */
+	public boolean isOpaque(){
+		return this.opacity == 0xF;
+	}
 
 	/**
 	 * Sets the amount of light blocked by this block.
