@@ -34,6 +34,7 @@ import org.spout.api.geo.World;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.util.flag.ByteFlagContainer;
 
 public class BlockMaterial extends Material {
 
@@ -81,6 +82,7 @@ public class BlockMaterial extends Material {
 		}
 	}
 
+	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFace.MASK_ALL);
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
@@ -162,7 +164,7 @@ public class BlockMaterial extends Material {
 	 * Returns true if the block is opaque, false if not.
 	 * @return True if opacity is 15, false if less than.
 	 */
-	public boolean isOpaque(){
+	public boolean isOpaque() {
 		return this.opacity == 0xF;
 	}
 
@@ -262,6 +264,44 @@ public class BlockMaterial extends Material {
 	}
 	
 	/**
+	 * Sets if this block occludes all faces
+	 * @param value whether it occludes
+	 * @return this block material
+	 */
+	public BlockMaterial setOccludes(boolean value) {
+		this.occlusion.set(value ? BlockFace.MASK_ALL : BlockFace.MASK_NONE);
+		return this;
+	}
+	
+	/**
+	 * Sets if a certain face of the block occludes
+	 * @param face to set it of
+	 * @param value whether it occludes
+	 * @return this block material
+	 */
+	public BlockMaterial setOccludes(BlockFace face, boolean value) {
+		this.occlusion.set(face, value);
+		return this;
+	}
+	
+	/**
+	 * Gets if a certain block face occludes
+	 * @param face to get it of
+	 * @return if the block face occludes
+	 */
+	public boolean occludes(BlockFace face) {
+		return this.occlusion.get(face);
+	}
+	
+	/**
+	 * Gets if this block material has occlusion
+	 * @return whether there is occlusion
+	 */
+	public boolean occludes() {
+		return this.occlusion.isDirty();
+	}
+	
+	/**
 	 * Sets the collision strategy to use for this block
 	 * 
 	 * @param strategy
@@ -271,7 +311,7 @@ public class BlockMaterial extends Material {
 		this.collision.setStrategy(strategy);
 		return this;
 	}
-
+	
 	/**
 	 * Called when this block is about to be placed (before {@link onPlacement}), 
 	 * checking if placement is allowed or not.

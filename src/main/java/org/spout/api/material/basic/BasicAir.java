@@ -33,6 +33,7 @@ public class BasicAir extends BlockMaterial {
 	public BasicAir() {
 		super("Air", 0);
 		this.setCollision(CollisionStrategy.NOCOLLIDE).setOpacity((byte) 0);
+		this.setOccludes(false);
 	}
 	
 	@Override

@@ -33,6 +33,7 @@ public class BasicSkyBox extends BlockMaterial {
 	public BasicSkyBox() {
 		super("Skybox", 10002);
 		this.setCollision(CollisionStrategy.NOCOLLIDE);
+		this.setOccludes(false);
 	}
 	
 	@Override
