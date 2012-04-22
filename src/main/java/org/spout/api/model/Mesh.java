@@ -25,6 +25,57 @@
  */
 package org.spout.api.model;
 
+import java.util.ArrayList;
+
+import org.spout.api.math.Vector3;
+
 public class Mesh {
-	//TODO this
+	static final PositionNormalTexture cubeVerts[] = new PositionNormalTexture[] {
+		new PositionNormalTexture(Vector3.ZERO), new PositionNormalTexture(Vector3.UNIT_Y), new PositionNormalTexture(new Vector3(0,1,1)), new PositionNormalTexture(Vector3.UNIT_Z),
+		new PositionNormalTexture(Vector3.UNIT_X), new PositionNormalTexture(new Vector3(1,1,0)), new PositionNormalTexture(Vector3.ONE), new PositionNormalTexture(new Vector3(1, 0, 1))
+	};
+
+	
+	
+	ModelFace[] faces;
+	
+	
+	protected Mesh(ModelFace[] faces){
+		this.faces = faces;
+	}
+	
+	
+	public static Mesh createCubeMesh(){
+		return createCubeMesh(Vector3.ONE);
+	}
+	
+	public static Mesh createCubeMesh(Vector3 scale){
+
+		ModelFace[] faces = new ModelFace[] {
+				new ModelFace(cubeVerts[0], cubeVerts[1], cubeVerts[2]),
+				new ModelFace(cubeVerts[3], cubeVerts[1], cubeVerts[4]),
+				
+				new ModelFace(cubeVerts[7], cubeVerts[6], cubeVerts[5]),
+				new ModelFace(cubeVerts[6], cubeVerts[7], cubeVerts[4]),
+				
+				new ModelFace(cubeVerts[3], cubeVerts[2], cubeVerts[6]),
+				new ModelFace(cubeVerts[6], cubeVerts[3], cubeVerts[7]),
+				
+				new ModelFace(cubeVerts[4], cubeVerts[5], cubeVerts[1]),
+				new ModelFace(cubeVerts[1], cubeVerts[4], cubeVerts[0]),
+				
+				new ModelFace(cubeVerts[1], cubeVerts[5], cubeVerts[6]),
+				new ModelFace(cubeVerts[6], cubeVerts[1], cubeVerts[2]),
+				
+				new ModelFace(cubeVerts[4], cubeVerts[0], cubeVerts[3]),
+				new ModelFace(cubeVerts[3], cubeVerts[4], cubeVerts[7]),
+		};
+		
+		for(ModelFace face : faces){
+			face.doRecalculateNormals();
+		}
+		
+		return new Mesh(faces);
+		
+	}
 }
