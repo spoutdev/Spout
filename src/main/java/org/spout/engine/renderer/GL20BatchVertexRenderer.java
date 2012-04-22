@@ -4,7 +4,6 @@ import java.nio.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
 
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
@@ -34,7 +33,9 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		if(activeShader == null) throw new IllegalStateException("Batch must have a shader attached");
 		if(vbos != -1) GL15.glDeleteBuffers(vbos);
 		
+		@SuppressWarnings("unused")
 		int size = numVerticies * 4 * SIZE_FLOAT;
+		@SuppressWarnings("unused")
 		int numBuffers = 1;
 		if(useColors){
 			size += numVerticies * 4 * SIZE_FLOAT;

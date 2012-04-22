@@ -42,8 +42,6 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
 
-	private static final long serialVersionUID = 1L;
-
 	public void readLock(Plugin plugin) {
 		lock.readLock().lock();
 		addLock(plugin);
