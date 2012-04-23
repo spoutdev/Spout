@@ -141,9 +141,7 @@ public class SpoutEntity implements Entity {
 		if (controller != null && controller.getParent() != null && !isDead()) {
 			controller.onTick(dt);
 		}
-		this.rotate(roll, 1, 0, 0);
-		this.rotate(yaw, 0, 1, 0);
-		this.rotate(pitch, 0, 0, 1);
+		updateTransformAxisAngles();
 
 		if (controllerLive.get() instanceof PlayerController) {
 			Player player = ((PlayerController) controllerLive.get()).getPlayer();
@@ -325,7 +323,7 @@ public class SpoutEntity implements Entity {
 			}
 			return;
 		}
-		roll += ang;
+		setRoll(getRoll()+ang);
 	}
 
 	@Override
@@ -336,7 +334,7 @@ public class SpoutEntity implements Entity {
 			}
 			return;
 		}
-		pitch += ang;
+		setPitch(getPitch()+ang);
 	}
 
 	@Override
@@ -347,7 +345,7 @@ public class SpoutEntity implements Entity {
 			}
 			return;
 		}
-		yaw += ang;
+		setYaw(getYaw()+yaw);
 	}
 
 	@Override
@@ -374,6 +372,7 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		pitch = ang;
+		updateTransformAxisAngles();
 	}
 
 	@Override
@@ -385,6 +384,7 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		roll = ang;
+		updateTransformAxisAngles();
 	}
 
 	@Override
@@ -396,6 +396,7 @@ public class SpoutEntity implements Entity {
 			return;
 		}
 		yaw = ang;
+		updateTransformAxisAngles();
 	}
 
 	@Override
@@ -789,5 +790,12 @@ public class SpoutEntity implements Entity {
 	@Override
 	public boolean hasComponent(EntityComponent component) {
 		return components.contains(component);
+	}
+	
+	private void updateTransformAxisAngles() {
+		setRotation(Quaternion.IDENTITY);
+		rotate(pitch, 0,0,1);
+		rotate(yaw, 0,1,0);
+		rotate(roll, 1,0,0);
 	}
 }
