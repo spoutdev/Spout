@@ -42,7 +42,7 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.datatable.value.DatatableBool;
 import org.spout.api.datatable.value.DatatableFloat;
 import org.spout.api.datatable.value.DatatableInt;
-import org.spout.api.datatable.value.DatatableObject;
+import org.spout.api.datatable.value.DatatableSerializable;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
@@ -62,7 +62,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.net.SpoutSession;
@@ -674,7 +673,7 @@ public class SpoutEntity implements Entity {
 	@Override
 	public void setData(String key, Serializable value) {
 		int ikey = map.getKey(key);
-		map.set(ikey, new DatatableObject(ikey, value));
+		map.set(ikey, new DatatableSerializable(ikey, value));
 	}
 
 	@Override
