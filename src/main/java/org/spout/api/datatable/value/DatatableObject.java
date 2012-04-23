@@ -25,37 +25,44 @@
  */
 package org.spout.api.datatable.value;
 
-import org.spout.api.datatable.DatatableTuple;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class DatatableObject implements DatatableTuple {
+import org.spout.api.datatable.DatatableTuple;
+
+public abstract class DatatableObject implements DatatableTuple {
 	public static final byte PERSIST = 0x1;
 	public static final byte SYNC = 0x2;
 
-	protected int keyID;
-	protected byte flags;
-	Serializable data;
+	protected final int keyID;
+	protected final AtomicInteger flags;
+	protected final AtomicReference<Serializable> data;
+	protected final AtomicBoolean dirty;
+	protected final AtomicReference<byte[]> compressed;
 
 	public DatatableObject(int key) {
-		keyID = key;
+		this(key, null);
 	}
 
 	public DatatableObject(int key, Serializable dat) {
 		keyID = key;
-		data = dat;
+		data = new AtomicReference<Serializable>(dat);
+		flags = new AtomicInteger(0);
+		dirty = new AtomicBoolean(false);
+		compressed = new AtomicReference<byte[]>(null);
 	}
 
 	@Override
-	public void set(int key, Object value) {
-		keyID = key;
+	public void set(Object value) {
 		if (!(value instanceof Serializable)) {
 			throw new IllegalArgumentException("Unsupported Metadata type");
 		}
-		data = (Serializable) value;
+		data.set((Serializable) value);
 	}
 
 	@Override
@@ -65,25 +72,38 @@ public class DatatableObject implements DatatableTuple {
 
 	@Override
 	public void setFlags(byte flags) {
-		this.flags = flags;
+		this.flags.set(flags);
 	}
 
 	@Override
 	public void setPersistant(boolean value) {
-		if (value) {
-			flags |= DatatableObject.PERSIST;
-		} else {
-			flags &= ~DatatableObject.PERSIST;
-		}
+		int oldValue;
+		int newValue;
+		
+		do {
+			oldValue = this.flags.get();
+			if (value) {
+				newValue = oldValue | DatatableObject.PERSIST;
+			} else {
+				newValue = oldValue & ~DatatableObject.PERSIST;
+			}	
+		} while (!this.flags.compareAndSet(oldValue, newValue));
+
 	}
 
 	@Override
 	public void setSynced(boolean value) {
-		if (value) {
-			flags |= DatatableObject.SYNC;
-		} else {
-			flags &= ~DatatableObject.SYNC;
-		}
+		int oldValue;
+		int newValue;
+		
+		do {
+			oldValue = this.flags.get();
+			if (value) {
+				newValue = oldValue | DatatableObject.SYNC;
+			} else {
+				newValue = oldValue & ~DatatableObject.SYNC;
+			}	
+		} while (!this.flags.compareAndSet(oldValue, newValue));
 	}
 
 	@Override
@@ -93,6 +113,7 @@ public class DatatableObject implements DatatableTuple {
 
 	@Override
 	public int asInt() {
+		Object data = this.data.get();
 		if (data instanceof Number) {
 			return ((Number) data).intValue();
 		}
@@ -101,6 +122,7 @@ public class DatatableObject implements DatatableTuple {
 
 	@Override
 	public float asFloat() {
+		Object data = this.data.get();
 		if (data instanceof Number) {
 			return ((Number) data).floatValue();
 		}
@@ -109,19 +131,21 @@ public class DatatableObject implements DatatableTuple {
 
 	@Override
 	public boolean asBool() {
+		Object data = this.data.get();
 		if (data instanceof Boolean) {
 			return (Boolean) data;
 		}
 		return false;
 	}
-
-	@Override
+	
+	public abstract byte[] compress();
+	
+	public abstract void decompress(byte[] compressed);
+	
 	public void output(OutputStream out) throws IOException {
+	};
 
-	}
-
-	@Override
 	public void input(InputStream in) throws IOException {
+	};
 
-	}
 }

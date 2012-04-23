@@ -25,13 +25,11 @@
  */
 package org.spout.api.datatable.value;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatatableBool extends DatatableObject {
-	boolean data;
+	private AtomicBoolean data = new AtomicBoolean(false);
 
 	public DatatableBool(int key) {
 		super(key);
@@ -39,27 +37,26 @@ public class DatatableBool extends DatatableObject {
 
 	public DatatableBool(int key, boolean value) {
 		super(key);
-		data = value;
+		data.set(value);
 	}
 
 	@Override
-	public void set(int key, Object value) {
+	public void set(Object value) {
 		throw new IllegalArgumentException("This is an boolean value, use set(string,bool)");
 	}
 
-	public void set(String key, boolean value) {
-		keyID = key.hashCode();
-		data = value;
+	public void set(boolean value) {
+		data.set(value);
 	}
 
 	@Override
 	public Serializable get() {
-		return data;
+		return data.get();
 	}
 
 	@Override
 	public int asInt() {
-		return data ? 1 : 0;
+		return data.get() ? 1 : 0;
 	}
 
 	@Override
@@ -69,16 +66,19 @@ public class DatatableBool extends DatatableObject {
 
 	@Override
 	public boolean asBool() {
-		return data;
+		return data.get();
 	}
 
 	@Override
-	public void output(OutputStream out) throws IOException {
-
+	public byte[] compress() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void input(InputStream in) throws IOException {
-
+	public void decompress(byte[] compressed) {
+		// TODO Auto-generated method stub
+		
 	}
+
 }

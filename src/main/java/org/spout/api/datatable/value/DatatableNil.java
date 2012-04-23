@@ -44,7 +44,7 @@ public class DatatableNil implements DatatableTuple {
 	}
 
 	@Override
-	public void set(int key, Object value) {
+	public void set(Object value) {
 		throw new RuntimeException("This value doesn't exist!");
 	}
 

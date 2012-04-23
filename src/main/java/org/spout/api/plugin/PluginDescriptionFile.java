@@ -40,7 +40,7 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.datatable.value.DatatableBool;
 import org.spout.api.datatable.value.DatatableFloat;
 import org.spout.api.datatable.value.DatatableInt;
-import org.spout.api.datatable.value.DatatableObject;
+import org.spout.api.datatable.value.DatatableSerializable;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -322,7 +322,7 @@ public class PluginDescriptionFile implements Datatable {
 
 	public void setData(String key, Serializable value) {
 		int ikey = datatableMap.getKey(key);
-		datatableMap.set(ikey, new DatatableObject(ikey, value));
+		datatableMap.set(ikey, new DatatableSerializable(ikey, value));
 	}
 
 	public DatatableTuple getData(String key) {

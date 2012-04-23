@@ -25,13 +25,12 @@
  */
 package org.spout.api.datatable.value;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DatatableInt extends DatatableObject {
-	int data;
+	
+	private final AtomicInteger data = new AtomicInteger(0);
 
 	public DatatableInt(int key) {
 		super(key);
@@ -39,46 +38,48 @@ public class DatatableInt extends DatatableObject {
 
 	public DatatableInt(int key, int value) {
 		super(key);
-		data = value;
+		data.set(value);
 	}
 
 	@Override
-	public void set(int key, Object value) {
-		throw new IllegalArgumentException("This is an int value, use set(string,int)");
+	public void set(Object value) {
+		throw new IllegalArgumentException("This is an int value, use set(int)");
 	}
-
-	public void set(String key, int value) {
-		keyID = key.hashCode();
-		data = value;
+	
+	public void set(int value) {
+		data.set(value);
 	}
 
 	@Override
 	public Serializable get() {
-		return data;
+		return data.get();
 	}
 
 	@Override
 	public int asInt() {
-		return data;
+		return data.get();
 	}
 
 	@Override
 	public float asFloat() {
-		return data;
+		return data.get();
 	}
 
 	@Override
 	public boolean asBool() {
-		return data != 0;
+		return data.get() != 0;
 	}
 
 	@Override
-	public void output(OutputStream out) throws IOException {
-
+	public byte[] compress() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void input(InputStream in) throws IOException {
-
+	public void decompress(byte[] compressed) {
+		// TODO Auto-generated method stub
+		
 	}
+
 }
