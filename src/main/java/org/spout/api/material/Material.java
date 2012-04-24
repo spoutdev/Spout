@@ -28,6 +28,10 @@ package org.spout.api.material;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.GenericMaterialData;
 import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
@@ -227,5 +231,16 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public void setMaxStackSize(int newValue) {
 		this.maxStackSize = newValue;
+	}
+
+	/**
+	 * Fired when an entity interacts with the material
+	 *
+	 * @param entity that is interacting with the world
+	 * @param position of the interaction
+	 * @param type of interaction
+	 * @param clickedFace of the material clicked or the face being clicked by the material
+	 */
+	public void onInteract(Entity entity, Point position, PlayerInteractEvent.Action type, BlockFace clickedFace) {
 	}
 }

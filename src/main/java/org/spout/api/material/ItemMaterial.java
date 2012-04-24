@@ -27,8 +27,6 @@ package org.spout.api.material;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.block.BlockFace;
 
 public class ItemMaterial extends Material {
 
@@ -75,16 +73,6 @@ public class ItemMaterial extends Material {
 	 * 
 	 */
 	public void onInventoryRender() {
-	}
-
-	/**
-	 * Fired when an entity interacts with the world
-	 * 
-	 * @param entity that is interacting with the world
-	 * @param position of the interaction
-	 * @param type of interaction
-	 */
-	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedFace) {
 	}
 
 	/**
