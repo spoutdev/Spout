@@ -292,10 +292,12 @@ public final class ConsoleManager {
 	// TODO - convert to command source
 	public class ColoredCommandSource implements CommandSource {
 
+		@Override
 		public String getName() {
 			return "Console";
 		}
 
+		@Override
 		public boolean sendMessage(String text) {
 			server.getLogger().info(text);
 			return true;

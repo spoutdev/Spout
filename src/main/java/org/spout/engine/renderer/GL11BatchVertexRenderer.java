@@ -15,6 +15,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	}
 	
 
+	@Override
 	protected void doFlush(){
 		if(!(activeShader instanceof BasicShader)) throw new IllegalStateException("Need Basic Shader in 1.1 mode");
 			

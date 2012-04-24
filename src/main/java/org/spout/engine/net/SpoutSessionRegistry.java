@@ -60,6 +60,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	 *
 	 * @param session The session to add.
 	 */
+	@Override
 	public void add(Session session) {
 		if (session instanceof SpoutSession) {
 			sessions.put((SpoutSession) session, true);
@@ -73,6 +74,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	 *
 	 * @param session The session to remove.
 	 */
+	@Override
 	public void remove(Session session) {
 		if (session instanceof SpoutSession) {
 			sessions.remove(session);

@@ -94,6 +94,7 @@ public class SnapshotableReference<T> implements Snapshotable {
 	/**
 	 * Copies the next value to the snapshot value
 	 */
+	@Override
 	public void copySnapshot() {
 		snapshot = next.get();
 	}

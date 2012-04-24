@@ -177,6 +177,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	/**
 	 * Copies the next values to the snapshot
 	 */
+	@Override
 	public void copySnapshot() {
 		for (K key : dirty) {
 			V value = live.get(key);

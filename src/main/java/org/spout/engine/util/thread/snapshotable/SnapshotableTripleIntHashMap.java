@@ -245,6 +245,7 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	/**
 	 * Copies the next values to the snapshot
 	 */
+	@Override
 	public void copySnapshot() {
 		for (TripleInt k : dirtyQueue) {
 			V value = live.get(k.x, k.y, k.z);

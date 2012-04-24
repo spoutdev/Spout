@@ -152,6 +152,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @return The session's state.
 	 */
+	@Override
 	public State getState() {
 		return state;
 	}
@@ -161,6 +162,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @param state The new state.
 	 */
+	@Override
 	public void setState(State state) {
 		this.state = state;
 	}
@@ -170,6 +172,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
+	@Override
 	public Player getPlayer() {
 		return player;
 	}
@@ -181,6 +184,7 @@ public final class SpoutSession implements Session {
 	 * @throws IllegalStateException if there is already a player associated
 	 *             with this session.
 	 */
+	@Override
 	public void setPlayer(Player player) {
 		if (this.player != null) {
 			throw new IllegalStateException();
@@ -246,6 +250,7 @@ public final class SpoutSession implements Session {
 	 * @param message The message.
 	 * @param if this message is used in the identification stages of communication
 	 */
+	@Override
 	public void send(Message message, boolean force) {
 		try {
 			if (force || this.state == State.GAME) {
@@ -259,6 +264,7 @@ public final class SpoutSession implements Session {
 		}
 	}
 
+	@Override
 	public void send(Message message) {
 		send(message, false);
 	}
@@ -269,6 +275,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @param reason The reason for disconnection.
 	 */
+	@Override
 	public void disconnect(String reason) {
 		disconnect(reason, false);
 	}
@@ -290,7 +297,7 @@ public final class SpoutSession implements Session {
 
 			reason = event.getKickReason();
 
-			if (event.getMessage() != null && event.getMessage() != reason) {
+			if (event.getMessage() != null && !event.getMessage().equals(reason)) {
 				server.broadcastMessage(event.getMessage());
 				useMessage = false;
 			}
@@ -317,6 +324,7 @@ public final class SpoutSession implements Session {
 	 *
 	 * @return The remote address.
 	 */
+	@Override
 	public InetSocketAddress getAddress() {
 		SocketAddress addr = channel.getRemoteAddress();
 		if (addr instanceof InetSocketAddress) {
@@ -337,6 +345,7 @@ public final class SpoutSession implements Session {
 	 * @param message The message.
 	 * @param <T> The type of message.
 	 */
+	@Override
 	public <T extends Message> void messageReceived(T message) {
 		messageQueue.add(message);
 	}
@@ -345,6 +354,7 @@ public final class SpoutSession implements Session {
 	 * Disposes of this session by destroying the associated player, if there is
 	 * one.
 	 */
+	@Override
 	public void dispose(boolean broadcastQuit) {
 		if (player != null && isConnected) {
 			isConnected = false;
@@ -372,6 +382,7 @@ public final class SpoutSession implements Session {
 		}
 	}
 
+	@Override
 	public String getSessionId() {
 		return sessionId;
 	}
@@ -399,6 +410,7 @@ public final class SpoutSession implements Session {
 		return protocol == null ? null : protocol.getPlayerProtocol();
 	}
 
+	@Override
 	public Engine getGame() {
 		return server;
 	}
