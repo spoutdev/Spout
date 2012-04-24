@@ -116,36 +116,42 @@ public class ClientShader implements Shader {
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, int)
 	 */
+	@Override
 	public void setUniform(String name, int value){
 		variables.put(name, new IntShaderVariable(program, name, value));
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, float)
 	 */
+	@Override
 	public void setUniform(String name, float value){
 		variables.put(name, new FloatShaderVariable(program, name, value));
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, org.spout.api.math.Vector2)
 	 */
+	@Override
 	public void setUniform(String name, Vector2 value){
 		variables.put(name, new Vec2ShaderVariable(program, name, value));
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, org.spout.api.math.Vector3)
 	 */
+	@Override
 	public void setUniform(String name, Vector3 value){
 		variables.put(name, new Vec3ShaderVariable(program, name, value));
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, org.spout.api.math.Vector4)
 	 */
+	@Override
 	public void setUniform(String name, Vector4 value){
 		variables.put(name, new Vec4ShaderVariable(program, name, value));
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, org.spout.api.math.Matrix)
 	 */
+	@Override
 	public void setUniform(String name, Matrix value){
 		if(value.getDimension() == 2){
 			variables.put(name, new Mat2ShaderVariable(program, name, value));
@@ -159,12 +165,14 @@ public class ClientShader implements Shader {
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, org.spout.api.util.Color)
 	 */
+	@Override
 	public void setUniform(String name, Color value){
 		variables.put(name, new ColorShaderVariable(program, name, value));
 	}
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, org.newdawn.slick.opengl.Texture)
 	 */
+	@Override
 	public void setUniform(String name, Texture value){
 		if(variables.containsKey(name)){
 			ShaderVariable texture = variables.get(name);
@@ -181,6 +189,7 @@ public class ClientShader implements Shader {
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#enableAttribute(java.lang.String, int, int, int, long)
 	 */
+	@Override
 	public void enableAttribute(String name, int size, int type, int stride,  long offset){
 		variables.put(name, new AttributeShaderVariable(program, name, size, type,stride,  offset));
 	}
@@ -188,6 +197,7 @@ public class ClientShader implements Shader {
 	/* (non-Javadoc)
 	 * @see org.spout.client.renderer.shader.IShader#assign()
 	 */
+	@Override
 	public void assign(){
 		GL20.glUseProgram(program);
 		for(ShaderVariable v : variables.values()){

@@ -29,6 +29,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	
 
 	
+	@Override
 	protected void doFlush(){
 		if(activeShader == null) throw new IllegalStateException("Batch must have a shader attached");
 		if(vbos != -1) GL15.glDeleteBuffers(vbos);
@@ -105,6 +106,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	/**
 	 * Draws this batch
 	 */
+	@Override
 	public void doRender(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
 		

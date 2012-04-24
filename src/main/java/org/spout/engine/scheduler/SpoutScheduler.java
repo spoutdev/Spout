@@ -164,6 +164,7 @@ public final class SpoutScheduler implements Scheduler {
 			super("Render Thread");
 		}
 		
+		@Override
 		public void run(){
 			SpoutClient c = (SpoutClient)Spout.getEngine();
 			c.initRenderer();
@@ -608,6 +609,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
+	@Override
 	public SnapshotLock getSnapshotLock() {
 		return snapshotLock;
 	}

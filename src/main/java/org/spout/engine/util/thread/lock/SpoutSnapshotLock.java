@@ -42,11 +42,13 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
 
+	@Override
 	public void readLock(Plugin plugin) {
 		lock.readLock().lock();
 		addLock(plugin);
 	}
 
+	@Override
 	public boolean readTryLock(Plugin plugin) {
 		boolean success = lock.readLock().tryLock();
 		if (success) {
@@ -55,6 +57,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		return success;
 	}
 
+	@Override
 	public void readUnlock(Plugin plugin) {
 		lock.readLock().unlock();
 		addLock(plugin);

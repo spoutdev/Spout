@@ -104,6 +104,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	/**
 	 * Copies the next values to the snapshot
 	 */
+	@Override
 	public void copySnapshot() {
 		SnapshotUpdate<T> update;
 		while ((update = pendingUpdates.poll()) != null) {

@@ -62,6 +62,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		super(name);
 	}
 
+	@Override
 	public void setManager(AsyncManager manager) {
 		if (this.manager != null) {
 			throw new IllegalStateException("The manager for an AsyncExecutor may not be set more than once");
@@ -69,6 +70,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		this.manager = manager;
 	}
 
+	@Override
 	public boolean startExecutor() {
 		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.STARTED)) {
 			super.start();
@@ -78,6 +80,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		}
 	}
 
+	@Override
 	public boolean haltExecutor() {
 		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.HALTED)) {
 			return true;
@@ -97,6 +100,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		}
 	}
 
+	@Override
 	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
 		if (Thread.currentThread() == this) {
 			executeTask(task);
@@ -111,6 +115,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		return future;
 	}
 
+	@Override
 	public final void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException {
 		ThreadsafetyManager.checkCurrentThread(this);
 		checkFuture(future);

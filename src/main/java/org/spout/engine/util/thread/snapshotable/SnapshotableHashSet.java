@@ -149,6 +149,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	/**
 	 * Copies the next values to the snapshot
 	 */
+	@Override
 	public void copySnapshot() {
 		for (T o : dirty) {
 			if (live.contains(o)) {

@@ -199,6 +199,7 @@ public class SpoutRegion extends Region {
 		this.chunkStore = new BAAWrapper(regionFile, SEGMENT_SIZE, REGION_SIZE_CUBED, TIMEOUT);
 	}
 
+	@Override
 	public SpoutWorld getWorld() {
 		return (SpoutWorld) super.getWorld();
 	}

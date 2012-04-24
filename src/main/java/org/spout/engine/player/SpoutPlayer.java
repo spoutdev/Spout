@@ -315,22 +315,27 @@ public class SpoutPlayer implements Player {
 		return inputState;
 	}
 	
+	@Override
 	public Stack<Screen> getScreenStack() {
 		return screenStack;
 	}
 	
+	@Override
 	public void openScreen(Screen screen) {
 		screenStack.add(screen);
 	}
 	
+	@Override
 	public void closeScreen() {
 		screenStack.pop();
 	}
 	
+	@Override
 	public void closeScreen(Screen screen) {
 		screenStack.remove(screen);
 	}
 	
+	@Override
 	public Screen getFocussedScreen() {
 		return screenStack.firstElement();
 	}
