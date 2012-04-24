@@ -162,6 +162,7 @@ public class SpoutChunk extends Chunk {
 		lastUnloadCheck.set(world.getAge());
 	}
 
+	@Override
 	public SpoutWorld getWorld() {
 		return (SpoutWorld) super.getWorld();
 	}

@@ -66,10 +66,12 @@ public class SpoutBlock implements Block {
 		this.controller = controller;
 	}
 
+	@Override
 	public Point getPosition() {
 		return new Point(this.world, this.x, this.y, this.z);
 	}
 
+	@Override
 	public Chunk getChunk() {
 		if (this.chunk == null || !this.chunk.isLoaded()) {
 			recalculateChunk();
@@ -77,48 +79,58 @@ public class SpoutBlock implements Block {
 		return this.chunk;
 	}
 
+	@Override
 	public World getWorld() {
 		return this.chunk.getWorld();
 	}
 
+	@Override
 	public int getX() {
 		return this.x;
 	}
 
+	@Override
 	public int getY() {
 		return this.y;
 	}
 
+	@Override
 	public int getZ() {
 		return this.z;
 	}
 
+	@Override
 	public Block setX(int x) {
 		this.x = x;
 		recalculateChunk();
 		return this;
 	}
 
+	@Override
 	public Block setY(int y) {
 		this.y = y;
 		recalculateChunk();
 		return this;
 	}
 
+	@Override
 	public Block setZ(int z) {
 		this.z = z;
 		recalculateChunk();
 		return this;
 	}
 
+	@Override
 	public Block move(BlockFace offset) {
 		return this.move(offset.getOffset());
 	}
 
+	@Override
 	public Block move(Vector3 offset) {
 		return this.move((int) offset.getX(), (int) offset.getY(), (int) offset.getZ());
 	}
 
+	@Override
 	public Block move(int dx, int dy, int dz) {
 		this.x += dx;
 		this.y += dy;
@@ -137,10 +149,12 @@ public class SpoutBlock implements Block {
 	 * @param material to set to
 	 * @param update whether players nearby should be notified of the block change
 	 */
+	@Override
 	public void setMaterial(MaterialSource material, boolean update) {
 		this.setMaterial(material, (short) 0, update);
 	}
 
+	@Override
 	public BlockMaterial getMaterial() {
 		return this.getChunk().getBlockMaterial(this.x, this.y, this.z);
 	}
@@ -167,6 +181,7 @@ public class SpoutBlock implements Block {
 		}
 	}
 
+	@Override
 	public SpoutBlock clone() {
 		return new SpoutBlock(this);
 	}
@@ -182,6 +197,7 @@ public class SpoutBlock implements Block {
 	 * @param datasource of the data to set to
 	 * @param update whether players nearby should be notified of the block change
 	 */
+	@Override
 	public void setMaterial(MaterialSource material, DataSource datasource, boolean update) {
 		this.setMaterial(material, datasource.getData(), update);
 	}
@@ -197,6 +213,7 @@ public class SpoutBlock implements Block {
 	 * @param data value to set to
 	 * @param update whether players nearby should be notified of the block change
 	 */
+	@Override
 	public void setMaterial(MaterialSource material, short data, boolean update) {
 		if (material.getMaterial() instanceof BlockMaterial) {
 			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), data, update, this.source);
@@ -215,6 +232,7 @@ public class SpoutBlock implements Block {
 	 * @param datasource of the data to set to
 	 * @param update whether players nearby should be notified of the block change
 	 */
+	@Override
 	public void setData(DataSource datasource, boolean update) {
 		this.setData(datasource.getData(), update);
 	}
@@ -229,6 +247,7 @@ public class SpoutBlock implements Block {
 	 * @param data value to set to
 	 * @param update whether players nearby should be notified of the block change
 	 */
+	@Override
 	public void setData(short data, boolean update) {
 		this.getChunk().setBlockData(this.x, this.y, this.z, data, update, this.source);
 	}

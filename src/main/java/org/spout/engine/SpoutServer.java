@@ -118,6 +118,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 *
 	 * @param address The addresss.
 	 */
+	@Override
 	public boolean bind(SocketAddress address, BootstrapProtocol protocol) {
 		if (protocol == null) {
 			throw new IllegalArgumentException("Protocol cannot be null");
@@ -219,22 +220,27 @@ public class SpoutServer extends SpoutEngine implements Server {
 		banManager.setBanned(player, false);
 	}
 
+	@Override
 	public boolean isBanned(String player, String address) {
 		return banManager.isBanned(player, address);
 	}
 
+	@Override
 	public boolean isIpBanned(String address) {
 		return banManager.isIpBanned(address);
 	}
 
+	@Override
 	public boolean isPlayerBanned(String player) {
 		return banManager.isBanned(player);
 	}
 
+	@Override
 	public String getBanMessage(String player) {
 		return banManager.getBanMessage(player);
 	}
 
+	@Override
 	public String getIpBanMessage(String address) {
 		return banManager.getIpBanMessage(address);
 	}

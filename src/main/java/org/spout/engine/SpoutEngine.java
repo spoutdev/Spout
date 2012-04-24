@@ -520,6 +520,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		stop("Spout shutting down");
 	}
 
+	@Override
 	public void stop(String message) {
 		for (Player player : getOnlinePlayers()) {
 			player.kick(message);
@@ -568,6 +569,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		return sessions;
 	}
 
+	@Override
 	public SpoutScheduler getScheduler() {
 		return scheduler;
 	}
