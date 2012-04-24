@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.event.player.PlayerInteractEvent;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.GenericMaterialData;
@@ -232,15 +232,40 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public void setMaxStackSize(int newValue) {
 		this.maxStackSize = newValue;
 	}
-
+	
 	/**
-	 * Fired when an entity interacts with the material
-	 *
-	 * @param entity that is interacting with the world
-	 * @param position of the interaction
-	 * @param type of interaction
-	 * @param clickedFace of the material clicked or the face being clicked by the material
+	 * Fired when this material is being rendered in the inventory
+	 * 
 	 */
-	public void onInteract(Entity entity, Point position, PlayerInteractEvent.Action type, BlockFace clickedFace) {
+	public void onInventoryRender() {
+	}
+	
+	/**
+	 * Called when an entity interacts with the world while wielding this material
+	 * @param entity that interacted
+	 * @param position of the block
+	 * @param type of interaction
+	 * @param clickedface of the block
+	 */
+	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedface) {
+	}
+	
+	/**
+	 * Called when an entity interacts with another entity while wielding this material
+	 * 
+	 * @param entity that is interacting with the entity
+	 * @param other entity that was interacted with
+	 * @param type of interaction
+	 */
+	public void onInteract(Entity entity, Entity other, Action type) {
+	}
+	
+	/**
+	 * Called when an entity interacts with nothing (air) while wielding this material
+	 * 
+	 * @param entity that is interacting
+	 * @param type of interaction
+	 */
+	public void onInteract(Entity entity, Action type) {
 	}
 }
