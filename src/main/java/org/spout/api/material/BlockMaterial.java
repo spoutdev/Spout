@@ -30,7 +30,10 @@ import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent;
 import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
@@ -343,5 +346,16 @@ public class BlockMaterial extends Material {
 	 */
 	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source) {
 		return world.setBlockMaterial(x, y, z, this, data, true, source);
+	}
+
+	/**
+	 * Called when an entity interacts with this block material in the world
+	 *
+	 * @param entity that is interacting with this material
+	 * @param position of the block interacted by the entity
+	 * @param type of interaction
+	 * @param clickedFace of the material clicked
+	 */
+	public void onInteractBy(Entity entity, Point position, PlayerInteractEvent.Action type, BlockFace clickedFace) {
 	}
 }
