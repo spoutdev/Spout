@@ -88,13 +88,12 @@ public class SpoutEntity implements Entity {
 	private final Transform transform = new Transform();
 	private boolean justSpawned = true;
 	private boolean observer = false;
-	private float pitch, yaw, roll;
 	private int viewDistance;
 	private Chunk chunk;
 	private CollisionModel collision;
 	private Controller controller;
 	private EntityManager entityManager;
-	private GenericDatatableMap map;
+	private final GenericDatatableMap map;
 	private Model model;
 	private Thread owningThread;
 	private Transform lastTransform = transform;
@@ -133,15 +132,13 @@ public class SpoutEntity implements Entity {
 
 	public void onTick(float dt) {
 		lastTransform = transform.copy();
-		Vector3 ang = this.transform.getRotation().getAxisAngles();
-		pitch = ang.getZ();
-		yaw = ang.getY();
-		roll = ang.getX();
+		Quaternion lastRotation = transform.getRotation();
 
 		if (controller != null && controller.getParent() != null && !isDead()) {
 			controller.onTick(dt);
 		}
-		updateTransformAxisAngles();
+
+		setRotation(lastRotation);
 
 		if (controllerLive.get() instanceof PlayerController) {
 			Player player = ((PlayerController) controllerLive.get()).getPlayer();
@@ -198,11 +195,6 @@ public class SpoutEntity implements Entity {
 		//Check to see if we should fire off a Move event
 	}
 
-	private final boolean isValidAccess() {
-		Thread current = Thread.currentThread();
-		return this.owningThread == current || Spout.getEngine().getMainThread() == current;
-	}
-
 	@Override
 	public Transform getTransform() {
 		return transform.copy();
@@ -210,18 +202,9 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void setTransform(Transform transform) {
-		this.transform.set(transform);
-	}
-
-	@Override
-	public void translate(Vector3 amount) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to translate from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
+		if (activeThreadIsValid("set transform")) {
+			transform.set(transform);
 		}
-		setPosition(getPosition().add(amount));
 	}
 
 	@Override
@@ -230,41 +213,28 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
+	public void translate(Vector3 amount) {
+		setPosition(getPosition().add(amount));
+	}
+
+	@Override
 	public void rotate(float ang, float x, float y, float z) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to rotate from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
 		setRotation(getRotation().rotate(ang, x, y, z));
 	}
 
 	@Override
 	public void rotate(Quaternion rot) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to rotation from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
 		setRotation(getRotation().multiply(rot));
-	}
-
-	@Override
-	public void scale(Vector3 amount) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to scale from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
-		setScale(getScale().multiply(amount));
 	}
 
 	@Override
 	public void scale(float x, float y, float z) {
 		scale(new Vector3(x, y, z));
+	}
+
+	@Override
+	public void scale(Vector3 amount) {
+		setScale(getScale().multiply(amount));
 	}
 
 	@Override
@@ -279,124 +249,92 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public Vector3 getScale() {
-		return this.transform.getScale();
+		return transform.getScale();
 	}
 
 	@Override
 	public void setPosition(Point position) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to set position from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
+		if (activeThreadIsValid("set position")) {
+			transform.setPosition(position);
 		}
-		this.transform.setPosition(position);
 	}
 
 	@Override
 	public void setRotation(Quaternion rotation) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to set rotation from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
+		if (activeThreadIsValid("set rotation")) {
+			transform.setRotation(rotation);
 		}
-		this.transform.setRotation(rotation);
 	}
 
 	@Override
 	public void setScale(Vector3 scale) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to set scale from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
+		if (activeThreadIsValid("set scale")) {
+			transform.setScale(scale);
 		}
-		this.transform.setScale(scale);
 	}
 
 	@Override
 	public void roll(float ang) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to roll from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
 		setRoll(getRoll()+ang);
 	}
 
 	@Override
 	public void pitch(float ang) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to pitch from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
 		setPitch(getPitch()+ang);
 	}
 
 	@Override
 	public void yaw(float ang) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to yaw from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
-		setYaw(getYaw()+yaw);
+		setYaw(getYaw()+ang);
 	}
 
 	@Override
 	public float getPitch() {
-		return pitch;
+		return transform.getRotation().getPitch();
 	}
 
 	@Override
 	public float getYaw() {
-		return yaw;
+		return transform.getRotation().getYaw();
 	}
 
 	@Override
 	public float getRoll() {
-		return roll;
+		return transform.getRotation().getRoll();
 	}
 
 	@Override
-	public void setPitch(float ang) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to set pitch from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
-		pitch = ang;
-		updateTransformAxisAngles();
+	public void setPitch(float pitch) {
+		setAxisAngles(pitch, getYaw(), getRoll(), "set pitch");
 	}
 
 	@Override
-	public void setRoll(float ang) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to set scale from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
-		}
-		roll = ang;
-		updateTransformAxisAngles();
+	public void setRoll(float roll) {
+		setAxisAngles(getPitch(), getYaw(), roll, "set roll");
 	}
 
 	@Override
-	public void setYaw(float ang) {
-		if (!isValidAccess()) {
-			if (Spout.getEngine().debugMode()) {
-				throw new IllegalAccessError("Tried to set scale from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
-			}
-			return;
+	public void setYaw(float yaw) {
+		setAxisAngles(getPitch(), yaw, getRoll(), "set yaw");
+	}
+
+	private void setAxisAngles(float pitch, float yaw, float roll, String errorMessage) {
+		if (activeThreadIsValid(errorMessage)) {
+			setRotation(Quaternion.rotation(pitch, yaw, roll));
 		}
-		yaw = ang;
-		updateTransformAxisAngles();
+	}
+
+	private final boolean activeThreadIsValid(String attemptedAction) {
+		Thread current = Thread.currentThread();
+		boolean invalidAccess = !(this.owningThread == current || Spout.getEngine().getMainThread() == current);
+
+		if (invalidAccess && Spout.getEngine().debugMode()) {
+			if (attemptedAction == null)
+				attemptedAction = "Unknown Action";
+
+			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
+		}
+		return !invalidAccess;
 	}
 
 	@Override
@@ -790,12 +728,5 @@ public class SpoutEntity implements Entity {
 	@Override
 	public boolean hasComponent(EntityComponent component) {
 		return components.contains(component);
-	}
-	
-	private void updateTransformAxisAngles() {
-		setRotation(Quaternion.IDENTITY);
-		rotate(pitch, 0,0,1);
-		rotate(yaw, 0,1,0);
-		rotate(roll, 1,0,0);
 	}
 }
