@@ -215,5 +215,13 @@ public class QuaternionTest {
 		assertEquals(q2.getPitch(), pitch, eps);
 		assertEquals(q2.getYaw(), yaw, eps);
 		assertEquals(q2.getRoll(), roll, eps);
+
+		final float polePitch = 90;
+		final float poleYaw = 18;
+		final float poleRoll = 0;
+		final Quaternion pole = Quaternion.rotation(polePitch, poleYaw, 0);
+		assertEquals(polePitch, pole.getPitch(), eps);
+		assertEquals(poleYaw, pole.getYaw(), eps);
+		assertEquals(poleRoll, pole.getRoll(), eps);
 	}
 }
