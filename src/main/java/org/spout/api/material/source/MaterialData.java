@@ -33,12 +33,12 @@ public interface MaterialData extends MaterialSource {
 	 * 
 	 * @param data value
 	 */
-	public void setData(short data);
+	public MaterialData setData(short data);
 
 	/**
 	 * Sets the data value
 	 * 
 	 * @param datasource to get the data from
 	 */
-	public void setData(DataSource datasource);
+	public MaterialData setData(DataSource datasource);
 }

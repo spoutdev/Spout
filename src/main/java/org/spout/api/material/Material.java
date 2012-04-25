@@ -112,17 +112,27 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	}
 
 	/**
-	 * Gets the sub material mapped to the data value specified
+	 * Recursively gets the sub material mapped to the data value specified
 	 * 
 	 * @param data to search for
-	 * @return the sub material, or null if not found
+	 * @return the sub material, or this material if not found
 	 */
 	public Material getSubMaterial(short data) {
 		if (this.hasSubMaterials()) {
-			return this.submaterials.get(data);
+			Material material = this.submaterials.get(data);
+		    if (material == null) {
+		    	return this;
+		    } else {
+		    	return material.getSubMaterial(data);
+		    }
 		} else {
-			return null;
+			return this;
 		}
+	}
+	
+	@Override
+	public Material getSubMaterial() {
+		return this; //no way around it unfortunately
 	}
 
 	/**
@@ -144,7 +154,12 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			throw new IllegalArgumentException("Material is not a valid sub material!");
 		}
 	}
-
+	
+	@Override
+	public MaterialData createData() {
+		return this.createData(this.getData());
+	}
+	
 	/**
 	 * Constructs a new material data using the data specified
 	 * 
@@ -167,6 +182,15 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public Material getParentMaterial() {
 		return this.parent;
+	}
+	
+	/**
+	 * Gets the root parent of this sub materia;
+	 * 
+	 * @return the material root
+	 */
+	public Material getRoot() {
+		return this.parent == this ? this : this.parent.getRoot();
 	}
 
 	/**

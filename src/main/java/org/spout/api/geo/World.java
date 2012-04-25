@@ -34,9 +34,6 @@ import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.player.Player;
@@ -47,7 +44,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaBlockAccess {
+public interface World extends Source, AreaRegionAccess {
 	/**
 	 * Gets the name of the world
 	 *
@@ -66,39 +63,6 @@ public interface World extends Source, AreaBlockAccess {
 	public long getAge();
 
 	/**
-	 * Gets a {@link Block} representing a particular location in the world
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 * @param source of any changes done by this block
-	 * 
-	 * @return the Block
-	 */
-	@Threadsafe
-	public Block getBlock(int x, int y, int z, Source source);
-
-	/**
-	 * Gets a {@link Block} representing a particular location in the world
-	 *
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 *
-	 * @return the Block
-	 */
-	@Threadsafe
-	public Block getBlock(int x, int y, int z);
-
-	/**
-	 * Gets a {@link Block} representing a particular point in the world
-	 *
-	 * @param point The point
-	 * @return the Block
-	 */
-	@Threadsafe
-	public Block getBlock(Point point);
-
-	/**
 	 * Gets the UID representing the world. With extremely high probability the
 	 * UID is unique to each world.
 	 *
@@ -107,112 +71,6 @@ public interface World extends Source, AreaBlockAccess {
 	@SnapshotRead
 	public UUID getUID();
 
-	/**
-	 * Gets the {@link Region} at region coordinates (x, y, z)
-	 *
-	 * @param x the region x coordinate
-	 * @param y the region y coordinate
-	 * @param z the region z coordinate
-	 * @return the region
-	 */
-	@LiveRead
-	public Region getRegion(int x, int y, int z);
-
-	/**
-	 * Gets the {@link Region} at region coordinates (x, y, z)
-	 *
-	 * @param x the region x coordinate
-	 * @param y the region y coordinate
-	 * @param z the region z coordinate
-	 * @param load true if the region should be loaded/generated
-	 * @return the region
-	 */
-	@LiveRead
-	public Region getRegion(int x, int y, int z, boolean load);
-
-	/**
-	 * Gets the {@link Region} at block position
-	 *
-	 * @param point in the world
-	 * @return the region
-	 */
-	@LiveRead
-	public Region getRegion(Point point);
-
-	/**
-	 * Gets the {@link Region} at block position
-	 *
-	 * @param point in the world
-	 * @param load true if the region should be loaded/generated
-	 * @return the region
-	 */
-	@LiveRead
-	public Region getRegion(Point point, boolean load);
-
-	/**
-	 * Gets the {@link Region} at block coordinates (x, y, z)
-	 *
-	 * @param x the block x coordinate
-	 * @param y the block y coordinate
-	 * @param z the block z coordinate
-	 * @return the region
-	 */
-	@LiveRead
-	public Region getRegionFromBlock(int x, int y, int z);
-
-	/**
-	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 * @return the chunk
-	 */
-	@LiveRead
-	public Chunk getChunk(int x, int y, int z);
-
-	/**
-	 * Gets the {@link Chunk} at block position
-	 *
-	 * @param point in the world
-	 * @return the chunk
-	 */
-	@LiveRead
-	public Chunk getChunk(Point point);
-
-	/**
-	 * Gets the {@link Chunk} at block position
-	 *
-	 * @param point in the world
-	 * @param load true if the region should be loaded/generated
-	 * @return the chunk
-	 */
-	@LiveRead
-	public Chunk getChunk(Point point, boolean load);
-
-	/**
-	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 * @param load true if the Chunk should be loaded/generated
-	 * @return the chunk
-	 */
-	@LiveRead
-	public Chunk getChunk(int x, int y, int z, boolean load);
-
-	/**
-	 * Gets the {@link Chunk} at block coordinates (x, y, z)
-	 *
-	 * @param x the block x coordinate
-	 * @param y the block y coordinate
-	 * @param z the block z coordinate
-	 * @return the chunk
-	 */
-	@LiveRead
-	public Chunk getChunkFromBlock(int x, int y, int z);
-	
 	/**
 	 * Gets the height of the highest block in the given (x, z) column.<br>
 	 * <br>

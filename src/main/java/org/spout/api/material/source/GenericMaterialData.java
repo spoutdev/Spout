@@ -47,12 +47,23 @@ public class GenericMaterialData implements MaterialData {
 	}
 
 	@Override
-	public void setData(short data) {
+	public GenericMaterialData setData(short data) {
 		this.data = data;
+		return this;
 	}
 
 	@Override
-	public void setData(DataSource datasource) {
-		this.setData(datasource.getData());
+	public GenericMaterialData setData(DataSource datasource) {
+		return this.setData(datasource.getData());
+	}
+
+	@Override
+	public Material getSubMaterial() {
+		return this.getMaterial().getSubMaterial(this.getData());
+	}
+
+	@Override
+	public MaterialData createData() {
+		return this.material.createData(this.data);
 	}
 }

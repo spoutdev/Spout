@@ -27,16 +27,16 @@ package org.spout.api.inventory;
 
 import org.spout.api.material.Material;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialContainer;
 import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.material.source.MaterialState;
 import org.spout.api.util.LogicUtil;
 import org.spout.nbt.CompoundMap;
 
 /**
  * Represents a stack of items
  */
-public class ItemStack implements MaterialContainer {
+public class ItemStack implements MaterialState {
 	private Material material;
 	private int amount;
 	private short data;
@@ -55,9 +55,8 @@ public class ItemStack implements MaterialContainer {
 	 * specified amount
 	 */
 	public ItemStack(Material material, short data, int amount) {
-		this.setMaterial(material);
+		this.setMaterial(material).setData(data);
 		this.amount = amount;
-		this.data = data;
 	}
 
 	/**
@@ -65,18 +64,14 @@ public class ItemStack implements MaterialContainer {
 	 * 
 	 * @return the material
 	 */
+	@Override
 	public Material getMaterial() {
 		return material;
 	}
-
-	/**
-	 * Sets the Material for the stack
-	 * 
-	 * @param material the material
-	 */
-	public ItemStack setMaterial(Material material) {
-		this.material = material;
-		return this;
+	
+	@Override
+	public Material getSubMaterial() {
+		return this.getMaterial().getSubMaterial(this.getData());
 	}
 
 	/**
@@ -151,34 +146,36 @@ public class ItemStack implements MaterialContainer {
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material) {
+	public ItemStack setMaterial(MaterialSource material) {
 		Material mat = material == null ? null : material.getMaterial();
 		if (mat == null) {
 			throw new IllegalArgumentException("Material can not be null!");
 		} else {
-			this.material = material.getMaterial();
+			this.material = material.getMaterial().getRoot();
+			this.setData(material);
 		}
+		return this;
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material, DataSource datasource) {
-		this.setMaterial(material, datasource.getData());
+	public ItemStack setMaterial(MaterialSource material, DataSource datasource) {
+		return this.setMaterial(material, datasource.getData());
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material, short data) {
-		this.setMaterial(material);
+	public ItemStack setMaterial(MaterialSource material, short data) {
+		return this.setMaterial(material).setData(data);
+	}
+
+	@Override
+	public ItemStack setData(DataSource datasource) {
+		return this.setData(datasource.getData());
+	}
+
+	@Override
+	public ItemStack setData(short data) {
 		this.data = data;
-	}
-
-	@Override
-	public void setData(DataSource datasource) {
-		this.setData(datasource.getData());
-	}
-
-	@Override
-	public void setData(short data) {
-		this.data = data;
+		return this;
 	}
 
 	@Override

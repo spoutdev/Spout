@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.material.source.MaterialSource;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -42,7 +43,7 @@ public class AtomicBlockStore<T> {
 	private final int shift;
 	private final int doubleShift;
 	private final AtomicShortArray blockIds;
-	private AtomicIntReferenceArrayStore<T> auxStore;
+	private AtomicIntReferenceArrayStore<T> auxStore; //TODO: Replace with AtomicShortArray!
 	private final AtomicBoolean compressing = new AtomicBoolean(false);
 	private final byte[] dirtyX;
 	private final byte[] dirtyY;
@@ -92,12 +93,8 @@ public class AtomicBlockStore<T> {
 				if(data != null) {
 					d = data[i];
 				}
-				T ad = null;
-				if(auxData != null) {
-					ad = auxData[i];
-				}
 				
-				this.setBlock(x, y, z, blocks[i], d, ad);
+				this.setBlock(x, y, z, blocks[i], d);
 				
 				if (x < max) {
 					x++;
@@ -326,7 +323,7 @@ public class AtomicBlockStore<T> {
 	 *            null to generate a new one
 	 * @return the full state of the block
 	 */
-	public final BlockFullState<T> getFullData(int x, int y, int z) {
+	public final BlockFullState getFullData(int x, int y, int z) {
 		return getFullData(x, y, z, null);
 	}
 
@@ -337,13 +334,13 @@ public class AtomicBlockStore<T> {
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param fullState a BlockFullState object to store the return value, or
+	 * @param input is a BlockFullState object to store the return value, or
 	 *            null to generate a new one
 	 * @return the full state of the block
 	 */
-	public final BlockFullState<T> getFullData(int x, int y, int z, BlockFullState<T> fullData) {
-		if (fullData == null) {
-			fullData = new BlockFullState<T>();
+	public final BlockFullState getFullData(int x, int y, int z, BlockFullState input) {
+		if (input == null) {
+			input = new BlockFullState();
 		}
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -358,17 +355,15 @@ public class AtomicBlockStore<T> {
 				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
-					fullData.setId(auxStore.getId(blockId));
-					fullData.setData(auxStore.getData(blockId));
-					fullData.setAuxData(auxStore.getAuxData(blockId));
+					input.setId(auxStore.getId(blockId));
+					input.setData(auxStore.getData(blockId));
 					if (testSequence(x, y, z, seq)) {
-						return fullData;
+						return input;
 					}
 				} else {
-					fullData.setId(blockId);
-					fullData.setData((short) 0);
-					fullData.setAuxData(null);
-					return fullData;
+					input.setId(blockId);
+					input.setData((short) 0);
+					return input;
 				}
 			}
 		} finally {
@@ -389,8 +384,8 @@ public class AtomicBlockStore<T> {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
-	public final void setBlock(int x, int y, int z, BlockFullState<T> fullState) {
-		setBlock(x, y, z, fullState.getId(), fullState.getData(), fullState.getAuxData());
+	public final void setBlock(int x, int y, int z, MaterialSource material) {
+		setBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
 
 	/**
@@ -406,7 +401,7 @@ public class AtomicBlockStore<T> {
 	 * @param data the block data
 	 * @param auxData the block auxiliary data
 	 */
-	public final void setBlock(int x, int y, int z, short id, short data, T auxData) {
+	public final void setBlock(int x, int y, int z, short id, short data) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -419,7 +414,7 @@ public class AtomicBlockStore<T> {
 
 				short oldBlockId = blockIds.get(index);
 				boolean oldReserved = auxStore.isReserved(oldBlockId);
-				if (data == 0 && auxData == null && !auxStore.isReserved(id)) {
+				if (data == 0 && !auxStore.isReserved(id)) {
 					if (!blockIds.compareAndSet(index, oldBlockId, id)) {
 						continue;
 					}
@@ -430,7 +425,7 @@ public class AtomicBlockStore<T> {
 					}
 					return;
 				} else {
-					int newIndex = auxStore.add(id, data, auxData);
+					int newIndex = auxStore.add(id, data, null);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
 						if (auxStore.remove(newIndex)) {
 							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
@@ -470,7 +465,7 @@ public class AtomicBlockStore<T> {
 	 * @param newAuxData the new block auxiliary data
 	 * @return true if the block was set
 	 */
-	public final boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, T expectAuxData, short newId, short newData, T newAuxData) {
+	public final boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -485,23 +480,22 @@ public class AtomicBlockStore<T> {
 				boolean oldReserved = auxStore.isReserved(oldBlockId);
 
 				if (!oldReserved) {
-					if (blockIds.get(index) != expectId || expectData != 0 || expectAuxData != null) {
+					if (blockIds.get(index) != expectId || expectData != 0) {
 						return false;
 					}
 				} else {
 					int seq = auxStore.getSequence(oldBlockId);
 					short oldId = auxStore.getId(oldBlockId);
 					short oldData = auxStore.getData(oldBlockId);
-					T oldAuxData = auxStore.getAuxData(oldBlockId);
 					if (!testSequence(x, y, z, seq)) {
 						continue;
 					}
-					if (oldId != expectId || oldData != expectData || oldAuxData != expectAuxData) {
+					if (oldId != expectId || oldData != expectData) {
 						return false;
 					}
 				}
 
-				if (newData == 0 && newAuxData == null && !auxStore.isReserved(newId)) {
+				if (newData == 0 && !auxStore.isReserved(newId)) {
 					if (!blockIds.compareAndSet(index, oldBlockId, newId)) {
 						continue;
 					}
@@ -513,7 +507,7 @@ public class AtomicBlockStore<T> {
 					markDirty(x, y, z);
 					return true;
 				} else {
-					int newIndex = auxStore.add(newId, newData, newAuxData);
+					int newIndex = auxStore.add(newId, newData, null);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
 						if (!auxStore.remove(newIndex)) {
 							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
@@ -535,22 +529,6 @@ public class AtomicBlockStore<T> {
 				Thread.currentThread().interrupt();
 			}
 		}
-	}
-
-	/**
-	 * Sets the block id, data and auxData for the block at (x, y, z), if the
-	 * current data matches the expected data.<br>
-	 * <br>
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param expect the expected block value
-	 * @param newValue the new block value
-	 * @return true if the block was set
-	 */
-	public final boolean compareAndSetBlock(int x, int y, int z, BlockFullState<T> expect, BlockFullState<T> newValue) {
-		return compareAndSetBlock(x, y, z, expect.getId(), expect.getData(), expect.getAuxData(), newValue.getId(), newValue.getData(), newValue.getAuxData());
 	}
 
 	/**

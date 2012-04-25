@@ -31,9 +31,8 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.player.PlayerInteractEvent;
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
@@ -92,6 +91,11 @@ public class BlockMaterial extends Material {
 	private byte lightLevel = 0;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 
+	@Override
+	public BlockMaterial getSubMaterial(short data) {
+		return (BlockMaterial) super.getSubMaterial(data);
+	}
+	
 	/**
 	 * Gets the friction of this block
 	 * 
@@ -209,23 +213,18 @@ public class BlockMaterial extends Material {
 	/**
 	 * Called when a block adjacent to this material is changed.
 	 * 
-	 * @param world that the material is in
-	 * @param x coordinate for this material
-	 * @param y coordinate for this material
-	 * @param z coordinate for this material
+	 * @param block that got updated
 	 */
-	public void onUpdate(World world, int x, int y, int z) {
+	public void onUpdate(Block block) {
 	}
 
 	/**
 	 * Called when this block has been destroyed.
 	 * 
-	 * @param world that the material is in
-	 * @param x coordinate for this material
-	 * @param y coordinate for this material
-	 * @param z coordinate for this material
+	 * @param block that got destroyed
 	 */
-	public void onDestroy(World world, int x, int y, int z) {
+	public void onDestroy(Block block) {
+		block.setMaterial(AIR).update();
 	}
 
 	/**
@@ -319,33 +318,28 @@ public class BlockMaterial extends Material {
 	 * Called when this block is about to be placed (before {@link onPlacement}), 
 	 * checking if placement is allowed or not.
 	 * 
-	 * @param world that the material is in
-	 * @param x coordinate for this material
-	 * @param y coordinate for this material
-	 * @param z coordinate for this material
+	 * @param block to place
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
-	 * @param source source of this placement
+	 * @param source of this placement
 	 * @return true if placement is allowed
 	 */
-	public boolean canPlace(World world, int x, int y, int z, short data, BlockFace against, Source source) {
+	public boolean canPlace(Block block, short data, BlockFace against, Source source) {
 		return true;
 	}
 	
 	/**
 	 * Called when this block is placed, handles the actual placement.
 	 * 
-	 * @param world that the material is in
-	 * @param x coordinate for this material
-	 * @param y coordinate for this material
-	 * @param z coordinate for this material
+	 * @param block to affect
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
-	 * @param source source of this placement
+	 * @param source of this placement
 	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(World world, int x, int y, int z, short data, BlockFace against, Source source) {
-		return world.setBlockMaterial(x, y, z, this, data, true, source);
+	public boolean onPlacement(Block block, short data, BlockFace against, Source source) {
+		block.setMaterial(this, data).update(true);
+		return true;
 	}
 
 	/**
@@ -356,6 +350,6 @@ public class BlockMaterial extends Material {
 	 * @param type of interaction
 	 * @param clickedFace of the material clicked
 	 */
-	public void onInteractBy(Entity entity, Point position, PlayerInteractEvent.Action type, BlockFace clickedFace) {
+	public void onInteractBy(Entity entity, Block block, Action type, BlockFace clickedFace) {
 	}
 }

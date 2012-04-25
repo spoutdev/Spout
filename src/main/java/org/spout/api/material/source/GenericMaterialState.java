@@ -25,49 +25,58 @@
  */
 package org.spout.api.material.source;
 
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 
-public class GenericMaterialContainer implements MaterialContainer {
+public class GenericMaterialState implements MaterialState {
 	private Material material;
 	private short data;
 
-	public GenericMaterialContainer(MaterialSource material) {
+	public GenericMaterialState() {
+		this.material = BlockMaterial.AIR;
+		this.data = 0;
+	}
+
+	public GenericMaterialState(MaterialSource material) {
 		this(material.getMaterial(), material.getData());
 	}
 
-	public GenericMaterialContainer(MaterialSource material, DataSource datasource) {
+	public GenericMaterialState(MaterialSource material, DataSource datasource) {
 		this(material, datasource.getData());
 	}
 
-	public GenericMaterialContainer(MaterialSource material, short data) {
+	public GenericMaterialState(MaterialSource material, short data) {
 		this.setMaterial(material);
 		this.setData(data);
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material, DataSource datasource) {
-		this.setMaterial(material, datasource.getData());
+	public GenericMaterialState setMaterial(MaterialSource material, DataSource datasource) {
+		return this.setMaterial(material, datasource.getData());
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material, short data) {
+	public GenericMaterialState setMaterial(MaterialSource material, short data) {
 		this.setMaterial(material);
 		this.setData(data);
+		return this;
 	}
 
 	@Override
-	public void setData(DataSource datasource) {
-		this.setData(datasource.getData());
+	public GenericMaterialState setData(DataSource datasource) {
+		return this.setData(datasource.getData());
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material) {
+	public GenericMaterialState setMaterial(MaterialSource material) {
 		this.material = material.getMaterial();
+		return this;
 	}
 	
 	@Override
-	public void setData(short data) {
+	public GenericMaterialState setData(short data) {
 		this.data = data;
+		return this;
 	}
 
 	@Override
@@ -83,6 +92,11 @@ public class GenericMaterialContainer implements MaterialContainer {
 	@Override
 	public MaterialData createData() {
 		return this.material.createData(this.data);
+	}
+
+	@Override
+	public Material getSubMaterial() {
+		return this.getMaterial().getSubMaterial(this.getData());
 	}
 }
 

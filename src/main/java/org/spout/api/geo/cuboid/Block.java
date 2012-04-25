@@ -32,110 +32,212 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialContainer;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.material.source.MaterialState;
 import org.spout.api.math.Vector3;
 
-public interface Block extends MaterialContainer, Cloneable {
+public interface Block extends MaterialState {
 
+	/**
+	 * Gets the {@link Point} position of this block in the world
+	 * 
+	 * @return the position
+	 */
 	public Point getPosition();
 
+	/**
+	 * Gets the {@link Chunk} this block is in
+	 * 
+	 * @return the Chunk
+	 */
 	public Chunk getChunk();
-	
+
+	/**
+	 * Gets the {@link Region} this block is in
+	 * 
+	 * @return the Region
+	 */
+	public Region getRegion();
+
+	/**
+	 * Gets the {@link World} this block is in
+	 * 
+	 * @return the World
+	 */
 	public World getWorld();
 
+	/**
+	 * Gets the x-coordinate of this block
+	 * 
+	 * @return the x-coordinate
+	 */
 	public int getX();
 
+	/**
+	 * Gets the y-coordinate of this block
+	 * 
+	 * @return the y-coordinate
+	 */
 	public int getY();
 
+	/**
+	 * Gets the z-coordinate of this block
+	 * 
+	 * @return the z-coordinate
+	 */
 	public int getZ();
 
+	/**
+	 * Sets the x-coordinate of this block
+	 * 
+	 * @param x coordinate to set to
+	 * @return a new Block instance
+	 */
 	public Block setX(int x);
-	
+
+	/**
+	 * Sets the y-coordinate of this block
+	 * 
+	 * @param y coordinate to set to
+	 * @return a new Block instance
+	 */
 	public Block setY(int y);
-	
+
+	/**
+	 * Sets the z-coordinate of this block
+	 * 
+	 * @param z coordinate to set to
+	 * @return a new Block instance
+	 */
 	public Block setZ(int z);
-	
-	public Block move(BlockFace offset);
 
-	public Block move(Vector3 offset);
+	/**
+	 * Translates this block using the offset given
+	 * 
+	 * @param offset BlockFace to translate
+	 * @return a new Block instance
+	 */
+	public Block translate(BlockFace offset);
 
-	public Block move(int dx, int dy, int dz);
-	
+	/**
+	 * Translates this block using the offset given
+	 * 
+	 * @param offset Vector to translate
+	 * @return a new Block instance
+	 */
+	public Block translate(Vector3 offset);
+
+	/**
+	 * Translates this block using the offsets given
+	 * 
+	 * @param dx offset to translate
+	 * @param dy offset to translate
+	 * @param dz offset to translate
+	 * @return a new Block instance
+	 */
+	public Block translate(int dx, int dy, int dz);
+
 	/**
 	 * Gets the source this block represents
 	 * 
 	 * @return the source
 	 */
 	public Source getSource();
-	
-	/**
-	 * Sets the source this block represents
-	 * 
-	 * @param source
-	 */
-	public void setSource(Source source);
-	
-	/**
-	 * Sets the material
-	 * @param material to set to
-	 * @param update whether players nearby should be notified of the block change
-	 */
-	public void setMaterial(MaterialSource material, boolean update);
-	
-	/**
-	 * Gets the block material
-	 * 
-	 * @return the block material
-	 */
+
 	@Override
 	public BlockMaterial getMaterial();
 	
-	/**
-	 * Sets the material and data to the one of the source block
-	 * @param block to set to
-	 */
-	public void setBlock(MaterialSource block);
+	@Override
+	public BlockMaterial getSubMaterial();
 	
 	/**
-	 * Sets the material and data to the one of the source block
-	 * @param blocksource to set to
-	 * @param update whether players nearby should be notified of the block change
+	 * Sets the data of this block
+	 *
+	 * @param data to set to
+	 * @return this Block
+	 * @throws NullPointerException
 	 */
-	public void setBlock(MaterialSource blocksource, boolean update);
-	
+	@Override
+	public Block setData(DataSource data);
+
 	/**
-	 * Sets the material and data
+	 * Sets the data of this block
+	 *
+	 * @param data to set to
+	 * @return this Block
+	 * @throws NullPointerException
+	 */
+	@Override
+	public Block setData(short data);
+
+	/**
+	 * Sets the material of this block
+	 *
 	 * @param material to set to
-	 * @param datasource of the data to set to
-	 * @param update whether players nearby should be notified of the block change
+	 * @return this Block
+	 * @throws NullPointerException
 	 */
-	public void setMaterial(MaterialSource material, DataSource datasource, boolean update);
+	@Override
+	public Block setMaterial(MaterialSource material);
 
 	/**
-	 * Sets the material and data
+	 * Sets the material and data of this block
+	 *
 	 * @param material to set to
-	 * @param data value to set to
-	 * @param update whether players nearby should be notified of the block change
+	 * @param data to set to
+	 * @return this Block
+	 * @throws NullPointerException
 	 */
-	public void setMaterial(MaterialSource material, short data, boolean update);
+	@Override
+	public Block setMaterial(MaterialSource material, DataSource data);
 
 	/**
-	 * Sets the data
-	 * @param datasource of the data to set to
-	 * @param update whether players nearby should be notified of the block change
+	 * Sets the material and data of this block
+	 *
+	 * @param material to set to
+	 * @param data to set to
+	 * @return this Block
+	 * @throws NullPointerException
 	 */
-	public void setData(DataSource datasource, boolean update);
+	@Override
+	public Block setMaterial(MaterialSource material, short data);
 
 	/**
-	 * Sets the data
-	 * @param data value to set to
-	 * @param update whether players nearby should be notified of the block change
+	 * Gets the block light level
+	 *
+	 * @return the block light level
+	 * @throws NullPointerException
 	 */
-	public void setData(short data, boolean update);
+	public byte getLight();
 
 	/**
-	 * Gets any controller associated with the block.
+	 * Sets the block light level to the given light level
+	 *
+	 * @param light level to set to
+	 * @return this Block
+	 * @throws NullPointerException
+	 */
+	public Block setLight(byte level);
+
+	/**
+	 * Gets the sky light level
+	 *
+	 * @return the sky light level
+	 * @throws NullPointerException
+	 */
+	public byte getSkyLight();
+
+	/**
+	 * Sets the sky light level to the given light level
+	 *
+	 * @param light level to set to
+	 * @return this Block
+	 * @throws NullPointerException
+	 */
+	public Block setSkyLight(byte level);
+
+	/**
+	 * Gets a controller associated with the block, or null if it has none.
 	 *
 	 * @return block controller
 	 */
@@ -144,21 +246,30 @@ public interface Block extends MaterialContainer, Cloneable {
 	/**
 	 * Sets the entity associated with the block.
 	 *
-	 * @param controller
+	 * @param controller to set to, or null to clear it
+	 * @return this Block
 	 */
-	public void setController(BlockController controller);
+	public Block setController(BlockController controller);
 
 	/**
-	 * Whether or not the block is associated with an entity.
+	 * Whether or not the block is associated with a block controller
 	 *
-	 * @return true if has entity
+	 * @return true if has a controller
 	 */
 	public boolean hasController();
 	
 	/**
-	 * Clones this block
+	 * Performs a physics update on this block and the neighboring blocks
 	 * 
-	 * @return a new instance of this block
+	 * @return this Block
 	 */
-	public Block clone();
+	public Block update();
+	
+	/**
+	 * Performs a physics update on this block and/or neighboring blocks
+	 * 
+	 * @param True to update neighboring blocks, False to update only this block
+	 * @return this Block
+	 */
+	public Block update(boolean around);
 }
