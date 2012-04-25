@@ -73,7 +73,7 @@ public class Quaternion {
 		this.z = z;
 		this.w = w;
 	}
-	
+
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
 	 * arbatrary axis
@@ -81,7 +81,7 @@ public class Quaternion {
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param x-axis
 	 * @param y-axis
-	 * @param z-axis	
+	 * @param z-axis
 	 */
 	public Quaternion(float angle, float x, float y, float z) {
 		double rads = Math.toRadians(angle);
@@ -145,19 +145,19 @@ public class Quaternion {
 	public float getW() {
 		return w;
 	}
-	
-	
+
+
 	public float getPitch(){
 		return getAxisAngles().getX();
-	
+
 	}
 	public float getYaw(){
 		return getAxisAngles().getY();
-	
+
 	}
 	public float getRoll(){
 		return getAxisAngles().getZ();
-	
+
 	}
 
 
@@ -211,7 +211,7 @@ public class Quaternion {
 	public Quaternion rotate(float angle, Vector3 axis) {
 		return Quaternion.rotate(this, angle, axis);
 	}
-	
+
 	/**
 	 * Creates and returns a new Quaternion that represnets this quaternion
 	 * rotated by the given Axis and Angle
@@ -321,7 +321,7 @@ public class Quaternion {
 	public static Quaternion rotate(Quaternion a, float angle, Vector3 axis) {
 		return multiply(new Quaternion(angle, axis), a);
 	}
-	
+
 	/**
 	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
@@ -355,15 +355,28 @@ public class Quaternion {
 		final float q2 = a.x; // pitch
 		final float q3 = a.y; // yaw
 
-		final double r1 = Math.atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
-		final double r2 = Math.asin(2*(q0*q2-q3*q1));
-		final double r3 = Math.atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3));
+		final double r1,r2,r3,test;
+		test = q0*q2-q3*q1;
+
+		if (Math.abs(test) < 0.4999) {
+			r1 = Math.atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
+			r2 = Math.asin(2*test);
+			r3 = Math.atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3));
+		} else { // pitch is at north or south pole
+			int sign = (test < 0) ? -1:1;
+			r1 = 0;
+			r2 = sign * Math.PI/2;
+			r3 = -sign * 2 * Math.atan2(q1,q0);
+		}
 
 		// ...and back to Tait-Bryan
 		final float roll = (float) Math.toDegrees(r1);
 		final float pitch = (float) Math.toDegrees(r2);
-		final float yaw = (float) Math.toDegrees(r3);
-
+		float yaw = (float) Math.toDegrees(r3);
+		if (yaw > 180) // keep -180 < yaw < 180
+			yaw -= 360;
+		else if (yaw < -180)
+			yaw += 360;
 		return new Vector3(pitch, yaw, roll);
 	}
 }
