@@ -59,6 +59,7 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
+import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
@@ -135,7 +136,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	/**
 	 * Online player list
 	 */
-	private final SnapshotableLinkedHashMap<String, Player> players = new SnapshotableLinkedHashMap<String, Player>(snapshotManager);
+	private final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 
 	/**
 	 * The security manager TODO - need to integrate this
@@ -301,7 +302,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 	}
 
-	public Collection<Player> rawGetAllOnlinePlayers() {
+	public Collection<SpoutPlayer> rawGetAllOnlinePlayers() {
 		return players.get().values();
 	}
 
@@ -326,10 +327,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public Player[] getOnlinePlayers() {
-		Map<String, Player> playerList = players.get();
-		ArrayList<Player> onlinePlayers = new ArrayList<Player>(playerList.size());
-		for (Player player : playerList.values()) {
+	public SpoutPlayer[] getOnlinePlayers() {
+		Map<String, SpoutPlayer> playerList = players.get();
+		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
+		for (SpoutPlayer player : playerList.values()) {
 			if (player.isOnline()) {
 				onlinePlayers.add(player);
 			}
@@ -417,7 +418,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		return dataDirectory;
 	}
 
-	private Player[] emptyPlayerArray = new Player[0];
+	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
 
 	@Override
 	public Player getPlayer(String name, boolean exact) {
@@ -522,16 +523,15 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void stop(String message) {
-		for (Player player : getOnlinePlayers()) {
-			player.kick(message, true);
+		for (SpoutPlayer player : getOnlinePlayers()) {
+			player.kick(message);
 		}
-		
+
 		for (SpoutWorld world : this.getLiveWorlds()) {
 			world.unload(true);
 		}
 
 		getPluginManager().clearPlugins();
-
 		consoleManager.stop();
 		scheduler.stop();
 		group.close();
@@ -739,7 +739,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession session) {
-		Player player = null;
+		SpoutPlayer player = null;
 
 		// The new player needs a corresponding entity
 		Entity newEntity = new SpoutEntity(this, getDefaultWorld().getSpawnPoint(), null);
@@ -750,7 +750,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			player = players.getLive().get(playerName);
 
 			if (player != null) {
-				if (!((SpoutPlayer) player).connect(session, newEntity)) {
+				if (!player.connect(session, newEntity)) {
 					return null;
 				} else {
 					success = true;
@@ -763,14 +763,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			}
 		}
 
-		if (player == null) {
-			throw new IllegalStateException("Attempting to set session to null player, which shouldn't be possible");
-		} else {
 			World world = newEntity.getWorld();
 			world.spawnEntity(newEntity);
 			session.setPlayer(player);
 			((SpoutWorld) world).addPlayer(player);
-		}
 		return player;
 	}
 

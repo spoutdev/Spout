@@ -38,7 +38,6 @@ import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.player.Player;
 import org.spout.engine.net.SpoutSession;
-import org.spout.engine.player.SpoutPlayer;
 
 public class InternalEventListener implements Listener {
 	private final SpoutServer server;
@@ -63,7 +62,7 @@ public class InternalEventListener implements Listener {
 			PlayerLoginEvent loginEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
-					player.kick(loginEvent.getMessage(), false);
+					player.kick(loginEvent.getMessage());
 				} else {
 					player.kick();
 				}
@@ -71,34 +70,32 @@ public class InternalEventListener implements Listener {
 				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
 			}
 		} else {
-			event.getSession().disconnect("Player is already online", true);
+			event.getSession().disconnect("Player is already online", false);
+		}
+	}
+
+	@EventHandler(order = Order.EARLIEST)
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		Player p = event.getPlayer();
+		PlayerBanKickEvent banEvent = null;
+		if (server.isPlayerBanned(p.getName())) {
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage(p.getName())));
+		} else if (server.isIpBanned(p.getAddress().getHostAddress())) {
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getBanMessage(p.getAddress().getHostAddress())));
+		}
+
+		if (banEvent != null && !banEvent.isCancelled()) {
+			event.disallow(!banEvent.getMessage().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage(p.getName()) : server.getIpBanMessage(p.getAddress().getHostAddress()));
+			return;
+		}
+
+		if (server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
+			event.disallow("Server is full!");
 		}
 	}
 
 	@EventHandler(order = Order.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		SpoutPlayer p = (SpoutPlayer) event.getPlayer();
-
-		PlayerBanKickEvent banEvent = null;
-		
-		if(server.isPlayerBanned(p.getName())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage(p.getName())));
-		}
-		
-		if(server.isIpBanned(p.getAddress().getHostAddress())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getBanMessage(p.getAddress().getHostAddress())));
-		}
-		
-		if(banEvent != null && !banEvent.isCancelled()) {
-			p.kick(!banEvent.getMessage().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage(p.getName()) : server.getIpBanMessage(p.getAddress().getHostAddress()), false);
-			return;
-		}
-		
-		if (server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
-			p.kick("Server is full!", false);
-			return;
-		}
-
 		if (event.getMessage() != null) {
 			server.broadcastMessage(event.getMessage());
 		}

@@ -49,12 +49,13 @@ import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
+import org.spout.engine.net.SpoutSession;
 import org.spout.engine.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
 
-	private final AtomicReference<Session> sessionLive = new AtomicReference<Session>();
-	private Session session;
+	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();
+	private SpoutSession session;
 	private final String name;
 	private final AtomicReference<String> displayName = new AtomicReference<String>();
 	private final AtomicReference<Entity> entityLive = new AtomicReference<Entity>();
@@ -73,7 +74,7 @@ public class SpoutPlayer implements Player {
 		hashcode = name.hashCode();
 	}
 
-	public SpoutPlayer(String name, Entity entity, Session session) {
+	public SpoutPlayer(String name, Entity entity, SpoutSession session) {
 		this(name);
 		sessionLive.set(session);
 		this.session = session;
@@ -109,7 +110,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	@SnapshotRead
-	public Session getSession() {
+	public SpoutSession getSession() {
 		return session;
 	}
 
@@ -130,9 +131,8 @@ public class SpoutPlayer implements Player {
 	}
 
 	@DelayedWrite
-	public boolean disconnect(String reason, boolean force) {
+	public boolean disconnect() {
 		if (onlineLive.compareAndSet(true, false)) {
-			session.disconnect(reason, force);
 			entityLive.get().kill();
 			sessionLive.set(null);
 			entityLive.set(null);
@@ -144,7 +144,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	@DelayedWrite
-	public boolean connect(Session session, Entity entity) {
+	public boolean connect(SpoutSession session, Entity entity) {
 		if (onlineLive.compareAndSet(false, true)) {
 			sessionLive.set(session);
 			entityLive.set(entity);
@@ -280,15 +280,15 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public void kick() {
-		kick("Kicked", false);
+		kick("Kicked");
 	}
 
 	@Override
-	public void kick(String reason, boolean force) {
+	public void kick(String reason) {
 		if (reason == null) {
 			throw new IllegalArgumentException("reason cannot be null");
 		}
-		disconnect(reason, force);
+		session.disconnect(reason);
 	}
 
 	@Override
@@ -314,29 +314,29 @@ public class SpoutPlayer implements Player {
 	public PlayerInputState input() {
 		return inputState;
 	}
-	
+
 	@Override
 	public Stack<Screen> getScreenStack() {
 		return screenStack;
 	}
-	
+
 	@Override
 	public void openScreen(Screen screen) {
 		screenStack.add(screen);
 	}
-	
+
 	@Override
 	public void closeScreen() {
 		screenStack.pop();
 	}
-	
+
 	@Override
 	public void closeScreen(Screen screen) {
 		screenStack.remove(screen);
 	}
-	
+
 	@Override
-	public Screen getFocussedScreen() {
+	public Screen getFocusedScreen() {
 		return screenStack.firstElement();
 	}
 }

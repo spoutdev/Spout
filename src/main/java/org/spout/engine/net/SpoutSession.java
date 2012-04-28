@@ -40,6 +40,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
@@ -52,7 +53,6 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.player.SpoutPlayer;
-import org.spout.engine.world.SpoutWorld;
 
 /**
  * A single connection to the server, which may or may not be associated with a
@@ -85,7 +85,7 @@ public final class SpoutSession implements Session {
 	 * A queue of incoming and unprocessed messages.
 	 */
 	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
-	
+
 	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
@@ -99,7 +99,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * The player associated with this session (if there is one).
 	 */
-	private Player player;
+	private SpoutPlayer player;
 
 	/**
 	 * The random long used for client-server handshake
@@ -178,8 +178,7 @@ public final class SpoutSession implements Session {
 	 * @throws IllegalStateException if there is already a player associated
 	 *             with this session.
 	 */
-	@Override
-	public void setPlayer(Player player) {
+	public void setPlayer(SpoutPlayer player) {
 		if (this.player != null) {
 			throw new IllegalStateException();
 		}
@@ -190,13 +189,13 @@ public final class SpoutSession implements Session {
 	@SuppressWarnings("unchecked")
 	public void pulse() {
 		Message message;
-		
-		if (state == State.GAME){ 
+
+		if (state == State.GAME){
 			while ((message = sendQueue.poll()) != null) {
 				send(message, true);
 			}
 		}
-		
+
 		while ((message = messageQueue.poll()) != null) {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
@@ -210,26 +209,6 @@ public final class SpoutSession implements Session {
 			}
 		}
 	}
-	
-	/**
-	 * + * Sends a message to the client.
-	 *
-	 * @param message The message.
-	 * @param if this message is used in the identification stages of communication
-	 */
-	@Override
-	public void send(Message message, boolean force) {
-		try {
-			if (force || this.state == State.GAME) {
-				channel.write(message); 
-			}
-			else {
-				sendQueue.add(message);
-			}
-		} catch (Exception e) {
-			disconnect("Socket Error!", true);
-		}
-	}
 
 	@Override
 	public void send(Message message) {
@@ -237,34 +216,51 @@ public final class SpoutSession implements Session {
 	}
 
 	/**
-	 * Disconnects the session with the specified reason. This causes a kick
-	 * packet to be sent. When it has been delivered, the channel is closed.
+	 * Sends a message to the client.
 	 *
-	 * @param reason The reason for disconnection.
-	 * @param overrideKick Whether to override the kick event.
+	 * @param message The message.
+	 * @param force if this message is used in the identification stages of communication
 	 */
 	@Override
-	public void disconnect(String reason, boolean overrideKick) {
-		if (player != null && !overrideKick) {
-			boolean useMessage = true;
-			PlayerKickEvent event = getGame().getEventManager().callEvent(new PlayerKickEvent(player, reason));
-			if (event.isCancelled()) {
-				return;
+	public void send(Message message, boolean force) {
+		try {
+			if (force || this.state == State.GAME) {
+				channel.write(message);
+			} else {
+				sendQueue.add(message);
 			}
-
-			reason = event.getKickReason();
-
-			if (event.getMessage() != null && !event.getMessage().equals(reason)) {
-				server.broadcastMessage(event.getMessage());
-				useMessage = false;
-			}
-
-			SpoutServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
-
-			dispose(useMessage);
+		} catch (Exception e) {
+			disconnect("Socket Error!", false);
 		}
+	}
 
+	@Override
+	public boolean disconnect(String reason) {
+		return disconnect(reason, true);
+	}
+
+	public String getDefaultLeaveMessage() {
+		return ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has left the game";
+	}
+
+	@Override
+	public boolean disconnect(String reason, boolean kick) {
+		if (player != null) {
+			PlayerLeaveEvent event;
+			if (kick) {
+				event = getGame().getEventManager().callEvent(new PlayerKickEvent(player, getDefaultLeaveMessage(), reason));
+				if (event.isCancelled()) {
+					return false;
+				}
+
+				getGame().getLogger().log(Level.INFO, "Player {0} kicked: {1}", new Object[] {player.getName(), reason});
+			} else {
+				event = new PlayerLeaveEvent(player, getDefaultLeaveMessage());
+			}
+			dispose(event);
+		}
 		channel.write(protocol.get().getPlayerProtocol().getKickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
+		return true;
 	}
 
 	/**
@@ -307,33 +303,37 @@ public final class SpoutSession implements Session {
 		messageQueue.add(message);
 	}
 
-	/**
-	 * Disposes of this session by destroying the associated player, if there is
-	 * one.
-	 */
 	@Override
-	public void dispose(boolean broadcastQuit) {
+	public void dispose() {
+		dispose(new PlayerLeaveEvent(player, getDefaultLeaveMessage()));
+	}
+
+	public void dispose(PlayerLeaveEvent leaveEvent) {
 		if (player != null && isConnected) {
 			isConnected = false;
-			String text = getGame().getEventManager().callEvent(new PlayerLeaveEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has left the game", broadcastQuit)).getMessage();
-			if (broadcastQuit && text != null) {
+
+			if (!leaveEvent.hasBeenCalled()) {
+				getGame().getEventManager().callEvent(leaveEvent);
+			}
+
+			String text = leaveEvent.getMessage();
+			if (text != null && text.length() > 0) {
 				server.broadcastMessage(text);
 			}
 
-			PlayerSaveEvent event = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
-			if (!event.isSaved()) {
+			PlayerSaveEvent saveEvent = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
+			if (!saveEvent.isSaved()) {
 				//SaveTaskThread.addTask(new PlayerSaveTask(player));
 			}
+
 			//If its null or can't be get , just ignore it
 			//If disconnect fails, we just ignore it for now.
 			try {
-				if (player.getEntity() != null) {
-					((SpoutWorld) player.getEntity().getWorld()).removePlayer(player);
-					for (Player user : getPlayer().getEntity().getWorld().getPlayers()) {
-						user.getNetworkSynchronizer().destroyEntity(getPlayer().getEntity());
-					}
+				Entity entity = player.getEntity();
+				if (entity != null) {
+					entity.kill();
 				}
-				((SpoutPlayer) player).disconnect("", true);
+				((SpoutPlayer) player).disconnect();
 			} catch (Exception e) { }
 			player = null; // in case we are disposed twice
 		}

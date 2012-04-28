@@ -83,8 +83,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	public SpoutServer() {
 	}
-	
-
 
 	@Override
 	public void start() {
