@@ -37,7 +37,7 @@ import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.player.Player;
-import org.spout.engine.net.SpoutSession;
+import org.spout.engine.protocol.SpoutSession;
 
 public class InternalEventListener implements Listener {
 	private final SpoutServer server;

@@ -64,7 +64,7 @@ import org.spout.api.player.Player;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.net.SpoutSession;
+import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;

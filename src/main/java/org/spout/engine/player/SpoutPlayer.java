@@ -45,11 +45,10 @@ import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
-import org.spout.engine.net.SpoutSession;
+import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
