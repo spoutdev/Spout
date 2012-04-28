@@ -36,30 +36,31 @@ import org.spout.api.gui.Screen;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
+import org.spout.api.util.thread.Threadsafe;
 
 public interface Player extends CommandSource, PermissionsSubject, DataSubject, Source {
 	/**
 	 * Gets the player's name. This method is thread-safe.
 	 *
-	 * @Threadsafe
 	 * @return the player's name
 	 */
+	@Threadsafe
 	public String getName();
 
 	/**
 	 * Gets the player's display name. This method is thread-safe.
 	 *
-	 * @Threadsafe
 	 * @return the player's display name
 	 */
+	@Threadsafe
 	public String getDisplayName();
 
 	/**
 	 * Sets the player's display name. This method is thread-safe.
 	 *
-	 * @Threadsafe
-	 * @param the new player's display name
+	 * @param name the new player's display name
 	 */
+	@Threadsafe
 	public void setDisplayName(String name);
 
 	/**
@@ -126,38 +127,38 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @param force Whether to force the kick
 	 */
 	public void kick(String reason, boolean force);
-	
+
 	/**
 	 * Gets the current input state of the player
 	 * @return current input state
 	 */
 	public PlayerInputState input();
-	
+
 	/**
 	 * @return the stack of the screens.
 	 */
 	public Stack<Screen> getScreenStack();
-	
+
 	/**
 	 * Puts the given screen on the stack.
 	 * @param screen the screen to put on the stack
 	 */
 	public void openScreen(Screen screen);
-	
+
 	/**
 	 * Removes the screen in focus from the stack.
 	 */
 	public void closeScreen();
-	
+
 	/**
 	 * Removes the given screen from the stack. Useful if the screen you want to close is not in focus.
-	 * @param screen
+	 * @param screen The screen to close
 	 */
 	public void closeScreen(Screen screen);
-	
+
 	/**
 	 * Gets the screen in focus. This is the screen that is in the front of the stack.
 	 * @return the screen in focus.
 	 */
-	public Screen getFocussedScreen();
+	public Screen getFocusedScreen();
 }
