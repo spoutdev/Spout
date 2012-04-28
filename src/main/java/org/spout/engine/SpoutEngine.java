@@ -523,7 +523,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void stop(String message) {
 		for (Player player : getOnlinePlayers()) {
-			player.kick(message);
+			player.kick(message, true);
 		}
 		
 		for (SpoutWorld world : this.getLiveWorlds()) {

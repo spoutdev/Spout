@@ -92,12 +92,6 @@ public final class SpoutSession implements Session {
 	private final Queue<Message> sendQueue = new ConcurrentLinkedQueue<Message>();
 
 	/**
-	 * A timeout counter. This is increment once every tick and if it goes above
-	 * a certain value the session is disconnected.
-	 */
-	private int timeoutCounter = 0;
-
-	/**
 	 * The current state.
 	 */
 	private State state = State.EXCHANGE_HANDSHAKE;
@@ -191,33 +185,10 @@ public final class SpoutSession implements Session {
 		}
 
 		this.player = player;
-		/*PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
-		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-			disconnect(event.getKickMessage(), true);
-			return;
-		}*/
-
-		//String message = EventFactory.onPlayerJoin(player).getJoinMessage();
-		//if (message != null) {
-		//	server.broadcastMessage(message);
-		//}
-
-		//player.loadData();
-		//player.saveData();
-
-		//player.getWorld().getRawPlayers().add(player);
-		//player.teleport(player.getLocation().add(0, 0.5, 0));
-
-		/*Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short) timeoutCounter);
-		for (Player sendPlayer : server.getOnlinePlayers()) {
-			//((SpoutPlayer) sendPlayer).getSession().send(userListMessage);
-			//send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, (short) ((SpoutPlayer) sendPlayer).getSession().timeoutCounter));
-		}*/
 	}
 
 	@SuppressWarnings("unchecked")
 	public void pulse() {
-		timeoutCounter++;
 		Message message;
 		
 		if (state == State.GAME){ 
@@ -234,13 +205,9 @@ public final class SpoutSession implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect("Message handler exception for " + message.getClass().getSimpleName());
+					disconnect("Message handler exception for " + message.getClass().getSimpleName(), false);
 				}
 			}
-			timeoutCounter = 0;
-		}
-		if (timeoutCounter >= TIMEOUT_TICKS) {
-			disconnect("Timed out", true);
 		}
 	}
 	
@@ -260,7 +227,7 @@ public final class SpoutSession implements Session {
 				sendQueue.add(message);
 			}
 		} catch (Exception e) {
-			disconnect("Socket Error!");
+			disconnect("Socket Error!", true);
 		}
 	}
 
@@ -274,19 +241,9 @@ public final class SpoutSession implements Session {
 	 * packet to be sent. When it has been delivered, the channel is closed.
 	 *
 	 * @param reason The reason for disconnection.
-	 */
-	@Override
-	public void disconnect(String reason) {
-		disconnect(reason, false);
-	}
-
-	/**
-	 * Disconnects the session with the specified reason. This causes a kick
-	 * packet to be sent. When it has been delivered, the channel is closed.
-	 *
-	 * @param reason The reason for disconnection.
 	 * @param overrideKick Whether to override the kick event.
 	 */
+	@Override
 	public void disconnect(String reason, boolean overrideKick) {
 		if (player != null && !overrideKick) {
 			boolean useMessage = true;
@@ -376,7 +333,7 @@ public final class SpoutSession implements Session {
 						user.getNetworkSynchronizer().destroyEntity(getPlayer().getEntity());
 					}
 				}
-				((SpoutPlayer) player).disconnect("");
+				((SpoutPlayer) player).disconnect("", true);
 			} catch (Exception e) { }
 			player = null; // in case we are disposed twice
 		}
