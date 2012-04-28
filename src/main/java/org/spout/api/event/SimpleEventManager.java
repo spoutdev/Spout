@@ -63,6 +63,7 @@ public class SimpleEventManager implements EventManager {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
 				}
 			}
+			event.setHasBeenCalled(true);
 		}
 		return event;
 	}

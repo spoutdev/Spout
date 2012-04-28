@@ -36,6 +36,11 @@ public abstract class Event {
 	protected boolean cancelled = false;
 
 	/**
+	 * Stores whether this event has already been called
+	 */
+	private boolean beenCalled = false;
+
+	/**
 	 * Get the static handler list of this event subclass.
 	 *
 	 * @return HandlerList to call event with
@@ -81,5 +86,13 @@ public abstract class Event {
 	 */
 	public boolean isCancelled() {
 		return cancelled;
+	}
+
+	public boolean hasBeenCalled() {
+		return beenCalled;
+	}
+
+	void setHasBeenCalled(boolean beenCalled) {
+		this.beenCalled = beenCalled;
 	}
 }
