@@ -130,9 +130,9 @@ public class SpoutPlayer implements Player {
 	}
 
 	@DelayedWrite
-	public boolean disconnect(String reason) {
+	public boolean disconnect(String reason, boolean force) {
 		if (onlineLive.compareAndSet(true, false)) {
-			session.disconnect(reason);
+			session.disconnect(reason, force);
 			entityLive.get().kill();
 			sessionLive.set(null);
 			entityLive.set(null);
@@ -280,15 +280,15 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public void kick() {
-		kick("Kicked");
+		kick("Kicked", false);
 	}
 
 	@Override
-	public void kick(String reason) {
+	public void kick(String reason, boolean force) {
 		if (reason == null) {
 			throw new IllegalArgumentException("reason cannot be null");
 		}
-		disconnect(reason);
+		disconnect(reason, force);
 	}
 
 	@Override
