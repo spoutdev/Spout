@@ -63,7 +63,7 @@ public class InternalEventListener implements Listener {
 			PlayerLoginEvent loginEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
-					player.kick(loginEvent.getMessage());
+					player.kick(loginEvent.getMessage(), false);
 				} else {
 					player.kick();
 				}
@@ -71,7 +71,7 @@ public class InternalEventListener implements Listener {
 				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
 			}
 		} else {
-			event.getSession().disconnect("Player is already online");
+			event.getSession().disconnect("Player is already online", true);
 		}
 	}
 
@@ -90,12 +90,12 @@ public class InternalEventListener implements Listener {
 		}
 		
 		if(banEvent != null && !banEvent.isCancelled()) {
-			p.kick(!banEvent.getMessage().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage(p.getName()) : server.getIpBanMessage(p.getAddress().getHostAddress()));
+			p.kick(!banEvent.getMessage().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage(p.getName()) : server.getIpBanMessage(p.getAddress().getHostAddress()), false);
 			return;
 		}
 		
 		if (server.rawGetAllOnlinePlayers().size() >= server.getMaxPlayers()) {
-			p.kick("Server is full!");
+			p.kick("Server is full!", false);
 			return;
 		}
 
