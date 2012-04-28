@@ -130,12 +130,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * A map of the loaded columns
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
-	
+
 	/**
 	 * A map of column height map files
 	 */
 	private final TSyncIntPairObjectHashMap<BAAWrapper> heightMapBAAs;
-	
+
 	/**
 	 * The directory where the world data is stored
 	 */
@@ -155,7 +155,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.generator = generator;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
-		File world = new File(FileSystem.worldsDirectory, name);
+		File world = new File(FileSystem.WORLDS_DIRECTORY, name);
 		world.mkdirs();
 		String generatorName = generator.getName();
 		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
@@ -163,7 +163,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
 		}
 		worldDirectory = new File(world, generatorName);
-		worldDirectory.mkdirs();	
+		worldDirectory.mkdirs();
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 	}
 
@@ -563,10 +563,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		long key = HashUtil.intToLong(x, z);
 		columns.remove(key, column);
 	}
-	
+
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 * 
+	 *
 	 * @param x the x block coordinate
 	 * @param z the z block coordinate
 	 * @param create true to create the column if it doesn't exist
@@ -590,7 +590,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutColumn getColumn(int x, int z) {
 		return getColumn(x, z, false);
 	}
-	
+
 	private BAAWrapper getColumnHeightMapBAA(int x, int z) {
 		int cx = x >> Region.REGION_SIZE_BITS;
 		int cz = z >> Region.REGION_SIZE_BITS;
@@ -598,7 +598,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		BAAWrapper baa = null;
 
 		baa = heightMapBAAs.get(cx,  cz);
-		
+
 		if (baa == null) {
 			File columnDirectory = new File(worldDirectory, "col");
 			columnDirectory.mkdirs();
@@ -609,30 +609,30 @@ public class SpoutWorld extends AsyncManager implements World {
 				baa = oldBAA;
 			}
 		}
-		
+
 		return baa;
 	}
-	
+
 	public InputStream getHeightMapInputStream(int x, int z) {
 
 		BAAWrapper baa = getColumnHeightMapBAA(x, z);
-		
+
 		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
-		
+
 		return baa.getBlockInputStream(key);
-		
+
 	}
-	
+
 	public OutputStream getHeightMapOutputStream(int x, int z) {
 
 		BAAWrapper baa = getColumnHeightMapBAA(x, z);
-		
+
 		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
-		
+
 		return baa.getBlockOutputStream(key);
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";

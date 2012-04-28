@@ -25,6 +25,8 @@
  */
 package org.spout.engine.filesystem.path;
 
+import org.spout.engine.filesystem.FileSystem;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,15 +34,13 @@ import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.spout.engine.filesystem.FileSystem;
-
-public class JarfileResolver extends FilepathResolver  {
+public class JarfileResolver extends FilepathResolver {
 	public JarfileResolver() {
-		super(FileSystem.pluginDirectory.getPath());
+		super(FileSystem.PLUGIN_DIRECTORY.getPath());
 		// TODO Auto-generated constructor stub
 	}
 
-	File pluginsFolder = FileSystem.pluginDirectory;
+	File pluginsFolder = FileSystem.PLUGIN_DIRECTORY;
 
 	@Override
 	public boolean existsInPath(String file, String path) {
@@ -52,19 +52,16 @@ public class JarfileResolver extends FilepathResolver  {
 			has = entry != null;
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally{
-			if(f != null)
+		} finally {
+			if (f != null)
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			
 		}
 		return has;
 	}
-
 
 	@Override
 	public InputStream getStream(String file, String path) {
@@ -77,21 +74,14 @@ public class JarfileResolver extends FilepathResolver  {
 			return s; //TODO close the jar.
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally{
-			if(f != null)
+		} finally {
+			if (f != null)
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			
 		}
 		return stream;
 	}
-
-	
-	
-	
-	
 }

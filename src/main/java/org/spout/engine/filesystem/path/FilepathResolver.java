@@ -25,23 +25,22 @@
  */
 package org.spout.engine.filesystem.path;
 
+import org.spout.api.resource.ResourcePathResolver;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.spout.api.resource.ResourcePathResolver;
-
-public class FilepathResolver implements ResourcePathResolver  {
+public class FilepathResolver implements ResourcePathResolver {
 
 	protected final String directory;
-	
-	public FilepathResolver(String path){
+
+	public FilepathResolver(String path) {
 		this.directory = path;
 	}
-	
-	
+
 	@Override
 	public boolean existsInPath(String file, String path) {
 		File f = new File(path + File.separator + file);
@@ -60,7 +59,6 @@ public class FilepathResolver implements ResourcePathResolver  {
 		try {
 			return new FileInputStream(new File(path + File.separator + file));
 		} catch (FileNotFoundException e) {
-			
 			e.printStackTrace();
 			return null;
 		}
@@ -70,5 +68,4 @@ public class FilepathResolver implements ResourcePathResolver  {
 	public InputStream getStream(URI path) {
 		return this.getStream(path.getPath(), directory + File.separatorChar + (path.getHost() == null ? "/" : path.getHost()));
 	}
-
 }

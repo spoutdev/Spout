@@ -168,28 +168,22 @@ public final class SpoutScheduler implements Scheduler {
 		public void run(){
 			SpoutClient c = (SpoutClient)Spout.getEngine();
 			c.initRenderer();
-
-
-
-			int rate = (int)((1f / TARGET_FPS) * 1000);
+			int rate = (int) ((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
-			while(!shutdown){
+			while (!shutdown) {
 				long startTime = System.currentTimeMillis();
 				long delta = startTime - lastTick;
-
-
 				c.render(delta / 1000f);
 
-
 				Display.update();
-
 				lastTick = System.currentTimeMillis();
-				if(rate - delta > 0)
+				if (rate - delta > 0) {
 					try {
 						Thread.sleep(rate - delta);
 					} catch (InterruptedException e) {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
+				}
 
 			}
 
@@ -238,11 +232,9 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			asyncExecutors.copySnapshot();
-
 			TickStage.setStage(TickStage.TICKSTART);
 
 			// Halt all executors, except the Server
-
 			for (AsyncExecutor e : asyncExecutors.get()) {
 				if (!(e.getManager() instanceof SpoutServer)) {
 					if (!e.haltExecutor()) {
@@ -260,7 +252,6 @@ public final class SpoutScheduler implements Scheduler {
 			asyncExecutors.copySnapshot();
 
 			// Halt the executor for the Server
-
 			for (AsyncExecutor e : asyncExecutors.get()) {
 				if (!(e.getManager() instanceof SpoutServer)) {
 					throw new IllegalStateException("Only the server should be left to shutdown");
@@ -337,9 +328,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * Adds new tasks and updates existing tasks, removing them if necessary.
 	 */
 	private boolean tick(long delta) throws InterruptedException {
-
 		TickStage.setStage(TickStage.TICKSTART);
-
 		asyncExecutors.copySnapshot();
 
 		// Bring in new tasks this tick.
@@ -379,7 +368,6 @@ public final class SpoutScheduler implements Scheduler {
 
 		int stage = 0;
 		boolean allStagesComplete = false;
-
 		boolean joined = false;
 
 		TickStage.setStage(TickStage.STAGE1);
@@ -406,7 +394,6 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			joined = false;
-
 			while (!joined) {
 				try {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
@@ -417,12 +404,10 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.checkForDeadlocks();
 				}
 			}
-
 			stage++;
 		}
 
 		copySnapshot(executors);
-
 		return true;
 	}
 
@@ -436,7 +421,6 @@ public final class SpoutScheduler implements Scheduler {
 		}
 
 		boolean joined = false;
-
 		while (!joined) {
 			try {
 				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
@@ -452,7 +436,6 @@ public final class SpoutScheduler implements Scheduler {
 		TickStage.setStage(TickStage.PRESNAPSHOT);
 
 		try {
-
 			for (AsyncExecutor e : executors) {
 				if (!e.preSnapshot()) {
 					throw new IllegalStateException("Attempt made to enter the pre-snapshot stage for a tick while the previous operation was still active");
@@ -460,7 +443,6 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			joined = false;
-
 			while (!joined) {
 				try {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
@@ -480,7 +462,6 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			joined = false;
-
 			while (!joined) {
 				try {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));

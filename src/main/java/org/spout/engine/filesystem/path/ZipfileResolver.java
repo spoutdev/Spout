@@ -25,22 +25,20 @@
  */
 package org.spout.engine.filesystem.path;
 
+import org.spout.engine.filesystem.FileSystem;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.spout.engine.filesystem.FileSystem;
-
 public class ZipfileResolver extends FilepathResolver {
 
 	public ZipfileResolver() {
-		super(FileSystem.resourceFolder.getPath());
-		
+		super(FileSystem.RESOURCE_FOLDER.getPath());
 	}
 
-	
 	@Override
 	public boolean existsInPath(String file, String path) {
 		boolean has = false;
@@ -51,19 +49,16 @@ public class ZipfileResolver extends FilepathResolver {
 			has = entry != null;
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally{
-			if(f != null)
+		} finally {
+			if (f != null)
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			
 		}
 		return has;
 	}
-
 
 	@Override
 	public InputStream getStream(String file, String path) {
@@ -76,17 +71,14 @@ public class ZipfileResolver extends FilepathResolver {
 			return s; //TODO close the jar.
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally{
-			if(f != null)
+		} finally {
+			if (f != null)
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			
 		}
 		return stream;
 	}
-
 }

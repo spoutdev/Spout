@@ -111,13 +111,13 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	private volatile String[] allAddresses;
 
-	private final File pluginDirectory = FileSystem.pluginDirectory;
+	private final File pluginDirectory = FileSystem.PLUGIN_DIRECTORY;
 
-	private final File configDirectory = FileSystem.configDirectory;
+	private final File configDirectory = FileSystem.CONFIG_DIRECTORY;
 
-	private final File updateDirectory = FileSystem.updateDirectory;
+	private final File updateDirectory = FileSystem.UPDATE_DIRECTORY;
 
-	private final File dataDirectory = FileSystem.dataDirectory;
+	private final File dataDirectory = FileSystem.DATA_DIRECTORY;
 
 	private String logFile = "logs" + File.separator + "log-%D.txt";
 

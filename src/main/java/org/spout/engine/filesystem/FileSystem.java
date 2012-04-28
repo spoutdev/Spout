@@ -25,86 +25,97 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
+import org.spout.api.resource.Resource;
+import org.spout.api.resource.ResourceLoader;
+import org.spout.api.resource.ResourcePathResolver;
+import org.spout.engine.filesystem.path.FilepathResolver;
+import org.spout.engine.filesystem.path.JarfileResolver;
+import org.spout.engine.filesystem.path.ZipfileResolver;
+import org.spout.engine.resources.TextureLoader;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import org.spout.api.plugin.Platform;
-import org.spout.api.resource.Resource;
-import org.spout.api.resource.ResourceLoader;
-import org.spout.api.resource.ResourcePathResolver;
-
-import org.spout.api.Spout;
-import org.spout.engine.filesystem.path.FilepathResolver;
-import org.spout.engine.filesystem.path.JarfileResolver;
-import org.spout.engine.filesystem.path.ZipfileResolver;
-import org.spout.engine.resources.TextureLoader;
-
 public class FileSystem {
 
 	/**
 	 * Plugins live in this folder (SERVER and CLIENT)
 	 */
-	public static final File pluginDirectory = new File("plugins"); 
-	
-	public static final File resourceFolder = new File("resources");
-	public static final File cacheFolder = new File("cache");	
-	public static final File configDirectory = new File("config");
-	public static final File updateDirectory = new File("update");
-	public static final File dataDirectory = new File("data");	
-	public static final File worldsDirectory = new File("worlds");
-	
-	
-	
+	public static final File PLUGIN_DIRECTORY = new File("plugins");
+
+	public static final File RESOURCE_FOLDER = new File("resources");
+	public static final File CACHE_FOLDER = new File("cache");
+	public static final File CONFIG_DIRECTORY = new File("config");
+	public static final File UPDATE_DIRECTORY = new File("update");
+	public static final File DATA_DIRECTORY = new File("data");
+	public static final File WORLDS_DIRECTORY = new File("worlds");
+
 	static ResourcePathResolver[] searchpaths;
-	
-	static HashMap<String, ResourceLoader<? extends Resource>> loaders = new HashMap<String, ResourceLoader<? extends Resource>>();
-	
-	static HashMap<URI, Resource> loadedResource = new HashMap<URI, Resource>();
-	
-	
-	public static void init()
-	{
-		if(Spout.getPlatform() == Platform.CLIENT && !resourceFolder.exists()) resourceFolder.mkdirs();
-		if(Spout.getPlatform() == Platform.CLIENT && !cacheFolder.exists()) cacheFolder.mkdirs();
-		if(!pluginDirectory.exists()) pluginDirectory.mkdirs();
-		if(Spout.getPlatform() == Platform.SERVER && !configDirectory.exists()) configDirectory.mkdirs();
-		if(Spout.getPlatform() == Platform.SERVER && !updateDirectory.exists()) updateDirectory.mkdirs();
-		if(!dataDirectory.exists()) dataDirectory.mkdirs();
-		if(!worldsDirectory.exists()) worldsDirectory.mkdirs();
-		
-		
-		searchpaths = new ResourcePathResolver[] { new FilepathResolver("cache"), 
-													new ZipfileResolver(),
-													new JarfileResolver() };
-		
+
+	static final HashMap<String, ResourceLoader<? extends Resource>> LOADERS = new HashMap<String, ResourceLoader<? extends Resource>>();
+
+	static final HashMap<URI, Resource> LOADED_RESOURCES = new HashMap<URI, Resource>();
+
+	public static void init() {
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			if (!RESOURCE_FOLDER.exists()) {
+				RESOURCE_FOLDER.mkdirs();
+			}
+			if (!CACHE_FOLDER.exists()) {
+				CACHE_FOLDER.mkdirs();
+			}
+		} else if (Spout.getPlatform() == Platform.SERVER) {
+			if (!CONFIG_DIRECTORY.exists()) {
+				CONFIG_DIRECTORY.mkdirs();
+			}
+			if (!UPDATE_DIRECTORY.exists()) {
+				UPDATE_DIRECTORY.mkdirs();
+			}
+		}
+
+		if (!PLUGIN_DIRECTORY.exists())  {
+			PLUGIN_DIRECTORY.mkdirs();
+		}
+		if (!DATA_DIRECTORY.exists()) {
+			DATA_DIRECTORY.mkdirs();
+		}
+		if (!WORLDS_DIRECTORY.exists()) {
+			WORLDS_DIRECTORY.mkdirs();
+		}
+
+		searchpaths = new ResourcePathResolver[]{new FilepathResolver("cache"),
+				new ZipfileResolver(),
+				new JarfileResolver()};
+
 		registerLoader("texture", new TextureLoader());
-		
 	}
-	
-	
-	protected static InputStream getResourceStream(URI path){
-		for(int i = 0; i < searchpaths.length; i++){
-			if(searchpaths[i].existsInPath(path)) return searchpaths[i].getStream(path);
+
+	protected static InputStream getResourceStream(URI path) {
+		for (int i = 0; i < searchpaths.length; i++) {
+			if (searchpaths[i].existsInPath(path)) return searchpaths[i].getStream(path);
 		}
 		return null;
 	}
-	
-	public static void registerLoader(String protocol, ResourceLoader<? extends Resource> loader){
-		if(loaders.containsKey(protocol)) return;
-		loaders.put(protocol, loader);
+
+	public static void registerLoader(String protocol, ResourceLoader<? extends Resource> loader) {
+		if (LOADERS.containsKey(protocol)) return;
+		LOADERS.put(protocol, loader);
 	}
 
-	public static void loadResource(URI path){
+	public static void loadResource(URI path) {
 		String protocol = path.getScheme();
-		if(!loaders.containsKey(protocol)) throw new IllegalArgumentException("Unknown resource type: " + protocol);
-		Resource r =  loaders.get(protocol).getResource(path);
-		loadedResource.put(path, r);
+		if (!LOADERS.containsKey(protocol))
+			throw new IllegalArgumentException("Unknown resource type: " + protocol);
+		Resource r = LOADERS.get(protocol).getResource(path);
+		LOADED_RESOURCES.put(path, r);
 	}
-	
-	public static void loadResource(String path){
+
+	public static void loadResource(String path) {
 		try {
 			URI upath = new URI(path);
 			loadResource(upath);
@@ -112,17 +123,17 @@ public class FileSystem {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	
-	public static Resource getResource(URI path){
-		if(!loadedResource.containsKey(path)){
-			Spout.log("Warning: Late Precache of resource: " + path.toString());
+
+	public static Resource getResource(URI path) {
+		if (!LOADED_RESOURCES.containsKey(path)) {
+			Spout.getLogger().warning("Late Precache of resource: " + path.toString());
 			loadResource(path);
 		}
-		return loadedResource.get(path);
+		return LOADED_RESOURCES.get(path);
 	}
-	public static Resource getResource(String path){
+
+	public static Resource getResource(String path) {
 		try {
 			URI upath = new URI(path);
 			return getResource(upath);
