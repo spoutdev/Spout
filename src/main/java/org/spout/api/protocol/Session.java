@@ -94,9 +94,9 @@ public interface Session {
 	 * is closed.
 	 *
 	 * @param reason The reason for disconnection.
+	 * @param force Whether to force the disconnect.
 	 */
-	public void disconnect(String reason);
-
+	public void disconnect(String reason, boolean force);
 	/**
 	 * Returns the address of this session.
 	 *

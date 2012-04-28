@@ -115,7 +115,7 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	public InetAddress getAddress();
 
 	/**
-	 * Kicks the player without giving a reason.
+	 * Kicks the player without giving a reason, or forcing it.
 	 */
 	public void kick();
 
@@ -123,8 +123,9 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * Kicks the player for the given reason.
 	 *
 	 * @param reason the message to send to the player.
+	 * @param force Whether to force the kick
 	 */
-	public void kick(String reason);
+	public void kick(String reason, boolean force);
 	
 	/**
 	 * Gets the current input state of the player
