@@ -41,10 +41,8 @@ public interface Session {
 	/**
 	 * Disposes of this session by destroying the associated player, if there is
 	 * one.
-	 *
-	 * @param broadcastQuit true if a quit message should be sent
 	 */
-	public void dispose(boolean broadcastQuit);
+	public void dispose();
 
 	/**
 	 * Sets the protocol associated with this session.
@@ -79,7 +77,7 @@ public interface Session {
 	 * @param message The message.
 	 */
 	public void send(Message message);
-	
+
 	/**
 	 * Sends a message to the client.
 	 *
@@ -89,14 +87,22 @@ public interface Session {
 	public void send(Message message, boolean force);
 
 	/**
-	 * Disconnects the session with the specified reason. This causes a
-	 * {@link KickMessage} to be sent. When it has been delivered, the channel
-	 * is closed.
+	 * Disconnects the player as a kick. This is equivalent to calling disconnect(reason, true)
+	 * @param reason The reason for disconnection
+	 * @return Whether the player was actually disconnected
+	 */
+	public boolean disconnect(String reason);
+
+	/**
+	 * Disconnects the session with the specified reason. When the kick packet has been delivered,
+	 * the channel is closed.
 	 *
 	 * @param reason The reason for disconnection.
-	 * @param force Whether to force the disconnect.
+	 * @param kick Whether this disconnection is caused by the player being kicked or the player quitting
+	 *             Disconnects are only cancellable when the disconnection is a kick
+	 * @return Whether the player was actually disconnected. This can be false if the kick event is cancelled or errors occur
 	 */
-	public void disconnect(String reason, boolean force);
+	public boolean disconnect(String reason, boolean kick);
 	/**
 	 * Returns the address of this session.
 	 *
@@ -117,15 +123,6 @@ public interface Session {
 	 */
 	public Player getPlayer();
 
-	/**
-	 * Sets the player associated with this session.
-	 *
-	 * @param player The new player.
-	 * @throws IllegalStateException if there is already a player associated
-	 *             with this session.
-	 */
-	public void setPlayer(Player player);
-	
 	public enum State {
 		/**
 		 * In the exchange handshake state, the server is waiting for the client

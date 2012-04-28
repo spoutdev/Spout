@@ -82,7 +82,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 		Session session = (Session) ctx.getAttachment();
 		server.getSessionRegistry().remove(session);
-		session.dispose(true);
+		session.dispose();
 
 		server.getLogger().info("Channel disconnected: " + c + ".");
 	}
@@ -101,7 +101,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 			Session session = (Session) ctx.getAttachment();
 			server.getSessionRegistry().remove(session);
-			session.dispose(true);
+			session.dispose();
 
 			server.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();

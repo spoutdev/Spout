@@ -34,8 +34,8 @@ import org.spout.api.player.Player;
 public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 	private String kickReason;
 
-	public PlayerKickEvent(Player p, String reason) {
-		super(p, reason, false);
+	public PlayerKickEvent(Player p, String leaveMessage, String reason) {
+		super(p, leaveMessage);
 		kickReason = reason;
 	}
 
@@ -47,11 +47,6 @@ public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 	@Override
 	public boolean isKick() {
 		return true;
-	}
-
-	@Override
-	public boolean isQuit() {
-		return false;
 	}
 
 	/**

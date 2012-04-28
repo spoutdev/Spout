@@ -36,12 +36,9 @@ public class PlayerLeaveEvent extends PlayerEvent {
 
 	private String message;
 
-	private boolean quit;
-
-	public PlayerLeaveEvent(Player p, String reason, boolean quit) {
+	public PlayerLeaveEvent(Player p, String message) {
 		super(p);
-		message = reason;
-		this.quit = quit;
+		this.message = message;
 	}
 
 	/**
@@ -63,25 +60,12 @@ public class PlayerLeaveEvent extends PlayerEvent {
 	}
 
 	/**
-	 * Gets if this event was a quit.
-	 *
-	 * @return True if the player quit.
-	 */
-	public boolean isQuit() {
-		return quit;
-	}
-
-	/**
 	 * Gets if the player was kicked.
 	 *
 	 * @return True if the player was kicked.
 	 */
 	public boolean isKick() {
-		return !quit;
-	}
-
-	public void setQuit(boolean quit) {
-		this.quit = quit;
+		return false;
 	}
 
 	@Override

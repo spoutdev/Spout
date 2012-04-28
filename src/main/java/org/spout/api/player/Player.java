@@ -124,9 +124,8 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * Kicks the player for the given reason.
 	 *
 	 * @param reason the message to send to the player.
-	 * @param force Whether to force the kick
 	 */
-	public void kick(String reason, boolean force);
+	public void kick(String reason);
 
 	/**
 	 * Gets the current input state of the player

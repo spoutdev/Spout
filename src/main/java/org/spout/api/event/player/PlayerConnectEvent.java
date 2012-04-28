@@ -32,16 +32,16 @@ import org.spout.api.protocol.Session;
 public class PlayerConnectEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
 
-	private final Session s;
+	private final Session session;
 	private final String playerName;
 
-	public PlayerConnectEvent(Session s, String playerName) {
-		this.s = s;
+	public PlayerConnectEvent(Session session, String playerName) {
+		this.session = session;
 		this.playerName = playerName;
 	}
 
 	public Session getSession() {
-		return s;
+		return session;
 	}
 
 	public String getPlayerName() {
