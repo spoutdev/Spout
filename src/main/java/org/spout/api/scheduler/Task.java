@@ -39,11 +39,11 @@ public interface Task {
 	public int getTaskId();
 
 	/**
-	 * Returns the Plugin that owns this task
+	 * Returns the Object that owns this task
 	 *
-	 * @return The Plugin that owns the task
+	 * @return The Object that owns the task
 	 */
-	public Plugin getOwner();
+	public Object getOwner();
 
 	/**
 	 * Returns true if the Task is a sync task

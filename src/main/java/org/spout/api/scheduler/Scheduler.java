@@ -37,37 +37,37 @@ public interface Scheduler {
 	 * Schedules a once off task to occur after a delay This task will be
 	 * executed by the main server thread
 	 */
-	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay);
 
 	/**
 	 * Schedules a once off task to occur as soon as possible This task will be
 	 * executed by the main server thread
 	 */
-	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task);
 
 	/**
 	 * Schedules a repeating task This task will be executed by the main server
 	 * thread
 	 */
-	public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period);
+	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period);
 
 	/**
 	 * Schedules a once off task to occur after a delay This task will be
 	 * executed by a thread managed by the scheduler
 	 */
-	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay);
 
 	/**
 	 * Schedules a once off task to occur as soon as possible This task will be
 	 * executed by a thread managed by the scheduler
 	 */
-	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task);
 
 	/**
 	 * Schedules a repeating task This task will be executed by a thread managed
 	 * by the scheduler
 	 */
-	public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period);
+	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period);
 
 	/**
 	 * Calls a method on the main thread and returns a Future object This task
@@ -80,7 +80,7 @@ public interface Scheduler {
 	 *
 	 * @return Future Future object related to the task
 	 */
-	public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> task);
+	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task);
 
 	/**
 	 * Removes task from scheduler
@@ -88,9 +88,9 @@ public interface Scheduler {
 	public void cancelTask(int taskId);
 
 	/**
-	 * Removes all tasks associated with a particular plugin from the scheduler
+	 * Removes all tasks associated with a particular object from the scheduler
 	 */
-	public void cancelTasks(Plugin plugin);
+	public void cancelTasks(Object plugin);
 
 	/**
 	 * Removes all tasks from the scheduler
@@ -122,18 +122,18 @@ public interface Scheduler {
 	 * @return the snapshot lock
 	 */
 	public SnapshotLock getSnapshotLock();
-	
+
 	/**
 	 * Gets the amount of time since the beginning of the current tick.
-	 * 
+	 *
 	 * @return the time in ms since the start of the current tick
 	 */
 	@Threadsafe
 	public long getTickTime();
-	
+
 	/**
 	 * Gets the amount of time remaining until the tick should end.  A negative time indicates that the tick has gone over the target time.
-	 * 
+	 *
 	 * @return the time in ms since the start of the current tick
 	 */
 	@Threadsafe
