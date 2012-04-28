@@ -30,6 +30,11 @@ package org.spout.api.protocol.event;
  * @author zml2008
  */
 public abstract class ProtocolEvent {
+
+	/**
+	 * Returns the name of this protocol event
+	 * @return The event's class name
+	 */
 	public String getName() {
 		return getClass().getName();
 	}

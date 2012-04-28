@@ -26,11 +26,12 @@
 package org.spout.api.protocol.event;
 
 import org.spout.api.exception.EventException;
+import org.spout.api.protocol.Message;
 
 /**
  *
  * @author zml2008
  */
 public interface ProtocolEventExecutor {
-	public void execute(ProtocolEvent event) throws EventException;
+	public Message[] execute(ProtocolEvent event) throws EventException;
 }

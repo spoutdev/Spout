@@ -107,28 +107,45 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 					session.getGame().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
 					continue;
 				}
+
+				if (!Message.class.isAssignableFrom(method.getReturnType()) && !Message.class.isAssignableFrom(method.getReturnType().getComponentType())) {
+					session.getGame().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
+				}
+
 				method.setAccessible(true);
 				protocolEventMapping.put(clazz.asSubclass(ProtocolEvent.class), new ProtocolEventExecutor() {
 					@Override
-					public void execute(ProtocolEvent event) throws EventException {
+					public Message[] execute(ProtocolEvent event) throws EventException {
 						try {
-							method.invoke(listener, event);
+							Object obj = method.invoke(listener, event);
+							if (obj.getClass().isArray()) {
+								return (Message[])obj;
+							} else if (Message.class.isAssignableFrom(obj.getClass())) {
+								return new Message[] {(Message) obj};
+							}
 						} catch (InvocationTargetException e) {
 							throw new EventException(e.getCause());
 						} catch (IllegalAccessException e) {
 							throw new EventException(e);
 						}
+						return null;
 					}
 				});
 			}
 		}
 	}
 
-	public <T extends ProtocolEvent> T callProtocolEvent(T event) {
+	public boolean callProtocolEvent(ProtocolEvent event) {
 		ProtocolEventExecutor executor = protocolEventMapping.get(event.getClass());
 		if (executor != null) {
 			try {
-				executor.execute(event);
+				Message[] messages = executor.execute(event);
+				if (messages != null && messages.length > 0) {
+					for (Message msg : messages) {
+						session.send(msg);
+					}
+					return true;
+				}
 			} catch (EventException e) {
 				if (e.getCause() != null) {
 					Throwable t = e.getCause();
@@ -138,7 +155,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				}
 			}
 		}
-		return event;
+		return false;
 	}
 
 	public void onDeath() {
@@ -187,7 +204,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				addObserver(p);
 			}
 		}
-		
+
 		checkObserverUpdateQueue();
 
 	}
@@ -221,7 +238,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			int chunksSent = 0;
 
 			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
-			
+
 			Iterator<Point> i;
 
 			i = priorityChunkSendQueue.iterator();
@@ -252,7 +269,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 
 	}
-	
+
 	private void checkObserverUpdateQueue() {
 		Iterator<Point> i = chunksToObserve.iterator();
 		while (i.hasNext()) {
@@ -268,7 +285,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 		}
 	}
-	
+
 	private void addObserver(Point p) {
 		Chunk c = p.getWorld().getChunk(p, false);
 		if (c != null) {
@@ -290,7 +307,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 		chunksToObserve.remove(p);
 	}
-	
+
 	private void removeObserver(Chunk c) {
 		observed.remove(c);
 		c.removeObserver(owner.getEntity());
