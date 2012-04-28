@@ -27,6 +27,7 @@ package org.spout.engine.scheduler;
 
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Task;
+import org.spout.api.util.Named;
 
 /**
  * Represents a task which is executed periodically.
@@ -56,7 +57,7 @@ public class SpoutTask implements Task {
 	/**
 	 * The Plugin that owns this task
 	 */
-	private final Plugin owner;
+	private final Object owner;
 
 	/**
 	 * The number of ticks before the call to the Runnable.
@@ -86,7 +87,7 @@ public class SpoutTask implements Task {
 	 *
 	 * @param ticks The number of ticks.
 	 */
-	public SpoutTask(Plugin owner, Runnable task, boolean sync, long delay, long period) {
+	public SpoutTask(Object owner, Runnable task, boolean sync, long delay, long period) {
 		synchronized (nextTaskIdLock) {
 			taskId = nextTaskId++;
 		}
@@ -112,7 +113,7 @@ public class SpoutTask implements Task {
 	}
 
 	@Override
-	public Plugin getOwner() {
+	public Object getOwner() {
 		return owner;
 	}
 
@@ -149,8 +150,8 @@ public class SpoutTask implements Task {
 
 	@Override
 	public String toString() {
-		Plugin owner = getOwner();
-		String ownerName = owner == null ? "null" : owner.getDescription().getName();
+		Object owner = getOwner();
+		String ownerName = owner == null || !(owner instanceof Named) ? "null" : ((Named) owner).getName();
 		return this.getClass().getSimpleName() + "{" + getTaskId() + ", " + ownerName + "}";
 	}
 }

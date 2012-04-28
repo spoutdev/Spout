@@ -82,7 +82,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
  * <li><b>Stage 2</b><br>
  * During this stage, entity collisions are handled.
  * <li><b>Finalize Tick</b><br>
- * During this stage - entities are moved between entity managers. 
+ * During this stage - entities are moved between entity managers.
  *  - chunks are compressed if necessary.
  * <li><b>Pre-snapshot</b><br>
  * This is a MONITOR stage, data is stable and no modifications are allowed.
@@ -98,11 +98,11 @@ public final class SpoutScheduler implements Scheduler {
 	 * The number of milliseconds between pulses.
 	 */
 	private static final int PULSE_EVERY = 50;
-	
+
 	/**
 	 * Target Frames per Second for the renderer
 	 */
-	private static final int TARGET_FPS = 60; 
+	private static final int TARGET_FPS = 60;
 
 	/**
 	 * The server this scheduler is managing for.
@@ -135,7 +135,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
-	
+
 	private final AtomicLong tickStartTime = new AtomicLong();
 
 	private volatile boolean shutdown = false;
@@ -143,46 +143,46 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
 
 	private final Thread mainThread;
-	
+
 	private Thread renderThread;
 
 	/**
 	 * Creates a new task scheduler.
 	 */
 	public SpoutScheduler(Engine server) {
-	
+
 		this.server = server;
 
 		mainThread = new MainThread();
 		renderThread  = new RenderThread();
 	}
-	
-	
+
+
 	private class RenderThread extends Thread {
-		
+
 		public RenderThread(){
 			super("Render Thread");
 		}
-		
+
 		@Override
 		public void run(){
 			SpoutClient c = (SpoutClient)Spout.getEngine();
 			c.initRenderer();
-			
-			
-			
+
+
+
 			int rate = (int)((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
 			while(!shutdown){
 				long startTime = System.currentTimeMillis();
-				long delta = startTime - lastTick;				
-				
-				
-				c.render(delta / 1000f);	
-				
-				
+				long delta = startTime - lastTick;
+
+
+				c.render(delta / 1000f);
+
+
 				Display.update();
-				
+
 				lastTick = System.currentTimeMillis();
 				if(rate - delta > 0)
 					try {
@@ -190,15 +190,15 @@ public final class SpoutScheduler implements Scheduler {
 					} catch (InterruptedException e) {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
-						
+
 			}
-			
-			
-			
+
+
+
 		}
-		
+
 	}
-	
+
 
 	private class MainThread extends Thread {
 
@@ -287,16 +287,16 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	
+
 	public void startRenderThread() {
 		if(!(Spout.getEngine() instanceof SpoutClient)) throw new IllegalStateException("Cannot start the rendering thread unless on the client");
 		if(renderThread.isAlive()){
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
 		renderThread.start();
-	
+
 	}
-	
+
 	/**
 	 * Adds an async manager to the scheduler
 	 */
@@ -522,37 +522,37 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay) {
 		return scheduleSyncRepeatingTask(plugin, task, delay, -1);
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Plugin plugin, Runnable task) {
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleSyncDelayedTask(plugin, task, 0);
 	}
 
 	@Override
-	public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
+	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
 		return schedule(new SpoutTask(plugin, task, true, delay, period));
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay) {
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay) {
 		return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task) {
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
 	}
 
 	@Override
-	public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
+	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
 		return schedule(new SpoutTask(plugin, task, false, delay, period));
 	}
 
 	@Override
-	public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> task) {
+	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -569,7 +569,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public void cancelTasks(Plugin plugin) {
+	public void cancelTasks(Object plugin) {
 		synchronized (oldTasks) {
 			for (SpoutTask task : tasks) {
 				if (task.getOwner() == plugin) {
@@ -613,7 +613,7 @@ public final class SpoutScheduler implements Scheduler {
 	public SnapshotLock getSnapshotLock() {
 		return snapshotLock;
 	}
-	
+
 	public final Thread getMainThread() {
 		return mainThread;
 	}
@@ -623,7 +623,7 @@ public final class SpoutScheduler implements Scheduler {
 	public long getTickTime() {
 		return System.currentTimeMillis() - tickStartTime.get();
 	}
-	
+
 	@Override
 	public long getRemainingTickTime() {
 		return PULSE_EVERY - getTickTime();

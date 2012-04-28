@@ -25,12 +25,11 @@
  */
 package org.spout.engine.scheduler;
 
-import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Worker;
 
 public class SpoutWorker implements Worker, Runnable {
 	private final int id;
-	private final Plugin owner;
+	private final Object owner;
 	private final SpoutTask task;
 	private Thread thread = null;
 	private boolean shouldContinue = true;
@@ -39,7 +38,7 @@ public class SpoutWorker implements Worker, Runnable {
 		id = task.getTaskId();
 		owner = task.getOwner();
 		this.task = task;
-		String name = "Spout Worker{Owner:" + ((owner != null) ? owner.getName() : "none") + ", id:" + id + "}";
+		String name = "Spout Worker{Owner:" + ((owner != null) ? owner.getClass().getName() : "none") + ", id:" + id + "}";
 		thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -56,7 +55,7 @@ public class SpoutWorker implements Worker, Runnable {
 	}
 
 	@Override
-	public Plugin getOwner() {
+	public Object getOwner() {
 		return owner;
 	}
 
