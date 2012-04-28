@@ -28,6 +28,8 @@ package org.spout.api.datatable;
 public interface DatatableTuple extends Outputable {
 	public void set(Object value);
 
+	public boolean compareAndSet(Object expected, Object newValue);
+
 	public void setFlags(byte flags);
 
 	public void setPersistant(boolean value);

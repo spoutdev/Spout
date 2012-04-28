@@ -59,10 +59,20 @@ public abstract class DatatableObject implements DatatableTuple {
 
 	@Override
 	public void set(Object value) {
-		if (!(value instanceof Serializable)) {
+		if (value != null && !(value instanceof Serializable)) {
 			throw new IllegalArgumentException("Unsupported Metadata type");
 		}
 		data.set((Serializable) value);
+	}
+	
+	@Override
+	public boolean compareAndSet(Object expected, Object newValue) {
+		if (newValue != null && !(newValue instanceof Serializable)) {
+			throw new IllegalArgumentException("Unsupported Metadata type");
+		} else if (expected != null && !(expected instanceof Serializable)) {
+			return false;
+		}
+		return data.compareAndSet((Serializable)expected, (Serializable)newValue);
 	}
 
 	@Override
@@ -108,7 +118,7 @@ public abstract class DatatableObject implements DatatableTuple {
 
 	@Override
 	public Serializable get() {
-		return data;
+		return data.get();
 	}
 
 	@Override
@@ -147,5 +157,5 @@ public abstract class DatatableObject implements DatatableTuple {
 
 	public void input(InputStream in) throws IOException {
 	};
-
+	
 }

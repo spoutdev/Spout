@@ -49,6 +49,11 @@ public class DatatableNil implements DatatableTuple {
 	}
 
 	@Override
+	public boolean compareAndSet(Object expected, Object value) {
+		throw new RuntimeException("This value doesn't exist!");
+	}
+	
+	@Override
 	public void setFlags(byte flags) {
 		throw new RuntimeException("This value doesn't exist!");
 	}
