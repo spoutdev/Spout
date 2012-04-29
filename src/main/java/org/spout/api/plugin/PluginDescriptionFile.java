@@ -193,7 +193,8 @@ public class PluginDescriptionFile implements Datatable {
 	 */
 	private boolean isOfficialPlugin(String namespace) {
 		return (namespace.equalsIgnoreCase("org.spout.vanilla.VanillaPlugin")
-				|| namespace.equalsIgnoreCase("org.spout.bukkit.BukkitBridge"));
+				|| namespace.equalsIgnoreCase("org.spout.bukkit.BukkitBridge")
+				|| namespace.equalsIgnoreCase("org.spout.droplet.DropletAlert"));
 	}
 
 	/**
