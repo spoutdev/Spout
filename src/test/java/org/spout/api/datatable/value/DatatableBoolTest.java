@@ -23,38 +23,61 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.data;
+package org.spout.api.datatable.value;
+
+import static org.junit.Assert.assertTrue;
+
+import java.util.Random;
 
 import org.junit.Test;
-import org.spout.api.event.server.data.RetrieveDataEvent;
 
-import static org.junit.Assert.*;
-
-public class DataSubjectTest implements DataSubject {
-	private final RetrieveDataEvent event = new RetrieveDataEvent(this, "foo.bar");
+public class DatatableBoolTest {
+	
+	private Random r = new Random();
 
 	@Test
-	public void testDataSubject() {
-		String node = "foo.bar";
-		event.setResult(20);
-		assertEquals(getData(node).getInt(), 20);
-		event.setResult(20L);
-		assertEquals(getData(node).getLong(), 20L);
-		event.setResult(20.0d);
-		assertEquals(getData(node).getDouble(), 20.0, 0d);
-		event.setResult(true);
-		assertEquals(getData(node).getBoolean(), true);
-		event.setResult("baz");
-		assertEquals(getData(node).getString(), "baz");
+	public void testBoolean() {
+
+		checkBool(true);
+		
+		checkBool(false);
+
+	}
+	
+	private void checkBool(boolean value) {
+		int key = r.nextInt();
+		
+		DatatableBool b = new DatatableBool(key);
+
+		b.set(value);
+		
+		checkBool(b, key, value);
+		
+		byte[] compressed = b.compress();
+		
+		assertTrue("Compressed array wrong length", compressed.length == 1);
+		
+		int key2 = r.nextInt();
+		
+		DatatableBool b2 = new DatatableBool(key2);
+		
+		b2.decompress(compressed);
+		
+		checkBool(b2, key2, value);
+	}
+	
+	private void checkBool(DatatableBool b, int key, boolean value) {
+				
+		assertTrue("Wrong key, got " + b.hashCode() + ", expected " + key, b.hashCode() == key);
+		
+		assertTrue("Wrong value", b.get().equals(new Boolean(value)));
+		
+		assertTrue("Wrong value as bool", b.asBool() == value);
+		
+		//assertTrue("Wrong value as float", b.asFloat());
+		
+		assertTrue("Wrong value as int", b.asInt() == (value ? 1 : 0));
+		
 	}
 
-	@Override
-	public ValueHolder getData(String node) {
-		return event.getResult();
-	}
-
-	@Override
-	public String getName() {
-		return "TestSubject";
-	}
 }

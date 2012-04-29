@@ -29,6 +29,9 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatatableBool extends DatatableObject {
+	private static final byte[] one = new byte[] {(byte)1};
+	private static final byte[] zero = new byte[] {(byte)0};
+	
 	private AtomicBoolean data = new AtomicBoolean(false);
 
 	public DatatableBool(int key) {
@@ -71,14 +74,15 @@ public class DatatableBool extends DatatableObject {
 
 	@Override
 	public byte[] compress() {
-		// TODO Auto-generated method stub
-		return null;
+		return (asBool()) ? one : zero;
 	}
 
 	@Override
 	public void decompress(byte[] compressed) {
-		// TODO Auto-generated method stub
-		
+		if (compressed.length != 1) {
+			throw new IllegalArgumentException("DatatableBools should be represented by a byte array of length 1");
+		}
+		set(compressed[0] != 0);
 	}
 
 }

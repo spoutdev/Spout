@@ -26,23 +26,18 @@
 
 package org.spout.api.datatable.value;
 
-import org.spout.api.datatable.DatatableTuple;
+import java.io.Serializable;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+public class DatatableNil extends DatatableObject {
 
-public class DatatableNil implements DatatableTuple {
-	@Override
-	public void output(OutputStream out) throws IOException {
-		throw new RuntimeException("This value doesn't exist!");
+	public DatatableNil() {
+		this(0);
 	}
-
-	@Override
-	public void input(InputStream in) throws IOException {
-		throw new RuntimeException("This value doesn't exist!");
+	
+	public DatatableNil(int key) {
+		super(key);
 	}
-
+	
 	@Override
 	public void set(Object value) {
 		throw new RuntimeException("This value doesn't exist!");
@@ -69,7 +64,7 @@ public class DatatableNil implements DatatableTuple {
 	}
 
 	@Override
-	public Object get() {
+	public Serializable get() {
 		return null;
 	}
 
@@ -86,5 +81,17 @@ public class DatatableNil implements DatatableTuple {
 	@Override
 	public boolean asBool() {
 		return false;
+	}
+
+	@Override
+	public byte[] compress() {
+		return null;
+	}
+
+	@Override
+	public void decompress(byte[] compressed) {
+		if (compressed != null && compressed.length != 0) {
+			throw new IllegalArgumentException("DatatableNil objects can only be represented by null or zero length arrays");
+		}
 	}
 }

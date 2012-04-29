@@ -88,6 +88,8 @@ public class DatatableSerializable extends DatatableObject {
 	}
 	
 	private static class ByteArrayWrapper implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
 		private byte[] array;
 		
 		public ByteArrayWrapper(byte[] array) {
