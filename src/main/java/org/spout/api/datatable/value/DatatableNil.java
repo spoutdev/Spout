@@ -94,4 +94,14 @@ public class DatatableNil extends DatatableObject {
 			throw new IllegalArgumentException("DatatableNil objects can only be represented by null or zero length arrays");
 		}
 	}
+
+	@Override
+	public byte getObjectTypeId() {
+		return 0;
+	}
+	
+	@Override
+	public DatatableObject newInstance(int key) {
+		return new DatatableNil(key);
+	}
 }

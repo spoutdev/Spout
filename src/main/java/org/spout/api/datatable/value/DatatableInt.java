@@ -97,5 +97,15 @@ public class DatatableInt extends DatatableObject {
 		x |= (compressed[3] & 0xFF) << 0;
 		return x;
 	}
+	
+	@Override
+	public byte getObjectTypeId() {
+		return 3;
+	}
+	
+	@Override
+	public DatatableObject newInstance(int key) {
+		return new DatatableInt(key);
+	}
 
 }

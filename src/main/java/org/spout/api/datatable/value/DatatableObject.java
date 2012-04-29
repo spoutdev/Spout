@@ -44,6 +44,8 @@ public abstract class DatatableObject implements DatatableTuple {
 	protected final AtomicReference<Serializable> data;
 	protected final AtomicBoolean dirty;
 	protected final AtomicReference<byte[]> compressed;
+	
+	private static DatatableObject[] newInstanceArray = new DatatableObject[5];
 
 	public DatatableObject(int key) {
 		this(key, null);
@@ -55,6 +57,30 @@ public abstract class DatatableObject implements DatatableTuple {
 		flags = new AtomicInteger(0);
 		dirty = new AtomicBoolean(false);
 		compressed = new AtomicReference<byte[]>(null);
+	}
+	
+	static {
+		register(new DatatableNil(0));
+		register(new DatatableBool(0));
+		register(new DatatableInt(0));
+		register(new DatatableFloat(0));
+		register(new DatatableSerializable(0));
+	}
+	
+	private static void register(DatatableObject o) {
+		int id = o.getObjectTypeId();
+		if (newInstanceArray[id] != null) {
+			throw new IllegalStateException("Attempt made to register " + o.getClass().getSimpleName() + 
+					" but the id is already in use by " + newInstanceArray[id].getClass().getSimpleName());
+		}
+		newInstanceArray[id] = o;
+	}
+	
+	public static DatatableObject newInstance(int id, int key) {
+		if (id < 0 || id > newInstanceArray.length || newInstanceArray[id] == null) {
+			throw new IllegalArgumentException("Datatable object id of " + id + " has no corresponding type");
+		}
+		return newInstanceArray[id].newInstance(key);
 	}
 
 	@Override
@@ -147,6 +173,10 @@ public abstract class DatatableObject implements DatatableTuple {
 		}
 		return false;
 	}
+	
+	public abstract byte getObjectTypeId();
+	
+	public abstract DatatableObject newInstance(int key);
 	
 	public abstract byte[] compress();
 	

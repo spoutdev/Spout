@@ -84,5 +84,15 @@ public class DatatableBool extends DatatableObject {
 		}
 		set(compressed[0] != 0);
 	}
+	
+	@Override
+	public byte getObjectTypeId() {
+		return 1;
+	}
+	
+	@Override
+	public DatatableObject newInstance(int key) {
+		return new DatatableBool(key);
+	}
 
 }

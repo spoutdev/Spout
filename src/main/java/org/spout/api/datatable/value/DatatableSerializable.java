@@ -78,6 +78,16 @@ public class DatatableSerializable extends DatatableObject {
 		}
 	}
 	
+	@Override
+	public byte getObjectTypeId() {
+		return 4;
+	}
+	
+	@Override
+	public DatatableObject newInstance(int key) {
+		return new DatatableSerializable(key);
+	}
+	
 	public boolean isUnknownClass() {
 		Serializable s = super.get();
 		if (s == null) {

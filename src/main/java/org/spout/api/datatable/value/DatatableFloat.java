@@ -79,5 +79,15 @@ public class DatatableFloat extends DatatableObject {
 	public void decompress(byte[] compressed) {
 		set(Float.intBitsToFloat(DatatableInt.decompressRaw(compressed)));
 	}
+	
+	@Override
+	public byte getObjectTypeId() {
+		return 2;
+	}
+	
+	@Override
+	public DatatableObject newInstance(int key) {
+		return new DatatableFloat(key);
+	}
 
 }
