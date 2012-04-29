@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
@@ -54,6 +55,8 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFullState;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -171,7 +174,7 @@ public class SpoutRegion extends Region {
 
 	private final Queue<Entity> removeQueue = new ConcurrentLinkedQueue<Entity>();
 	
-	private final Map<Point, BlockController> blockControllers = new HashMap<Point, BlockController>();
+	private final Map<Vector3, BlockController> blockControllers = new HashMap<Vector3, BlockController>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, false);
@@ -459,7 +462,9 @@ public class SpoutRegion extends Region {
 	public void addEntity(Entity e) {
 		Controller controller = e.getController();
 		if (controller instanceof BlockController) {
-			blockControllers.put(e.getPosition(), (BlockController) controller);
+			Point p = e.getPosition();
+			this.setBlockController(p.getBlockX(), p.getBlockY(), p.getBlockZ(), (BlockController) controller, e);
+			return;
 		}
 		
 		if (spawnQueue.contains(e))
@@ -468,14 +473,14 @@ public class SpoutRegion extends Region {
 			throw new IllegalArgumentException("Cannot add an entity marked for removal");
 		}
 		spawnQueue.add(e);
-
 	}
 
 	public void removeEntity(Entity e) {
 		if (e.getController() instanceof BlockController) {
-			blockControllers.remove(e.getPosition());
+			Point p = e.getPosition();
+			this.setBlockController(p.getBlockX(), p.getBlockY(), p.getBlockZ(), null, e);
+			return;
 		}
-		
 		if (removeQueue.contains(e))
 			return;
 		if (spawnQueue.contains(e)) {
@@ -483,7 +488,6 @@ public class SpoutRegion extends Region {
 			return;
 		}
 		removeQueue.add(e);
-
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
@@ -536,7 +540,8 @@ public class SpoutRegion extends Region {
 						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
 						if (material.hasPhysics()) {
 							//switch region block coords (0-255) to world block coords
-							material.onUpdate(world, x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts));
+							Block block = world.getBlock(x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts));
+							material.onUpdate(block);
 						}
 					}
 				}
@@ -683,8 +688,8 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public BlockController getBlockController(Point pos) {
-		return blockControllers.get(pos);
+	public BlockController getBlockController(int x, int y, int z) {
+		return blockControllers.get(new Vector3(x, y, z));
 	}
 
 	/**
@@ -796,5 +801,140 @@ public class SpoutRegion extends Region {
 		key |= z << (Region.REGION_SIZE_BITS << 1);
 
 		return key;
+	}
+
+	@Override
+	public Chunk getChunkFromBlock(int x, int y, int z) {
+		return this.getWorld().getChunkFromBlock(x, y, z);
+	}
+
+	@Override
+	public Chunk getChunkFromBlock(int x, int y, int z, boolean load) {
+		return this.getWorld().getChunkFromBlock(x, y, z, load);
+	}
+
+	@Override
+	public Chunk getChunkFromBlock(Vector3 position) {
+		return this.getWorld().getChunkFromBlock(position);
+	}
+
+	@Override
+	public Chunk getChunkFromBlock(Vector3 position, boolean load) {
+		return this.getWorld().getChunkFromBlock(position, load);
+	}
+
+	@Override
+	public boolean hasChunkAtBlock(int x, int y, int z) {
+		return this.getWorld().hasChunkAtBlock(x, y, z);
+	}
+
+	@Override
+	public boolean setBlockData(int x, int y, int z, short data, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
+	}
+
+	@Override
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
+	}
+
+	@Override
+	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, source);
+	}
+
+	@Override
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, source);
+	}
+
+	@Override
+	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source) {
+		if (source == null) {
+			throw new NullPointerException("Source can not be null");
+		}
+		Vector3 pos = new Vector3(x, y, z);
+		if (controller == null) {
+		    controller = this.blockControllers.remove(pos);
+		    if (controller != null) {
+		    	Entity e = controller.getParent();
+				if (removeQueue.contains(e)) {
+					return true;
+				} else if (spawnQueue.remove(e)) {
+					return true;
+				}
+				removeQueue.add(e);
+		    }
+		} else {
+			this.blockControllers.put(pos, controller);
+			Entity e = controller.getParent();
+			if (spawnQueue.contains(e)) {
+				return true;
+			} else if (removeQueue.contains(e)) {
+				throw new IllegalArgumentException("Cannot add an entity marked for removal");
+			}
+			spawnQueue.add(e);
+		}
+		return true;
+	}
+
+	@Override
+	public void updateBlockPhysics(int x, int y, int z) {
+		this.getChunkFromBlock(x, y, z).updateBlockPhysics(x, y, z);
+	}
+
+	@Override
+	public Block getBlock(int x, int y, int z) {
+		return this.getWorld().getBlock(x, y, z);
+	}
+
+	@Override
+	public Block getBlock(int x, int y, int z, Source source) {
+		return this.getWorld().getBlock(x, y, z, source);
+	}
+
+	@Override
+	public Block getBlock(float x, float y, float z) {
+		return this.getWorld().getBlock(x, y, z);
+	}
+
+	@Override
+	public Block getBlock(float x, float y, float z, Source source) {
+		return this.getWorld().getBlock(x, y, z, source);
+	}
+
+	@Override
+	public Block getBlock(Vector3 position) {
+		return this.getWorld().getBlock(position);
+	}
+
+	@Override
+	public Block getBlock(Vector3 position, Source source) {
+		return this.getWorld().getBlock(position, source);
+	}
+
+	@Override
+	public BlockMaterial getBlockMaterial(int x, int y, int z) {
+		return this.getChunkFromBlock(x, y, z).getBlockMaterial(x, y, z);
+	}
+
+	@Override
+	public short getBlockData(int x, int y, int z) {
+		return this.getChunkFromBlock(x, y, z).getBlockData(x, y, z);
+	}
+
+	@Override
+	public byte getBlockLight(int x, int y, int z) {
+		return this.getChunkFromBlock(x, y, z).getBlockLight(x, y, z);
+	}
+
+	@Override
+	public byte getBlockSkyLight(int x, int y, int z) {
+		return this.getChunkFromBlock(x, y, z).getBlockSkyLight(x, y, z);
+	}
+
+	@Override
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+		return this.getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
 	}
 }

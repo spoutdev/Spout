@@ -724,7 +724,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public EntityManager getExpectedEntityManager(Point point) {
-		Region region = point.getWorld().getRegion(point);
+		Region region = point.getWorld().getRegionFromBlock(point);
 		return ((SpoutRegion) region).getEntityManager();
 	}
 
