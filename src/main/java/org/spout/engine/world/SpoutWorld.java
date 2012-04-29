@@ -43,8 +43,6 @@ import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
-import org.spout.api.datatable.Datatable;
-import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -58,6 +56,7 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
@@ -196,21 +195,27 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public SpoutBlock getBlock(int x, int y, int z, Source source) {
-		SpoutBlock block = new SpoutBlock(this, x, y, z, source);
-		BlockController controller = block.getChunk().getRegion().getBlockController(x, y, z);
-		if (controller != null) {
-			block.setController(controller);
-		}
-
-		return block;
+		return new SpoutBlock(this, x, y, z, source);
 	}
 
 	@Override
-	public SpoutBlock getBlock(Point point) {
-		int x = MathHelper.floor(point.getX());
-		int y = MathHelper.floor(point.getY());
-		int z = MathHelper.floor(point.getZ());
-		return getBlock(x, y, z);
+	public SpoutBlock getBlock(float x, float y, float z) {
+		return this.getBlock(x, y, z, this);
+	}
+
+	@Override
+	public SpoutBlock getBlock(float x, float y, float z, Source source) {
+		return this.getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
+	}
+
+	@Override
+	public SpoutBlock getBlock(Vector3 position) {
+		return this.getBlock(position, this);
+	}
+
+	@Override
+	public SpoutBlock getBlock(Vector3 position, Source source) {
+		return this.getBlock(position.getX(), position.getY(), position.getZ(), source);
 	}
 
 	@Override
@@ -225,34 +230,39 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public SpoutRegion getRegion(Point point) {
-		int x = MathHelper.floor(point.getX());
-		int y = MathHelper.floor(point.getY());
-		int z = MathHelper.floor(point.getZ());
-		return regions.getRegionFromBlock(x, y, z);
-	}
-
-	@Override
 	public SpoutRegion getRegion(int x, int y, int z, boolean load) {
 		return regions.getRegion(x, y, z, load);
 	}
 
 	@Override
-	public SpoutRegion getRegion(Point point, boolean load) {
-		int x = MathHelper.floor(point.getX());
-		int y = MathHelper.floor(point.getY());
-		int z = MathHelper.floor(point.getZ());
+	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
+		return this.regions.getRegionFromBlock(x, y, z);
+	}
+	
+	@Override
+	public SpoutRegion getRegionFromBlock(int x, int y, int z, boolean load) {
+		return this.regions.getRegionFromBlock(x, y, z, load);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromBlock(Vector3 position) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return regions.getRegionFromBlock(x, y, z);
+	}
+	
+	@Override
+	public SpoutRegion getRegionFromBlock(Vector3 position, boolean load) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
 		return regions.getRegionFromBlock(x, y, z, load);
 	}
 
 	@Override
-	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
-		return regions.getRegionFromBlock(x, y, z);
-	}
-
-	@Override
 	public SpoutChunk getChunk(int x, int y, int z) {
-		return getChunk(x, y, z, true);
+		return this.getChunk(x, y, z, true);
 	}
 
 	@Override
@@ -265,21 +275,26 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public SpoutChunk getChunk(Point point) {
-		return getChunk(point, true);
-	}
-
-	@Override
-	public SpoutChunk getChunk(Point point, boolean load) {
-		int x = MathHelper.floor(point.getX());
-		int y = MathHelper.floor(point.getY());
-		int z = MathHelper.floor(point.getZ());
-		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
-	}
-
-	@Override
 	public SpoutChunk getChunkFromBlock(int x, int y, int z) {
-		return getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
+		return this.getChunkFromBlock(x, y, z, true);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(int x, int y, int z, boolean load) {
+		return this.getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(Vector3 position) {
+		return this.getChunkFromBlock(position, true);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(Vector3 position, boolean load) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return this.getChunkFromBlock(x, y, z, load);
 	}
 
 	@Override
@@ -321,7 +336,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public Entity createAndSpawnEntity(Point point, Controller controller) {
 		Entity e = createEntity(point, controller);
 		//initialize region if needed
-		getRegion(point, true);
+		this.getRegionFromBlock(point, true);
 		spawnEntity(e);
 		return e;
 	}
@@ -391,13 +406,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, boolean updatePhysics, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, updatePhysics, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, updatePhysics, source);
+	public boolean setBlockData(int x, int y, int z, short data, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
 	}
 
 	@Override
@@ -411,8 +426,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public byte getSkyLight(int x, int y, int z) {
-		return getChunkFromBlock(x, y, z).getSkyLight(x, y, z);
+	public byte getBlockSkyLight(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockSkyLight(x, y, z);
 	}
 
 	@Override
@@ -421,22 +436,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
-		return getChunkFromBlock(x, y, z).compareAndPut(x, y, z, expect, key, auxData);
-	}
-
-	@Override
-	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData) {
-		return getChunkFromBlock(x, y, z).compareAndRemove(x, y, z, expect, key, auxData);
-	}
-
-	@Override
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data) {
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
 	}
 
 	@Override
-	public void updatePhysics(int x, int y, int z) {
+	public void updateBlockPhysics(int x, int y, int z) {
 		regions.getRegionFromBlock(x, y, z).queuePhysicsUpdate(x, y, z);
 	}
 
@@ -647,5 +652,54 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (Region r : regions.getRegions()) {
 			r.unload(save);
 		}
+	}
+
+	@Override
+	public boolean hasChunk(int x, int y, int z) {
+		return this.getChunk(x, y, z, false) != null;
+	}
+
+	@Override
+	public boolean hasChunkAtBlock(int x, int y, int z) {
+		return this.getChunkFromBlock(x, y, z, false) != null;
+	}
+
+	@Override
+	public void saveChunk(int x, int y, int z) {
+		this.getRegionFromBlock(x, y, z).saveChunk(x, y, z);
+	}
+
+	@Override
+	public void unloadChunk(int x, int y, int z, boolean save) {
+		this.getRegionFromBlock(x, y, z).unloadChunk(x, y, z, save);
+	}
+
+	@Override
+	public int getNumLoadedChunks() {
+		int total = 0;
+		for (Region region : this.regions) {
+			total += region.getNumLoadedChunks();
+		}
+		return total;
+	}
+
+	@Override
+	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, source);
+	}
+
+	@Override
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, source);
+	}
+
+	@Override
+	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source) {
+		return this.getRegionFromBlock(x, y, z).setBlockController(x, y, z, controller, source);
+	}
+
+	@Override
+	public BlockController getBlockController(int x, int y, int z) {
+		return this.getRegionFromBlock(x, y, z).getBlockController(x, y, z);
 	}
 }

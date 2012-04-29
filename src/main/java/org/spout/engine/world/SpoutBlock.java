@@ -30,58 +30,63 @@ import org.spout.api.entity.BlockController;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringUtil;
 
 public class SpoutBlock implements Block {
-	protected int x, y, z;
-	protected World world;
-	protected Chunk chunk;
-	protected Source source;
-	protected BlockController controller;
+	private int x, y, z;
+	private World world;
+	private Source source;
+	private Chunk chunk;
 
 	public SpoutBlock(Block source) {
 		this(source.getWorld(), source.getX(), source.getY(), source.getZ(), source.getSource());
+		if (source instanceof SpoutBlock) {
+			this.chunk = ((SpoutBlock) source).chunk;
+		}
 	}
 
 	public SpoutBlock(Point position, Source source) {
 		this(position.getWorld(), position.getBlockX(), position.getBlockY(), position.getBlockZ(), source);
 	}
-
+	
 	public SpoutBlock(World world, int x, int y, int z, Source source) {
-		this(world, x, y, z, source, null);
+		this(world, x, y, z, null, source);
 	}
 	
-	public SpoutBlock(World world, int x, int y, int z, Source source, BlockController controller) {
+	public SpoutBlock(World world, int x, int y, int z, Chunk chunk, Source source) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.world = world;
 		this.source = source == null ? world : source;
-		this.controller = controller;
+		this.chunk = chunk != null && chunk.containsBlock(x, y, z) ? chunk : null;
 	}
 
 	@Override
 	public Point getPosition() {
-		return new Point(this.world, this.x, this.y, this.z);
+		return new Point(this.world, this.x + 0.5f, this.y + 0.5f, this.z + 0.5f);
 	}
 
 	@Override
 	public Chunk getChunk() {
 		if (this.chunk == null || !this.chunk.isLoaded()) {
-			recalculateChunk();
+			this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, true);
 		}
 		return this.chunk;
 	}
 
 	@Override
 	public World getWorld() {
-		return this.chunk.getWorld();
+		return this.world;
 	}
 
 	@Override
@@ -101,73 +106,48 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block setX(int x) {
-		this.x = x;
-		recalculateChunk();
-		return this;
+		SpoutBlock sb = this.clone();
+		sb.x = x;
+		sb.chunk = null;
+		return sb;
 	}
 
 	@Override
 	public Block setY(int y) {
-		this.y = y;
-		recalculateChunk();
-		return this;
+		SpoutBlock sb = this.clone();
+		sb.y = y;
+		sb.chunk = null;
+		return sb;
 	}
 
 	@Override
 	public Block setZ(int z) {
-		this.z = z;
-		recalculateChunk();
-		return this;
+		SpoutBlock sb = this.clone();
+		sb.z = z;
+		sb.chunk = null;
+		return sb;
 	}
 
 	@Override
-	public Block move(BlockFace offset) {
-		return this.move(offset.getOffset());
+	public Block translate(BlockFace offset) {
+		return this.translate(offset.getOffset());
 	}
 
 	@Override
-	public Block move(Vector3 offset) {
-		return this.move((int) offset.getX(), (int) offset.getY(), (int) offset.getZ());
+	public Block translate(Vector3 offset) {
+		return this.translate((int) offset.getX(), (int) offset.getY(), (int) offset.getZ());
 	}
 
 	@Override
-	public Block move(int dx, int dy, int dz) {
-		this.x += dx;
-		this.y += dy;
-		this.z += dz;
-		recalculateChunk();
-		return this;
+	public Block translate(int dx, int dy, int dz) {
+		SpoutBlock sb = this.clone();
+		sb.x += dx;
+		sb.y += dy;
+		sb.z += dz;
+		sb.chunk = null;
+		return sb;
 	}
 
-	@Override
-	public void setMaterial(MaterialSource material) {
-		this.setMaterial(material, true);
-	}
-
-	/**
-	 * Sets the material
-	 * @param material to set to
-	 * @param update whether players nearby should be notified of the block change
-	 */
-	@Override
-	public void setMaterial(MaterialSource material, boolean update) {
-		this.setMaterial(material, (short) 0, update);
-	}
-
-	@Override
-	public BlockMaterial getMaterial() {
-		return this.getChunk().getBlockMaterial(this.x, this.y, this.z);
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 53 * hash + this.world.hashCode();
-		hash = 53 * hash + (this.x ^ (this.x >> 16));
-		hash = 53 * hash + (this.y ^ (this.y >> 16));
-		hash = 53 * hash + (this.z ^ (this.z >> 16));
-		return hash;
-	}
 
 	@Override
 	public boolean equals(Object other) {
@@ -187,84 +167,29 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material, DataSource datasource) {
-		this.setMaterial(material, datasource, true);
-	}
-
-	/**
-	 * Sets the material and data
-	 * @param material to set to
-	 * @param datasource of the data to set to
-	 * @param update whether players nearby should be notified of the block change
-	 */
-	@Override
-	public void setMaterial(MaterialSource material, DataSource datasource, boolean update) {
-		this.setMaterial(material, datasource.getData(), update);
+	public String toString() {
+		return StringUtil.toNamedString(this, this.world, this.x, this.y, this.z);
 	}
 
 	@Override
-	public void setMaterial(MaterialSource material, short data) {
-		this.setMaterial(material, data, true);
-	}
-
-	/**
-	 * Sets the material and data
-	 * @param material to set to
-	 * @param data value to set to
-	 * @param update whether players nearby should be notified of the block change
-	 */
-	@Override
-	public void setMaterial(MaterialSource material, short data, boolean update) {
+	public SpoutBlock setMaterial(MaterialSource material, short data) {
 		if (material.getMaterial() instanceof BlockMaterial) {
-			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), data, update, this.source);
+			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), data, this.source);
 		} else {
 			throw new IllegalArgumentException("Can't set a block to a non-block material!");
 		}
+		return this;
 	}
 
 	@Override
-	public void setData(DataSource datasource) {
-		this.setData(datasource, true);
-	}
-
-	/**
-	 * Sets the data
-	 * @param datasource of the data to set to
-	 * @param update whether players nearby should be notified of the block change
-	 */
-	@Override
-	public void setData(DataSource datasource, boolean update) {
-		this.setData(datasource.getData(), update);
+	public SpoutBlock setData(DataSource data) {
+		return this.setData(data.getData());
 	}
 
 	@Override
-	public void setData(short data) {
-		this.setData(data);
-	}
-
-	/**
-	 * Sets the data
-	 * @param data value to set to
-	 * @param update whether players nearby should be notified of the block change
-	 */
-	@Override
-	public void setData(short data, boolean update) {
-		this.getChunk().setBlockData(this.x, this.y, this.z, data, update, this.source);
-	}
-
-	@Override
-	public BlockController getController() {
-		return controller;
-	}
-
-	@Override
-	public void setController(BlockController controller) {
-		this.controller = controller;
-	}
-
-	@Override
-	public boolean hasController() {
-		return controller != null;
+	public SpoutBlock setData(short data) {
+		this.getChunk().setBlockData(this.x, this.y, this.z, data, this.source);
+		return this;
 	}
 
 	@Override
@@ -283,24 +208,90 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public void setSource(Source source) {
-		this.source = source;
+	public BlockMaterial getSubMaterial() {
+		return this.getMaterial().getSubMaterial(this.getData());
 	}
 
 	@Override
-	public void setBlock(MaterialSource block) {
-		this.setBlock(block, true);
+	public Region getRegion() {
+		return this.getChunk().getRegion();
 	}
 
 	@Override
-	public void setBlock(MaterialSource blocksource, boolean update) {
-		this.setMaterial(blocksource.getMaterial(), blocksource.getData(), update);
+	public BlockMaterial getMaterial() {
+		return this.getChunk().getBlockMaterial(this.x, this.y, this.z);
 	}
 
-	private void recalculateChunk() {
-		int cx = this.x >> Chunk.CHUNK_SIZE_BITS;
-		int cy = this.y >> Chunk.CHUNK_SIZE_BITS;
-		int cz = this.z >> Chunk.CHUNK_SIZE_BITS;
-		this.chunk = this.world.getChunk(cx, cy, cz, true);
+	@Override
+	public Block setMaterial(MaterialSource material) {
+		return this.setMaterial(material, material.getData());
+	}
+
+	@Override
+	public Block setMaterial(MaterialSource material, DataSource data) {
+		return this.setMaterial(material, data.getData());
+	}
+
+	@Override
+	public byte getLight() {
+		return this.getChunk().getBlockLight(this.x, this.y, this.z);
+	}
+
+	@Override
+	public Block setLight(byte level) {
+		this.getChunk().setBlockLight(this.x, this.y, this.z, level, this.source);
+		return this;
+	}
+
+	@Override
+	public byte getSkyLight() {
+		return this.getChunk().getBlockSkyLight(this.x, this.y, this.z);
+	}
+
+	@Override
+	public Block setSkyLight(byte level) {
+		this.getChunk().setBlockSkyLight(this.x, this.y, this.z, level, this.source);
+		return this;
+	}
+
+	@Override
+	public BlockController getController() {
+		return this.getChunk().getBlockController(this.x, this.y, this.z);
+	}
+
+	@Override
+	public Block setController(BlockController controller) {
+		this.getChunk().setBlockController(this.x, this.y, this.z, controller, this.source);
+		return this;
+	}
+
+	@Override
+	public boolean hasController() {
+		return this.getController() != null;
+	}
+
+	@Override
+	public Block update() {
+		return this.update(true);
+	}
+
+	@Override
+	public Block update(boolean around) {
+		Chunk chunk = this.getChunk();
+		chunk.updateBlockPhysics(this.x, this.y, this.z);
+		if (around) {
+			//South and North
+			chunk.updateBlockPhysics(this.x + 1, this.y, this.z);
+			chunk.updateBlockPhysics(this.x - 1, this.y, this.z);
+
+			//West and East
+			chunk.updateBlockPhysics(this.x, this.y, this.z + 1);
+			chunk.updateBlockPhysics(this.x, this.y, this.z - 1);
+
+			//Above and Below
+			chunk.updateBlockPhysics(this.x, this.y + 1, this.z);
+			chunk.updateBlockPhysics(this.x, this.y - 1, this.z);
+		}
+		return this;
 	}
 }

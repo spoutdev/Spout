@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -76,25 +77,29 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.skyLight = skyLight;
 	}
 
+	private int getBlockIndex(int x, int y, int z) {
+		return (y & this.coordMask) << 8 | (z & this.coordMask) << 4 | x & this.coordMask;
+	}
+	
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		BlockMaterial mat = BlockMaterial.get(getBlockId(x, y, z));
 		return mat == null ? BlockMaterial.AIR : mat;
 	}
-
+	
 	//TODO: Should this be hidden, or not?
 	private short getBlockId(int x, int y, int z) {
-		return blockIds[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
+		return blockIds[this.getBlockIndex(x, y, z)];
 	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
-		return blockData[(y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask];
+		return blockData[this.getBlockIndex(x, y, z)];
 	}
 
 	@Override
-	public byte getSkyLight(int x, int y, int z) {
-		int index = (y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask;
+	public byte getBlockSkyLight(int x, int y, int z) {
+		int index = this.getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
 			return (byte)((light >> 4) & 0xF);
@@ -104,7 +109,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public byte getBlockLight(int x, int y, int z) {
-		int index = (y & coordMask) << 8 | (z & coordMask) << 4 | x & coordMask;
+		int index = this.getBlockIndex(x, y, z);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
 			return (byte)((light >> 4) & 0xF);
@@ -147,5 +152,10 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public byte[] getSkyLight() {
 		return skyLight;
+	}
+
+	@Override
+	public BlockController getBlockController(int x, int y, int z) {
+		return null;
 	}
 }

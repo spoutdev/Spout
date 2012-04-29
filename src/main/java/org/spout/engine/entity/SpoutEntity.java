@@ -107,7 +107,7 @@ public class SpoutEntity implements Entity {
 		controllerLive = new AtomicReference<Controller>();
 
 		if (transform != null) {
-			chunkLive.set(transform.getPosition().getWorld().getChunk(transform.getPosition()));
+			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
 			entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
 		}
 
@@ -187,7 +187,7 @@ public class SpoutEntity implements Entity {
 				}
 				if (controllerLive.get() != null) {
 					Block b = this.transform.getPosition().getWorld().getBlock((int) box.getPosition().getX(), (int) box.getPosition().getY(), (int) box.getPosition().getZ());
-					controllerLive.get().onCollide(b.clone());
+					controllerLive.get().onCollide(b);
 				}
 			}
 		}
@@ -546,7 +546,7 @@ public class SpoutEntity implements Entity {
 					return null;
 				}
 			} else {
-				Chunk c = w.getChunk(position, true);
+				Chunk c = w.getChunkFromBlock(position, true);
 				if (lock.readUnlock(seq)) {
 					return c;
 				}
@@ -572,7 +572,7 @@ public class SpoutEntity implements Entity {
 			if (world == null && lock.readUnlock(seq)) {
 				return null;
 			} else {
-				Region r = world.getRegion(position, true);
+				Region r = world.getRegionFromBlock(position, true);
 				if (lock.readUnlock(seq)) {
 					return r;
 				}
