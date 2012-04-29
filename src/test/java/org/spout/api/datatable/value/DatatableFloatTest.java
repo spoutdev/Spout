@@ -25,59 +25,67 @@
  */
 package org.spout.api.datatable.value;
 
-import java.io.Serializable;
+import static org.junit.Assert.assertTrue;
 
-import org.spout.api.util.concurrent.AtomicFloat;
+import java.util.Random;
 
-public class DatatableFloat extends DatatableObject {
-	private AtomicFloat data = new AtomicFloat(0);
+import org.junit.Test;
 
-	public DatatableFloat(int key) {
-		super(key);
+public class DatatableFloatTest {
+	
+	private static final int LENGTH = 1000;
+	
+	private Random r = new Random();
+
+	@Test
+	public void testInt() {
+
+		for (int x = 0; x < LENGTH; x++) {
+			checkFloat(r.nextFloat());
+		}
+		
+		checkFloat(0.0F);
+		
+		checkFloat(1.0F);
+		
+		checkFloat(-1.0F);
+
 	}
+	
+	private void checkFloat(float value) {
+		int key = r.nextInt();
+		
+		DatatableFloat f = new DatatableFloat(key);
 
-	public DatatableFloat(int key, float value) {
-		super(key);
-		data.set(value);
+		f.set(value);
+		
+		checkFloat(f, key, value);
+		
+		byte[] compressed = f.compress();
+		
+		assertTrue("Compressed array wrong length", compressed.length == 4);
+		
+		int key2 = r.nextInt();
+		
+		DatatableFloat b2 = new DatatableFloat(key2);
+		
+		b2.decompress(compressed);
+		
+		checkFloat(b2, key2, value);
 	}
-
-	@Override
-	public void set(Object value) {
-		throw new IllegalArgumentException("This is an float value, use set(float)");
-	}
-
-	public void set(float value) {
-		data.set(value);
-	}
-
-	@Override
-	public Serializable get() {
-		return data.get();
-	}
-
-	@Override
-	public int asInt() {
-		return (int) data.get();
-	}
-
-	@Override
-	public float asFloat() {
-		return data.get();
-	}
-
-	@Override
-	public boolean asBool() {
-		return data.get() != 0.0F;
-	}
-
-	@Override
-	public byte[] compress() {
-		return DatatableInt.compressRaw(Float.floatToRawIntBits(asFloat()));
-	}
-
-	@Override
-	public void decompress(byte[] compressed) {
-		set(Float.intBitsToFloat(DatatableInt.decompressRaw(compressed)));
+	
+	private void checkFloat(DatatableFloat f, int key, float value) {
+				
+		assertTrue("Wrong key, got " + f.hashCode() + ", expected " + key, f.hashCode() == key);
+		
+		assertTrue("Wrong value", f.get().equals(new Float(value)));
+		
+		assertTrue("Wrong value as bool", f.asBool() == (value != 0.0F));
+		
+		assertTrue("Wrong value as float", f.asFloat() == value);
+		
+		assertTrue("Wrong value as int", f.asInt() == (int)value);
+		
 	}
 
 }

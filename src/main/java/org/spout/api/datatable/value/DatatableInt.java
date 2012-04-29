@@ -72,14 +72,30 @@ public class DatatableInt extends DatatableObject {
 
 	@Override
 	public byte[] compress() {
-		// TODO Auto-generated method stub
-		return null;
+		return compressRaw(asInt());
+	}
+	
+	public static byte[] compressRaw(int x) {
+		byte[] compressed = new byte[4];
+		compressed[0] = (byte)(x >> 24);
+		compressed[1] = (byte)(x >> 16);
+		compressed[2] = (byte)(x >> 8);
+		compressed[3] = (byte)(x >> 0);
+		return compressed;
 	}
 
 	@Override
 	public void decompress(byte[] compressed) {
-		// TODO Auto-generated method stub
-		
+		set(decompressRaw(compressed));
+	}
+	
+	public static int decompressRaw(byte[] compressed) {
+		int x = 0;
+		x |= (compressed[0] & 0xFF) << 24;
+		x |= (compressed[1] & 0xFF) << 16;
+		x |= (compressed[2] & 0xFF) << 8;
+		x |= (compressed[3] & 0xFF) << 0;
+		return x;
 	}
 
 }
