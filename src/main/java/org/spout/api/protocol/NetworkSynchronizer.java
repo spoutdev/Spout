@@ -244,7 +244,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			i = priorityChunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK  && tickTimeRemaining) {
 				Point p = i.next();
-				Chunk c = p.getWorld().getChunk(p, true);
+				Chunk c = p.getWorld().getChunkFromBlock(p, true);
 				sendChunk(c);
 				activeChunks.add(p);
 				i.remove();
@@ -254,7 +254,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			i = chunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 				Point p = i.next();
-				Chunk c = p.getWorld().getChunk(p, true);
+				Chunk c = p.getWorld().getChunkFromBlock(p, true);
 				sendChunk(c);
 				activeChunks.add(p);
 				i.remove();
@@ -277,7 +277,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			if (!chunkInitQueue.contains(p) && !this.initializedChunks.contains(p)) {
 				i.remove();
 			} else {
-				Chunk c = p.getWorld().getChunk(p, false);
+				Chunk c = p.getWorld().getChunkFromBlock(p, false);
 				if (c != null) {
 					addObserver(c);
 					i.remove();
@@ -287,7 +287,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	}
 
 	private void addObserver(Point p) {
-		Chunk c = p.getWorld().getChunk(p, false);
+		Chunk c = p.getWorld().getChunkFromBlock(p, false);
 		if (c != null) {
 			addObserver(c);
 		} else {
@@ -301,7 +301,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	}
 
 	private void removeObserver(Point p) {
-		Chunk c = p.getWorld().getChunk(p, false);
+		Chunk c = p.getWorld().getChunkFromBlock(p, false);
 		if (c != null) {
 			removeObserver(c);
 		}
@@ -369,7 +369,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	public Set<Chunk> getActiveChunks() {
 		HashSet<Chunk> chunks = new HashSet<Chunk>();
 		for (Point p : activeChunks) {
-			chunks.add(p.getWorld().getChunk(p));
+			chunks.add(p.getWorld().getChunkFromBlock(p));
 		}
 		return chunks;
 	}

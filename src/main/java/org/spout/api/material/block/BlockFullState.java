@@ -14,7 +14,7 @@
  *
  * SpoutAPI is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
@@ -25,18 +25,18 @@
  */
 package org.spout.api.material.block;
 
-public class BlockFullState<T> implements Cloneable {
+import org.spout.api.util.StringUtil;
+
+public class BlockFullState implements Cloneable {
 	private short id;
 	private short data;
-	private T auxData;
 
 	public BlockFullState() {
 	}
 
-	public BlockFullState(short id, short data, T auxData) {
+	public BlockFullState(short id, short data) {
 		this.id = id;
 		this.data = data;
-		this.auxData = auxData;
 	}
 
 	public final short getId() {
@@ -55,17 +55,9 @@ public class BlockFullState<T> implements Cloneable {
 		this.data = data;
 	}
 
-	public final T getAuxData() {
-		return auxData;
-	}
-
-	public final void setAuxData(T auxData) {
-		this.auxData = auxData;
-	}
-
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + "{" + id + ", " + data + ", " + auxData + "}";
+		return StringUtil.toNamedString(this, this.id, this.data);
 	}
 
 	@Override
@@ -75,20 +67,14 @@ public class BlockFullState<T> implements Cloneable {
 		} else if (!(o instanceof BlockFullState)) {
 			return false;
 		} else {
-			@SuppressWarnings("unchecked")
-			BlockFullState<T> fullState = (BlockFullState<T>) o;
+			BlockFullState fullState = (BlockFullState) o;
 
-			return fullState.id == id && fullState.data == data && fullState.auxData.equals(auxData);
+			return fullState.id == id && fullState.data == data;
 		}
 	}
 
-	/**
-	 * Gets a shallow copy of the BlockFullState, the auxiliary data is not
-	 * cloned.
-	 *
-	 * @return the shallow clone
-	 */
-	public BlockFullState<T> shallowClone() {
-		return new BlockFullState<T>(id, data, auxData);
+	@Override
+	public BlockFullState clone() {
+		return new BlockFullState(id, data);
 	}
 }

@@ -26,96 +26,172 @@
 package org.spout.api.geo;
 
 import org.spout.api.Source;
-import org.spout.api.datatable.Datatable;
-import org.spout.api.datatable.DatatableMap;
+import org.spout.api.entity.BlockController;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.LiveWrite;
+import org.spout.api.util.thread.Threadsafe;
 
 public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
-	 * Sets the data for the block at (x, y, z) to the given data.<br>
-	 * <br>
-	 * This method will clear the block's auxiliary data.<br>
-	 * <br>
+	 * Sets the data for the block at (x, y, z) to the given data.
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 * @param data to set to
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
-	 * @param notify whether players nearby should be notified of the block change
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockData(int x, int y, int z, short data, boolean updatePhysics, Source source);
+	public boolean setBlockData(int x, int y, int z, short data, Source source);
 
 	/**
-	 * Sets the material and data for the block at (x, y, z) to the given material and data.<br>
-	 * <br>
-	 * This method will clear the block's auxiliary data.<br>
-	 * <br>
+	 * Sets the material and data for the block at (x, y, z) to the given material and data.
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 * @param data value to set to
 	 * @param material to set to
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterword
-	 * @param notify whether players nearby should be notified of the block change
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, boolean updatePhysics, Source source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source);
 	
 	/**
-	 * Forces a physics update for the block at the (x, y, z)
+	 * Sets the block light level for the block at (x, y, z) to the given light level
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 */
-	public void updatePhysics(int x, int y, int z);
-
-	/**
-	 * Sets the snapshot data for the block at (x, y, z) to the given data, but
-	 * only if the current block state matches the given state.
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param data to set at the block
-	 * @return true on success
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param light level to set to
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
+	 * @param source of the change
+	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState<DatatableMap> expect, short data);
-
+	public boolean setBlockLight(int x, int y, int z, byte light, Source source);
+	
 	/**
-	 * Adds a key, value pair to the auxiliary data for the block, but only if
-	 * the current block state matches the given state.
+	 * Sets the block sky light level for the block at (x, y, z) to the given light level
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param data to set at the block
-	 * @return true on success
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param light level to set to
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
+	 * @param source of the change
+	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean compareAndPut(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData);
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source);
 
 	/**
-	 * Removes a key, value pair from the auxiliary data for the block, but only
-	 * if the current block state matches the given state.
+	 * Sets the block controller for the block at (x, y, z) to the given controller
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param data to set at the block
-	 * @return true on success
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param controller to set to, null to remove the controller
+	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
+	 * @param source of the change
+	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean compareAndRemove(int x, int y, int z, BlockFullState<DatatableMap> expect, String key, Datatable auxData);
+	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source);
+
+	/**
+	 * Sets the data of the block at (x, y, z) if the expected state matches
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param expect is the state of the block it expects
+	 * @param data to set to if it matches
+	 * @param source of the change
+	 * @throws NullPointerException
+	 */
+	@LiveWrite
+	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data);
+	
+	/**
+	 * Forces a physics update for the block at (x, y, z)
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 */
+	public void updateBlockPhysics(int x, int y, int z);
+	
+	/**
+	 * Gets a {@link Block} representing the block at (x, y, z)
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(int x, int y, int z);
+	
+	/**
+	 * Gets a {@link Block} representing the block at (x, y, z)
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param source the block should represent
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(int x, int y, int z, Source source);
+
+	/**
+	 * Gets a {@link Block} representing the block at (x, y, z)
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(float x, float y, float z);
+
+	/**
+	 * Gets a {@link Block} representing the block at (x, y, z)
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param source the block should represent
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(float x, float y, float z, Source source);
+
+	/**
+	 * Gets a {@link Block} representing the block at the position given
+	 * @param position of the block
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(Vector3 position);
+
+	/**
+	 * Gets a {@link Block} representing the block at the position given
+	 * @param position of the block
+	 * @param source the block should represent
+	 * 
+	 * @return the Block
+	 */
+	@Threadsafe
+	public Block getBlock(Vector3 position, Source source);
 }

@@ -164,6 +164,13 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	@LiveRead
 	public abstract Set<Entity> getLiveEntities();
 	
+	/**
+	 * Gets whether the given block coordinates is inside this chunk
+	 */
+	public boolean containsBlock(int x, int y, int z) {
+		return x >> Chunk.CHUNK_SIZE_BITS == this.getX() && y >> Chunk.CHUNK_SIZE_BITS == this.getY() && z >> Chunk.CHUNK_SIZE_BITS == this.getZ();
+	}
+	
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & BASE_MASK, (int) p.getY() & BASE_MASK, (int) p.getZ() & BASE_MASK);
 	}

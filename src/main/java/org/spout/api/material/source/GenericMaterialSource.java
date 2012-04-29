@@ -26,6 +26,7 @@
 package org.spout.api.material.source;
 
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 import org.spout.api.util.HashUtil;
 
 public class GenericMaterialSource implements MaterialSource {
@@ -67,5 +68,15 @@ public class GenericMaterialSource implements MaterialSource {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public Material getSubMaterial() {
+		return this.getMaterial().getSubMaterial(this.getData());
+	}
+
+	@Override
+	public MaterialData createData() {
+		return this.material.createData(this.data);
 	}
 }

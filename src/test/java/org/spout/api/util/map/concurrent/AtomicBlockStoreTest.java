@@ -39,7 +39,6 @@ public class AtomicBlockStoreTest {
 
 	private short[] ids = new short[MAX_SIZE];
 	private short[] data = new short[MAX_SIZE];
-	private Integer[] auxData = new Integer[MAX_SIZE];
 
 	int arraySize = -1;
 
@@ -54,8 +53,7 @@ public class AtomicBlockStoreTest {
 				for (int y = 0; y < 16; y++) {
 					short id = (short)(rand.nextInt());
 					short data = (short)(((rand.nextInt() & 0x3) != 0) ? (0) : (rand.nextInt()));
-					Integer auxData = (((rand.nextInt() & 0x3) != 0) ? (null) : (rand.nextInt()));
-					set(x, y, z, id, data, auxData);
+					set(x, y, z, id, data);
 				}
 			}
 		}
@@ -68,19 +66,18 @@ public class AtomicBlockStoreTest {
 		System.out.println();
 		System.out.println("-- Starting random access --");
 
-		BlockFullState<Integer> fullData = new BlockFullState<Integer>();
+		BlockFullState fullData = new BlockFullState();
 
 		for (int i = 0; i < 32768; i++) {
 			short id = (short)(rand.nextInt());
 			short data = (short)(((rand.nextInt() & 0x3) != 0) ? (0) : (rand.nextInt()));
-			Integer auxData = (((rand.nextInt() & 0x3) != 0) ? (null) : (rand.nextInt()));
 			int x = rand.nextInt() & 0xF;
 			int y = rand.nextInt() & 0xF;
 			int z = rand.nextInt() & 0xF;
 			if (rand.nextBoolean()) {
-				set(x, y, z, id, data, auxData);
+				set(x, y, z, id, data);
 			} else {
-				compareAndSet(x, y, z, id, data, auxData, rand.nextBoolean(), rand);
+				compareAndSet(x, y, z, id, data, rand.nextBoolean(), rand);
 			}
 			check(x, y, z, fullData);
 		}
@@ -101,7 +98,7 @@ public class AtomicBlockStoreTest {
 				for (int y = 15; y >= 0; y--) {
 					for (int z = 15; z >= 0; z--) {
 						if (rand.nextInt(3) == 0) {
-							set(x, y, z, 0, 0, null);
+							set(x, y, z, 0, 0);
 						}
 					}
 				}
@@ -129,40 +126,36 @@ public class AtomicBlockStoreTest {
 
 	}
 
-	private void set(int x, int y, int z, int id, int data, Integer auxData) {
+	private void set(int x, int y, int z, int id, int data) {
 		int index = getIndex(x, y, z);
 
 		this.ids[index] = (short)id;
 		this.data[index] = (short)data;
-		this.auxData[index] = auxData;
 
-		store.setBlock(x, y, z, (short)id, (short)data, auxData);
+		store.setBlock(x, y, z, (short)id, (short)data);
 
 		checkForResize();
 	}
 
-	private void compareAndSet(int x, int y, int z, short id, short data, Integer auxData, boolean useCorrectExpect, Random rand) {
+	private void compareAndSet(int x, int y, int z, short id, short data, boolean useCorrectExpect, Random rand) {
 		int index = getIndex(x, y, z);
 
 		short expectId = this.ids[index];
 		short expectData = this.data[index];
-		Integer expectAuxData = this.auxData[index];
 
 		if (!useCorrectExpect) {
-			switch (rand.nextInt(3)) {
+			switch (rand.nextInt(2)) {
 			case 0: expectId++; break;
 			case 1: expectData++; break;
-			case 2: expectAuxData = (expectAuxData == null) ? 0 : (expectAuxData + 1); break;
 			}
 		}
 
-		boolean success = store.compareAndSetBlock(x, y, z, expectId, expectData, expectAuxData, id, data, auxData);
+		boolean success = store.compareAndSetBlock(x, y, z, expectId, expectData, id, data);
 
 		if (useCorrectExpect) {
 			assertTrue("Compare and set with correct expect was unsuccessful", success);
 			this.ids[index] = id;
 			this.data[index] = data;
-			this.auxData[index] = auxData;
 		} else {
 			assertTrue("Compare and set with incorrect expect was successful", !success);
 		}
@@ -170,13 +163,12 @@ public class AtomicBlockStoreTest {
 		checkForResize();
 	}
 
-	private void check(int x, int y, int z, BlockFullState<Integer> fullData) {
+	private void check(int x, int y, int z, BlockFullState fullData) {
 		int index = getIndex(x, y, z);
 
 		fullData = store.getFullData(x, y, z, null);
 		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getData() == data[index]);
 		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getId() == ids[index]);
-		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getAuxData() == auxData[index]);
 	}
 
 	private final static int getIndex(int x, int y, int z) {
@@ -198,14 +190,14 @@ public class AtomicBlockStoreTest {
 	}
 
 	private void checkStoreLeaks() {
-		BlockFullState<Integer> fullData = new BlockFullState<Integer>();
+		BlockFullState fullData = new BlockFullState();
 
 		int entries = 0;
 		for (int x = 15; x >= 0; x--) {
 			for (int y = 15; y >= 0; y--) {
 				for (int z = 15; z >= 0; z--) {
 					fullData = store.getFullData(x, y, z, null);
-					if (fullData.getAuxData() != null || fullData.getData() != 0 || (fullData.getId() & 0xC000) == 0xC000 ) {
+					if (fullData.getData() != 0 || (fullData.getId() & 0xC000) == 0xC000 ) {
 						entries++;
 					}
 				}
@@ -221,7 +213,7 @@ public class AtomicBlockStoreTest {
 	}
 
 	private void checkStoreValues() {
-		BlockFullState<Integer> fullData = new BlockFullState<Integer>();
+		BlockFullState fullData = new BlockFullState();
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				for (int y = 0; y < 16; y++) {

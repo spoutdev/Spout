@@ -8,24 +8,26 @@
  *
  * SpoutAPI is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.spout.api.geo;
 
+import org.spout.api.entity.BlockController;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.SnapshotRead;
 
 public interface AreaBlockSource {
 	/**
-	 * Gets the snapshot material for the block at (x, y, z)
+	 * Gets the material for the block at (x, y, z)
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 * @return the block's material from the snapshot
 	 */
 	@LiveRead
@@ -34,33 +36,44 @@ public interface AreaBlockSource {
 	/**
 	 * Gets the data for the block at (x, y, z)
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 * @return the block's data from the snapshot
 	 */
 	@LiveRead
 	public short getBlockData(int x, int y, int z);
 
 	/**
-	 * Gets the sky light value for the block at (x, y, z)
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinte
-	 * @return the block's sky light value
-	 */
-	@LiveRead
-	public byte getSkyLight(int x, int y, int z);
-
-	/**
 	 * Gets the block light value for the block at (x, y, z)
 	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinte
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
 	 * @return the block's block light value
 	 */
 	@LiveRead
 	public byte getBlockLight(int x, int y, int z);
+
+	/**
+	 * Gets the sky light value for the block at (x, y, z)
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return the block's sky light value
+	 */
+	@LiveRead
+	public byte getBlockSkyLight(int x, int y, int z);
+
+	/**
+	 * Gets the {@link BlockController} for the block at (x, y, z)
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return the block controller
+	 */
+	@SnapshotRead
+	public BlockController getBlockController(int x, int y, int z);
 }

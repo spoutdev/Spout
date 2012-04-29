@@ -25,34 +25,74 @@
  */
 package org.spout.api.material.block;
 
-import java.util.Collections;
-import java.util.Map;
-
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.Material;
-import org.spout.nbt.Tag;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.source.GenericMaterialSource;
 
 /**
  * Represents an immutable snapshot of the state of a block
  */
-public class BlockSnapshot {
-	private final Block block;
-	private final Material material;
-	private final Map<String, Tag> auxData;
+public class BlockSnapshot extends GenericMaterialSource {
+	private final int x, y, z;
+	private final World world;
 
-	public BlockSnapshot(Block block, Material material, Map<String, Tag> auxData) {
-		this.block = block;
-		this.material = material;
-		this.auxData = Tag.cloneMap(auxData);
+	public BlockSnapshot(Block block) {
+		this(block, block.getMaterial(), block.getData());
 	}
 
+	public BlockSnapshot(Block block, BlockMaterial material, short data) {
+		this(block.getWorld(), block.getX(), block.getY(), block.getZ(), material, data);
+	}
+
+	public BlockSnapshot(World world, int x, int y, int z, BlockMaterial material, short data) {
+		super(material, data);
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.world = world;
+	}
+
+	/**
+	 * Gets the x-coordinate of this Block snapshot
+	 * @return the x-coordinate
+	 */
+	public int getX() {
+		return this.x;
+	}
+
+	/**
+	 * Gets the y-coordinate of this Block snapshot
+	 * @return the y-coordinate
+	 */
+	public int getY() {
+		return this.y;
+	}
+	
+	/**
+	 * Gets the z-coordinate of this Block snapshot
+	 * @return the z-coordinate
+	 */
+	public int getZ() {
+		return this.z;
+	}
+
+	/**
+	 * Gets the world this Block snapshot is in
+	 * 
+	 * @return the World
+	 */
+	public World getWorld() {
+		return this.world;
+	}
+	
 	/**
 	 * Gets which block corresponding to the snapshot
 	 *
 	 * @return the block
 	 */
 	public Block getBlock() {
-		return block;
+		return this.world.getBlock(this.x, this.y, this.z);
 	}
 
 	/**
@@ -60,21 +100,7 @@ public class BlockSnapshot {
 	 *
 	 * @return the material
 	 */
-	public Material getMaterial() {
-		return material;
-	}
-
-	/**
-	 * Gets the auxiliary data associated with the block at the time of the
-	 * snapshot
-	 *
-	 * @return the auxiliary data, or null if there was no auxiliary data
-	 */
-	public Map<String, Tag> getAuxData() {
-		if (auxData == null) {
-			return null;
-		} else {
-			return Collections.unmodifiableMap(auxData);
-		}
+	public BlockMaterial getMaterial() {
+		return (BlockMaterial) super.getMaterial();
 	}
 }

@@ -27,19 +27,18 @@ package org.spout.api.geo.cuboid;
 
 import java.util.Set;
 
-import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
  */
-public abstract class Region extends Cube {
+public abstract class Region extends Cube implements AreaChunkAccess {
 	/**
 	 * Number of chunks on a side of a region
 	 */
@@ -60,61 +59,6 @@ public abstract class Region extends Cube {
 	}
 
 	/**
-	 * Gets the chunk at (x, y, z).
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 * @return the chunk, if one exists
-	 */
-	@LiveRead
-	public abstract Chunk getChunk(int x, int y, int z);
-
-	/**
-	 * Gets the chunk at (x, y, z).
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 * @param load whether to load or generate the chunk if none exists
-	 * @return the chunk
-	 */
-	@LiveRead
-	public abstract Chunk getChunk(int x, int y, int z, boolean load);
-
-	/**
-	 * True if the region has a loaded chunk at the (x, y, z).
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 * @return true if chunk exists
-	 */
-	@LiveRead
-	public abstract boolean hasChunk(int x, int y, int z);
-
-	/**
-	 * Queues a chunk for saving at the next available opportunity.
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 */
-	@DelayedWrite
-	public abstract void saveChunk(int x, int y, int z);
-
-	/**
-	 * Unloads a chunk, and queues it for saving, if requested.
-	 *
-	 * @param x the chunk x coordinate
-	 * @param y the chunk y coordinate
-	 * @param z the chunk z coordinate
-	 * @Param whether to save this chunk
-	 */
-	@DelayedWrite
-	public abstract void unloadChunk(int x, int y, int z, boolean save);
-
-	/**
 	 * Queues all chunks for saving at the next available opportunity.
 	 */
 	@DelayedWrite
@@ -128,14 +72,6 @@ public abstract class Region extends Cube {
 	 */
 	@DelayedWrite
 	public abstract void unload(boolean save);
-	
-	/**
-	 * Gets the number of currently loaded chunks in this region
-	 * 
-	 * @return number of loaded chunks
-	 */
-	@SnapshotRead
-	public abstract int getNumLoadedChunks();
 
 	/**
 	 * Gets all entities with the specified type.
@@ -163,18 +99,4 @@ public abstract class Region extends Cube {
 	 */
 	@SnapshotRead
 	public abstract Entity getEntity(int id);
-
-	/**
-	 * Gets an entity mapped to a point.
-	 *
-	 * @param pos
-	 * @return block entity
-	 */
-	@SnapshotRead
-	public abstract BlockController getBlockController(Point pos);
-	
-	@SnapshotRead
-	public BlockController getBlockController(int x, int y, int z) {
-		return getBlockController(new Point(getWorld(), x, y, z));
-	}
 }
