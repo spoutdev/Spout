@@ -25,10 +25,11 @@
  */
 package org.spout.api.command;
 
+import org.spout.api.Source;
 import org.spout.api.data.DataSubject;
 import org.spout.api.permissions.PermissionsSubject;
 
-public interface CommandSource extends PermissionsSubject, DataSubject {
+public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	/**
 	 * Sends a text message to the source of the command.
 	 *
