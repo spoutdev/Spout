@@ -52,28 +52,37 @@ public class GenericDatatableMap implements DatatableMap {
 
 	@Override
 	public void set(DatatableTuple value) {
-		map.put(value.hashCode(), value);
+		set(value.hashCode(), value);
 	}
 
 	@Override
 	public void set(String key, DatatableTuple value) {
-		set(stringmap.register(key), value);
+		setRaw(stringmap.register(key), value);
 	}
 
 	@Override
 	public void set(int key, DatatableTuple value) {
-		value.setKey(key);
-		set(value);
+		if (stringmap.getString(key) == null) {
+			throw new IllegalArgumentException("Key " + key + " does not have a matching string");
+		} else {
+			setRaw(key, value);
+		}
 	}
-
-	public int getKey(String key) {
-		return stringmap.register(key);
+	
+	private void setRaw(int key, DatatableTuple value) {
+		value.setKey(key);
+		map.put(key, value);
 	}
 
 	@Override
 	public DatatableTuple get(String key) {
-		if (!map.containsKey(getKey(key))) return niltype;
-		return map.get(getKey(key));
+		int intKey = getIntKey(key);
+		DatatableTuple value = map.get(intKey);
+		if (value == null) {
+			return niltype;
+		} else {
+			return value;
+		}
 	}
 
 	@Override
@@ -90,29 +99,39 @@ public class GenericDatatableMap implements DatatableMap {
 	@Override
 	public void output(OutputStream out) throws IOException {
 
+		// Should include table with
+		// int -> String mappings
+		// All entries in the map as
+		// int -> DatatableObjects
 	}
 
 	public void input(InputStream in) throws IOException {
 
 	}
 
+	@Override
 	public boolean contains(String key) {
-		return map.containsKey(getKey(key));
+		int intKey = getIntKey(key);
+		return map.containsKey(intKey);
+	}
+	
+	@Override
+	public boolean contains(int key) {
+		return map.containsKey(key);
 	}
 
 	@Override
 	public int getIntKey(String key) {
-		return ROOT_STRING_MAP.register(key);
+		return stringmap.register(key);
 	}
 
 	@Override
 	public String getStringKey(int key) {
-		return ROOT_STRING_MAP.getString(key);
+		return stringmap.getString(key);
 	}
 
 	@Override
 	public DatatableTuple get(int key) {
-		// TODO Auto-generated method stub
-		return null;
+		return map.get(key);
 	}
 }

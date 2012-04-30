@@ -91,6 +91,22 @@ public interface DatatableMap extends Outputable {
 	 * @return
 	 */
 	public DatatableTuple get(int key);
+	
+	/**
+	 * Gets if the map contains a particular key String
+	 * 
+	 * @param key
+	 * @return true if the map contains the key
+	 */
+	public boolean contains(String key);
+	
+	/**
+	 * Gets if the map contains a particular key int
+	 * 
+	 * @param key
+	 * @return true if the int maps to a String and the map contains the key
+	 */
+	public boolean contains(int key);
 
 	public byte[] compress();
 
