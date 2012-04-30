@@ -25,6 +25,8 @@
  */
 package org.spout.engine;
 
+import java.net.InetAddress;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Spout;
 import org.spout.api.event.EventHandler;
@@ -78,9 +80,12 @@ public class InternalEventListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player p = event.getPlayer();
 		PlayerBanKickEvent banEvent = null;
-		if (server.isPlayerBanned(p.getName())) {
+		InetAddress address = p.getAddress();
+		if (address == null) {
+			event.disallow("Invalid IP Address!");
+		} else if (server.isPlayerBanned(p.getName())) {
 			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage(p.getName())));
-		} else if (server.isIpBanned(p.getAddress().getHostAddress())) {
+		} else if (server.isIpBanned(address.getHostAddress())) {
 			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getBanMessage(p.getAddress().getHostAddress())));
 		}
 
