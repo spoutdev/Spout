@@ -126,7 +126,10 @@ public class SpoutPlayer implements Player {
 	@Override
 	@SnapshotRead
 	public InetAddress getAddress() {
-		return session.getAddress().getAddress();
+		if (session != null && session.getAddress() != null) {
+			return session.getAddress().getAddress();
+		}
+		return null;
 	}
 
 	@DelayedWrite
