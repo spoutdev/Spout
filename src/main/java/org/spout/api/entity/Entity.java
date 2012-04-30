@@ -82,7 +82,7 @@ public interface Entity extends Datatable, Source {
 
 	public CollisionModel getCollision();
 
-	
+
 	/**
 	 * Called when the entity is set to be sent to clients
 	 */
@@ -196,32 +196,32 @@ public interface Entity extends Datatable, Source {
 	@SnapshotRead
 	public int getViewDistance();
 
-	
+
 	/**
 	 * Sets whether or not the entity is an observer
-	 * 
+	 *
 	 * An entity that is an observer is an entity that keeps chunks loaded in memory
-	 * 
+	 *
 	 * @param obs True if the entity should be an observer, false if not
 	 */
 	@DelayedWrite
 	public void setObserver(boolean obs);
-	
+
 	/**
 	 * Tells whether or not the entity is an Observer.
-	 * 
+	 *
 	 * an entity that is an observer will keep chunks loaded in memory.
-	 * 
+	 *
 	 * @return true if the entity is an observer, false if not
 	 */
 	@SnapshotRead
 	public boolean isObserver();
-	
+
 	/**
 	 * Tells whether or not the entity is an Observer.
-	 * 
+	 *
 	 * an entity that is an observer will keep chunks loaded in memory.
-	 * 
+	 *
 	 * @return true if the entity is an observer, false if not
 	 */
 	@LiveRead
@@ -233,6 +233,12 @@ public interface Entity extends Datatable, Source {
 	 * @return
 	 */
 	public Transform getTransform();
+
+	/**
+	 * Gets a {@link Transform} representing the last tick's position, scale and rotation of the entity.
+	 * @return
+	 */
+	public Transform getLastTransform();
 
 	/**
 	 * Gets the position, scale and rotation of the entity from the given a {@link Transform}.
@@ -367,14 +373,14 @@ public interface Entity extends Datatable, Source {
 	 * Gets the max health of the entity
 	 */
 	public int getMaxHealth();
-	
-	
+
+
 	/**
 	 * Attaches a component to this entity.  If it's already attached, it will fail silently
 	 * @param component
 	 */
 	public void attachComponent(EntityComponent component);
-	
+
 	/**
 	 * removes a component from an entity.  Fails silently if component doesnt exist
 	 * @param component
