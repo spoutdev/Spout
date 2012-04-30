@@ -595,25 +595,25 @@ public class SpoutEntity implements Entity {
 	// TODO - datatable and atomics
 	@Override
 	public void setData(String key, int value) {
-		int ikey = map.getKey(key);
+		int ikey = map.getIntKey(key);
 		map.set(ikey, new DatatableInt(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, float value) {
-		int ikey = map.getKey(key);
+		int ikey = map.getIntKey(key);
 		map.set(ikey, new DatatableFloat(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, boolean value) {
-		int ikey = map.getKey(key);
+		int ikey = map.getIntKey(key);
 		map.set(ikey, new DatatableBool(ikey, value));
 	}
 
 	@Override
 	public void setData(String key, Serializable value) {
-		int ikey = map.getKey(key);
+		int ikey = map.getIntKey(key);
 		map.set(ikey, new DatatableSerializable(ikey, value));
 	}
 
