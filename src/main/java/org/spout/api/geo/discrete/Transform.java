@@ -25,7 +25,7 @@
  */
 package org.spout.api.geo.discrete;
 
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.spout.api.geo.World;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -124,13 +124,15 @@ public class Transform {
 	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
 		this.position = new Point(world, px, py, pz);
 		this.rotation = new Quaternion(rx, ry, rz, rw);
-		this.scale = new Vector3(sx, sy, sz);		
+		this.scale = new Vector3(sx, sy, sz);
 	}
 
 	/**
 	 * Atomically sets this point to the given components
 	 *
-	 * @param point
+	 * @param p
+	 * @param r
+	 * @param s
 	 */
 	@Threadsafe
 	public void set(Point p, Quaternion r, Vector3 s) {
@@ -149,13 +151,13 @@ public class Transform {
 	@Threadsafe
 	public Transform createSum(Transform t) {
 		Transform r = new Transform();
-			
+
 		r.setPosition(position.add(t.getPosition()));
 		r.setRotation(rotation.multiply(t.getRotation()));
 		r.setScale(scale.add(t.getScale()));
 		r.setParent(parent);
 		return r;
-	
+
 	}
 
 	/**
@@ -165,16 +167,16 @@ public class Transform {
 	 * @return the snapshot
 	 */
 	@Threadsafe
-	public Transform getAbsolutePosition() {		
+	public Transform getAbsolutePosition() {
 		if (parent == null) {
 			Transform r = copy();
-			return r;				
+			return r;
 		} else {
 			Transform r = createSum(parent.getAbsolutePosition());
 			return r;
-		
+
 		}
-		
+
 	}
 
 	/**
@@ -185,14 +187,14 @@ public class Transform {
 	@Threadsafe
 	public Transform copy() {
 		Transform t = new Transform();
-		
+
 		t.setPosition(position);
 		t.setRotation(rotation);
 		t.setScale(scale);
 		t.setParent(parent);
-		
+
 		return t;
-			
+
 	}
 
 	/**
@@ -202,8 +204,17 @@ public class Transform {
 	 */
 	@Override
 	@Threadsafe
-	public String toString() {	
+	public String toString() {
 		return getClass().getSimpleName() + StringUtil.toString(position, rotation, scale);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Transform)) {
+			return false;
+		}
+		Transform t = (Transform) other;
+		return position.equals(t.position) && rotation.equals(t.rotation) && scale.equals(t.scale) && ObjectUtils.equals(parent, t.parent);
 	}
 
 }

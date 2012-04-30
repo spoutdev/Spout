@@ -29,8 +29,6 @@ import org.spout.api.util.StringUtil;
 
 /**
  * Represents a rotation around a unit 4d circle.
- *
- *
  */
 public class Quaternion {
 	protected final float x, y, z, w;
@@ -107,7 +105,7 @@ public class Quaternion {
 	 * Copy Constructor
 	 */
 	public Quaternion(Quaternion rotation) {
-		this(rotation.x, rotation.y, rotation.z, rotation.w);
+		this(rotation.x, rotation.y, rotation.z, rotation.w, false);
 	}
 
 	/**
@@ -146,21 +144,17 @@ public class Quaternion {
 		return w;
 	}
 
-
-	public float getPitch(){
+	public float getPitch() {
 		return getAxisAngles().getX();
-
 	}
-	public float getYaw(){
+
+	public float getYaw() {
 		return getAxisAngles().getY();
-
 	}
-	public float getRoll(){
+
+	public float getRoll() {
 		return getAxisAngles().getZ();
-
 	}
-
-
 
 	/**
 	 * Returns the length squared of the quaternion
@@ -355,18 +349,18 @@ public class Quaternion {
 		final float q2 = a.x; // pitch
 		final float q3 = a.y; // yaw
 
-		final double r1,r2,r3,test;
-		test = q0*q2-q3*q1;
+		final double r1, r2, r3, test;
+		test = q0 * q2 - q3 * q1;
 
 		if (Math.abs(test) < 0.4999) {
-			r1 = Math.atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
-			r2 = Math.asin(2*test);
-			r3 = Math.atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3));
+			r1 = Math.atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
+			r2 = Math.asin(2 * test);
+			r3 = Math.atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q2 * q2 + q3 * q3));
 		} else { // pitch is at north or south pole
-			int sign = (test < 0) ? -1:1;
+			int sign = (test < 0) ? -1 : 1;
 			r1 = 0;
-			r2 = sign * Math.PI/2;
-			r3 = -sign * 2 * Math.atan2(q1,q0);
+			r2 = sign * Math.PI / 2;
+			r3 = -sign * 2 * Math.atan2(q1, q0);
 		}
 
 		// ...and back to Tait-Bryan
