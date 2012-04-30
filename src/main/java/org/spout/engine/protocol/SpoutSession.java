@@ -329,11 +329,7 @@ public final class SpoutSession implements Session {
 			//If its null or can't be get , just ignore it
 			//If disconnect fails, we just ignore it for now.
 			try {
-				Entity entity = player.getEntity();
-				if (entity != null) {
-					entity.kill();
-				}
-				((SpoutPlayer) player).disconnect();
+				player.disconnect();
 			} catch (Exception e) { }
 			player = null; // in case we are disposed twice
 		}

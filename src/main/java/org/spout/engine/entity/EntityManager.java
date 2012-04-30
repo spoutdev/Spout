@@ -210,7 +210,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 				controller.preSnapshot();
 				if (controller instanceof PlayerController) {
 					Player p = ((PlayerController) controller).getPlayer();
-					NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
+					NetworkSynchronizer n = p.getNetworkSynchronizer();
 					if (n != null) {
 						n.preSnapshot();
 					}

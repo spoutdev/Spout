@@ -72,7 +72,7 @@ public class InternalEventListener implements Listener {
 				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
 			}
 		} else {
-			event.getSession().disconnect("Player is already online", false);
+			event.getSession().disconnect("Player is already online");
 		}
 	}
 

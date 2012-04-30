@@ -150,6 +150,7 @@ public class SpoutPlayer implements Player {
 		if (onlineLive.compareAndSet(false, true)) {
 			sessionLive.set(session);
 			entityLive.set(entity);
+			copyToSnapshot();
 			return true;
 		} else {
 			return false;

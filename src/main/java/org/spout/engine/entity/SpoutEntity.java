@@ -132,13 +132,10 @@ public class SpoutEntity implements Entity {
 
 	public void onTick(float dt) {
 		lastTransform = transform.copy();
-		Quaternion lastRotation = transform.getRotation();
 
 		if (controller != null && controller.getParent() != null && !isDead()) {
 			controller.onTick(dt);
 		}
-
-		setRotation(lastRotation);
 
 		if (controllerLive.get() instanceof PlayerController) {
 			Player player = ((PlayerController) controllerLive.get()).getPlayer();
@@ -201,9 +198,14 @@ public class SpoutEntity implements Entity {
 	}
 
 	@Override
+	public Transform getLastTransform() {
+		return lastTransform.copy();
+	}
+
+	@Override
 	public void setTransform(Transform transform) {
 		if (activeThreadIsValid("set transform")) {
-			transform.set(transform);
+			this.transform.set(transform);
 		}
 	}
 
@@ -324,7 +326,7 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	private final boolean activeThreadIsValid(String attemptedAction) {
+	private boolean activeThreadIsValid(String attemptedAction) {
 		Thread current = Thread.currentThread();
 		boolean invalidAccess = !(this.owningThread == current || Spout.getEngine().getMainThread() == current);
 
