@@ -25,6 +25,7 @@
  */
 package org.spout.api.datatable.value;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,12 +35,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.datatable.DatatableTuple;
+import org.spout.api.util.VarInt;
 
 public abstract class DatatableObject implements DatatableTuple {
 	public static final byte PERSIST = 0x1;
 	public static final byte SYNC = 0x2;
 
-	protected final int keyID;
+	protected final AtomicInteger keyID;
 	protected final AtomicInteger flags;
 	protected final AtomicReference<Serializable> data;
 	protected final AtomicBoolean dirty;
@@ -47,12 +49,16 @@ public abstract class DatatableObject implements DatatableTuple {
 	
 	private static DatatableObject[] newInstanceArray = new DatatableObject[5];
 
+	public DatatableObject() {
+		this(0);
+	}
+	
 	public DatatableObject(int key) {
 		this(key, null);
 	}
 
 	public DatatableObject(int key, Serializable dat) {
-		keyID = key;
+		keyID = new AtomicInteger(key);
 		data = new AtomicReference<Serializable>(dat);
 		flags = new AtomicInteger(0);
 		dirty = new AtomicBoolean(false);
@@ -91,6 +97,10 @@ public abstract class DatatableObject implements DatatableTuple {
 		data.set((Serializable) value);
 	}
 	
+	public void setKey(int key) {
+		keyID.set(key);
+	}
+	
 	@Override
 	public boolean compareAndSet(Object expected, Object newValue) {
 		if (newValue != null && !(newValue instanceof Serializable)) {
@@ -103,7 +113,7 @@ public abstract class DatatableObject implements DatatableTuple {
 
 	@Override
 	public int hashCode() {
-		return keyID;
+		return keyID.get();
 	}
 
 	@Override
@@ -174,6 +184,8 @@ public abstract class DatatableObject implements DatatableTuple {
 		return false;
 	}
 	
+	public abstract int fixedLength();
+	
 	public abstract byte getObjectTypeId();
 	
 	public abstract DatatableObject newInstance(int key);
@@ -183,9 +195,35 @@ public abstract class DatatableObject implements DatatableTuple {
 	public abstract void decompress(byte[] compressed);
 	
 	public void output(OutputStream out) throws IOException {
+		out.write(getObjectTypeId());
+		VarInt.writeInt(out, hashCode());
+		byte[] compressed = compress();
+		int expectedLength = fixedLength();
+		if (expectedLength == -1) {
+			VarInt.writeInt(out, compressed.length);
+		} else if (expectedLength != compressed.length) {
+			throw new IllegalStateException("Fixed length DatatableObject did not match actual length");
+		}
+		out.write(compressed);
 	};
 
-	public void input(InputStream in) throws IOException {
+	public static DatatableObject input(InputStream in) throws IOException {
+		int typeId = in.read();
+		if (typeId == -1) {
+			throw new EOFException("InputStream did not contain a DatatableObject");
+		}
+		int key = VarInt.readInt(in);
+		DatatableObject obj = newInstance(typeId, key);
+		int expectedLength = obj.fixedLength();
+		if (expectedLength == -1) {
+			expectedLength = VarInt.readInt(in);
+		}
+		byte[] compressed = new byte[expectedLength];
+		while (expectedLength > 0) {
+			expectedLength -= in.read(compressed, compressed.length - expectedLength, expectedLength);
+		}
+		obj.decompress(compressed);
+		return obj;
 	};
 	
 }

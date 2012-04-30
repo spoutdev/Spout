@@ -26,6 +26,8 @@
 package org.spout.api.datatable;
 
 public interface DatatableTuple extends Outputable {
+	public void setKey(int key);
+	
 	public void set(Object value);
 
 	public boolean compareAndSet(Object expected, Object newValue);

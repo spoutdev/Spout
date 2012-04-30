@@ -52,7 +52,7 @@ public class GenericDatatableMap implements DatatableMap {
 
 	@Override
 	public void set(DatatableTuple value) {
-		set(value.hashCode(), value);
+		map.put(value.hashCode(), value);
 	}
 
 	@Override
@@ -62,7 +62,8 @@ public class GenericDatatableMap implements DatatableMap {
 
 	@Override
 	public void set(int key, DatatableTuple value) {
-		map.put(key, value);
+		value.setKey(key);
+		set(value);
 	}
 
 	public int getKey(String key) {
@@ -91,12 +92,27 @@ public class GenericDatatableMap implements DatatableMap {
 
 	}
 
-	@Override
 	public void input(InputStream in) throws IOException {
 
 	}
 
 	public boolean contains(String key) {
 		return map.containsKey(getKey(key));
+	}
+
+	@Override
+	public int getIntKey(String key) {
+		return ROOT_STRING_MAP.register(key);
+	}
+
+	@Override
+	public String getStringKey(int key) {
+		return ROOT_STRING_MAP.getString(key);
+	}
+
+	@Override
+	public DatatableTuple get(int key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

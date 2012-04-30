@@ -32,13 +32,17 @@ package org.spout.api.datatable;
 public interface DatatableMap extends Outputable {
 	/**
 	 * Adds the Datatable Tuple to the map, using hashCode() as the key
-	 *
+	 * <br>
+	 * The int used must correspond to a String key.
+	 * 
 	 * @param value
 	 */
 	public void set(DatatableTuple value);
 
 	/**
-	 * Adds the DatatableTuple to the map, using the int as the key
+	 * Adds the DatatableTuple to the map, using the int as the key.<br>
+	 * <br>
+	 * The given int must correspond to a String key.
 	 *
 	 * @param key
 	 * @param value
@@ -47,14 +51,46 @@ public interface DatatableMap extends Outputable {
 
 	/**
 	 * Adds the DatatableTuple to the map, using the string key. This triggers a
-	 * string lookup
+	 * string lookup and registration if necessary.
 	 *
 	 * @param key
 	 * @param value
 	 */
 	public void set(String key, DatatableTuple value);
+	
+	/**
+	 * Gets the integer key corresponding to a particular String.<br>
+	 * <br>
+	 * This method will register the String if no mapping already exists
+	 * 
+	 * @param key
+	 * @return the int corresponding to the String
+	 */
+	public int getIntKey(String key);
+	
+	/**
+	 * Gets the String key corresponding to a particular int.
+	 * 
+	 * @param key
+	 * @return the String corresponding to the int, or null if no match
+	 */
+	public String getStringKey(int key);
 
+	/**
+	 * Gets the DatatableTuple corresponding to the given String key
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public DatatableTuple get(String key);
+	
+	/**
+	 * Gets the DatatableTuple corresponding to the given int key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public DatatableTuple get(int key);
 
 	public byte[] compress();
 

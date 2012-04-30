@@ -90,4 +90,9 @@ public class DatatableFloat extends DatatableObject {
 		return new DatatableFloat(key);
 	}
 
+	@Override
+	public int fixedLength() {
+		return 4;
+	}
+	
 }

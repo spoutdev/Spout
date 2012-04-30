@@ -173,6 +173,16 @@ public class StringMap {
 		}
 		throw new IllegalStateException("StringMap id space exhausted");
 	}
+	
+	/**
+	 * Gets the String corresponding to a given int.
+	 * 
+	 * @param value
+	 * @return the String or null if no match
+	 */
+	public String getString(int value) {
+		return store.reverseGet(value);
+	}
 
 	/**
 	 * Saves the map to the persistence system

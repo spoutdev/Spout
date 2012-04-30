@@ -1,5 +1,9 @@
 package org.spout.api.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.spout.api.util.list.ByteCircularBufferFIFO;
 
 /**
@@ -12,6 +16,21 @@ import org.spout.api.util.list.ByteCircularBufferFIFO;
 public class VarInt {
 
 	public static void writeInt(ByteCircularBufferFIFO buf, int data) {
+		if (data < 0 || data >= 0x00007F00) {
+			buf.write((byte)(0xFF));
+			buf.write((byte)(data >> 24));
+			buf.write((byte)(data >> 16));
+			buf.write((byte)(data >> 8));
+			buf.write((byte)(data >> 0));
+		} else if (data >= 0x00000080) {
+			buf.write((byte)(0x80 | (data >> 8)));
+			buf.write((byte)(       (data >> 0)));
+		} else {
+			buf.write((byte)data);
+		}
+	}
+	
+	public static void writeInt(OutputStream buf, int data) throws IOException {
 		if (data < 0 || data >= 0x00007F00) {
 			buf.write((byte)(0xFF));
 			buf.write((byte)(data >> 24));
@@ -38,6 +57,32 @@ public class VarInt {
 			byte[] arr = new byte[4];
 			if (buf.read(arr) != 4) {
 				throw new IllegalStateException("FIFO ran out of bytes when trying to read integer");
+			}
+			data |= (arr[0] & 0xFF) << 24;
+			data |= (arr[1] & 0xFF) << 16;
+			data |= (arr[2] & 0xFF) << 8;
+			data |= (arr[3] & 0xFF) << 0;
+		} else if ((b1 & 0x80) == 0x80) {
+			int b2 = buf.read();
+			return ((b1 << 8) | (b2 & 0xFF)) & 0x7FFF;
+		} else {
+			return b1;
+		}
+		return data;
+	}
+	
+	public static int readInt(InputStream buf) throws IOException {
+
+		int b1 = buf.read();
+		if (b1 == -1) {
+			throw new IllegalStateException("InputStream reached end when trying to read integer");
+		}
+
+		int data = 0;
+		if (b1 == 255) {
+			byte[] arr = new byte[4];
+			if (buf.read(arr) != 4) {
+				throw new IllegalStateException("InputStream ran out of bytes when trying to read integer");
 			}
 			data |= (arr[0] & 0xFF) << 24;
 			data |= (arr[1] & 0xFF) << 16;

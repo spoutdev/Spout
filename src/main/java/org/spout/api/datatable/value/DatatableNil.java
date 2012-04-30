@@ -104,4 +104,9 @@ public class DatatableNil extends DatatableObject {
 	public DatatableObject newInstance(int key) {
 		return new DatatableNil(key);
 	}
+	
+	@Override
+	public int fixedLength() {
+		return 0;
+	}
 }

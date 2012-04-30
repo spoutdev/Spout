@@ -112,4 +112,9 @@ public class DatatableSerializable extends DatatableObject {
 		
 	}
 
+	@Override
+	public int fixedLength() {
+		return -1;
+	}
+
 }

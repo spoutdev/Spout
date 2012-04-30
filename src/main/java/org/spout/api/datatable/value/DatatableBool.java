@@ -95,4 +95,9 @@ public class DatatableBool extends DatatableObject {
 		return new DatatableBool(key);
 	}
 
+	@Override
+	public int fixedLength() {
+		return 1;
+	}
+	
 }

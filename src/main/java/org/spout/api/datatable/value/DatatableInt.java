@@ -107,5 +107,10 @@ public class DatatableInt extends DatatableObject {
 	public DatatableObject newInstance(int key) {
 		return new DatatableInt(key);
 	}
+	
+	@Override
+	public int fixedLength() {
+		return 4;
+	}
 
 }
