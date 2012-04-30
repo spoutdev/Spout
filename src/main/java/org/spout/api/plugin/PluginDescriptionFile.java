@@ -307,22 +307,22 @@ public class PluginDescriptionFile implements Datatable {
 	}
 
 	public void setData(String key, int value) {
-		int ikey = datatableMap.getKey(key);
+		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableInt(ikey, value));
 	}
 
 	public void setData(String key, float value) {
-		int ikey = datatableMap.getKey(key);
+		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableFloat(ikey, value));
 	}
 
 	public void setData(String key, boolean value) {
-		int ikey = datatableMap.getKey(key);
+		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableBool(ikey, value));
 	}
 
 	public void setData(String key, Serializable value) {
-		int ikey = datatableMap.getKey(key);
+		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableSerializable(ikey, value));
 	}
 
