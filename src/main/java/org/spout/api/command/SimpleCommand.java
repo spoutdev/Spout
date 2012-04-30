@@ -67,8 +67,13 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command addSubCommand(Named owner, String primaryName) {
+		boolean wasLocked = false;
 		if (isLocked()) {
-			return this;
+			if (unlock(owner)) {
+				wasLocked = true;
+			} else {
+				return this;
+			}
 		}
 		SimpleCommand sub = new SimpleCommand(owner, primaryName);
 		while (children.containsKey(primaryName)) {
@@ -76,6 +81,9 @@ public class SimpleCommand implements Command {
 		}
 		children.put(primaryName, sub);
 		sub.parent = this;
+		if (wasLocked) {
+			lock(owner);
+		}
 		return sub;
 	}
 
