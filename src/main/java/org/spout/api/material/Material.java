@@ -292,4 +292,18 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public void onInteract(Entity entity, Action type) {
 	}
+
+	/**
+	 * Checks whether this material equals any of the materials given
+	 * @param materials to compare to
+	 * @return whether it equals one of the materials
+	 */
+	public boolean equals(Material... materials) {
+		for (Material mat : materials ){
+			if (this.equals(mat)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
