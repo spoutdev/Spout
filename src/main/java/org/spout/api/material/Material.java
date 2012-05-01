@@ -30,7 +30,7 @@ import java.util.Map;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
-import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.GenericMaterialData;
 import org.spout.api.material.source.MaterialData;
@@ -267,11 +267,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	/**
 	 * Called when an entity interacts with the world while wielding this material
 	 * @param entity that interacted
-	 * @param position of the block
+	 * @param block that got interacted with
 	 * @param type of interaction
 	 * @param clickedface of the block
 	 */
-	public void onInteract(Entity entity, Point position, Action type, BlockFace clickedface) {
+	public void onInteract(Entity entity, Block block, Action type, BlockFace clickedface) {
 	}
 	
 	/**
