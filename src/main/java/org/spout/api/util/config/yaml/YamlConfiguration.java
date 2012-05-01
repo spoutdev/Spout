@@ -80,7 +80,9 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		BufferedReader in = null;
 		try {
 			if (!file.exists()) {
-				file.getParentFile().mkdirs();
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 

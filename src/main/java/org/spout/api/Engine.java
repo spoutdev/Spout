@@ -29,6 +29,7 @@ import java.io.File;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -39,6 +40,7 @@ import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.inventory.RecipeManager;
+import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
@@ -55,6 +57,12 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents the core of an implementation of an engine (powers a game).
  */
 public interface Engine extends Named {
+	/**
+	 * The permission to be used for standard broadcasts. Implementations should register
+	 * this permission with {@link org.spout.api.permissions.DefaultPermissions}
+	 */
+	public static final String STANDARD_BROADCAST_PERMISSION = "spout.broadcast.standard";
+
 	/**
 	 * Gets the name of this game's implementation
 	 *
@@ -135,6 +143,26 @@ public interface Engine extends Named {
 	public void broadcastMessage(String message);
 
 	/**
+	 * Returns a Set of all permissions subjects with the provided node. Plugins wishing
+	 * to modify the result of this event should listen to the {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent} event.
+	 *
+	 * @param permission The permission to check
+	 * @return Every {@link PermissionsSubject} with the specified node
+	 */
+	public Set<PermissionsSubject> getAllWithNode(String permission);
+
+	/**
+	 * Broadcasts the given message to all players
+	 *
+	 * The implementation of broadcast is identical to calling a {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent}
+	 * event, iterating over each element in getReceivers, invoking {@link CommandSource#sendMessage(String)} for
+	 * each CommandSource.
+	 *
+	 * @param message to send
+	 */
+	public void broadcastMessage(String message, String permission);
+
+	/**
 	 * Gets singleton instance of the plugin manager, used to interact with
 	 * other plugins and register events.
 	 *
@@ -177,10 +205,10 @@ public interface Engine extends Named {
 	 * @return config folder
 	 */
 	public File getConfigFolder();
-	
+
 	/**
 	 * Gets the folder that contains world, entity and player data.
-	 * 
+	 *
 	 * @return data
 	 */
 	public File getDataFolder();
@@ -270,7 +298,7 @@ public interface Engine extends Named {
 	 */
 	@LiveRead
 	public World loadWorld(String name, WorldGenerator generator);
-	
+
 	/**
 	 * Unloads this world from memory. <br/>
 	 * <br/>
@@ -318,7 +346,7 @@ public interface Engine extends Named {
 	 * data is saved, and all threads are ended cleanly.
 	 */
 	public void stop();
-	
+
 	/**
 	 * Ends this game instance safely. All worlds, players, and configuration
 	 * data is saved, and all threads are ended cleanly.
@@ -358,7 +386,7 @@ public interface Engine extends Named {
 	 */
 	public Platform getPlatform();
 
-	
+
 	/**
 	 * Gets the network channel group.
 	 *
@@ -396,14 +424,14 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the service manager
-	 * 
+	 *
 	 * @return ServiceManager
 	 */
 	public ServiceManager getServiceManager();
 
 	/**
 	 * Gets the recipe manager
-	 * 
+	 *
 	 * @return RecipeManager
 	 */
 	public RecipeManager getRecipeManager();
@@ -416,8 +444,8 @@ public interface Engine extends Named {
 	 * @return true if server is started with the -debug flag, false if not
 	 */
 	public boolean debugMode();
-	
-	
+
+
 	/**
 	 * Gets the main thread that is used to manage all execution on the server. <br/>
 	 * <br/>
@@ -425,7 +453,7 @@ public interface Engine extends Named {
 	 * @return main thread
 	 */
 	public Thread getMainThread();
-	
+
 	/**
 	 * Sets the default world.
 	 *
@@ -467,5 +495,5 @@ public interface Engine extends Named {
 	 * @return A list of all commands at the time.
 	 */
 	public String[] getAllCommands();
-	
+
 }

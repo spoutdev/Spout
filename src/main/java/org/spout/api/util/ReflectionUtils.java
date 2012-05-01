@@ -36,15 +36,26 @@ import java.util.List;
  * @author zml2008
  */
 public class ReflectionUtils {
+
+	/**
+	 * Get all the public fields in a class, as well as those in its superclasses (excluding {@link Object})
+	 *
+	 * @param clazz The class to get all fields in
+	 * @return The public fields in the class
+	 */
+	public static List<Field> getFieldsRecur(Class<?> clazz) {
+		return getFieldsRecur(clazz, false);
+	}
+
 	/**
 	 * Get all the public fields in a class, as well as those in its superclasses
 	 *
 	 * @see Class#getFields()
 	 * @param clazz The class to get all fields in
 	 * @param includeObject Whether to include fields in {@link Object}
-	 * @return The fields in the class
+	 * @return The public fields in the class
 	 */
-	private static List<Field> getFieldsRecur(Class<?> clazz, boolean includeObject) {
+	public static List<Field> getFieldsRecur(Class<?> clazz, boolean includeObject) {
 		List<Field> fields = new ArrayList<Field>();
 		while(clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			fields.addAll(Arrays.asList(clazz.getFields()));
@@ -60,7 +71,7 @@ public class ReflectionUtils {
 	 * @return The fields in the class
 	 */
 	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz) {
-		return getFieldsRecur(clazz, false);
+		return getDeclaredFieldsRecur(clazz, false);
 	}
 
 	/**
