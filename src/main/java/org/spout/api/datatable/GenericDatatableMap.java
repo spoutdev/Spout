@@ -26,19 +26,26 @@
 package org.spout.api.datatable;
 
 import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import org.spout.api.datatable.value.DatatableNil;
-import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.util.StringMap;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.spout.api.datatable.procedures.GDMCompressProcedure;
+import org.spout.api.datatable.value.DatatableNil;
+import org.spout.api.datatable.value.DatatableObject;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.StringMap;
+import org.spout.api.util.VarInt;
+
 public class GenericDatatableMap implements DatatableMap {
 	private static final StringMap ROOT_STRING_MAP = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 	private final StringMap stringmap;
-	TSynchronizedIntObjectMap<DatatableTuple> map = new TSynchronizedIntObjectMap<DatatableTuple>(new TIntObjectHashMap<DatatableTuple>());
+	TSynchronizedIntObjectMap<DatatableObject> map = new TSynchronizedIntObjectMap<DatatableObject>(new TIntObjectHashMap<DatatableObject>());
 
 	private final DatatableNil niltype = new DatatableNil();
 
@@ -51,17 +58,17 @@ public class GenericDatatableMap implements DatatableMap {
 	}
 
 	@Override
-	public void set(DatatableTuple value) {
+	public void set(DatatableObject value) {
 		set(value.hashCode(), value);
 	}
 
 	@Override
-	public void set(String key, DatatableTuple value) {
+	public void set(String key, DatatableObject value) {
 		setRaw(stringmap.register(key), value);
 	}
 
 	@Override
-	public void set(int key, DatatableTuple value) {
+	public void set(int key, DatatableObject value) {
 		if (stringmap.getString(key) == null) {
 			throw new IllegalArgumentException("Key " + key + " does not have a matching string");
 		} else {
@@ -69,15 +76,15 @@ public class GenericDatatableMap implements DatatableMap {
 		}
 	}
 	
-	private void setRaw(int key, DatatableTuple value) {
+	private void setRaw(int key, DatatableObject value) {
 		value.setKey(key);
 		map.put(key, value);
 	}
 
 	@Override
-	public DatatableTuple get(String key) {
+	public DatatableObject get(String key) {
 		int intKey = getIntKey(key);
-		DatatableTuple value = map.get(intKey);
+		DatatableObject value = map.get(intKey);
 		if (value == null) {
 			return niltype;
 		} else {
@@ -87,26 +94,97 @@ public class GenericDatatableMap implements DatatableMap {
 
 	@Override
 	public byte[] compress() {
-		// TODO Auto-generated method stub
-		return null;
+		final ByteArrayOutputStream stringOutput = new ByteArrayOutputStream();
+		final ByteArrayOutputStream objectOutput = new ByteArrayOutputStream();
+		
+		GDMCompressProcedure procedure = new GDMCompressProcedure(this, stringOutput, objectOutput);
+		
+		boolean success = map.forEachEntry(procedure);
+		
+		if (!success) {
+			throw new IllegalStateException("Unable to compress GenericDatatableMap");
+		}
+		
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		try {
+			VarInt.writeInt(out, procedure.strings);
+			VarInt.writeInt(out, procedure.objects);
+			out.write(stringOutput.toByteArray());
+			out.write(objectOutput.toByteArray());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return out.toByteArray();
+	}
+	
+	public void decompress(byte[] compressedData, boolean wipe) {
+		if (wipe) {
+			map.clear();
+		}
+		InputStream in = new ByteArrayInputStream(compressedData);
+		try {
+			TIntIntHashMap keyReplacement = new TIntIntHashMap();
+			int strings = VarInt.readInt(in);
+			int objects = VarInt.readInt(in);
+			for (int i = 0; i < strings; i++) {
+				int key = VarInt.readInt(in);
+				String string = VarInt.readString(in);
+				int newKey = getIntKey(string);
+				keyReplacement.put(key, newKey);
+			}
+			for (int i = 0; i < objects; i++) {
+				DatatableObject obj = DatatableObject.input(in);
+				int key = obj.hashCode();
+				if (!keyReplacement.contains(key)) {
+					throw new IOException("Unknown key when decompressing GenericDatatableMap");
+				} else {
+					int newKey = keyReplacement.get(key);
+					obj.setKey(newKey);
+					setRaw(newKey, obj);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	@Override
 	public void decompress(byte[] compressedData) {
-		// TODO Auto-generated method stub
+		decompress(compressedData, true);
 	}
 
 	@Override
 	public void output(OutputStream out) throws IOException {
-
-		// Should include table with
-		// int -> String mappings
-		// All entries in the map as
-		// int -> DatatableObjects
+		VarInt.writeInt(out, -1);
+		byte[] compressed = compress();
+		VarInt.writeInt(out, compressed.length);
+		out.write(compressed);
+	}
+	
+	public void input(InputStream in) throws IOException {
+		input(in, true);
 	}
 
-	public void input(InputStream in) throws IOException {
-
+	public void input(InputStream in, boolean wipe) throws IOException {
+		int id = VarInt.readInt(in);
+		if (id != -1) {
+			throw new IOException("Unable to parse GenericDatatableMap");
+		}
+		int length = VarInt.readInt(in);
+		byte[] compressed = new byte[length];
+		while (length > 0) {
+			length -= in.read(compressed, compressed.length - length, length);
+		}
+		decompress(compressed, wipe);
+	}
+	
+	public static DatatableMap readMap(InputStream in) throws IOException {
+		GenericDatatableMap map = new GenericDatatableMap();
+		map.input(in);
+		return map;
 	}
 
 	@Override
@@ -131,7 +209,8 @@ public class GenericDatatableMap implements DatatableMap {
 	}
 
 	@Override
-	public DatatableTuple get(int key) {
+	public DatatableObject get(int key) {
 		return map.get(key);
 	}
+	
 }

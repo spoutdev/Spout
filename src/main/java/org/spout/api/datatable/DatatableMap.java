@@ -25,6 +25,8 @@
  */
 package org.spout.api.datatable;
 
+import org.spout.api.datatable.value.DatatableObject;
+
 /**
  * Interface for a Datatable Map.
  *
@@ -37,7 +39,7 @@ public interface DatatableMap extends Outputable {
 	 * 
 	 * @param value
 	 */
-	public void set(DatatableTuple value);
+	public void set(DatatableObject value);
 
 	/**
 	 * Adds the DatatableTuple to the map, using the int as the key.<br>
@@ -47,7 +49,7 @@ public interface DatatableMap extends Outputable {
 	 * @param key
 	 * @param value
 	 */
-	public void set(int key, DatatableTuple value);
+	public void set(int key, DatatableObject value);
 
 	/**
 	 * Adds the DatatableTuple to the map, using the string key. This triggers a
@@ -56,7 +58,7 @@ public interface DatatableMap extends Outputable {
 	 * @param key
 	 * @param value
 	 */
-	public void set(String key, DatatableTuple value);
+	public void set(String key, DatatableObject value);
 	
 	/**
 	 * Gets the integer key corresponding to a particular String.<br>
@@ -82,7 +84,7 @@ public interface DatatableMap extends Outputable {
 	 * @param key
 	 * @return
 	 */
-	public DatatableTuple get(String key);
+	public DatatableObject get(String key);
 	
 	/**
 	 * Gets the DatatableTuple corresponding to the given int key
@@ -90,7 +92,7 @@ public interface DatatableMap extends Outputable {
 	 * @param key
 	 * @return
 	 */
-	public DatatableTuple get(int key);
+	public DatatableObject get(int key);
 	
 	/**
 	 * Gets if the map contains a particular key String
