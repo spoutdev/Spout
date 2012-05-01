@@ -595,8 +595,8 @@ public class SpoutChunk extends Chunk {
 		return blockStore.isDirtyOverflow();
 	}
 
-	public Block getDirtyBlock(int i, Block blockm) {
-		return blockStore.getDirtyBlock(i, blockm);
+	public Block getDirtyBlock(int i) {
+		return blockStore.getDirtyBlock(i, this.getWorld());
 	}
 
 	public void resetDirtyArrays() {
