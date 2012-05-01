@@ -35,6 +35,31 @@ public class BlockFaces {
 	public static final BlockFace[] NESW = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
 	/**
+	 * The [east-west-south-north] faces
+	 */
+	public static final BlockFace[] EWSN = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH};
+
+	/**
+	 * The [north-south-west-east] faces
+	 */
+	public static final BlockFace[] NSWE = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
+
+	/**
+	 * The [south-west-north-east] faces
+	 */
+	public static final BlockFace[] SWNE = {BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST};
+
+	/**
+	 * The [west-north-east-south] faces
+	 */
+	public static final BlockFace[] WNES = {BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH};
+
+	/**
+	 * The [south-north-east-west] faces
+	 */
+	public static final BlockFace[] SNEW = {BlockFace.SOUTH, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST};
+
+	/**
 	 * The [north-east-south-west-bottom] faces
 	 */
 	public static final BlockFace[] NESWB = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM};
@@ -55,10 +80,15 @@ public class BlockFaces {
 	public static final BlockFace[] BTEWNS = {BlockFace.BOTTOM, BlockFace.TOP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
 
 	/**
+	 * The [bottom-top-north-south-west-east] faces
+	 */
+	public static final BlockFace[] BTNSWE = {BlockFace.BOTTOM, BlockFace.TOP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
+
+	/**
 	 * The [north-south-east-west-bottom] faces
 	 */
 	public static final BlockFace[] NSEWB = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.BOTTOM};
-
+	
 	/**
 	 * Gets whether the constant contains the face
 	 * @param constant to use

@@ -43,10 +43,14 @@ public class Inventory implements Serializable {
 	private TIntSet hidden = new TIntHashSet();
 	private final List<InventoryViewer> viewers = new ArrayList<InventoryViewer>();
 	private int currentSlot;
-
+	
 	public Inventory(int size) {
-		contents = new ItemStack[size];
-		currentSlot = 0;
+		this(new ItemStack[size]);
+	}
+
+	public Inventory(ItemStack[] contents) {
+		this.contents = contents;
+		this.currentSlot = 0;
 	}
 
 	public void setHiddenSlot(int slot, boolean add) {
@@ -61,6 +65,13 @@ public class Inventory implements Serializable {
 		return hidden.contains(slot);
 	}
 
+	/**
+	 * Adds a single {@link InventoryViewer} to this Inventory<br>
+	 * This viewer will be notified of item changes in this Inventory.
+	 * 
+	 * @param viewer to add
+	 * @return True if the viewer was added, False if not
+	 */
 	public boolean addViewer(InventoryViewer viewer) {
 		if (viewers.contains(viewer)) {
 			return false;
@@ -70,14 +81,47 @@ public class Inventory implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Removes a single {@link InventoryViewer} from this Inventory<br>
+	 * This viewer will no longer be notified of item changes in this Inventory.
+	 * 
+	 * @param viewer to add
+	 * @return True if the viewer was removed, False if not
+	 */
 	public boolean removeViewer(InventoryViewer viewer) {
 		return viewers.remove(viewer);
 	}
 
+	/**
+	 * Gets the contents of this Inventory<br>
+	 * Note that the items still reference back into this Inventory
+	 * 
+	 * @return the contents
+	 */
 	public ItemStack[] getContents() {
 		return contents;
 	}
 
+	/**
+	 * Gets the contents of this Inventory<br>
+	 * The Item Stacks no longer reference back in this Inventory
+	 * 
+	 * @return the cloned contents
+	 */
+	public ItemStack[] getClonedContents() {
+		ItemStack[] cloned = new ItemStack[this.contents.length];
+		for (int i = 0; i < cloned.length; i++) {
+			cloned[i] = this.contents[i] == null ? null : this.contents[i].clone();
+		}
+		return cloned;
+	}
+
+	/**
+	 * Gets the item at a given slot index
+	 * 
+	 * @param slot index to get at
+	 * @return the item at the index, or null if there is no item
+	 */
 	public ItemStack getItem(int slot) {
 		if (contents[slot] == null) {
 			return null;
@@ -86,6 +130,13 @@ public class Inventory implements Serializable {
 		}
 	}
 
+	/**
+	 * Sets the item at a given slot index<br>
+	 * The item is cloned before adding
+	 * 
+	 * @param item to set to
+	 * @param slot index to set at
+	 */
 	public void setItem(ItemStack item, int slot) {
 		contents[slot] = item == null || item.getAmount() == 0 ? null : item.clone();
 		for (InventoryViewer viewer : viewers) {
@@ -93,59 +144,126 @@ public class Inventory implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds an item to this Inventory<br>
+	 * The input item amount will get affected<br>
+	 * If True is returned, the input item amount is 0, else it is the amount that didn't get added.<br><br>
+	 * 
+	 * It will try to stack the item first, then it will fill empty slots<br>
+	 * 
+	 * @param item to add
+	 * @return True if the addition was successful, False if not
+	 */
+	public boolean addItem(ItemStack item) {
+		return this.addItem(item, false);
+	}
+
+	/**
+	 * Adds an item to this Inventory<br>
+	 * The input item amount will get affected<br>
+	 * If True is returned, the input item amount is 0, else it is the amount that didn't get added.
+	 * 
+	 * @param item to add
+	 * @param toFirstOpenSlot whether to add the item to the first available slot it finds
+	 * @return True if the addition was successful, False if not
+	 */
 	public boolean addItem(ItemStack item, boolean toFirstOpenSlot) {
-		for (int i = 0; i < contents.length; ++i) {
-			if (hidden.contains(i)) {
-				continue;
-			}
-
-			if (contents[i] == null && toFirstOpenSlot) {
-				setItem(item.clone(), i);
-				item.setAmount(0);
-				return true;
-			} else if (contents[i] == null) {
-				continue;
-			} else if (contents[i].equalsIgnoreSize(item)) {
-				boolean full = false;
-				final int combinedSize = contents[i].getAmount() + item.getAmount();
-				final int maxSize = item.getMaterial().getMaxStackSize();
-				if (combinedSize <= maxSize) {
-					contents[i].setAmount(combinedSize);
-					item.setAmount(0);
-					full = true;
-				} else {
-					contents[i].setAmount(maxSize);
-					item.setAmount(combinedSize - maxSize);
+		if (toFirstOpenSlot) {
+			for (int i = 0; i < contents.length; ++i) {
+				if (hidden.contains(i)) {
+					continue;
 				}
-
+				if (contents[i] == null || contents[i].isEmpty()) {
+					contents[i] = item.limitStackSize();
+				} else if (contents[i].equalsIgnoreSize(item)) {
+					contents[i].stack(item);
+				} else {
+					continue;
+				}
 				for (InventoryViewer viewer : viewers) {
 					viewer.onSlotSet(this, i, contents[i]);
 				}
-
-				if (full) {
-					item.setAmount(0);
+				if (item.isEmpty()) {
 					return true;
 				}
 			}
-		}
-		if (toFirstOpenSlot) {
 			return false;
+		} else {
+			return this.addItem(item, true, true);
 		}
-		return addItem(item, true);
 	}
 
+	/**
+	 * Adds the item to this Inventory<br>
+	 * The input item amount will get affected<br>
+	 * If True is returned, the input item amount is 0, else it is the amount that didn't get added.
+	 * 
+	 * @param item to add
+	 * @param stackItem whether to stack the item to other items
+	 * @param toEmptySlot whether to add the item to empty slots
+	 * @return True if the addition was successful, False if not
+	 */
+	public boolean addItem(ItemStack item, boolean stackItem, boolean toEmptySlot) {
+		if (stackItem && toEmptySlot) {
+			return this.addItem(item, true, false) || this.addItem(item, false, true);
+		} else {
+			for (int i = 0; i < contents.length; ++i) {
+				if (hidden.contains(i)) {
+					continue;
+				}
+				if (stackItem) {
+					if (contents[i] == null || !contents[i].equalsIgnoreSize(item)) {
+						continue;
+					}
+					contents[i].stack(item);
+				} else if (toEmptySlot) {
+					if (contents[i] != null && !contents[i].isEmpty()) {
+						continue;
+					}
+					contents[i] = item.limitStackSize();
+				}
+				for (InventoryViewer viewer : viewers) {
+					viewer.onSlotSet(this, i, contents[i]);
+				}
+				if (item.isEmpty()) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * Gets the size of this Inventory
+	 * 
+	 * @return the size of this Inventory
+	 */
 	public int getSize() {
 		return contents.length;
 	}
 
+	/**
+	 * Gets the currently selected item
+	 * 
+	 * @return the selected item, or null if the slot is empty
+	 */
 	public ItemStack getCurrentItem() {
 		return getItem(currentSlot);
 	}
 
+	/**
+	 * Gets the currently selected item slot
+	 * 
+	 * @return the item slot index
+	 */
 	public int getCurrentSlot() {
 		return currentSlot;
 	}
 
+	/**
+	 * Sets the currently selected item slot
+	 * @param slot index to set to
+	 */
 	public void setCurrentSlot(int slot) {
 		if (slot < 0 || slot >= contents.length) {
 			throw new ArrayIndexOutOfBoundsException();
@@ -153,6 +271,74 @@ public class Inventory implements Serializable {
 		currentSlot = slot;
 	}
 
+	/**
+	 * Checks if all of the items in the inventory can be added to this Inventory
+	 * 
+	 * @param inventory containing the items to add
+	 * @return whether addition is possible
+	 */
+	public boolean canAddAll(Inventory inventory) {
+		return this.canAddAll(inventory.getContents());
+	}
+
+	/**
+	 * Checks if all of the items can be added to this Inventory
+	 * 
+	 * @param items to try to add
+	 * @return whether addition is possible
+	 */
+	public boolean canAddAll(ItemStack[] items) {
+		Inventory inv = this.clone();
+		for (ItemStack item : items) {
+			if (!inv.addItem(item)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Gets the amount of the item that can be added to this Inventory.
+	 * 
+	 * @param item to compare with
+	 * @return the amount of the item that can be added
+	 */
+	public int getAddableAmount(ItemStack item) {
+		int amount = 0;
+		int maxsize = item.getMaxStackSize();
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i] == null) {
+				amount += maxsize;
+			} else if (contents[i].equalsIgnoreSize(item)) {
+				amount += maxsize - contents[i].getAmount();
+			}
+		}
+		return amount;
+	}
+
+	/**
+	 * Gets the amount of the item contained in this Inventory<br>
+	 * 
+	 * @param item to compare to
+	 * @return the amount of the item
+	 */
+	public int getItemAmount(ItemStack item) {
+		int amount = 0;
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i] != null && contents[i].equalsIgnoreSize(item)) {
+				amount += contents[i].getAmount();
+			}
+		}
+		return amount;
+	}
+
+	/**
+	 * Checks if this precise item stack is contained in this Inventory.<br>
+	 * All item stack properties have to match for this function to return True.
+	 * 
+	 * @param item to find
+	 * @return whether it is contained
+	 */
 	public boolean containsExactly(ItemStack item) {
 		for (int i = 0; i < contents.length; i++) {
 			if (contents[i] != null && contents[i].equals(item)) {
@@ -162,19 +348,31 @@ public class Inventory implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Checks if this Inventory contains the item stack given<br>
+	 * The item properties, except amount, are compared to the items in this Inventory<br>
+	 * If the amount of the item stack or more is found, True is returned.
+	 * 
+	 * @param item to check
+	 * @return True if it is contained, False if not
+	 */
 	public boolean contains(ItemStack item) {
 		if (containsExactly(item)) {
 			return true;
 		}
-		int neededAmount = item.getAmount();
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i] != null && contents[i].equalsIgnoreSize(item)) {
-				neededAmount -= contents[i].getAmount();
-				if (neededAmount <= 0) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return this.getItemAmount(item) >= item.getAmount();
+	}
+	
+	/**
+	 * Clones this Inventory and all of it's contents and hidden slots
+	 * Note that viewers are not cloned.
+	 * 
+	 * @return a clone of this Inventory
+	 */
+	@Override
+	public Inventory clone() {
+		Inventory inv = new Inventory(this.getClonedContents());
+		inv.hidden.addAll(this.hidden);
+		return inv;
 	}
 }

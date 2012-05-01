@@ -92,6 +92,15 @@ public class ItemStack implements MaterialState {
 		this.amount = amount;
 		return this;
 	}
+	
+	/**
+	 * Gets whether this item stack is empty
+	 * 
+	 * @return whether the amount equals zero
+	 */
+	public boolean isEmpty() {
+		return this.amount == 0;
+	}
 
 	/**
 	 * returns a copy of the map containing the aux data for this stack
@@ -186,5 +195,85 @@ public class ItemStack implements MaterialState {
 	@Override
 	public MaterialData createData() {
 		return this.material.createData(this.data);
+	}
+
+	
+	/**
+	 * Gets this item stack limited by the maximum stacking size<br>
+	 * The amount of this item stack is set to contain the remaining amount<br>
+	 * The amount of the returned stack is set to be this amount or the maximum stacking size<br><br>
+	 * 
+	 * For example, limiting a stack of amount 120 to a max stacking size of 64 will:
+	 * <ul>
+	 * <li>Set the amount of this item stack to 56
+	 * <li>Return an item stack with amount 64
+	 * </ul>
+	 * 
+	 * @return the limited stack
+	 */
+	public ItemStack limitStackSize() {
+		return this.limitSize(this.getMaxStackSize());
+	}
+	
+	/**
+	 * Gets this item stack limited by the maximum size specified<br>
+	 * The amount of this item stack is set to contain the remaining amount<br>
+	 * The amount of the returned stack is set to be this amount or the maximum amount<br><br>
+	 * 
+	 * For example, limiting a stack of amount 5 to a max size of 2 will:
+	 * <ul>
+	 * <li>Set the amount of this item stack to 3
+	 * <li>Return an item stack with amount 2
+	 * </ul>
+	 * 
+	 * @return the limited stack
+	 */
+	public ItemStack limitSize(int maxSize) {
+		ItemStack stack = this.clone();
+		if (stack.getAmount() <= maxSize) {
+			this.setAmount(0);
+		} else {
+			stack.setAmount(maxSize);
+			this.setAmount(this.getAmount() - maxSize);
+		}
+		return stack;
+	}
+	
+	/**
+	 * Tries to stack an item on top of this item<br>
+	 * The item must have the same properties as this item stack<br>
+	 * The amount of this item is kept below the max stacking size<br><br>
+	 * 
+	 * The input item amount is affected<br>
+	 * If true is returned, this amount is 0, otherwise it is the amount it didn't stack into this item
+	 * 
+	 * @param item to stack
+	 * @return True if stacking was successful, False otherwise
+	 */
+	public boolean stack(ItemStack item) {
+		if (this.equalsIgnoreSize(item)) {
+			final int maxsize = this.getMaxStackSize();
+			final int combinedSize = this.getAmount() + item.getAmount();
+			if (combinedSize <= maxsize) {
+				this.setAmount(combinedSize);
+				item.setAmount(0);
+				return true;
+			} else {
+				this.setAmount(maxsize);
+				item.setAmount(combinedSize - maxsize);
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets the maximum size this {@link ItemStack} can be using the material it has
+	 * 
+	 * @return the max stack size
+	 */
+	public int getMaxStackSize() {
+		return this.getSubMaterial().getMaxStackSize();
 	}
 }
