@@ -14,6 +14,18 @@ import org.spout.api.util.list.ByteCircularBufferFIFO;
  * Rest:         5 bytes
  */
 public class VarInt {
+	
+	public static void writeString(OutputStream buf, String data) throws IOException {
+		if (data == null) {
+			writeInt(buf, -1);
+			return;
+		} else {
+			writeInt(buf, data.length());
+		}
+		for (int i = 0; i < data.length(); i++) {
+			writeInt(buf, data.charAt(i) & 0xFF);
+		}
+	}
 
 	public static void writeInt(ByteCircularBufferFIFO buf, int data) {
 		if (data < 0 || data >= 0x00007F00) {
@@ -43,6 +55,18 @@ public class VarInt {
 		} else {
 			buf.write((byte)data);
 		}
+	}
+	
+	public static String readString(InputStream buf) throws IOException {
+		int length = readInt(buf);
+		if (length == -1) {
+			return null;
+		}
+		char[] data = new char[length];
+		for (int i = 0; i < length; i++) {
+			data[i] = (char)readInt(buf);
+		}
+		return new String(data);
 	}
 
 	public static int readInt(ByteCircularBufferFIFO buf) {

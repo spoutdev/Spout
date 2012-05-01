@@ -27,6 +27,9 @@ package org.spout.api.util;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 import org.junit.Test;
@@ -41,7 +44,7 @@ public class VarIntTest {
 	
 	
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		
 		int[] ints = new int[LENGTH];
 		
@@ -81,6 +84,41 @@ public class VarIntTest {
 		}
 		
 		assertTrue("Reading an int from an empty buffer did not throw an exception", thrown);
+		
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		String s1 = "String 1";
+		String s2 = null;
+		String s3 = "String - alternative length";
+		String s4 = "";
+		
+		VarInt.writeString(out, s1);
+		
+		VarInt.writeString(out, s2);
+		
+		VarInt.writeString(out, s3);
+		
+		VarInt.writeString(out, s4);
+		
+		byte[] outputArray = out.toByteArray();
+		
+		out.close();
+		
+		ByteArrayInputStream in = new ByteArrayInputStream(outputArray);
+		
+		matchString("String mismatch with read/write string " + s1, s1, VarInt.readString(in));
 
+		matchString("String mismatch with read/write string " + s2, s2, VarInt.readString(in));
+		
+		matchString("String mismatch with read/write string " + s3, s3, VarInt.readString(in));
+
+		matchString("String mismatch with read/write string " + s4, s4, VarInt.readString(in));
+		
+		in.close();
+	}
+	
+	private void matchString(String message, String s1, String s2) {
+		boolean match = (s1 == s2) || (s1 != null && s1.equals(s2));
+		assertTrue(message, match);
 	}
 }
