@@ -25,7 +25,6 @@
  */
 package org.spout.api.material;
 
-import org.spout.api.Source;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
@@ -321,10 +320,9 @@ public class BlockMaterial extends Material {
 	 * @param block to place
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
-	 * @param source of this placement
 	 * @return true if placement is allowed
 	 */
-	public boolean canPlace(Block block, short data, BlockFace against, Source source) {
+	public boolean canPlace(Block block, short data, BlockFace against) {
 		return true;
 	}
 	
@@ -334,10 +332,9 @@ public class BlockMaterial extends Material {
 	 * @param block to affect
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
-	 * @param source of this placement
 	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(Block block, short data, BlockFace against, Source source) {
+	public boolean onPlacement(Block block, short data, BlockFace against) {
 		block.setMaterial(this, data).update(true);
 		return true;
 	}

@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.datatable.DatatableSequenceNumber;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
@@ -710,14 +711,12 @@ public class AtomicBlockStore<T> {
 	 * @param block
 	 * @return
 	 */
-	public Block getDirtyBlock(int i, Block block) {
+	public Block getDirtyBlock(int i, World world) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
+		} else {
+			return world.getBlock(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 		}
-		block.setX(dirtyX[i] & 0xFF);
-		block.setY(dirtyY[i] & 0xFF);
-		block.setZ(dirtyZ[i] & 0xFF);
-		return block;
 	}
 
 	private final int getIndex(int x, int y, int z) {
