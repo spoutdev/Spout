@@ -625,7 +625,7 @@ public class SpoutRegion extends Region {
 		if (synchronizer != null) {
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
-					Block block = chunk.getDirtyBlock(i, new SpoutBlock(getWorld(), 0, 0, 0, null));
+					Block block = chunk.getDirtyBlock(i);
 					if (block == null) {
 						break;
 					} else {
