@@ -82,4 +82,7 @@ public final class Spout {
 		instance.getLogger().info(arg);
 	}
 
+	public static String getAPIVersion() {
+		return instance.getClass().getPackage().getImplementationVersion();
+	}
 }

@@ -52,7 +52,7 @@ import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 
 /**
- * Represents the abstract, non-specific implementation of Minecraft.
+ * Represents the core of an implementation of an engine (powers a game).
  */
 public interface Engine extends Named {
 	/**
@@ -64,7 +64,7 @@ public interface Engine extends Named {
 	public String getName();
 
 	/**
-	 * Gets the build version of this game's implementation
+	 * Gets the version of this game's implementation
 	 *
 	 * @return build version
 	 */
