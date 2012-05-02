@@ -519,16 +519,20 @@ public final class SpoutScheduler implements Scheduler {
 
 	@Override
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
+		return scheduleAsyncRepeatingTaskInternal(plugin, task, delay, -1);
 	}
 
 	@Override
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task) {
-		return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
+		return scheduleAsyncRepeatingTaskInternal(plugin, task, 0, -1);
 	}
 
 	@Override
 	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+	
+	private int scheduleAsyncRepeatingTaskInternal(Object plugin, Runnable task, long delay, long period) {
 		return schedule(new SpoutTask(plugin, task, false, delay, period));
 	}
 
