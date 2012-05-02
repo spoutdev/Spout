@@ -97,6 +97,7 @@ public class SpoutEntity implements Entity {
 	private Model model;
 	private Thread owningThread;
 	private Transform lastTransform = transform;
+	private Point collisionPoint;
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
 		id.set(NOTSPAWNEDID);
@@ -146,28 +147,38 @@ public class SpoutEntity implements Entity {
 	}
 
 	/**
+	 * Called right before resolving collisions. This is necessary to make sure all entities'
+	 * get their collisions set.
+	 * @return
+	 */
+	public boolean preResolve() {
+		//Don't need to do collisions if we have no collision volume
+		if (this.collision == null || controllerLive.get() != null) {
+			return false;
+		}
+
+		//Set collision point at the current position of the entity.
+		collisionPoint = this.transform.getPosition();
+
+		//Move the collision volume to the new position
+		this.collision.setPosition(collisionPoint);
+
+		//This will let SpoutRegion know it should call resolve for this entity.
+		return true;
+	}
+
+	/**
 	 * Called when the tick is finished and collisions need to be resolved and
 	 * move events fired
 	 */
 	public void resolve() {
-		//Don't need to do collisions if we have no collision volume
-		if (this.collision == null || this.getWorld() == null) {
-			return;
-		}
+		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
 
-		//Resolve Collisions Here
-		final Point location = this.transform.getPosition();
-
-		//Move the collision volume to the new position
-		this.collision.setPosition(location);
-
-		List<CollisionVolume> colliding = ((SpoutWorld) location.getWorld()).getCollidingObject(this.collision);
-
-		Vector3 offset = this.lastTransform.getPosition().subtract(location);
+		Vector3 offset = this.lastTransform.getPosition().subtract(collisionPoint);
 		for (CollisionVolume box : colliding) {
 			Vector3 collision = this.collision.resolve(box);
 			if (collision != null) {
-				collision = collision.subtract(location);
+				collision = collision.subtract(collisionPoint);
 
 				if (collision.getX() != 0F) {
 					offset = new Vector3(collision.getX(), offset.getY(), offset.getZ());
@@ -180,12 +191,10 @@ public class SpoutEntity implements Entity {
 				}
 
 				if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-					this.setPosition(location.add(offset));
+					this.setPosition(collisionPoint.add(offset));
 				}
-				if (controllerLive.get() != null) {
-					Block b = this.transform.getPosition().getWorld().getBlock((int) box.getPosition().getX(), (int) box.getPosition().getY(), (int) box.getPosition().getZ());
-					controllerLive.get().onCollide(b);
-				}
+
+				controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
 			}
 		}
 

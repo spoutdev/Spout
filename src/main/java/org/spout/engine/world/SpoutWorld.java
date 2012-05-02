@@ -366,18 +366,6 @@ public class SpoutWorld extends AsyncManager implements World {
 				}
 				break;
 			}
-			case 1: {
-				//Resolve and collisions and prepare for a snapshot.
-				for (SpoutEntity ent : entityManager) {
-					try {
-						ent.resolve();
-					} catch (Exception e) {
-						Spout.getEngine().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
-						e.printStackTrace();
-					}
-				}
-				break;
-			}
 			default: {
 				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
 			}

@@ -48,6 +48,9 @@ import org.spout.engine.util.bans.FlatFileBanManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
 
+	private volatile int maxPlayers = 20;
+
+	private volatile String[] allAddresses;
 	/**
 	 * If the server has a whitelist or not.
 	 */
@@ -128,6 +131,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 		group.add(bootstrap.bind(address));
 		logger.log(Level.INFO, "Binding to address: {0}...", address);
 		return true;
+	}
+
+	@Override
+	public int getMaxPlayers() {
+		return maxPlayers;
 	}
 
 	@Override

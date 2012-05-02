@@ -572,8 +572,23 @@ public class SpoutRegion extends Region {
 				break;
 			}
 			case 1: {
-				//Resolve and collisions and prepare for a snapshot.
+				//Resolve collisions and prepare for a snapshot.
+				Set<SpoutEntity> resolvers = entityManager.getAll();
+				boolean shouldResolve = false;
 				for (SpoutEntity ent : entityManager) {
+					try {
+						shouldResolve = ent.preResolve();
+					} catch (Exception e) {
+						Spout.getEngine().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
+						e.printStackTrace();
+					} finally {
+						if (shouldResolve) {
+							resolvers.remove(ent);
+						}
+					}
+				}
+
+				for (SpoutEntity ent : resolvers) {
 					try {
 						ent.resolve();
 					} catch (Exception e) {
