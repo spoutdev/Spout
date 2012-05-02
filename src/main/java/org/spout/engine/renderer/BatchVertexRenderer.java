@@ -5,9 +5,12 @@ import java.io.FileNotFoundException;
 import gnu.trove.list.array.*;
 
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Renderer;
 import org.spout.engine.renderer.shader.EmptyShader;
@@ -15,14 +18,14 @@ import org.spout.engine.renderer.shader.EmptyShader;
 
 public abstract class BatchVertexRenderer implements Renderer {
 
-	public static BatchModes GLMode = BatchModes.GL30;
 	
 	public static Renderer constructNewBatch(int renderMode){
-		if(GLMode == BatchModes.GL11) return new GL11BatchVertexRenderer(renderMode);
-		if(GLMode == BatchModes.GL20) return new GL20BatchVertexRenderer(renderMode);
-		if(GLMode == BatchModes.GL30) return new GL30BatchVertexRenderer(renderMode);
-		if(GLMode == BatchModes.GLES20) return new GLES20BatchVertexRenderer(renderMode);
-		throw new IllegalArgumentException("GL Mode:" + GLMode + " Not reconized");
+		Client client = (Client)Spout.getEngine();
+		if(client.getRenderMode() == RenderMode.GL11) return new GL11BatchVertexRenderer(renderMode);
+		if(client.getRenderMode() == RenderMode.GL20) return new GL20BatchVertexRenderer(renderMode);
+		if(client.getRenderMode() == RenderMode.GL30) return new GL30BatchVertexRenderer(renderMode);
+		if(client.getRenderMode() == RenderMode.GLES20) return new GLES20BatchVertexRenderer(renderMode);
+		throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 	}
 	
 	

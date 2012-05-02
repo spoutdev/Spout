@@ -7,9 +7,11 @@ import java.util.Scanner;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.spout.api.Spout;
 import org.spout.api.math.*;
+import org.spout.api.Client;
+import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
-import org.spout.engine.renderer.BatchModes;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.variables.AttributeShaderVariable;
 import org.spout.engine.renderer.shader.variables.ColorShaderVariable;
@@ -44,7 +46,8 @@ public class ClientShader implements Shader {
 	
 	
 	public ClientShader(String vertexShader, String fragmentShader){
-		if(BatchVertexRenderer.GLMode == BatchModes.GL11) return;
+	
+		if(((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL11) return;
 		System.out.println("Compiling "+ vertexShader + " and " + fragmentShader);
 		//Create a new Shader object on the GPU
 		program = GL20.glCreateProgram();

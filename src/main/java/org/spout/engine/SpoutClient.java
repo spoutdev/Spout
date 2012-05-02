@@ -24,6 +24,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
+import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -324,5 +325,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 			default:
 				return new Color(150,150,150);
 		}
+	}
+
+
+
+	@Override
+	public RenderMode getRenderMode() {
+		return RenderMode.GL30;
 	}
 }
