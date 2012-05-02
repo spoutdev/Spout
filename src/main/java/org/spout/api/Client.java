@@ -31,6 +31,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;
+import org.spout.api.render.RenderMode;
 
 /**
  * Represents the client-specific implementation of Minecraft.
@@ -100,4 +101,11 @@ public interface Client extends Engine {
 	 * @return plugin store
 	 */
 	public PluginStore getPluginStore();
+	
+	/**
+	 * Gets the current render mode that spoutclient is running in
+	 * 
+	 * @return render mode
+	 */
+	public RenderMode getRenderMode();
 }
