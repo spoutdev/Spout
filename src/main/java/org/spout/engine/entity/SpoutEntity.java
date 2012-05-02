@@ -132,7 +132,9 @@ public class SpoutEntity implements Entity {
 	}
 
 	public void onTick(float dt) {
-		lastTransform = transform.copy();
+		if (this.transform != null && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null && this.transform.getRotation() != null && this.transform.getScale() != null) {
+			lastTransform = transform.copy();
+		}
 
 		if (controller != null && controller.getParent() != null && !isDead()) {
 			controller.onTick(dt);
@@ -173,7 +175,7 @@ public class SpoutEntity implements Entity {
 	 */
 	public void resolve() {
 		System.out.println("COLLISION DEBUGGING");
-		System.out.println(this.collision.toString());
+		System.out.println("Current Collision: " + this.collision.toString());
 
 		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
 
