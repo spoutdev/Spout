@@ -153,7 +153,7 @@ public class SpoutEntity implements Entity {
 	 */
 	public boolean preResolve() {
 		//Don't need to do collisions if we have no collision volume
-		if (this.collision == null || controllerLive.get() != null) {
+		if (this.collision == null || this.getWorld() == null || controllerLive.get() == null) {
 			return false;
 		}
 

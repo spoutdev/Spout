@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -573,18 +574,12 @@ public class SpoutRegion extends Region {
 			}
 			case 1: {
 				//Resolve collisions and prepare for a snapshot.
-				Set<SpoutEntity> resolvers = entityManager.getAll();
-				boolean shouldResolve = false;
+				Set<SpoutEntity> resolvers = new HashSet<SpoutEntity>();
+				boolean shouldResolve;
 				for (SpoutEntity ent : entityManager) {
-					try {
-						shouldResolve = ent.preResolve();
-					} catch (Exception e) {
-						Spout.getEngine().getLogger().severe("Unhandled exception during tick resolution for " + ent.toString());
-						e.printStackTrace();
-					} finally {
-						if (shouldResolve) {
-							resolvers.remove(ent);
-						}
+					shouldResolve = ent.preResolve();
+					if (shouldResolve) {
+						resolvers.add(ent);
 					}
 				}
 
