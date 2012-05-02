@@ -60,8 +60,11 @@ public class ClientTexture extends Texture {
 
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 
-		//Use Mipmaps
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		if(((Client)Spout.getEngine()).getRenderMode() != RenderMode.GL30){
+			
+			//Use Mipmaps
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		}
 
 		//Bilinear Filter the closest mipmap
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_NEAREST);
@@ -93,9 +96,9 @@ public class ClientTexture extends Texture {
 		if(((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL30){
 			GL30.glGenerateMipmap(textureID);			
 		}
-		else{
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-		}
+		
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+		
 		//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 	}
 }
