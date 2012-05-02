@@ -1,3 +1,4 @@
+
 /*
  * This file is part of Spout (http://www.spout.org/).
  *
@@ -32,11 +33,13 @@ import org.spout.api.Spout;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
+import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerBanKickEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.player.PlayerJoinEvent;
 import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.server.BanChangeEvent.BanType;
+import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.player.Player;
 
@@ -87,7 +90,7 @@ public class SpoutListener implements Listener {
 		} else if (server.isPlayerBanned(p.getName())) {
 			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage(p.getName())));
 		} else if (server.isIpBanned(address.getHostAddress())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getBanMessage(p.getAddress().getHostAddress())));
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getIpBanMessage(p.getAddress().getHostAddress())));
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {
@@ -106,4 +109,13 @@ public class SpoutListener implements Listener {
 			server.broadcastMessage(event.getMessage());
 		}
 	}
+
+	@EventHandler(order = Order.EARLIEST)
+	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
+		for (Player player : server.getOnlinePlayers()) {
+			event.getReceivers().put(player, Result.DEFAULT);
+		}
+		event.getReceivers().put(server.getConsole(), Result.DEFAULT);
+	}
+
 }

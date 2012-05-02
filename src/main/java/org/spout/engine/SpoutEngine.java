@@ -32,6 +32,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -59,6 +61,7 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
+import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
@@ -74,6 +77,8 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.CommonRecipeManager;
 import org.spout.api.inventory.RecipeManager;
+import org.spout.api.permissions.DefaultPermissions;
+import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
@@ -161,6 +166,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		if (!getExecutor().startExecutor()) {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
 		}
+		DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
 	}
 
 	public void start() {
@@ -277,10 +283,21 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void broadcastMessage(String message) {
-		for (Player player : getOnlinePlayers()) {
-			player.sendMessage(message);
+		broadcastMessage(message, STANDARD_BROADCAST_PERMISSION);
+	}
+
+	@Override
+	public void broadcastMessage(String message, String permission) {
+		for (PermissionsSubject player : getAllWithNode(permission)) {
+			if (player instanceof CommandSource) {
+				((CommandSource) player).sendMessage(message);
+			}
 		}
-		consoleManager.getCommandSource().sendMessage(message);
+	}
+
+	@Override
+	public Set<PermissionsSubject> getAllWithNode(String permission) {
+		return getEventManager().callEvent(new PermissionGetAllWithNodeEvent(permission)).getAllowedReceivers();
 	}
 
 	@Override
@@ -314,7 +331,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			source.sendMessage(ChatColor.RED + e.getMessage());
 			source.sendMessage(ChatColor.RED + e.getUsage());
 		} catch (CommandException e) {
-			// TODO: Better exception handling!
 			source.sendMessage(ChatColor.RED + e.getMessage());
 		}
 	}
@@ -701,5 +717,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	protected Collection<SpoutWorld> getLiveWorlds() {
 		return loadedWorlds.getLive().values();
+	}
+
+	public CommandSource getConsole() {
+		return consoleManager.getCommandSource();
 	}
 }
