@@ -682,8 +682,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source) {
-		return this.getRegionFromBlock(x, y, z).setBlockController(x, y, z, controller, source);
+	public void setBlockController(int x, int y, int z, BlockController controller) {
+		getRegionFromBlock(x, y, z).setBlockController(x, y, z, controller);
 	}
 
 	@Override
