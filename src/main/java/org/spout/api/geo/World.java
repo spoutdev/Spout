@@ -34,6 +34,7 @@ import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.BiomeType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.player.Player;
@@ -45,6 +46,7 @@ import org.spout.api.util.thread.Threadsafe;
  * Represents a World.
  */
 public interface World extends Source, AreaRegionAccess {
+
 	/**
 	 * Gets the name of the world
 	 *
@@ -158,6 +160,14 @@ public interface World extends Source, AreaRegionAccess {
 	public int getHeight();
 
 	/**
+	 * Gets the biome type at the coordinates,
+	 * if the world generator used uses biomes.
+	 *
+	 * @return The biome type at the location
+	 */
+	public BiomeType getBiomeType(int x, int y, int z);
+
+	/**
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.
@@ -189,7 +199,7 @@ public interface World extends Source, AreaRegionAccess {
 	 * @return all players on this world
 	 */
 	public Set<Player> getPlayers();
-	
+
 	/**
 	 * Gets the directory where world data is stored
 	 */
