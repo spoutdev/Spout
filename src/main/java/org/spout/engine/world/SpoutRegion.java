@@ -463,9 +463,8 @@ public class SpoutRegion extends Region {
 	public void addEntity(Entity e) {
 		Controller controller = e.getController();
 		if (controller instanceof BlockController) {
-			Point p = e.getPosition();
-			this.setBlockController(p.getBlockX(), p.getBlockY(), p.getBlockZ(), (BlockController) controller, e);
-			return;
+			Point pos = e.getPosition();
+			setBlockController(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), (BlockController) controller);
 		}
 		
 		if (spawnQueue.contains(e))
@@ -477,11 +476,11 @@ public class SpoutRegion extends Region {
 	}
 
 	public void removeEntity(Entity e) {
-		if (e.getController() instanceof BlockController) {
-			Point p = e.getPosition();
-			this.setBlockController(p.getBlockX(), p.getBlockY(), p.getBlockZ(), null, e);
-			return;
+		Vector3 pos = e.getPosition().floor();
+		if (blockControllers.containsKey(pos)) {
+			blockControllers.remove(pos);
 		}
+		
 		if (removeQueue.contains(e))
 			return;
 		if (spawnQueue.contains(e)) {
@@ -697,11 +696,6 @@ public class SpoutRegion extends Region {
 		return entityManager.getEntity(id);
 	}
 
-	@Override
-	public BlockController getBlockController(int x, int y, int z) {
-		return blockControllers.get(new Vector3(x, y, z));
-	}
-
 	/**
 	 * Allocates the id for an entity.
 	 * 
@@ -859,33 +853,13 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source) {
-		if (source == null) {
-			throw new NullPointerException("Source can not be null");
-		}
-		Vector3 pos = new Vector3(x, y, z);
-		if (controller == null) {
-		    controller = this.blockControllers.remove(pos);
-		    if (controller != null) {
-		    	Entity e = controller.getParent();
-				if (removeQueue.contains(e)) {
-					return true;
-				} else if (spawnQueue.remove(e)) {
-					return true;
-				}
-				removeQueue.add(e);
-		    }
-		} else {
-			this.blockControllers.put(pos, controller);
-			Entity e = controller.getParent();
-			if (spawnQueue.contains(e)) {
-				return true;
-			} else if (removeQueue.contains(e)) {
-				throw new IllegalArgumentException("Cannot add an entity marked for removal");
-			}
-			spawnQueue.add(e);
-		}
-		return true;
+	public void setBlockController(int x, int y, int z, BlockController controller) {
+		blockControllers.put(new Vector3(x, y, z), controller);
+	}
+
+	@Override
+	public BlockController getBlockController(int x, int y, int z) {
+		return blockControllers.get(new Vector3(x, y, z));
 	}
 
 	@Override

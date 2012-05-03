@@ -894,15 +894,13 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source) {
-		// TODO Auto-generated method stub
-		return false;
+	public void setBlockController(int x, int y, int z, BlockController controller) {
+		getRegion().setBlockController(x, y, z, controller);
 	}
 	
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
-		// TODO Auto-generated method stub
-		return null;
+		return getRegion().getBlockController(x, y, z);
 	}
 
 	@Override
