@@ -47,6 +47,8 @@ import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.BiomeGenerator;
+import org.spout.api.generator.biome.BiomeType;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -74,67 +76,54 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 public class SpoutWorld extends AsyncManager implements World {
 
 	private SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * The server of this world.
 	 */
 	private final Engine server;
-
 	/**
 	 * The name of this world.
 	 */
 	private final String name;
-
 	/**
 	 * The region source
 	 */
 	private final RegionSource regions;
-
 	/**
 	 * The world seed.
 	 */
 	private final long seed;
-
 	/**
 	 * The spawn position.
 	 */
 	private final Transform spawnLocation = new Transform();
-
 	/**
 	 * The current world age.
 	 */
 	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
-
 	/**
 	 * The world's UUID.
 	 */
 	private final UUID uid;
-
 	/**
 	 * The generator responsible for generating chunks in this world.
 	 */
 	private final WorldGenerator generator;
-
 	/**
 	 * Holds all of the entities to be simulated
 	 */
 	private final EntityManager entityManager;
-
 	/**
 	 * A set of all players currently connected to this world
 	 */
 	private final Set<Player> players = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
-
 	/**
 	 * A map of the loaded columns
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
-
 	/**
 	 * A map of column height map files
 	 */
 	private final TSyncIntPairObjectHashMap<BAAWrapper> heightMapBAAs;
-
 	/**
 	 * The directory where the world data is stored
 	 */
@@ -238,7 +227,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
 		return this.regions.getRegionFromBlock(x, y, z);
 	}
-	
+
 	@Override
 	public SpoutRegion getRegionFromBlock(int x, int y, int z, boolean load) {
 		return this.regions.getRegionFromBlock(x, y, z, load);
@@ -251,7 +240,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		int z = MathHelper.floor(position.getZ());
 		return regions.getRegionFromBlock(x, y, z);
 	}
-	
+
 	@Override
 	public SpoutRegion getRegionFromBlock(Vector3 position, boolean load) {
 		int x = MathHelper.floor(position.getX());
@@ -295,6 +284,21 @@ public class SpoutWorld extends AsyncManager implements World {
 		int y = MathHelper.floor(position.getY());
 		int z = MathHelper.floor(position.getZ());
 		return this.getChunkFromBlock(x, y, z, load);
+	}
+
+	@Override
+	public BiomeType getBiomeType(int x, int y, int z) {
+		if (y < 0 || y > getHeight()) {
+			throw new IllegalArgumentException("Invalid value for y, expected "
+					+ getHeight() + " >= y >= 0, got y = " + y);
+		}
+		if (generator instanceof BiomeGenerator) {
+			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
+		} else {
+			throw new IllegalStateException("Generator of type '"
+					+ generator.getName() + "' used by world '"
+					+ name + "' does not use biomes.");
+		}
 	}
 
 	@Override
