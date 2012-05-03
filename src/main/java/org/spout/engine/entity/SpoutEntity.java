@@ -174,19 +174,27 @@ public class SpoutEntity implements Entity {
 	 * move events fired
 	 */
 	public void resolve() {
-		System.out.println("COLLISION DEBUGGING");
-		System.out.println("Current Collision: " + this.collision.toString());
+		if (Spout.debugMode()) {
+			System.out.println("COLLISION DEBUGGING");
+			System.out.println("Current Collision: " + this.collision.toString());
+		}
 
 		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
 
 		Vector3 offset = this.lastTransform.getPosition().subtract(collisionPoint);
 		for (CollisionVolume box : colliding) {
-			System.out.println("Colliding box: " + box.toString());
+			if (Spout.debugMode()) {
+				System.out.println("Colliding box: " + box.toString());
+			}
 			Vector3 collision = this.collision.resolve(box);
-			System.out.println("Collision vector: " + collision.toString());
+			if (Spout.debugMode()) {
+				System.out.println("Collision vector: " + collision.toString());
+			}
 			if (collision != null) {
 				collision = collision.subtract(collisionPoint);
-				System.out.println("Collision point: " + collision.toString() + " Collision vector: " + collision);
+				if (Spout.debugMode()) {
+					System.out.println("Collision point: " + collision.toString() + " Collision vector: " + collision);
+				}
 
 				if (collision.getX() != 0F) {
 					offset = new Vector3(collision.getX(), offset.getY(), offset.getZ());
@@ -198,10 +206,14 @@ public class SpoutEntity implements Entity {
 					offset = new Vector3(offset.getX(), offset.getY(), collision.getZ());
 				}
 
-				System.out.println("Collision offset: " + offset.toString());
+				if (Spout.debugMode()) {
+					System.out.println("Collision offset: " + offset.toString());
+				}
 				if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
 					this.setPosition(collisionPoint.add(offset));
-					System.out.println("New Position: " + this.getPosition());
+					if (Spout.debugMode()) {
+						System.out.println("New Position: " + this.getPosition());
+					}
 				}
 
 				controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
