@@ -28,6 +28,7 @@ package org.spout.api.geo.cuboid;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.generator.biome.BiomeType;
 import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -39,16 +40,15 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents a cube containing 16x16x16 Blocks
  */
 public abstract class Chunk extends Cube implements AreaBlockAccess {
+
 	/**
 	 * Internal size of a side of a chunk
 	 */
 	public final static int CHUNK_SIZE = 16;
-
 	/**
 	 * Number of bits on the side of a chunk
 	 */
 	public final static int CHUNK_SIZE_BITS = 4;
-
 	/**
 	 * Mask to convert a block integer coordinate into the chunk's base
 	 */
@@ -127,6 +127,14 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	public abstract boolean isLoaded();
 
 	/**
+	 * Gets the biome type at the coordinates,
+	 * if the world generator used uses biomes.
+	 *
+	 * @return The biome type at the location
+	 */
+	public abstract BiomeType getBiomeType(int x, int y, int z);
+
+	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
 	 */
@@ -163,14 +171,14 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	@LiveRead
 	public abstract Set<Entity> getLiveEntities();
-	
+
 	/**
 	 * Gets whether the given block coordinates is inside this chunk
 	 */
 	public boolean containsBlock(int x, int y, int z) {
 		return x >> Chunk.CHUNK_SIZE_BITS == this.getX() && y >> Chunk.CHUNK_SIZE_BITS == this.getY() && z >> Chunk.CHUNK_SIZE_BITS == this.getZ();
 	}
-	
+
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & BASE_MASK, (int) p.getY() & BASE_MASK, (int) p.getZ() & BASE_MASK);
 	}
