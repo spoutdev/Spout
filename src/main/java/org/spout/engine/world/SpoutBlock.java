@@ -256,18 +256,18 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public BlockController getController() {
-		return this.getChunk().getBlockController(this.x, this.y, this.z);
+		return getRegion().getBlockController(x, y, z);
 	}
 
 	@Override
 	public Block setController(BlockController controller) {
-		this.getChunk().setBlockController(this.x, this.y, this.z, controller, this.source);
+		getRegion().setBlockController(x, y, z, controller);
 		return this;
 	}
 
 	@Override
 	public boolean hasController() {
-		return this.getController() != null;
+		return getController() != null;
 	}
 
 	@Override
