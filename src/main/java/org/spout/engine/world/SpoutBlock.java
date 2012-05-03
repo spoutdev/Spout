@@ -27,13 +27,13 @@ package org.spout.engine.world;
 
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
+import org.spout.api.generator.biome.BiomeType;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialData;
@@ -293,5 +293,10 @@ public class SpoutBlock implements Block {
 			chunk.updateBlockPhysics(this.x, this.y - 1, this.z);
 		}
 		return this;
+	}
+
+	@Override
+	public BiomeType getBiomeType() {
+		return world.getBiomeType(x, y, z);
 	}
 }
