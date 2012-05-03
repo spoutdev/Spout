@@ -43,7 +43,6 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param data to set to
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -58,7 +57,6 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @param data value to set to
 	 * @param material to set to
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -72,7 +70,6 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param light level to set to
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -86,7 +83,6 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param light level to set to
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
 	 * @param source of the change
 	 * @throws NullPointerException
 	 */
@@ -96,16 +92,12 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	/**
 	 * Sets the block controller for the block at (x, y, z) to the given controller
 	 *
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
+	 * @param x,y,z position of the controller
 	 * @param controller to set to, null to remove the controller
-	 * @param updatePhysics whether this block change should update the physics of neighbor blocks afterwards
-	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean setBlockController(int x, int y, int z, BlockController controller, Source source);
+	public void setBlockController(int x, int y, int z, BlockController controller);
 
 	/**
 	 * Sets the data of the block at (x, y, z) if the expected state matches
@@ -115,7 +107,6 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @param expect is the state of the block it expects
 	 * @param data to set to if it matches
-	 * @param source of the change
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
