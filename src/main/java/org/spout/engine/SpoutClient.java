@@ -21,6 +21,7 @@ import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.gui.Screen;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
@@ -38,6 +39,13 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.ClientShader;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.batcher.PrimitiveBatch;
+import org.spout.engine.filesystem.FileSystem;
+
+
+import java.awt.Color;
+import java.io.File;
+import java.util.Stack;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final String name = "Spout Client";
@@ -45,6 +53,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private Camera activeCamera;
 	private final Vector2 resolution = new Vector2(854, 480);
 	private final float aspectRatio = resolution.getX() / resolution.getY();
+	private Stack<Screen> screenStack = new Stack<Screen>();
 
 	public static void main(String[] args) {
 		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives/");
@@ -316,5 +325,29 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	public Stack<Screen> getScreenStack() {
+		return screenStack;
+	}
+
+	@Override
+	public void openScreen(Screen screen) {
+		screenStack.add(screen);
+	}
+
+	@Override
+	public void closeScreen() {
+		screenStack.pop();
+	}
+
+	@Override
+	public void closeScreen(Screen screen) {
+		screenStack.remove(screen);
+	}
+
+	@Override
+	public Screen getFocusedScreen() {
+		return screenStack.firstElement();
 	}
 }
