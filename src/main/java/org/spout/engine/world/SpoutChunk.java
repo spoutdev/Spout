@@ -44,7 +44,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -613,7 +613,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public BiomeType getBiomeType(int x, int y, int z) {
+	public Biome getBiomeType(int x, int y, int z) {
 		return getWorld().getBiomeType((getX() << CHUNK_SIZE_BITS) + x,
 				(getY() << CHUNK_SIZE_BITS) + y, (getZ() << CHUNK_SIZE_BITS) + z);
 	}

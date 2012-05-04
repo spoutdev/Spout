@@ -27,7 +27,7 @@ package org.spout.engine.world;
 
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -296,7 +296,7 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public BiomeType getBiomeType() {
+	public Biome getBiomeType() {
 		return world.getBiomeType(x, y, z);
 	}
 }

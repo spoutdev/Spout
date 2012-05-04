@@ -48,7 +48,7 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeGenerator;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -287,17 +287,14 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public BiomeType getBiomeType(int x, int y, int z) {
+	public Biome getBiomeType(int x, int y, int z) {
 		if (y < 0 || y > getHeight()) {
-			throw new IllegalArgumentException("Invalid value for y, expected "
-					+ getHeight() + " >= y >= 0, got y = " + y);
+			return null;
 		}
 		if (generator instanceof BiomeGenerator) {
 			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
 		} else {
-			throw new IllegalStateException("Generator of type '"
-					+ generator.getName() + "' used by world '"
-					+ name + "' does not use biomes.");
+			return null;
 		}
 	}
 
