@@ -25,16 +25,15 @@
  */
 package org.spout.engine.filesystem.path;
 
-import org.spout.engine.filesystem.FileSystem;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ZipfileResolver extends FilepathResolver {
+import org.spout.engine.filesystem.FileSystem;
 
+public class ZipfileResolver extends FilepathResolver {
 	public ZipfileResolver() {
 		super(FileSystem.RESOURCE_FOLDER.getPath());
 	}
@@ -50,12 +49,13 @@ public class ZipfileResolver extends FilepathResolver {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (f != null)
+			if (f != null) {
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
 		}
 		return has;
 	}
@@ -72,12 +72,13 @@ public class ZipfileResolver extends FilepathResolver {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (f != null)
+			if (f != null) {
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
 		}
 		return stream;
 	}

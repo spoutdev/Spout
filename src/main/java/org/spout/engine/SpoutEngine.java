@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -85,16 +86,16 @@ import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-import org.spout.api.util.config.Configuration;
+
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
-import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.ConsoleManager;
 import org.spout.engine.util.thread.AsyncManager;
@@ -107,121 +108,42 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutEngine extends AsyncManager implements Engine {
-	private volatile int maxPlayers = 20;
+	public static final Logger logger = Logger.getLogger("Spout");
 
-	private volatile String[] allAddresses;
-
+	private final String name = "Spout Engine";
 	private final File pluginDirectory = FileSystem.PLUGIN_DIRECTORY;
-
 	private final File configDirectory = FileSystem.CONFIG_DIRECTORY;
-
 	private final File updateDirectory = FileSystem.UPDATE_DIRECTORY;
-
 	private final File dataDirectory = FileSystem.DATA_DIRECTORY;
-
-	private String logFile = "logs" + File.separator + "log-%D.txt";
-
-	private String name = "Spout Server";
-
-	private EntityManager entityManager = new EntityManager();
-
-	private SnapshotManager snapshotManager = new SnapshotManager();
-
-	/**
-	 * Default world generator
-	 */
+	private final Random random = new Random();
+	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
+	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
+	private final ConsoleManager consoleManager = new ConsoleManager(this);
+	private final EntityManager entityManager = new EntityManager();
+	private final EventManager eventManager = new SimpleEventManager();
+	private final RecipeManager recipeManager = new CommonRecipeManager();
+	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
+	private final SnapshotManager snapshotManager = new SnapshotManager();
+	private final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
+	private final RootCommand rootCommand = new RootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 
-	/**
-	 * Online player list
-	 */
-	private final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
+	private volatile int maxPlayers = 20;
+	private volatile String[] allAddresses;
 
-	/**
-	 * The security manager TODO - need to integrate this
-	 */
-	private CommonSecurityManager securityManager = new CommonSecurityManager(0);
-
-	/**
-	 * The plugin manager for the server
-	 */
-	private CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
-
-	/**
-	 * The console manager of this server.
-	 */
-	private final ConsoleManager consoleManager = new ConsoleManager(this);
-
-	/**
-	 * The logger for this class.
-	 */
-	public static final Logger logger = Logger.getLogger("Minecraft");
-
-	/**
-	 * A group containing all of the channels.
-	 */
-	protected final ChannelGroup group = new DefaultChannelGroup();
-
-	/**
-	 * The network executor service - Netty dispatches events to this thread
-	 * pool.
-	 */
+	//The network executor service - Netty dispatches events to this thread
 	protected final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutEngine"));
-
-	/**
-	 * A list of all the active {@link SpoutSession}s.
-	 */
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-
-	/**
-	 * The scheduler for the server.
-	 */
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
-
-	/**
-	 * A folder that holds all of the world data folders inside of it. By
-	 * default, it does not exist ('.'), meant for organizational purposes.
-	 */
-	private File worldFolder = new File(".");
-
-	/**
-	 * loaded plugins
-	 */
-	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
-
-	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
-
-	/**
-	 * The root commnd for this server.
-	 */
-	private final RootCommand rootCommand = new RootCommand(this);
-
-	/**
-	 * The event manager.
-	 */
-	private final EventManager eventManager = new SimpleEventManager();
-
-	/**
-	 * The service manager.
-	 */
-	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
-
-	/**
-	 * The recipe manager.
-	 */
-	private final RecipeManager recipeManager = new CommonRecipeManager();
-
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
-
-	private final Random random = new Random();
-
-	private boolean debugMode = false;
-
-	/**
-	 * Cached copy of the server configuration, can be used instead of
-	 * re-parsing the config file for each access
-	 */
+	protected final ChannelGroup group = new DefaultChannelGroup();
 	protected SpoutConfiguration config = new SpoutConfiguration();
+	private File worldFolder = new File(".");
+	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
+	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
+	private String logFile = "logs" + File.separator + "log-%D.txt";
+	private boolean debugMode = false;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor());
@@ -229,11 +151,13 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	public void init(String[] args) {
 		for (String s : args) {
-			if (s.equals("-debug")) debugMode = true;
+			if (s.equals("-debug")) {
+				debugMode = true;
+			}
 		}
 		registerWithScheduler(scheduler);
 		if (!getExecutor().startExecutor()) {
-			throw new IllegalStateException("SpoutServer's executor was already started");
+			throw new IllegalStateException("SpoutEngine's executor was already started");
 		}
 	}
 
@@ -247,8 +171,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		if (Spout.getEngine().debugMode())
+		if (Spout.getEngine().debugMode()) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
+		}
 
 		try {
 			config.load();
@@ -302,11 +227,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public Collection<SpoutPlayer> rawGetAllOnlinePlayers() {
-		return players.get().values();
-	}
-
-	public Configuration getConfiguration() {
-		return config;
+		return onlinePlayers.get().values();
 	}
 
 	@Override
@@ -327,7 +248,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public SpoutPlayer[] getOnlinePlayers() {
-		Map<String, SpoutPlayer> playerList = players.get();
+		Map<String, SpoutPlayer> playerList = onlinePlayers.get();
 		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
 		for (SpoutPlayer player : playerList.values()) {
 			if (player.isOnline()) {
@@ -417,13 +338,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		return dataDirectory;
 	}
 
-	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
-
 	@Override
 	public Player getPlayer(String name, boolean exact) {
 		name = name.toLowerCase();
 		if (exact) {
-			for (Player player : players.getValues()) {
+			for (Player player : onlinePlayers.getValues()) {
 				if (player.getName().equalsIgnoreCase(name)) {
 					return player;
 				}
@@ -431,7 +350,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		} else {
 			int shortestMatch = Integer.MAX_VALUE;
 			Player shortestPlayer = null;
-			for (Player player : players.getValues()) {
+			for (Player player : onlinePlayers.getValues()) {
 				if (player.getName().toLowerCase().startsWith(name)) {
 					if (player.getName().length() < shortestMatch) {
 						shortestMatch = player.getName().length();
@@ -486,9 +405,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public World loadWorld(String name, WorldGenerator generator) {
-		if (loadedWorlds.get().containsKey((name))) return loadedWorlds.get().get(name);
-		if (loadedWorlds.getLive().containsKey(name))
+		if (loadedWorlds.get().containsKey((name))) {
+			return loadedWorlds.get().get(name);
+		}
+		if (loadedWorlds.getLive().containsKey(name)) {
 			return loadedWorlds.getLive().get(name);
+		}
 
 		// TODO - should include generator (and non-zero seed)
 		if (generator == null) {
@@ -635,7 +557,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public void copySnapshotRun() throws InterruptedException {
 		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
-		for (Player player : players.get().values()) {
+		for (Player player : onlinePlayers.get().values()) {
 			((SpoutPlayer) player).copyToSnapshot();
 		}
 	}
@@ -746,7 +668,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		boolean success = false;
 
 		while (!success) {
-			player = players.getLive().get(playerName);
+			player = onlinePlayers.getLive().get(playerName);
 
 			if (player != null) {
 				if (!player.connect(session, newEntity)) {
@@ -756,20 +678,20 @@ public class SpoutEngine extends AsyncManager implements Engine {
 				}
 			} else {
 				player = new SpoutPlayer(playerName, newEntity, session);
-				if (players.putIfAbsent(playerName, player) == null) {
+				if (onlinePlayers.putIfAbsent(playerName, player) == null) {
 					success = true;
 				}
 			}
 		}
 
-			World world = newEntity.getWorld();
-			world.spawnEntity(newEntity);
-			session.setPlayer(player);
-			((SpoutWorld) world).addPlayer(player);
+		World world = newEntity.getWorld();
+		world.spawnEntity(newEntity);
+		session.setPlayer(player);
+		((SpoutWorld) world).addPlayer(player);
 		return player;
 	}
 
-	protected Collection<SpoutWorld> getLiveWorlds(){
+	protected Collection<SpoutWorld> getLiveWorlds() {
 		return loadedWorlds.getLive().values();
 	}
 }

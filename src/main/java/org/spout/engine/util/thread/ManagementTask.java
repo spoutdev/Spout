@@ -31,37 +31,32 @@ import org.spout.engine.util.thread.future.ManagedFuture;
 
 /**
  * This is a task that returns a value
- *
+ * <p/>
  * This task must support being serialized and then the deserialized object
  * being run instead.
- *
+ * <p/>
  * Its return value must also support serialization
  */
 public abstract class ManagementTask implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	public abstract Serializable call(AsyncExecutor executor) throws InterruptedException;
 
 	/**
 	 * Gets the Future associated with this task
-	 *
 	 * @return the Future associated with this task
 	 */
 	public abstract ManagedFuture<Serializable> getFuture();
 
 	/**
 	 * Sets the Future associated with this task
-	 *
 	 * @param future the future
 	 */
 	public abstract void setFuture(ManagedFuture<Serializable> future);
 
 	/**
 	 * Gets the enum corresponding to this task
-	 *
 	 * @return the enum
 	 */
 	public abstract ManagementTaskEnum getEnum();
-
 }

@@ -26,13 +26,13 @@
 package org.spout.engine.util.thread.future;
 
 import org.spout.api.util.future.SimpleFuture;
+
 import org.spout.engine.util.thread.AsyncManager;
 
 /**
  * This is a future that is linked to a particular AsyncManager
  */
 public class ManagedFuture<T> extends SimpleFuture<T> {
-
 	private AsyncManager manager;
 
 	public ManagedFuture() {
@@ -50,7 +50,6 @@ public class ManagedFuture<T> extends SimpleFuture<T> {
 
 	/**
 	 * Gets manager associated with this future
-	 *
 	 * @return the manager
 	 */
 	public AsyncManager getManager() {
@@ -59,11 +58,9 @@ public class ManagedFuture<T> extends SimpleFuture<T> {
 
 	/**
 	 * Sets the manager associated with this future
-	 *
 	 * @return the manager
 	 */
 	public void setManager(AsyncManager manager) {
 		this.manager = manager;
 	}
-
 }

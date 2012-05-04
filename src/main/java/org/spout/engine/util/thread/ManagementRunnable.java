@@ -32,11 +32,10 @@ import org.spout.engine.util.thread.future.ManagedFuture;
 /**
  * This task must support being serialized and then the deserialized object
  * being run instead
- *
+ * <p/>
  * This task does not have a return a value
  */
 public abstract class ManagementRunnable extends ManagementTask {
-
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -56,5 +55,4 @@ public abstract class ManagementRunnable extends ManagementTask {
 			future.set(null);
 		}
 	}
-
 }

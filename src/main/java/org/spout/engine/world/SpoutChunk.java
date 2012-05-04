@@ -25,8 +25,6 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.set.hash.TByteHashSet;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,6 +33,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+
+import gnu.trove.set.hash.TByteHashSet;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -58,6 +58,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -65,7 +66,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
-
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
@@ -102,7 +102,7 @@ public class SpoutChunk extends Chunk {
 	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
 	/**
 	 * Stores a short value of the sky light
-	 * 
+	 * <p/>
 	 * Note: These do not need to be thread-safe as long as only one thread (the region)
 	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
@@ -142,7 +142,8 @@ public class SpoutChunk extends Chunk {
 		for (int i = 0; i < this.skyLight.length; i++) {
 			this.skyLight[i] = 0;
 		}
-		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];;
+		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		;
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue = new TByteHashSet();
 		column = world.getColumn(((int) x) << Chunk.CHUNK_SIZE_BITS, ((int) z) << Chunk.CHUNK_SIZE_BITS, true);
@@ -269,7 +270,6 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Gets the sky brightness, may look up from neighbor chunks.
-	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -292,9 +292,8 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Recalculates the sky light in the x, z column.
-	 * 
+	 * <p/>
 	 * May queue more lighting updates in chunks underneath.
-	 * 
 	 * @param x coordinate
 	 * @param z coordinate
 	 */
@@ -340,9 +339,8 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Recalculates the block light in the x, z column
-	 * 
+	 * <p/>
 	 * May queue more lighting updates in neighbor chunks.
-	 * 
 	 * @param x coordinate
 	 * @param z coordinate
 	 */
@@ -359,10 +357,9 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Queues a lighting update for the column. This will be processed in a later tick.
-	 * 
-	 * @param x coordinate of the column
-	 * @param z coordinate of the column
-	 * @param sky whether to update the sky lighting
+	 * @param x     coordinate of the column
+	 * @param z     coordinate of the column
+	 * @param sky   whether to update the sky lighting
 	 * @param block whether to update the block lighting
 	 */
 	private void queueLightUpdate(int x, int z, boolean sky, boolean block) {
@@ -384,7 +381,7 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * Processes the queued lighting updates for this chunk.
-	 * 
+	 * <p/>
 	 * This should only be called from the SpoutRegion that manages this chunk, during the first tick stage.
 	 */
 	protected void processQueuedLighting() {
@@ -884,7 +881,6 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public static class ChunkAccessException extends RuntimeException {
-
 		private static final long serialVersionUID = 1L;
 
 		public ChunkAccessException(String message) {

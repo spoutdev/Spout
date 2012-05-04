@@ -36,41 +36,39 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+
 import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
+	private final String name = "Spout Server";
 
 	private volatile int maxPlayers = 20;
-
 	private volatile String[] allAddresses;
 	/**
 	 * If the server has a whitelist or not.
 	 */
 	private volatile boolean whitelist = false;
-
 	/**
 	 * If the server allows flight.
 	 */
 	private volatile boolean allowFlight = false;
-
 	/**
 	 * A list of all players who can log onto this server, if using a whitelist.
 	 */
 	private List<String> whitelistedPlayers = new ArrayList<String>();
-
 	/**
 	 * The server's ban manager
 	 */
 	private BanManager banManager;
-
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
@@ -84,16 +82,13 @@ public class SpoutServer extends SpoutEngine implements Server {
 		server.start();
 	}
 
-	public SpoutServer() {
-	}
-
 	@Override
 	public void start() {
 		super.start();
 
 		banManager = new FlatFileBanManager(this);
 
-		getEventManager().registerEvents(new InternalEventListener(this), this);
+		getEventManager().registerEvents(new SpoutListener(this), this);
 
 		getLogger().info("Done Loading, ready for players.");
 	}
@@ -116,7 +111,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	/**
 	 * Binds this server to the specified address.
-	 *
 	 * @param address The addresss.
 	 */
 	@Override
@@ -260,5 +254,10 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Session newSession(Channel channel) {
 		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
 		return new SpoutSession(this, channel, protocol);
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }

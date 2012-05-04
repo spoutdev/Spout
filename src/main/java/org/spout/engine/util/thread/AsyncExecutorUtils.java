@@ -39,7 +39,7 @@ import org.spout.api.Spout;
 
 public class AsyncExecutorUtils {
 	private static final String LINE = "------------------------------";
-	
+
 	/**
 	 * Logs all threads, the thread details, and active stack traces
 	 */
@@ -51,7 +51,7 @@ public class AsyncExecutorUtils {
 			Entry<Thread, StackTraceElement[]> entry = i.next();
 			Thread thread = entry.getKey();
 			log.finest(LINE);
-			
+
 			log.finest("Current Thread: " + thread.getName());
 			log.finest("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
 			log.finest("    Stack:");
@@ -62,7 +62,7 @@ public class AsyncExecutorUtils {
 		}
 		log.finest(LINE);
 	}
-	
+
 	/**
 	 * Scans for deadlocked threads
 	 */
@@ -82,9 +82,8 @@ public class AsyncExecutorUtils {
 
 	/**
 	 * Waits for a list of ManagedThreads to complete a pulse
-	 *
 	 * @param executors the threads to join for
-	 * @param timeout how long to wait, or 0 to wait forever
+	 * @param timeout   how long to wait, or 0 to wait forever
 	 */
 	public static void pulseJoinAll(List<AsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
 		ThreadsafetyManager.checkMainThread();
@@ -134,7 +133,5 @@ public class AsyncExecutorUtils {
 		if (endTime <= currentTime && !waitForever) {
 			throw new TimeoutException("pulseJoinAll timed out");
 		}
-
 	}
-
 }

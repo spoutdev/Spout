@@ -4,13 +4,11 @@ import java.awt.Color;
 
 import org.spout.api.math.Vector3;
 
-
 public class PositionColor extends VertexFormat {
-	
 	Vector3 position;
 	Color color;
-	
-	public PositionColor(Vector3 position, Color c){
+
+	public PositionColor(Vector3 position, Color c) {
 		this.position = position;
 		this.color = c;
 	}
@@ -30,5 +28,4 @@ public class PositionColor extends VertexFormat {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-
 }

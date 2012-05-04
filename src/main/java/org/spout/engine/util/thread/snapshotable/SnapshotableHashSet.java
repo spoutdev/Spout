@@ -67,7 +67,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list
-	 *
 	 * @param next
 	 * @return true if the object was successfully added
 	 */
@@ -83,7 +82,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Removes an object from the list
-	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -97,7 +95,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
-	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -107,7 +104,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Gets the live value
-	 *
 	 * @return the live set
 	 */
 	public Set<T> getLive() {
@@ -120,7 +116,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	 * <br>
 	 * This method may only be called during the pre-snapshot stage and the list
 	 * only remains valid during that stage.
-	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<T> getDirtyList() {
@@ -139,7 +134,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Tests if the set is empty
-	 *
 	 * @return true if the set is empty
 	 */
 	public boolean isEmptyLive() {
@@ -162,5 +156,4 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 		dirtyList.clear();
 		dirtyListGenerated = false;
 	}
-
 }

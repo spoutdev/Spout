@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
+
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
@@ -45,6 +46,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.util.thread.AsyncExecutor;
@@ -83,7 +85,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
  * During this stage, entity collisions are handled.
  * <li><b>Finalize Tick</b><br>
  * During this stage - entities are moved between entity managers.
- *  - chunks are compressed if necessary.
+ * - chunks are compressed if necessary.
  * <li><b>Pre-snapshot</b><br>
  * This is a MONITOR stage, data is stable and no modifications are allowed.
  * <li><b>Copy Snapshot</b><br>
@@ -91,59 +93,45 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
  * is unstable so no reads are permitted during this stage.
  * </ul>
  * </ul>
- *
  */
 public final class SpoutScheduler implements Scheduler {
 	/**
 	 * The number of milliseconds between pulses.
 	 */
 	private static final int PULSE_EVERY = 50;
-
 	/**
 	 * Target Frames per Second for the renderer
 	 */
 	private static final int TARGET_FPS = 60;
-
 	/**
 	 * The server this scheduler is managing for.
 	 */
 	private final Engine server;
-
 	/**
 	 * A list of new tasks to be added.
 	 */
 	private final List<SpoutTask> newTasks = new ArrayList<SpoutTask>();
-
 	/**
 	 * A list of tasks to be removed.
 	 */
 	private final List<SpoutTask> oldTasks = new ArrayList<SpoutTask>();
-
 	/**
 	 * A list of active tasks.
 	 */
 	private final List<SpoutTask> tasks = new ArrayList<SpoutTask>();
-
 	private final List<SpoutWorker> activeWorkers = Collections.synchronizedList(new ArrayList<SpoutWorker>());
-
 	/**
 	 * A snapshot manager for local snapshot variables
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
-
 	private final AtomicLong tickStartTime = new AtomicLong();
-
 	private volatile boolean shutdown = false;
-
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
-
 	private final Thread mainThread;
-
 	private Thread renderThread;
 
 	/**
@@ -154,19 +142,17 @@ public final class SpoutScheduler implements Scheduler {
 		this.server = server;
 
 		mainThread = new MainThread();
-		renderThread  = new RenderThread();
+		renderThread = new RenderThread();
 	}
 
-
 	private class RenderThread extends Thread {
-
-		public RenderThread(){
+		public RenderThread() {
 			super("Render Thread");
 		}
 
 		@Override
-		public void run(){
-			SpoutClient c = (SpoutClient)Spout.getEngine();
+		public void run() {
+			SpoutClient c = (SpoutClient) Spout.getEngine();
 			c.initRenderer();
 			int rate = (int) ((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
@@ -184,18 +170,11 @@ public final class SpoutScheduler implements Scheduler {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
 				}
-
 			}
-
-
-
 		}
-
 	}
 
-
 	private class MainThread extends Thread {
-
 		public MainThread() {
 			super("MainThread");
 			ThreadsafetyManager.setMainThread(this);
@@ -278,14 +257,14 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-
 	public void startRenderThread() {
-		if(!(Spout.getEngine() instanceof SpoutClient)) throw new IllegalStateException("Cannot start the rendering thread unless on the client");
-		if(renderThread.isAlive()){
+		if (!(Spout.getEngine() instanceof SpoutClient)) {
+			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
+		}
+		if (renderThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
 		renderThread.start();
-
 	}
 
 	/**
@@ -314,7 +293,6 @@ public final class SpoutScheduler implements Scheduler {
 
 	/**
 	 * Schedules the specified task.
-	 *
 	 * @param task The task.
 	 */
 	private int schedule(SpoutTask task) {
@@ -348,7 +326,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 
 		// Run the relevant tasks.
-		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext();) {
+		for (Iterator<SpoutTask> it = tasks.iterator(); it.hasNext(); ) {
 			SpoutTask task = it.next();
 			boolean cont = false;
 			try {
@@ -531,7 +509,7 @@ public final class SpoutScheduler implements Scheduler {
 	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 	private int scheduleAsyncRepeatingTaskInternal(Object plugin, Runnable task, long delay, long period) {
 		return schedule(new SpoutTask(plugin, task, false, delay, period));
 	}
@@ -602,7 +580,6 @@ public final class SpoutScheduler implements Scheduler {
 	public final Thread getMainThread() {
 		return mainThread;
 	}
-
 
 	@Override
 	public long getTickTime() {

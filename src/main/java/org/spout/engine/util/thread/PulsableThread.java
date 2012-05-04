@@ -37,16 +37,16 @@ public abstract class PulsableThread extends Thread {
 	private static final Logger logger = Logger.getLogger(PulsableThread.class.getCanonicalName());
 	private final AtomicBoolean pulsing = new AtomicBoolean(false);
 
-	public PulsableThread(){
+	public PulsableThread() {
 		super();
 	}
-	public PulsableThread(String name){
+
+	public PulsableThread(String name) {
 		super(name);
 	}
-	
+
 	/**
 	 * Causes the thread to execute one pulse by calling pulseRun();
-	 *
 	 * @return false if the thread was already pulsing
 	 */
 	public boolean pulse() {
@@ -75,11 +75,9 @@ public abstract class PulsableThread extends Thread {
 	/**
 	 * Puts the current thread to sleep until the current pulse operation has
 	 * completed
-	 *
 	 * @param millis the time in milliseconds to wait before throwing a
-	 *            TimeoutException
+	 *               TimeoutException
 	 */
-
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException {
 		if (millis == 0) {
 			pulseJoin();
@@ -100,7 +98,6 @@ public abstract class PulsableThread extends Thread {
 
 	/**
 	 * This method indicates if the thread is currently pulsing
-	 *
 	 * @return true if the thread is pulsing
 	 */
 	public boolean isPulsing() {
@@ -109,12 +106,12 @@ public abstract class PulsableThread extends Thread {
 
 	/**
 	 * This method is called when the thread is woken up.
-	 *
+	 * <p/>
 	 * Interrupted exceptions MUST be thrown when interrupts happen.
-	 *
+	 * <p/>
 	 * Where InterruptedExceptions are caught for handling,
 	 * InterruptedExceptions should be chained.
-	 *
+	 * <p/>
 	 * This is required in order to ensure that the thread can be automatically
 	 * shut down.
 	 */

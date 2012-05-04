@@ -44,7 +44,6 @@ public class SnapshotableInt implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
-	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -54,7 +53,6 @@ public class SnapshotableInt implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
-	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -64,7 +62,6 @@ public class SnapshotableInt implements Snapshotable {
 
 	/**
 	 * Gets the live value
-	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead
@@ -79,5 +76,4 @@ public class SnapshotableInt implements Snapshotable {
 	public void copySnapshot() {
 		snapshot = next;
 	}
-
 }

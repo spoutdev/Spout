@@ -37,9 +37,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
 
 public class SpoutSnapshotLock implements SnapshotLock {
-
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
 	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
 
 	@Override
@@ -127,14 +125,13 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 
 	private class LockInfo {
-
 		public LockInfo(long oldestLock, int locks) {
 			this.oldestLock = oldestLock;
 			this.locks = locks;
 		}
 
-		public final long oldestLock;;
+		public final long oldestLock;
+		;
 		public final int locks;
 	}
-
 }

@@ -37,6 +37,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -47,8 +48,8 @@ import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -64,6 +65,7 @@ import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -74,7 +76,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
 public class SpoutWorld extends AsyncManager implements World {
-
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -314,7 +315,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 			return world.getUID().equals(getUID());
 		}
-
 	}
 
 	@Override
@@ -507,7 +507,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		return Collections.unmodifiableSet(players);
 	}
 
-	public List<CollisionVolume> getCollidingObject(CollisionModel model){
+	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
 		//TODO Make this more general
 		final int minX = MathHelper.floor(model.getPosition().getX());
 		final int minY = MathHelper.floor(model.getPosition().getY());
@@ -524,7 +524,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			for (int dy = minY - 1; dy < maxY; dy++) {
 				for (int dz = minZ; dz < maxZ; dz++) {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
-					mutable.set((BoundingBox)material.getBoundingArea());
+					mutable.set((BoundingBox) material.getBoundingArea());
 					mutable.offset(dx, dy, dz);
 					if (mutable.intersects(model.getVolume())) {
 						colliding.add(mutable.clone());
@@ -535,7 +535,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		//TODO: colliding entities
 		return colliding;
-
 	}
 
 	@Override
@@ -560,9 +559,8 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 *
-	 * @param x the x block coordinate
-	 * @param z the z block coordinate
+	 * @param x      the x block coordinate
+	 * @param z      the z block coordinate
 	 * @param create true to create the column if it doesn't exist
 	 * @return the column or null if it doesn't exist
 	 */
@@ -591,14 +589,14 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		BAAWrapper baa = null;
 
-		baa = heightMapBAAs.get(cx,  cz);
+		baa = heightMapBAAs.get(cx, cz);
 
 		if (baa == null) {
 			File columnDirectory = new File(worldDirectory, "col");
 			columnDirectory.mkdirs();
 			File file = new File(columnDirectory, "col" + cx + "_" + cz + ".scl");
 			baa = new BAAWrapper(file, 1024, 256, SpoutRegion.TIMEOUT);
-			BAAWrapper oldBAA = heightMapBAAs.putIfAbsent(cx, cz,  baa);
+			BAAWrapper oldBAA = heightMapBAAs.putIfAbsent(cx, cz, baa);
 			if (oldBAA != null) {
 				baa = oldBAA;
 			}
@@ -614,7 +612,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
 
 		return baa.getBlockInputStream(key);
-
 	}
 
 	public OutputStream getHeightMapOutputStream(int x, int z) {
@@ -624,7 +621,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
 
 		return baa.getBlockOutputStream(key);
-
 	}
 
 	@Override

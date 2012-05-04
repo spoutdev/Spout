@@ -50,7 +50,6 @@ import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.event.entity.EntityHealthChangeEvent;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -62,6 +61,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.util.concurrent.OptimisticReadWriteLock;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
@@ -71,7 +71,6 @@ import org.spout.engine.world.SpoutWorld;
 
 public class SpoutEntity implements Entity {
 	public static final int NOTSPAWNEDID = -1;
-
 	//Thread-safe
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Controller> controllerLive;
@@ -81,7 +80,6 @@ public class SpoutEntity implements Entity {
 	private final AtomicInteger health = new AtomicInteger(1), maxHealth = new AtomicInteger(1);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
-
 	private static final long serialVersionUID = 1L;
 	private static final Transform DEAD = new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO);
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
@@ -308,17 +306,17 @@ public class SpoutEntity implements Entity {
 
 	@Override
 	public void roll(float ang) {
-		setRoll(getRoll()+ang);
+		setRoll(getRoll() + ang);
 	}
 
 	@Override
 	public void pitch(float ang) {
-		setPitch(getPitch()+ang);
+		setPitch(getPitch() + ang);
 	}
 
 	@Override
 	public void yaw(float ang) {
-		setYaw(getYaw()+ang);
+		setYaw(getYaw() + ang);
 	}
 
 	@Override
@@ -362,8 +360,9 @@ public class SpoutEntity implements Entity {
 		boolean invalidAccess = !(this.owningThread == current || Spout.getEngine().getMainThread() == current);
 
 		if (invalidAccess && Spout.getEngine().debugMode()) {
-			if (attemptedAction == null)
+			if (attemptedAction == null) {
 				attemptedAction = "Unknown Action";
+			}
 
 			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
 		}

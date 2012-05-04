@@ -7,8 +7,8 @@ public class PositionNormalTexture extends VertexFormat {
 	Vector3 position;
 	Vector3 normal;
 	Vector2 texture;
-	
-	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 uv){
+
+	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 uv) {
 		this.position = position;
 		this.normal = normal;
 		this.texture = uv;
@@ -37,7 +37,4 @@ public class PositionNormalTexture extends VertexFormat {
 	public void setTexture(Vector2 texture) {
 		this.texture = texture;
 	}
-
-	
-
 }

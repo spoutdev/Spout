@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Region;
+
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -17,7 +18,6 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class WorldIO {
-
 	protected static void saveChunk(SpoutChunk c, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
 		chunkTags.put(new ByteTag("version", (byte) 1));
@@ -73,7 +73,6 @@ public class WorldIO {
 			byte[] blockLight = (byte[]) map.get("blockLight").getValue();
 
 			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -86,5 +85,4 @@ public class WorldIO {
 		}
 		return chunk;
 	}
-
 }

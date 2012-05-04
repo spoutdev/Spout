@@ -1,10 +1,10 @@
 package org.spout.engine.filesystem;
 
-import org.spout.api.resource.Resource;
-import org.spout.api.resource.ResourceLoader;
-
 import java.io.InputStream;
 import java.net.URI;
+
+import org.spout.api.resource.Resource;
+import org.spout.api.resource.ResourceLoader;
 
 public abstract class BasicResourceLoader<E extends Resource> implements ResourceLoader<E> {
 	@Override

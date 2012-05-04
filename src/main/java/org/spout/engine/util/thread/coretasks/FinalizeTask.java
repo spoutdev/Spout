@@ -32,7 +32,6 @@ import org.spout.engine.util.thread.ManagementRunnable;
 import org.spout.engine.util.thread.ManagementTaskEnum;
 
 public class FinalizeTask extends ManagementRunnable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Override

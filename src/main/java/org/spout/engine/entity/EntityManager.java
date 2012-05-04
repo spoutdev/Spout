@@ -40,6 +40,7 @@ import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
+
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -50,27 +51,22 @@ import org.spout.engine.world.SpoutRegion;
  * A class which manages all of the entities within a world.
  */
 public final class EntityManager implements Iterable<SpoutEntity> {
-
 	/**
 	 * The snapshot manager
 	 */
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-
 	/**
 	 * A map of all the entity ids to the corresponding entities.
 	 */
 	private final SnapshotableHashMap<Integer, SpoutEntity> entities = new SnapshotableHashMap<Integer, SpoutEntity>(snapshotManager);
-
 	/**
 	 * A map of entity types to a set containing all entities of that type.
 	 */
 	private final ConcurrentHashMap<Class<? extends Controller>, SnapshotableHashSet<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, SnapshotableHashSet<SpoutEntity>>();
-
 	/**
 	 * The next id to check.
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
-
 	private final StringMap entityMap = GenericDatatableMap.getStringMap();
 
 	private SnapshotableHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
@@ -87,7 +83,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities with the specified type from the live map.
-	 *
 	 * @param type The {@link Class} for the type.
 	 * @return A set of entities with the specified type.
 	 */
@@ -97,7 +92,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities with the specified type.
-	 *
 	 * @param type The {@link Class} for the type.
 	 * @return A set of entities with the specified type.
 	 */
@@ -107,7 +101,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities.
-	 *
 	 * @return A set of entities.
 	 */
 	public Set<SpoutEntity> getAll() {
@@ -121,7 +114,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets an entity by its id.
-	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
@@ -131,7 +123,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Allocates the id for an entity.
-	 *
 	 * @param entity The entity.
 	 * @return The id.
 	 */
@@ -140,7 +131,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
 			getRawAll(entity.getController().getClass()).add(entity);
-			entity.setOwningThread(((SpoutRegion)entity.getRegionLive()).getExceutionThread());
+			entity.setOwningThread(((SpoutRegion) entity.getRegionLive()).getExceutionThread());
 			return currentId;
 		} else {
 			int id = nextId.getAndIncrement();
@@ -153,7 +144,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			if (controller != null) {
 				getRawAll(controller.getClass()).add(entity);
 			}
-			entity.setOwningThread(((SpoutRegion)entity.getRegionLive()).getExceutionThread());
+			entity.setOwningThread(((SpoutRegion) entity.getRegionLive()).getExceutionThread());
 
 			return id;
 		}
@@ -161,7 +152,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Deallocates the id for an entity.
-	 *
 	 * @param entity The entity.
 	 */
 	public void deallocate(SpoutEntity entity) {
@@ -187,19 +177,21 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 		for (SpoutEntity e : entities.get().values()) {
 			e.finalizeRun();
 			Controller controller = e.getController();
-			if (controller == null) continue;
+			if (controller == null) {
+				continue;
+			}
 
 			controller.finalizeTick();
 
-			if (! (controller instanceof PlayerController)) continue;
+			if (!(controller instanceof PlayerController)) {
+				continue;
+			}
 
 			Player p = ((PlayerController) controller).getPlayer();
 			NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
 			if (n != null) {
 				n.finalizeTick();
 			}
-
-
 		}
 	}
 
@@ -231,7 +223,6 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets the string map associated with this entity manager
-	 *
 	 * @return
 	 */
 	public StringMap getStringMap() {

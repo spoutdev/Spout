@@ -25,27 +25,23 @@
  */
 package org.spout.engine;
 
+import java.io.File;
+import java.util.Arrays;
+
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
-
-	private static final List<String> whitelist = Arrays.asList("Notch", "ez", "jeb");
-	private static final List<String> banlist = Arrays.asList("Satan");
 	public static final ConfigurationHolder ADDRESS = new ConfigurationHolder("0.0.0.0:25565", "address");
 	public static final ConfigurationHolder ALLOW_FLIGHT = new ConfigurationHolder(false, "allow-flight");
-	public static final ConfigurationHolder BANLIST = new ConfigurationHolder(banlist, "banlist");
+	public static final ConfigurationHolder BANLIST = new ConfigurationHolder(Arrays.asList("Satan"), "banlist");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "console");
+	public static final ConfigurationHolder DEFAULT_WORLD = new ConfigurationHolder("world", "default-world");
 	public static final ConfigurationHolder USE_WHITELIST = new ConfigurationHolder(false, "use-whitelist");
 	public static final ConfigurationHolder VIEW_DISTANCE = new ConfigurationHolder(10, "view-distance");
-	public static final ConfigurationHolder WHITELIST = new ConfigurationHolder(whitelist, "whitelist");
-	public static final ConfigurationHolder WORLD_CONTAINER = new ConfigurationHolder(".", "world-container");
+	public static final ConfigurationHolder WHITELIST = new ConfigurationHolder(Arrays.asList("Notch", "ez", "jeb"), "whitelist");
 	public static final ConfigurationHolder WORLDS = new ConfigurationHolder("default", "worlds");
 
 	public SpoutConfiguration() {

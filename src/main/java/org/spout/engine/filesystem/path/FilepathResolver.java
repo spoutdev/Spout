@@ -25,16 +25,15 @@
  */
 package org.spout.engine.filesystem.path;
 
-import org.spout.api.resource.ResourcePathResolver;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
 
-public class FilepathResolver implements ResourcePathResolver {
+import org.spout.api.resource.ResourcePathResolver;
 
+public class FilepathResolver implements ResourcePathResolver {
 	protected final String directory;
 
 	public FilepathResolver(String path) {

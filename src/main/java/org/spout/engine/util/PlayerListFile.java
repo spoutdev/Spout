@@ -43,7 +43,6 @@ public final class PlayerListFile {
 	 * The list as we currently know it.
 	 */
 	private final ArrayList<String> list = new ArrayList<String>();
-
 	/**
 	 * The file the list is associated with.
 	 */
@@ -51,7 +50,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Initialize the player list from the given file.
-	 *
 	 * @param path The file to use for this list.
 	 */
 	public PlayerListFile(String path) {
@@ -60,7 +58,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Initialize the player list from the given file.
-	 *
 	 * @param file The file to use for this list.
 	 */
 	public PlayerListFile(File file) {
@@ -90,7 +87,6 @@ public final class PlayerListFile {
 				save();
 			}
 		}
-
 	}
 
 	/**
@@ -111,7 +107,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Add a player to the list.
-	 *
 	 * @param player The name to add
 	 */
 	public void add(String player) {
@@ -124,7 +119,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Remove a player from the list.
-	 *
 	 * @param player The name to remove
 	 */
 	public void remove(String player) {
@@ -134,7 +128,6 @@ public final class PlayerListFile {
 
 	/**
 	 * Check if a player is in the list.
-	 *
 	 * @param player The name to check
 	 * @return Whether this list contains the given name
 	 */

@@ -7,13 +7,13 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
+
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 
 public class ClientTexture extends Texture {
-
 	int textureID = -1;
 
 	public ClientTexture(BufferedImage baseImage) {
@@ -25,33 +25,37 @@ public class ClientTexture extends Texture {
 		return new ClientTexture(image.getSubimage(x, y, w, h));
 	}
 
-	public int getTextureID(){
-		if(textureID == -1) throw new IllegalStateException("Cannot use an unloaded texture");
+	public int getTextureID() {
+		if (textureID == -1) {
+			throw new IllegalStateException("Cannot use an unloaded texture");
+		}
 		return textureID;
 	}
 
 	@Override
 	public void bind() {
-		if(textureID == -1) throw new IllegalStateException("Cannot bind an unloaded texture!");
+		if (textureID == -1) {
+			throw new IllegalStateException("Cannot bind an unloaded texture!");
+		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-
 	}
 
-
-	public void unload(){
-		if(textureID == -1) throw new IllegalStateException("Cannot delete an unloaded texture!");
+	public void unload() {
+		if (textureID == -1) {
+			throw new IllegalStateException("Cannot delete an unloaded texture!");
+		}
 
 		GL11.glDeleteTextures(textureID);
 		textureID = -1;
-
 	}
-
 
 	@Override
 	public void load() {
-		if(textureID != -1) throw new IllegalStateException("Cannot load an already loaded texture!");
+		if (textureID != -1) {
+			throw new IllegalStateException("Cannot load an already loaded texture!");
+		}
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -60,8 +64,8 @@ public class ClientTexture extends Texture {
 
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 
-		if(((Client)Spout.getEngine()).getRenderMode() != RenderMode.GL30){
-			
+		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
+
 			//Use Mipmaps
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
 		}
@@ -74,7 +78,6 @@ public class ClientTexture extends Texture {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
-
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -82,8 +85,8 @@ public class ClientTexture extends Texture {
 		image.getRGB(0, 0, width, height, pixels, 0, width);
 
 		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
-		for(int x = 0; x < width; x++){
-			for(int y = 0; y < height; y++){
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
 				int pixel = pixels[y * width + x];
 				buffer.put((byte) ((pixel >> 16) & 0xFF)); // Red component
 				buffer.put((byte) ((pixel >> 8) & 0xFF));  // Green component
@@ -92,13 +95,13 @@ public class ClientTexture extends Texture {
 			}
 		}
 
-		buffer.flip(); 
-		if(((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL30){
-			GL30.glGenerateMipmap(textureID);			
+		buffer.flip();
+		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL30) {
+			GL30.glGenerateMipmap(textureID);
 		}
-		
+
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-		
+
 		//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 	}
 }

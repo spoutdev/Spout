@@ -48,11 +48,11 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
+
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
-
 	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();
 	private SpoutSession session;
 	private final String name;

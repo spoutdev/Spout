@@ -138,7 +138,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	/**
 	 * Checks if the future is associated with this executor
-	 *
 	 * @param future the future
 	 */
 	private void checkFuture(ManagedFuture<Serializable> future) {
@@ -149,7 +148,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	/**
 	 * Executes all tasks on the queue
-	 *
 	 * @throws InterruptedException
 	 */
 	private final void executeAllTasks() throws InterruptedException {

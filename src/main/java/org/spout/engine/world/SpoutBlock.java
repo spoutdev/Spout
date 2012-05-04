@@ -57,11 +57,11 @@ public class SpoutBlock implements Block {
 	public SpoutBlock(Point position, Source source) {
 		this(position.getWorld(), position.getBlockX(), position.getBlockY(), position.getBlockZ(), source);
 	}
-	
+
 	public SpoutBlock(World world, int x, int y, int z, Source source) {
 		this(world, x, y, z, null, source);
 	}
-	
+
 	public SpoutBlock(World world, int x, int y, int z, Chunk chunk, Source source) {
 		this.x = x;
 		this.y = y;
@@ -147,7 +147,6 @@ public class SpoutBlock implements Block {
 		sb.chunk = null;
 		return sb;
 	}
-
 
 	@Override
 	public boolean equals(Object other) {

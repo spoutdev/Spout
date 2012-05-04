@@ -34,17 +34,17 @@ import org.spout.api.util.map.TUnmodifiableInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+
 import org.spout.engine.util.TripleInt;
 
 /**
  * A snapshotable class for triple int HashMaps based on Trove long maps.
- *
+ * <p/>
  * This allows the class to support getLive functionality.
- *
+ * <p/>
  * Removals from the Map occur at the next snapshot update.
  */
 public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
-
 	private final TInt21TripleObjectHashMap<V> live;
 	private final ConcurrentHashMap<TripleInt, Boolean> dirtyMap;
 	private final ConcurrentLinkedQueue<TripleInt> dirtyQueue;
@@ -64,10 +64,9 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Adds an object to the map
-	 *
-	 * @param x x coordinate
-	 * @param y y coordinate
-	 * @param z z coordinate
+	 * @param x     x coordinate
+	 * @param y     y coordinate
+	 * @param z     z coordinate
 	 * @param value the value
 	 * @return the previous value
 	 */
@@ -82,10 +81,9 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Adds an object to the map, if not already present
-	 *
-	 * @param x x coordinate
-	 * @param y y coordinate
-	 * @param z z coordinate
+	 * @param x     x coordinate
+	 * @param y     y coordinate
+	 * @param z     z coordinate
 	 * @param value the value
 	 * @return the current value, or null on success
 	 */
@@ -105,7 +103,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the Map
-	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -127,13 +124,12 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the Map.
-	 *
+	 * <p/>
 	 * This method will have no effect if the key does not map to the given
 	 * value when the removal is attempted
-	 *
-	 * @param x x coordinate
-	 * @param y y coordinate
-	 * @param z z coordinate
+	 * @param x     x coordinate
+	 * @param y     y coordinate
+	 * @param z     z coordinate
 	 * @param value the value
 	 * @return true if the value was removed
 	 */
@@ -155,7 +151,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
-	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -165,7 +160,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets the live/unstable value
-	 *
 	 * @return the stable snapshot value
 	 */
 	@LiveRead
@@ -175,7 +169,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets a value from a key, checks the Live map and then the snapshot map
-	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -196,7 +189,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets a value from a key
-	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -209,7 +201,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets a value from a key
-	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
@@ -224,7 +215,6 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets all values that are on the live map and the snapshot map
-	 *
 	 * @return an Iterable containing the values
 	 */
 	@LiveRead
@@ -265,5 +255,4 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 			dirtyQueue.add(key);
 		}
 	}
-
 }

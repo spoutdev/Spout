@@ -42,20 +42,14 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The parent region that manages this chunk
 	 */
 	private final WeakReference<Region> parentRegion;
-
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
-
 	private final Set<WeakReference<Entity>> entities;
-
 	private final short[] blockIds;
-
 	private final short[] blockData;
-
 	private final byte[] blockLight;
-
 	private final byte[] skyLight;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
@@ -80,13 +74,13 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private int getBlockIndex(int x, int y, int z) {
 		return (y & this.coordMask) << 8 | (z & this.coordMask) << 4 | x & this.coordMask;
 	}
-	
+
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		BlockMaterial mat = BlockMaterial.get(getBlockId(x, y, z));
 		return mat == null ? BlockMaterial.AIR : mat;
 	}
-	
+
 	//TODO: Should this be hidden, or not?
 	private short getBlockId(int x, int y, int z) {
 		return blockIds[this.getBlockIndex(x, y, z)];
@@ -102,9 +96,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		int index = this.getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte)((light >> 4) & 0xF);
+			return (byte) ((light >> 4) & 0xF);
 		}
-		return (byte)(light & 0xF);
+		return (byte) (light & 0xF);
 	}
 
 	@Override
@@ -112,9 +106,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		int index = this.getBlockIndex(x, y, z);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte)((light >> 4) & 0xF);
+			return (byte) ((light >> 4) & 0xF);
 		}
-		return (byte)(light & 0xF);
+		return (byte) (light & 0xF);
 	}
 
 	@Override

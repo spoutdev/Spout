@@ -39,22 +39,18 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
-
 	/**
 	 * Internal size of a side of a column
 	 */
 	public final static int COLUMN_SIZE = Chunk.CHUNK_SIZE;
-
 	/**
 	 * Internal size of a side of a column
 	 */
 	public final static int BIT_MASK = COLUMN_SIZE - 1;
-
 	/**
 	 * Number of bits on the side of a column
 	 */
 	public final static int COLUMN_SIZE_BITS = Chunk.CHUNK_SIZE_BITS;
-
 	private final World world;
 	private final int x;
 	private final int z;
@@ -74,7 +70,6 @@ public class SpoutColumn {
 		}
 
 		readHeightMap(((SpoutWorld) world).getHeightMapInputStream(x, z));
-
 	}
 
 	public void registerChunk() {
@@ -99,7 +94,6 @@ public class SpoutColumn {
 		} else {
 			activeChunks.decrementAndGet();
 		}
-
 	}
 
 	public boolean activeChunks() {
@@ -166,7 +160,6 @@ public class SpoutColumn {
 		int yy = y;
 		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
 		return isAir(world.getBlockMaterial(xx, yy, zz));
-
 	}
 
 	private boolean isAir(Chunk c, int x, int y, int z) {
@@ -220,5 +213,4 @@ public class SpoutColumn {
 			Spout.getLogger().severe("Error writing column height-map for column" + x + ", " + z);
 		}
 	}
-
 }

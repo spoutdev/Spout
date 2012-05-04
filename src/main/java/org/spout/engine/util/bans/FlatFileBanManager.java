@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.spout.api.Spout;
 import org.spout.api.event.server.BanChangeEvent;
+
 import org.spout.engine.SpoutServer;
 import org.spout.engine.util.PlayerListFile;
 
@@ -62,15 +63,15 @@ public class FlatFileBanManager implements BanManager {
 		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.PLAYER, player, banned));
 
 		boolean alreadyBanned = !(isBanned(player) == event.isBanned());
-		
-		if(!event.isCancelled()) {
+
+		if (!event.isCancelled()) {
 			if (banned) {
 				bannedNames.add(player);
 			} else {
 				bannedNames.remove(player);
 			}
 		}
-		
+
 		return alreadyBanned;
 	}
 
@@ -92,17 +93,17 @@ public class FlatFileBanManager implements BanManager {
 	@Override
 	public boolean setIpBanned(String address, boolean banned) {
 		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.IP, address, banned));
-		
+
 		boolean alreadyBanned = !(isIpBanned(address) == event.isBanned());
-		
-		if(!event.isCancelled()) {
+
+		if (!event.isCancelled()) {
 			if (banned) {
 				bannedIps.add(address);
 			} else {
 				bannedIps.remove(address);
 			}
 		}
-		
+
 		return alreadyBanned;
 	}
 

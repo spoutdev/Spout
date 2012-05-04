@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import org.spout.api.inventory.ItemStack;
@@ -39,6 +40,7 @@ import org.spout.api.material.Material;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.Parameter;
+
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -56,8 +58,7 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a list of parameters (e.g. mob metadata) to the buffer.
-	 *
-	 * @param buf The buffer.
+	 * @param buf        The buffer.
 	 * @param parameters The parameters.
 	 */
 	@SuppressWarnings("unchecked")
@@ -98,14 +99,13 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a list of parameters from the buffer.
-	 *
 	 * @param buf The buffer.
 	 * @return The parameters.
 	 */
 	public static List<Parameter<?>> readParameters(ChannelBuffer buf) {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 
-		for (int b = buf.readUnsignedByte(); b != 127;) {
+		for (int b = buf.readUnsignedByte(); b != 127; ) {
 			int type = (b & 0x0E) >> 5;
 			int index = b & 0x1F;
 
@@ -140,11 +140,10 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a string to the buffer.
-	 *
 	 * @param buf The buffer.
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *             it is encoded.
+	 *                                  it is encoded.
 	 */
 	public static void writeString(ChannelBuffer buf, String str) {
 		int len = str.length();
@@ -160,11 +159,10 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a UTF-8 string to the buffer.
-	 *
 	 * @param buf The buffer.
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *             it is encoded.
+	 *                                  it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
 		byte[] bytes = str.getBytes(CHARSET_UTF8);
@@ -178,7 +176,6 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a string from the buffer.
-	 *
 	 * @param buf The buffer.
 	 * @return The string.
 	 */
@@ -195,7 +192,6 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a UTF-8 encoded string from the buffer.
-	 *
 	 * @param buf The buffer.
 	 * @return The string.
 	 */

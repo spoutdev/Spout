@@ -25,40 +25,36 @@
  */
 package org.spout.engine.filesystem;
 
-import org.spout.api.Spout;
-import org.spout.api.plugin.Platform;
-import org.spout.api.resource.Resource;
-import org.spout.api.resource.ResourceLoader;
-import org.spout.api.resource.ResourcePathResolver;
-import org.spout.engine.filesystem.path.FilepathResolver;
-import org.spout.engine.filesystem.path.JarfileResolver;
-import org.spout.engine.filesystem.path.ZipfileResolver;
-import org.spout.engine.resources.TextureLoader;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-public class FileSystem {
+import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
+import org.spout.api.resource.Resource;
+import org.spout.api.resource.ResourceLoader;
+import org.spout.api.resource.ResourcePathResolver;
 
+import org.spout.engine.filesystem.path.FilepathResolver;
+import org.spout.engine.filesystem.path.JarfileResolver;
+import org.spout.engine.filesystem.path.ZipfileResolver;
+import org.spout.engine.resources.TextureLoader;
+
+public class FileSystem {
 	/**
 	 * Plugins live in this folder (SERVER and CLIENT)
 	 */
 	public static final File PLUGIN_DIRECTORY = new File("plugins");
-
 	public static final File RESOURCE_FOLDER = new File("resources");
 	public static final File CACHE_FOLDER = new File("cache");
 	public static final File CONFIG_DIRECTORY = new File("config");
 	public static final File UPDATE_DIRECTORY = new File("update");
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
-
 	static ResourcePathResolver[] searchpaths;
-
 	static final HashMap<String, ResourceLoader<? extends Resource>> LOADERS = new HashMap<String, ResourceLoader<? extends Resource>>();
-
 	static final HashMap<URI, Resource> LOADED_RESOURCES = new HashMap<URI, Resource>();
 
 	public static void init() {
@@ -78,7 +74,7 @@ public class FileSystem {
 			}
 		}
 
-		if (!PLUGIN_DIRECTORY.exists())  {
+		if (!PLUGIN_DIRECTORY.exists()) {
 			PLUGIN_DIRECTORY.mkdirs();
 		}
 		if (!DATA_DIRECTORY.exists()) {
@@ -97,20 +93,25 @@ public class FileSystem {
 
 	protected static InputStream getResourceStream(URI path) {
 		for (int i = 0; i < searchpaths.length; i++) {
-			if (searchpaths[i].existsInPath(path)) return searchpaths[i].getStream(path);
+			if (searchpaths[i].existsInPath(path)) {
+				return searchpaths[i].getStream(path);
+			}
 		}
 		return null;
 	}
 
 	public static void registerLoader(String protocol, ResourceLoader<? extends Resource> loader) {
-		if (LOADERS.containsKey(protocol)) return;
+		if (LOADERS.containsKey(protocol)) {
+			return;
+		}
 		LOADERS.put(protocol, loader);
 	}
 
 	public static void loadResource(URI path) {
 		String protocol = path.getScheme();
-		if (!LOADERS.containsKey(protocol))
+		if (!LOADERS.containsKey(protocol)) {
 			throw new IllegalArgumentException("Unknown resource type: " + protocol);
+		}
 		Resource r = LOADERS.get(protocol).getResource(path);
 		LOADED_RESOURCES.put(path, r);
 	}

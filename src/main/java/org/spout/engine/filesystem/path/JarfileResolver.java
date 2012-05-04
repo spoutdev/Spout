@@ -25,14 +25,14 @@
  */
 package org.spout.engine.filesystem.path;
 
-import org.spout.engine.filesystem.FileSystem;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.spout.engine.filesystem.FileSystem;
 
 public class JarfileResolver extends FilepathResolver {
 	public JarfileResolver() {
@@ -53,12 +53,13 @@ public class JarfileResolver extends FilepathResolver {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (f != null)
+			if (f != null) {
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
 		}
 		return has;
 	}
@@ -75,12 +76,13 @@ public class JarfileResolver extends FilepathResolver {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (f != null)
+			if (f != null) {
 				try {
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
 		}
 		return stream;
 	}
