@@ -27,7 +27,7 @@ package org.spout.api.geo.cuboid;
 
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
@@ -234,7 +234,7 @@ public interface Block extends MaterialState {
 	 *
 	 * @return The biome type for the block
 	 */
-	public BiomeType getBiomeType();
+	public Biome getBiomeType();
 
 	/**
 	 * Sets the sky light level to the given light level

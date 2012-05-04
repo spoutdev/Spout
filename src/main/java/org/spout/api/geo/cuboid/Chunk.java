@@ -28,7 +28,7 @@ package org.spout.api.geo.cuboid;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -132,7 +132,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 *
 	 * @return The biome type at the location
 	 */
-	public abstract BiomeType getBiomeType(int x, int y, int z);
+	public abstract Biome getBiomeType(int x, int y, int z);
 
 	/**
 	 * Populates the chunk with all the Populators attached to the

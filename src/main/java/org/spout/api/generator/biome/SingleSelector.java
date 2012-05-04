@@ -4,14 +4,14 @@ package org.spout.api.generator.biome;
  * @author zml2008
  */
 public class SingleSelector extends BiomeSelector {
-	private final int index;
+	private final Biome biome;
 
-	public SingleSelector(int index) {
-		this.index = index;
+	public SingleSelector(Biome biome) {
+		this.biome = biome;
 	}
 
 	@Override
-	public int pickBiome(int x, int y, int z, long seed) {
-		return index;
+	public Biome pickBiome(int x, int y, int z, long seed) {
+		return biome;
 	}
 }

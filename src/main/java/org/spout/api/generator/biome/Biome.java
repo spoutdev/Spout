@@ -40,10 +40,10 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
  *
  *
  */
-public abstract class BiomeType {
+public abstract class Biome {
 	List<BiomeDecorator> decorators = new ArrayList<BiomeDecorator>();
 
-	public BiomeType(BiomeDecorator... decorators) {
+	public Biome(BiomeDecorator... decorators) {
 		this.decorators.addAll(Arrays.asList(decorators));
 	}
 

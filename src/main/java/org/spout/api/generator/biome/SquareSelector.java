@@ -33,7 +33,7 @@ package org.spout.api.generator.biome;
  */
 public class SquareSelector extends BiomeSelector {
 	@Override
-	public int pickBiome(int x, int y, int z, long seed) {
-		return x / 64 ^ z / 64;
+	public Biome pickBiome(int x, int y, int z, long seed) {
+		return parent.getBiomeRaw(x / 64 ^ z / 64);
 	}
 }

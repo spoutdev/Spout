@@ -37,25 +37,30 @@ import java.util.Set;
  * A simple store wrapper that holds biomes and the selector.
  */
 public final class BiomeMap {
-	private final SimpleStoreMap<Vector3, BiomeType> biomeOverrides;
-	private final SimpleStoreMap<Integer, BiomeType> map;
+	private final SimpleStoreMap<Vector3, Biome> biomeOverrides;
+	private final SimpleStoreMap<Integer, Biome> map;
 	private BiomeSelector selector;
 
 	public BiomeMap() {
 		//Todo: Make this saveable
-		map = new MemoryStoreMap<Integer, BiomeType>();
-		biomeOverrides = new MemoryStoreMap<Vector3, BiomeType>();
+		map = new MemoryStoreMap<Integer, Biome>();
+		biomeOverrides = new MemoryStoreMap<Vector3, Biome>();
+	}
+	
+	public Biome getBiomeRaw(int index){
+		return map.get(Math.abs(index) % map.getSize());
 	}
 
 	public void setSelector(BiomeSelector selector) {
 		this.selector = selector;
+		selector.parent = this;
 	}
 
-	public void addBiome(BiomeType biome) {
+	public void addBiome(Biome biome) {
 		map.set(map.getSize(), biome);
 	}
 
-	public void setBiome(Vector3 loc, BiomeType biome) {
+	public void setBiome(Vector3 loc, Biome biome) {
 		biomeOverrides.set(loc, biome);
 	}
 
@@ -63,25 +68,36 @@ public final class BiomeMap {
 	 * TODO This needs to generate a noise function relying on x and z to generate a map that is [0-map.getSize()] so that we can select
 	 * Biomes for the biome generator
 	 */
-	public BiomeType getBiome(int x, int z, long seed) {
+	public Biome getBiome(int x, int z, long seed) {
 		return getBiome(x, 0, z, seed);
 	}
 
-	public BiomeType getBiome(int x, int y, int z, long seed) {
-		BiomeType biome = biomeOverrides.get(new Vector3(x, y, z));
-		if (biome == null) {
-			biome = map.get(Math.abs(selector.pickBiome(x, y, z, seed)) % map.getSize());
-		}
-		return biome;
+	public Biome getBiome(int x, int y, int z, long seed) {
+		return getBiome(new Vector3(x,y,z), seed);
 	}
 
-	public Collection<BiomeType> getBiomes() {
-		Set<BiomeType> biomes = new HashSet<BiomeType> (map.getValues());
+	/**
+	 * Returns the biome at the current location.  If the position has a override, that override is used.
+	 * @param position
+	 * @param seed
+	 * @return
+	 */
+	public Biome getBiome(Vector3 position, long seed) {
+		Biome biome = biomeOverrides.get(position);
+		if (biome == null) {
+			biome = selector.pickBiome((int)position.getX(), (int)position.getY(), (int)position.getZ(), seed);
+		}
+		return biome;
+		
+	}
+	
+	public Collection<Biome> getBiomes() {
+		Set<Biome> biomes = new HashSet<Biome> (map.getValues());
 		biomes.addAll(biomeOverrides.getValues());
 		return biomes;
 	}
 	
-	public int indexOf(BiomeType biome) {
+	public int indexOf(Biome biome) {
 		if(map.reverseGet(biome) != null) {
 			return map.reverseGet(biome);
 		} else {

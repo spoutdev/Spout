@@ -35,7 +35,12 @@ package org.spout.api.generator.biome;
  *
  */
 public abstract class BiomeSelector {
-	public final int pickBiome(int x, int z, long seed) {
+	
+	protected BiomeMap parent;
+	
+	
+	
+	public final Biome pickBiome(int x, int z, long seed) {
 		return pickBiome(x, 0, z, seed);
 	}
 	/**
@@ -46,5 +51,5 @@ public abstract class BiomeSelector {
 	 * @param seed
 	 * @return the biome between 0 and maxBiomes
 	 */
-	public abstract int pickBiome(int x, int y, int z, long seed);
+	public abstract Biome pickBiome(int x, int y, int z, long seed);
 }

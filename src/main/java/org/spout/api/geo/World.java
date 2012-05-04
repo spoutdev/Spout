@@ -34,7 +34,7 @@ import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.generator.biome.BiomeType;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.player.Player;
@@ -165,7 +165,7 @@ public interface World extends Source, AreaRegionAccess {
 	 *
 	 * @return The biome type at the location
 	 */
-	public BiomeType getBiomeType(int x, int y, int z);
+	public Biome getBiomeType(int x, int y, int z);
 
 	/**
 	 * Gets all entities with the specified type.
