@@ -132,32 +132,4 @@ public interface Player extends CommandSource, PermissionsSubject, DataSubject, 
 	 * @return current input state
 	 */
 	public PlayerInputState input();
-
-	/**
-	 * @return the stack of the screens.
-	 */
-	public Stack<Screen> getScreenStack();
-
-	/**
-	 * Puts the given screen on the stack.
-	 * @param screen the screen to put on the stack
-	 */
-	public void openScreen(Screen screen);
-
-	/**
-	 * Removes the screen in focus from the stack.
-	 */
-	public void closeScreen();
-
-	/**
-	 * Removes the given screen from the stack. Useful if the screen you want to close is not in focus.
-	 * @param screen The screen to close
-	 */
-	public void closeScreen(Screen screen);
-
-	/**
-	 * Gets the screen in focus. This is the screen that is in the front of the stack.
-	 * @return the screen in focus.
-	 */
-	public Screen getFocusedScreen();
 }
