@@ -118,7 +118,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private final Random random = new Random();
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
-	private final ConsoleManager consoleManager = new ConsoleManager(this);
+	private final ConsoleManager consoleManager;
 	private final EntityManager entityManager = new EntityManager();
 	private final EventManager eventManager = new SimpleEventManager();
 	private final RecipeManager recipeManager = new CommonRecipeManager();
@@ -147,6 +147,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor());
+		consoleManager = new ConsoleManager(this);
 	}
 
 	public void init(String[] args) {
@@ -171,7 +172,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		if (Spout.getEngine().debugMode()) {
+		if (debugMode) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 		}
 

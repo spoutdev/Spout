@@ -83,7 +83,7 @@ import org.spout.engine.SpoutServer;
  * Portions are heavily based on CraftBukkit.
  */
 public final class ConsoleManager {
-	private final Engine server;
+	private final Engine engine;
 	private ConsoleReader reader;
 	private ColoredCommandSource source;
 	private ConsoleCommandThread thread;
@@ -95,12 +95,12 @@ public final class ConsoleManager {
 	private boolean running = true;
 	private boolean jLine = false;
 
-	public ConsoleManager(Engine server) {
-		this.server = server;
+	public ConsoleManager(Engine engine) {
+		this.engine = engine;
 
 		consoleHandler = new FancyConsoleHandler();
 
-		String logFile = server.getLogFile();
+		String logFile = engine.getLogFile();
 		if (new File(logFile).getParentFile() != null) {
 			new File(logFile).getParentFile().mkdirs();
 		}
@@ -119,7 +119,7 @@ public final class ConsoleManager {
 		try {
 			reader = new ConsoleReader();
 		} catch (IOException ex) {
-			server.getLogger().log(Level.SEVERE, "Exception initializing console reader: {0}", ex.getMessage());
+			engine.getLogger().log(Level.SEVERE, "Exception initializing console reader: {0}", ex.getMessage());
 			ex.printStackTrace();
 		}
 
@@ -205,7 +205,7 @@ public final class ConsoleManager {
 			reader.removeCompletor(c);
 		}
 
-		Completor[] list = new Completor[]{new SimpleCompletor(server.getAllCommands()), new NullCompletor()};
+		Completor[] list = new Completor[]{new SimpleCompletor(engine.getAllCommands()), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
@@ -250,9 +250,9 @@ public final class ConsoleManager {
 						continue;
 					}
 
-					server.getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
+					engine.getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (Exception ex) {
-					server.getLogger().severe("Impossible exception while executing command: " + ex.getMessage());
+					engine.getLogger().severe("Impossible exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
 				}
 			}
@@ -268,7 +268,7 @@ public final class ConsoleManager {
 
 		@Override
 		public void run() {
-			server.stop();
+			engine.stop();
 		}
 	}
 
@@ -281,7 +281,7 @@ public final class ConsoleManager {
 
 		@Override
 		public void run() {
-			server.processCommand(source, command);
+			engine.processCommand(source, command);
 		}
 	}
 
@@ -294,13 +294,13 @@ public final class ConsoleManager {
 
 		@Override
 		public boolean sendMessage(String text) {
-			server.getLogger().info(text);
+			engine.getLogger().info(text);
 			return true;
 		}
 
 		@Override
 		public boolean sendRawMessage(String text) {
-			server.getLogger().info(text);
+			engine.getLogger().info(text);
 			return true;
 		}
 
@@ -351,7 +351,7 @@ public final class ConsoleManager {
 			super.reset();
 
 			if (record.length() > 0 && !record.equals(separator)) {
-				server.getLogger().logp(level, "LoggerOutputStream", "log" + level, record);
+				engine.getLogger().logp(level, "LoggerOutputStream", "log" + level, record);
 			}
 		}
 	}
@@ -384,7 +384,7 @@ public final class ConsoleManager {
 					super.flush();
 				}
 			} catch (IOException ex) {
-				server.getLogger().severe("I/O exception flushing console output");
+				engine.getLogger().severe("I/O exception flushing console output");
 				ex.printStackTrace();
 			}
 		}
@@ -402,7 +402,7 @@ public final class ConsoleManager {
 			try {
 				setOutputStream(new FileOutputStream(filename, true));
 			} catch (FileNotFoundException ex) {
-				server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
+				engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
 				ex.printStackTrace();
 			}
 		}
@@ -411,11 +411,11 @@ public final class ConsoleManager {
 		public synchronized void flush() {
 			if (!filename.equals(calculateFilename())) {
 				filename = calculateFilename();
-				server.getLogger().log(Level.INFO, "Log rotating to {0}...", filename);
+				engine.getLogger().log(Level.INFO, "Log rotating to {0}...", filename);
 				try {
 					setOutputStream(new FileOutputStream(filename, true));
 				} catch (FileNotFoundException ex) {
-					server.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
+					engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{filename, ex.getMessage()});
 					ex.printStackTrace();
 				}
 			}
@@ -490,7 +490,7 @@ public final class ConsoleManager {
 
 		@Override
 		public void windowClosing(WindowEvent e) {
-			server.stop();
+			engine.stop();
 		}
 
 		@Override
@@ -498,7 +498,7 @@ public final class ConsoleManager {
 			if (e.getKeyChar() == '\n') {
 				String command = jInput.getText().trim();
 				if (command.length() > 0) {
-					((SpoutServer) server).getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command));
+					engine.getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command));
 				}
 				jInput.setText("");
 			}
