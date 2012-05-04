@@ -163,7 +163,7 @@ public interface World extends Source, AreaRegionAccess {
 	 * Gets the biome type at the coordinates,
 	 * if the world generator used uses biomes.
 	 *
-	 * @return The biome type at the location
+	 * @return The biome type at the location, or null if no biome exists.
 	 */
 	public Biome getBiomeType(int x, int y, int z);
 
