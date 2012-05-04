@@ -69,6 +69,13 @@ public class Matrix {
 		dimension = dim;
 		data = dat.clone();
 	}
+	/**
+	 * Creates a new copy of provided matrix
+	 * @param copy
+	 */
+	public Matrix(Matrix copy){
+		this(copy.dimension, copy.data);
+	}
 
 	public int getDimension() {
 		return dimension;
