@@ -448,4 +448,15 @@ public class Matrix {
 
 		return ortho;
 	}
+	
+	public static Matrix transpose(Matrix in){
+		Matrix r = new Matrix(in.dimension);
+		
+		for(int i = 0; i < in.dimension; i++){
+			for(int j = 0; j < in.dimension; j++){
+				r.set(j, i, in.get(i, j));
+			}
+		}
+		return r;
+	}
 }

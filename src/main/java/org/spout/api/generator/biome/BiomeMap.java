@@ -83,6 +83,7 @@ public final class BiomeMap {
 	 * @return
 	 */
 	public Biome getBiome(Vector3 position, long seed) {
+		if(selector == null) throw new IllegalStateException("Biome Selector is null and cannot set a selector");
 		Biome biome = biomeOverrides.get(position);
 		if (biome == null) {
 			biome = selector.pickBiome((int)position.getX(), (int)position.getY(), (int)position.getZ(), seed);
