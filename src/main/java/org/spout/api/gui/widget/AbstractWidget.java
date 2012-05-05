@@ -83,4 +83,9 @@ public abstract class AbstractWidget implements Widget {
 		this.screen = screen;
 		return this;
 	}
+
+	@Override
+	public void onTick() {
+		
+	}
 }

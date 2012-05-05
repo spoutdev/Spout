@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+import org.spout.api.Tickable;
 import org.spout.api.gui.KeyboardEventHandler;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.MouseEventHandler;
@@ -39,7 +40,7 @@ import org.spout.api.gui.Renderable;
 import org.spout.api.gui.Screen;
 import org.spout.api.keyboard.Keyboard;
 
-public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEventHandler {
+public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEventHandler, Tickable {
 	/**
 	 * Contains all attached screens in front-to-back order, that means, the topmost screen is the first element
 	 */
@@ -168,12 +169,22 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	}
 
 	@Override
-	public void onMouseMove(Point position) {
-		Screen screen = getHitScreen(position);
+	public void onMouseMove(Point from, Point to) {
+		Screen screen = getHitScreen(from);
 		if(screen != null) {
-			Point screenPosition = new Point(position);
-			screenPosition.translate(-screen.getGeometry().x, -screen.getGeometry().y);
-			getHitScreen(position).onMouseMove(screenPosition);
+			Point screenPositionFrom = new Point(from);
+			Point screenPositionTo = new Point(to);
+			screenPositionFrom.translate(-screen.getGeometry().x, -screen.getGeometry().y);
+			screenPositionTo.translate(-screen.getGeometry().x, -screen.getGeometry().y);
+			screen.onMouseMove(screenPositionFrom, screenPositionTo);
+		}
+		screen = getHitScreen(to);
+		if(screen != null) {
+			Point screenPositionFrom = new Point(from);
+			Point screenPositionTo = new Point(to);
+			screenPositionFrom.translate(-screen.getGeometry().x, -screen.getGeometry().y);
+			screenPositionTo.translate(-screen.getGeometry().x, -screen.getGeometry().y);
+			screen.onMouseMove(screenPositionFrom, screenPositionTo);
 		}
 	}
 
@@ -204,6 +215,14 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 			GL11.glPushMatrix();
 			screen.render();
 			GL11.glPopMatrix();
+		}
+	}
+
+	@Override
+	public void onTick() {
+		//Invisible screens don't have to be ticked
+		for(Screen screen:visibleScreens) {
+			screen.onTick();
 		}
 	}
 }

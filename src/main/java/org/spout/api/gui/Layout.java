@@ -1,6 +1,8 @@
 package org.spout.api.gui;
 
-public interface Layout extends MouseEventHandler, Renderable {
+import org.spout.api.Tickable;
+
+public interface Layout extends MouseEventHandler, Renderable, Tickable {
 	/**
 	 * Called whenever the size of the underlying container changes.
 	 * The implementation has to set new geometry of the contained widgets when that happens

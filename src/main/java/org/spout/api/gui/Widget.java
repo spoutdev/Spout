@@ -2,9 +2,10 @@ package org.spout.api.gui;
 
 import java.awt.Rectangle;
 
+import org.spout.api.Tickable;
 import org.spout.api.plugin.Plugin;
 
-public interface Widget extends Renderable {
+public interface Widget extends Renderable, Tickable {
 	/**
 	 * Gets the applied geometry of the widget
 	 * @return the geometry
@@ -84,4 +85,9 @@ public interface Widget extends Renderable {
 	 * @return the instance for chained calls
 	 */
 	public Widget setScreen(Screen screen);
+	
+	/**
+	 * Called each tick
+	 */
+	public void onTick();
 }

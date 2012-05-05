@@ -80,10 +80,14 @@ public abstract class AbstractLayout implements Layout {
 	}
 
 	@Override
-	public void onMouseMove(Point position) {
-		Widget clicked = getWidgetAt(position);
-		if(canReceiveClick(clicked)) {
-			((MouseEventHandler) clicked).onMouseMove(position);
+	public void onMouseMove(Point from, Point to) {
+		Widget movedTo = getWidgetAt(to);
+		if(canReceiveClick(movedTo)) {
+			((MouseEventHandler) movedTo).onMouseMove(from, to);
+		}
+		Widget movedFrom = getWidgetAt(to);
+		if(canReceiveClick(movedFrom)) {
+			((MouseEventHandler) movedFrom).onMouseMove(from, to);
 		}
 	}
 
@@ -111,5 +115,12 @@ public abstract class AbstractLayout implements Layout {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void onTick() {
+		for(Widget widget : attachedWidgets) {
+			widget.onTick();
+		}
 	}
 }

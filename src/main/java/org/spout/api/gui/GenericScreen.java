@@ -23,8 +23,8 @@ public class GenericScreen extends AbstractWidget implements Screen {
 	}
 
 	@Override
-	public void onMouseMove(Point position) {
-		getLayout().onMouseMove(position);
+	public void onMouseMove(Point from, Point to) {
+		getLayout().onMouseMove(from, to);
 	}
 
 	@Override
@@ -81,5 +81,10 @@ public class GenericScreen extends AbstractWidget implements Screen {
 	@Override
 	public Widget setScreen(Screen screen) {
 		return this;
+	}
+
+	@Override
+	public void onTick() {
+		getLayout().onTick();
 	}
 }
