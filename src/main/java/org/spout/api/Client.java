@@ -31,6 +31,7 @@ import java.util.Stack;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.gui.Screen;
+import org.spout.api.gui.screen.ScreenStack;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
@@ -112,30 +113,9 @@ public interface Client extends Engine {
 	public RenderMode getRenderMode();
 	
 	/**
-	 * @return the stack of the screens.
+	 * Gets the screen stack
+	 * 
+	 * @return screen stack
 	 */
-	public Stack<Screen> getScreenStack();
-
-	/**
-	 * Puts the given screen on the stack.
-	 * @param screen the screen to put on the stack
-	 */
-	public void openScreen(Screen screen);
-
-	/**
-	 * Removes the screen in focus from the stack.
-	 */
-	public void closeScreen();
-
-	/**
-	 * Removes the given screen from the stack. Useful if the screen you want to close is not in focus.
-	 * @param screen The screen to close
-	 */
-	public void closeScreen(Screen screen);
-
-	/**
-	 * Gets the screen in focus. This is the screen that is in the front of the stack.
-	 * @return the screen in focus.
-	 */
-	public Screen getFocusedScreen();
+	public ScreenStack getScreenStack();
 }
