@@ -144,7 +144,10 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 		for(Screen screen:screens) {
 			visibleScreens.addLast(screen);
 			if(screen instanceof FullScreen) {
-				break;
+				FullScreen fs = (FullScreen) screen;
+				if(!fs.isTransparent()) {
+					break;
+				}
 			}
 		}
 	}
