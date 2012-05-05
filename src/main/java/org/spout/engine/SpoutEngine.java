@@ -142,11 +142,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
-	private String logFile = "logs" + File.separator + "log-%D.txt";
+	private String logFile;
 	private boolean debugMode = false;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor());
+		logFile = "logs" + File.separator + "log-%D.txt";
 		consoleManager = new ConsoleManager(this);
 	}
 
