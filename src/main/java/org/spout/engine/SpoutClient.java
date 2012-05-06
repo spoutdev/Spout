@@ -155,7 +155,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		//Shader shader = new BasicShader();
-		Shader shader = new ClientShader("fallback.330.vert", "fallback.330.frag");
+		//Shader shader = new ClientShader("fallback.330.vert", "fallback.330.frag");
+		Shader shader = (Shader)FileSystem.getResource("shader://Vanilla/fallback.330.yml");
 		renderer = new PrimitiveBatch();
 		//renderer.getRenderer().setShader(shader);
 

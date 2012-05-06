@@ -40,6 +40,7 @@ import org.spout.api.resource.ResourcePathResolver;
 import org.spout.engine.filesystem.path.FilepathResolver;
 import org.spout.engine.filesystem.path.JarfileResolver;
 import org.spout.engine.filesystem.path.ZipfileResolver;
+import org.spout.engine.resources.ShaderLoader;
 import org.spout.engine.resources.TextureLoader;
 
 public class FileSystem {
@@ -89,15 +90,24 @@ public class FileSystem {
 				new JarfileResolver()};
 
 		registerLoader("texture", new TextureLoader());
+		registerLoader("shader", new ShaderLoader());
 	}
 
-	protected static InputStream getResourceStream(URI path) {
+	public static InputStream getResourceStream(URI path) {
 		for (int i = 0; i < searchpaths.length; i++) {
 			if (searchpaths[i].existsInPath(path)) {
 				return searchpaths[i].getStream(path);
 			}
 		}
 		return null;
+	}
+	
+	public static InputStream getResourceStream(String path){
+		try {
+			return getResourceStream(new URI(path));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Tried to get a Resource Stream URI, but" + path +" Isn't a URI");
+		}
 	}
 
 	public static void registerLoader(String protocol, ResourceLoader<? extends Resource> loader) {

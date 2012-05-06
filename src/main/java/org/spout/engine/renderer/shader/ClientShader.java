@@ -18,6 +18,7 @@ import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
+import org.spout.api.resource.Resource;
 
 import org.spout.engine.renderer.shader.variables.AttributeShaderVariable;
 import org.spout.engine.renderer.shader.variables.ColorShaderVariable;
@@ -36,21 +37,25 @@ import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
  * Represents a Shader Object in OpenGL
  * @author RoyAwesome
  */
-public class ClientShader implements Shader {
+public class ClientShader extends Resource implements Shader {
 	int program;
 	int textures = 0;
 	HashMap<String, ShaderVariable> variables = new HashMap<String, ShaderVariable>();
 	public static boolean validateShader = true;
 
+	public static final ClientShader BASIC = new BasicShader();
+	
+	public ClientShader(String vshaderSource, String fshaderSource, boolean override){
+		doCompileShader(vshaderSource, fshaderSource);
+	}
+	
+	
 	public ClientShader(String vertexShader, String fragmentShader) {
 
-		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-			return;
-		}
 		System.out.println("Compiling " + vertexShader + " and " + fragmentShader);
-		//Create a new Shader object on the GPU
-		program = GL20.glCreateProgram();
-
+		
+		
+	
 		//Compile the vertex shader
 		String vshader;
 		if (vertexShader == null) {
@@ -63,8 +68,7 @@ public class ClientShader implements Shader {
 				vshader = fallbackVertexShader;
 			}
 		}
-		int vShader = compileShader(vshader, GL20.GL_VERTEX_SHADER);
-		GL20.glAttachShader(program, vShader);
+		
 		String fshader;
 		if (fragmentShader == null) {
 			fshader = fallbackFragmentShader;
@@ -77,7 +81,25 @@ public class ClientShader implements Shader {
 			}
 		}
 
-		int fShader = compileShader(fshader, GL20.GL_FRAGMENT_SHADER);
+		doCompileShader(vshader, fshader);
+	
+	}
+
+	
+	private void doCompileShader(String vsource, String fsource){
+		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
+			return;
+		}
+	
+		
+		//Create a new Shader object on the GPU
+		program = GL20.glCreateProgram();
+		
+		int vShader = compileShader(vsource, GL20.GL_VERTEX_SHADER);
+		GL20.glAttachShader(program, vShader);
+		
+		
+		int fShader = compileShader(fsource, GL20.GL_FRAGMENT_SHADER);
 		GL20.glAttachShader(program, fShader);
 
 		GL20.glLinkProgram(program);
@@ -111,7 +133,9 @@ public class ClientShader implements Shader {
 		}
 		System.out.println("Compiled Shader with id: " + program);
 	}
-
+	
+	
+	
 	/* (non-Javadoc)
 		 * @see org.spout.client.renderer.shader.IShader#setUniform(java.lang.String, int)
 		 */
@@ -223,6 +247,7 @@ public class ClientShader implements Shader {
 		}
 		return shader;
 	}
+	
 
 	private String readShaderSource(String file) throws FileNotFoundException {
 
