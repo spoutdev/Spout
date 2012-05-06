@@ -133,6 +133,51 @@ public class Inventory implements Serializable {
 	}
 
 	/**
+	 * Adds a given amount to the data of the currently selected item<br><br>
+	 * 
+	 * If the data becomes negative the item is removed and False is returned<br>
+	 * Otherwise True is returned.
+	 * @param amount of data to add
+	 * @return True if the item data was successfully added
+	 */
+	public boolean addCurrentItemData(int slot, int amount) {
+		return this.addItemData(this.getCurrentSlot(), amount);
+	}
+
+	/**
+	 * Adds a given amount to the data of the item at the slot index<br><br>
+	 * 
+	 * If the data becomes negative the item is removed and False is returned<br>
+	 * Otherwise True is returned.
+	 * @param slot index of the item
+	 * @param amount of data to add
+	 * @return True if the item data was successfully added
+	 */
+	public boolean addItemData(int slot, int amount) {
+		ItemStack item = this.getItem(slot);
+		if (item != null) {
+			short newdata = (short) (item.getData() + amount);
+			if (newdata <= 0) {
+				this.setItem(slot, null);
+			} else {
+				this.setItem(slot, item.clone().setData(newdata));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Sets the item at the currently selected slot index<br>
+	 * The item is cloned before adding
+	 * 
+	 * @param item to set to
+	 */
+	public void setCurrentItem(ItemStack item) {
+		this.setItem(this.getCurrentSlot(), item);
+	}
+
+	/**
 	 * Sets the item at a given slot index<br>
 	 * The item is cloned before adding
 	 * 
