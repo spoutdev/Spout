@@ -46,7 +46,13 @@ public class ConcurrentList<T> extends ArrayList<T> {
 	 * Adds all current values to the removal queue
 	 */
 	public void clearDelayed() {
-		removeAllDelayed(this);
+		synchronized (toAdd) {
+			toAdd.clear();
+		}
+		synchronized (toRemove) {
+			toRemove.clear();
+			toRemove.addAll(this);
+		}
 	}
 
 	/**
