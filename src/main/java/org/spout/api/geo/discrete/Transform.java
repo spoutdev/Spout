@@ -97,12 +97,18 @@ public class Transform {
 	 * transform
 	 *
 	 * @param transform the other transform
+	 * @return true if successful
 	 */
 	@Threadsafe
-	public void set(Transform transform) {
-		setPosition(transform.position);
-		setRotation(transform.rotation);
-		setScale(transform.scale);
+	public boolean set(Transform transform) {
+		if(transform != null) {
+			setPosition(transform.position);
+			setRotation(transform.rotation);
+			setScale(transform.scale);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
