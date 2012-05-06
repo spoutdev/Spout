@@ -60,6 +60,7 @@ import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -132,7 +133,7 @@ public class SpoutChunk extends Chunk {
 		this(world, region, x, y, z, false, initial, null, null, null);
 	}
 
-	protected SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight) {
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
@@ -143,7 +144,7 @@ public class SpoutChunk extends Chunk {
 			this.skyLight[i] = 0;
 		}
 		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		;
+
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue = new TByteHashSet();
 		column = world.getColumn(((int) x) << Chunk.CHUNK_SIZE_BITS, ((int) z) << Chunk.CHUNK_SIZE_BITS, true);
@@ -500,7 +501,7 @@ public class SpoutChunk extends Chunk {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		WorldIO.saveChunk(this, this.parentRegion.getChunkOutputStream(this));
+		WorldFiles.saveChunk(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), skyLight, blockLight, this.parentRegion.getChunkOutputStream(this));
 	}
 
 	@Override

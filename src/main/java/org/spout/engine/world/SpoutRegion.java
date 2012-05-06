@@ -66,6 +66,7 @@ import org.spout.api.util.thread.LiveRead;
 
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
@@ -202,7 +203,7 @@ public class SpoutRegion extends Region {
 
 			boolean success = false;
 
-			SpoutChunk newChunk = WorldIO.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z));
+			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z));
 			if (newChunk == null) {
 				newChunk = generateChunk(x, y, z);
 			}
@@ -414,7 +415,6 @@ public class SpoutRegion extends Region {
 			}
 			if (oldState.isUnload()) {
 				if (removeChunk(c)) {
-					System.out.println("Region is now empty ... remove?");
 					empty = true;
 				}
 			}

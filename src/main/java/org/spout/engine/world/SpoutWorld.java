@@ -70,6 +70,7 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -144,19 +145,13 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.generator = generator;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
-		File world = new File(FileSystem.WORLDS_DIRECTORY, name);
-		world.mkdirs();
-		String generatorName = generator.getName();
-		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
-			generatorName = Long.toHexString(System.currentTimeMillis());
-			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
-		}
-		worldDirectory = new File(world, generatorName);
+
+		worldDirectory = new File(FileSystem.WORLDS_DIRECTORY, name);
 		worldDirectory.mkdirs();
+
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 	}
 
-	// TODO need world that loads from disk
 	public void start() {
 		//load spawn regions
 		for (int dx = -1; dx < 1; dx++) {
@@ -323,7 +318,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	/**
-	 * Spawns an entity into the world.  Fires off a cancellable EntitySpawnEvent
+	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
 	@Override
 	public void spawnEntity(Entity e) {
@@ -549,6 +544,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Removes a column corresponding to the given Column coordinates
+	 * 
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
@@ -559,8 +555,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 * @param x      the x block coordinate
-	 * @param z      the z block coordinate
+	 * 
+	 * @param x the x block coordinate
+	 * @param z the z block coordinate
 	 * @param create true to create the column if it doesn't exist
 	 * @return the column or null if it doesn't exist
 	 */
@@ -634,6 +631,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	public void unload(boolean save) {
+		if (save) {
+			WorldFiles.saveWorldData(this);
+		}
 		for (Region r : regions.getRegions()) {
 			r.unload(save);
 		}

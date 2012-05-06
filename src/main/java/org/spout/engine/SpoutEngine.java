@@ -49,7 +49,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
-import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
@@ -93,6 +92,7 @@ import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
@@ -419,7 +419,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			generator = defaultGenerator;
 		}
 
-		SpoutWorld world = new SpoutWorld(name, this, random.nextLong(), generator);
+		SpoutWorld world = WorldFiles.loadWorldData(this, name, generator);
+		if(world == null) {
+			System.out.println("Creating new world");
+			world = new SpoutWorld(name, this, random.nextLong(), generator);
+			WorldFiles.saveWorldData(world);
+		}
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 
 		if (oldWorld != null) {
