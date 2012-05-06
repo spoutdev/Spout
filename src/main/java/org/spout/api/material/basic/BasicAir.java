@@ -26,6 +26,7 @@
 package org.spout.api.material.basic;
 
 import org.spout.api.collision.CollisionStrategy;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 
 public class BasicAir extends BlockMaterial {
@@ -40,5 +41,8 @@ public class BasicAir extends BlockMaterial {
 	public boolean isPlacementObstacle() {
 		return false;
 	}
-
+	
+	@Override
+	public void onDestroy(Block block) {
+	}
 }

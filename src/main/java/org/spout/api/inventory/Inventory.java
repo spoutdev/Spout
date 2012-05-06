@@ -31,6 +31,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spout.api.material.source.MaterialSource;
+
 /**
  * Represents an inventory, usually owned by an entity. In a grid-style
  * inventory, slot ordering starts in the lower-left corner at zero, going
@@ -134,14 +136,70 @@ public class Inventory implements Serializable {
 	 * Sets the item at a given slot index<br>
 	 * The item is cloned before adding
 	 * 
-	 * @param item to set to
 	 * @param slot index to set at
+	 * @param item to set to
 	 */
-	public void setItem(ItemStack item, int slot) {
+	public void setItem(int slot, ItemStack item) {
 		contents[slot] = item == null || item.getAmount() == 0 ? null : item.clone();
 		for (InventoryViewer viewer : viewers) {
 			viewer.onSlotSet(this, slot, contents[slot]);
 		}
+	}
+
+	/**
+	 * Checks if the currently selected item matches the material
+	 * @param material to compare with
+	 * @return True if the item matches the material or both are null
+	 */
+	public boolean isCurrentItem(MaterialSource material) {
+		return this.isItem(this.getCurrentSlot(), material);
+	}
+
+	/**
+	 * Checks if the item at the slot given matches the material
+	 * @param slot of the item
+	 * @param material to compare with
+	 * @return True if the item matches the material or both are null
+	 */
+	public boolean isItem(int slot, MaterialSource material) {
+		ItemStack item = this.getItem(slot);
+		if (item == null) {
+			return material == null;
+		} else {
+			return item.getMaterial().equals(material.getMaterial()) && item.getData() == material.getData();
+		}
+	}
+
+	/**
+	 * Adds a certain amount of the item at the currently selected slot<br>
+	 * You can add a negative amount to subtract
+	 * @param amount to add
+	 * @return True if successful, which means the item was not null and could add the amount
+	 */
+	public boolean addCurrentItemAmount(int amount) {
+		return this.addItemAmount(this.getCurrentSlot(), amount);
+	}
+
+	/**
+	 * Adds a certain amount of the item at the slot given<br>
+	 * You can add a negative amount to subtract
+	 * @param slot of the item
+	 * @param amount to add
+	 * @return True if successful, which means the item was not null and could add the amount
+	 */
+	public boolean addItemAmount(int slot, int amount) {
+		ItemStack item = this.getItem(slot);
+		if (item != null) {
+			int newamount = item.getAmount() + amount;
+			if (newamount == 0) {
+				this.setItem(slot, null);
+				return true;
+			} else if (newamount > 0 && newamount <= item.getMaxStackSize()) {
+				this.setItem(slot, item.clone().setAmount(newamount));
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
