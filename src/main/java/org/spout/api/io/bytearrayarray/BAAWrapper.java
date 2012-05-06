@@ -154,7 +154,6 @@ public class BAAWrapper {
 				baa = null;
 				try {
 					try {
-						System.out.println("Creating new SimpleRegionFile object: " + file);
 						baa = new SimpleRegionFile(file, segmentSize, entries, timeout);
 					} catch (IOException e) {
 						System.out.println("Error when creating SimpleRegionFile object: " + file);
