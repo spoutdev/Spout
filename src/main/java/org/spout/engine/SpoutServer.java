@@ -48,6 +48,8 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 
+import com.beust.jcommander.JCommander;
+
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
 
@@ -81,6 +83,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		SpoutServer server = new SpoutServer();
 		Spout.setEngine(server);
 		FileSystem.init();
+		new JCommander(server, args);
 		server.init(args);
 		server.start();
 	}

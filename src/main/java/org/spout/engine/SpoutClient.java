@@ -65,10 +65,14 @@ import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.shader.ClientShader;
+import org.spout.engine.util.RenderModeConverter;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 
 
 import java.awt.Color;
@@ -83,13 +87,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final float aspectRatio = resolution.getX() / resolution.getY();
 	
 	private ScreenStack screenStack;
+	
+	@Parameter(names = "-Rendermode", converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20" )
+	RenderMode rmode = RenderMode.GL30;
 
 	public static void main(String[] args) {
 		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives/");
 		SpoutClient c = new SpoutClient();
 		Spout.setEngine(c);
 		FileSystem.init();
-
+		new JCommander(c, args);
 		c.init(args);
 		c.start();
 	}
@@ -101,7 +108,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void init(String[] args) {
 		super.init(args);
-		screenStack = new ScreenStack(new LoadingScreen(null));
+		//screenStack = new ScreenStack(new LoadingScreen(null));
 	}
 
 	@Override
@@ -111,7 +118,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void initRenderer() {
-
+		
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 
@@ -128,7 +135,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 
 			Display.setTitle("Spout Client");
-
+			System.out.println("SpoutClient Information");
+			System.out.println("Operating System: " + System.getProperty("os.name"));
+			System.out.println("Renderer Mode: " + this.getRenderMode().toString());
 			System.out.println("OpenGL Information");
 			System.out.println("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
 			System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
@@ -350,7 +359,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public RenderMode getRenderMode() {
-		return RenderMode.GL11;
+		return rmode;
 	}
 
 	@Override

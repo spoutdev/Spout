@@ -107,6 +107,8 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
+import com.beust.jcommander.Parameter;
+
 public class SpoutEngine extends AsyncManager implements Engine {
 	public static final Logger logger = Logger.getLogger("Spout");
 
@@ -143,6 +145,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
 	private String logFile;
+	
+	@Parameter(names = "-debug", description="Debug Mode")
 	private boolean debugMode = false;
 
 	public SpoutEngine() {
@@ -152,11 +156,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public void init(String[] args) {
-		for (String s : args) {
-			if (s.equals("-debug")) {
-				debugMode = true;
-			}
-		}
+		
 		registerWithScheduler(scheduler);
 		if (!getExecutor().startExecutor()) {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
