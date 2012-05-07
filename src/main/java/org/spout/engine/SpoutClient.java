@@ -114,7 +114,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void init(String[] args) {
 		super.init(args);
-		//screenStack = new ScreenStack(new LoadingScreen(null));
+		screenStack = new ScreenStack(new LoadingScreen());
 	}
 
 	@Override
