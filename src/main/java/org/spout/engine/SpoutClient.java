@@ -27,6 +27,7 @@
 package org.spout.engine;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.io.File;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -41,6 +42,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
+import org.newdawn.slick.Graphics;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -49,7 +51,9 @@ import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.gui.GuiRenderUtils;
 import org.spout.api.gui.Screen;
+import org.spout.api.gui.TextProperties;
 import org.spout.api.gui.screen.LoadingScreen;
 import org.spout.api.gui.screen.ScreenStack;
 import org.spout.api.material.BlockMaterial;
@@ -153,6 +157,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		texture.load(); //Loads texture to GPU
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		textureTest.setShader(shader);
+		
+		graphics = new Graphics(Display.getWidth(), Display.getHeight());
 	}
 	
 	
@@ -205,11 +211,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	final boolean[] sides = {true, true, true, true, true, true};
 	long ticks = 0;
 	BatchVertexRenderer textureTest;
+	Graphics graphics;
 
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(1, 1, 1, 1);
+		GL11.glClearColor(0, 0, 0, 0);
 
 		ticks++;
 		/*
@@ -274,7 +281,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest.addVertex(1, 0);
 		textureTest.end();
 		//textureTest.dumpBuffers();
-		textureTest.render();
+//		textureTest.render();
+				
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		screenStack.render();
+		graphics.setColor(new org.newdawn.slick.Color(255,0,0,255));
+		graphics.drawRect(10, 10, 20, 20);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 
 	@SuppressWarnings("unused")
