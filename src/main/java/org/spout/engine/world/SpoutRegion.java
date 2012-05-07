@@ -685,7 +685,7 @@ public class SpoutRegion extends Region {
 	 * @return The id.
 	 */
 	public int allocate(SpoutEntity entity) {
-		return entityManager.allocate(entity);
+		return entityManager.allocate(entity, this);
 	}
 
 	/**

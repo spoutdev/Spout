@@ -127,11 +127,22 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 * @return The id.
 	 */
 	public int allocate(SpoutEntity entity) {
+		return allocate(entity, null);
+	}
+	
+	/**
+	 * Allocates the id for an entity.
+	 * @param entity The entity.
+	 * @param region to allocate the entity for
+	 * @return The id.
+	 */
+	public int allocate(SpoutEntity entity, SpoutRegion region) {
 		int currentId = entity.getId();
+		SpoutRegion entityRegion = region == null ? ((SpoutRegion) entity.getRegionLive()) : region;
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
 			getRawAll(entity.getController().getClass()).add(entity);
-			entity.setOwningThread(((SpoutRegion) entity.getRegionLive()).getExceutionThread());
+			entity.setOwningThread(entityRegion.getExceutionThread());
 			return currentId;
 		} else {
 			int id = nextId.getAndIncrement();
@@ -144,7 +155,8 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 			if (controller != null) {
 				getRawAll(controller.getClass()).add(entity);
 			}
-			entity.setOwningThread(((SpoutRegion) entity.getRegionLive()).getExceutionThread());
+			
+			entity.setOwningThread(entityRegion.getExceutionThread());
 
 			return id;
 		}
