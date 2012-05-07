@@ -31,10 +31,11 @@ public class SpoutWorker implements Worker, Runnable {
 	private final int id;
 	private final Object owner;
 	private final SpoutTask task;
-	private Thread thread = null;
+	private final Thread thread;
 	private boolean shouldContinue = true;
+	private final SpoutTaskManager taskManager;
 
-	protected SpoutWorker(final SpoutTask task, final SpoutScheduler scheduler) {
+	protected SpoutWorker(final SpoutTask task, final SpoutTaskManager taskManager) {
 		id = task.getTaskId();
 		owner = task.getOwner();
 		this.task = task;
@@ -43,10 +44,20 @@ public class SpoutWorker implements Worker, Runnable {
 			@Override
 			public void run() {
 				task.pulse();
-				scheduler.workerComplete(SpoutWorker.this);
+				taskManager.removeWorker(SpoutWorker.this, task);
+				taskManager.repeatSchedule(task);
 			}
 		}, name);
+		this.taskManager = taskManager;
+	}
+	
+	public void start() {
 		thread.start();
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 	@Override
@@ -73,14 +84,7 @@ public class SpoutWorker implements Worker, Runnable {
 	}
 
 	public void cancel() {
-		if (thread == null) {
-			return;
-		}
-		if (!thread.isAlive()) {
-			thread.interrupt();
-			return;
-		}
-		task.stop();
+		taskManager.cancelTask(task);
 	}
 
 	@Override

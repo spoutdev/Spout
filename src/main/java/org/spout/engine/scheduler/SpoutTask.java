@@ -25,6 +25,10 @@
  */
 package org.spout.engine.scheduler;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.spout.api.scheduler.Task;
 import org.spout.api.util.Named;
 
@@ -35,11 +39,7 @@ public class SpoutTask implements Task {
 	/**
 	 * The next task ID pending.
 	 */
-	private static Integer nextTaskId = 0;
-	/**
-	 * A lock to use when getting the next task ID.
-	 */
-	private final static Object nextTaskIdLock = new Object();
+	private static AtomicInteger nextTaskId = new AtomicInteger(0);
 	/**
 	 * The ID of this task.
 	 */
@@ -60,30 +60,38 @@ public class SpoutTask implements Task {
 	 * The number of ticks between each call to the Runnable.
 	 */
 	private final long period;
-	/**
-	 * The current number of ticks since last initialization.
+	/** 
+	 * Indicates if the task is a synchronous task or an async task
 	 */
-	private long counter;
-	/**
-	 * A flag which indicates if this task is running.
-	 */
-	private boolean running = true;
 	private final boolean sync;
-
+	/**
+	 * Indicates the next scheduled time for the task to be called
+	 */
+	private final AtomicLong nextCallTime;
+	private final AtomicBoolean nextCallTimeLock = new AtomicBoolean(false);
+	/**
+	 * A flag which indicates if this task is alive.
+	 */
+	private final AtomicBoolean alive;
+	/**
+	 * A flag indicating if the task is actually executing
+	 */
+	private final AtomicBoolean executing;
+	
 	/**
 	 * Creates a new task with the specified number of ticks between consecutive
 	 * calls to {@link #execute()}.
 	 * @param ticks The number of ticks.
 	 */
-	public SpoutTask(Object owner, Runnable task, boolean sync, long delay, long period) {
-		synchronized (nextTaskIdLock) {
-			taskId = nextTaskId++;
-		}
+	public SpoutTask(SpoutTaskManager manager, Object owner, Runnable task, boolean sync, long delay, long period) {
+		this.taskId = nextTaskId.getAndIncrement();
+		this.nextCallTime = new AtomicLong(manager.getUpTime() + delay);
+		this.alive = new AtomicBoolean(true);
+		this.executing = new AtomicBoolean(false);
 		this.owner = owner;
 		this.task = task;
 		this.delay = delay;
 		this.period = period;
-		counter = 0;
 		this.sync = sync;
 	}
 
@@ -99,40 +107,75 @@ public class SpoutTask implements Task {
 	public boolean isSync() {
 		return sync;
 	}
+	
+	@Override
+	public boolean isExecuting() {
+		return executing.get();
+	}
 
 	@Override
 	public Object getOwner() {
 		return owner;
+	}
+	
+	@Override
+	public boolean isAlive() {
+		return alive.get();
+	}
+	
+	public long getNextCallTime() {
+		return nextCallTime.get();
 	}
 
 	/**
 	 * Stops this task.
 	 */
 	public void stop() {
-		running = false;
+		alive.set(false);
 	}
 
 	/**
-	 * Called every 'pulse' which is around 200ms in Minecraft. This method
-	 * updates the counters and calls {@link #execute()} if necessary.
-	 * @return The {@link #isRunning()} flag.
+	 * Executes the task.  The task will fail to execute if it is no longer running, if it is called early, or if it is already executing.
+	 * 
+	 * @return The task successfully executed.
 	 */
 	boolean pulse() {
-		if (!running) {
+		if (!alive.get()) {
 			return false;
 		}
-
-		++counter;
-		if (counter >= delay) {
-			if (period == -1) {
-				task.run();
-				running = false;
-			} else if ((counter - delay) % period == 0) {
-				task.run();
-			}
+		
+		if (!executing.compareAndSet(false, true)) {
+			return false;
+		}
+		
+		task.run();
+		
+		if (nextCallTimeLock.compareAndSet(false, true)) {
+			nextCallTime.addAndGet(period);
+			nextCallTimeLock.set(false);
+		} else {
+			throw new IllegalStateException("Attempt made to modify next call time when the task was in the queue.");
 		}
 
-		return running;
+		if (period <= 0) {
+			alive.set(false);
+		}
+		
+		executing.set(false);
+		
+		return true;
+	}
+	
+	public void lockNextCallTime() {
+		if (!nextCallTimeLock.compareAndSet(false, true)) {
+			throw new IllegalStateException("Task added in the queue twice without being removed");
+		}
+	}
+	
+	public void unlockNextCallTime() {
+		if (!nextCallTimeLock.compareAndSet(true, false)) {
+			throw new IllegalStateException("Task removed from the queue before being added");
+		}
 	}
 
 	@Override
@@ -141,4 +184,5 @@ public class SpoutTask implements Task {
 		String ownerName = owner == null || !(owner instanceof Named) ? "null" : ((Named) owner).getName();
 		return this.getClass().getSimpleName() + "{" + getTaskId() + ", " + ownerName + "}";
 	}
+
 }
