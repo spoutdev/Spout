@@ -46,6 +46,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private Model model;
 	private String displayName;
 	private int maxStackSize = 64;
+	private short maxData = Short.MAX_VALUE;
 	private Map<Short, Material> submaterials = null;
 
 	public Material(String name, int typeId) {
@@ -256,7 +257,22 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public void setMaxStackSize(int newValue) {
 		this.maxStackSize = newValue;
 	}
-	
+
+	/**
+	 * Gets the maximum data a stack of this material can have
+	 */
+	public short getMaxData() {
+		return this.maxData;
+	}
+
+	/**
+	 * Sets the maximum of the data value this material can have
+	 * @param newValue the new maximum data
+	 */
+	public void setMaxData(short newValue) {
+		this.maxData = newValue;
+	}
+
 	/**
 	 * Fired when this material is being rendered in the inventory
 	 * 

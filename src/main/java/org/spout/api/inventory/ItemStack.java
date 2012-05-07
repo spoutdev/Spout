@@ -276,4 +276,13 @@ public class ItemStack implements MaterialState {
 	public int getMaxStackSize() {
 		return this.getSubMaterial().getMaxStackSize();
 	}
+
+	/**
+	 * Gets the maximum data this {@link ItemStack} can have using the material it has
+	 * 
+	 * @return the max data
+	 */
+	public short getMaxData() {
+		return this.getSubMaterial().getMaxData();
+	}
 }

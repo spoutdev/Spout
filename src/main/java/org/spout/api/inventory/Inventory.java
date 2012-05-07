@@ -140,7 +140,7 @@ public class Inventory implements Serializable {
 	 * @param amount of data to add
 	 * @return True if the item data was successfully added
 	 */
-	public boolean addCurrentItemData(int slot, int amount) {
+	public boolean addCurrentItemData(int amount) {
 		return this.addItemData(this.getCurrentSlot(), amount);
 	}
 
@@ -159,7 +159,7 @@ public class Inventory implements Serializable {
 			short newdata = (short) (item.getData() + amount);
 			if (newdata <= 0) {
 				this.setItem(slot, null);
-			} else {
+			} else if (newdata <= item.getMaxData()) {
 				this.setItem(slot, item.clone().setData(newdata));
 				return true;
 			}
