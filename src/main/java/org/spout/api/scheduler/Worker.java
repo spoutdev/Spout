@@ -25,7 +25,6 @@
  */
 package org.spout.api.scheduler;
 
-import org.spout.api.plugin.Plugin;
 
 /**
  * Represents a worker thread for the scheduler. This gives information about
@@ -55,4 +54,11 @@ public interface Worker {
 	 * @return The Thread object for the worker
 	 */
 	public Thread getThread();
+	
+	/**
+	 * Gets the task associated with this worker
+	 * 
+	 * @return the task
+	 */
+	public Task getTask();
 }
