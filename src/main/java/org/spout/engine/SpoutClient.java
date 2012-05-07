@@ -43,8 +43,10 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 
 import org.spout.api.Client;
+import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
+import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.gui.Screen;
@@ -54,6 +56,9 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.plugin.Plugin;
+import org.spout.api.plugin.PluginDescriptionFile;
+import org.spout.api.plugin.PluginLoader;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
@@ -78,6 +83,7 @@ import com.beust.jcommander.Parameter;
 import java.awt.Color;
 import java.io.File;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final String name = "Spout Client";
@@ -118,7 +124,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void initRenderer() {
-		
 		createWindow();
 	
 		System.out.println("SpoutClient Information");
