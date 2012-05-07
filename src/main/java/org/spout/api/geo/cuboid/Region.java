@@ -28,8 +28,6 @@ package org.spout.api.geo.cuboid;
 import java.util.Collections;
 import java.util.Set;
 
-import com.sun.xml.internal.ws.server.ServerRtException;
-
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.AreaChunkAccess;
@@ -40,7 +38,6 @@ import org.spout.api.player.Player;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
-import org.spout.api.util.thread.Threadsafe;
 
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
@@ -50,12 +47,10 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	 * Number of chunks on a side of a region
 	 */
 	public static final int REGION_SIZE = 16;
-
 	/**
 	 * Number of bits in {@link #REGION_SIZE}
 	 */
 	public static final int REGION_SIZE_BITS = 4;
-
 	/**
 	 * Number of blocks on a side of a region
 	 */
@@ -74,7 +69,6 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	/**
 	 * Performs the nessecary tasks to unload this region from the world, and
 	 * all associated chunks.
-	 *
 	 * @param save whether to save the region and associated data.
 	 */
 	@DelayedWrite
@@ -82,7 +76,6 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 
 	/**
 	 * Gets all entities with the specified type.
-	 *
 	 * @param type The {@link Class} for the type.
 	 * @param type The type of entity.
 	 * @return A set of entities with the specified type.
@@ -92,7 +85,6 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 
 	/**
 	 * Gets all entities.
-	 *
 	 * @return A collection of entities.
 	 */
 	@SnapshotRead
@@ -100,7 +92,6 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 
 	/**
 	 * Gets an entity by its id.
-	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
