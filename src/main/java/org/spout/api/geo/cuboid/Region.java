@@ -34,6 +34,8 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.util.thread.DelayedWrite;
@@ -121,10 +123,11 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 		//Cut down on work by getting only players in the same world.
 		for (Player plr : getWorld().getPlayers()) {
 			//Do not count the entity passing in as a closest player if that entity is a player
-			if (plr.getEntity() == entity) {
+			if (plr == null || plr.getEntity() == null || plr.getEntity() == entity || plr.getEntity().getTransform() == new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO)) {
 				continue;
 			}
 			double distance = Vector3.distanceSquared(position, plr.getEntity().getPosition());
+			//Only add players that are within range.
 			if (distance < RANGESQUARED) {
 				foundPlayers.add(plr);
 			}
