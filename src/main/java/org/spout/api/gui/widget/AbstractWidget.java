@@ -17,7 +17,7 @@ public abstract class AbstractWidget implements Widget {
 	public AbstractWidget(Plugin plugin) {
 		this.plugin = plugin;
 		if(plugin == null) {
-			throw new IllegalStateException("plugin must not be null");
+//			throw new IllegalStateException("plugin must not be null");
 		}
 	}
 

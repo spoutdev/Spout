@@ -33,7 +33,7 @@ public class LoadingScreen extends FullScreen {
 
 	public LoadingScreen(Plugin plugin) {
 		super(plugin);
-		getLayout().addWidgets(new GenericLabel("Loading", plugin));
+//		getLayout().addWidgets(new GenericLabel("Loading", plugin));
 	}
 
 }
