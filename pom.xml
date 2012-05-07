@@ -111,6 +111,12 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>slick</groupId>
+			<artifactId>slick</artifactId>
+			<version>274</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
    
 	<build>
