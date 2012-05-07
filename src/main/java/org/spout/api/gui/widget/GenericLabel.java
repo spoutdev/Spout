@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 
 import org.spout.api.gui.GuiRenderUtils;
 import org.spout.api.gui.TextProperties;
+import org.spout.api.gui.WidgetType;
 import org.spout.api.plugin.Plugin;
 
 public class GenericLabel extends AbstractWidget implements Label {
@@ -45,6 +46,11 @@ public class GenericLabel extends AbstractWidget implements Label {
 	public Label setTextProperties(TextProperties p) {
 		this.textProperties = p;
 		return this;
+	}
+
+	@Override
+	public WidgetType getWidgetType() {
+		return WidgetType.LABEL;
 	}
 
 }

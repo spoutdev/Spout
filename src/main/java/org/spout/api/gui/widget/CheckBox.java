@@ -1,5 +1,6 @@
 package org.spout.api.gui.widget;
 
+import org.spout.api.gui.WidgetType;
 import org.spout.api.plugin.Plugin;
 
 public class CheckBox extends AbstractButton {
@@ -17,6 +18,11 @@ public class CheckBox extends AbstractButton {
 	public void render() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public WidgetType getWidgetType() {
+		return WidgetType.CHECKBOX;
 	}
 
 }

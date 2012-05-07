@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 
 import org.lwjgl.opengl.Display;
 import org.spout.api.gui.GenericScreen;
+import org.spout.api.gui.ScreenType;
 import org.spout.api.gui.Widget;
 import org.spout.api.plugin.Plugin;
 
@@ -53,5 +54,10 @@ public class FullScreen extends GenericScreen {
 	 */
 	public boolean isTransparent() {
 		return backgroundColor.getAlpha() != 0;
+	}
+
+	@Override
+	public ScreenType getScreenType() {
+		return ScreenType.FULLSCREEN;
 	}
 }

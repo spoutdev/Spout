@@ -90,4 +90,10 @@ public interface Widget extends Renderable, Tickable {
 	 * Called each tick
 	 */
 	public void onTick();
+	
+	/**
+	 * Gets the type of the widget
+	 * @return the widget type
+	 */
+	public WidgetType getWidgetType();
 }

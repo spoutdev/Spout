@@ -46,4 +46,6 @@ public interface Layout extends MouseEventHandler, Renderable, Tickable {
 	 * @return the parent container
 	 */
 	public Container getParent();
+	
+	public LayoutType getLayoutType();
 }

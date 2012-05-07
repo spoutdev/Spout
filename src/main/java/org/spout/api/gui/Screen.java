@@ -13,4 +13,6 @@ public interface Screen extends MouseEventHandler, KeyboardEventHandler, Contain
 	 * @return the control in focus
 	 */
 	public Control getFocussedControl();
+	
+	public ScreenType getScreenType();
 }
