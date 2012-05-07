@@ -134,13 +134,16 @@ public final class ConsoleManager {
 	}
 
 	public void stop() {
-		consoleHandler.flush();
-		fileHandler.flush();
-		fileHandler.close();
 		running = false;
 		if (jFrame != null) {
 			jFrame.dispose();
 		}
+	}
+	
+	public void closeFiles() {
+		consoleHandler.flush();
+		fileHandler.flush();
+		fileHandler.close();
 	}
 
 	public void setupConsole(String mode) {

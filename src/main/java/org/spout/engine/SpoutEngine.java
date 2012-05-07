@@ -581,6 +581,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void haltRun() throws InterruptedException {
 		logger.info("Server halting");
+		consoleManager.closeFiles();
 	}
 
 	@Override

@@ -278,17 +278,15 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Stops the scheduler and waits for all tasks to complete
 	 * 
-	 * @param timeout the time in ms to wait for all the tasks to stop
+	 * @param timeout the time in ms, after the main thread completes, to wait for all the tasks to stop
 	 */
 	public void stop(long timeout) {
-		long endTime = System.currentTimeMillis() + timeout;
 		shutdown = true;
 		try {
 			mainThread.join(timeout);
 		} catch (InterruptedException e) {
 			server.getLogger().info("Main thread interrupted when shutting down");
 		}
-		timeout = endTime - System.currentTimeMillis();
 		if (timeout > 0) {
 			taskManager.shutdown(timeout);
 		} else {
