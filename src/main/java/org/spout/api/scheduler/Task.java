@@ -51,4 +51,18 @@ public interface Task {
 	 * @return true if the task is run by main thread
 	 */
 	public boolean isSync();
+	
+	/**
+	 * Returns true if the Task is alive.  Dead tasks are no longer being scheduled
+	 *
+	 * @return true if the task is alive
+	 */
+	public boolean isAlive();
+	
+	/**
+	 * Returns true if the Task is executing.
+	 *
+	 * @return true if the task is executing
+	 */
+	public boolean isExecuting();
 }
