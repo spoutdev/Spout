@@ -33,7 +33,6 @@ public class QuaternionTest {
 	final float eps = 0.01f;
 
 	private void testValues(Quaternion q, float x, float y, float z, float w) {
-		//System.out.println("Testing! Expected: {"+x+","+y+","+z+","+w+"} got " + q);
 		if (Math.abs(q.getX() - x) > eps || Math.abs(q.getY() - y) > eps || Math.abs(q.getZ() - z) > eps || Math.abs(q.getW() - w) > eps) {
 			fail("Quaternion Wrong! Expected: {" + x + "," + y + "," + z + "," + w + "} got " + q);
 		}

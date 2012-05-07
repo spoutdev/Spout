@@ -26,6 +26,7 @@
 package org.spout.api.geo.cuboid;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.spout.api.entity.Controller;
@@ -38,6 +39,7 @@ import org.spout.api.player.Player;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.Threadsafe;
 
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
@@ -102,16 +104,17 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	public abstract Set<Player> getPlayers();
 
 	/**
-	 * Gets the nearest players in range of the entity specified. The list returned will NOT
-	 * be in order of nearest to not as nearest player. If this matters to you, consider using
-	 * getNearestPlayer instead.
+	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
+	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
+	 * consider using getNearestPlayer instead.
 	 * @param entity
 	 * @param range
 	 * @return
 	 */
 	@LiveRead
+	@Threadsafe
 	public Set<Player> getNearbyPlayers(Entity entity, int range) {
-		Set<Player> foundPlayers = Collections.emptySet();
+		Set<Player> foundPlayers = new HashSet<Player>();
 		Vector3 position = entity.getPosition();
 		final int RANGESQUARED = range * range;
 
@@ -123,7 +126,7 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 			}
 		}
 
-		return foundPlayers;
+		return Collections.unmodifiableSet(foundPlayers);
 	}
 
 	/**
@@ -133,6 +136,7 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	 * @return
 	 */
 	@LiveRead
+	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
 		Player best = null;
 		Vector3 position = entity.getPosition();
