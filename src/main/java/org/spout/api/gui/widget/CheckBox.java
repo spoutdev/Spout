@@ -5,13 +5,9 @@ import org.spout.api.plugin.Plugin;
 
 public class CheckBox extends AbstractButton {
 	
-	public CheckBox(String text, Plugin plugin) {
-		super(text, plugin);
+	public CheckBox(String text) {
+		super(text);
 		setCheckable(true);
-	}
-
-	public CheckBox(Plugin plugin) {
-		this("", plugin);
 	}
 
 	@Override

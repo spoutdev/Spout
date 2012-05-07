@@ -29,13 +29,13 @@ public class WidgetType extends GenericType<Widget> {
 	/**
 	 * Creates a new instance of the WidgetType. 
 	 * @param plugin the plugin to pass into the widgets constructor
-	 * @return
+	 * @return a new created instance, or null if an error occured
 	 */
-	public Widget newInstance(Plugin plugin) {
+	public Widget newInstance() {
 		Class<? extends Widget> clazz = getClazz();
 		Constructor<? extends Widget> constructor = null;
 		try {
-			constructor = clazz.getConstructor(Plugin.class);
+			constructor = clazz.getConstructor();
 		} catch (SecurityException e1) {
 			e1.printStackTrace();
 		} catch (NoSuchMethodException e1) {
@@ -43,7 +43,7 @@ public class WidgetType extends GenericType<Widget> {
 		}
 		if(constructor != null) {
 			try {
-				return constructor.newInstance(plugin);
+				return constructor.newInstance();
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (InstantiationException e) {

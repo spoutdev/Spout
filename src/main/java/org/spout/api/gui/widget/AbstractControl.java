@@ -11,10 +11,6 @@ import org.spout.api.plugin.Plugin;
 public abstract class AbstractControl extends AbstractWidget implements Control {
 	private boolean enabled = true;
 
-	public AbstractControl(Plugin plugin) {
-		super(plugin);
-	}
-
 	@Override
 	public void onMouseDown(Point position, MouseButton button) {
 		setFocus(FocusReason.MOUSE_CLICKED);

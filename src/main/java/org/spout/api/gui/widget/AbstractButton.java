@@ -15,13 +15,8 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 	private boolean checkable = false;
 	private int timeout = -1;
 
-	public AbstractButton(String text, Plugin plugin) {
-		super(plugin);
+	public AbstractButton(String text) {
 		setText("");
-	}
-	
-	public AbstractButton(Plugin plugin) {
-		this("", plugin);
 	}
 
 	@Override

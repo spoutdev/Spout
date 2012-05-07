@@ -10,16 +10,8 @@ import org.spout.api.plugin.Plugin;
 public abstract class AbstractWidget implements Widget {
 	
 	private Rectangle geometry = null, minimumSize = null, maximumSize = null;
-	private Plugin plugin;
 	private Layout layout = null;
 	private Screen screen = null;
-	
-	public AbstractWidget(Plugin plugin) {
-		this.plugin = plugin;
-		if(plugin == null) {
-//			throw new IllegalStateException("plugin must not be null");
-		}
-	}
 
 	@Override
 	public Rectangle getGeometry() {
@@ -66,11 +58,6 @@ public abstract class AbstractWidget implements Widget {
 	@Override
 	public Layout getParent() {
 		return layout;
-	}
-
-	@Override
-	public Plugin getPlugin() {
-		return plugin;
 	}
 
 	@Override

@@ -27,13 +27,11 @@
 package org.spout.api.gui.screen;
 
 import org.spout.api.gui.widget.GenericLabel;
-import org.spout.api.plugin.Plugin;
 
 public class LoadingScreen extends FullScreen {
 
-	public LoadingScreen(Plugin plugin) {
-		super(plugin);
-//		getLayout().addWidgets(new GenericLabel("Loading", plugin));
+	public LoadingScreen() {
+		getLayout().addWidgets(new GenericLabel("Loading"));
 	}
 
 }

@@ -68,12 +68,6 @@ public interface Widget extends Renderable, Tickable {
 	public Layout getParent();
 	
 	/**
-	 * Gets the plugin that created the widget
-	 * @return the plugin
-	 */
-	public Plugin getPlugin();
-	
-	/**
 	 * Gets the screen the widget is on
 	 * @return the screen
 	 */

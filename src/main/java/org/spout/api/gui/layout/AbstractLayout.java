@@ -13,7 +13,7 @@ import org.spout.api.gui.Widget;
 
 public abstract class AbstractLayout implements Layout {
 	private Container parent = null;
-	protected LinkedList<Widget> attachedWidgets;
+	protected LinkedList<Widget> attachedWidgets = new LinkedList<Widget>();
 
 	@Override
 	public Widget[] getWidgets() {

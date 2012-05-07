@@ -7,12 +7,8 @@ import org.spout.api.plugin.Plugin;
 public class RadioButton extends AbstractButton {
 	private int group = 0;
 
-	public RadioButton(Plugin plugin) {
-		this("", plugin);
-	}
-
-	public RadioButton(String text, Plugin plugin) {
-		super(text, plugin);
+	public RadioButton(String text) {
+		super(text);
 		setCheckable(true);
 	}
 	

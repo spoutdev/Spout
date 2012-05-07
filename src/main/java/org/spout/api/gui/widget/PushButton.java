@@ -5,13 +5,9 @@ import org.spout.api.plugin.Plugin;
 
 public class PushButton extends AbstractButton {
 	
-	public PushButton(String text, Plugin plugin) {
-		super(text, plugin);
+	public PushButton(String text) {
+		super(text);
 		setCheckable(false);
-	}
-	
-	public PushButton(Plugin plugin) {
-		this("", plugin);
 	}
 
 	@Override

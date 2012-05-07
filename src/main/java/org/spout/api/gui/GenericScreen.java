@@ -12,8 +12,7 @@ public class GenericScreen extends AbstractWidget implements Screen {
 	private Control focussedControl;
 	private Layout layout;
 
-	public GenericScreen(Plugin plugin) {
-		super(plugin);
+	public GenericScreen() {
 		setLayout(new FreeLayout());
 	}
 
@@ -54,6 +53,9 @@ public class GenericScreen extends AbstractWidget implements Screen {
 	@Override
 	public Container setLayout(Layout layout) {
 		this.layout = layout;
+		if(layout != null) {
+			layout.setParent(this);
+		}
 		return this;
 	}
 

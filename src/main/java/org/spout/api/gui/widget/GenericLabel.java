@@ -12,13 +12,8 @@ public class GenericLabel extends AbstractWidget implements Label {
 	private String text;
 	private TextProperties textProperties = new TextProperties();
 	
-	public GenericLabel(String text, Plugin plugin) {
-		super(plugin);
+	public GenericLabel(String text) {
 		setText(text);
-	}
-
-	public GenericLabel(Plugin plugin) {
-		this("", plugin);
 	}
 
 	@Override

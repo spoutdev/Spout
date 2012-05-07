@@ -7,10 +7,6 @@ public class ProgressBar extends AbstractWidget implements RangedWidget<Integer>
 
 	private int min, max, value;
 	
-	public ProgressBar(Plugin plugin) {
-		super(plugin);
-	}
-
 	@Override
 	public void render() {
 		// TODO Auto-generated method stub

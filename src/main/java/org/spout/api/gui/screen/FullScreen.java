@@ -16,10 +16,6 @@ import org.spout.api.plugin.Plugin;
 public class FullScreen extends GenericScreen {
 	private Color backgroundColor = new Color(0,0,0,0);
 
-	public FullScreen(Plugin plugin) {
-		super(plugin);
-	}
-
 	@Override
 	public Rectangle getGeometry() {
 		return new Rectangle(Display.getWidth(), Display.getHeight());

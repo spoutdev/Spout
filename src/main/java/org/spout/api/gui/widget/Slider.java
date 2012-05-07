@@ -12,10 +12,6 @@ public class Slider extends AbstractControl implements RangedWidget<Integer> {
 
 	private int min, max, value;
 	
-	public Slider(Plugin plugin) {
-		super(plugin);
-	}
-
 	@Override
 	public void render() {
 		// TODO Auto-generated method stub
