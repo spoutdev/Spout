@@ -84,8 +84,8 @@ public class GenericScreen extends AbstractWidget implements Screen {
 	}
 
 	@Override
-	public void onTick() {
-		getLayout().onTick();
+	public void onTick(float dt) {
+		getLayout().onTick(dt);
 	}
 
 	@Override

@@ -25,12 +25,14 @@
  */
 package org.spout.api.gamestate;
 
+import org.spout.api.Tickable;
+
 /**
  * Simple Game State interface
  *
  */
 
-public abstract class GameState {
+public abstract class GameState implements Tickable {
 	/**
 	 * Called when this state is going to be used.  Use this to initialize state variables. 
 	 */
@@ -40,12 +42,6 @@ public abstract class GameState {
 	 * Called when this state can load resources. 
 	 */
 	public void loadResources() { }
-	
-	/**
-	 * Called every update tick on the client
-	 * @param dt - time since last tick in seconds
-	 */
-	public abstract void onTick(float dt);
 	
 	/**
 	 * Called ever render tick on the client

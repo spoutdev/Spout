@@ -222,10 +222,10 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	}
 
 	@Override
-	public void onTick() {
+	public void onTick(float dt) {
 		//Invisible screens don't have to be ticked
 		for(Screen screen:visibleScreens) {
-			screen.onTick();
+			screen.onTick(dt);
 		}
 	}
 }

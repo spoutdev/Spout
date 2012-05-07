@@ -25,9 +25,10 @@
  */
 package org.spout.api.entity.component;
 
+import org.spout.api.Tickable;
 import org.spout.api.entity.Entity;
 
-public abstract class EntityComponent {
+public abstract class EntityComponent implements Tickable {
 	private Entity parent;
 
 	/**
@@ -46,8 +47,6 @@ public abstract class EntityComponent {
 	public Entity getParent() {
 		return this.parent;
 	}
-
-	public abstract void onTick(float dt);
 
 	public abstract void onAttached();
 

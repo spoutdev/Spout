@@ -85,7 +85,7 @@ public abstract class AbstractWidget implements Widget {
 	}
 
 	@Override
-	public void onTick() {
+	public void onTick(float dt) {
 		
 	}
 }

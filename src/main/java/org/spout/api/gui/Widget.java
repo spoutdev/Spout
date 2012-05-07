@@ -87,11 +87,6 @@ public interface Widget extends Renderable, Tickable {
 	public Widget setScreen(Screen screen);
 	
 	/**
-	 * Called each tick
-	 */
-	public void onTick();
-	
-	/**
 	 * Gets the type of the widget
 	 * @return the widget type
 	 */

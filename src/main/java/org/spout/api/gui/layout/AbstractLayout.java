@@ -118,9 +118,9 @@ public abstract class AbstractLayout implements Layout {
 	}
 	
 	@Override
-	public void onTick() {
+	public void onTick(float dt) {
 		for(Widget widget : attachedWidgets) {
-			widget.onTick();
+			widget.onTick(dt);
 		}
 	}
 }

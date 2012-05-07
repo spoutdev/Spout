@@ -8,6 +8,8 @@ public interface Tickable {
 	 * 1200    ticks = 1 minute
 	 * 72000   ticks = 1 hour
 	 * 1728000 ticks = 1 day
+	 * 
+	 * @param dt time since the last tick in seconds
 	 */
-	public void onTick();
+	public void onTick(float dt);
 }

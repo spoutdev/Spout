@@ -92,7 +92,7 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 	}
 
 	@Override
-	public void onTick() {
+	public void onTick(float dt) {
 		if(timeout >= 0) {
 			if(timeout == 0) {
 				down = false;
@@ -100,6 +100,7 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 			}
 			timeout --; //if timeout == 0, this will be -1, so it returns into valid state after that...
 		}
+		super.onTick(dt);
 	}
 
 	@Override
