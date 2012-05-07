@@ -250,7 +250,7 @@ public final class ConsoleManager {
 						continue;
 					}
 
-					engine.getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command.trim()));
+					engine.getScheduler().scheduleSyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (Exception ex) {
 					engine.getLogger().severe("Impossible exception while executing command: " + ex.getMessage());
 					ex.printStackTrace();
@@ -498,7 +498,7 @@ public final class ConsoleManager {
 			if (e.getKeyChar() == '\n') {
 				String command = jInput.getText().trim();
 				if (command.length() > 0) {
-					engine.getScheduler().scheduleAsyncDelayedTask(null, new CommandTask(command));
+					engine.getScheduler().scheduleSyncDelayedTask(null, new CommandTask(command));
 				}
 				jInput.setText("");
 			}

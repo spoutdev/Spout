@@ -75,6 +75,7 @@ public class SpoutWorker implements Worker, Runnable {
 		return thread;
 	}
 
+	@Override
 	public SpoutTask getTask() {
 		return task;
 	}

@@ -92,7 +92,7 @@ public class RegionSource implements Iterable<Region> {
 
 		// removeRegion is called during snapshot copy on the Region thread (when the last chunk is removed)
 		// Needs re-syncing to a safe moment
-		world.getServer().getScheduler().scheduleAsyncDelayedTask(null, new Runnable() {
+		world.getServer().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
 			@Override
 			public void run() {
 				int x = r.getX();

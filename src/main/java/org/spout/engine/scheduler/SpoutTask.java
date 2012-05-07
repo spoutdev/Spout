@@ -39,7 +39,7 @@ public class SpoutTask implements Task {
 	/**
 	 * The next task ID pending.
 	 */
-	private static AtomicInteger nextTaskId = new AtomicInteger(0);
+	private final static AtomicInteger nextTaskId = new AtomicInteger(0);
 	/**
 	 * The ID of this task.
 	 */

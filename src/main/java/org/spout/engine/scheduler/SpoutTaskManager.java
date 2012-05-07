@@ -7,7 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
+import org.spout.api.Spout;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.Worker;
@@ -179,8 +182,53 @@ public class SpoutTaskManager implements TaskManager {
 		return new ArrayList<Task>(taskQueue);
 	}
 	
-	public void shutdown() {
+	public boolean shutdown() {
+		return shutdown(1);
+	}
+	
+	public boolean shutdown(long timeout) {
 		alive.set(false);
+		cancelAllTasks();
+		long endTime = System.currentTimeMillis() + timeout;
+		boolean success = false;
+		while (!success && System.currentTimeMillis() < endTime) {
+			cancelAllTasks();
+			if (activeWorkers.isEmpty()) {
+				success = true;
+				continue;
+			} else {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+		if (!success) {
+			Logger logger = Spout.getEngine().getLogger();
+			logger.info("Forcing shutdown of tasks that did not properly shut down after " + timeout + "ms");
+			logger.info("Task id) Owner");
+			for (Worker worker : getActiveWorkers()) {
+				Task task = worker.getTask();
+				Thread thread = worker.getThread();
+				if (thread.isAlive()) {
+					Object owner = task.getOwner();
+					if (owner instanceof Plugin) {
+						Plugin plugin = (Plugin)owner;
+						logger.info("Task " + task.getTaskId() + ") " + plugin.getName());
+					} else if (owner != null) {
+						logger.info("Task " + task.getTaskId() + ") " + owner + " of type " + owner.getClass().getCanonicalName());
+					} else {
+						logger.info("Task " + task.getTaskId() + ") Owner is null");
+					}
+					thread.stop();
+				}
+			}
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException ie) {
+			}
+		}
+		return success;
 	}
 	
 	public long getUpTime() {

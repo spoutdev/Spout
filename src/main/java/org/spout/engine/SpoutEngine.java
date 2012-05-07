@@ -454,14 +454,14 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		for (SpoutPlayer player : getOnlinePlayers()) {
 			player.kick(message);
 		}
-
+		
 		for (SpoutWorld world : this.getLiveWorlds()) {
 			world.unload(true);
 		}
 
 		getPluginManager().clearPlugins();
 		consoleManager.stop();
-		scheduler.stop();
+		scheduler.stop(5000);
 		group.close();
 		bootstrapProtocols.clear();
 		executor.shutdown();
