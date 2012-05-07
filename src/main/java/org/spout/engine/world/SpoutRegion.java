@@ -58,6 +58,7 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
+import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -893,5 +894,11 @@ public class SpoutRegion extends Region {
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		return this.getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
+	}
+
+	@Override
+	public Set<Player> getPlayers() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

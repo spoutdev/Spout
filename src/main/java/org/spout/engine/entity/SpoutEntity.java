@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.Tickable;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
@@ -69,7 +70,7 @@ import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
-public class SpoutEntity implements Entity {
+public class SpoutEntity implements Entity, Tickable {
 	public static final int NOTSPAWNEDID = -1;
 	//Thread-safe
 	private final AtomicReference<EntityManager> entityManagerLive;
@@ -129,6 +130,7 @@ public class SpoutEntity implements Entity {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
 	}
 
+	@Override
 	public void onTick(float dt) {
 		if (this.transform != null && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null && this.transform.getRotation() != null && this.transform.getScale() != null) {
 			lastTransform = transform.copy();
