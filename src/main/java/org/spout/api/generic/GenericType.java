@@ -1,4 +1,4 @@
-package org.spout.api;
+package org.spout.api.generic;
 
 import java.util.HashMap;
 

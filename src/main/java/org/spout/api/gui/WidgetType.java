@@ -3,7 +3,7 @@ package org.spout.api.gui;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.spout.api.GenericType;
+import org.spout.api.generic.GenericType;
 import org.spout.api.gui.widget.GenericLabel;
 import org.spout.api.gui.widget.ProgressBar;
 import org.spout.api.gui.widget.PushButton;

@@ -1,4 +1,4 @@
-package org.spout.api.gui;
+package org.spout.api.generic;
 
 public class Bounds<T extends Number> {
 	T left, right, top, bottom;

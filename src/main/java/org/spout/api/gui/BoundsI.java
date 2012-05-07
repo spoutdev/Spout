@@ -1,5 +1,7 @@
 package org.spout.api.gui;
 
+import org.spout.api.generic.Bounds;
+
 public class BoundsI extends Bounds<Integer> {
 
 	public BoundsI() {

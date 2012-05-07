@@ -1,6 +1,6 @@
 package org.spout.api.gui;
 
-import org.spout.api.GenericType;
+import org.spout.api.generic.GenericType;
 import org.spout.api.gui.screen.FullScreen;
 
 public class ScreenType extends GenericType<Screen> {

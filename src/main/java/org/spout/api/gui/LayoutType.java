@@ -1,6 +1,6 @@
 package org.spout.api.gui;
 
-import org.spout.api.GenericType;
+import org.spout.api.generic.GenericType;
 import org.spout.api.gui.layout.FreeLayout;
 import org.spout.api.gui.layout.HorizontalLayout;
 import org.spout.api.gui.layout.VerticalLayout;
