@@ -25,12 +25,26 @@
  */
 package org.spout.api.entity;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.spout.api.Spout;
 import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.entity.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.io.Savable;
+import org.spout.api.io.SavableField;
 
-public abstract class Controller extends EntityComponent {
+public abstract class Controller extends EntityComponent implements Savable {
 	private final ControllerType type;
 
 	protected Controller(ControllerType type) {
@@ -85,5 +99,72 @@ public abstract class Controller extends EntityComponent {
 
 	public ControllerType getType() {
 		return type;
+	}
+	
+	public boolean save(ChannelBuffer buf) {
+		return saveInternal(buf);
+	}
+	
+	protected final boolean saveInternal(ChannelBuffer buf) {
+		
+		return false;
+	}
+	
+	protected final boolean saveInternal(ChannelBuffer buf, Class<? extends Controller> clazz) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		for (Field f : clazz.getDeclaredFields()) {
+			if (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
+				if (f.isAnnotationPresent(SavableField.class)) {
+					SavableField savable = f.getAnnotation(SavableField.class);
+					Object value = null;
+					if (!savable.getter().isEmpty()) {
+						try {
+							value = getDeclaredMethod(savable.getter(), clazz).invoke(this, (Object[])null);
+						} catch (Exception ignore) { 
+							Spout.getLogger().severe("Failed to find getter [" + savable.getter() + "] for savable field [" + f.getName() + "].");
+							return false;
+						}
+					} else {
+						try {
+							value = f.get(this);
+						} catch (Exception ignore) {
+							Spout.getLogger().severe("Failed to get value of field for savable field [" + f.getName() + "].");
+							return false;
+						}
+					}
+					
+					if (value instanceof Serializable) {
+						oos.writeObject(value);
+						oos.flush();
+						baos.flush();
+						buf.writeBytes(baos.toByteArray());
+						baos.reset();
+					}
+
+				}
+			}
+		}
+	}
+	
+	protected final Method getDeclaredMethod(String name, Class<?> clazz) {
+		try {
+			Method m = clazz.getDeclaredMethod(name, (Class<?>[])null);
+			m.setAccessible(true);
+			return m;
+		} catch (Exception e) {
+			if (clazz.getSuperclass() != null) {
+				return getDeclaredMethod(name, clazz.getSuperclass());
+			}
+		}
+		return null;
+	}
+	
+	public boolean read(ChannelBuffer buf) {
+		return readInternal(buf);
+	}
+	
+	protected final boolean readInternal(ChannelBuffer buf) {
+		return false;
 	}
 }

@@ -35,6 +35,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.io.Savable;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
@@ -45,7 +46,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Datatable, Source {
+public interface Entity extends Datatable, Source, Savable {
 
 	public int getId();
 
