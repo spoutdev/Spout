@@ -136,8 +136,8 @@ public class SpoutEntity implements Entity, Tickable {
 			lastTransform = transform.copy();
 		}
 
-		if (controller != null && controller.getParent() != null && !isDead()) {
-			controller.onTick(dt);
+		if (controllerLive.get() != null && controllerLive.get().getParent() != null) {
+			controllerLive.get().onTick(dt);
 		}
 
 		if (controllerLive.get() instanceof PlayerController) {
