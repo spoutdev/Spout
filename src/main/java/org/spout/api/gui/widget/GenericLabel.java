@@ -41,6 +41,10 @@ public class GenericLabel extends AbstractWidget implements Label {
 		setText(text);
 	}
 
+	public GenericLabel() {
+		this("");
+	}
+
 	@Override
 	public void render() {
 		GuiRenderUtils.renderText(getText(), getTextProperties(), new Rectangle(0, 0, getGeometry().width, getGeometry().height));

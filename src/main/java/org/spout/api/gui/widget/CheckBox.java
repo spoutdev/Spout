@@ -27,13 +27,16 @@
 package org.spout.api.gui.widget;
 
 import org.spout.api.gui.WidgetType;
-import org.spout.api.plugin.Plugin;
 
 public class CheckBox extends AbstractButton {
 	
 	public CheckBox(String text) {
 		super(text);
 		setCheckable(true);
+	}
+
+	public CheckBox() {
+		this("");
 	}
 
 	@Override

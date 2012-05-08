@@ -30,12 +30,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.spout.api.generic.GenericType;
+import org.spout.api.gui.widget.CheckBox;
 import org.spout.api.gui.widget.GenericLabel;
 import org.spout.api.gui.widget.ProgressBar;
 import org.spout.api.gui.widget.PushButton;
-import org.spout.api.gui.widget.CheckBox;
 import org.spout.api.gui.widget.RadioButton;
 import org.spout.api.gui.widget.Slider;
+import org.spout.api.gui.widget.TextField;
 import org.spout.api.plugin.Plugin;
 
 public class WidgetType extends GenericType<Widget> {
@@ -47,6 +48,7 @@ public class WidgetType extends GenericType<Widget> {
 	public static final WidgetType RADIOBUTTON = new WidgetType(RadioButton.class, 3);
 	public static final WidgetType SLIDER = new WidgetType(Slider.class, 4);
 	public static final WidgetType PROGRESSBAR = new WidgetType(ProgressBar.class, 5);
+	public static final WidgetType TEXTFIELD = new WidgetType(TextField.class, 6);
 	
 	public WidgetType(Class<? extends Widget> clazz, int id) {
 		super(clazz, id);

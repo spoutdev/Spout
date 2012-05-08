@@ -31,7 +31,6 @@ import java.awt.Point;
 import org.spout.api.gui.layout.FreeLayout;
 import org.spout.api.gui.widget.AbstractWidget;
 import org.spout.api.keyboard.Keyboard;
-import org.spout.api.plugin.Plugin;
 
 public class GenericScreen extends AbstractWidget implements Screen {
 	

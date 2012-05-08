@@ -32,7 +32,6 @@ import org.spout.api.gui.Control;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.keyboard.Keyboard;
-import org.spout.api.plugin.Plugin;
 
 public abstract class AbstractControl extends AbstractWidget implements Control {
 	private boolean enabled = true;

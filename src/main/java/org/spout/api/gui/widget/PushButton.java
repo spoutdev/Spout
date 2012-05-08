@@ -27,13 +27,16 @@
 package org.spout.api.gui.widget;
 
 import org.spout.api.gui.WidgetType;
-import org.spout.api.plugin.Plugin;
 
 public class PushButton extends AbstractButton {
 	
 	public PushButton(String text) {
 		super(text);
 		setCheckable(false);
+	}
+	
+	public PushButton() {
+		this("");
 	}
 
 	@Override

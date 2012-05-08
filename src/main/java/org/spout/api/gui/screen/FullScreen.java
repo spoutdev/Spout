@@ -33,7 +33,6 @@ import org.lwjgl.opengl.Display;
 import org.spout.api.gui.GenericScreen;
 import org.spout.api.gui.ScreenType;
 import org.spout.api.gui.Widget;
-import org.spout.api.plugin.Plugin;
 
 /**
  * Defines a fullscreen
@@ -41,6 +40,9 @@ import org.spout.api.plugin.Plugin;
  */
 public class FullScreen extends GenericScreen {
 	private Color backgroundColor = new Color(0,0,0,0);
+
+	public FullScreen() {
+	}
 
 	@Override
 	public Rectangle getGeometry() {

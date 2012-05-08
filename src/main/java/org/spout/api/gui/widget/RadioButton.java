@@ -28,10 +28,13 @@ package org.spout.api.gui.widget;
 
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.WidgetType;
-import org.spout.api.plugin.Plugin;
 
 public class RadioButton extends AbstractButton {
 	private int group = 0;
+
+	public RadioButton() {
+		this("");
+	}
 
 	public RadioButton(String text) {
 		super(text);

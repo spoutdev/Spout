@@ -31,7 +31,6 @@ import java.awt.Point;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.TextProperties;
 import org.spout.api.keyboard.Keyboard;
-import org.spout.api.plugin.Plugin;
 
 public abstract class AbstractButton extends AbstractControl implements Button {
 	private TextProperties textProperties = new TextProperties();
@@ -43,6 +42,10 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 
 	public AbstractButton(String text) {
 		setText("");
+	}
+	
+	public AbstractButton() {
+		this("");
 	}
 
 	@Override

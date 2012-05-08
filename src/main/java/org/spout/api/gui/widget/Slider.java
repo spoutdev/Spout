@@ -30,14 +30,15 @@ import java.awt.Point;
 
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.WidgetType;
-import org.spout.api.gui.widget.AbstractControl;
 import org.spout.api.keyboard.Keyboard;
-import org.spout.api.plugin.Plugin;
 
 public class Slider extends AbstractControl implements RangedWidget<Integer> {
 
 	private int min, max, value;
 	
+	public Slider() {
+	}
+
 	@Override
 	public void render() {
 		// TODO Auto-generated method stub

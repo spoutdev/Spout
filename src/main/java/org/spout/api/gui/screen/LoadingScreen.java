@@ -29,9 +29,9 @@ package org.spout.api.gui.screen;
 import java.awt.Rectangle;
 
 import org.spout.api.gui.widget.GenericLabel;
-
 public class LoadingScreen extends FullScreen {
 	public LoadingScreen() {
+		super();
 		GenericLabel label = new GenericLabel("Loading");
 		label.setGeometry(new Rectangle(50,50,200,20));
 		getLayout().addWidgets(label);

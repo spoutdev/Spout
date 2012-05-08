@@ -29,7 +29,6 @@ package org.spout.api.gui;
 import java.awt.Rectangle;
 
 import org.spout.api.Tickable;
-import org.spout.api.plugin.Plugin;
 
 public interface Widget extends Renderable, Tickable {
 	/**
@@ -92,7 +91,7 @@ public interface Widget extends Renderable, Tickable {
 	 * @return the layout
 	 */
 	public Layout getParent();
-	
+
 	/**
 	 * Gets the screen the widget is on
 	 * @return the screen
