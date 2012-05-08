@@ -215,6 +215,18 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
+	public void sendAll(Message... messages) {
+		sendAll(false, messages);
+	}
+
+	@Override
+	public void sendAll(boolean force, Message... messages) {
+		for (Message msg : messages) {
+			send(msg, force);
+		}
+	}
+
+	@Override
 	public boolean disconnect(String reason) {
 		return disconnect(reason, true);
 	}
