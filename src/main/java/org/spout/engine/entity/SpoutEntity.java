@@ -112,13 +112,15 @@ public class SpoutEntity implements Entity, Tickable {
 		}
 
 		map = new GenericDatatableMap();
-		this.viewDistance = viewDistance;
 		viewDistanceLive.set(viewDistance);
 
-		//Only call setController if the controller was null (indicates this entity was just created)
-		if (controller != null) {
-			this.controller = controller;
-			controllerLive.set(controller);
+		controllerLive.set(controller);
+		if(controller != null)  {
+			if (controller instanceof PlayerController) {
+				setObserver(true);
+			}
+			controller.attachToEntity(this);
+			controller.onAttached();
 		}
 	}
 
