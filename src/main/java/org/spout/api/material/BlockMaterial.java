@@ -37,7 +37,7 @@ import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.util.flag.ByteFlagContainer;
 
-public class BlockMaterial extends Material {
+public class BlockMaterial extends Material implements Placeable {
 
 	public static final BlockMaterial AIR = register(new BasicAir());
 	public static final BlockMaterial SOLID = register(new BlockMaterial("solid", 10000).setHardness(1.f));
@@ -313,27 +313,12 @@ public class BlockMaterial extends Material {
 		return this;
 	}
 	
-	/**
-	 * Called when this block is about to be placed (before {@link onPlacement}), 
-	 * checking if placement is allowed or not.
-	 * 
-	 * @param block to place
-	 * @param data block data to use during placement
-	 * @param against face against the block is placed
-	 * @return true if placement is allowed
-	 */
+	@Override
 	public boolean canPlace(Block block, short data, BlockFace against) {
 		return true;
 	}
 	
-	/**
-	 * Called when this block is placed, handles the actual placement.
-	 * 
-	 * @param block to affect
-	 * @param data block data to use during placement
-	 * @param against face against the block is placed
-	 * @return true if placement is handled
-	 */
+	@Override
 	public boolean onPlacement(Block block, short data, BlockFace against) {
 		block.setMaterial(this, data).update(true);
 		return true;
