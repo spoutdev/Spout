@@ -82,7 +82,6 @@ public class SpoutEntity implements Entity, Tickable {
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private static final long serialVersionUID = 1L;
-	private static final Transform DEAD = new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO);
 	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final Transform transform = new Transform();
 	private boolean justSpawned = true;
@@ -444,17 +443,19 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public boolean kill() {
-		Point p = transform.getPosition();
-		boolean alive = p.getWorld() != null;
-		transform.set(DEAD);
+		//Do not overkill this entity >.>.
+		if (transform == null || transform.getPosition() == null || chunkLive.get() == null || entityManagerLive.get() == null) {
+			return false;
+		}
+		transform.set(null);
 		chunkLive.set(null);
 		entityManagerLive.set(null);
-		return alive;
+		return true;
 	}
 
 	@Override
 	public boolean isDead() {
-		return id.get() != NOTSPAWNEDID && transform.getPosition().getWorld() == null;
+		return id.get() != NOTSPAWNEDID && (transform == null || chunkLive.get() == null || entityManagerLive.get() == null);
 	}
 
 	// TODO - needs to be made thread safe
