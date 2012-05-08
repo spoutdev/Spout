@@ -118,7 +118,7 @@ public class SpoutEntity implements Entity, Tickable {
 		//Only call setController if the controller was null (indicates this entity was just created)
 		if (controller != null) {
 			this.controller = controller;
-			setController(controller);
+			controllerLive.set(controller);
 		}
 	}
 
