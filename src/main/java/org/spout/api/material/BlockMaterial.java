@@ -314,12 +314,12 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 	
 	@Override
-	public boolean canPlace(Block block, short data, BlockFace against) {
+	public boolean canPlace(Block block, short data, BlockFace against, boolean isClickedBlock) {
 		return true;
 	}
 	
 	@Override
-	public boolean onPlacement(Block block, short data, BlockFace against) {
+	public boolean onPlacement(Block block, short data, BlockFace against, boolean isClickedBlock) {
 		block.setMaterial(this, data).update(true);
 		return true;
 	}

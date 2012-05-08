@@ -40,9 +40,10 @@ public interface Placeable {
 	 * @param block to place
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
+	 * @param isClickedBlock whether the block is to be placed at the clicked block
 	 * @return true if placement is allowed
 	 */
-	public boolean canPlace(Block block, short data, BlockFace against);
+	public boolean canPlace(Block block, short data, BlockFace against, boolean isClickedBlock);
 
 	/**
 	 * Called when this block is placed, handles the actual placement.
@@ -50,7 +51,8 @@ public interface Placeable {
 	 * @param block to affect
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
+	 * @param isClickedBlock whether the block is being placed at the clicked block
 	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(Block block, short data, BlockFace against);
+	public boolean onPlacement(Block block, short data, BlockFace against, boolean isClickedBlock);
 }
