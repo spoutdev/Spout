@@ -87,6 +87,18 @@ public interface Session {
 	public void send(Message message, boolean force);
 
 	/**
+	 * Sends any amount of messages to the client
+	 * @param messages the messages to send to the client
+	 */
+	public void sendAll(Message... messages);
+
+	/**
+	 * Sends any amount of messages to the client.
+	 * @param force if the messages are used in the identification stages of communication
+	 * @param messages the messages to send to the client
+	 */
+	public void sendAll(boolean force, Message... messages);
+	/**
 	 * Disconnects the player as a kick. This is equivalent to calling disconnect(reason, true)
 	 * @param reason The reason for disconnection
 	 * @return Whether the player was actually disconnected
