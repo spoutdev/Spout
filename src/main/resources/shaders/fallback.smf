@@ -1,0 +1,7 @@
+GL30:
+    Vertex: Vanilla/fallback.330.vert
+    Fragment: Vanilla/fallback.330.frag
+GL20:
+    Vertex: Vanilla/fallback.120.vert
+    Fragment: Vanilla/fallback.120.frag
+    

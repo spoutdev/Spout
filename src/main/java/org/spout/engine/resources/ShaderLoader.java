@@ -30,19 +30,37 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		//Get the paths for the Vertex and Fragment shaders
 		Yaml yaml = new Yaml();
 		Map<String, Map<String, ?>> resource = (Map<String, Map<String, ?>>) yaml.load(stream);
-		Map<String, ?> shaderfiles = resource.get("Shaders");
-		String fragShader = shaderfiles.get("Fragment").toString();
-		String vertShader = shaderfiles.get("Vertex").toString();
 		
-		String fragSrc = readShaderSource(FileSystem.getResourceStream(fragShader));
-		String vertSrc = readShaderSource(FileSystem.getResourceStream(vertShader));
-		
-		ClientShader shader = new ClientShader(vertSrc, fragSrc, true);
+		ClientShader shader = null;
+		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL30) {
+			Map<String, ?> shaderfiles = resource.get("GL30");
+			String fragShader = shaderfiles.get("Fragment").toString();
+			String vertShader = shaderfiles.get("Vertex").toString();
+			
+			String fragSrc = readShaderSource(FileSystem.getResourceStream(fragShader));
+			String vertSrc = readShaderSource(FileSystem.getResourceStream(vertShader));
+			
+			shader = new ClientShader(vertSrc, fragSrc, true);
+			
+			
+		} else {
+			Map<String, ?> shaderfiles = resource.get("GL20");
+			String fragShader = shaderfiles.get("Fragment").toString();
+			String vertShader = shaderfiles.get("Vertex").toString();
+			
+			String fragSrc = readShaderSource(FileSystem.getResourceStream(fragShader));
+			String vertSrc = readShaderSource(FileSystem.getResourceStream(vertShader));
+			
+			shader = new ClientShader(vertSrc, fragSrc, true);
+			
+		}
 		
 		//TODO: Read Values in the shader to file
 		
 		
+		
 		return shader;
+		
 	}
 
 	private String readShaderSource(InputStream stream){
