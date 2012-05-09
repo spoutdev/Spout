@@ -127,6 +127,13 @@ public final class ConsoleManager {
 
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
+
+		for (Completor c : new ArrayList<Completor>(reader.getCompletors())) {
+			reader.removeCompletor(c);
+		}
+
+		Completor[] list = new Completor[]{new SpoutCommandCompletor(engine), new NullCompletor()};
+		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
 	public ColoredCommandSource getCommandSource() {
@@ -139,7 +146,7 @@ public final class ConsoleManager {
 			jFrame.dispose();
 		}
 	}
-	
+
 	public void closeFiles() {
 		consoleHandler.flush();
 		fileHandler.flush();
@@ -200,16 +207,6 @@ public final class ConsoleManager {
 			thread.setDaemon(true);
 			thread.start();
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public void refreshCommands() {
-		for (Completor c : new ArrayList<Completor>(reader.getCompletors())) {
-			reader.removeCompletor(c);
-		}
-
-		Completor[] list = new Completor[]{new SimpleCompletor(engine.getAllCommands()), new NullCompletor()};
-		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
 	public String colorize(String string) {
