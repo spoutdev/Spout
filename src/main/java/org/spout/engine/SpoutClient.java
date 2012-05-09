@@ -172,7 +172,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 				if(rmode == RenderMode.GL11){
 					ContextAttribs ca = new ContextAttribs(1, 5);
 					Display.create(new PixelFormat(8, 24, 0), ca);
-				} else if(rmode == RenderMode.GL30){
+				} else if (rmode == RenderMode.GL20){					
+					ContextAttribs ca = new ContextAttribs(2, 1);
+					Display.create(new PixelFormat(8, 24, 0), ca);
+				}else if(rmode == RenderMode.GL30){
 					
 					ContextAttribs ca = new ContextAttribs(3, 2);
 					Display.create(new PixelFormat(8, 24, 0), ca);
