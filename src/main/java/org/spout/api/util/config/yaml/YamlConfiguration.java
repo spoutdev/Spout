@@ -62,7 +62,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 	public static final Pattern COMMENT_REGEX = Pattern.compile(COMMENT_CHAR + " ?(.*)");
 	private final File file;
 	private final Yaml yaml;
-	private String header = null;
+	private String[] header = null;
 
 	public YamlConfiguration(File file) {
 		this.file = file;
@@ -140,7 +140,10 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		try {
 			writer = new BufferedWriter(getWriter());
 			if (getHeader() != null) {
-				writer.append(getHeader());
+				for (String line : getHeader()) {
+					writer.append(COMMENT_CHAR).append(" ").append(line).append(LINE_BREAK);
+				}
+
 				writer.append(LINE_BREAK);
 			}
 
@@ -155,7 +158,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 					writer.flush();
 					writer.close();
 				}
-			} catch (IOException e) {
+			} catch (IOException ignore) {
 			}
 		}
 	}
@@ -164,26 +167,22 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		if (headerLines.length == 1) {
 			headerLines = headerLines[0].split(LINE_BREAK);
 		}
+		String[] header = new String[headerLines.length];
 
-		StringBuilder header = new StringBuilder();
-		for (String line : headerLines) {
-			if (header.length() > 0) {
-				header.append(LINE_BREAK);
-			}
-
+		for (int i = 0; i < headerLines.length; ++i) {
+			String line = headerLines[i];
 			line = line.trim();
 			Matcher matcher = COMMENT_REGEX.matcher(line);
 			if (matcher.find()) {
-				header.append(matcher.group(1).trim());
-			} else {
-				header.append(line);
+				line = matcher.group(1).trim();
 			}
+			header[i] = line;
 		}
 
-		this.header = header.toString();
+		this.header = header;
 	}
 
-	public String getHeader() {
+	public String[] getHeader() {
 		return header;
 	}
 

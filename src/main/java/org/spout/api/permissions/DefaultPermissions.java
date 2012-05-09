@@ -37,8 +37,8 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 		super(CONFIG);
 		CONFIG.setHeader("This is the configuration file for default server permissions.",
 				"If enabled is set to false, by default nobody will have default permissions.",
-				"Plugins can provide their own default permissions, and server admins can",
-				"provide default permissions under the defaults section of this file.");
+				"Plugins can set their own default permissions, and server admins can",
+				"set default permissions under the defaults section of this file.");
 		reload(this);
 		Spout.getEngine().getEventManager().registerEvents(this, this);
 	}
