@@ -25,13 +25,21 @@
  */
 package org.spout.api.generator;
 
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.World;
 
 public abstract class WorldGeneratorObject {
 
-	public void placeObject(Chunk c, int x, int y, int z) {
-		this.placeObject(c, x, y, z, false);
-	}
+	/**
+	 * Verify if the object can be placed at the given coordinates
+	 *
+	 * @param c
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return true if the object can be placed, false if it can't
+	 * 
+	 */
+	public abstract boolean canPlaceObject(World w, int x, int y, int z);
 
 	/**
 	 * Place this object into the world
@@ -40,8 +48,7 @@ public abstract class WorldGeneratorObject {
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @param override If false, this object should fail if it encounters a non
-	 *            air block. If true, it should replace blocks it findes
+	 * 
 	 */
-	public abstract void placeObject(Chunk c, int x, int y, int z, boolean override);
+	public abstract void placeObject(World w, int x, int y, int z);
 }
