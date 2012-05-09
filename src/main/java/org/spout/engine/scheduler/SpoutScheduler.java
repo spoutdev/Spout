@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
@@ -116,6 +117,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private Thread renderThread;
 	private final SpoutTaskManager taskManager;
+	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 
 	/**
 	 * Creates a new task scheduler.
@@ -187,13 +189,18 @@ public final class SpoutScheduler implements Scheduler {
 				long freeTime = targetPeriod - (finishTime - startTime);
 
 				if (freeTime > 0) {
+					heavyLoad.set(false);
 					try {
 						Thread.sleep(freeTime);
 					} catch (InterruptedException e) {
 						shutdown = true;
 					}
+				} else {
+					heavyLoad.set(true);
 				}
 			}
+			
+			heavyLoad.set(false);
 
 			asyncExecutors.copySnapshot();
 			TickStage.setStage(TickStage.TICKSTART);
@@ -518,5 +525,19 @@ public final class SpoutScheduler implements Scheduler {
 	@Override
 	public long getRemainingTickTime() {
 		return PULSE_EVERY - getTickTime();
+	}
+	
+	@Override
+	public boolean isServerLoaded() {
+		if (heavyLoad.get()) {
+			return true;
+		} else {
+			if (getRemainingTickTime() < 0) {
+				heavyLoad.set(true);
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }
