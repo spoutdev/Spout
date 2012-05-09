@@ -38,64 +38,59 @@ import org.spout.api.math.Vector3;
  * This class performs ray tracing and iterates along blocks on a line
  */
 public class BlockIterator implements Iterator<Block> {
-	// TODO -- need to actually code this :)
-
-	@SuppressWarnings("unused")
-	private final Point position;
-	private final Vector3 direction;
-	private final Block[] blockBuffer = new Block[3];
-	private int bufferSize = 0;
+	private Point position;
+	private Vector3 direction;
+	private Vector3 stepDirection;
 	private int blocksRead;
 	private int maxDistance;
-	private boolean done = false;
 
 	/**
 	 * Constructs the BlockIterator
 	 *
 	 * @param world The world to use for tracing
-	 * @param eye the eyeline to trace
-	 * @param yOffset The trace begins vertically offset from the start vector
-	 *            by this value
+	 * @param pos of the starting transformation of the trace
 	 * @param maxDistance This is the maximum distance in blocks for the trace.
 	 *            Setting this value above 140 may lead to problems with
 	 *            unloaded chunks. A value of 0 indicates no limit
 	 *
 	 */
 	public BlockIterator(World world, Transform pos, int maxDistance) {
-		position = new Point(pos.getPosition());
-		direction = new Vector3(MathHelper.getDirectionVector(pos.getRotation()));
+		this.position = new Point(pos.getPosition());
+		this.direction = new Vector3(MathHelper.getDirectionVector(pos.getRotation()));
 
-		float max = Math.abs(direction.getX());
-		max = Math.abs(direction.getY()) > max ? Math.abs(direction.getY()) : max;
-		max = Math.abs(direction.getZ()) > max ? Math.abs(direction.getY()) : max;
+		float length = this.direction.length();
 
-		if (max == 0) {
+		if (length < 0.001f) {
 			throw new IllegalArgumentException("Direction may not be a zero vector");
 		}
 
-		direction.multiply(1 / max);
+		this.direction = this.direction.divide(length);
+		this.stepDirection = this.direction.multiply(0.01f);
 
 		blocksRead = 0;
 		this.maxDistance = maxDistance;
 	}
 
 	public boolean hasNext() {
-		return !done && blocksRead < maxDistance;
+		return blocksRead < maxDistance;
 	}
 
 	public Block next() {
-		if (done) {
-			throw new IllegalStateException("Iterator has already completed");
-		}
-		if (bufferSize == 0) {
-			//updateBuffer();
-		}
-		Block block = blockBuffer[--bufferSize];
-		if (block == null) {
-			done = true;
-		}
+		Block current = this.position.getWorld().getBlock(this.position);
 		blocksRead++;
-		return block;
+		//translate position to precisely end up at a new block
+		//TODO: Make this more efficient (it needs a calculation to get to the border of the current block)
+		//This requires some sort of distance calculation using a 1x1x1 bounding box
+		//Perhaps use the Collision utilities for this?
+
+		Vector3 currentblock = this.position.floor();
+		Vector3 newblock = currentblock;
+		while (currentblock.equals(newblock)) {
+			this.position = this.position.add(this.stepDirection);
+			newblock = this.position.floor();
+		}
+
+		return current;
 	}
 
 	public void remove() {

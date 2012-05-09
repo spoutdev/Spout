@@ -28,42 +28,34 @@ package org.spout.api.material.block;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Tests for the BlockFaces class
  */
 public class BlockFacesTest {
-	
-	@Test
-	public void testConstants() {
-		assertArrayEquals(BlockFaces.NESW, new BlockFace[] {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST});
-		assertArrayEquals(BlockFaces.NESWBT, new BlockFace[] {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM, BlockFace.TOP});
-		assertArrayEquals(BlockFaces.NSEWB, new BlockFace[] {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.BOTTOM});
-	}
-	
+
 	@Test
 	public void testContains() {
-		assertEquals(BlockFaces.contains(BlockFaces.NESW, BlockFace.NORTH), true);
-		assertEquals(BlockFaces.contains(BlockFaces.NESW, BlockFace.THIS), false);
+		assertEquals(BlockFaces.NESW.contains(BlockFace.NORTH), true);
+		assertEquals(BlockFaces.NESW.contains(BlockFace.THIS), false);
 	}
-	
+
 	@Test
 	public void testIndexOf() {
-		assertEquals(BlockFaces.indexOf(BlockFaces.NESW, BlockFace.NORTH, -1), 0);
-		assertEquals(BlockFaces.indexOf(BlockFaces.NESW, BlockFace.EAST, -1), 1);
-		assertEquals(BlockFaces.indexOf(BlockFaces.NESW, BlockFace.WEST, -1), 3);
-		assertEquals(BlockFaces.indexOf(BlockFaces.NESW, BlockFace.TOP, -1), -1);
-		assertEquals(BlockFaces.indexOf(BlockFaces.NESW, BlockFace.TOP, 55), 55);
+		assertEquals(BlockFaces.NESW.indexOf(BlockFace.NORTH, -1), 0);
+		assertEquals(BlockFaces.NESW.indexOf(BlockFace.EAST, -1), 1);
+		assertEquals(BlockFaces.NESW.indexOf(BlockFace.WEST, -1), 3);
+		assertEquals(BlockFaces.NESW.indexOf(BlockFace.TOP, -1), -1);
+		assertEquals(BlockFaces.NESW.indexOf(BlockFace.TOP, 55), 55);
 	}
-	
+
 	@Test
 	public void testGet() {
-		assertEquals(BlockFaces.get(BlockFaces.NESW, 0), BlockFace.NORTH);
-		assertEquals(BlockFaces.get(BlockFaces.NESW, 3), BlockFace.WEST);
-		assertEquals(BlockFaces.get(BlockFaces.NESW, 5), BlockFace.WEST);
-		assertEquals(BlockFaces.get(BlockFaces.NESW, -4), BlockFace.NORTH);
-		assertEquals(BlockFaces.get(BlockFaces.NESW, 6, BlockFace.THIS), BlockFace.THIS);
-		assertEquals(BlockFaces.get(BlockFaces.NESW, 6, null), null);
+		assertEquals(BlockFaces.NESW.get(0), BlockFace.NORTH);
+		assertEquals(BlockFaces.NESW.get(3), BlockFace.WEST);
+		assertEquals(BlockFaces.NESW.get(5), BlockFace.WEST);
+		assertEquals(BlockFaces.NESW.get(-4), BlockFace.NORTH);
+		assertEquals(BlockFaces.NESW.get(6, BlockFace.THIS), BlockFace.THIS);
+		assertEquals(BlockFaces.NESW.get(6, null), null);
 	}
 }

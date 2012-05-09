@@ -37,6 +37,10 @@ public class ByteFlagContainer {
 		this.flag = (byte) flag;
 	}
 
+	public ByteFlagContainer(ByteFlagMask flag) {
+		this.flag = flag.getMask();
+	}
+
 	/**
 	 * Checks if a bit in this flag is set
 	 */
@@ -59,6 +63,14 @@ public class ByteFlagContainer {
 	 */
 	public boolean get(ByteFlagMask mask) {
 		return (this.flag & mask.getMask()) != 0;
+	}
+
+	/**
+	 * Sets the current flag
+	 * @param flag to set to
+	 */
+	public void set(ByteFlagMask mask) {
+		this.flag = mask.getMask();
 	}
 
 	/**

@@ -35,6 +35,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.util.flag.ByteFlagContainer;
 
 public class BlockMaterial extends Material implements Placeable {
@@ -83,7 +84,7 @@ public class BlockMaterial extends Material implements Placeable {
 		}
 	}
 
-	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFace.MASK_ALL);
+	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFaces.NESWB);
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
@@ -165,7 +166,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public byte getOpacity() {
 		return this.opacity;
 	}
-	
+
 	/**
 	 * Returns true if the block is opaque, false if not.
 	 * @return True if opacity is 15, false if less than.
@@ -263,17 +264,17 @@ public class BlockMaterial extends Material implements Placeable {
 	public boolean isSolid() {
 		return this.collision.getStrategy() == CollisionStrategy.SOLID;
 	}
-	
+
 	/**
 	 * Sets if this block occludes all faces
 	 * @param value whether it occludes
 	 * @return this block material
 	 */
 	public BlockMaterial setOccludes(boolean value) {
-		this.occlusion.set(value ? BlockFace.MASK_ALL : BlockFace.MASK_NONE);
+		this.occlusion.set(value ? BlockFaces.NESWBT : BlockFaces.NONE);
 		return this;
 	}
-	
+
 	/**
 	 * Sets if a certain face of the block occludes
 	 * @param face to set it of
@@ -281,6 +282,9 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @return this block material
 	 */
 	public BlockMaterial setOccludes(BlockFace face, boolean value) {
+		if (face == BlockFace.THIS) {
+			throw new IllegalArgumentException("Can not set occlusion state on block face THIS.");
+		}
 		this.occlusion.set(face, value);
 		return this;
 	}
