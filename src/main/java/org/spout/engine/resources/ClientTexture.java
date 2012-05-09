@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 
@@ -64,12 +65,15 @@ public class ClientTexture extends Texture {
 
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 
-		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
+		/*if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
 
 			//Use Mipmaps
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		}
+		}*/
 
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_BASE_LEVEL, 0);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);
+		
 		//Bilinear Filter the closest mipmap
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
@@ -96,9 +100,9 @@ public class ClientTexture extends Texture {
 		}
 
 		buffer.flip();
-		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL30) {
-			GL30.glGenerateMipmap(textureID);
-		}
+		//if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL30) {
+		//	GL30.glGenerateMipmap(textureID);
+		//}
 
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 

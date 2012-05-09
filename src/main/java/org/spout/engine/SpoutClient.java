@@ -42,7 +42,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
-import org.newdawn.slick.Graphics;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -84,10 +83,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 
-import java.awt.Color;
-import java.io.File;
-import java.util.Stack;
-import java.util.logging.Logger;
+
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final String name = "Spout Client";
@@ -118,7 +114,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void init(String[] args) {
 		super.init(args);
-		screenStack = new ScreenStack(new LoadingScreen());
+		
 	}
 
 	@Override
@@ -158,7 +154,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		textureTest.setShader(shader);
 		
-		graphics = new Graphics(Display.getWidth(), Display.getHeight());
+		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
+		
+		//screenStack = new ScreenStack(new LoadingScreen());
 	}
 	
 	
@@ -171,7 +169,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 				createMacWindow();
 			
 			} else {
-				Display.create();
+				if(rmode == RenderMode.GL11){
+					ContextAttribs ca = new ContextAttribs(1, 5);
+					Display.create(new PixelFormat(8, 24, 0), ca);
+				} else if(rmode == RenderMode.GL30){
+					
+					ContextAttribs ca = new ContextAttribs(3, 2);
+					Display.create(new PixelFormat(8, 24, 0), ca);
+				}
 			}
 
 			Display.setTitle("Spout Client");
@@ -211,12 +216,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	final boolean[] sides = {true, true, true, true, true, true};
 	long ticks = 0;
 	BatchVertexRenderer textureTest;
-	Graphics graphics;
+	//Graphics graphics;
 
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0, 0, 0);
+		GL11.glClearColor(1, 1, 1, 0);
 
 		ticks++;
 		/*
@@ -281,14 +286,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest.addVertex(1, 0);
 		textureTest.end();
 		//textureTest.dumpBuffers();
-//		textureTest.render();
-				
+		textureTest.render();
+		
+		/*		
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		screenStack.render();
 		graphics.setColor(new org.newdawn.slick.Color(255,0,0,255));
 		graphics.drawRect(10, 10, 20, 20);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		*/
 	}
 
 	@SuppressWarnings("unused")
