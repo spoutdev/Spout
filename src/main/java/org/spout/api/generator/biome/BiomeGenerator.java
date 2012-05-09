@@ -44,8 +44,8 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
  *
  */
 public abstract class BiomeGenerator implements WorldGenerator {
-	private final BiomeMap biomes = new BiomeMap();
 
+	private final BiomeMap biomes = new BiomeMap();
 	private final ArrayList<Populator> populators = new ArrayList<Populator>();
 
 	public BiomeGenerator() {
@@ -93,6 +93,10 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		return populators.toArray(new Populator[populators.size()]);
 	}
 
+	public void addPopulator(Populator populator) {
+		populators.add(populator);
+	}
+
 	public Biome getBiome(int x, int y, int z, long seed) {
 		return biomes.getBiome(x, y, z, seed);
 	}
@@ -108,7 +112,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	public void setBiome(Vector3 loc, Biome type) {
 		biomes.setBiome(loc, type);
 	}
-	
+
 	public int indexOf(Biome biome) {
 		return biomes.indexOf(biome);
 	}
