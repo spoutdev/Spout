@@ -25,6 +25,7 @@
  */
 package org.spout.api.material.block;
 
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.flag.ByteFlagMask;
 
@@ -39,12 +40,10 @@ public enum BlockFace implements ByteFlagMask {
 	EAST(0x8, 0, 0, -1),
 	WEST(0xf, 0, 0, 1, EAST),
 	THIS(0x20, 0, 0, 0);
-	
-	public static final byte MASK_ALL = 0x3f;
-	public static final byte MASK_NONE = 0x0;
 
 	private final byte mask;
 	private Vector3 offset;
+	private Quaternion direction;
 	private BlockFace opposite = this;
 
 	private BlockFace(int mask, int dx, int dy, int dz, BlockFace opposite) {
@@ -55,7 +54,12 @@ public enum BlockFace implements ByteFlagMask {
 
 	private BlockFace(int mask, int dx, int dy, int dz) {
 		this.offset = new Vector3(dx, dy, dz);
+		this.direction = new Quaternion(0f, this.offset);
 		this.mask = (byte) mask;
+	}
+
+	public Quaternion getDirection() {
+		return this.direction;
 	}
 
 	public Vector3 getOffset() {

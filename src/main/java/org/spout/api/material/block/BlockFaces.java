@@ -25,111 +25,152 @@
  */
 package org.spout.api.material.block;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
+import org.spout.api.util.flag.ByteFlagMask;
+
 /**
- * Contains several BlockFace constants
+ * Contains several BlockFace array constants and functions to operate on them
  */
-public class BlockFaces {
+public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
+
 	/**
 	 * The [north-east-south-west] faces
 	 */
-	public static final BlockFace[] NESW = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+	public static final BlockFaces NESW = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
 
 	/**
 	 * The [north-south-east-west] faces
 	 */
-	public static final BlockFace[] NSEW = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+	public static final BlockFaces NSEW = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
 
 	/**
 	 * The [east-west-south-north] faces
 	 */
-	public static final BlockFace[] EWSN = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH};
+	public static final BlockFaces EWSN = new BlockFaces(BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH);
 
 	/**
 	 * The [north-south-west-east] faces
 	 */
-	public static final BlockFace[] NSWE = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
+	public static final BlockFaces NSWE = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST);
 
 	/**
 	 * The [south-west-north-east] faces
 	 */
-	public static final BlockFace[] SWNE = {BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST};
+	public static final BlockFaces SWNE = new BlockFaces(BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST);
 
 	/**
 	 * The [west-north-east-south] faces
 	 */
-	public static final BlockFace[] WNES = {BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH};
+	public static final BlockFaces WNES = new BlockFaces(BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH);
 
 	/**
 	 * The [south-north-east-west] faces
 	 */
-	public static final BlockFace[] SNEW = {BlockFace.SOUTH, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST};
+	public static final BlockFaces SNEW = new BlockFaces(BlockFace.SOUTH, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST);
+
+	/**
+	 * The [west-east-south-north] faces
+	 */
+	public static final BlockFaces WESN = new BlockFaces(BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH, BlockFace.NORTH);
 
 	/**
 	 * The [north-east-south-west-bottom] faces
 	 */
-	public static final BlockFace[] NESWB = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM};
+	public static final BlockFaces NESWB = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM);
 
 	/**
 	 * The [east-west-south-north-bottom] faces
 	 */
-	public static final BlockFace[] EWSNB = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.BOTTOM};
+	public static final BlockFaces EWSNB = new BlockFaces(BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.BOTTOM);
 
 	/**
 	 * The [north-east-south-west-top] faces
 	 */
-	public static final BlockFace[] NESWT = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.TOP};
+	public static final BlockFaces NESWT = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.TOP);
 
 	/**
 	 * The [north-east-south-west-bottom-top] faces
 	 */
-	public static final BlockFace[] NESWBT = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM, BlockFace.TOP};
+	public static final BlockFaces NESWBT = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM, BlockFace.TOP);
 
 	/**
 	 * The [bottom-top-east-west-north-south] faces
 	 */
-	public static final BlockFace[] BTEWNS = {BlockFace.BOTTOM, BlockFace.TOP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
+	public static final BlockFaces BTEWNS = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH);
 
 	/**
 	 * The [bottom-top-north-south-west-east] faces
 	 */
-	public static final BlockFace[] BTNSWE = {BlockFace.BOTTOM, BlockFace.TOP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
+	public static final BlockFaces BTNSWE = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST);
 
 	/**
 	 * The [north-south-east-west-bottom] faces
 	 */
-	public static final BlockFace[] NSEWB = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.BOTTOM};
+	public static final BlockFaces NSEWB = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.BOTTOM);
 
 	/**
 	 * The [north-south-west-east-bottom] faces
 	 */
-	public static final BlockFace[] NSWEB = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST, BlockFace.BOTTOM};
+	public static final BlockFaces NSWEB = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST, BlockFace.BOTTOM);
 
 	/**
-	 * Gets whether the constant contains the face
-	 * @param constant to use
-	 * @param face to use
+	 * The [top-bottom-north-south-east-west-this] faces
+	 */
+	public static final BlockFaces ALL = new BlockFaces(BlockFace.values());
+
+	/**
+	 * A constant containing no faces at all
+	 */
+	public static final BlockFaces NONE = new BlockFaces();
+
+	private final byte mask;
+	private final BlockFace[] faces;
+
+	public BlockFaces(BlockFace... blockfaces) {
+		this.faces = blockfaces;
+		byte mask = 0;
+		for (BlockFace face : this.faces) {
+			mask |= face.getMask();
+		}
+		this.mask = mask;
+	}
+
+	@Override
+	public byte getMask() {
+		return this.mask;
+	}
+
+	@Override
+	public Iterator<BlockFace> iterator() {
+		return Arrays.asList(this.faces).iterator();
+	}
+
+	/**
+	 * Checks if this block face constant contains the face given
+	 * @param face to look for
 	 * @return True if found, False if not
 	 */
-	public static boolean contains(BlockFace[] constant, BlockFace face) {
-		for (BlockFace bface : constant) {
+	public boolean contains(BlockFace face) {
+		for (BlockFace bface : this.faces) {
 			if (bface == face) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Gets the index of the face in the constant given as a short
+	 * Gets the index of a face in this constant
 	 * 
-	 * @param constant to use
 	 * @param face to get the index of
-	 * @param def to return if not found
+	 * @param def value to return if not found
 	 * @return the index in the constant, or the def value if not found
 	 */
-	public static int indexOf(BlockFace[] constant, BlockFace face, int def) {
-		for (int i = 0; i < constant.length; i++) {
-			if (constant[i] == face) {
+	public int indexOf(BlockFace face, int def) {
+		for (int i = 0; i < this.faces.length; i++) {
+			if (this.faces[i] == face) {
 				return i;
 			}
 		}
@@ -137,37 +178,35 @@ public class BlockFaces {
 	}
 
 	/**
-	 * Gets the face from a constant at the index given<br>
+	 * Gets the face from this constant at the index given<br>
 	 * If the index is out of range, the first or last element is returned
 	 * 
-	 * @param constant to get from
 	 * @param index to get at
 	 * @return the BlockFace
 	 */
-	public static BlockFace get(BlockFace[] constant, int index) {
+	public BlockFace get(int index) {
 		if (index < 0) {
-			return constant[0];
-		} else if (index >= constant.length) {
-			return constant[constant.length - 1];
+			return this.faces[0];
+		} else if (index >= this.faces.length) {
+			return this.faces[this.faces.length - 1];
 		} else {
-			return constant[index];
+			return this.faces[index];
 		}
 	}
 
 	/**
-	 * Gets the face from a constant at the index given<br>
+	 * Gets the face from this constant at the index given<br>
 	 * If the index is out of range, the default is returned
 	 * 
-	 * @param constant to get from
 	 * @param index to get at
 	 * @param def if the index is out of range
 	 * @return the BlockFace
 	 */
-	public static BlockFace get(BlockFace[] constant, int index, BlockFace def) {
-		if (index < 0 || index >= constant.length) {
+	public BlockFace get(int index, BlockFace def) {
+		if (index < 0 || index >= this.faces.length) {
 			return def;
 		} else {
-			return constant[index];
+			return this.faces[index];
 		}
 	}
 }
