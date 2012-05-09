@@ -187,15 +187,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 				throw new UnsupportedOperationException("Cannot create a 3.0 context without OSX 10.7_");
 			}
 			
-		}else if(this.rmode == RenderMode.GL20) {
-			ContextAttribs ca = new ContextAttribs(2, 1);
-			Display.create(new PixelFormat(8, 24, 0), ca);
-			
-		} else {			
-			ContextAttribs ca = new ContextAttribs(1, 5);
-			Display.create(new PixelFormat(8, 24, 0), ca);
-		}
-		
+		}else {
+			Display.create();
+		}	
 		
 		
 	}
