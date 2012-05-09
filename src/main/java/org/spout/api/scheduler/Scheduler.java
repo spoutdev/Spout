@@ -52,4 +52,14 @@ public interface Scheduler extends TaskManager {
 	 */
 	@Threadsafe
 	public long getRemainingTickTime();
+	
+	/**
+	 * Determines if the server is under heavy load.<br>
+	 * <br>
+	 * The server is considered under heavy load if the previous tick went over time, or if the current tick has gone over time.
+	 *
+	 * @return true if the server is under heavy load
+	 */
+	@Threadsafe
+	public boolean isServerLoaded();
 }
