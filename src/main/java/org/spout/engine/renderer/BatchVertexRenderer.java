@@ -126,6 +126,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	protected void postFlush() {
 		flushed = true;
+		vertexBuffer.clear();
+		colorBuffer.clear();
+		normalBuffer.clear();
+		uvBuffer.clear();
 	}
 
 	/**
