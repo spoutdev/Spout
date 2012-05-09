@@ -119,39 +119,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public void initRenderer() {
 		
-		try {
-			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
-
-			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-				String[] ver = System.getProperty("os.version").split("\\.");
-				if (Integer.parseInt(ver[1]) >= 7) {
-					ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);
-					Display.create(new PixelFormat(8, 24, 0), ca);
-				} else {
-					Display.create();
-				}
-			} else {
-				Display.create();
-			}
-
-			Display.setTitle("Spout Client");
-			System.out.println("SpoutClient Information");
-			System.out.println("Operating System: " + System.getProperty("os.name"));
-			System.out.println("Renderer Mode: " + this.getRenderMode().toString());
-			System.out.println("OpenGL Information");
-			System.out.println("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
-			System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
-			System.out.println("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-			String extensions = "Extensions Supported: ";
-			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
-				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
-			}
-			System.out.println(extensions);
-			System.out.println("Max Texture Units: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-		} catch (LWJGLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		createWindow();
+	
+		System.out.println("SpoutClient Information");
+		System.out.println("Operating System: " + System.getProperty("os.name"));
+		System.out.println("Renderer Mode: " + this.getRenderMode().toString());
+		System.out.println("OpenGL Information");
+		System.out.println("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
+		System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
+		System.out.println("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+		String extensions = "Extensions Supported: ";
+		for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
+			extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
 		}
+		System.out.println(extensions);
+
 
 		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		//Shader shader = new BasicShader();
@@ -167,6 +149,57 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		textureTest.setShader(shader);
 	}
+	
+	
+	
+	private void createWindow(){
+		try {
+			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
+
+			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+				createMacWindow();
+			
+			} else {
+				Display.create();
+			}
+
+			Display.setTitle("Spout Client");
+		
+		} catch (LWJGLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+		
+	}
+	
+	
+	private void createMacWindow() throws LWJGLException{
+		
+		String[] ver = System.getProperty("os.version").split("\\.");
+		
+		if(this.rmode == RenderMode.GL30){
+			if (Integer.parseInt(ver[1]) >= 7) {
+				ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);
+				Display.create(new PixelFormat(8, 24, 0), ca);
+			} else {
+				throw new UnsupportedOperationException("Cannot create a 3.0 context without OSX 10.7_");
+			}
+			
+		}else if(this.rmode == RenderMode.GL20) {
+			ContextAttribs ca = new ContextAttribs(2, 1);
+			Display.create(new PixelFormat(8, 24, 0), ca);
+			
+		} else {			
+			ContextAttribs ca = new ContextAttribs(1, 5);
+			Display.create(new PixelFormat(8, 24, 0), ca);
+		}
+		
+		
+		
+	}
+	
 
 	Texture texture;
 	PrimitiveBatch renderer;
