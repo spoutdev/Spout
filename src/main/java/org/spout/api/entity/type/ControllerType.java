@@ -44,6 +44,7 @@ public abstract class ControllerType {
 	protected ControllerType(Class<? extends Controller> controllerClass, String name) {
 		this.controllerClass = controllerClass;
 		this.name = name;
+		ControllerRegistry.register(this);
 	}
 
 	/**
