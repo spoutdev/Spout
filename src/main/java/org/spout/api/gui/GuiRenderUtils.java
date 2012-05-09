@@ -42,10 +42,12 @@ public class GuiRenderUtils {
 		if(hasFlag(options.getAlign(), Align.ALIGN_BOTTOM)) {
 			y = y + height - stringHeight;
 		}
-		
-		glColor(options.getColor());
-		
-		options.getFont().drawString(x, y, text);
+				
+		options.getFont().drawString(x, y, text, getSlickColor(options.getColor()));
+	}
+	
+	private static org.newdawn.slick.Color getSlickColor(Color color) {
+		return new org.newdawn.slick.Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 	
 	private static boolean hasFlag(int value, int flag) {

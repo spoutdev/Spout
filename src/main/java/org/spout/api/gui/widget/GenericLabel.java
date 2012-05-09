@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import org.spout.api.gui.GuiRenderUtils;
 import org.spout.api.gui.TextProperties;
 import org.spout.api.gui.WidgetType;
-import org.spout.api.plugin.Plugin;
 
 public class GenericLabel extends AbstractWidget implements Label {
 
@@ -19,6 +18,7 @@ public class GenericLabel extends AbstractWidget implements Label {
 	@Override
 	public void render() {
 		GuiRenderUtils.renderText(getText(), getTextProperties(), new Rectangle(0, 0, getGeometry().width, getGeometry().height));
+		
 	}
 
 	@Override

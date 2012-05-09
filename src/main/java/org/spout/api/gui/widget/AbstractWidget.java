@@ -5,11 +5,10 @@ import java.awt.Rectangle;
 import org.spout.api.gui.Layout;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.plugin.Plugin;
 
 public abstract class AbstractWidget implements Widget {
 	
-	private Rectangle geometry = null, minimumSize = null, maximumSize = null;
+	private Rectangle geometry = new Rectangle(), minimumSize = null, maximumSize = null;
 	private Layout layout = null;
 	private Screen screen = null;
 
