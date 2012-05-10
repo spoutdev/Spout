@@ -26,14 +26,12 @@
 package org.spout.api.entity;
 
 import org.spout.api.entity.type.ControllerType;
-import org.spout.api.io.SavableField;
 import org.spout.api.material.BlockMaterial;
 
 /**
  * Represents a controller represented by a block.
  */
 public abstract class BlockController extends Controller {
-	@SavableField
 	protected final BlockMaterial blockMaterial;
 
 	public BlockController(ControllerType type, BlockMaterial blockMaterial) {

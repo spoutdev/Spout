@@ -25,6 +25,7 @@
  */
 package org.spout.api.util;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
@@ -191,5 +192,15 @@ public class StringMap {
 	 */
 	public boolean save() {
 		return store.save();
+	}
+	
+	/**
+	 * Returns a collection of all keys for all key, value pairs within the
+	 * Store
+	 *
+	 * @return returns a Collection containing all the keys
+	 */
+	public Collection<String> getKeys() {
+		return store.getKeys();
 	}
 }

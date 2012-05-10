@@ -101,6 +101,10 @@ public abstract class DatatableObject implements DatatableTuple {
 		keyID.set(key);
 	}
 	
+	public int getKey() {
+		return keyID.get();
+	}
+	
 	@Override
 	public boolean compareAndSet(Object expected, Object newValue) {
 		if (newValue != null && !(newValue instanceof Serializable)) {

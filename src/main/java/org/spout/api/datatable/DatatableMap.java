@@ -25,11 +25,13 @@
  */
 package org.spout.api.datatable;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.spout.api.datatable.value.DatatableObject;
 
 /**
  * Interface for a Datatable Map.
- *
  */
 public interface DatatableMap extends Outputable {
 	/**
@@ -109,6 +111,55 @@ public interface DatatableMap extends Outputable {
 	 * @return true if the int maps to a String and the map contains the key
 	 */
 	public boolean contains(int key);
+	
+	/**
+	 * Removes the value associated the string key.
+	 * 
+	 * @param key
+	 * @return previous value
+	 */
+	public DatatableObject remove(String key);
+	
+	/**
+	 * Removes the value associated the int key.
+	 * 
+	 * @param key
+	 * @return previous value
+	 */
+	public DatatableObject remove(int key);
+	
+	/**
+	 * Clears the map of all set key-value pairs.
+	 */
+	public void clear();
+	
+	/**
+	 * Returns the number of key-value mappings in this datatable map.
+	 * 
+	 * @return the number of key-value mappings in this map
+	 */
+	public int size();
+	
+	/**
+	 * Returns true if this map contains no key-value mappings.
+	 * 
+	 * @return true if this map contains key-value mappings.
+	 */
+	public boolean isEmpty();
+	
+	/**
+	 * Returns the set of all registered string keys in this datatable map.
+	 * 
+	 * @return key set
+	 */
+	public Set<String> keySet();
+	
+	/**
+	 * Returns a collection of datatable objects in this datatable map.
+	 * 
+	 * @return collection of all values
+	 */
+	public Collection<DatatableObject> values();
 
 	public byte[] compress();
 

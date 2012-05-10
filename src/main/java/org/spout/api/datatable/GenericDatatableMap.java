@@ -34,6 +34,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.spout.api.datatable.procedures.GDMCompressProcedure;
 import org.spout.api.datatable.value.DatatableNil;
@@ -211,6 +214,50 @@ public class GenericDatatableMap implements DatatableMap {
 	@Override
 	public DatatableObject get(int key) {
 		return map.get(key);
+	}
+
+	@Override
+	public int size() {
+		return map.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return map.isEmpty();
+	}
+
+	@Override
+	public DatatableObject remove(String key) {
+		return remove(getIntKey(key));
+	}
+
+	@Override
+	public DatatableObject remove(int key) {
+		DatatableObject o = map.remove(key);
+		return o != null ? o : niltype;
+	}
+
+	@Override
+	public void clear() {
+		map.clear();
+	}
+
+	@Override
+	public Set<String> keySet() {
+		Collection<String> keys = stringmap.getKeys();
+		HashSet<String> keyset = new HashSet<String>();
+		//Not all of the string map values are necessarily registered to a value
+		for (String key : keys) {
+			if (contains(key)) {
+				keyset.add(key);
+			}
+		}
+		return keyset;
+	}
+
+	@Override
+	public Collection<DatatableObject> values() {
+		return map.valueCollection();
 	}
 	
 }

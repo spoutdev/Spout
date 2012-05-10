@@ -29,8 +29,6 @@ import java.io.Serializable;
 
 /**
  * Indicates that the implementing object has a Datatable associated with it
- *
- *
  */
 public interface Datatable extends Serializable {
 	public void setData(String key, int value);
