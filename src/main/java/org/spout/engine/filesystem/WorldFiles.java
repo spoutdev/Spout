@@ -13,6 +13,8 @@ import java.util.logging.Level;
 
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.type.ControllerRegistry;
 import org.spout.api.entity.type.ControllerType;
@@ -43,6 +45,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class WorldFiles {
+	private static final byte ENTITY_VERSION = 1;
 
 	public static void saveWorldData(SpoutWorld world) {
 		File worldData = new File(world.getDirectory(), "world.dat");
@@ -209,58 +212,103 @@ public class WorldFiles {
 		return tagMap;
 	}
 
-	private static void loadEntity(SpoutRegion r, CompoundTag tag) {
+	private static Entity loadEntity(SpoutRegion r, CompoundTag tag) {
 		CompoundMap map = tag.getValue();
 
 		@SuppressWarnings("unused")
 		Byte version = (Byte) map.get("version").getValue();
-
 		String name = (String) map.get("controller").getValue();
+		
 		ControllerType type = ControllerRegistry.get(name);
 		if (type == null) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
 		} else if (type.canCreateController()) {
 			System.out.println("Loading a controller of type: " + name);
+			
+			//Read entity
 			float pX = (Float) map.get("posX").getValue();
 			float pY = (Float) map.get("posY").getValue();
 			float pZ = (Float) map.get("posZ").getValue();
+			
 			float sX = (Float) map.get("scaleX").getValue();
 			float sY = (Float) map.get("scaleY").getValue();
 			float sZ = (Float) map.get("scaleZ").getValue();
+			
 			float qX = (Float) map.get("quatX").getValue();
 			float qY = (Float) map.get("quatY").getValue();
 			float qZ = (Float) map.get("quatZ").getValue();
 			float qW = (Float) map.get("quatW").getValue();
+			
 			int view = (Integer) map.get("view").getValue();
 			boolean observer = ((ByteTag) map.get("observer")).getBooleanValue();
-			Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
-			Entity e = new SpoutEntity((SpoutEngine) r.getWorld().getServer(), null, type.createController(), view);
+			
+			//Setup entity
+			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
+			Entity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), null, type.createController(), view);
 			e.setObserver(observer);
 			e.setTransform(t);
-			r.addEntity(e);
+			if (r != null) {
+				r.addEntity(e);
+			}
+			
+			//Setup controller
+			try {
+				if (((ByteTag) map.get("controller_data_exists")).getBooleanValue()) {
+					byte[] data = ((ByteArrayTag)map.get("controller_data")).getValue();
+					GenericDatatableMap dataMap = new GenericDatatableMap();
+					dataMap.decompress(data);
+					e.getController().read(new DataMap(dataMap));
+				}
+			} catch (Exception error) {
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type, error);
+			}
+			
+			return e;
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type);
 		}
+		
+		return null;
 	}
 
 	private static Tag saveEntity(SpoutEntity e) {
 		CompoundMap map = new CompoundMap();
 
-		map.put(new ByteTag("version", (byte) 1));
+		map.put(new ByteTag("version", ENTITY_VERSION));
 		map.put(new StringTag("controller", e.getController().getType().getName()));
+		
 		System.out.println("Saving a controller of type: " + e.getController().getType().getName());
+		
+		//Write entity
 		map.put(new FloatTag("posX", e.getPosition().getX()));
 		map.put(new FloatTag("posY", e.getPosition().getY()));
 		map.put(new FloatTag("posZ", e.getPosition().getZ()));
+		
 		map.put(new FloatTag("scaleX", e.getScale().getX()));
 		map.put(new FloatTag("scaleY", e.getScale().getY()));
 		map.put(new FloatTag("scaleZ", e.getScale().getZ()));
+		
 		map.put(new FloatTag("quatX", e.getRotation().getX()));
 		map.put(new FloatTag("quatY", e.getRotation().getY()));
 		map.put(new FloatTag("quatZ", e.getRotation().getZ()));
 		map.put(new FloatTag("quatW", e.getRotation().getW()));
+		
 		map.put(new IntTag("view", e.getViewDistance()));
 		map.put(new ByteTag("observer", e.isObserverLive()));
+		
+		//Write controller
+		try {
+			GenericDatatableMap dataMap = new GenericDatatableMap();
+			if (e.getController().save(new DataMap(dataMap))) {
+				map.put(new ByteTag("controller_data_exists", true));
+				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
+			} else {
+				map.put(new ByteTag("controller_data_exists", false));
+			}
+		} catch(Exception error) {
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getController().getType(), error);
+		}
+		
 		CompoundTag tag = new CompoundTag("entity", map);
 
 		return tag;

@@ -26,7 +26,6 @@
 package org.spout.engine.player;
 
 import java.net.InetAddress;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,7 +39,6 @@ import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
-import org.spout.api.gui.Screen;
 import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;

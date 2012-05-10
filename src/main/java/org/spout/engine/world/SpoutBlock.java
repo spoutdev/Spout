@@ -25,6 +25,7 @@
  */
 package org.spout.engine.world;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
 import org.spout.api.generator.biome.Biome;
@@ -157,6 +158,11 @@ public class SpoutBlock implements Block {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(getWorld()).append(getX()).append(getY()).append(getZ()).toHashCode();
 	}
 
 	@Override

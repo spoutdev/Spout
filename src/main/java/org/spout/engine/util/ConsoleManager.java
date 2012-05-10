@@ -76,8 +76,6 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.geo.World;
 
-import org.spout.engine.SpoutServer;
-
 /**
  * A meta-class to handle all logging and input-related console improvements.
  * Portions are heavily based on CraftBukkit.

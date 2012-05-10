@@ -73,13 +73,9 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.shader.ClientShader;
 import org.spout.engine.util.RenderModeConverter;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
-import org.spout.engine.batcher.PrimitiveBatch;
-import org.spout.engine.filesystem.FileSystem;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 

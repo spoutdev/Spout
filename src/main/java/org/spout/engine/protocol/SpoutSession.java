@@ -312,10 +312,10 @@ public final class SpoutSession implements Session {
 
 			PlayerSaveEvent saveEvent = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
 			if (!saveEvent.isSaved()) {
-				//SaveTaskThread.addTask(new PlayerSaveTask(player));
+				
 			}
 
-			//If its null or can't be get , just ignore it
+			//If its null or can't be get, just ignore it
 			//If disconnect fails, we just ignore it for now.
 			try {
 				player.disconnect();
