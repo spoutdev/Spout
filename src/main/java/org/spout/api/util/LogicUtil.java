@@ -37,4 +37,47 @@ public class LogicUtil {
 	public static boolean bothNullOrEqual(Object a, Object b) {
 		return (a == null || b == null) ? (a == b) : a.equals(b);
 	}
+
+	/**
+	 * Gets if a bit is set in an integer value
+	 * @param value to get it of
+	 * @param bit to check
+	 * @return True if the bit is set
+	 */
+	public static boolean getBit(int value, int bit) {
+		return (value & bit) == bit;
+	}
+
+	/**
+	 * Sets a single bit in a byte value
+	 * @param value to set a bit of
+	 * @param bit to set
+	 * @param state to enable or disable the bit
+	 * @return the resulting value
+	 */
+	public static byte setBit(byte value, int bit, boolean state) {
+		return (byte) setBit((int) value, bit, state);
+	}
+
+	/**
+	 * Sets a single bit in a short value
+	 * @param value to set a bit of
+	 * @param bit to set
+	 * @param state to enable or disable the bit
+	 * @return the resulting value
+	 */
+	public static short setBit(short value, int bit, boolean state) {
+		return (short) setBit((int) value, bit, state);
+	}
+
+	/**
+	 * Sets a single bit in an integer value
+	 * @param value to set a bit of
+	 * @param bit to set
+	 * @param state to enable or disable the bit
+	 * @return the resulting value
+	 */
+	public static int setBit(int value, int bit, boolean state) {
+		return state ? value | bit : value & ~bit;
+	}
 }

@@ -25,6 +25,8 @@
  */
 package org.spout.api.util.flag;
 
+import org.spout.api.util.LogicUtil;
+
 public class ByteFlagContainer {
 
 	private byte flag;
@@ -62,7 +64,7 @@ public class ByteFlagContainer {
 	 * @return if the bit is set
 	 */
 	public boolean get(ByteFlagMask mask) {
-		return (this.flag & mask.getMask()) != 0;
+		return LogicUtil.getBit(this.flag, mask.getMask());
 	}
 
 	/**
@@ -87,10 +89,6 @@ public class ByteFlagContainer {
 	 * @param value to set the bit to
 	 */
 	public void set(ByteFlagMask mask, boolean value) {
-		if (value) {
-			this.flag |= mask.getMask();
-		} else {
-			this.flag &= ~mask.getMask();
-		}
+		this.flag = LogicUtil.setBit(this.flag, mask.getMask(), value);
 	}
 }
