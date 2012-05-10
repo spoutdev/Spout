@@ -65,8 +65,8 @@ public class DataMap implements Map<String, Serializable>{
 
 	@Override
 	public boolean containsValue(Object value) {
-		for (Object o : map.values()) {
-			if (o.equals(value)) {
+		for (DatatableObject o : map.values()) {
+			if (o.get() != null && o.get().equals(value)) {
 				return true;
 			}
 		}
@@ -184,8 +184,15 @@ public class DataMap implements Map<String, Serializable>{
 				list.add(o.get());
 				keys.add(o.getKey());
 			}
-			current = list.get(index);
-			next = list.get(index+1);
+			if (expectedAmount > 1) {
+				current = list.get(index);
+				next = list.get(index + 1);
+			} else if (expectedAmount > 0) {
+				current = list.get(index);
+				next = null;
+			} else {
+				current = next = null;
+			}
 		}
 		
 		@Override
@@ -200,8 +207,12 @@ public class DataMap implements Map<String, Serializable>{
 			}
 			index++;
 			current = next;
-			next = list.get(index);
-			return new Entry(map.getStringKey(keys.get(index)), current);
+			if (index < expectedAmount) {
+				next = list.get(index);
+			} else {
+				next = null;
+			}
+			return new Entry(map.getStringKey(keys.get(index-1)), current);
 		}
 
 		@Override
@@ -254,8 +265,15 @@ public class DataMap implements Map<String, Serializable>{
 				list.add(o.get());
 				keys.add(o.getKey());
 			}
-			current = list.get(index);
-			next = list.get(index+1);
+			if (expectedAmount > 1) {
+				current = list.get(index);
+				next = list.get(index + 1);
+			} else if (expectedAmount > 0) {
+				current = list.get(index);
+				next = null;
+			} else {
+				current = next = null;
+			}
 		}
 		
 		@Override
@@ -270,7 +288,11 @@ public class DataMap implements Map<String, Serializable>{
 			}
 			index++;
 			current = next;
-			next = list.get(index);
+			if (index < expectedAmount) {
+				next = list.get(index);
+			} else {
+				next = null;
+			}
 			return current;
 		}
 

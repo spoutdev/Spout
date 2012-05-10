@@ -213,7 +213,8 @@ public class GenericDatatableMap implements DatatableMap {
 
 	@Override
 	public DatatableObject get(int key) {
-		return map.get(key);
+		DatatableObject o = map.get(key);
+		return o != null ? o : niltype;
 	}
 
 	@Override
