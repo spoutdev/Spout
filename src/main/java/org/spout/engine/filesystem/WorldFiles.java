@@ -205,8 +205,10 @@ public class WorldFiles {
 		CompoundMap tagMap = new CompoundMap();
 
 		for (Entity e : entities) {
-			tagMap.put(saveEntity((SpoutEntity) e));
-			e.kill();
+			Tag tag = saveEntity((SpoutEntity) e);
+			if (tag != null) {
+				tagMap.put(tag);
+			}
 		}
 
 		return tagMap;
@@ -244,9 +246,8 @@ public class WorldFiles {
 			
 			//Setup entity
 			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
-			Entity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), null, type.createController(), view);
+			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, type.createController(), view, false);
 			e.setObserver(observer);
-			e.setTransform(t);
 			if (r != null) {
 				r.addEntity(e);
 			}
@@ -272,6 +273,9 @@ public class WorldFiles {
 	}
 
 	private static Tag saveEntity(SpoutEntity e) {
+		if (!e.getController().isSavable()) {
+			return null;
+		}
 		CompoundMap map = new CompoundMap();
 
 		map.put(new ByteTag("version", ENTITY_VERSION));

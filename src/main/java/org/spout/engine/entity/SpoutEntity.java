@@ -96,7 +96,7 @@ public class SpoutEntity implements Entity, Tickable {
 	private Transform lastTransform = transform;
 	private Point collisionPoint;
 
-	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
+	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, boolean load) {
 		id.set(NOTSPAWNEDID);
 		this.transform.set(transform);
 
@@ -104,7 +104,7 @@ public class SpoutEntity implements Entity, Tickable {
 		entityManagerLive = new AtomicReference<EntityManager>();
 		controllerLive = new AtomicReference<Controller>();
 
-		if (transform != null) {
+		if (transform != null && load) {
 			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
 			entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
 		}
@@ -121,6 +121,10 @@ public class SpoutEntity implements Entity, Tickable {
 			controller.onAttached();
 		}
 	}
+	
+	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
+		this(engine, transform, controller, viewDistance, true);
+	}
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller) {
 		this(engine, transform, controller, SpoutConfiguration.VIEW_DISTANCE.getInt() * SpoutChunk.CHUNK_SIZE);
@@ -132,11 +136,9 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public void onTick(float dt) {
-		if (this.transform != null && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null && this.transform.getRotation() != null && this.transform.getScale() != null) {
-			if(lastTransform != this.transform) {
-				chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
-				entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
-			}
+		if (this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
+			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
+			entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
 			lastTransform = transform.copy();
 		}
 
@@ -179,8 +181,8 @@ public class SpoutEntity implements Entity, Tickable {
 	 */
 	public void resolve() {
 		if (Spout.debugMode()) {
-			System.out.println("COLLISION DEBUGGING");
-			System.out.println("Current Collision: " + this.collision.toString());
+		//	System.out.println("COLLISION DEBUGGING");
+		//	System.out.println("Current Collision: " + this.collision.toString());
 		}
 
 		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
@@ -188,16 +190,16 @@ public class SpoutEntity implements Entity, Tickable {
 		Vector3 offset = this.lastTransform.getPosition().subtract(collisionPoint);
 		for (CollisionVolume box : colliding) {
 			if (Spout.debugMode()) {
-				System.out.println("Colliding box: " + box.toString());
+			//	System.out.println("Colliding box: " + box.toString());
 			}
 			Vector3 collision = this.collision.resolve(box);
 			if (Spout.debugMode()) {
-				System.out.println("Collision vector: " + collision.toString());
+			//	System.out.println("Collision vector: " + collision.toString());
 			}
 			if (collision != null) {
 				collision = collision.subtract(collisionPoint);
 				if (Spout.debugMode()) {
-					System.out.println("Collision point: " + collision.toString() + " Collision vector: " + collision);
+				//	System.out.println("Collision point: " + collision.toString() + " Collision vector: " + collision);
 				}
 
 				if (collision.getX() != 0F) {
@@ -211,12 +213,12 @@ public class SpoutEntity implements Entity, Tickable {
 				}
 
 				if (Spout.debugMode()) {
-					System.out.println("Collision offset: " + offset.toString());
+				//	System.out.println("Collision offset: " + offset.toString());
 				}
 				if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
 					this.setPosition(collisionPoint.add(offset));
 					if (Spout.debugMode()) {
-						System.out.println("New Position: " + this.getPosition());
+					//	System.out.println("New Position: " + this.getPosition());
 					}
 				}
 
@@ -446,11 +448,6 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public boolean kill() {
-		//Do not overkill this entity >.>.
-		if (transform == null || transform.getPosition() == null || chunkLive.get() == null || entityManagerLive.get() == null) {
-			return false;
-		}
-		transform.set(null);
 		chunkLive.set(null);
 		entityManagerLive.set(null);
 		return true;
@@ -458,7 +455,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public boolean isDead() {
-		return id.get() != NOTSPAWNEDID && (transform == null || chunkLive.get() == null || entityManagerLive.get() == null);
+		return id.get() != NOTSPAWNEDID && (chunkLive.get() == null || entityManagerLive.get() == null);
 	}
 
 	// TODO - needs to be made thread safe
@@ -499,11 +496,13 @@ public class SpoutEntity implements Entity, Tickable {
 			if (entityManager != entityManagerLive.get() || controller != controllerLive.get()) {
 				SpoutRegion r = (SpoutRegion) chunk.getRegion();
 				r.removeEntity(this);
-				if (entityManagerLive.get() == null) {
+				if (isDead()) {
 					controller.onDeath();
 					if (controller instanceof PlayerController) {
 						Player p = ((PlayerController) controller).getPlayer();
-						p.getNetworkSynchronizer().onDeath();
+						if (p != null) {
+							p.getNetworkSynchronizer().onDeath();
+						}
 					}
 				}
 			}
@@ -743,6 +742,7 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 
 	public void setOwningThread(Thread thread) {
+		if (getController() instanceof PlayerController) System.out.println("[DEBUG] Changing owning thread from [" + owningThread + "] to [" + thread + "]");
 		this.owningThread = thread;
 	}
 

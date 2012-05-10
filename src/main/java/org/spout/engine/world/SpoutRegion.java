@@ -47,7 +47,6 @@ import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
-import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
@@ -150,8 +149,6 @@ public class SpoutRegion extends Region {
 	 * A queue of chunks that need to be populated
 	 */
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
-	private final Queue<Entity> spawnQueue = new ConcurrentLinkedQueue<Entity>();
-	private final Queue<Entity> removeQueue = new ConcurrentLinkedQueue<Entity>();
 	private final Map<Vector3, BlockController> blockControllers = new HashMap<Vector3, BlockController>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -265,6 +262,10 @@ public class SpoutRegion extends Region {
 		boolean success = current.compareAndSet(currentChunk, null);
 		if (success) {
 			int num = numberActiveChunks.decrementAndGet();
+			
+			for (Entity e : currentChunk.getLiveEntities()) {
+				e.kill();
+			}
 
 			((SpoutChunk) currentChunk).setUnloaded();
 
@@ -442,13 +443,7 @@ public class SpoutRegion extends Region {
 			setBlockController(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), (BlockController) controller);
 		}
 
-		if (spawnQueue.contains(e)) {
-			return;
-		}
-		if (removeQueue.contains(e)) {
-			throw new IllegalArgumentException("Cannot add an entity marked for removal");
-		}
-		spawnQueue.add(e);
+		this.allocate((SpoutEntity)e);
 	}
 
 	public void removeEntity(Entity e) {
@@ -456,44 +451,20 @@ public class SpoutRegion extends Region {
 		if (blockControllers.containsKey(pos)) {
 			blockControllers.remove(pos);
 		}
-
-		if (removeQueue.contains(e)) {
-			return;
-		}
-		if (spawnQueue.contains(e)) {
-			spawnQueue.remove(e);
-			return;
-		}
-		removeQueue.add(e);
+		
+		this.deallocate((SpoutEntity)e);
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
-				//Add or remove entities
-				if (!spawnQueue.isEmpty()) {
-					SpoutEntity e;
-					while ((e = (SpoutEntity) spawnQueue.poll()) != null) {
-						this.allocate(e);
-						EntitySpawnEvent event = new EntitySpawnEvent(e, e.getPosition());
-						Spout.getEngine().getEventManager().callEvent(event);
-						if (event.isCancelled()) {
-							this.deallocate((SpoutEntity) e);
-						}
-					}
-				}
-
-				if (!removeQueue.isEmpty()) {
-					SpoutEntity e;
-					while ((e = (SpoutEntity) removeQueue.poll()) != null) {
-						this.deallocate(e);
-					}
-				}
-
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
 					try {
+						if (ent.getRegionLive() != this) {
+							System.out.println("Region live does not match this region. Live Region: " + ent.getRegionLive() + " This region: " + toString());
+						}
 						ent.onTick(dt);
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
@@ -733,7 +704,6 @@ public class SpoutRegion extends Region {
 	}
 
 	public Thread getExceutionThread() {
-
 		return ((ThreadAsyncExecutor) manager.getExecutor());
 	}
 
