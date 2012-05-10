@@ -91,6 +91,15 @@ public abstract class Controller extends EntityComponent{
 	}
 	
 	/**
+	 * True if this controller and it's parent entity should be saved.
+	 * 
+	 * @return save
+	 */
+	public boolean isSavable() {
+		return true;
+	}
+	
+	/**
 	 * Called when the entity information is being saved. 
 	 * 
 	 * @param map to put information

@@ -75,7 +75,7 @@ public class Bounds<T extends Number> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Bounds other = (Bounds) obj;
+		Bounds<?> other = (Bounds<?>) obj;
 		if (bottom == null) {
 			if (other.bottom != null)
 				return false;
