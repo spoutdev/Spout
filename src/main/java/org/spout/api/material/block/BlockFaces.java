@@ -76,6 +76,11 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 	public static final BlockFaces WESN = new BlockFaces(BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH, BlockFace.NORTH);
 
 	/**
+	 * The [east-south-west-north] faces
+	 */
+	public static final BlockFaces ESWN = new BlockFaces(BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH);
+
+	/**
 	 * The [north-east-south-west-bottom] faces
 	 */
 	public static final BlockFaces NESWB = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM);

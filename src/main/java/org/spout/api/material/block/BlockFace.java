@@ -25,6 +25,7 @@
  */
 package org.spout.api.material.block;
 
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.flag.ByteFlagMask;
@@ -73,5 +74,25 @@ public enum BlockFace implements ByteFlagMask {
 	@Override
 	public byte getMask() {
 		return this.mask;
+	}
+
+	/**
+	 * Uses a yaw angle to get the north, east, west or south face which points into the same direction.
+	 * 
+	 * @param yaw to use
+	 * @return the block face
+	 */
+	public static BlockFace fromYaw(float yaw) {
+		yaw = MathHelper.wrapAngle(yaw);
+		//apply angle differences
+		if (yaw >= -135f && yaw < -45f) {
+			return BlockFace.NORTH;
+		} else if (yaw >= -45f && yaw < 45f) {
+			return BlockFace.WEST;
+		} else if (yaw >= 45f && yaw < 135f) {
+			return BlockFace.SOUTH;
+		} else {
+			return BlockFace.EAST;
+		}
 	}
 }
