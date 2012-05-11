@@ -118,8 +118,9 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
+	 * @param source of this physics update
 	 */
-	public void updateBlockPhysics(int x, int y, int z);
+	public void updateBlockPhysics(int x, int y, int z, Source source);
 	
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
