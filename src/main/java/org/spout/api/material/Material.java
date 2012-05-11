@@ -32,8 +32,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.material.source.GenericMaterialData;
-import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.model.Model;
 
@@ -154,21 +152,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		} else {
 			throw new IllegalArgumentException("Material is not a valid sub material!");
 		}
-	}
-	
-	@Override
-	public MaterialData createData() {
-		return this.createData(this.getData());
-	}
-	
-	/**
-	 * Constructs a new material data using the data specified
-	 * 
-	 * @param data the data to use during construction
-	 * @return a new {@link MaterialData} instance
-	 */
-	public MaterialData createData(short data) {
-		return new GenericMaterialData(this, data);
 	}
 
 	@Override

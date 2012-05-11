@@ -27,12 +27,12 @@ package org.spout.api.inventory;
 
 import org.spout.api.material.Material;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.material.source.MaterialState;
 import org.spout.api.util.LogicUtil;
 import org.spout.nbt.CompoundMap;
 
+//TODO: Make item stacks immutable!
 /**
  * Represents a stack of items
  */
@@ -172,7 +172,7 @@ public class ItemStack implements MaterialState {
 	}
 
 	@Override
-	public ItemStack setMaterial(MaterialSource material, short data) {
+	public ItemStack setMaterial(MaterialSource material, int data) {
 		return this.setMaterial(material).setData(data);
 	}
 
@@ -182,8 +182,8 @@ public class ItemStack implements MaterialState {
 	}
 
 	@Override
-	public ItemStack setData(short data) {
-		this.data = data;
+	public ItemStack setData(int data) {
+		this.data = (short) data;
 		return this;
 	}
 
@@ -191,12 +191,6 @@ public class ItemStack implements MaterialState {
 	public short getData() {
 		return this.data;
 	}
-
-	@Override
-	public MaterialData createData() {
-		return this.material.createData(this.data);
-	}
-
 	
 	/**
 	 * Gets this item stack limited by the maximum stacking size<br>

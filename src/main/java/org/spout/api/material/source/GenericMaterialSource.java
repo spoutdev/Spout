@@ -74,9 +74,4 @@ public class GenericMaterialSource implements MaterialSource {
 	public Material getSubMaterial() {
 		return this.getMaterial().getSubMaterial(this.getData());
 	}
-
-	@Override
-	public MaterialData createData() {
-		return this.material.createData(this.data);
-	}
 }

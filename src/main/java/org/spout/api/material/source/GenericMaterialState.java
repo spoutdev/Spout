@@ -45,7 +45,7 @@ public class GenericMaterialState implements MaterialState {
 		this(material, datasource.getData());
 	}
 
-	public GenericMaterialState(MaterialSource material, short data) {
+	public GenericMaterialState(MaterialSource material, int data) {
 		this.setMaterial(material);
 		this.setData(data);
 	}
@@ -56,7 +56,7 @@ public class GenericMaterialState implements MaterialState {
 	}
 
 	@Override
-	public GenericMaterialState setMaterial(MaterialSource material, short data) {
+	public GenericMaterialState setMaterial(MaterialSource material, int data) {
 		this.setMaterial(material);
 		this.setData(data);
 		return this;
@@ -74,8 +74,8 @@ public class GenericMaterialState implements MaterialState {
 	}
 	
 	@Override
-	public GenericMaterialState setData(short data) {
-		this.data = data;
+	public GenericMaterialState setData(int data) {
+		this.data = (short) data;
 		return this;
 	}
 
@@ -87,11 +87,6 @@ public class GenericMaterialState implements MaterialState {
 	@Override
 	public short getData() {
 		return this.data;
-	}
-
-	@Override
-	public MaterialData createData() {
-		return this.material.createData(this.data);
 	}
 
 	@Override

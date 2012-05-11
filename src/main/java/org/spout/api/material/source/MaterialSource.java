@@ -42,11 +42,4 @@ public interface MaterialSource extends DataSource {
 	 * @return the sub material
 	 */
 	public Material getSubMaterial();
-	
-	/**
-	 * Constructs a new material data object
-	 * 
-	 * @return a new {@link MaterialData} instance
-	 */
-	public MaterialData createData();
 }
