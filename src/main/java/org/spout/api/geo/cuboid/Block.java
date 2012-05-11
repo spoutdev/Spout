@@ -169,7 +169,7 @@ public interface Block extends MaterialState {
 	 * @throws NullPointerException
 	 */
 	@Override
-	public Block setData(short data);
+	public Block setData(int data);
 
 	/**
 	 * Sets the material of this block
@@ -201,7 +201,7 @@ public interface Block extends MaterialState {
 	 * @throws NullPointerException
 	 */
 	@Override
-	public Block setMaterial(MaterialSource material, short data);
+	public Block setMaterial(MaterialSource material, int data);
 
 	/**
 	 * Gets the block light level

@@ -47,8 +47,8 @@ public class GenericMaterialData implements MaterialData {
 	}
 
 	@Override
-	public GenericMaterialData setData(short data) {
-		this.data = data;
+	public GenericMaterialData setData(int data) {
+		this.data = (short) data;
 		return this;
 	}
 
@@ -60,10 +60,5 @@ public class GenericMaterialData implements MaterialData {
 	@Override
 	public Material getSubMaterial() {
 		return this.getMaterial().getSubMaterial(this.getData());
-	}
-
-	@Override
-	public MaterialData createData() {
-		return this.material.createData(this.data);
 	}
 }

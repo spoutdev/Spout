@@ -40,7 +40,7 @@ public interface MaterialState extends MaterialData {
 	 * @param material to set to
 	 * @param data value to set to
 	 */
-	public MaterialState setMaterial(MaterialSource material, short data);
+	public MaterialState setMaterial(MaterialSource material, int data);
 
 	/**
 	 * Sets the material and data
@@ -48,10 +48,10 @@ public interface MaterialState extends MaterialData {
 	 * @param datasource of the data to set to
 	 */
 	public MaterialState setMaterial(MaterialSource material, DataSource datasource);
-	
+
 	@Override
-	public MaterialState setData(short data);
-	
+	public MaterialState setData(int data);
+
 	@Override
 	public MaterialState setData(DataSource data);
 }
