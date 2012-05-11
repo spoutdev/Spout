@@ -62,7 +62,6 @@ import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
-import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 
@@ -504,7 +503,7 @@ public class SpoutRegion extends Region {
 
 				World world = getWorld();
 				int[] updates;
-				Source[] sources;
+				Object[] sources;
 				synchronized (queuedPhysicsUpdates) {
 					updates = queuedPhysicsUpdates.keys();
 					sources = queuedPhysicsUpdates.values();
@@ -512,10 +511,10 @@ public class SpoutRegion extends Region {
 				}
 				for (int i = 0; i < updates.length; i++) {
 					int key = updates[i];
-					Source source = sources[i];
-					int x = TByteTripleHashSet.key1(key);
-					int y = TByteTripleHashSet.key2(key);
-					int z = TByteTripleHashSet.key3(key);
+					Source source = (Source) sources[i];
+					int x = TByteTripleObjectHashMap.key1(key);
+					int y = TByteTripleObjectHashMap.key2(key);
+					int z = TByteTripleObjectHashMap.key3(key);
 					//switch region block coords (0-255) to a chunk index
 					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
 					if (chunk != null) {
