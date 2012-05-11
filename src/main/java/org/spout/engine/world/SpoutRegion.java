@@ -61,6 +61,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -139,7 +140,7 @@ public class SpoutRegion extends Region {
 	 * z) are the region coordinates.
 	 */
 	//TODO thresholds?
-	private final TByteTripleHashSet queuedPhysicsUpdates = new TByteTripleHashSet();
+	private final TByteTripleObjectHashMap<Source> queuedPhysicsUpdates = new TByteTripleObjectHashMap<Source>();
 	private final int blockCoordMask;
 	private final int blockShifts;
 	/**
@@ -503,11 +504,15 @@ public class SpoutRegion extends Region {
 
 				World world = getWorld();
 				int[] updates;
+				Source[] sources;
 				synchronized (queuedPhysicsUpdates) {
-					updates = queuedPhysicsUpdates.toArray();
+					updates = queuedPhysicsUpdates.keys();
+					sources = queuedPhysicsUpdates.values();
 					queuedPhysicsUpdates.clear();
 				}
-				for (int key : updates) {
+				for (int i = 0; i < updates.length; i++) {
+					int key = updates[i];
+					Source source = sources[i];
 					int x = TByteTripleHashSet.key1(key);
 					int y = TByteTripleHashSet.key2(key);
 					int z = TByteTripleHashSet.key3(key);
@@ -517,7 +522,7 @@ public class SpoutRegion extends Region {
 						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
 						if (material.hasPhysics()) {
 							//switch region block coords (0-255) to world block coords
-							Block block = world.getBlock(x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts));
+							Block block = world.getBlock(x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts), source);
 							material.onUpdate(block);
 						}
 					}
@@ -712,9 +717,9 @@ public class SpoutRegion extends Region {
 	 * @param y, the block y coordinate
 	 * @param z, the block z coordinate
 	 */
-	public void queuePhysicsUpdate(int x, int y, int z) {
+	public void queuePhysicsUpdate(int x, int y, int z, Source source) {
 		synchronized (queuedPhysicsUpdates) {
-			queuedPhysicsUpdates.add(x & blockCoordMask, y & blockCoordMask, z & blockCoordMask);
+			queuedPhysicsUpdates.put((byte) (x & blockCoordMask), (byte) (y & blockCoordMask), (byte) (z & blockCoordMask), source);
 		}
 	}
 
@@ -837,8 +842,8 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public void updateBlockPhysics(int x, int y, int z) {
-		this.getChunkFromBlock(x, y, z).updateBlockPhysics(x, y, z);
+	public void updateBlockPhysics(int x, int y, int z, Source source) {
+		this.getChunkFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
 	}
 
 	@Override
