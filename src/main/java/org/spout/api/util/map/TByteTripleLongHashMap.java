@@ -37,7 +37,7 @@ import gnu.trove.set.TIntSet;
  * @author Afforess
  *
  */
-public class TByteTripleLongHashMap {
+public class TByteTripleLongHashMap extends TByteTripleHashMap {
 	private TIntLongHashMap map;
 
 	public TByteTripleLongHashMap() {
@@ -107,9 +107,5 @@ public class TByteTripleLongHashMap {
 
 	public long[] values() {
 		return map.values();
-	}
-
-	private static final int key(int x, int y, int z) {
-		return (x & 0xF) << 11 | (z & 0xF) << 7 | y & 0x7F;
 	}
 }

@@ -38,7 +38,7 @@ import gnu.trove.set.TIntSet;
  * @author Afforess
  *
  */
-public class TByteTripleObjectHashMap<K> {
+public class TByteTripleObjectHashMap<K> extends TByteTripleHashMap {
 	private TIntObjectHashMap<K> map;
 
 	public TByteTripleObjectHashMap() {
@@ -103,9 +103,5 @@ public class TByteTripleObjectHashMap<K> {
 
 	public K[] values() {
 		return map.values();
-	}
-
-	private static final int key(int x, int y, int z) {
-		return (x & 0xF) << 11 | (z & 0xF) << 7 | y & 0x7F;
 	}
 }
