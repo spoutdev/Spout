@@ -261,11 +261,11 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public void updateBlockPhysics(int x, int y, int z) {
+	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		checkChunkLoaded();
 		SpoutRegion region = parentRegion.getWorld().getRegionFromBlock(x, y, z);
 		if (region != null) {
-			region.queuePhysicsUpdate(x, y, z);
+			region.queuePhysicsUpdate(x, y, z, source);
 		}
 	}
 

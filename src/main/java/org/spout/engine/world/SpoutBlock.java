@@ -201,6 +201,13 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public Block setSource(Source source) {
+		SpoutBlock block = this.clone();
+		block.source = source == null ? block.world : source;
+		return block;
+	}
+
+	@Override
 	public BlockMaterial getSubMaterial() {
 		return this.getMaterial().getSubMaterial(this.getData());
 	}
@@ -271,19 +278,19 @@ public class SpoutBlock implements Block {
 	@Override
 	public Block update(boolean around) {
 		Chunk chunk = this.getChunk();
-		chunk.updateBlockPhysics(this.x, this.y, this.z);
+		chunk.updateBlockPhysics(this.x, this.y, this.z, this.source);
 		if (around) {
 			//South and North
-			chunk.updateBlockPhysics(this.x + 1, this.y, this.z);
-			chunk.updateBlockPhysics(this.x - 1, this.y, this.z);
+			chunk.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
+			chunk.updateBlockPhysics(this.x - 1, this.y, this.z, this.source);
 
 			//West and East
-			chunk.updateBlockPhysics(this.x, this.y, this.z + 1);
-			chunk.updateBlockPhysics(this.x, this.y, this.z - 1);
+			chunk.updateBlockPhysics(this.x, this.y, this.z + 1, this.source);
+			chunk.updateBlockPhysics(this.x, this.y, this.z - 1, this.source);
 
 			//Above and Below
-			chunk.updateBlockPhysics(this.x, this.y + 1, this.z);
-			chunk.updateBlockPhysics(this.x, this.y - 1, this.z);
+			chunk.updateBlockPhysics(this.x, this.y + 1, this.z, this.source);
+			chunk.updateBlockPhysics(this.x, this.y - 1, this.z, this.source);
 		}
 		return this;
 	}
