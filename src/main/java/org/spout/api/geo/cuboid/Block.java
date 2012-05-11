@@ -145,6 +145,14 @@ public interface Block extends MaterialState {
 	 */
 	public Source getSource();
 
+	/**
+	 * Sets the source this block represents
+	 * 
+	 * @param source to set to
+	 * @return a clone of this block with the new source set
+	 */
+	public Block setSource(Source source);
+	
 	@Override
 	public BlockMaterial getMaterial();
 
