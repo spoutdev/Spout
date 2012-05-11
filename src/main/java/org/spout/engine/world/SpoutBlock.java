@@ -36,7 +36,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialData;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
@@ -171,9 +170,9 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public SpoutBlock setMaterial(MaterialSource material, short data) {
+	public SpoutBlock setMaterial(MaterialSource material, int data) {
 		if (material.getMaterial() instanceof BlockMaterial) {
-			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), data, this.source);
+			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), (short) data, this.source);
 		} else {
 			throw new IllegalArgumentException("Can't set a block to a non-block material!");
 		}
@@ -186,19 +185,14 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public SpoutBlock setData(short data) {
-		this.getChunk().setBlockData(this.x, this.y, this.z, data, this.source);
+	public SpoutBlock setData(int data) {
+		this.getChunk().setBlockData(this.x, this.y, this.z, (short) data, this.source);
 		return this;
 	}
 
 	@Override
 	public short getData() {
 		return this.getChunk().getBlockData(this.x, this.y, this.z);
-	}
-
-	@Override
-	public MaterialData createData() {
-		return this.getMaterial().createData(this.getData());
 	}
 
 	@Override
