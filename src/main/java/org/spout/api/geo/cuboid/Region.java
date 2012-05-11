@@ -109,21 +109,49 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
 	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
 	 * consider using getNearestPlayer instead.
-	 * @param entity
-	 * @param range
-	 * @return
+	 * @param position of the center
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Point position, int range) {
+		return getNearbyPlayers(position, null, range);
+	}
+
+	/**
+	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
+	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
+	 * consider using getNearestPlayer instead.
+	 * @param entity marking the center and which is ignored
+	 * @param range to look for
+	 * @return A set of nearby Players
 	 */
 	@LiveRead
 	@Threadsafe
 	public Set<Player> getNearbyPlayers(Entity entity, int range) {
+		return getNearbyPlayers(entity.getPosition(), entity, range);
+	}
+
+	/**
+	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
+	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
+	 * consider using getNearestPlayer instead.
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
 		Set<Player> foundPlayers = new HashSet<Player>();
-		Vector3 position = entity.getPosition();
 		final int RANGESQUARED = range * range;
 
 		//Cut down on work by getting only players in the same world.
 		for (Player plr : getWorld().getPlayers()) {
 			//Do not count the entity passing in as a closest player if that entity is a player
-			if (plr == null || plr.getEntity() == null || plr.getEntity() == entity || plr.getEntity().getTransform() == new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO)) {
+			if (plr == null || plr.getEntity() == null || plr.getEntity() == ignore || plr.getEntity().getTransform() == new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO)) {
 				continue;
 			}
 			double distance = Vector3.distanceSquared(position, plr.getEntity().getPosition());
