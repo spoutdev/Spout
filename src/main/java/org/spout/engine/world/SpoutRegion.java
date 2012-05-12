@@ -832,7 +832,11 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void setBlockController(int x, int y, int z, BlockController controller) {
-		blockControllers.put(new Vector3(x, y, z), controller);
+		if (controller.getParent() == null) {
+			this.getWorld().createAndSpawnEntity(new Point(this.getWorld(), x, y, z), controller);
+		} else {
+			blockControllers.put(new Vector3(x, y, z), controller);
+		}
 	}
 
 	@Override
