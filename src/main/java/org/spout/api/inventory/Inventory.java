@@ -95,6 +95,15 @@ public class Inventory implements Serializable {
 	}
 
 	/**
+	 * Gets all the {@link InventoryViewer} of the inventory
+	 * 
+	 * @return viewers of inventory
+	 */
+	public List<InventoryViewer> getViewers() {
+		return viewers;
+	}
+
+	/**
 	 * Gets the contents of this Inventory<br>
 	 * Note that the items still reference back into this Inventory
 	 * 
