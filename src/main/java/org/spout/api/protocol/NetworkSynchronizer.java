@@ -107,10 +107,6 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		return owner;
 	}
 	
-	public Session getSession() {
-		return session;
-	}
-
 	protected void registerProtocolEvents(final ProtocolEventListener listener) {
 		for (final Method method : listener.getClass().getDeclaredMethods()) {
 			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
