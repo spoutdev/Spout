@@ -98,6 +98,18 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		this.entity = entity;
 		entity.setObserver(true);
 	}
+	
+	public Entity getEntity() {
+		return entity;
+	}
+	
+	public Player getOwner() {
+		return owner;
+	}
+	
+	public Session getSession() {
+		return session;
+	}
 
 	protected void registerProtocolEvents(final ProtocolEventListener listener) {
 		for (final Method method : listener.getClass().getDeclaredMethods()) {
