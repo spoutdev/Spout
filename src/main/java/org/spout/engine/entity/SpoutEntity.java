@@ -61,8 +61,6 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
-import org.spout.api.util.concurrent.OptimisticReadWriteLock;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
@@ -81,7 +79,6 @@ public class SpoutEntity implements Entity, Tickable {
 	private final AtomicInteger health = new AtomicInteger(1), maxHealth = new AtomicInteger(1);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
-	private final OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
 	private final Transform transform = new Transform();
 	private boolean justSpawned = true;
 	private boolean observer = false;
@@ -137,15 +134,25 @@ public class SpoutEntity implements Entity, Tickable {
 	@Override
 	public void onTick(float dt) {
 		if (this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
-			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
-			entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
+			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
+			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition(), false));
+			
+			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
 			lastTransform = transform.copy();
 		}
 
+		//Tick the controller
 		if (controllerLive.get() != null && controllerLive.get().getParent() != null) {
 			controllerLive.get().onTick(dt);
 		}
 
+		//Pulse all player messages here, so they can interact with the entities position safely
+		if (Thread.currentThread() != this.owningThread) {
+			Spout.getLogger().info("Pulsing from wrong thread!");
+			Spout.getLogger().info("Owning Thread: " + owningThread);
+			Spout.getLogger().info("Current Thread: " + Thread.currentThread());
+			return;
+		}
 		if (controllerLive.get() instanceof PlayerController) {
 			Player player = ((PlayerController) controllerLive.get()).getPlayer();
 			if (player != null && player.getSession() != null) {
@@ -449,7 +456,6 @@ public class SpoutEntity implements Entity, Tickable {
 	@Override
 	public boolean kill() {
 		chunkLive.set(null);
-		entityManagerLive.set(null);
 		return true;
 	}
 
@@ -576,21 +582,7 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 
 	public Chunk getChunkLive() {
-		while (true) {
-			int seq = lock.readLock();
-			Point position = transform.getPosition();
-			World w = position.getWorld();
-			if (w == null) {
-				if (lock.readUnlock(seq)) {
-					return null;
-				}
-			} else {
-				Chunk c = w.getChunkFromBlock(position, true);
-				if (lock.readUnlock(seq)) {
-					return c;
-				}
-			}
-		}
+		return chunkLive.get();
 	}
 
 	@Override
@@ -600,22 +592,6 @@ public class SpoutEntity implements Entity, Tickable {
 			return null;
 		} else {
 			return world.getRegionFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
-		}
-	}
-
-	public Region getRegionLive() {
-		while (true) {
-			int seq = lock.readLock();
-			Point position = transform.getPosition();
-			World world = position.getWorld();
-			if (world == null && lock.readUnlock(seq)) {
-				return null;
-			} else {
-				Region r = world.getRegionFromBlock(position, true);
-				if (lock.readUnlock(seq)) {
-					return r;
-				}
-			}
 		}
 	}
 
@@ -742,7 +718,6 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 
 	public void setOwningThread(Thread thread) {
-		if (getController() instanceof PlayerController) System.out.println("[DEBUG] Changing owning thread from [" + owningThread + "] to [" + thread + "]");
 		this.owningThread = thread;
 	}
 

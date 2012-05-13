@@ -70,7 +70,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
-	private static final long UNLOAD_PERIOD = 30000;
+	private static final long UNLOAD_PERIOD = 10000;
 	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.

@@ -218,14 +218,14 @@ public class WorldFiles {
 		CompoundMap map = tag.getValue();
 
 		@SuppressWarnings("unused")
-		Byte version = (Byte) map.get("version").getValue();
+		byte version = (Byte) map.get("version").getValue();
 		String name = (String) map.get("controller").getValue();
 		
 		ControllerType type = ControllerRegistry.get(name);
 		if (type == null) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
 		} else if (type.canCreateController()) {
-			System.out.println("Loading a controller of type: " + name);
+			
 			
 			//Read entity
 			float pX = (Float) map.get("posX").getValue();
@@ -252,6 +252,8 @@ public class WorldFiles {
 				r.addEntity(e);
 			}
 			
+			System.out.println("Loading a controller of type: " + name + " (id: " + e.getId() + ")");
+			
 			//Setup controller
 			try {
 				if (((ByteTag) map.get("controller_data_exists")).getBooleanValue()) {
@@ -273,7 +275,7 @@ public class WorldFiles {
 	}
 
 	private static Tag saveEntity(SpoutEntity e) {
-		if (!e.getController().isSavable()) {
+		if (!e.getController().isSavable() || e.isDead()) {
 			return null;
 		}
 		CompoundMap map = new CompoundMap();
@@ -281,7 +283,7 @@ public class WorldFiles {
 		map.put(new ByteTag("version", ENTITY_VERSION));
 		map.put(new StringTag("controller", e.getController().getType().getName()));
 		
-		System.out.println("Saving a controller of type: " + e.getController().getType().getName());
+		System.out.println("Saving a controller of type: " + e.getController().getType().getName() + " (id: " + e.getId() + ")");
 		
 		//Write entity
 		map.put(new FloatTag("posX", e.getPosition().getX()));
@@ -303,7 +305,7 @@ public class WorldFiles {
 		//Write controller
 		try {
 			GenericDatatableMap dataMap = new GenericDatatableMap();
-			if (e.getController().save(new DataMap(dataMap))) {
+			if (e.getController().save(new DataMap(dataMap)) && !dataMap.isEmpty()) {
 				map.put(new ByteTag("controller_data_exists", true));
 				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
 			} else {
@@ -313,7 +315,7 @@ public class WorldFiles {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getController().getType(), error);
 		}
 		
-		CompoundTag tag = new CompoundTag("entity", map);
+		CompoundTag tag = new CompoundTag("entity_" + e.getId(), map);
 
 		return tag;
 	}

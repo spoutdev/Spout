@@ -262,10 +262,6 @@ public class SpoutRegion extends Region {
 		boolean success = current.compareAndSet(currentChunk, null);
 		if (success) {
 			int num = numberActiveChunks.decrementAndGet();
-			
-			for (Entity e : currentChunk.getLiveEntities()) {
-				e.kill();
-			}
 
 			((SpoutChunk) currentChunk).setUnloaded();
 
@@ -462,9 +458,6 @@ public class SpoutRegion extends Region {
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
 					try {
-						if (ent.getRegionLive() != this) {
-							System.out.println("Region live does not match this region. Live Region: " + ent.getRegionLive() + " This region: " + toString());
-						}
 						ent.onTick(dt);
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
@@ -556,8 +549,6 @@ public class SpoutRegion extends Region {
 	}
 
 	public void finalizeRun() throws InterruptedException {
-		entityManager.finalizeRun();
-
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
@@ -580,6 +571,9 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
+		
+		//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
+		entityManager.finalizeRun();
 	}
 
 	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {

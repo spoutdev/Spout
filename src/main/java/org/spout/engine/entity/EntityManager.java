@@ -136,7 +136,7 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public int allocate(SpoutEntity entity, SpoutRegion region) {
 		int currentId = entity.getId();
-		SpoutRegion entityRegion = region == null ? ((SpoutRegion) entity.getRegionLive()) : region;
+		SpoutRegion entityRegion = region == null ? ((SpoutRegion) entity.getRegion()) : region;
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
 			getRawAll(entity.getController().getClass()).add(entity);
