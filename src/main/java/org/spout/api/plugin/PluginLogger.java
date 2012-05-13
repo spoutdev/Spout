@@ -29,11 +29,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.spout.api.Spout;
+import org.spout.api.event.server.PluginLoggerEvent;
 
 public class PluginLogger extends Logger {
-    ArrayList<PluginLoggerListener> localListeners = new ArrayList<PluginLoggerListener>();
-    static ArrayList<PluginLoggerListener> globalListeners = new ArrayList<PluginLoggerListener>();
-    
     private final String tag;
     private Plugin plugin;
     
@@ -47,49 +46,8 @@ public class PluginLogger extends Logger {
 
     @Override
     public void log(LogRecord logRecord) {
-        for(PluginLoggerListener cur: localListeners){
-            cur.onLogged(plugin, logRecord);
-        }
-        for(PluginLoggerListener cur: globalListeners){
-            cur.onLogged(plugin, logRecord);
-        }
+        Spout.getEventManager().callEvent(new PluginLoggerEvent(plugin, logRecord));
         logRecord.setMessage(tag + logRecord.getMessage());
         super.log(logRecord);
-    }
-    
-    /**
-    * Register a local listener to this PluginLogger.
-    * Local listeners forward output of a single plugin to a PluginLoggerListener.
-    * @param listener The listener that the events will be sent to.
-    */
-    public void registerLocalListener(PluginLoggerListener listener){
-        localListeners.add(listener);
-    }
-    
-    /**
-    * Remove a local listener.
-    * Local listeners forward output of a single plugin to a PluginLoggerListener.
-    * @param listener The listener that will be removed.
-    */
-    public void unRegisterLocalListener(PluginLoggerListener listener){
-        localListeners.remove(listener);
-    }
-    
-    /**
-    * Register a global listener.
-    * Global listeners forward output of all PluginLoggers to a PluginLoggerListener.
-    * @param listener The listener that the events will be sent to.
-    */
-    public static void registerGlobalListener(PluginLoggerListener listener){
-        globalListeners.add(listener);
-    }
-    
-    /**
-    * Remove a global listener.
-    * Global listeners forward output of all PluginLoggers to a PluginLoggerListener.
-    * @param listener The listener that will be removed.
-    */
-    public static void unRegisterGlobalListener(PluginLoggerListener listener){
-        globalListeners.remove(listener);
     }
 }
