@@ -66,6 +66,12 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	public final static Vector3 ONE = new Vector3(1, 1, 1);
 	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
+	
 	
 	protected final float x;
 	protected final float y;
@@ -603,7 +609,11 @@ public class Vector3 implements Comparable<Vector3> {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(7, 37).append(x).append(y).append(z).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(7, 37).append(x).append(y).append(z).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override

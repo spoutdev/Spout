@@ -52,6 +52,12 @@ public class Vector2 implements Comparable<Vector2>{
 	 */
 	public final static Vector2 ONE = new Vector2(1, 1);
 	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
+	
 	
 	protected final float x;
 	protected final float y;
@@ -537,7 +543,11 @@ public class Vector2 implements Comparable<Vector2>{
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(5, 59).append(x).append(y).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(5, 59).append(x).append(y).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override

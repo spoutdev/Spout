@@ -37,6 +37,12 @@ import org.spout.api.util.StringUtil;
 public class Point extends Vector3 {
 	protected final World world;
 	public static final Point invalid = new Point(null, 0, 0, 0);
+	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
 
 	public Point(Point point) {
 		super(point);
@@ -257,7 +263,11 @@ public class Point extends Vector3 {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(5033, 61).appendSuper(super.hashCode()).append(world).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(5033, 61).appendSuper(super.hashCode()).append(world).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override

@@ -59,6 +59,12 @@ public class Vector4 implements Comparable<Vector4> {
 	 * Represents a unit vector in the W direction (0, 0, 1, 1)
 	 */
 	public final static Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
+	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
 
 	protected final float x;
 	protected final float y;
@@ -569,7 +575,11 @@ public class Vector4 implements Comparable<Vector4> {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(7, 53).append(x).append(y).append(z).append(w).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(7, 53).append(x).append(y).append(z).append(w).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override

@@ -48,6 +48,12 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	
 	protected final float r;
 	protected final float theta;
+	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta
@@ -466,7 +472,11 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(5, 59).append(r).append(theta).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(5, 59).append(r).append(theta).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override

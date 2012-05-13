@@ -32,7 +32,7 @@ import org.spout.api.util.StringUtil;
  */
 public class Quaternion {
 	protected final float x, y, z, w;
-	protected Vector3 cachedAngle = null;
+	protected volatile Vector3 cachedAngle = null;
 
 	/**
 	 * Represents no rotation

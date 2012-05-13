@@ -41,6 +41,12 @@ public class Cuboid {
 	private final int y;
 	private final int z;
 	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
+	
 	public Cuboid(Point base, Vector3 size) {
 		this(base, size, false);
 	}
@@ -104,7 +110,11 @@ public class Cuboid {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(563, 21).append(base).append(size).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(563, 21).append(base).append(size).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override
