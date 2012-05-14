@@ -365,19 +365,11 @@ public class MathHelper {
 	// Integer Maths
 
 	public static int floor(double x) {
-		int y = (int) x;
-		if (x < y) {
-			return y - 1;
-		}
-		return y;
+		return (int)java.lang.Math.floor(x);
 	}
 
 	public static int floor(float x) {
-		int y = (int) x;
-		if (x < y) {
-			return y - 1;
-		}
-		return y;
+		return (int)java.lang.Math.floor(x);
 	}
 
 	/**
