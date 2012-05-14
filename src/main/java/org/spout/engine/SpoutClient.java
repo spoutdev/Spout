@@ -29,11 +29,17 @@ package org.spout.engine;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
+import java.util.logging.Level;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -99,7 +105,19 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	
 	public static void main(String[] args) {
-		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives/");
+		boolean inJar = false;
+
+		try {
+			CodeSource cs = SpoutClient.class.getProtectionDomain().getCodeSource();
+			inJar = cs.getLocation().toURI().getPath().endsWith(".jar");
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+		if (inJar) {
+			unpackLwjgl();
+		}
+
 		SpoutClient c = new SpoutClient();
 		Spout.setEngine(c);
 		FileSystem.init();
@@ -433,5 +451,62 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public ScreenStack getScreenStack() {
 		return screenStack;
+	}
+	
+	private static void unpackLwjgl() {
+		String[] files = null;
+		String osPath = "";
+		
+		if(SystemUtils.IS_OS_WINDOWS) {
+			files = new String[] {
+					"jinput-dx8_64.dll",
+					"jinput-dx8.dll",
+					"jinput-raw_64.dll",
+					"jinput-raw.dll",
+					"jinput-wintab.dll",
+					"lwjgl.dll",
+					"lwjgl64.dll",
+					"OpenAL32.dll",
+					"OpenAL64.dll" 
+			};
+			osPath = "windows/";
+		} else if (SystemUtils.IS_OS_MAC) {
+			files = new String[] {
+					"libjinput-osx.jnilib",
+					"liblwjgl.jnilib",
+					"openal.dylib",
+			};
+			osPath = "mac/";
+		} else if(SystemUtils.IS_OS_LINUX) {
+			files = new String[] {
+					"liblwjgl.so",
+					"liblwjgl64.so",
+					"libopenal.so",
+					"libopenal64.so",
+					"libjinput-linux.so",
+					"libjinput-linux64.so"
+			};
+			osPath = "linux/";
+		} else {
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: " + SystemUtils.OS_NAME);
+			return;
+		}
+
+		File cacheDir = new File(System.getProperty("user.dir"), "natives/" + osPath);
+		cacheDir.mkdirs();
+		for (String f : files) {
+			File outFile = new File(cacheDir, f);
+			if (!outFile.exists()) {
+				try {
+					FileUtils.copyInputStreamToFile(SpoutClient.class.getResourceAsStream("/" + f), outFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		String nativePath = cacheDir.getAbsolutePath();
+		System.setProperty("org.lwjgl.librarypath", nativePath);
+		System.setProperty("net.java.games.input.librarypath", nativePath);
 	}
 }
