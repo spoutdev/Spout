@@ -148,7 +148,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-		texture = (Texture) FileSystem.getResource("texture://Vanilla/terrain.png");
+		texture = (Texture) FileSystem.getResource("texture://Vanilla/res/terrain.png");
 		texture.load(); //Loads texture to GPU
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		textureTest.setShader(shader);
@@ -238,27 +238,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		
 		
-		if(this.getLiveWorlds().size() > 0){
-			Object[] worlds = this.getWorlds().toArray();
-			SpoutWorld world = (SpoutWorld)worlds[0];
-			renderVisibleChunks(world);
-			
-		}			
-		else{
+		//if(this.getLiveWorlds().size() > 0){
+		//	Object[] worlds = this.getWorlds().toArray();
+		//	SpoutWorld world = (SpoutWorld)worlds[0];
+		//	renderVisibleChunks(world);
+		//	
+		//}			
+		//else{
 			renderer.begin();
 			renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
 			renderer.end();
-		}
+		//}
 		
 		
 		renderer.draw();
-		/*
+		
 
 		textureTest.getShader().setUniform("View", activeCamera.getView());
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
 		textureTest.getShader().setUniform("tex", texture);
 
-		
+/*		
 		 renderer.addColor(col);
 		renderer.addVertex(a);
 		renderer.addColor(col);		
@@ -272,7 +272,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.addVertex(a);
 		renderer.addColor(col);
 		renderer.addVertex(d);
-		
+*/		
 
 		textureTest.begin();
 		//texture.bind();
@@ -293,7 +293,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//textureTest.dumpBuffers();
 		textureTest.render();
 		
-		
+		/*
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		screenStack.render();

@@ -62,7 +62,7 @@ public class JarfileResolver extends FilepathResolver {
 				Spout.log("Tried to get file " + file + " from plugin " + path + " but it isn't loaded!");
 				return false; //If the plugin doesn't exist, we don't have the file
 			}
-			
+			file = file.substring(1);
 			JarEntry entry = f.getJarEntry(file);
 			has = entry != null;
 		} catch (IOException e) {
@@ -84,6 +84,7 @@ public class JarfileResolver extends FilepathResolver {
 		JarFile f = null;
 		try {
 			f = getJar(path);
+			file = file.substring(1);
 			JarEntry entry = f.getJarEntry(file);
 			InputStream s = f.getInputStream(entry);
 			return s; //TODO close the jar.
