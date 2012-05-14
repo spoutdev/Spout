@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.type.ControllerRegistry;
@@ -121,7 +122,7 @@ public class WorldFiles {
 		return world;
 	}
 
-	public static void saveChunk(SpoutChunk c, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, OutputStream dos) {
+	public static void saveChunk(SpoutChunk c, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
 		chunkTags.put(new ByteTag("version", (byte) 1));
 		chunkTags.put(new ByteTag("format", (byte) 0));
@@ -134,6 +135,7 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
 		chunkTags.put(new ByteArrayTag("blockLight", blockLight));
 		chunkTags.put(new CompoundTag("entities", saveEntities(c)));
+		chunkTags.put(new ByteArrayTag("extraData", extraData.compress()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 
@@ -175,8 +177,12 @@ public class WorldFiles {
 			short[] data = (short[]) map.get("data").getValue();
 			byte[] skyLight = (byte[]) map.get("skyLight").getValue();
 			byte[] blockLight = (byte[]) map.get("blockLight").getValue();
+			byte[] extraData = (byte[]) map.get("extraData").getValue();
+			
+			DatatableMap extraDataMap = new GenericDatatableMap();
+			extraDataMap.decompress(extraData);
 
-			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight);
+			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, extraDataMap);
 
 			loadEntities(r, (CompoundMap) map.get("entities").getValue());
 		} catch (IOException e) {

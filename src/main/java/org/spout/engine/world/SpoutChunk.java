@@ -25,6 +25,7 @@
  */
 package org.spout.engine.world;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -38,7 +39,9 @@ import gnu.trove.set.hash.TByteHashSet;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
@@ -128,12 +131,18 @@ public class SpoutChunk extends Chunk {
 	 * True if this chunk should be resent due to light calculations
 	 */
 	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
+	
+	/**
+	 * Data map and Datatable associated with it
+	 */
+	private final DatatableMap datatableMap;
+	private final DataMap dataMap;
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
-		this(world, region, x, y, z, false, initial, null, null, null);
+		this(world, region, x, y, z, false, initial, null, null, null, null);
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight) {
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
@@ -144,6 +153,13 @@ public class SpoutChunk extends Chunk {
 			this.skyLight[i] = 0;
 		}
 		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		
+		if (extraData != null) {
+			this.datatableMap = extraData;
+		} else {
+			this.datatableMap = new GenericDatatableMap();;
+		}
+		this.dataMap = new DataMap(this.datatableMap);
 
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue = new TByteHashSet();
@@ -501,7 +517,7 @@ public class SpoutChunk extends Chunk {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		WorldFiles.saveChunk(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), skyLight, blockLight, this.parentRegion.getChunkOutputStream(this));
+		WorldFiles.saveChunk(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), skyLight, blockLight, datatableMap, this.parentRegion.getChunkOutputStream(this));
 	}
 
 	@Override
@@ -932,5 +948,10 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		return this.blockStore.compareAndSetBlock(x & coordMask, y & coordMask, z & coordMask, expect.getId(), expect.getData(), expect.getId(), data);
+	}
+
+	@Override
+	public Map<String, Serializable> getDataMap() {
+		return dataMap;
 	}
 }
