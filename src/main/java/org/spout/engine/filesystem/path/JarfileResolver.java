@@ -26,12 +26,13 @@
 package org.spout.engine.filesystem.path;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.spout.api.Spout;
+import org.spout.api.plugin.Plugin;
 import org.spout.engine.filesystem.FileSystem;
 
 public class JarfileResolver extends FilepathResolver {
@@ -42,12 +43,26 @@ public class JarfileResolver extends FilepathResolver {
 
 	File pluginsFolder = FileSystem.PLUGIN_DIRECTORY;
 
+	
+	private JarFile getJar(String path) throws IOException{
+		String pluginName = path.substring(path.lastIndexOf(File.separatorChar) + 1);
+		Plugin p = Spout.getEngine().getPluginManager().getPlugin(pluginName);
+		if(p == null) return null;
+		return new JarFile(p.getFile());
+	}
+	
 	@Override
 	public boolean existsInPath(String file, String path) {
 		boolean has = false;
 		JarFile f = null;
 		try {
-			f = new JarFile(directory + path);
+			
+			f = getJar(path);
+			if(f == null) {
+				Spout.log("Tried to get file " + file + " from plugin " + path + " but it isn't loaded!");
+				return false; //If the plugin doesn't exist, we don't have the file
+			}
+			
 			JarEntry entry = f.getJarEntry(file);
 			has = entry != null;
 		} catch (IOException e) {
@@ -67,23 +82,14 @@ public class JarfileResolver extends FilepathResolver {
 	@Override
 	public InputStream getStream(String file, String path) {
 		JarFile f = null;
-		FileInputStream stream = null;
 		try {
-			f = new JarFile(directory + path);
+			f = getJar(path);
 			JarEntry entry = f.getJarEntry(file);
 			InputStream s = f.getInputStream(entry);
 			return s; //TODO close the jar.
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			if (f != null) {
-				try {
-					f.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
-		return stream;
+		return null;
 	}
 }

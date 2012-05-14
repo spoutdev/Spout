@@ -43,7 +43,8 @@ public class ZipfileResolver extends FilepathResolver {
 		boolean has = false;
 		ZipFile f = null;
 		try {
-			f = new ZipFile(directory + path);
+			System.out.println(path);
+			f = new ZipFile(path);
 			ZipEntry entry = f.getEntry(file);
 			has = entry != null;
 		} catch (IOException e) {

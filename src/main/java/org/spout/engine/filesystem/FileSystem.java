@@ -86,7 +86,7 @@ public class FileSystem {
 		}
 
 		searchpaths = new ResourcePathResolver[]{new FilepathResolver("cache"),
-				new ZipfileResolver(),
+				//new ZipfileResolver(),
 				new JarfileResolver()};
 
 		registerLoader("texture", new TextureLoader());
@@ -99,11 +99,10 @@ public class FileSystem {
 				return searchpaths[i].getStream(path);
 			}
 		}
-		
+		Spout.getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
 		//Open our jar and grab the fallback file
 		String name = LOADERS.get(path.getScheme()).getFallbackResourceName();	
-		InputStream stream = FileSystem.class.getResourceAsStream("fallbacks/"+name);
-		
+		InputStream stream = FileSystem.class.getResourceAsStream("/fallbacks/" + name);
 		return stream;
 	}
 	
