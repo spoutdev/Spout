@@ -1,7 +1,7 @@
 GL30:
-    Vertex: Vanilla/fallback.330.vert
-    Fragment: Vanilla/fallback.330.frag
+    Vertex: Spout/fallback.330.vert
+    Fragment: Spout/fallback.330.frag
 GL20:
-    Vertex: Vanilla/fallback.120.vert
-    Fragment: Vanilla/fallback.120.frag
+    Vertex: Spout/fallback.120.vert
+    Fragment: Spout/fallback.120.frag
     
