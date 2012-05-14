@@ -263,6 +263,10 @@ public class SpoutRegion extends Region {
 		boolean success = current.compareAndSet(currentChunk, null);
 		if (success) {
 			int num = numberActiveChunks.decrementAndGet();
+			
+			for (Entity e : currentChunk.getLiveEntities()) {
+				e.kill();
+			}
 
 			((SpoutChunk) currentChunk).setUnloaded();
 
