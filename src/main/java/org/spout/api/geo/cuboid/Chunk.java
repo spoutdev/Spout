@@ -25,6 +25,8 @@
  */
 package org.spout.api.geo.cuboid;
 
+import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
@@ -171,6 +173,15 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	@LiveRead
 	public abstract Set<Entity> getLiveEntities();
+	
+	/**
+	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
+	 * 
+	 * Can be used to attach and store any persistent chunk related data.
+	 * 
+	 * @return data map
+	 */
+	public abstract Map<String, Serializable> getDataMap();
 
 	/**
 	 * Gets whether the given block coordinates is inside this chunk
