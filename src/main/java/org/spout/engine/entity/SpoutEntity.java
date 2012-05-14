@@ -133,12 +133,12 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public void onTick(float dt) {
-		if (this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
-			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
-			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition(), false));
-			
-			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
-			lastTransform = transform.copy();
+		//Pulse all player messages here, so they can interact with the entities position safely
+		if (controllerLive.get() instanceof PlayerController) {
+			Player player = ((PlayerController) controllerLive.get()).getPlayer();
+			if (player != null && player.getSession() != null) {
+				((SpoutSession) player.getSession()).pulse();
+			}
 		}
 
 		//Tick the controller
@@ -146,12 +146,13 @@ public class SpoutEntity implements Entity, Tickable {
 			controllerLive.get().onTick(dt);
 		}
 
-		//Pulse all player messages here, so they can interact with the entities position safely
-		if (controllerLive.get() instanceof PlayerController) {
-			Player player = ((PlayerController) controllerLive.get()).getPlayer();
-			if (player != null && player.getSession() != null) {
-				((SpoutSession) player.getSession()).pulse();
-			}
+		//Copy values last (position may change during controller or session pulses)
+		if (this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
+			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
+			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition(), false));
+			
+			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
+			lastTransform = transform.copy();
 		}
 	}
 
@@ -615,6 +616,11 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public Region getRegion() {
+		//Check here to avoid the lookup
+		if (entityManager != null && entityManager.getRegion() != null) {
+			return entityManager.getRegion();
+		}
+		//Lookup
 		World world = getWorld();
 		if (world == null) {
 			return null;
