@@ -130,6 +130,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The directory where the world data is stored
 	 */
 	private final File worldDirectory;
+	
+	/**
+	 * Hashcode cache
+	 */
+	private final int hashcode;
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator) {
@@ -150,6 +155,8 @@ public class SpoutWorld extends AsyncManager implements World {
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
+		
+		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 	}
 
 	public void start() {
@@ -296,7 +303,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(27, 971).append(uid).toHashCode();
+		return hashcode;
 	}
 
 	@Override

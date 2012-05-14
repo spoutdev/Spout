@@ -48,7 +48,7 @@ import org.spout.engine.world.SpoutRegion;
 /**
  * A class which manages all of the entities within a world.
  */
-public final class EntityManager implements Iterable<SpoutEntity> {
+public class EntityManager implements Iterable<SpoutEntity> {
 	/**
 	 * The snapshot manager
 	 */
@@ -232,5 +232,14 @@ public final class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public StringMap getStringMap() {
 		return entityMap;
+	}
+	
+	/**
+	 * The region this entity manager oversees, or null if it does not manage a region's entities
+	 * 
+	 * @return region or null
+	 */
+	public SpoutRegion getRegion() {
+		return null;
 	}
 }

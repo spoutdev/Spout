@@ -39,6 +39,12 @@ public class TripleInt {
 	public final int x;
 	public final int y;
 	public final int z;
+	
+	/**
+	 * Hashcode caching
+	 */
+	private volatile boolean hashed = false;
+	private volatile int hashcode = 0;
 
 	public TripleInt(int x, int y, int z) {
 		this.x = x;
@@ -60,7 +66,11 @@ public class TripleInt {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(10293, 7).append(x).append(y).append(z).toHashCode();
+		if (!hashed) {
+			hashcode = new HashCodeBuilder(10293, 7).append(x).append(y).append(z).toHashCode();
+			hashed = true;
+		}
+		return hashcode;
 	}
 
 	@Override

@@ -65,6 +65,7 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 
 import org.spout.engine.entity.EntityManager;
+import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
@@ -119,7 +120,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * Holds all of the entities to be simulated
 	 */
-	protected final EntityManager entityManager = new EntityManager();
+	protected final RegionEntityManager entityManager = new RegionEntityManager(this);
 	/**
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */

@@ -147,12 +147,6 @@ public class SpoutEntity implements Entity, Tickable {
 		}
 
 		//Pulse all player messages here, so they can interact with the entities position safely
-		if (Thread.currentThread() != this.owningThread) {
-			Spout.getLogger().info("Pulsing from wrong thread!");
-			Spout.getLogger().info("Owning Thread: " + owningThread);
-			Spout.getLogger().info("Current Thread: " + Thread.currentThread());
-			return;
-		}
 		if (controllerLive.get() instanceof PlayerController) {
 			Player player = ((PlayerController) controllerLive.get()).getPlayer();
 			if (player != null && player.getSession() != null) {
@@ -498,24 +492,63 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public void finalizeRun() {
+		//Moving from one region to another
 		if (entityManager != null) {
-			if (entityManager != entityManagerLive.get() || controller != controllerLive.get()) {
-				SpoutRegion r = (SpoutRegion) chunk.getRegion();
-				r.removeEntity(this);
-				if (isDead()) {
-					controller.onDeath();
-					if (controller instanceof PlayerController) {
-						Player p = ((PlayerController) controller).getPlayer();
-						if (p != null) {
-							p.getNetworkSynchronizer().onDeath();
-						}
-					}
+			if (entityManager != entityManagerLive.get()) {
+				//Deallocate entity
+				if (entityManager.getRegion() != null) {
+					entityManager.getRegion().removeEntity(this);
+				} else {
+					entityManager.deallocate(this);
 				}
 			}
 		}
 		if (entityManagerLive.get() != null) {
-			if (entityManager != entityManagerLive.get() || controller != controllerLive.get()) {
+			if (entityManager != entityManagerLive.get()) {
+				//Allocate entity
 				entityManagerLive.get().allocate(this);
+			}
+		}
+
+		//Could be 1 of 3 scenarios:
+		//    1.) Entity is dead (ControllerLive == null)
+		//    2.) Entity is swapping controllers (ControllerLive != Controller, niether is null)
+		//    3.) Entity has just spawned and has never executed copy snapshot, Controller == null, ControllerLive != null
+		if (controller != controllerLive.get()) {
+			//1.) Entity is dead
+			if (controller != null && controllerLive.get() == null) {
+				//Sanity check
+				if (!isDead()) throw new IllegalStateException("ControllerLive is null, but entity is not dead!");
+				
+				//Kill old controller
+				controller.onDeath();
+				if (controller instanceof PlayerController) {
+					Player p = ((PlayerController) controller).getPlayer();
+					if (p != null) {
+						p.getNetworkSynchronizer().onDeath();
+					}
+				}
+			}
+			//2.) Entity is changing controllers
+			else if (controller != null && controllerLive.get() != null) {
+				//Kill old controller
+				controller.onDeath();
+				if (controller instanceof PlayerController) {
+					Player p = ((PlayerController) controller).getPlayer();
+					if (p != null) {
+						p.getNetworkSynchronizer().onDeath();
+					}
+				}
+				
+				//Allocate new controller
+				if (entityManagerLive.get() != null) {
+					entityManagerLive.get().allocate(this);
+				}
+			}
+			//3.) Entity was just spawned, has not copied snapshots yet
+			else if (controller == null && controllerLive.get() != null) {
+				//Sanity check
+				if (!this.justSpawned()) throw new IllegalStateException("Controller is null, ControllerLive is not-null, and the entity did not just spawn.");
 			}
 		}
 
@@ -573,12 +606,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public Chunk getChunk() {
-		World world = getWorld();
-		if (world == null) {
-			return null;
-		} else {
-			return world.getChunkFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
-		}
+		return chunk;
 	}
 
 	public Chunk getChunkLive() {
