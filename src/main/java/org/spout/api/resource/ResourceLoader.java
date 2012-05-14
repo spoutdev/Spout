@@ -31,4 +31,10 @@ import java.net.URI;
 public interface ResourceLoader<E extends Resource> {
 	public E getResource(InputStream stream);
 	public E getResource(URI resource);
+	
+	/**
+	 * Returns the fallback name for this resource.
+	 * @return
+	 */
+	public String getFallbackResourceName();
 }
