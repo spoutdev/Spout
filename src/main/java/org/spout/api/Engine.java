@@ -43,6 +43,7 @@ import org.spout.api.inventory.RecipeManager;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.SessionRegistry;

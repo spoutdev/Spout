@@ -56,14 +56,15 @@ public class CommonPluginManager implements PluginManager {
 	private final Map<Pattern, PluginLoader> loaders = new HashMap<Pattern, PluginLoader>();
 	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
-	private final SpoutMetaPlugin metaPlugin = new SpoutMetaPlugin();
+	private final SpoutMetaPlugin metaPlugin;
 
 	public CommonPluginManager(final Engine game, final CommonSecurityManager manager, final double key) {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;
 		
-		metaPlugin.initialize(null, game, new PluginDescriptionFile("Spout", game.getVersion(), "", Platform.BOTH), game.getDataFolder(), null, null);
+		//Setup the meta plugin
+		metaPlugin = new SpoutMetaPlugin(game);		
 		plugins.add(metaPlugin);
 		names.put("Spout", metaPlugin);
 	}
@@ -206,6 +207,9 @@ public class CommonPluginManager implements PluginManager {
 
 	public void disablePlugins() {
 		for (Plugin plugin : plugins) {
+			if(plugin == metaPlugin) {
+				continue;
+			}
 			disablePlugin(plugin);
 		}
 	}
@@ -220,6 +224,9 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public void enablePlugin(Plugin plugin) {
+		if(plugin == metaPlugin) {
+			return;
+		}
 		if (!plugin.isEnabled()) {
 			boolean locked = manager.lock(key);
 
@@ -236,6 +243,9 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public void disablePlugin(Plugin plugin) {
+		if(plugin == metaPlugin) {
+			return;
+		}
 		if (plugin.isEnabled()) {
 			boolean locked = manager.lock(key);
 
