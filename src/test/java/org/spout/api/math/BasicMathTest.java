@@ -53,7 +53,7 @@ public final class BasicMathTest {
 		assertEquals(1, roundUpPow2(0));
 		assertEquals(16, roundUpPow2(9));
 		assertEquals(8, roundUpPow2(8));
-		assertEquals(8, roundUpPow2(8));
+		assertEquals(4096, roundUpPow2(2050));
 	}
 
 	@Test
