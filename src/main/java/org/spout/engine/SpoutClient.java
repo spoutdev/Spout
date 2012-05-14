@@ -68,6 +68,7 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
+import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
@@ -97,6 +98,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Parameter(names = "-Rendermode", converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20" )
 	RenderMode rmode = RenderMode.GL30;
 
+	
+	TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
+	
+	
 	public static void main(String[] args) {
 		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives/");
 		SpoutClient c = new SpoutClient();
@@ -227,16 +232,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glClearColor(1, 1, 1, 0);
 
 		ticks++;
-		/*
+		
 		double cx = 20 * Math.sin(Math.toRadians(ticks));
 		double cz = 20 * Math.cos(Math.toRadians(ticks));
 		double cy = 20 * Math.sin(Math.toRadians(ticks));
 
 		Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
-		renderer.getRenderer().getShader().setUniform("View", view);*/
-		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
+		renderer.getRenderer().getShader().setUniform("View", view);
+		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 
-		/*
+		
 		
 		if(this.getLiveWorlds().size() > 0){
 			Object[] worlds = this.getWorlds().toArray();
@@ -250,14 +255,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		renderer.draw();
-		*/
+		/*
 
 		textureTest.getShader().setUniform("View", activeCamera.getView());
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
 		textureTest.getShader().setUniform("tex", texture);
 
-		/*
-		 * renderer.addColor(col);
+		
+		 renderer.addColor(col);
 		renderer.addVertex(a);
 		renderer.addColor(col);		
 		renderer.addVertex(b);
@@ -270,7 +275,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.addVertex(a);
 		renderer.addColor(col);
 		renderer.addVertex(d);
-		*/
+		
 
 		textureTest.begin();
 		//texture.bind();
@@ -291,7 +296,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//textureTest.dumpBuffers();
 		textureTest.render();
 		
-		/*		
+		
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		screenStack.render();

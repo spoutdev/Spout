@@ -51,6 +51,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final short[] blockData;
 	private final byte[] blockLight;
 	private final byte[] skyLight;
+	
+	private boolean renderDirty = false;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
 		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
@@ -69,6 +71,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
+		renderDirty = chunk.isDirty();
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
@@ -148,6 +151,15 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		return skyLight;
 	}
 
+	public boolean isRenderDirty(){
+		return renderDirty;
+	}
+	
+	public void setRenderDirty(boolean val){
+		renderDirty = false;
+	}
+	
+	
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
 		return null;
