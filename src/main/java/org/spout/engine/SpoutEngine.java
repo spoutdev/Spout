@@ -151,7 +151,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
 	private String logFile;
 	
-	@Parameter(names = "-debug", description="Debug Mode")
+	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
 	private boolean debugMode = false;
 
 	public SpoutEngine() {
