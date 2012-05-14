@@ -142,7 +142,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 
 		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
-		Shader shader = (Shader)FileSystem.getResource("shader://Vanilla/fallback.smf");
+		Shader shader = (Shader)FileSystem.getResource("shader://Vanilla/garbageName.smf");
 		renderer = new PrimitiveBatch();
 		renderer.getRenderer().setShader(shader);
 
@@ -238,17 +238,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		
 		
-		/*if(this.getLiveWorlds().size() > 0){
+		if(this.getLiveWorlds().size() > 0){
 			Object[] worlds = this.getWorlds().toArray();
 			SpoutWorld world = (SpoutWorld)worlds[0];
 			renderVisibleChunks(world);
 			
 		}			
-		else{*/
-		renderer.begin();
+		else{
+			renderer.begin();
 			renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
 			renderer.end();
-		//}
+		}
 		
 		
 		renderer.draw();
@@ -320,6 +320,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	private void renderChunk(ChunkSnapshot snap, PrimitiveBatch batch) {
+		if(!chunkRenderers.containsKey(snap.getX(), snap.getY(), snap.getZ())){
+			
+		}
+		
 		for (int x = 0; x < 16; x++) {
 			for (int y = 0; y < 16; y++) {
 				for (int z = 0; z < 16; z++) {

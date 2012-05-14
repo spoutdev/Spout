@@ -29,4 +29,11 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 		}
 		return t;
 	}
+
+	@Override
+	public String getFallbackResourceName() {
+		return "fallback.png";
+	}
+	
+	
 }

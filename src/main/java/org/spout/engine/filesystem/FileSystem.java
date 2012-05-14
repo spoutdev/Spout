@@ -99,7 +99,12 @@ public class FileSystem {
 				return searchpaths[i].getStream(path);
 			}
 		}
-		return null;
+		
+		//Open our jar and grab the fallback file
+		String name = LOADERS.get(path.getScheme()).getFallbackResourceName();	
+		InputStream stream = FileSystem.class.getResourceAsStream("fallbacks/"+name);
+		
+		return stream;
 	}
 	
 	public static InputStream getResourceStream(String path){

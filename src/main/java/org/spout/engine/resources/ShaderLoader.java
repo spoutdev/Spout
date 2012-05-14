@@ -79,5 +79,10 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		}
 		return src.toString();
 	}
+
+	@Override
+	public String getFallbackResourceName() {
+		return "fallback.smf";
+	}
 	
 }
