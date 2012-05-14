@@ -492,31 +492,4 @@ public class MathHelper {
 
 		return null;
 	}
-
-	/**
-	 * Calculates the mean of a set of values
-	 *
-	 * @param values to calculate the mean of
-	 * @return the mean
-	 */
-	public static int mean(int... values) {
-		int sum = 0;
-		for(int v : values){
-			sum += v;
-		}
-		return sum/values.length;
-	}
-
-	/**
-	 * Calculates the mean of a set of values.
-	 *
-	 * @param values to calculate the mean of
-	 */
-	public static double mean(double... values) {
-		double sum = 0;
-		for(double v : values){
-			sum += v;
-		}
-		return sum/values.length;
-	}
 }
