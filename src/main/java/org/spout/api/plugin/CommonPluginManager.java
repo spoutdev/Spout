@@ -56,11 +56,16 @@ public class CommonPluginManager implements PluginManager {
 	private final Map<Pattern, PluginLoader> loaders = new HashMap<Pattern, PluginLoader>();
 	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
+	private final SpoutMetaPlugin metaPlugin = new SpoutMetaPlugin();
 
 	public CommonPluginManager(final Engine game, final CommonSecurityManager manager, final double key) {
 		this.game = game;
 		this.manager = manager;
 		this.key = key;
+		
+		metaPlugin.initialize(null, game, new PluginDescriptionFile("Spout", game.getVersion(), "", Platform.BOTH), game.getDataFolder(), null, null);
+		plugins.add(metaPlugin);
+		names.put("Spout", metaPlugin);
 	}
 
 	public void registerPluginLoader(Class<? extends PluginLoader> loader) {
