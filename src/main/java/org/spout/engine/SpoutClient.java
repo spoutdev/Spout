@@ -142,11 +142,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 
 		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
-		//Shader shader = new BasicShader();
-		//Shader shader = new ClientShader("fallback.330.vert", "fallback.330.frag");
 		Shader shader = (Shader)FileSystem.getResource("shader://Vanilla/fallback.smf");
 		renderer = new PrimitiveBatch();
-		//renderer.getRenderer().setShader(shader);
+		renderer.getRenderer().setShader(shader);
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
@@ -166,6 +164,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 
+			
 			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 				createMacWindow();
 			
@@ -178,7 +177,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}else if(rmode == RenderMode.GL30){
 					
-					ContextAttribs ca = new ContextAttribs(3, 2);
+					ContextAttribs ca = new ContextAttribs(3, 2).withForwardCompatible(false);
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}
 			}
@@ -239,15 +238,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		
 		
-		if(this.getLiveWorlds().size() > 0){
+		/*if(this.getLiveWorlds().size() > 0){
 			Object[] worlds = this.getWorlds().toArray();
 			SpoutWorld world = (SpoutWorld)worlds[0];
 			renderVisibleChunks(world);
 			
 		}			
-		else{
+		else{*/
+		renderer.begin();
 			renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.red, sides);
-		}
+			renderer.end();
+		//}
 		
 		
 		renderer.draw();
