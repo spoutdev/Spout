@@ -29,7 +29,9 @@ import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.basic.BasicAir;
@@ -90,6 +92,67 @@ public class BlockMaterial extends Material implements Placeable {
 	private byte opacity = 0xF;
 	private byte lightLevel = 0;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
+	private ControllerType controller = null;
+
+	/**
+	 * Sets the block controller associated with this material<br>
+	 * Future calls to getController will return an instance of this block controller.
+	 * 
+	 * @param controller type to set to
+	 * @return This block material
+	 */
+	public BlockMaterial setController(ControllerType controller) {
+		this.controller = controller;
+		return this;
+	}
+
+	/**
+	 * Gets whether this Block Material has a Block Controller associated with it.
+	 * @return True if it has a block controller
+	 */
+	public boolean hasController() {
+		return this.controller != null;
+	}
+
+	/**
+	 * Gets the block controller associated with this material from a block<br>
+	 * If the block controller set is null or does not match, a new instance is created and set on the block and returned
+	 * 
+	 * @param block to get the Block Controller of
+	 * @return The Block Controller
+	 */
+	public BlockController getController(Block block) {
+		return getController(block, true);
+	}
+
+	/**
+	 * Gets the block controller associated with this material from a block<br>
+	 * If the block controller set is null or does not match, null is returned<br>
+	 * If forced is set True, the controller is forcibly replaced with the one set in this material and is returned
+	 * 
+	 * @param block to get the Block Controller of
+	 * @param forced whether to force-convert the controller if not found or invalid
+	 * @return The Block Controller
+	 */
+	public BlockController getController(Block block, boolean forced) {
+		if (this.controller == null) {
+			throw new IllegalStateException("Can not obtain the block controller because no controller type is set for this material.");
+		}
+		BlockController controller = block.getController();
+		if (controller != null) {
+			Class<?> clazz = this.controller.getControllerClass();
+			if (clazz.isAssignableFrom(controller.getClass())) {
+				return controller;
+			}
+		}
+		if (forced) {
+			controller = (BlockController) this.controller.createController();
+			block.setController(controller);
+			return controller;
+		} else {
+			return null;
+		}
+	}
 
 	@Override
 	public BlockMaterial getSubMaterial(short data) {
@@ -225,6 +288,9 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public void onDestroy(Block block) {
 		block.setMaterial(AIR).update();
+		if (this.hasController()) {
+			block.setController(null);
+		}
 	}
 
 	/**
