@@ -324,6 +324,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		graphics.drawRect(10, 10, 20, 20);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		*/
+	
 	}
 
 	@SuppressWarnings("unused")
@@ -514,4 +515,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		System.setProperty("org.lwjgl.librarypath", nativePath);
 		System.setProperty("net.java.games.input.librarypath", nativePath);
 	}
+	
+	@Override
+	public void stop() {		
+		Display.destroy();
+		super.stop();
+	}
+	
 }

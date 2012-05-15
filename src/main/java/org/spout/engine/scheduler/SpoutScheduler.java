@@ -144,11 +144,15 @@ public final class SpoutScheduler implements Scheduler {
 			int rate = (int) ((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
 			while (!shutdown) {
+				if(Display.isCloseRequested()){
+					c.stop();
+					break;	
+				}
 				long startTime = System.currentTimeMillis();
 				long delta = startTime - lastTick;
 				c.render(delta / 1000f);
 
-				Display.update();
+				Display.update(true);
 				lastTick = System.currentTimeMillis();
 				if (rate - delta > 0) {
 					try {
@@ -157,7 +161,9 @@ public final class SpoutScheduler implements Scheduler {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
 				}
+				
 			}
+			
 		}
 	}
 
@@ -291,6 +297,9 @@ public final class SpoutScheduler implements Scheduler {
 		shutdown = true;
 		try {
 			mainThread.join(timeout);
+			if(renderThread != null){
+				renderThread.join(timeout);
+			}
 		} catch (InterruptedException e) {
 			server.getLogger().info("Main thread interrupted when shutting down");
 		}
