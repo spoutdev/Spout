@@ -258,15 +258,14 @@ public class WorldFiles {
 				r.addEntity(e);
 			}
 			
-			System.out.println("Loading a controller of type: " + name + " (id: " + e.getId() + ")");
+			System.out.println("Loading a controller of type: " + type.getName() + " (id: " + e.getId() + ")");
 			
 			//Setup controller
 			try {
 				if (((ByteTag) map.get("controller_data_exists")).getBooleanValue()) {
 					byte[] data = ((ByteArrayTag)map.get("controller_data")).getValue();
-					GenericDatatableMap dataMap = new GenericDatatableMap();
+					DatatableMap dataMap = ((DataMap)e.getController().data()).getRawMap();
 					dataMap.decompress(data);
-					e.getController().read(new DataMap(dataMap));
 				}
 			} catch (Exception error) {
 				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type, error);
@@ -310,8 +309,8 @@ public class WorldFiles {
 		
 		//Write controller
 		try {
-			GenericDatatableMap dataMap = new GenericDatatableMap();
-			if (e.getController().save(new DataMap(dataMap)) && !dataMap.isEmpty()) {
+			DatatableMap dataMap = ((DataMap)e.getController().data()).getRawMap();
+			if (!dataMap.isEmpty()) {
 				map.put(new ByteTag("controller_data_exists", true));
 				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
 			} else {

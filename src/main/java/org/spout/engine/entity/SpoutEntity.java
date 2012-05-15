@@ -25,7 +25,6 @@
  */
 package org.spout.engine.entity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,12 +37,6 @@ import org.spout.api.Tickable;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
-import org.spout.api.datatable.DatatableTuple;
-import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.datatable.value.DatatableBool;
-import org.spout.api.datatable.value.DatatableFloat;
-import org.spout.api.datatable.value.DatatableInt;
-import org.spout.api.datatable.value.DatatableSerializable;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
@@ -87,7 +80,6 @@ public class SpoutEntity implements Entity, Tickable {
 	private CollisionModel collision;
 	private Controller controller;
 	private EntityManager entityManager;
-	private final GenericDatatableMap map;
 	private Model model;
 	private Thread owningThread;
 	private Transform lastTransform = transform;
@@ -106,7 +98,6 @@ public class SpoutEntity implements Entity, Tickable {
 			entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
 		}
 
-		map = new GenericDatatableMap();
 		viewDistanceLive.set(viewDistance);
 
 		controllerLive.set(controller);
@@ -639,41 +630,6 @@ public class SpoutEntity implements Entity, Tickable {
 		return clazz.isAssignableFrom(controllerLive.get().getClass());
 	}
 
-	// TODO - datatable and atomics
-	@Override
-	public void setData(String key, int value) {
-		int ikey = map.getIntKey(key);
-		map.set(ikey, new DatatableInt(ikey, value));
-	}
-
-	@Override
-	public void setData(String key, float value) {
-		int ikey = map.getIntKey(key);
-		map.set(ikey, new DatatableFloat(ikey, value));
-	}
-
-	@Override
-	public void setData(String key, boolean value) {
-		int ikey = map.getIntKey(key);
-		map.set(ikey, new DatatableBool(ikey, value));
-	}
-
-	@Override
-	public void setData(String key, Serializable value) {
-		int ikey = map.getIntKey(key);
-		map.set(ikey, new DatatableSerializable(ikey, value));
-	}
-
-	@Override
-	public DatatableTuple getData(String key) {
-		return map.get(key);
-	}
-
-	@Override
-	public boolean hasData(String key) {
-		return map.contains(key);
-	}
-
 	private int inventorySize;
 	private Inventory inventory;
 
@@ -684,28 +640,28 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public void setInventorySize(int newsize) {
-		if (inventorySize == newsize) {
+		if (inventorySize == newsize || controllerLive.get() == null) {
 			return;
 		}
 		inventorySize = newsize;
 		if (inventory != null && getInventory().getSize() != inventorySize) {
 			inventory = null;
-			setData("inventory", null);
+			controllerLive.get().data().put("inventory", null);
 		}
 	}
 
 	@Override
 	public Inventory getInventory() {
-		if (getInventorySize() <= 0) {
+		if (getInventorySize() <= 0 || controllerLive.get() == null) {
 			return null;
 		}
 		if (inventory == null) {
 
-			if (!hasData("inventory")) {
+			if (!controllerLive.get().data().containsKey("inventory")) {
 				inventory = controllerLive == null ? new Inventory(getInventorySize()) : controllerLive.get().createInventory(getInventorySize());
-				setData("inventory", inventory);
+				controllerLive.get().data().put("inventory", inventory);
 			} else {
-				inventory = (Inventory) getData("inventory").get();
+				inventory = (Inventory) controllerLive.get().data().get("inventory");
 			}
 		}
 		return inventory;
