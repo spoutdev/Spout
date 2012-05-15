@@ -28,9 +28,7 @@ package org.spout.engine.util.thread;
 import java.util.WeakHashMap;
 
 import org.spout.api.Engine;
-import org.spout.api.Server;
 import org.spout.api.scheduler.Scheduler;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.scheduler.SpoutScheduler;
 
@@ -62,10 +60,10 @@ public abstract class AsyncManager {
 
 	public Engine getServer() {
 		if (engine == null) {
-			if (!(this instanceof Server)) {
+			if (!(this instanceof Engine)) {
 				throw new IllegalStateException("Only the Server object itself should have a null server reference");
 			} else {
-				return (Server) this;
+				return (Engine) this;
 			}
 		} else {
 			return engine;
