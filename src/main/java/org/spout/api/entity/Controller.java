@@ -28,6 +28,9 @@ package org.spout.api.entity;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.entity.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
@@ -35,6 +38,8 @@ import org.spout.api.inventory.Inventory;
 
 public abstract class Controller extends EntityComponent{
 	private final ControllerType type;
+	private final DatatableMap datatableMap = new GenericDatatableMap();
+	private final DataMap dataMap = new DataMap(datatableMap);
 
 	protected Controller(ControllerType type) {
 		this.type = type;
@@ -86,8 +91,25 @@ public abstract class Controller extends EntityComponent{
 
 	}
 
+	/**
+	 * Returns the type of controller
+	 * 
+	 * @return controller type
+	 */
 	public ControllerType getType() {
 		return type;
+	}
+	
+	/**
+	 * Gets a map of persistent string mapped serializable values attached to this controller.
+	 * This map can be used to store any data relevant to the entity.
+	 * <br/> <br/>
+	 * This map is thread-safe, and will be saved between restarts if the entity {@link #isSavable()}.
+	 * 
+	 * @return thread-safe persistent storage map
+	 */
+	public Map<String, Serializable> data() {
+		return dataMap;
 	}
 	
 	/**
@@ -97,25 +119,5 @@ public abstract class Controller extends EntityComponent{
 	 */
 	public boolean isSavable() {
 		return true;
-	}
-	
-	/**
-	 * Called when the entity information is being saved. 
-	 * 
-	 * @param map to put information
-	 * @return true if information was saved, false if none
-	 */
-	public boolean save(Map<String, Serializable> map) {
-		return false;
-	}
-
-	/**
-	 * Called when the entity information is being read from files. 
-	 * 
-	 * @param map to read information from
-	 * @return true if information was read, false if not
-	 */
-	public boolean read(Map<String, Serializable> map) {
-		return false;
 	}
 }

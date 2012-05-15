@@ -40,6 +40,15 @@ public class DataMap implements Map<String, Serializable>{
 	public DataMap(DatatableMap map) {
 		this.map = map;
 	}
+	
+	/**
+	 * Returns the DatatableMap that backs this DataMap. Changes to the backing map will be reflected here as well.
+	 * 
+	 * @return backing datatable map
+	 */
+	public DatatableMap getRawMap() {
+		return map;
+	}
 
 	@Override
 	public int size() {
