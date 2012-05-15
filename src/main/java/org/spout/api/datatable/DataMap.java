@@ -31,11 +31,12 @@ import org.spout.api.datatable.value.DatatableFloat;
 import org.spout.api.datatable.value.DatatableInt;
 import org.spout.api.datatable.value.DatatableObject;
 import org.spout.api.datatable.value.DatatableSerializable;
+import org.spout.api.map.DefaultedMap;
 
 /**
  * A simpler abstraction for a Datatable Map
  */
-public class DataMap implements Map<String, Serializable>{
+public class DataMap implements DefaultedMap<String, Serializable>{
 	final DatatableMap map;
 	public DataMap(DatatableMap map) {
 		this.map = map;
@@ -88,6 +89,14 @@ public class DataMap implements Map<String, Serializable>{
 			return get((String)key);
 		}
 		return null;
+	}
+	
+	@Override
+	public Serializable get(Object key, Serializable defaultValue) {
+		if (containsKey(key)) {
+			return get(key);
+		}
+		return defaultValue;
 	}
 	
 	public Serializable get(String key) {

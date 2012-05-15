@@ -26,8 +26,6 @@
 package org.spout.api.entity;
 
 import java.io.Serializable;
-import java.util.Map;
-
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -35,6 +33,7 @@ import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.entity.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.Inventory;
+import org.spout.api.map.DefaultedMap;
 
 public abstract class Controller extends EntityComponent{
 	private final ControllerType type;
@@ -108,9 +107,32 @@ public abstract class Controller extends EntityComponent{
 	 * 
 	 * @return thread-safe persistent storage map
 	 */
-	public Map<String, Serializable> data() {
+	public DefaultedMap<String, Serializable> data() {
 		return dataMap;
 	}
+	
+	/**
+	 * Called immediately <i>before</i> a controller and it's parent entity are
+	 * serialized. This method is intended as the last chance to store serializable
+	 * information inside of the controller data map (see: {@link #data()})
+	 * <br/><br/>
+	 * <b>Note:</b> This will never occur is {@link #isSavable()} is false. <br/>
+	 * <b>Note:</b> onSave occurs during Copy Snapshot. During this stage
+	 * all live values are copied to their stable snapshot. Data
+	 * is unstable so no reads are permitted during this stage.
+	 */
+	public void onSave() {
+		
+	}
+	
+	/**
+	 * Called when this controller is attached to an entity.
+	 * <br/><br/>
+	 * If this controller was serialized and deserialized, any serializable
+	 * information stored in {@link #data()} will be available.
+	 */
+	@Override
+	public abstract void onAttached();
 	
 	/**
 	 * True if this controller and it's parent entity should be saved.

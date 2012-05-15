@@ -48,10 +48,13 @@ public abstract class EntityComponent implements Tickable {
 		return this.parent;
 	}
 
+	/**
+	 * Called when this component is attached to an entity.
+	 */
 	public abstract void onAttached();
 
 	/** 
-	 * Called when this component is detached from an entity
+	 * Called when this component is detached from an entity.
 	 */
 	public void onDetached(){
 		
