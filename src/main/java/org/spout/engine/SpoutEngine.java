@@ -217,7 +217,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public void loadPlugins() {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
-		pluginManager.loadMetaPlugin();
 
 		if (!pluginDirectory.exists()) {
 			pluginDirectory.mkdirs();
