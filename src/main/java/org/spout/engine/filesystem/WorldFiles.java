@@ -16,6 +16,7 @@ import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.type.ControllerRegistry;
 import org.spout.api.entity.type.ControllerType;
@@ -250,27 +251,28 @@ public class WorldFiles {
 			int view = (Integer) map.get("view").getValue();
 			boolean observer = ((ByteTag) map.get("observer")).getBooleanValue();
 			
-			//Setup entity
-			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
-			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, type.createController(), view, false);
-			e.setObserver(observer);
-			if (r != null) {
-				r.addEntity(e);
-			}
-			
-			System.out.println("Loading a controller of type: " + type.getName() + " (id: " + e.getId() + ")");
 			
 			//Setup controller
+			Controller controller = type.createController();
 			try {
 				if (((ByteTag) map.get("controller_data_exists")).getBooleanValue()) {
 					byte[] data = ((ByteArrayTag)map.get("controller_data")).getValue();
-					DatatableMap dataMap = ((DataMap)e.getController().data()).getRawMap();
+					DatatableMap dataMap = ((DataMap)controller.data()).getRawMap();
 					dataMap.decompress(data);
 				}
 			} catch (Exception error) {
 				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type, error);
 			}
 			
+			//Setup entity
+			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
+			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, false);
+			e.setObserver(observer);
+			if (r != null) {
+				r.addEntity(e);
+			}
+			
+			System.out.println("Loading a controller of type: " + type.getName() + " (id: " + e.getId() + ")");
 			return e;
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type);
@@ -309,6 +311,9 @@ public class WorldFiles {
 		
 		//Write controller
 		try {
+			//Call onSave
+			e.getController().onSave();
+			//Serialize data
 			DatatableMap dataMap = ((DataMap)e.getController().data()).getRawMap();
 			if (!dataMap.isEmpty()) {
 				map.put(new ByteTag("controller_data_exists", true));
