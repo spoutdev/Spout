@@ -197,6 +197,13 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		if (loadedWorlds.getLive().size() == 0) {
 			throw new IllegalStateException("There are no loaded worlds!  You must install a plugin that creates a world (Did you forget Vanilla?)");
 		}
+		
+		//Pick the default world from the configuration
+		World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
+		if (world != null) {
+			this.setDefaultWorld(world);
+		}
+
 		//If we don't have a default world set, just grab one.
 		getDefaultWorld();
 
