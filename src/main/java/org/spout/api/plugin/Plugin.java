@@ -106,7 +106,15 @@ public interface Plugin extends Source, Named {
 	 */
 	public WorldGenerator getWorldGenerator(String world, String generator);
 
+	/**
+	 * Returns the plugin's data folder
+	 * @return
+	 */
 	public File getDataFolder();
 
+	/**
+	 * Returns a File that is the plugin's jar file.
+	 * @return
+	 */
 	public File getFile();
 }

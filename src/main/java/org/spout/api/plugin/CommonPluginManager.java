@@ -150,6 +150,8 @@ public class CommonPluginManager implements PluginManager {
 			updateDir = game.getUpdateFolder();
 		}
 
+		loadMetaPlugin();
+		
 		List<Plugin> result = new ArrayList<Plugin>();
 		LinkedList<File> files = new LinkedList<File>(Arrays.asList(paramFile.listFiles()));
 		boolean failed = false;
