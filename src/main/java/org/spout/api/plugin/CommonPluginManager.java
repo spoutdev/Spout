@@ -63,10 +63,7 @@ public class CommonPluginManager implements PluginManager {
 		this.manager = manager;
 		this.key = key;
 		
-		//Setup the meta plugin
-		metaPlugin = new SpoutMetaPlugin(game);		
-		plugins.add(metaPlugin);
-		names.put("Spout", metaPlugin);
+		metaPlugin = new SpoutMetaPlugin(game);
 	}
 
 	public void registerPluginLoader(Class<? extends PluginLoader> loader) {
@@ -274,5 +271,10 @@ public class CommonPluginManager implements PluginManager {
 		if (relock) {
 			manager.lock(key);
 		}
+	}
+	
+	public void loadMetaPlugin() {
+		plugins.add(metaPlugin);
+		names.put("Spout", metaPlugin);
 	}
 }
