@@ -27,7 +27,6 @@ package org.spout.api.plugin;
 
 import java.io.File;
 import java.util.logging.Logger;
-
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.generator.WorldGenerator;

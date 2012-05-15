@@ -1,28 +1,54 @@
 package org.spout.api.inventory;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.spout.api.plugin.Plugin;
 
 public class CommonRecipeManager implements RecipeManager {
 
+	private Map<Plugin, Map<String, Recipe>> registeredRecipes = new ConcurrentHashMap<Plugin, Map<String, Recipe>>();
+	private Set<Recipe> allRecipes = Collections.newSetFromMap(new HashMap<Recipe, Boolean>());
+
 	public CommonRecipeManager() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void addRecipe(Recipe recipe) {
-		// TODO Auto-generated method stub
-
+		Plugin plugin = recipe.getPlugin();
+		Map<String, Recipe> recipes = registeredRecipes.get(plugin);
+		if (recipes == null) {
+			recipes = new ConcurrentHashMap<String, Recipe>();
+		}
+		recipes.put(recipe.getName(), recipe);
+		allRecipes.add(recipe);
+		registeredRecipes.put(plugin, recipes);
 	}
 
 	@Override
 	public Recipe getRecipe(Plugin plugin, String recipe) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!registeredRecipes.containsKey(plugin)) {
+			return null;
+		}
+		return registeredRecipes.get(plugin).get(recipe);
 	}
 
 	@Override
 	public Recipe removeRecipe(Plugin plugin, String recipe) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!registeredRecipes.containsKey(plugin)) {
+			return null;
+		}
+		Map<String, Recipe> forPlugin = registeredRecipes.get(plugin);
+		Recipe safe = forPlugin.get(recipe);
+		forPlugin.remove(recipe);
+		allRecipes.remove(safe);
+		return safe;
+	}
+	
+	@Override
+	public Set<Recipe> getAllRecipes() {
+		return Collections.unmodifiableSet(allRecipes);
 	}
 }

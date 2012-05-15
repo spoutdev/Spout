@@ -1,5 +1,6 @@
 package org.spout.api.inventory;
 
+import java.util.Set;
 import org.spout.api.plugin.Plugin;
 
 public interface RecipeManager {
@@ -36,4 +37,11 @@ public interface RecipeManager {
 	 * @return recipe that was removed
 	 */
 	public Recipe removeRecipe(Plugin plugin, String recipe);
+	
+	
+	/**
+	 * Get all the registered recipes, from all the plugins.
+	 * @return All the registered recipes.
+	 */
+	public Set<Recipe> getAllRecipes();
 }
