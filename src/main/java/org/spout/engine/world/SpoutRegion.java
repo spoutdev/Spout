@@ -161,7 +161,7 @@ public class SpoutRegion extends Region {
 		this.source = source;
 		blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
 		blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
-		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getServer());
+		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getEngine());
 
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {

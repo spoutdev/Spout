@@ -95,7 +95,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	public void haltCheck() throws InterruptedException {
 		if (state.compareAndSet(ExecutorState.HALTING, ExecutorState.HALTED)) {
 			getManager().haltRun();
-			((SpoutScheduler) getManager().getServer().getScheduler()).removeAsyncExecutor(this);
+			((SpoutScheduler) getManager().getEngine().getScheduler()).removeAsyncExecutor(this);
 			throw new InterruptedException("Executor halted");
 		}
 	}

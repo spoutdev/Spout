@@ -58,7 +58,7 @@ public abstract class AsyncManager {
 		((SpoutScheduler) scheduler).addAsyncExecutor(executor);
 	}
 
-	public Engine getServer() {
+	public Engine getEngine() {
 		if (engine == null) {
 			if (!(this instanceof Engine)) {
 				throw new IllegalStateException("Only the Server object itself should have a null server reference");
