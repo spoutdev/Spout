@@ -60,7 +60,7 @@ public abstract class DatatableObject implements DatatableTuple {
 	public DatatableObject(int key, Serializable dat) {
 		keyID = new AtomicInteger(key);
 		data = new AtomicReference<Serializable>(dat);
-		flags = new AtomicInteger(0);
+		flags = new AtomicInteger((PERSIST | SYNC));
 		dirty = new AtomicBoolean(false);
 		compressed = new AtomicReference<byte[]>(null);
 	}
