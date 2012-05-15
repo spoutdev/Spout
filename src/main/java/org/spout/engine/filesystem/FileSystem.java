@@ -94,6 +94,7 @@ public class FileSystem {
 	}
 
 	public static InputStream getResourceStream(URI path) {
+	
 		for (int i = 0; i < searchpaths.length; i++) {
 			if (searchpaths[i].existsInPath(path)) {
 				return searchpaths[i].getStream(path);
@@ -101,7 +102,12 @@ public class FileSystem {
 		}
 		Spout.getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
 		//Open our jar and grab the fallback file
-		String name = LOADERS.get(path.getScheme()).getFallbackResourceName();	
+		String scheme = path.getScheme();
+		if(scheme.equals("file")){
+			return FileSystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
+		}
+		
+		String name = LOADERS.get(scheme).getFallbackResourceName();	
 		InputStream stream = FileSystem.class.getResourceAsStream("/fallbacks/" + name);
 		return stream;
 	}

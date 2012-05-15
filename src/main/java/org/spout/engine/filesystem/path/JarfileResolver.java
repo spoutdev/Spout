@@ -28,26 +28,30 @@ package org.spout.engine.filesystem.path;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.resource.ResourcePathResolver;
 import org.spout.engine.filesystem.FileSystem;
 
-public class JarfileResolver extends FilepathResolver {
+public class JarfileResolver implements ResourcePathResolver{
 	public JarfileResolver() {
-		super(FileSystem.PLUGIN_DIRECTORY.getPath());
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	File pluginsFolder = FileSystem.PLUGIN_DIRECTORY;
 
 	
+	
+	
 	private JarFile getJar(String path) throws IOException{
-		String pluginName = path.substring(path.lastIndexOf(File.separatorChar) + 1);
-		Plugin p = Spout.getEngine().getPluginManager().getPlugin(pluginName);
+		Plugin p = Spout.getEngine().getPluginManager().getPlugin(path);
+		System.out.println("path: " + path);
 		if(p == null) return null;
+		System.out.println(p.getName());
 		return new JarFile(p.getFile());
 	}
 	
@@ -92,5 +96,15 @@ public class JarfileResolver extends FilepathResolver {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public boolean existsInPath(URI path) {
+		return existsInPath(path.getPath(), path.getHost());
+	}
+
+	@Override
+	public InputStream getStream(URI path) {
+		return getStream(path.getPath(), path.getHost());
 	}
 }
