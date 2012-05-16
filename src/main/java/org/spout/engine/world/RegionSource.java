@@ -32,6 +32,7 @@ import java.util.Iterator;
 import org.spout.api.Spout;
 import org.spout.api.event.world.RegionLoadEvent;
 import org.spout.api.event.world.RegionUnloadEvent;
+import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
@@ -65,7 +66,7 @@ public class RegionSource implements Iterable<Region> {
 	 */
 	@SnapshotRead
 	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
-		return getRegionFromBlock(x, y, z, false);
+		return getRegionFromBlock(x, y, z, LoadGenerateOption.NO_LOAD);
 	}
 
 	/**
@@ -73,13 +74,13 @@ public class RegionSource implements Iterable<Region> {
 	 * @param x    the x coordinate
 	 * @param y    the y coordinate
 	 * @param z    the z coordinate
-	 * @param load to load the region
-	 * @return region, if it is loaded and exists
+	 * @param loadopt to control whether to load or generate the region, if needed
+	 * @return region
 	 */
 	@LiveRead
-	public SpoutRegion getRegionFromBlock(int x, int y, int z, boolean load) {
+	public SpoutRegion getRegionFromBlock(int x, int y, int z, LoadGenerateOption loadopt) {
 		int shifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
-		return getRegion(x >> shifts, y >> shifts, z >> shifts, load);
+		return getRegion(x >> shifts, y >> shifts, z >> shifts, loadopt);
 	}
 
 	@DelayedWrite
@@ -117,7 +118,7 @@ public class RegionSource implements Iterable<Region> {
 	 */
 	@LiveRead
 	public SpoutRegion getRegion(int x, int y, int z) {
-		return getRegion(x, y, z, false);
+		return getRegion(x, y, z, LoadGenerateOption.NO_LOAD);
 	}
 
 	/**
@@ -127,32 +128,15 @@ public class RegionSource implements Iterable<Region> {
 	 * @param x    the x coordinate
 	 * @param y    the y coordinate
 	 * @param z    the z coordinate
-	 * @param load whether to load or generate the region if one does not exist
+	 * @param loadopt whether to load or generate the region if one does not exist
 	 *             at the coordinates
 	 * @return region
 	 */
 	@LiveRead
-	public SpoutRegion getRegion(int x, int y, int z, boolean load) {
-		return getRegion(x, y, z, load, false);
-	}
-
-	/**
-	 * Gets the region associated with the region x, y, z coordinates <br/>
-	 * <p/>
-	 * Will load or generate a region if requested.
-	 * @param x        the x coordinate
-	 * @param y        the y coordinate
-	 * @param z        the z coordinate
-	 * @param load     whether to load or generate the region if one does not exist
-	 *                 at the coordinates
-	 * @param generate all the chunks inside of the region immediately
-	 * @return region
-	 */
-	@LiveRead
-	public SpoutRegion getRegion(int x, int y, int z, boolean load, boolean generate) {
+	public SpoutRegion getRegion(int x, int y, int z, LoadGenerateOption loadopt) {
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
-		if (region != null || !load) {
+		if (region != null || (!loadopt.loadIfNeeded())) {
 			return region;
 		} else {
 			region = new SpoutRegion(world, x, y, z, this);
