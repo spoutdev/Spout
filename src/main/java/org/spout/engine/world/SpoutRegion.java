@@ -49,6 +49,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -155,10 +156,10 @@ public class SpoutRegion extends Region {
 	private final Map<Vector3, BlockController> blockControllers = new HashMap<Vector3, BlockController>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
-		this(world, x, y, z, source, false);
+		this(world, x, y, z, source, LoadGenerateOption.NO_LOAD);
 	}
 
-	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, boolean load) {
+	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadGenerateOption loadopt) {
 		super(world, x * Region.EDGE, y * Region.EDGE, z * Region.EDGE);
 		this.source = source;
 		blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
@@ -168,7 +169,7 @@ public class SpoutRegion extends Region {
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
 				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(load ? getChunk(dx, dy, dz, true) : null);
+					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(loadopt.loadIfNeeded() ? getChunk(dx, dy, dz, loadopt) : null);
 				}
 			}
 		}
@@ -188,15 +189,21 @@ public class SpoutRegion extends Region {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z) {
-		return getChunk(x, y, z, true);
+		return getChunk(x, y, z, LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED);
 	}
 
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, boolean load) {
+		return this.getChunk(x, y, z, load ? LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED : LoadGenerateOption.NO_LOAD);
+	}
+	
+	@Override
+	@LiveRead
+	public SpoutChunk getChunk(int x, int y, int z, LoadGenerateOption loadopt) {
 		if (x < Region.REGION_SIZE && x >= 0 && y < Region.REGION_SIZE && y >= 0 && z < Region.REGION_SIZE && z >= 0) {
 			SpoutChunk chunk = chunks[x][y][z].get();
-			if (chunk != null || !load) {
+			if (chunk != null || (!loadopt.loadIfNeeded())) {
 				return chunk;
 			}
 
@@ -206,6 +213,9 @@ public class SpoutRegion extends Region {
 
 			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z));
 			if (newChunk == null) {
+				if (!loadopt.generateIfNeeded()) {
+					return null;
+				}
 				newChunk = generateChunk(x, y, z);
 			}
 
@@ -295,7 +305,7 @@ public class SpoutRegion extends Region {
 	@Override
 	@DelayedWrite
 	public void saveChunk(int x, int y, int z) {
-		SpoutChunk c = getChunk(x, y, z, false);
+		SpoutChunk c = getChunk(x, y, z, LoadGenerateOption.NO_LOAD);
 		if (c != null) {
 			c.save();
 		}
@@ -337,7 +347,7 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void unloadChunk(int x, int y, int z, boolean save) {
-		SpoutChunk c = getChunk(x, y, z, false);
+		SpoutChunk c = getChunk(x, y, z, LoadGenerateOption.NO_LOAD);
 		if (c != null) {
 			c.unload(save);
 		}
@@ -408,7 +418,7 @@ public class SpoutRegion extends Region {
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
 		boolean empty = false;
-		SpoutChunk c = (SpoutChunk) getChunk(x, y, z, false);
+		SpoutChunk c = (SpoutChunk) getChunk(x, y, z, LoadGenerateOption.NO_LOAD);
 		if (c != null) {
 			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
 			if (oldState.isSave()) {
@@ -792,6 +802,11 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
+	public Chunk getChunkFromBlock(int x, int y, int z, LoadGenerateOption loadopt) {
+		return this.getWorld().getChunkFromBlock(x, y, z, loadopt);
+	}
+
+	@Override
 	public Chunk getChunkFromBlock(Vector3 position) {
 		return this.getWorld().getChunkFromBlock(position);
 	}
@@ -799,6 +814,11 @@ public class SpoutRegion extends Region {
 	@Override
 	public Chunk getChunkFromBlock(Vector3 position, boolean load) {
 		return this.getWorld().getChunkFromBlock(position, load);
+	}
+
+	@Override
+	public Chunk getChunkFromBlock(Vector3 position, LoadGenerateOption loadopt) {
+		return this.getWorld().getChunkFromBlock(position, loadopt);
 	}
 
 	@Override
