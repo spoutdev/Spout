@@ -658,12 +658,18 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void saveChunk(int x, int y, int z) {
-		this.getRegionFromBlock(x, y, z).saveChunk(x, y, z);
+		SpoutRegion r = this.getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, false);
+		if (r != null) {
+			r.saveChunk(x & Region.REGION_SIZE - 1, y & Region.REGION_SIZE - 1, z & Region.REGION_SIZE - 1);
+		}
 	}
 
 	@Override
 	public void unloadChunk(int x, int y, int z, boolean save) {
-		this.getRegionFromBlock(x, y, z).unloadChunk(x, y, z, save);
+		SpoutRegion r = this.getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, false);
+		if (r != null) {
+			r.unloadChunk(x & Region.REGION_SIZE - 1, y & Region.REGION_SIZE - 1, z & Region.REGION_SIZE - 1, save);
+		}
 	}
 
 	@Override
