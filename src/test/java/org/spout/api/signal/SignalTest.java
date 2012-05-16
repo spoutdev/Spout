@@ -10,11 +10,7 @@ public class SignalTest {
 	public void testSignalWithStringMethod() throws SecurityException, NoSuchMethodException {
 		SignalTestClass emittingObject = new SignalTestClass();
 		
-		Object receiver = new Object() {
-			public void onTest(String arg1) {
-				gotSignal = true;
-			}
-		};
+		Receiver receiver = new Receiver();
 		
 		emittingObject.subscribe("test", receiver, "onTest");
 		
@@ -27,13 +23,45 @@ public class SignalTest {
 		gotSignal = false;
 	}
 	
+	@Test
+	public void testSignalWithoutArguments() throws SecurityException, NoSuchMethodException {
+		SignalTestClass emittingObject = new SignalTestClass();
+		
+		Receiver receiver = new Receiver();
+		
+		emittingObject.subscribe("clicked", receiver, "onClick");
+		
+		emittingObject.click();
+		
+		if(!gotSignal) {
+			fail("Did not get a signal");
+		}
+		
+		gotSignal = false;
+	}
+	
+	public class Receiver {
+		public void onTest(String arg1) {
+			gotSignal = true;
+		}
+		
+		public void onClick(){
+			gotSignal = true;
+		}
+	}
+	
 	public class SignalTestClass extends SignalObject {
 		{
 			registerSignal(new Signal("test", String.class));
+			registerSignal(new Signal("clicked"));
 		}
 		
 		public void doSomething(String arg) {
 			emit("test", arg);
+		}
+		
+		public void click() {
+			emit("clicked");
 		}
 	}
 }
