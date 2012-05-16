@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
@@ -36,7 +38,7 @@ import org.spout.api.util.StringUtil;
  * Note, this is the Immutable form of Vector2Polar. All operations will
  * construct a new Vector2Polar.
  */
-public class Vector2Polar implements Comparable<Vector2Polar> {
+public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Represents the Zero vector (0 at 0 degrees)
 	 */
@@ -52,8 +54,8 @@ public class Vector2Polar implements Comparable<Vector2Polar> {
 	/**
 	 * Hashcode caching
 	 */
-	private volatile boolean hashed = false;
-	private volatile int hashcode = 0;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashcode = 0;
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta

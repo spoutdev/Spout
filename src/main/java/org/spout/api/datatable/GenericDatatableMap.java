@@ -139,7 +139,7 @@ public class GenericDatatableMap implements DatatableMap {
 			}
 			for (int i = 0; i < objects; i++) {
 				DatatableObject obj = DatatableObject.input(in);
-				int key = obj.hashCode();
+				int key = obj.hashCode() + 0;
 				if (!keyReplacement.contains(key)) {
 					throw new IOException("Unknown key when decompressing GenericDatatableMap");
 				} else {

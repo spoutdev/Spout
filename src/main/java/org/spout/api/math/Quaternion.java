@@ -25,14 +25,16 @@
  */
 package org.spout.api.math;
 
+import java.io.Serializable;
+
 import org.spout.api.util.StringUtil;
 
 /**
  * Represents a rotation around a unit 4d circle.
  */
-public class Quaternion {
+public class Quaternion implements Serializable{
 	protected final float x, y, z, w;
-	protected volatile Vector3 cachedAngle = null;
+	protected transient volatile Vector3 cachedAngle = null;
 
 	/**
 	 * Represents no rotation

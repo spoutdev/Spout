@@ -25,10 +25,12 @@
  */
 package org.spout.api.math;
 
+import java.io.Serializable;
+
 /**
  * Representation of a square matrix
  */
-public class Matrix {
+public class Matrix implements Serializable{
 	int dimension;
 	float[] data;
 

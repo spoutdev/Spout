@@ -204,12 +204,14 @@ public abstract class DatatableObject implements DatatableTuple {
 		byte[] compressed = compress();
 		int expectedLength = fixedLength();
 		if (expectedLength == -1) {
-			VarInt.writeInt(out, compressed.length);
+			VarInt.writeInt(out, compressed != null ? compressed.length : 0);
 		} else if (expectedLength != compressed.length) {
 			throw new IllegalStateException("Fixed length DatatableObject did not match actual length");
 		}
-		out.write(compressed);
-	};
+		if (compressed != null) {
+			out.write(compressed);
+		}
+	}
 
 	public static DatatableObject input(InputStream in) throws IOException {
 		int typeId = in.read();
@@ -222,11 +224,13 @@ public abstract class DatatableObject implements DatatableTuple {
 		if (expectedLength == -1) {
 			expectedLength = VarInt.readInt(in);
 		}
-		byte[] compressed = new byte[expectedLength];
-		while (expectedLength > 0) {
-			expectedLength -= in.read(compressed, compressed.length - expectedLength, expectedLength);
+		if (expectedLength > 0) {
+			byte[] compressed = new byte[expectedLength];
+			while (expectedLength > 0) {
+				expectedLength -= in.read(compressed, compressed.length - expectedLength, expectedLength);
+			}
+			obj.decompress(compressed);
 		}
-		obj.decompress(compressed);
 		return obj;
 	};
 	

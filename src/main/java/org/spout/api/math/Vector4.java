@@ -25,6 +25,8 @@
  */
 package org.spout.api.math;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
@@ -34,7 +36,7 @@ import org.spout.api.util.StringUtil;
  * Note, this is the Immutable form of Vector4. All operations will construct a
  * new Vector4.
  */
-public class Vector4 implements Comparable<Vector4> {
+public class Vector4 implements Comparable<Vector4>, Serializable {
 	/**
 	 * Represents the Zero vector (0, 0, 0, 0)
 	 */
@@ -63,8 +65,8 @@ public class Vector4 implements Comparable<Vector4> {
 	/**
 	 * Hashcode caching
 	 */
-	private volatile boolean hashed = false;
-	private volatile int hashcode = 0;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashcode = 0;
 
 	protected final float x;
 	protected final float y;

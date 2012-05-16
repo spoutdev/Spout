@@ -25,18 +25,23 @@
  */
 package org.spout.api.inventory;
 
+import java.io.IOException;
+import java.io.Serializable;
 import org.spout.api.material.Material;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.material.source.MaterialState;
 import org.spout.api.util.LogicUtil;
 import org.spout.nbt.CompoundMap;
+import org.spout.nbt.CompoundTag;
+import org.spout.nbt.stream.NBTInputStream;
+import org.spout.nbt.stream.NBTOutputStream;
 
-//TODO: Make item stacks immutable!
 /**
  * Represents a stack of items
  */
-public class ItemStack implements MaterialState {
+public class ItemStack implements MaterialState, Serializable {
 	private Material material;
 	private int amount;
 	private short data;
@@ -278,5 +283,40 @@ public class ItemStack implements MaterialState {
 	 */
 	public short getMaxData() {
 		return this.getSubMaterial().getMaxData();
+	}
+	
+	//Custom serialization logic because material & auxData can not be made serializable
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		out.writeShort(material.getId());
+		out.writeShort(material.getData());
+		out.writeInt(amount);
+		out.writeShort(data);
+		
+		if (auxData != null && !auxData.isEmpty()) {
+			out.writeBoolean(true);
+			NBTOutputStream os = new NBTOutputStream(out, false);
+			os.writeTag(new CompoundTag("auxData", auxData));
+		} else {
+			out.writeBoolean(false);
+		}
+	}
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		short matId = in.readShort();
+		short matData = in.readShort();
+		material = MaterialRegistry.get(matId);
+		if (matData != 0 && material != null) {
+			material = material.getSubMaterial(matData);
+		}
+		amount = in.readInt();
+		data = in.readShort();
+		
+		boolean hasAuxData = in.readBoolean();
+		if (hasAuxData) {
+			NBTInputStream is = new NBTInputStream(in, false);
+			CompoundTag tag = (CompoundTag) is.readTag();
+			auxData = tag.getValue();
+		}
+		
+		if (material == null) throw new ClassNotFoundException("No material matching {" + matId + ", " + matData + "} was found!");
 	}
 }

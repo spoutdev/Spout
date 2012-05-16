@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.spout.api.Spout;
+
 public class DatatableSerializable extends DatatableObject {
 	
 	public DatatableSerializable(int key) {
@@ -32,6 +34,9 @@ public class DatatableSerializable extends DatatableObject {
 				objOut.flush();
 				objOut.close();
 			} catch (IOException e) {
+				if (Spout.debugMode()) {
+					e.printStackTrace();
+				}
 				return null;
 			}
 

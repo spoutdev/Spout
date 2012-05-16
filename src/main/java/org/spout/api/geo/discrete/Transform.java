@@ -25,6 +25,8 @@
  */
 package org.spout.api.geo.discrete;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.spout.api.geo.World;
 import org.spout.api.math.Quaternion;
@@ -32,7 +34,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.thread.Threadsafe;
 
-public class Transform {
+public class Transform implements Serializable{
 	private Point position = Point.invalid;
 	private Quaternion rotation = Quaternion.IDENTITY;
 	private Vector3 scale = Vector3.ONE;

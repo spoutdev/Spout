@@ -25,7 +25,11 @@
  */
 package org.spout.api.geo.discrete;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -41,8 +45,8 @@ public class Point extends Vector3 {
 	/**
 	 * Hashcode caching
 	 */
-	private volatile boolean hashed = false;
-	private volatile int hashcode = 0;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashcode = 0;
 
 	public Point(Point point) {
 		super(point);
@@ -288,5 +292,45 @@ public class Point extends Vector3 {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + StringUtil.toString(world, x, y, z);
+	}
+	
+	//Custom serialization logic because world can not be made serializable
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		out.writeFloat(this.x);
+		out.writeFloat(this.y);
+		out.writeFloat(this.z);
+		out.writeUTF(world != null ? world.getName() : "null");
+	}
+	
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		float x = in.readFloat();
+		float y = in.readFloat();
+		float z = in.readFloat();
+		String world = in.readUTF();
+		World w = Spout.getEngine().getWorld(world);
+		try {
+			Field field;
+			
+			field = Vector3.class.getDeclaredField("x");
+			field.setAccessible(true);
+			field.set(this, x);
+			
+			field = Vector3.class.getDeclaredField("y");
+			field.setAccessible(true);
+			field.set(this, y);
+			
+			field = Vector3.class.getDeclaredField("z");
+			field.setAccessible(true);
+			field.set(this, z);
+			
+			field = Point.class.getDeclaredField("world");
+			field.setAccessible(true);
+			field.set(this, w);
+		}
+		catch (Exception e) {
+			if (Spout.debugMode()) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
