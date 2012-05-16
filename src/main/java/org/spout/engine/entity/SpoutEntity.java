@@ -581,18 +581,10 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 
 	public void copyToSnapshot() {
-		if (chunk != chunkLive.get()) {
-			chunk = chunkLive.get();
-		}
-		if (entityManager != entityManagerLive.get()) {
-			entityManager = entityManagerLive.get();
-		}
-		if (controller != controllerLive.get()) {
-			controller = controllerLive.get();
-		}
-		if (viewDistance != viewDistanceLive.get()) {
-			viewDistance = viewDistanceLive.get();
-		}
+		chunk = chunkLive.get();
+		entityManager = entityManagerLive.get();
+		controller = controllerLive.get();
+		viewDistance = viewDistanceLive.get();
 		justSpawned = false;
 	}
 

@@ -233,7 +233,6 @@ public class WorldFiles {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
 		} else if (type.canCreateController()) {
 			
-			
 			//Read entity
 			float pX = (Float) map.get("posX").getValue();
 			float pY = (Float) map.get("posY").getValue();
@@ -251,7 +250,6 @@ public class WorldFiles {
 			int view = (Integer) map.get("view").getValue();
 			boolean observer = ((ByteTag) map.get("observer")).getBooleanValue();
 			
-			
 			//Setup controller
 			Controller controller = type.createController();
 			try {
@@ -261,7 +259,7 @@ public class WorldFiles {
 					dataMap.decompress(data);
 				}
 			} catch (Exception error) {
-				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type, error);
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type.getName(), error);
 			}
 			
 			//Setup entity
@@ -275,7 +273,7 @@ public class WorldFiles {
 			System.out.println("Loading a controller of type: " + type.getName() + " (id: " + e.getId() + ")");
 			return e;
 		} else {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type);
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
 		}
 		
 		return null;
