@@ -40,6 +40,42 @@ public class SignalTest {
 		gotSignal = false;
 	}
 	
+	@Test
+	public void testSignalUnsubscribing() throws SecurityException, NoSuchMethodException {
+		SignalTestClass emittingObject = new SignalTestClass();
+		
+		Receiver receiver = new Receiver();
+		
+		emittingObject.subscribe("clicked", receiver, "onClick");
+		emittingObject.unsubscribe("clicked", receiver);
+		
+		emittingObject.click();
+		
+		if(gotSignal) {
+			fail("Unsubscribed, but still got a signal");
+		}
+		
+		gotSignal = false;
+	}
+	
+	@Test
+	public void testSignalUnsubscribingAll() throws SecurityException, NoSuchMethodException {
+		SignalTestClass emittingObject = new SignalTestClass();
+		
+		Receiver receiver = new Receiver();
+		
+		emittingObject.subscribe("clicked", receiver, "onClick");
+		emittingObject.unsubscribe(receiver);
+		
+		emittingObject.click();
+		
+		if(gotSignal) {
+			fail("Unsubscribed, but still got a signal");
+		}
+		
+		gotSignal = false;
+	}
+	
 	public class Receiver {
 		public void onTest(String arg1) {
 			gotSignal = true;
