@@ -48,6 +48,18 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	public Chunk getChunk(int x, int y, int z, boolean load);
 
 	/**
+	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
+	 *
+	 * @param x coordinate of the chunk
+	 * @param y coordinate of the chunk
+	 * @param z coordinate of the chunk
+	 * @param loadopt to control whether to load and/or generate the chunk, if needed
+	 * @return the chunk
+	 */
+	@LiveRead
+	public Chunk getChunk(int x, int y, int z, LoadGenerateOption loadopt);
+
+	/**
 	 * Gets the {@link Chunk} at block coordinates (x, y, z)
 	 *
 	 * @param x coordinate of the block
@@ -69,7 +81,19 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunkFromBlock(int x, int y, int z, boolean load);
-	
+
+	/**
+	 * Gets the {@link Chunk} at block coordinates (x, y, z)
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param loadopt to control whether to load and/or generate the chunk, if needed
+	 * @return the chunk
+	 */
+	@LiveRead
+	public Chunk getChunkFromBlock(int x, int y, int z, LoadGenerateOption loadopt);
+
 	/**
 	 * Gets the {@link Chunk} at the given position
 	 *
@@ -88,6 +112,16 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunkFromBlock(Vector3 position, boolean load);
+
+	/**
+	 * Gets the {@link Chunk} at the given position
+	 *
+	 * @param position of the block
+	 * @param loadopt to control whether to load and/or generate the chunk, if needed
+	 * @return the chunk
+	 */
+	@LiveRead
+	public Chunk getChunkFromBlock(Vector3 position, LoadGenerateOption loadopt);
 
 	/**
 	 * True if the region has a loaded chunk at the (x, y, z).
