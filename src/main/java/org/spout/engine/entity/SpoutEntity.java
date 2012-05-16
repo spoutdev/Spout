@@ -138,7 +138,7 @@ public class SpoutEntity implements Entity, Tickable {
 		}
 
 		//Copy values last (position may change during controller or session pulses)
-		if (this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
+		if (!isDead() && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
 			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
 			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition(), false));
 			
