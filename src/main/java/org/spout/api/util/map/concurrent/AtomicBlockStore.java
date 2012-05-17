@@ -31,8 +31,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.Vector3;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -711,18 +713,18 @@ public class AtomicBlockStore<T> {
 	 * @param block
 	 * @return
 	 */
-	public Block getDirtyBlock(int i, World world) {
+	public Vector3 getDirtyBlock(int i) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
 		} else {
-			return world.getBlock(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
+			return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 		}
 	}
 
 	private final int getIndex(int x, int y, int z) {
 		return (y << doubleShift) + (z << shift) + x;
 	}
-	
+
 	/**
 	 * Marks a block as dirty.<br>
 	 * <br>
