@@ -26,7 +26,6 @@
 package org.spout.api.geo.cuboid;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
@@ -34,6 +33,7 @@ import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -181,7 +181,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * 
 	 * @return data map
 	 */
-	public abstract Map<String, Serializable> getDataMap();
+	public abstract DefaultedMap<String, Serializable> getDataMap();
 
 	/**
 	 * Gets whether the given block coordinates is inside this chunk
