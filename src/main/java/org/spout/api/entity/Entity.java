@@ -39,6 +39,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.SnapshotRead;
 
 /**
@@ -184,7 +185,7 @@ public interface Entity extends Source{
 	 *
 	 * @param distance the distance in blocks at which the entity can be seen
 	 */
-	@DelayedWrite
+	@LiveWrite
 	public void setViewDistance(int distance);
 
 	/**
@@ -192,7 +193,7 @@ public interface Entity extends Source{
 	 *
 	 * @return the distance in blocks at which the entity can be seen
 	 */
-	@SnapshotRead
+	@LiveRead
 	public int getViewDistance();
 
 

@@ -54,22 +54,20 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected Entity entity;
 	protected final Session session;
 
-	public NetworkSynchronizer(Player owner) {
-		this(owner, null);
-	}
-
 	public NetworkSynchronizer(Player owner, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
 		entity.setObserver(true);
 		session = owner.getSession();
+		blockViewDistance = entity.getViewDistance();
+		viewDistance = (blockViewDistance + Chunk.CHUNK_SIZE - 1) / Chunk.CHUNK_SIZE; //round up 1
 	}
 
 	private final static int TARGET_SIZE = 5 * Chunk.CHUNK_SIZE;
 	private final static int CHUNKS_PER_TICK = 200;
 
-	private final int viewDistance = 10;
-	private final int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
+	private final int viewDistance;
+	private final int blockViewDistance;
 
 	private Point lastChunkCheck =  Point.invalid;
 
@@ -94,11 +92,6 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		teleported = true;
 	}
 
-	public void setEntity(Entity entity) {
-		this.entity = entity;
-		entity.setObserver(true);
-	}
-	
 	public Entity getEntity() {
 		return entity;
 	}
@@ -180,7 +173,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
-		if (entity == null) {
+		if (entity == null || entity.isDead()) {
 			return;
 		}
 
