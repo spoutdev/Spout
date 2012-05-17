@@ -600,8 +600,8 @@ public class SpoutChunk extends Chunk {
 		return blockStore.isDirtyOverflow();
 	}
 
-	public Block getDirtyBlock(int i) {
-		return blockStore.getDirtyBlock(i, this.getWorld());
+	protected Vector3 getDirtyBlock(int i) {
+		return blockStore.getDirtyBlock(i);
 	}
 
 	public void resetDirtyArrays() {
@@ -921,18 +921,13 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public Block getBlock(int x, int y, int z, Source source) {
-		return new SpoutBlock(this.getWorld(), x, y, z, this, source);
+	public Block getBlock(float x, float y, float z, Source source) {
+		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
 	}
 
 	@Override
 	public Block getBlock(float x, float y, float z) {
-		return this.getBlock(x, y, z, this.getWorld());
-	}
-
-	@Override
-	public Block getBlock(float x, float y, float z, Source source) {
-		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
+		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), this.getWorld());
 	}
 
 	@Override
@@ -943,6 +938,14 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public Block getBlock(Vector3 position, Source source) {
 		return getBlock(position.getX(), position.getY(), position.getZ(), source);
+	}
+
+	@Override
+	public Block getBlock(int x, int y, int z, Source source) {
+		x = (x & BASE_MASK) + (this.getX() << CHUNK_SIZE_BITS);
+		y = (y & BASE_MASK) + (this.getY() << CHUNK_SIZE_BITS);
+		z = (z & BASE_MASK) + (this.getZ() << CHUNK_SIZE_BITS);
+		return new SpoutBlock(this.getWorld(), x, y, z, this, source);
 	}
 
 	@Override
