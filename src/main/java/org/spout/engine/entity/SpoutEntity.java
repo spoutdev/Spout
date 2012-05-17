@@ -26,7 +26,9 @@
 package org.spout.engine.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -73,6 +75,7 @@ public class SpoutEntity implements Entity, Tickable {
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private final Transform transform = new Transform();
+	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
 	private boolean justSpawned = true;
 	private boolean observer = false;
 	private int viewDistance;
@@ -549,24 +552,23 @@ public class SpoutEntity implements Entity, Tickable {
 		}
 
 		if (chunkLive.get() != chunk) {
+			if (observer) {
+				if (!isDead()) {
+					updateObserver();
+				} else {
+					removeObserver();
+				}
+			}
 			if (chunkLive.get() != null) {
 				((SpoutChunk) chunkLive.get()).addEntity(this);
-				if (observer) {
-					chunkLive.get().refreshObserver(this);
-				}
+				
 			}
 			if (chunk != null && chunk.isLoaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
-				if (observer) {
-					chunk.removeObserver(this);
-				}
 			}
 			if (chunkLive.get() == null) {
 				if (chunk != null && chunk.isLoaded()) {
 					((SpoutChunk) chunk).removeEntity(this);
-					if (observer) {
-						chunk.removeObserver(this);
-					}
 				}
 				if (entityManagerLive.get() != null) {
 					entityManagerLive.get().deallocate(this);
@@ -577,11 +579,46 @@ public class SpoutEntity implements Entity, Tickable {
 		if (observerLive.get() != observer) {
 			observer = !observer;
 			if (observer) {
-				chunkLive.get().refreshObserver(this);
+				updateObserver();
 			} else {
-				chunkLive.get().removeObserver(this);
+				removeObserver();
 			}
 		}
+	}
+	
+	private void removeObserver() {
+		for (SpoutChunk chunk : observingChunks) {
+			if (chunk.isLoaded()) {
+				chunk.removeObserver(this);
+			}
+		}
+		observingChunks.clear();
+	}
+	
+	private void updateObserver() {
+		int viewDistance = (getViewDistance() + 15) / Chunk.CHUNK_SIZE; //round up
+		World w = transform.getPosition().getWorld();
+		int cx = chunkLive.get().getX();
+		int cy = chunkLive.get().getY();
+		int cz = chunkLive.get().getZ();
+		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>(viewDistance * viewDistance * viewDistance);
+		for (int dx = -viewDistance; dx < viewDistance; dx++) {
+			for (int dy = -viewDistance; dy < viewDistance; dy++) {
+				for (int dz = -viewDistance; dz < viewDistance; dz++) {
+					Chunk chunk = w.getChunk(cx + dx, cy + dy, cz + dz, true);
+					chunk.refreshObserver(this);
+					observing.add((SpoutChunk)chunk);
+				}
+			}
+		}
+		observingChunks.removeAll(observing);
+		for (SpoutChunk chunk : observingChunks) {
+			if (chunk.isLoaded()) {
+				chunk.removeObserver(this);
+			}
+		}
+		observingChunks.clear();
+		observingChunks.addAll(observing);
 	}
 
 	public void copyToSnapshot() {
