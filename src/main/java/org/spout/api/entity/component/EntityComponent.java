@@ -35,7 +35,7 @@ public abstract class EntityComponent implements Tickable {
 	 * Called when this controller is attached to an entity.
 	 * @param e entity this controller will be attached to.
 	 */
-	public void attachToEntity(Entity e) {
+	public final void attachToEntity(Entity e) {
 		this.parent = e;
 	}
 
@@ -44,7 +44,7 @@ public abstract class EntityComponent implements Tickable {
 	 *
 	 * @return parent Entity
 	 */
-	public Entity getParent() {
+	public final Entity getParent() {
 		return this.parent;
 	}
 
