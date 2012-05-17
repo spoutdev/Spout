@@ -52,6 +52,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
@@ -954,7 +955,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public Map<String, Serializable> getDataMap() {
+	public DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
 	}
 }
