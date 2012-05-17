@@ -904,4 +904,22 @@ public class SpoutRegion extends Region {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	/**
+	 * Test if region file exists
+	 * 
+	 * @param world world
+	 * @param x region x coordinate
+	 * @param y region y coordinate
+	 * @param z region z coordinate
+	 * 
+	 * @return true if exists, false if doesn't exist
+	 */
+	
+	public static boolean regionFileExists(SpoutWorld world, int x, int y, int z) {
+		File worldDirectory = world.getDirectory();
+		File regionDirectory = new File(worldDirectory, "region");
+		File regionFile = new File(regionDirectory, "reg" + x + "_" + y + "_" + z + ".spr");
+		return regionFile.exists();
+	}
 }

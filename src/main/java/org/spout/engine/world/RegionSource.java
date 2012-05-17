@@ -139,6 +139,10 @@ public class RegionSource implements Iterable<Region> {
 		if (region != null || (!loadopt.loadIfNeeded())) {
 			return region;
 		} else {
+			/* If not generating region, and it doesn't exist yet, we're done */
+			if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
+				return null;
+			}
 			region = new SpoutRegion(world, x, y, z, this);
 			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
