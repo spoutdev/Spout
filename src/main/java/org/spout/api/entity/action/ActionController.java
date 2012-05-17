@@ -54,14 +54,10 @@ public abstract class ActionController extends Controller {
 
 	@Override
 	public void onTick(float dt) {
-		if (getParent() == null || getParent().getWorld() == null) {
-			return;
-		}
 		for (EntityAction<Controller> ai : activeActions) {
 			if (ai.shouldRun(getParent(), this)) {
 				ai.run(getParent(), this, dt);
 			}
 		}
-
 	}
 }

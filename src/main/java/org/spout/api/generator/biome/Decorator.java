@@ -25,29 +25,10 @@
  */
 package org.spout.api.generator.biome;
 
-import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeMap;
+import org.spout.api.generator.Populator;
 
 /**
- * Defines an abstract biome selector
- *
- * Biome Selectors provide the logic to determine if the the current x, y, z is in a provided biome.
- * They also need to override pickBiome, and return a value between 0 and maxbiomes
+ * Biome level abstraction layer
  */
-public abstract class BiomeSelector {
-	protected BiomeMap parent;
-	
-	public final Biome pickBiome(int x, int z, long seed) {
-		return pickBiome(x, 0, z, seed);
-	}
-
-	/**
-	 * The logic to select the biome at the given x,y,z.  The value must be between 0 and maxBiomes
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param seed
-	 * @return the biome between 0 and maxBiomes
-	 */
-	public abstract Biome pickBiome(int x, int y, int z, long seed);
+public interface Decorator extends Populator {
 }

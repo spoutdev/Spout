@@ -33,27 +33,23 @@ import java.util.Random;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
-
-
 /**
- * Defines an abstract biome.  Extend this to implement your own biome types
- *
- *
+ * Defines an abstract biome.
  */
 public abstract class Biome {
-	List<BiomeDecorator> decorators = new ArrayList<BiomeDecorator>();
+	List<Decorator> decorators = new ArrayList<Decorator>();
 
-	public Biome(BiomeDecorator... decorators) {
+	public Biome(Decorator... decorators) {
 		this.decorators.addAll(Arrays.asList(decorators));
+	}
+
+	public final void decorate(Chunk chunk, Random random) {
+		for (Decorator b : decorators) {
+			b.populate(chunk, random);
+		}
 	}
 
 	public abstract void generateColumn(CuboidShortBuffer blockData, int x, int chunkY, int z);
 
 	public abstract String getName();
-
-	public final void decorate(Chunk chunk, Random random) {
-		for (BiomeDecorator b : decorators) {
-			b.populate(chunk, random);
-		}
-	}
 }

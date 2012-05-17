@@ -32,8 +32,6 @@ import org.spout.api.geo.cuboid.Chunk;
 
 /**
  * Provides Biome level population for BiomeGenerator
- *
- *
  */
 public final class BiomePopulator implements Populator {
 	final BiomeMap map;
