@@ -406,7 +406,7 @@ public class SpoutRegion extends Region {
 				saveMarked.clear();
 				break;
 			} else {
-				processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
+				empty |= processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
 			}
 		}
 
