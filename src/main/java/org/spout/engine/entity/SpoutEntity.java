@@ -101,12 +101,8 @@ public class SpoutEntity implements Entity, Tickable {
 		viewDistanceLive.set(viewDistance);
 
 		controllerLive.set(controller);
-		if(controller != null)  {
-			if (controller instanceof PlayerController) {
-				setObserver(true);
-			}
-			controller.attachToEntity(this);
-			controller.onAttached();
+		if (controller instanceof PlayerController) {
+			setObserver(true);
 		}
 	}
 	
@@ -124,17 +120,25 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public void onTick(float dt) {
+		Controller cont = controllerLive.get();
 		//Pulse all player messages here, so they can interact with the entities position safely
-		if (controllerLive.get() instanceof PlayerController) {
-			Player player = ((PlayerController) controllerLive.get()).getPlayer();
+		if (cont instanceof PlayerController) {
+			Player player = ((PlayerController)cont).getPlayer();
 			if (player != null && player.getSession() != null) {
 				((SpoutSession) player.getSession()).pulse();
 			}
 		}
 
 		//Tick the controller
-		if (controllerLive.get() != null && controllerLive.get().getParent() != null) {
-			controllerLive.get().onTick(dt);
+		if (cont != null) {
+			//If this is the first tick, we need to attach the controller
+			//Controller is attached here instead of inside of the constructor
+			//because the constructor can not access getChunk if the entity is being deserialized
+			if (cont.getParent() == null) {
+				cont.attachToEntity(this);
+				cont.onAttached();
+			}
+			cont.onTick(dt);
 		}
 
 		//Copy values last (position may change during controller or session pulses)
