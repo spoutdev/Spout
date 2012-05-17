@@ -597,12 +597,12 @@ public class SpoutRegion extends Region {
 		if (synchronizer != null) {
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
-					Block block = chunk.getDirtyBlock(i);
+					Vector3 block = chunk.getDirtyBlock(i);
 					if (block == null) {
 						break;
 					} else {
 						try {
-							synchronizer.updateBlock(chunk, block.getX(), block.getY(), block.getZ());
+							synchronizer.updateBlock(chunk, (int) block.getX(), (int) block.getY(), (int) block.getZ());
 						} catch (Exception e) {
 							Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
 						}
