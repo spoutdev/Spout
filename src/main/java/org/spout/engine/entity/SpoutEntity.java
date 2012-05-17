@@ -26,7 +26,9 @@
 package org.spout.engine.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -84,6 +86,8 @@ public class SpoutEntity implements Entity, Tickable {
 	private Thread owningThread;
 	private Transform lastTransform = transform;
 	private Point collisionPoint;
+	private Set<Chunk> observedChunks = new HashSet<Chunk>(); //TODO: Different collection? Snapshotable?
+	private Set<Chunk> oldObservedChunks = new HashSet<Chunk>(); //temporarily used to update chunks
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, boolean load) {
 		id.set(NOTSPAWNEDID);
@@ -545,18 +549,16 @@ public class SpoutEntity implements Entity, Tickable {
 		}
 
 		if (chunkLive.get() != chunk) {
+			//add entity to new chunk
 			if (chunkLive.get() != null) {
 				((SpoutChunk) chunkLive.get()).addEntity(this);
-				if (observer) {
-					chunkLive.get().refreshObserver(this);
-				}
 			}
+			//remove entity from old chunk
 			if (chunk != null && chunk.isLoaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
-				if (observer) {
-					chunk.removeObserver(this);
-				}
 			}
+
+			//if this entity has no chunk - remove
 			if (chunkLive.get() == null) {
 				if (chunk != null && chunk.isLoaded()) {
 					((SpoutChunk) chunk).removeEntity(this);
@@ -566,6 +568,23 @@ public class SpoutEntity implements Entity, Tickable {
 				}
 				if (entityManagerLive.get() != null) {
 					entityManagerLive.get().deallocate(this);
+				}
+			} else if (this.observer) {
+				this.oldObservedChunks.clear();
+				this.oldObservedChunks.addAll(this.observedChunks);
+				this.updateObservedChunks(this.getPosition());
+				//remove observers
+				for (Chunk chunk : this.oldObservedChunks) {
+					if (!chunk.isLoaded()) continue;
+					if (!this.observedChunks.contains(chunk)) {
+						chunk.removeObserver(this);
+					}
+				}
+				//add observers
+				for (Chunk chunk : this.observedChunks) {
+					if (!this.oldObservedChunks.contains(chunk)) {
+						chunk.refreshObserver(this);
+					}
 				}
 			}
 		}
@@ -586,6 +605,50 @@ public class SpoutEntity implements Entity, Tickable {
 		controller = controllerLive.get();
 		viewDistance = viewDistanceLive.get();
 		justSpawned = false;
+	}
+
+	//TODO: Bring to SpoutAPI
+	/**
+	 * Gets the chunk view distance this entity has as an observer
+	 * @return The chunk view distance
+	 */
+	public int getChunkViewDistance() {
+		return 10;
+	}
+
+	//TODO: Bring to SpoutAPI
+	/**
+	 * Updates the nearby chunks this entity observes
+	 * @param currentPosition of this entity
+	 */
+	public void updateObservedChunks(Point currentPosition) {
+		World world = currentPosition.getWorld();
+		int bx = (int) currentPosition.getX();
+		int by = (int) currentPosition.getY();
+		int bz = (int) currentPosition.getZ();
+
+		observedChunks.clear();
+
+		Point playerChunkBase = Chunk.pointToBase(currentPosition);
+
+		int cx = bx >> Chunk.CHUNK_SIZE_BITS;
+		int cy = by >> Chunk.CHUNK_SIZE_BITS;
+		int cz = bz >> Chunk.CHUNK_SIZE_BITS;
+
+		int viewDistance = this.getChunkViewDistance();
+		int blockViewDistance = viewDistance * Chunk.CHUNK_SIZE;
+
+		for (int x = cx - viewDistance; x < cx + viewDistance; x++) {
+			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
+				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
+					Point base = new Point(this.getWorld(), x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
+					double distance = base.getManhattanDistance(playerChunkBase);
+					if (distance <= blockViewDistance) {
+						this.observedChunks.add(world.getChunkFromBlock(base));
+					}
+				}
+			}
+		}
 	}
 
 	@Override
