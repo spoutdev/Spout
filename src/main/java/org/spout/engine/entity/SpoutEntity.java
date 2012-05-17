@@ -587,6 +587,10 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 	
 	private void removeObserver() {
+		//Player view distance is handled in the network synchronizer
+		if (controllerLive.get() instanceof PlayerController) {
+			return;
+		}
 		for (SpoutChunk chunk : observingChunks) {
 			if (chunk.isLoaded()) {
 				chunk.removeObserver(this);
@@ -596,6 +600,10 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 	
 	private void updateObserver() {
+		//Player view distance is handled in the network synchronizer
+		if (controllerLive.get() instanceof PlayerController) {
+			return;
+		}
 		int viewDistance = (getViewDistance() + 15) / Chunk.CHUNK_SIZE; //round up
 		World w = transform.getPosition().getWorld();
 		int cx = chunkLive.get().getX();
