@@ -47,6 +47,11 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * Internal size of a side of a chunk
 	 */
 	public final static int CHUNK_SIZE = 16;
+
+	/**
+	 * Internal size of an entire chunk's contents
+	 */
+	public static final int CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 	/**
 	 * Number of bits on the side of a chunk
 	 */
@@ -173,12 +178,12 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	@LiveRead
 	public abstract Set<Entity> getLiveEntities();
-	
+
 	/**
 	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
-	 * 
+	 *
 	 * Can be used to attach and store any persistent chunk related data.
-	 * 
+	 *
 	 * @return data map
 	 */
 	public abstract DefaultedMap<String, Serializable> getDataMap();

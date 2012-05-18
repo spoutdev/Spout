@@ -31,8 +31,7 @@ public interface WorldGenerator {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
-	 * The CuboidBuffer will always be exactly one Chunk in size (16x16x16
-	 * blocks) and Chunk aligned.
+	 * The CuboidBuffer will always be exactly one Chunk in size {@link org.spout.api.geo.cuboid.Chunk#CHUNK_SIZE} cubed and Chunk aligned.
 	 *
 	 * Structural blocks should not contain any lighting sources and the
 	 * generator should give repeatable results.
@@ -50,7 +49,7 @@ public interface WorldGenerator {
 	 * @return the Populator array
 	 */
 	public Populator[] getPopulators();
-	
+
 	/**
 	 * Gets the name of the generator.  This name should be unique to prevent two generators overwriting the same world
 	 */

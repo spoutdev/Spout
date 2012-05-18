@@ -69,8 +69,8 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		final int z = chunkZ << Chunk.CHUNK_SIZE_BITS;
 		final long seed = blockData.getWorld().getSeed();
 
-		for (int dx = x; dx < x + 16; ++dx) {
-			for (int dz = z; dz < z + 16; ++dz) {
+		for (int dx = x; dx < x + Chunk.CHUNK_SIZE; ++dx) {
+			for (int dz = z; dz < z + Chunk.CHUNK_SIZE; ++dz) {
 				biomes.getBiome(dx, dz, seed).generateColumn(blockData, dx, chunkY, dz);
 			}
 		}
