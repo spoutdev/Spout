@@ -246,10 +246,8 @@ public class ClientShader extends Resource implements Shader {
 		GL20.glCompileShader(shader);
 		int status = GL20.glGetShader(shader, GL20.GL_COMPILE_STATUS);
 		
-		if (status == GL11.GL_FALSE) {
+		if (status != GL11.GL_TRUE) {
 			String error = GL20.glGetShaderInfoLog(shader, 255);
-			Spout.log("Status: " + status);
-			Spout.log("Shader: " + source);
 			throw new ShaderCompileException("Compile Error in " + ((type == GL20.GL_FRAGMENT_SHADER) ? "Fragment Shader" : "VertexShader") + ": " + error);
 		}
 		return shader;
