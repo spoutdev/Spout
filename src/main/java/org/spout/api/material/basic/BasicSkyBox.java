@@ -33,7 +33,7 @@ import org.spout.api.material.BlockMaterial;
 public class BasicSkyBox extends BlockMaterial {
 
 	public BasicSkyBox() {
-		super("Skybox", 10002);
+		super("Skybox");
 		this.setCollision(CollisionStrategy.NOCOLLIDE);
 		this.setOccludes(false);
 	}

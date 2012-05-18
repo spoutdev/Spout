@@ -27,6 +27,7 @@
 package org.spout.api.geo;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,6 +39,7 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.player.Player;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.LiveRead;
@@ -207,6 +209,13 @@ public interface World extends Source, AreaRegionAccess {
 	 */
 	public File getDirectory();
 	
+	/**
+	 * Gets a map of data attached to this world. Data will persist across restarts.
+	 * 
+	 * @return data map
+	 */
+	public DefaultedMap<String, Serializable> getDataMap();
+
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
 	 * <br>

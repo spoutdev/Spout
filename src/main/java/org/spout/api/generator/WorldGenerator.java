@@ -26,6 +26,7 @@
  */
 package org.spout.api.generator;
 
+import org.spout.api.geo.World;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 public interface WorldGenerator {
@@ -55,4 +56,11 @@ public interface WorldGenerator {
 	 * Gets the name of the generator.  This name should be unique to prevent two generators overwriting the same world
 	 */
 	public String getName();
+	
+	/**
+	 * Sets the world this generator is attached to
+	 * 
+	 * @param world attached to
+	 */
+	public void setWorld(World world);
 }

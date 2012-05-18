@@ -26,14 +26,16 @@
  */
 package org.spout.api.generator.biome;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.io.store.map.MemoryStoreMap;
 import org.spout.api.io.store.map.SimpleStoreMap;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.math.Vector3;
 
 /**
@@ -42,19 +44,17 @@ import org.spout.api.math.Vector3;
 public final class BiomeMap {
 	private final SimpleStoreMap<Vector3, Biome> biomeOverrides;
 	private final SimpleStoreMap<Integer, Biome> map;
-	private final SimpleStoreMap<Vector3, Biome> cache1;
-	private final SimpleStoreMap<Vector3, Biome> cache0;
-	private final int CACHE_TIMEOUT = 30000;
-	private final AtomicLong lastCacheClear = new AtomicLong(0);
-	private final AtomicBoolean cacheSelect = new AtomicBoolean(false);
+	private World world = null;
+	private final int MINIMUM_BIOME_SIZE = 4;
 	private BiomeSelector selector;
 
 	public BiomeMap() {
-		//Todo: Make this saveable
 		map = new MemoryStoreMap<Integer, Biome>();
 		biomeOverrides = new MemoryStoreMap<Vector3, Biome>();
-		cache1 = new MemoryStoreMap<Vector3, Biome>();
-		cache0 = new MemoryStoreMap<Vector3, Biome>();
+	}
+	
+	public void setWorld(World world) {
+		this.world = world;
 	}
 	
 	public Biome getBiomeRaw(int index) {
@@ -83,7 +83,7 @@ public final class BiomeMap {
 	}
 
 	public Biome getBiome(int x, int y, int z, long seed) {
-		return getBiome(new Vector3(x,y,z), seed);
+		return getBiome(new Vector3(x, y, z), seed);
 	}
 
 	/**
@@ -95,37 +95,21 @@ public final class BiomeMap {
 	public Biome getBiome(Vector3 position, long seed) {
 		if (selector == null) throw new IllegalStateException("Biome Selector is null and cannot set a selector");
 		Biome biome = biomeOverrides.get(position);
-		
-		SimpleStoreMap<Vector3, Biome> cacheNew;
-		SimpleStoreMap<Vector3, Biome> cacheOld;
-		
-		if (cacheSelect.get()) {
-			cacheNew = cache1;
-			cacheOld = cache0;
-		} else {
-			cacheNew = cache0;
-			cacheOld = cache1;
+		if (biome != null) {
+			return biome;
 		}
-		
-		if (biome == null) {
-			biome = cacheNew.get(position);
-			if (biome == null) {
-				biome = cacheOld.get(position);
-				if (biome == null) {
-					biome = selector.pickBiome((int)position.getX(), (int)position.getY(), (int)position.getZ(), seed);
+		if (world != null) {
+			Chunk chunk = world.getChunkFromBlock(position, false);
+			if (chunk != null) {
+				DefaultedMap<String, Serializable> map = chunk.getDataMap();
+				
+				if (map.containsKey("BiomeData")) {
+					
 				}
-				cacheNew.set(position, biome);
 			}
 		}
-		long currentTime = System.currentTimeMillis();
-		long lastClearTime = lastCacheClear.get();
-		if (currentTime - lastClearTime > this.CACHE_TIMEOUT) {
-			if (lastCacheClear.compareAndSet(lastClearTime, currentTime)) {
-				cacheSelect.set(!cacheSelect.get());
-				cacheOld.clear();
-			}
-		}
-		return biome;
+
+		return null;
 	}
 	
 	public Collection<Biome> getBiomes() {

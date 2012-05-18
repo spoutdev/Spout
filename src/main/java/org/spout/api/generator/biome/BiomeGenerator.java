@@ -31,6 +31,7 @@ import java.util.Collection;
 
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
@@ -39,12 +40,23 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
  * Abstract Biome Generator.
  */
 public abstract class BiomeGenerator implements WorldGenerator {
+	private World world = null;
 	private final BiomeMap biomes = new BiomeMap();
 	private final ArrayList<Populator> populators = new ArrayList<Populator>();
 
 	public BiomeGenerator() {
 		populators.add(new BiomePopulator(biomes));
 		registerBiomes();
+	}
+	
+	@Override
+	public void setWorld(World world) {
+		this.world = world;
+		biomes.setWorld(world);
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 
 	/**

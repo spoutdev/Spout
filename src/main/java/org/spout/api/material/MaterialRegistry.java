@@ -30,11 +30,15 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.StringMap;
+
 public abstract class MaterialRegistry {
 	private final static ConcurrentHashMap<String, Material> nameLookup = new ConcurrentHashMap<String, Material>(1000);
 	private final static int MAX_SIZE = 1 << 16;
 	@SuppressWarnings("unchecked")
 	private final static AtomicReference<Material>[] materialLookup = new AtomicReference[MAX_SIZE];
+	private static StringMap materialRegistry = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
 
 	static {
 		for (int i = 0; i < materialLookup.length; i++) {
@@ -53,7 +57,8 @@ public abstract class MaterialRegistry {
 			nameLookup.put(material.getName().toLowerCase(), material);
 			return material;
 		} else {
-			int id = material.getId();
+			int id = materialRegistry.register(material.getClass() + "_" + material.getName());
+			material.id = (short) id;
 			if (!materialLookup[id].compareAndSet(null, material)) {
 				throw new IllegalArgumentException("Another material is already mapped to id: " + material.getId() + "!");
 			} else {

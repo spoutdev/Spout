@@ -37,7 +37,7 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.model.Model;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
-	private final short id;
+	protected short id = -1;
 	private final short data;
 	private final String name;
 	private final boolean isSubMaterial;
@@ -48,25 +48,23 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private short maxData = Short.MAX_VALUE;
 	private Map<Short, Material> submaterials = null;
 
-	public Material(String name, int typeId) {
+	public Material(String name) {
 		this.isSubMaterial = false;
-		this.id = (short) typeId;
 		this.displayName = name;
 		this.name = name.replace(' ', '_');
 		this.parent = this;
 		this.data = 0;
 	}
 
-	public Material(String name, int typeId, int data, Material parent) {
+	public Material(String name, int data, Material parent) {
 		this.isSubMaterial = true;
-		this.id = (short) typeId;
 		this.displayName = name;
 		this.name = name.replace(' ', '_');
 		this.parent = parent;
 		this.data = (short) data;
 	}
 
-	public short getId() {
+	public final short getId() {
 		return this.id;
 	}
 
@@ -76,7 +74,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return data value
 	 */
-	public short getData() {
+	public final short getData() {
 		return this.data;
 	}
 
@@ -85,7 +83,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return true if it is a sub material
 	 */
-	public boolean isSubMaterial() {
+	public final boolean isSubMaterial() {
 		return isSubMaterial;
 	}
 
@@ -94,7 +92,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return true if this material has sub materials
 	 */
-	public boolean hasSubMaterials() {
+	public final boolean hasSubMaterials() {
 		return this.submaterials != null;
 	}
 
@@ -103,7 +101,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return an array of sub materials
 	 */
-	public Material[] getSubMaterials() {
+	public final Material[] getSubMaterials() {
 		if (this.hasSubMaterials()) {
 			return this.submaterials.values().toArray(new Material[0]);
 		} else {
@@ -120,14 +118,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public Material getSubMaterial(short data) {
 		if (this.hasSubMaterials()) {
 			Material material = this.submaterials.get(data);
-		    if (material == null) {
-		    	return this;
-		    } else {
-		    	return material.getSubMaterial(data);
-		    }
-		} else {
-			return this;
+			if (material != null) {
+				return material.getSubMaterial(data);
+			}
 		}
+		return this;
 	}
 	
 	@Override
@@ -140,7 +135,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @param material to register
 	 */
-	public void registerSubMaterial(Material material) {
+	public final void registerSubMaterial(Material material) {
 		if (material.isSubMaterial) {
 			if (material.getParentMaterial() == this) {
 				if (this.submaterials == null) {
@@ -183,7 +178,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return the name
 	 */
-	public String getName() {
+	public final String getName() {
 		return this.name;
 	}
 
@@ -192,7 +187,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return the display name
 	 */
-	public String getDisplayName() {
+	public final String getDisplayName() {
 		return this.displayName;
 	}
 
@@ -201,7 +196,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @param name the new display name
 	 */
-	public void setDisplayName(String name) {
+	public final void setDisplayName(String name) {
 		this.displayName = name;
 	}
 
@@ -210,7 +205,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @param model the new model
 	 */
-	public Material setModel(Model model) {
+	public final Material setModel(Model model) {
 		this.model = model;
 		return this;
 	}
@@ -220,7 +215,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return the current model
 	 */
-	public Model getModel() {
+	public final Model getModel() {
 		return this.model;
 	}
 
@@ -229,7 +224,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return the current max size
 	 */
-	public int getMaxStackSize() {
+	public final int getMaxStackSize() {
 		return this.maxStackSize;
 	}
 
@@ -238,14 +233,14 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @param newValue the new maximum stack size
 	 */
-	public void setMaxStackSize(int newValue) {
+	public final void setMaxStackSize(int newValue) {
 		this.maxStackSize = newValue;
 	}
 
 	/**
 	 * Gets the maximum data a stack of this material can have
 	 */
-	public short getMaxData() {
+	public final short getMaxData() {
 		return this.maxData;
 	}
 
@@ -253,7 +248,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * Sets the maximum of the data value this material can have
 	 * @param newValue the new maximum data
 	 */
-	public void setMaxData(short newValue) {
+	public final void setMaxData(short newValue) {
 		this.maxData = newValue;
 	}
 
