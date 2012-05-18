@@ -57,3 +57,15 @@ build.xml
 #######################
 .idea
 *.iml
+
+# Spout Runtime Folders #
+#########################
+plugins/
+resources/
+cache/
+update/
+data/
+config/
+logs/
+worlds/
+
