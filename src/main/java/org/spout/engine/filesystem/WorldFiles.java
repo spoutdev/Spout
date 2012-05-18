@@ -47,6 +47,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class WorldFiles {
+	private static final byte WORLD_VERSION = 2;
 	private static final byte ENTITY_VERSION = 1;
 
 	public static void saveWorldData(SpoutWorld world) {
@@ -59,9 +60,10 @@ public class WorldFiles {
 		}
 
 		CompoundMap worldTags = new CompoundMap();
-		worldTags.put(new ByteTag("version", (byte) 1));
+		worldTags.put(new ByteTag("version", (byte)WORLD_VERSION));
 		worldTags.put(new LongTag("seed", world.getSeed()));
 		worldTags.put(new StringTag("generator", generatorName));
+		worldTags.put(new ByteArrayTag("extraData", ((DataMap)world.getDataMap()).getRawMap().compress()));
 
 		CompoundTag worldTag = new CompoundTag(world.getName(), worldTags);
 
@@ -98,16 +100,22 @@ public class WorldFiles {
 				is = new NBTInputStream(new DataInputStream(new FileInputStream(worldData)), false);
 				CompoundTag dataTag = (CompoundTag) is.readTag();
 				CompoundMap map = dataTag.getValue();
+				GenericDatatableMap extraData = new GenericDatatableMap();
 
-				@SuppressWarnings("unused")
 				byte version = (Byte) map.get("version").getValue();
 				long seed = (Long) map.get("seed").getValue();
 				String savedGeneratorName = (String) map.get("generator").getValue();
+				
+				if (version >= 2) {
+					byte[] extraDataBytes = (byte[])map.get("extraData").getValue();
+					extraData.decompress(extraDataBytes);
+				}
+
 				if (!savedGeneratorName.equals(generatorName)) {
 					Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 				}
 
-				world = new SpoutWorld(name, engine, seed, generator);
+				world = new SpoutWorld(name, engine, seed, generator, extraData);
 			} catch (IOException e) {
 				Spout.getLogger().log(Level.SEVERE, "Error saving load data for " + name, e);
 			} finally {

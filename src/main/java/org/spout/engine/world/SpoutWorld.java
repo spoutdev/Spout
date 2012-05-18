@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,6 +45,9 @@ import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -57,6 +61,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
@@ -146,9 +151,15 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Hashcode cache
 	 */
 	private final int hashcode;
+	
+	/**
+	 * Data map and Datatable associated with it
+	 */
+	private final DatatableMap datatableMap;
+	private final DataMap dataMap;
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator) {
+	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator, DatatableMap extraData) {
 		super(1, new ThreadAsyncExecutor(), server);
 		uid = UUID.randomUUID();
 		this.server = server;
@@ -159,6 +170,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		this.name = name;
 		this.generator = generator;
+		generator.setWorld(this);
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
 
@@ -167,6 +179,13 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 		
+		if (extraData != null) {
+			this.datatableMap = extraData;
+		} else {
+			this.datatableMap = new GenericDatatableMap();;
+		}
+		this.dataMap = new DataMap(this.datatableMap);
+
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 		
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
@@ -764,6 +783,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
 		return this.getRegionFromBlock(x, y, z).getBlockController(x, y, z);
+	}
+
+	@Override
+	public DefaultedMap<String, Serializable> getDataMap() {
+		return dataMap;
 	}
 	
 	@Override

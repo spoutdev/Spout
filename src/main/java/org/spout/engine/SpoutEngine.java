@@ -444,7 +444,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		SpoutWorld world = WorldFiles.loadWorldData(this, name, generator);
 		if(world == null) {
 			System.out.println("Creating new world");
-			world = new SpoutWorld(name, this, random.nextLong(), generator);
+			world = new SpoutWorld(name, this, random.nextLong(), generator, null);
 			WorldFiles.saveWorldData(world);
 		}
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);

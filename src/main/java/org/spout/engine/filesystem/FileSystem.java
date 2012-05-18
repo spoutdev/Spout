@@ -39,7 +39,6 @@ import org.spout.api.resource.ResourcePathResolver;
 
 import org.spout.engine.filesystem.path.FilepathResolver;
 import org.spout.engine.filesystem.path.JarfileResolver;
-import org.spout.engine.filesystem.path.ZipfileResolver;
 import org.spout.engine.resources.MeshLoader;
 import org.spout.engine.resources.ShaderLoader;
 import org.spout.engine.resources.TextureLoader;
