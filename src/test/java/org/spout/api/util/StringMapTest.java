@@ -25,6 +25,9 @@
  */
 package org.spout.api.util;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -58,8 +61,9 @@ public class StringMapTest {
 	
 	private final String firstKey = "firstKey";
 	private final String lastKey = "lastKey";
-	private final int minValue = 0;
-	private final int maxValue = 100;
+	private final int minValue = 100;
+	private final int maxValue = 200;
+	private final int numKeys = maxValue - minValue;
 	
 	@Before
 	public void setUp() {
@@ -107,7 +111,7 @@ public class StringMapTest {
 	@Test 
 	public void worldToServerSameKeys() {
 		
-		int numKeys = maxValue / 4;
+		int numKeys = this.numKeys / 4;
 		
 		for (int i = 0; i < numKeys; i++) {
 			registerWithWorld1Map("key" + i);
@@ -122,7 +126,7 @@ public class StringMapTest {
 	@Test 
 	public void worldToServerDiffKeys() {
 		
-		int numKeys = maxValue / 4;
+		int numKeys = this.numKeys / 4;
 		
 		for (int i = 0; i < numKeys; i++) {
 			registerWithWorld1Map("key1" + i);
@@ -137,7 +141,7 @@ public class StringMapTest {
 	@Test 
 	public void worldToWorld() {
 		
-		int numKeys = maxValue / 4;
+		int numKeys = this.numKeys / 4;
 		
 		for (int i = 0; i < numKeys; i++) {
 			registerWithWorld1Map("key" + i);
@@ -151,7 +155,7 @@ public class StringMapTest {
 	
 	@Test
 	public void persistTest() {
-		int numKeys = maxValue / 4;
+		int numKeys = this.numKeys / 4;
 		
 		for (int i = 0; i < numKeys; i++) {
 			registerWithWorld1Map("key1" + i);
@@ -170,6 +174,25 @@ public class StringMapTest {
 		
 		world1File.delete();
 		world2File.delete();
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void ManualRegisterOutOfMinRange() {
+		// only ids *below* minValue can be directly set
+		world1Map.register("some.block.name1", minValue + 1);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void ManualRegisterOutOfMaxRange() {
+		world1Map.register("some.block.name2", maxValue + 1);
+	}
+	
+	public void ManualRegister() {
+		assertTrue("Unable to manually register key/value pair", world1Map.register("some.block.name3", 10));
+		assertFalse("Registering key twice didn't fail", world1Map.register("some.block.name3", 11));
+		assertFalse("Registering id twice didn't fail", world1Map.register("some.block.name4", 10));
+		assertTrue("Wrong id for registered key", world1Map.register("some.block.name3") == 10);
+		assertTrue("Wrong key for registered id", world1Map.getString(10).equals("some.block.name3"));
 	}
 	
 	private void checkWorldToServer(int numKeys, String prefix, StringMap map) {
@@ -208,7 +231,7 @@ public class StringMapTest {
 	
 	private void fillServerMap() {
 		registerWithServerMap(firstKey);
-		for (int i = 0; i < (maxValue - 2); i++) {
+		for (int i = 0; i < (numKeys - 2); i++) {
 			registerWithServerMap("middle" + i);
 		}
 		registerWithServerMap(lastKey);
@@ -218,8 +241,8 @@ public class StringMapTest {
 	private int registerWithServerMap(String key) {
 		Integer newId = serverMap.register(key);
 		Integer oldId = serverCache.put(key, newId);
-		if (oldId != null && oldId != newId) {
-			throw new IllegalStateException("Registering the same key with the server map gave 2 different results");
+		if (oldId != null && !oldId.equals(newId)) {
+			throw new IllegalStateException("Registering the same key (" + key + ") with the server map gave 2 different results, " + oldId + " -> " + newId);
 		}
 		return newId;
 	}
@@ -227,8 +250,8 @@ public class StringMapTest {
 	private int registerWithWorld1Map(String key) {
 		Integer newId = world1Map.register(key);
 		Integer oldId = world1Cache.put(key, newId);
-		if (oldId != null && oldId != newId) {
-			throw new IllegalStateException("Registering the same key with the world1 map gave 2 different results");
+		if (oldId != null && !oldId.equals(newId)) {
+			throw new IllegalStateException("Registering the same key (" + key + ") with the server map gave 2 different results, " + oldId + " -> " + newId);
 		}
 		return newId;
 	}
@@ -236,8 +259,8 @@ public class StringMapTest {
 	private int registerWithWorld2Map(String key) {
 		Integer newId = world2Map.register(key);
 		Integer oldId = world2Cache.put(key, newId);
-		if (oldId != null && oldId != newId) {
-			throw new IllegalStateException("Registering the same key with the world2 map gave 2 different results");
+		if (oldId != null && !oldId.equals(newId)) {
+			throw new IllegalStateException("Registering the same key (" + key + ") with the server map gave 2 different results, " + oldId + " -> " + newId);
 		}
 		return newId;
 	}

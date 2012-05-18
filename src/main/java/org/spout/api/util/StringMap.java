@@ -58,7 +58,7 @@ public class StringMap {
 	 * @param parent the parent of this map
 	 * @param store the store to store ids
 	 * @param updateTask the task to call on update
-	 * @param minId the lowest valid id
+	 * @param minId the lowest valid id for dynamic allocation (ids below this are assumed to be reserved)
 	 * @param maxId the highest valid id + 1
 	 */
 	public StringMap(StringMap parent, SimpleStore<Integer> store, int minId, int maxId) {
@@ -173,6 +173,24 @@ public class StringMap {
 			}
 		}
 		throw new IllegalStateException("StringMap id space exhausted");
+	}
+	
+	/**
+	 * Registers a key/id pair with the map.  If the id is already in use the method will fail.<br>
+	 * <br>
+	 * The id must be lower than the min id for the map to prevent clashing with the dynamically allocated ids
+	 * 
+	 * @param key the key to be added
+	 * @param id the desired id to be matched to the key
+	 * @return true if the key/id pair was successfully registered
+	 * @exception IllegalArgumentException if the id >= minId
+	 */
+	
+	public boolean register(String key, int id) {
+		if (id >= this.minId) {
+			throw new IllegalArgumentException("Hardcoded ids must be below the minimum id value");
+		}
+		return store.setIfAbsent(key, id);
 	}
 	
 	/**
