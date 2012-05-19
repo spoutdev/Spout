@@ -28,6 +28,7 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -90,7 +91,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The region source
 	 */
-	private final RegionSource regions;
+	private final SpoutRegionSource regions;
 	/**
 	 * The world seed.
 	 */
@@ -131,7 +132,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The directory where the world data is stored
 	 */
 	private final File worldDirectory;
-	
+
+	/**
+	 * The async thread which handles the calculation of block and sky lighting in the world
+	 */
+	private final SpoutWorldLighting lightingManager;
+
 	/**
 	 * Hashcode cache
 	 */
@@ -150,14 +156,16 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.name = name;
 		this.generator = generator;
 		entityManager = new EntityManager();
-		regions = new RegionSource(this, snapshotManager);
+		regions = new SpoutRegionSource(this, snapshotManager);
 
 		worldDirectory = new File(FileSystem.WORLDS_DIRECTORY, name);
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-		
+
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
+
+		this.lightingManager = new SpoutWorldLighting(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"));
 	}
 
 	public void start() {
@@ -427,6 +435,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		return server;
 	}
 
+	/**
+	 * Gets the lighting manager that calculates the light for this world
+	 * @return world lighting manager
+	 */
+	public SpoutWorldLighting getLightingManager() {
+		return this.lightingManager;
+	}
+
 	@Override
 	public int getHeight() {
 		// TODO: Variable world height
@@ -470,7 +486,12 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		regions.getRegionFromBlock(x, y, z).queuePhysicsUpdate(x, y, z, source);
+		regions.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
+	}
+
+	@Override
+	public void updateBlockLighting(int x, int y, int z) {
+		regions.getRegionFromBlock(x, y, z).updateBlockLighting(x, y, z);
 	}
 
 	@Override
@@ -681,6 +702,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (Region r : regions.getRegions()) {
 			r.unload(save);
 		}
+		this.lightingManager.getExecutor().haltExecutor();
+	}
+
+	protected Collection<SpoutRegion> getRegions() {
+		return this.regions.getRegions();
 	}
 
 	@Override
