@@ -42,15 +42,12 @@ import org.spout.api.io.store.simple.SimpleStore;
  */
 
 public class StringMap {
-	//private static StringMap root;
-
 	private final StringMap parent;
 	private final SimpleStore<Integer> store;
 
 	private final AtomicIntegerArray thisToParentMap;
 	private final AtomicIntegerArray parentToThisMap;
 
-	@SuppressWarnings("unused")
 	private final int minId;
 	private final int maxId;
 	private AtomicInteger nextId;
@@ -76,11 +73,25 @@ public class StringMap {
 		nextId = new AtomicInteger(minId);
 
 	}
+	
+	/**
+	 * Converts an id local to this map to the id local to the parent map
+	 * 
+	 * @param localId to convert
+	 * @return the foreign id, or 0 on failure
+	 */
+	public int convertToParent(int localId) {
+		if (parent == null) {
+			throw new IllegalStateException("Parent map is null!");
+		}
+		return convertTo(parent, localId);
+	}
 
 	/**
 	 * Converts an id local to this map to a foreign id, local to another map.
 	 *
 	 * @param other the other map
+	 * @param localId to convert
 	 * @return returns the foreign id, or 0 on failure
 	 */
 

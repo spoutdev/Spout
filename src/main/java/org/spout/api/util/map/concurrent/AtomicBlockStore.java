@@ -30,9 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.datatable.DatatableSequenceNumber;
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
@@ -209,7 +206,7 @@ public class AtomicBlockStore<T> {
 	 * @param z the z coordinate
 	 * @return the block id
 	 */
-	public final int getBlockId(int x, int y, int z) {
+	public int getBlockId(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -327,7 +324,7 @@ public class AtomicBlockStore<T> {
 	 *            null to generate a new one
 	 * @return the full state of the block
 	 */
-	public final BlockFullState getFullData(int x, int y, int z) {
+	public BlockFullState getFullData(int x, int y, int z) {
 		return getFullData(x, y, z, null);
 	}
 
@@ -342,7 +339,7 @@ public class AtomicBlockStore<T> {
 	 *            null to generate a new one
 	 * @return the full state of the block
 	 */
-	public final BlockFullState getFullData(int x, int y, int z, BlockFullState input) {
+	public BlockFullState getFullData(int x, int y, int z, BlockFullState input) {
 		if (input == null) {
 			input = new BlockFullState();
 		}
@@ -388,7 +385,7 @@ public class AtomicBlockStore<T> {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
-	public final void setBlock(int x, int y, int z, MaterialSource material) {
+	public void setBlock(int x, int y, int z, MaterialSource material) {
 		setBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
 
@@ -405,7 +402,7 @@ public class AtomicBlockStore<T> {
 	 * @param data the block data
 	 * @param auxData the block auxiliary data
 	 */
-	public final void setBlock(int x, int y, int z, short id, short data) {
+	public void setBlock(int x, int y, int z, short id, short data) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -469,7 +466,7 @@ public class AtomicBlockStore<T> {
 	 * @param newAuxData the new block auxiliary data
 	 * @return true if the block was set
 	 */
-	public final boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData) {
+	public boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -543,7 +540,7 @@ public class AtomicBlockStore<T> {
 	 *
 	 * @return true if compression would reduce the store size
 	 */
-	public boolean needsCompression() {
+	public final boolean needsCompression() {
 		return (auxStore.getEntries() << 3) / 3 < auxStore.getSize();
 	}
 
@@ -595,7 +592,7 @@ public class AtomicBlockStore<T> {
 	 *
 	 * @return the array
 	 */
-	public short[] getDataArray() {
+	public final short[] getDataArray() {
 		return getDataArray(null);
 	}
 
@@ -610,7 +607,7 @@ public class AtomicBlockStore<T> {
 	 * @param the array to place the data
 	 * @return the array
 	 */
-	public short[] getDataArray(short[] array) {
+	public final short[] getDataArray(short[] array) {
 		int length = blockIds.length();
 		if (array == null || array.length != length) {
 			array = new short[length];
