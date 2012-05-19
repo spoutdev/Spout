@@ -44,8 +44,8 @@ public class TByteTripleHashed {
 	 * @param key to get from
 	 * @return the first 8-bit integer value in the key
 	 */
-	public static final int key1(int key) {
-		return key >> 16 & 0xFF;
+	public static final byte key1(int key) {
+		return (byte) (key >> 16 & 0xFF);
 	}
 
 	/**
@@ -54,8 +54,8 @@ public class TByteTripleHashed {
 	 * @param key to get from
 	 * @return the second 8-bit integer value in the key
 	 */
-	public static final int key2(int key) {
-		return key & 0xFF;
+	public static final byte key2(int key) {
+		return (byte) (key & 0xFF);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class TByteTripleHashed {
 	 * @param key to get from
 	 * @return the third 8-bit integer value in the key
 	 */
-	public static final int key3(int key) {
-		return key >> 8 & 0xFF;
+	public static final byte key3(int key) {
+		return (byte) (key >> 8 & 0xFF);
 	}
 }
