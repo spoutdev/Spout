@@ -51,7 +51,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final short[] blockData;
 	private final byte[] blockLight;
 	private final byte[] skyLight;
-	
+
 	private boolean renderDirty = false;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
@@ -99,7 +99,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		int index = this.getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte) ((light >> 4) & 0xF);
+			return (byte) ((light >> CHUNK_SIZE_BITS) & 0xF);
 		}
 		return (byte) (light & 0xF);
 	}
@@ -109,7 +109,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		int index = this.getBlockIndex(x, y, z);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte) ((light >> 4) & 0xF);
+			return (byte) ((light >> CHUNK_SIZE_BITS) & 0xF);
 		}
 		return (byte) (light & 0xF);
 	}
@@ -154,12 +154,12 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	public boolean isRenderDirty(){
 		return renderDirty;
 	}
-	
+
 	public void setRenderDirty(boolean val){
 		renderDirty = false;
 	}
-	
-	
+
+
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
 		return null;

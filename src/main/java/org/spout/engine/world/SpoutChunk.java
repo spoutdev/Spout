@@ -132,7 +132,7 @@ public class SpoutChunk extends Chunk {
 	 * True if this chunk should be resent due to light calculations
 	 */
 	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
-	
+
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -154,7 +154,7 @@ public class SpoutChunk extends Chunk {
 			this.skyLight[i] = 0;
 		}
 		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		
+
 		if (extraData != null) {
 			this.datatableMap = extraData;
 		} else {
@@ -261,7 +261,7 @@ public class SpoutChunk extends Chunk {
 		int index = getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte) ((light >> 4) & 0xF);
+			return (byte) ((light >> CHUNK_SIZE_BITS) & 0xF);
 		}
 		return (byte) (light & 0xF);
 	}
@@ -272,7 +272,7 @@ public class SpoutChunk extends Chunk {
 		int index = getBlockIndex(x, y, z);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
-			return (byte) ((light >> 4) & 0xF);
+			return (byte) ((light >> CHUNK_SIZE_BITS) & 0xF);
 		}
 		return (byte) (light & 0xF);
 	}
@@ -297,7 +297,7 @@ public class SpoutChunk extends Chunk {
 		if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE) {
 			return getBlockSkyLight(x, y, z);
 		}
-		SpoutChunk chunk = getWorld().getChunk(getX() + (x >> 4), getY() + (y >> 4), getZ() + (z >> 4), false);
+		SpoutChunk chunk = getWorld().getChunk(getX() + (x >> CHUNK_SIZE_BITS), getY() + (y >> CHUNK_SIZE_BITS), getZ() + (z >> CHUNK_SIZE_BITS), false);
 		if (chunk != null) {
 			return chunk.getBlockLight(x, y, z);
 		}
