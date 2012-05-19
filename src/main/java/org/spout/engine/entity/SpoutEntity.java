@@ -78,6 +78,7 @@ public class SpoutEntity implements Entity, Tickable {
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
 	private boolean justSpawned = true;
 	private boolean observer = false;
+	private boolean attached = false;
 	private int viewDistance;
 	private Chunk chunk;
 	private CollisionModel collision;
@@ -104,6 +105,7 @@ public class SpoutEntity implements Entity, Tickable {
 		viewDistanceLive.set(viewDistance);
 
 		controllerLive.set(controller);
+		controller.attachToEntity(this);
 		if (controller instanceof PlayerController) {
 			setObserver(true);
 		}
@@ -134,12 +136,20 @@ public class SpoutEntity implements Entity, Tickable {
 
 		//Tick the controller
 		if (cont != null) {
+			//Sanity check
+			if (cont.getParent() != this) {
+				if (Spout.debugMode()) {
+					throw new IllegalStateException("Controller parent does not match entity");
+				} else {
+					cont.attachToEntity(this);
+				}
+			}
 			//If this is the first tick, we need to attach the controller
 			//Controller is attached here instead of inside of the constructor
 			//because the constructor can not access getChunk if the entity is being deserialized
-			if (cont.getParent() == null) {
-				cont.attachToEntity(this);
+			if (!attached) {
 				cont.onAttached();
+				attached = true;
 			}
 			cont.onTick(dt);
 		}
