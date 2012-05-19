@@ -62,6 +62,7 @@ import org.spout.api.gui.TextProperties;
 import org.spout.api.gui.screen.LoadingScreen;
 import org.spout.api.gui.screen.ScreenStack;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -84,9 +85,6 @@ import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutWorld;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-
-
-
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final String name = "Spout Client";
@@ -164,7 +162,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		System.out.println(extensions);
 
 
-		activeCamera = new BasicCamera(Matrix.createPerspective(75, aspectRatio, 0.001f, 1000), Matrix.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
+		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		Shader shader = (Shader)FileSystem.getResource("shader://Vanilla/garbageName.smf");
 		renderer = new PrimitiveBatch();
 		renderer.getRenderer().setShader(shader);
@@ -255,7 +253,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cz = 20 * Math.cos(Math.toRadians(ticks));
 		double cy = 20 * Math.sin(Math.toRadians(ticks));
 
-		Matrix view = Matrix.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
+		Matrix view = MathHelper.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
 		renderer.getRenderer().getShader().setUniform("View", view);
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 

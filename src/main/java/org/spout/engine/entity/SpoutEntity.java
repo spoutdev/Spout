@@ -359,7 +359,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 	private void setAxisAngles(float pitch, float yaw, float roll, String errorMessage) {
 		if (activeThreadIsValid(errorMessage)) {
-			setRotation(Quaternion.rotation(pitch, yaw, roll));
+			setRotation(MathHelper.rotation(pitch, yaw, roll));
 		}
 	}
 
