@@ -69,6 +69,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.HashUtil;
+import org.spout.api.util.StringMap;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
@@ -157,9 +158,14 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
+	
+	/**
+	 * String item map, used to convert local id's to the server id
+	 */
+	private final StringMap itemMap;
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator, DatatableMap extraData) {
+	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator, StringMap itemMap, DatatableMap extraData) {
 		super(1, new ThreadAsyncExecutor(), server);
 		uid = UUID.randomUUID();
 		this.server = server;
@@ -171,6 +177,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.name = name;
 		this.generator = generator;
 		generator.setWorld(this);
+		this.itemMap = itemMap;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
 
@@ -185,6 +192,8 @@ public class SpoutWorld extends AsyncManager implements World {
 			this.datatableMap = new GenericDatatableMap();;
 		}
 		this.dataMap = new DataMap(this.datatableMap);
+		
+		
 
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 		
@@ -790,6 +799,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		return dataMap;
 	}
 	
+	public StringMap getItemMap() {
+		return itemMap;
+	}
+
 	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;

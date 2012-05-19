@@ -24,8 +24,10 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
@@ -83,7 +85,7 @@ public class WorldFiles {
 		}
 	}
 
-	public static SpoutWorld loadWorldData(Engine engine, String name, WorldGenerator generator) {
+	public static SpoutWorld loadWorldData(Engine engine, String name, WorldGenerator generator, StringMap global) {
 		SpoutWorld world = null;
 
 		String generatorName = generator.getName();
@@ -91,6 +93,13 @@ public class WorldFiles {
 			generatorName = Long.toHexString(System.currentTimeMillis());
 			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
 		}
+		
+		File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "items.dat");
+		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
+		if (itemMapFile.exists()) {
+			itemStore.load();
+		}
+		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
 
 		File worldData = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "world.dat");
 
@@ -115,7 +124,7 @@ public class WorldFiles {
 					Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 				}
 
-				world = new SpoutWorld(name, engine, seed, generator, extraData);
+				world = new SpoutWorld(name, engine, seed, generator, itemMap, extraData);
 			} catch (IOException e) {
 				Spout.getLogger().log(Level.SEVERE, "Error saving load data for " + name, e);
 			} finally {
@@ -127,6 +136,10 @@ public class WorldFiles {
 				}
 			}
 		}
+		
+		
+		
+		
 
 		return world;
 	}
