@@ -210,7 +210,7 @@ public class QuaternionTest {
 		assertEquals(q.getYaw(), yaw, eps);
 		assertEquals(q.getRoll(), roll, eps);
 
-		final Quaternion q2 = Quaternion.rotation(pitch, yaw, roll);
+		final Quaternion q2 = MathHelper.rotation(pitch, yaw, roll);
 		assertEquals(q2.getPitch(), pitch, eps);
 		assertEquals(q2.getYaw(), yaw, eps);
 		assertEquals(q2.getRoll(), roll, eps);
@@ -218,7 +218,7 @@ public class QuaternionTest {
 		final float polePitch = 90;
 		final float poleYaw = 18;
 		final float poleRoll = 0;
-		final Quaternion pole = Quaternion.rotation(polePitch, poleYaw, 0);
+		final Quaternion pole = MathHelper.rotation(polePitch, poleYaw, 0);
 		assertEquals(polePitch, pole.getPitch(), eps);
 		assertEquals(poleYaw, pole.getYaw(), eps);
 		assertEquals(poleRoll, pole.getRoll(), eps);

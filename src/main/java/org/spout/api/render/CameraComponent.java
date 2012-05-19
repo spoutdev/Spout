@@ -26,6 +26,7 @@
 package org.spout.api.render;
 
 import org.spout.api.entity.component.EntityComponent;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 
 public class CameraComponent extends EntityComponent implements Camera {
@@ -46,7 +47,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateView() {
-		view = Matrix.rotate(getParent().getRotation()).multiply(Matrix.translate(getParent().getPosition()));
+		view = MathHelper.rotate(getParent().getRotation()).multiply(MathHelper.translate(getParent().getPosition()));
 		
 	}
 
@@ -59,7 +60,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 	@Override
 	public void onAttached() {
 		// TODO Get FOV
-		projection = Matrix.createPerspective(90f, 4.0f/3.0f, .001f, 1000f);
+		projection = MathHelper.createPerspective(90f, 4.0f/3.0f, .001f, 1000f);
 		updateView();
 		
 	}

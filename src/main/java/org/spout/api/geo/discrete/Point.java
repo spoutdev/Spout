@@ -137,7 +137,7 @@ public class Point extends Vector3 {
 		if (world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
-		return new Point(Vector3.add(this, other), world);
+		return new Point(MathHelper.add(this, other), world);
 	}
 
 	@Override

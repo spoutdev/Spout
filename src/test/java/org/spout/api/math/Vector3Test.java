@@ -394,20 +394,20 @@ public class Vector3Test {
 	public void testMin() {
 		Vector3 x = new Vector3(5, -15, 4);
 		Vector3 y = new Vector3(3, 2, 6);
-		assertEquals(new Vector3(3, -15, 4), Vector3.min(x, y));
+		assertEquals(new Vector3(3, -15, 4), MathHelper.min(x, y));
 	}
 
 	@Test
 	public void testMax() {
 		Vector3 x = new Vector3(5, -15, 4);
 		Vector3 y = new Vector3(3, 2, 6);
-		assertEquals(new Vector3(5, 2, 6), Vector3.max(x, y));
+		assertEquals(new Vector3(5, 2, 6), MathHelper.max(x, y));
 	}
 
 	@Test
 	public void testRand() {
 		for (int i = 0; i < 100; ++i) {
-			Vector3 x = Vector3.rand();
+			Vector3 x = MathHelper.rand();
 			assertTrue(x.x >= -1);
 			assertTrue(x.x <= 1);
 			assertTrue(x.y >= -1);
@@ -420,11 +420,11 @@ public class Vector3Test {
 	@Test
 	public void testTransformVector3Matrix() {
 		Vector3 x = new Vector3(1, 0, 0);
-		Vector3 u = x.transform(Matrix.rotateY(90));
+		Vector3 u = x.transform(MathHelper.rotateY(90));
 		testValue(u, 0, 0, -1);
 
 		Vector3 y = new Vector3(2, 4, 5);
-		Vector3 v = y.transform(Matrix.rotateX(30));
+		Vector3 v = y.transform(MathHelper.rotateX(30));
 		testValue(v, 2, .9666f, 6.333f);
 	}
 

@@ -30,9 +30,6 @@ import org.spout.api.exception.ConfigurationException;
 
 import static org.junit.Assert.*;
 
-/**
- * @author zml2008
- */
 public class ConfigurationHolderConfigurationTest {
 	private static class TestConfig extends ConfigurationHolderConfiguration {
 		public static final int TEST_ONE_VALUE = 42;

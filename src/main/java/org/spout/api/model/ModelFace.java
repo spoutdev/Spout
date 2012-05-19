@@ -25,6 +25,7 @@
  */
 package org.spout.api.model;
 
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 /**
@@ -45,7 +46,7 @@ public class ModelFace {
 	 * Recalculates the normals for this triangle.  All points must be 0'd before this.
 	 */
 	protected void doRecalculateNormals(){
-		Vector3 trinormal = Vector3.cross(v1.position.subtract(v2.position), v2.position.subtract(v3.position)).normalize();
+		Vector3 trinormal = MathHelper.cross(v1.position.subtract(v2.position), v2.position.subtract(v3.position)).normalize();
 		v1.normal = v1.normal.add(trinormal).normalize();
 		v2.normal = v2.normal.add(trinormal).normalize();
 		v3.normal = v3.normal.add(trinormal).normalize();

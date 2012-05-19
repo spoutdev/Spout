@@ -35,6 +35,7 @@ import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
@@ -154,7 +155,7 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 			if (plr == null || plr.getEntity() == null || plr.getEntity() == ignore || plr.getEntity().getTransform() == new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO)) {
 				continue;
 			}
-			double distance = Vector3.distanceSquared(position, plr.getEntity().getPosition());
+			double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
 			//Only add players that are within range.
 			if (distance < RANGESQUARED) {
 				foundPlayers.add(plr);
@@ -184,7 +185,7 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 			if (plr.getEntity() == entity) {
 				continue;
 			}
-			int distance = (int) Vector3.distanceSquared(position, plr.getEntity().getPosition());
+			int distance = (int) MathHelper.distanceSquared(position, plr.getEntity().getPosition());
 			if (distance < RANGESQUARED && distance < bestDistance) {
 				best = plr;
 				bestDistance = distance;
