@@ -119,8 +119,4 @@ public interface TaskManager {
 	 */
 	public List<Task> getPendingTasks();
 
-	/**
-	 * This method should be called regularly.  It polls the 
-	 */
-
 }

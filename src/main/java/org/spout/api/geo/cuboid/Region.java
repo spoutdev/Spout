@@ -39,6 +39,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -194,4 +195,9 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 
 		return best;
 	}
+	
+	/**
+	 * Gets the TaskManager associated with this region
+	 */
+	public abstract TaskManager getTaskManager();
 }
