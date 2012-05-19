@@ -25,9 +25,10 @@
  */
 package org.spout.api.protocol.common.message;
 
-import java.util.Arrays;
-
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
+import org.spout.api.util.SpoutToStringStyle;
 
 public class CustomDataMessage extends Message {
 	private final byte[] data;
@@ -48,6 +49,21 @@ public class CustomDataMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "CustomDataMessage{" + "data=" + Arrays.toString(data) + ", type=" + type + '}';
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("data", data)
+				.append("type", type)
+				.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {return false;}
+		if (!getClass().equals(obj.getClass())) {return false;}
+
+		final CustomDataMessage other = (CustomDataMessage) obj;
+		return new EqualsBuilder()
+				.append(this.data, other.data)
+				.append(this.type, other.type)
+				.isEquals();
 	}
 }
