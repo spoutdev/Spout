@@ -23,31 +23,31 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.util.hashing;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
+import static org.junit.Assert.assertEquals;
 
-public class BasicSkyBox extends BlockMaterial {
+import org.junit.Test;
 
-	public BasicSkyBox() {
-		super("Skybox", 10002);
-		this.setCollision(CollisionStrategy.NOCOLLIDE);
-		this.setOccludes(false);
+public class TInt21TripleHashedTest {
+
+	public void testValue(int x, int y, int z) {
+		long key = TInt21TripleHashed.key(x, y, z);
+		assertEquals(x, TInt21TripleHashed.key1(key));
+		assertEquals(y, TInt21TripleHashed.key2(key));
+		assertEquals(z, TInt21TripleHashed.key3(key));
 	}
 
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
-	}
-
-	@Override
-	public boolean isHeightLimiter() {
-		return false;
-	}
-
-	@Override
-	public void onDestroy(Block block) {
+	@Test
+	public void testHashes() {
+		testValue(-1048575, -1048575, -1048575);
+		testValue(0, 0, 0);
+		testValue(1048575, 1048575, 1048575);
+		testValue(1048575, -1048575, 1048575);
+		testValue(-1048575, 1048575, -1048575);
+		testValue(32423, 14144, 24114);
+		testValue(10475, 104865, 104835);
+		testValue(128, 512, 1024);
+		testValue(-34, 2421, -4452);
 	}
 }

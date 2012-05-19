@@ -23,31 +23,37 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.util.hashing;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
-
-public class BasicSkyBox extends BlockMaterial {
-
-	public BasicSkyBox() {
-		super("Skybox", 10002);
-		this.setCollision(CollisionStrategy.NOCOLLIDE);
-		this.setOccludes(false);
+public class TIntPairHashed {
+	/**
+	 * Creates a long key from 2 ints
+	 *
+	 * @param key1 an <code>int</code> value
+	 * @param key2 an <code>int</code> value
+	 * @return a long which is the concatenation of key1 and key2
+	 */
+	public static final long key(int key1, int key2) {
+		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
+	/**
+	 * Gets the first 32-bit integer value from an long key
+	 * 
+	 * @param key to get from
+	 * @return the first 32-bit integer value in the key
+	 */
+	public static int key1(long key) {
+		return (int) (key >> 32 & 0xFFFFFFFFL);
 	}
 
-	@Override
-	public boolean isHeightLimiter() {
-		return false;
-	}
-
-	@Override
-	public void onDestroy(Block block) {
+	/**
+	 * Gets the second 32-bit integer value from an long key
+	 * 
+	 * @param key to get from
+	 * @return the second 32-bit integer value in the key
+	 */
+	public static int key2(long key) {
+		return (int) (key & 0xFFFFFFFFL);
 	}
 }

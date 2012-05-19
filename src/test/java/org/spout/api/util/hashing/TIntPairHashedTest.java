@@ -23,25 +23,28 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.map;
+package org.spout.api.util.hashing;
 
-/**
- * A simplistic map that supports a 3 bytes for keys, using a trove int hashmap in the backend.
- */
-public class TByteTripleHashMap {
-	protected static final int key(int x, int y, int z) {
-		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class TIntPairHashedTest {
+
+	public void testValue(int x, int y) {
+		long key = TIntPairHashed.key(x, y);
+		assertEquals(x, TIntPairHashed.key1(key));
+		assertEquals(y, TIntPairHashed.key2(key));
 	}
 
-	public static final int key1(int key) {
-		return key >> 16 & 0xFF;
-	}
-
-	public static final int key2(int key) {
-		return key & 0xFF;
-	}
-
-	public static final int key3(int key) {
-		return key >> 8 & 0xFF;
+	@Test
+	public void testHashes() {
+		testValue(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		testValue(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		testValue(0, 0);
+		testValue(2422, 65262);
+		testValue(373743, -435451);
+		testValue(33321, -5631);
+		testValue(-4096, 2048);
 	}
 }

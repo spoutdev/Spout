@@ -23,31 +23,37 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.util.hashing;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
-
-public class BasicSkyBox extends BlockMaterial {
-
-	public BasicSkyBox() {
-		super("Skybox", 10002);
-		this.setCollision(CollisionStrategy.NOCOLLIDE);
-		this.setOccludes(false);
+public class TNibbleDualHashed {
+	/**
+	 * Packs the first 4 most significant bits of each byte into a <code>byte</code>
+	 *
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>byte</code> value
+	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
+	 */
+	public static byte key(int key1, int key2) {
+		return (byte) (key1 << 4 | (key2 & 0xF));
 	}
 
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
+	/**
+	 * Returns the 4 most significant bits in the byte value.
+	 * 
+	 * @param composite to separate
+	 * @return the 4 most significant bits in a byte
+	 */
+	public static byte key1(int composite) {
+		return (byte) ((composite >> 4) & 0xF);
 	}
 
-	@Override
-	public boolean isHeightLimiter() {
-		return false;
-	}
-
-	@Override
-	public void onDestroy(Block block) {
+	/**
+	 * Returns the 4 least significant bits in the byte value.
+	 * 
+	 * @param composite to separate
+	 * @return the 4 least significant bits in a byte
+	 */
+	public static byte key2(int composite) {
+		return (byte) (composite & 0xF);
 	}
 }

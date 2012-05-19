@@ -23,31 +23,48 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.util.hashing;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
-
-public class BasicSkyBox extends BlockMaterial {
-
-	public BasicSkyBox() {
-		super("Skybox", 10002);
-		this.setCollision(CollisionStrategy.NOCOLLIDE);
-		this.setOccludes(false);
+public class TByteTripleHashed {
+	/**
+	 * Packs the first 8 most significant bits of each byte into an <code>int</code>
+	 *
+	 * @param x an <code>byte</code> value
+	 * @param y an <code>byte</code> value
+	 * @param z an <code>byte</code> value
+	 * @return The first 8 most significant bits of each byte packed into an <code>int</code>
+	 */
+	public static final int key(int x, int y, int z) {
+		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
 	}
 
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
+	/**
+	 * Gets the first 8-bit integer value from an int key
+	 * 
+	 * @param key to get from
+	 * @return the first 8-bit integer value in the key
+	 */
+	public static final int key1(int key) {
+		return key >> 16 & 0xFF;
 	}
 
-	@Override
-	public boolean isHeightLimiter() {
-		return false;
+	/**
+	 * Gets the second 8-bit integer value from an int key
+	 * 
+	 * @param key to get from
+	 * @return the second 8-bit integer value in the key
+	 */
+	public static final int key2(int key) {
+		return key & 0xFF;
 	}
 
-	@Override
-	public void onDestroy(Block block) {
+	/**
+	 * Gets the third 8-bit integer value from an int key
+	 * 
+	 * @param key to get from
+	 * @return the third 8-bit integer value in the key
+	 */
+	public static final int key3(int key) {
+		return key >> 8 & 0xFF;
 	}
 }

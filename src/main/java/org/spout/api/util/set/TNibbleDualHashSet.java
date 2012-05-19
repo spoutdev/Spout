@@ -23,31 +23,62 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.util.set;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.util.hashing.TNibbleDualHashed;
 
-public class BasicSkyBox extends BlockMaterial {
+import gnu.trove.iterator.TByteIterator;
+import gnu.trove.set.TByteSet;
+import gnu.trove.set.hash.TByteHashSet;
 
-	public BasicSkyBox() {
-		super("Skybox", 10002);
-		this.setCollision(CollisionStrategy.NOCOLLIDE);
-		this.setOccludes(false);
+/**
+ * A hash set that uses two 4-bit integers as key, backed by a byte trove
+ * hashset.
+ */
+public class TNibbleDualHashSet extends TNibbleDualHashed {
+	protected TByteSet set;
+
+	public TNibbleDualHashSet() {
+		set = new TByteHashSet(100);
 	}
 
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
+	public TNibbleDualHashSet(int capacity) {
+		set = new TByteHashSet(capacity);
 	}
 
-	@Override
-	public boolean isHeightLimiter() {
-		return false;
+	public TNibbleDualHashSet(TByteSet set) {
+		this.set = set;
 	}
 
-	@Override
-	public void onDestroy(Block block) {
+	public boolean add(int key1, int key2) {
+		return set.add(key(key1, key2));
+	}
+
+	public boolean contains(int key1, int key2) {
+		return set.contains(key(key1, key2));
+	}
+
+	public void clear() {
+		set.clear();
+	}
+
+	public boolean isEmpty() {
+		return set.isEmpty();
+	}
+
+	public TByteIterator iterator() {
+		return set.iterator();
+	}
+
+	public boolean remove(int key1, int key2) {
+		return set.remove(key(key1, key2));
+	}
+
+	public int size() {
+		return set.size();
+	}
+
+	public byte[] toArray() {
+		return set.toArray();
 	}
 }
