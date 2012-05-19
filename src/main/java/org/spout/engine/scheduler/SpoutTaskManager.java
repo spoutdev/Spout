@@ -27,7 +27,7 @@ public class SpoutTaskManager implements TaskManager {
 	
 	private final AtomicBoolean alive;
 	
-	private AtomicLong upTime = new AtomicLong(0);
+	private final AtomicLong upTime;
 	
 	private final Object scheduleLock = new Object();
 	
@@ -36,9 +36,14 @@ public class SpoutTaskManager implements TaskManager {
 	}
 	
 	public SpoutTaskManager(boolean mainThread, Thread t) {
+		this(mainThread, t, 0L);
+	}
+	
+	public SpoutTaskManager(boolean mainThread, Thread t, long age) {
 		this.taskQueue = new TaskPriorityQueue(t);
 		this.mainThread = mainThread;
 		this.alive = new AtomicBoolean(true);
+		this.upTime = new AtomicLong(age);
 	}
 
 	@Override
@@ -187,6 +192,9 @@ public class SpoutTaskManager implements TaskManager {
 	}
 	
 	public boolean shutdown(long timeout) {
+		if (!mainThread) {
+			throw new IllegalStateException("Only the task manager for the main thread should be shutdown, since the other task managers do not support async tasks");
+		}
 		alive.set(false);
 		cancelAllTasks();
 		long endTime = System.currentTimeMillis() + timeout;

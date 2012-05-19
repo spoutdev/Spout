@@ -60,17 +60,19 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
-
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.TripleInt;
+import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
@@ -152,6 +154,8 @@ public class SpoutRegion extends Region {
 	 */
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 	private final Map<Vector3, BlockController> blockControllers = new HashMap<Vector3, BlockController>();
+	
+	private final SpoutTaskManager taskManager;
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, LoadGenerateOption.NO_LOAD);
@@ -177,6 +181,14 @@ public class SpoutRegion extends Region {
 		regionDirectory.mkdirs();
 		File regionFile = new File(regionDirectory, "reg" + getX() + "_" + getY() + "_" + getZ() + ".spr");
 		this.chunkStore = new BAAWrapper(regionFile, SEGMENT_SIZE, REGION_SIZE_CUBED, TIMEOUT);
+		Thread t;
+		AsyncExecutor e = manager.getExecutor();
+		if (e instanceof Thread) {
+			t = (Thread)e;
+		} else {
+			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
+		}
+		taskManager = new SpoutTaskManager(false, t, world.getAge());
 	}
 
 	@Override
@@ -468,6 +480,7 @@ public class SpoutRegion extends Region {
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
+				taskManager.heartbeat(delta);
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
@@ -920,5 +933,10 @@ public class SpoutRegion extends Region {
 		File regionDirectory = new File(worldDirectory, "region");
 		File regionFile = new File(regionDirectory, "reg" + x + "_" + y + "_" + z + ".spr");
 		return regionFile.exists();
+	}
+
+	@Override
+	public TaskManager getTaskManager() {
+		return taskManager;
 	}
 }
