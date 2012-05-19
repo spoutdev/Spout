@@ -453,8 +453,7 @@ public class SpoutRegion extends Region {
 			Point pos = e.getPosition();
 			setBlockController(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), (BlockController) controller);
 		}
-
-		this.allocate((SpoutEntity)e);
+		this.allocate((SpoutEntity) e);
 	}
 
 	public void removeEntity(Entity e) {
@@ -821,16 +820,16 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void setBlockController(int x, int y, int z, BlockController controller) {
-		BlockController previous = blockControllers.remove(new Vector3(x, y, z));
-		if (previous != null && previous.getParent() != null) {
-			previous.getParent().kill();
+		Vector3 pos = new Vector3(x, y, z);
+		if (controller == null && controller.getParent() != null) {
+			controller.getParent().setController(null);
+			blockControllers.remove(pos);
+
 		}
-		if (controller == null) {
-			return;
-		} else if (controller.getParent() == null) {
-			this.getWorld().createAndSpawnEntity(new Point(this.getWorld(), x, y, z), controller);
+		else if (controller != null && controller.getParent() == null) {
+			this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), controller);
 		} else {
-			blockControllers.put(new Vector3(x, y, z), controller);
+			blockControllers.put(pos, controller);
 		}
 	}
 
