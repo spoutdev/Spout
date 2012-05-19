@@ -105,9 +105,11 @@ public class SpoutEntity implements Entity, Tickable {
 		viewDistanceLive.set(viewDistance);
 
 		controllerLive.set(controller);
-		controller.attachToEntity(this);
-		if (controller instanceof PlayerController) {
-			setObserver(true);
+		if (controller != null) {
+			controller.attachToEntity(this);
+			if (controller instanceof PlayerController) {
+				setObserver(true);
+			}
 		}
 	}
 	
