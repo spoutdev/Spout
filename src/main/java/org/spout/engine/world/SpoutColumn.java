@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
@@ -106,7 +105,7 @@ public class SpoutColumn {
 	}
 
 	public void notifyChunkAdded(Chunk c, int x, int z) {
-		int y = c.getY() << Chunk.CHUNK_SIZE_BITS;
+		int y = c.getBlockY();
 
 		AtomicInteger v = getAtomicInteger(x, z);
 		int maxY = y + Chunk.CHUNK_SIZE - 1;
@@ -116,7 +115,7 @@ public class SpoutColumn {
 		}
 
 		for (int yy = maxY; yy >= y; yy--) {
-			if (!isAir(c, x, yy, z)) {
+			if (isHeightLimiter(c, x, yy, z)) {
 				notifyBlockChange(v, x, yy, z);
 				return;
 			}
@@ -137,7 +136,7 @@ public class SpoutColumn {
 		} else if (y == value) {
 			falling(x, v, z);
 		} else {
-			if (!isAir(x, y, z)) {
+			if (isHeightLimiter(x, y, z)) {
 				v.set(y);
 				falling(x, v, z);
 			}
@@ -147,7 +146,7 @@ public class SpoutColumn {
 	private void falling(int x, AtomicInteger v, int z) {
 		while (true) {
 			int value = v.get();
-			if (!isAir(x, value, z)) {
+			if (isHeightLimiter(x, value, z)) {
 				return;
 			} else {
 				v.compareAndSet(value, value - 1);
@@ -155,23 +154,15 @@ public class SpoutColumn {
 		}
 	}
 
-	private boolean isAir(int x, int y, int z) {
+	private boolean isHeightLimiter(int x, int y, int z) {
 		int xx = (this.x << COLUMN_SIZE_BITS) + (x & BIT_MASK);
 		int yy = y;
 		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
-		return isAir(world.getBlockMaterial(xx, yy, zz));
+		return world.getBlockMaterial(xx, yy, zz).isHeightLimiter();
 	}
 
-	private boolean isAir(Chunk c, int x, int y, int z) {
-		return isAir(c.getBlockMaterial(x, y, z));
-	}
-
-	private boolean isAir(BlockMaterial m) {
-		if (m == null) {
-			return false;
-		} else {
-			return m.getOpacity() == 0;
-		}
+	private boolean isHeightLimiter(Chunk c, int x, int y, int z) {
+		return c.getBlockMaterial(x, y, z).isHeightLimiter();
 	}
 
 	private AtomicInteger getAtomicInteger(int x, int z) {

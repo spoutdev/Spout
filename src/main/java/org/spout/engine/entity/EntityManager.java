@@ -140,7 +140,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 		if (currentId != SpoutEntity.NOTSPAWNEDID) {
 			entities.put(currentId, entity);
 			getRawAll(entity.getController().getClass()).add(entity);
-			entity.setOwningThread(entityRegion.getExceutionThread());
+			entity.setOwningThread(entityRegion.getExecutionThread());
 			return currentId;
 		} else {
 			int id = nextId.getAndIncrement();
@@ -154,7 +154,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 				getRawAll(controller.getClass()).add(entity);
 			}
 			
-			entity.setOwningThread(entityRegion.getExceutionThread());
+			entity.setOwningThread(entityRegion.getExecutionThread());
 
 			return id;
 		}
