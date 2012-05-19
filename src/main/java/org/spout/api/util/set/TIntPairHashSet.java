@@ -23,7 +23,9 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.map;
+package org.spout.api.util.set;
+
+import org.spout.api.util.hashing.TIntPairHashed;
 
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.hash.TLongHashSet;
@@ -34,7 +36,7 @@ import gnu.trove.set.hash.TLongHashSet;
  * @author Afforess
  *
  */
-public class TIntPairHashSet {
+public class TIntPairHashSet extends TIntPairHashed {
 	private TLongHashSet set;
 
 	public TIntPairHashSet() {
@@ -50,13 +52,11 @@ public class TIntPairHashSet {
 	}
 
 	public boolean add(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return set.add(key);
+		return set.add(key(key1, key2));
 	}
 
 	public boolean contains(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return set.contains(key);
+		return set.contains(key(key1, key2));
 	}
 
 	public void clear() {
@@ -76,23 +76,10 @@ public class TIntPairHashSet {
 	}
 
 	public boolean remove(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return set.remove(key);
+		return set.remove(key(key1, key2));
 	}
 
 	public int size() {
 		return set.size();
-	}
-
-	public static int longToKey1(long composite) {
-		return (int) (composite >> 32 & 4294967295L);
-	}
-
-	public static int longToKey2(long composite) {
-		return (int) (composite & 4294967295L);
-	}
-
-	public static long keysToLong(int key1, int key2) {
-		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 }

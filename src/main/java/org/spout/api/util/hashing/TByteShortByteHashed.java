@@ -23,27 +23,48 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.map;
+package org.spout.api.util.hashing;
 
-/**
- * A simplistic map that supports (byte, short, byte) keys, using a trove int *
- * hashmap in the backend.
- *
- */
-public class TByteShortByteKeyedMap {
-	public static final int key(int x, int y, int z) {
-		return (x & 0xFF) << 24 | (z & 0xFF) << 16 | y & 0xFFFF;
+public class TByteShortByteHashed {
+	/**
+	 * Creates a long key from 2 bytes and a short
+	 *
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>short</code> value
+	 * @param key3 a <code>byte</code> value
+	 * @return a long which is the concatenation of key1, key2 and key3
+	 */
+	public static final int key(int key1, int key2, int key3) {
+		return (key1 & 0xFF) << 24 | (key3 & 0xFF) << 16 | key2 & 0xFFFF;
 	}
 
-	public static byte getXFromKey(int key) {
+	/**
+	 * Gets the first 8-bit integer value from a long key
+	 * 
+	 * @param key to get from
+	 * @return the first 8-bit integer value in the key
+	 */
+	public static byte key1(int key) {
 		return (byte) (key >> 24);
 	}
 
-	public static short getYFromKey(int key) {
+	/**
+	 * Gets the second 16-bit integer value from a long key
+	 * 
+	 * @param key to get from
+	 * @return the second 16-bit integer value in the key
+	 */
+	public static short key2(int key) {
 		return (short) key;
 	}
 
-	public static byte getZFromKey(int key) {
+	/**
+	 * Gets the third 8-bit integer value from a long key
+	 * 
+	 * @param key to get from
+	 * @return the third 8-bit integer value in the key
+	 */
+	public static byte key3(int key) {
 		return (byte) (key >> 16);
 	}
 }

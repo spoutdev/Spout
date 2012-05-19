@@ -25,6 +25,8 @@
  */
 package org.spout.api.util.set;
 
+import org.spout.api.util.hashing.TInt21TripleHashed;
+
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -33,13 +35,13 @@ import gnu.trove.set.hash.TLongHashSet;
  * A hash set that uses three 21bit integers as key, backed by a long trove
  * hashset. 1 bit is wasted.
  */
-public class TInt21HashSet {
+public class TInt21TripleHashSet extends TInt21TripleHashed {
 	protected TLongSet set;
 
 	/**
 	 * Creates a new <code>TInt21HashSet</code> instance backend by a {@see TLongHashSet} instance with an capacity of 100 and the default load factor.
 	 */
-	public TInt21HashSet() {
+	public TInt21TripleHashSet() {
 		set = new TLongHashSet(100);
 	}
 
@@ -48,7 +50,7 @@ public class TInt21HashSet {
 	 *
 	 * @param capacity an <code>int</code> value
 	 */
-	public TInt21HashSet(int capacity) {
+	public TInt21TripleHashSet(int capacity) {
 		set = new TLongHashSet(capacity);
 	}
 
@@ -57,7 +59,7 @@ public class TInt21HashSet {
 	 *
 	 * @param set
 	 */
-	public TInt21HashSet(TLongSet set) {
+	public TInt21TripleHashSet(TLongSet set) {
 		if (set == null) {
 			throw new IllegalArgumentException("The backend can not be null.");
 		}
@@ -157,17 +159,5 @@ public class TInt21HashSet {
 	 */
 	public long[] toArray() {
 		return set.toArray();
-	}
-
-	/**
-	 * Packs the most significant and the twenty least significant of each int pinto a <code>long</code>
-	 *
-	 * @param x an <code>int</code> value
-	 * @param y an <code>int</code> value
-	 * @param z an <code>int</code> value
-	 * @return the most significant and the twenty least significant of each int packed into a <code>long</code>
-	 */
-	protected static final long key(int x, int y, int z) {
-		return ((long) ((x >> 11) & 0x100000 | x & 0xFFFFF)) << 42 | ((long) ((y >> 11) & 0x100000 | y & 0xFFFFF)) << 21 | ((z >> 11) & 0x100000 | z & 0xFFFFF);
 	}
 }

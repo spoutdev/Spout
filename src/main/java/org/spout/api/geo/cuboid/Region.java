@@ -60,9 +60,41 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	 * Number of blocks on a side of a region
 	 */
 	public final static int EDGE = 256;
+	/**
+	 * The number of bits to shift to go from block to region or region to block coordinates.
+	 */
+	public static final int BLOCK_SHIFT = REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
+	/**
+	 * Mask to convert a block integer coordinate into the region's base
+	 */
+	public final static int BASE_MASK = EDGE - 1;
 
 	public Region(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), EDGE, true);
+	}
+
+	/**
+	 * Gets the x-coordinate of this region as a Block coordinate
+	 * @return the x-coordinate of the first block in this region
+	 */
+	public int getBlockX() {
+		return this.getX() << BLOCK_SHIFT;
+	}
+
+	/**
+	 * Gets the y-coordinate of this region as a Block coordinate
+	 * @return the y-coordinate of the first block in this region
+	 */
+	public int getBlockY() {
+		return this.getY() << BLOCK_SHIFT;
+	}
+
+	/**
+	 * Gets the z-coordinate of this region as a Block coordinate
+	 * @return the z-coordinate of the first block in this region
+	 */
+	public int getBlockZ() {
+		return this.getZ() << BLOCK_SHIFT;
 	}
 
 	/**

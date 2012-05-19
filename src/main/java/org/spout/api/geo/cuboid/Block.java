@@ -152,7 +152,7 @@ public interface Block extends MaterialState {
 	 * @return a clone of this block with the new source set
 	 */
 	public Block setSource(Source source);
-	
+
 	@Override
 	public BlockMaterial getMaterial();
 
@@ -217,16 +217,7 @@ public interface Block extends MaterialState {
 	 * @return the block light level
 	 * @throws NullPointerException
 	 */
-	public byte getLight();
-
-	/**
-	 * Sets the block light level to the given light level
-	 *
-	 * @param light level to set to
-	 * @return this Block
-	 * @throws NullPointerException
-	 */
-	public Block setLight(byte level);
+	public byte getBlockLight();
 
 	/**
 	 * Gets the sky light level
@@ -237,21 +228,44 @@ public interface Block extends MaterialState {
 	public byte getSkyLight();
 
 	/**
+	 * Gets the light level, which is the maximum of the block or sky light
+	 *
+	 * @return the light level
+	 * @throws NullPointerException
+	 */
+	public byte getLight();
+
+	/**
+	 * Gets the block light this block sends to the face given
+	 * 
+	 * @param face the light is going
+	 * @return the block light level
+	 */
+	public byte getBlockLightTo(BlockFace face);
+
+	/**
+	 * Gets the sky light this block sends to the face given
+	 * 
+	 * @param face the light is going
+	 * @return the sky light level
+	 */
+	public byte getSkyLightTo(BlockFace face);
+
+	/**
+	 * Gets the light this block sends to the face given
+	 * 
+	 * @param face the light is going
+	 * @return the light level
+	 */
+	public byte getLightTo(BlockFace face);
+
+	/**
 	 * Gets the biome type for this block,
 	 * if the world generator used uses biomes.
 	 *
 	 * @return The biome type for the block
 	 */
 	public Biome getBiomeType();
-
-	/**
-	 * Sets the sky light level to the given light level
-	 *
-	 * @param light level to set to
-	 * @return this Block
-	 * @throws NullPointerException
-	 */
-	public Block setSkyLight(byte level);
 
 	/**
 	 * Gets a controller associated with the block, or null if it has none.
@@ -289,4 +303,19 @@ public interface Block extends MaterialState {
 	 * @return this Block
 	 */
 	public Block update(boolean around);
+
+	/**
+	 * Performs a lighting update on this block and the neighboring blocks
+	 * 
+	 * @return this Block
+	 */
+	public Block updateLighting();
+
+	/**
+	 * Performs a lighting update on this block and/or neighboring blocks
+	 * 
+	 * @param True to update neighboring blocks, False to update only this block
+	 * @return this Block
+	 */
+	public Block updateLighting(boolean around);
 }

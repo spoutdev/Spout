@@ -23,31 +23,18 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.util.hashing;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
-
-public class BasicSkyBox extends BlockMaterial {
-
-	public BasicSkyBox() {
-		super("Skybox", 10002);
-		this.setCollision(CollisionStrategy.NOCOLLIDE);
-		this.setOccludes(false);
-	}
-
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
-	}
-
-	@Override
-	public boolean isHeightLimiter() {
-		return false;
-	}
-
-	@Override
-	public void onDestroy(Block block) {
+public class TNibbleTripleHashed {
+	/**
+	 * Packs the first 4 most significant bits of each byte into a <code>short</code>
+	 *
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>byte</code> value
+	 * @param key3 a <code>byte</code> value
+	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
+	 */
+	public static final short key(int key1, int key2, int key3) {
+		return (short) ((key1 & 0xF) << 8 | (key2 & 0xF) << 4 | key3 & 0xF);
 	}
 }
