@@ -485,9 +485,9 @@ public class SpoutRegion extends Region {
 				for (int i = 0; i < updates.length; i++) {
 					int key = updates[i];
 					Source source = (Source) sources[i];
-					x = TByteTripleObjectHashMap.key1(key);
-					y = TByteTripleObjectHashMap.key2(key);
-					z = TByteTripleObjectHashMap.key3(key);
+					x = TByteTripleObjectHashMap.key1(key) & 0xFF;
+					y = TByteTripleObjectHashMap.key2(key) & 0xFF;
+					z = TByteTripleObjectHashMap.key3(key) & 0xFF;
 					//switch region block coords (0-255) to a chunk index
 					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
 					if (chunk != null) {
@@ -499,42 +499,6 @@ public class SpoutRegion extends Region {
 						}
 					}
 				}
-
-				//TODO: MOVE TO SEPARATE WORLD THREAD
-				/*
-				for (int i = 0; i < LIGHT_PER_TICK; i++) {
-					SpoutChunk toLight = lightingQueue.poll();
-					if (toLight == null) {
-						break;
-					}
-					if (toLight.isLoaded()) {
-						toLight.processQueuedLighting();
-					}
-				}
-				Block block;
-				SpoutChunk chunk;
-				for (int i = 0; i < LIGHT_PER_TICK; i++) {
-					synchronized (queuedLightingUpdates) {
-						if (queuedLightingUpdates.isEmpty()) {
-							break;
-						}
-						updates = queuedLightingUpdates.toArray();
-						queuedLightingUpdates.clear();
-					}
-					//perform lighting updates
-					for (int key : updates) {
-						x = TByteTripleHashSet.key1(key);
-						y = TByteTripleHashSet.key2(key);
-						z = TByteTripleHashSet.key3(key);
-						chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
-						if (chunk != null) {
-							block = chunk.getBlock(x, y, z);
-							block.setSkyLight(block.getReceivingSkyLight());
-							//block.setLight(block.getReceivingLight());
-						}
-					}
-				}
-				*/
 
 				for (int i = 0; i < POPULATE_PER_TICK; i++) {
 					Chunk toPopulate = populationQueue.poll();
@@ -931,7 +895,6 @@ public class SpoutRegion extends Region {
 	 * 
 	 * @return true if exists, false if doesn't exist
 	 */
-	
 	public static boolean regionFileExists(SpoutWorld world, int x, int y, int z) {
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
