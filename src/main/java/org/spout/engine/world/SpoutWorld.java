@@ -73,6 +73,8 @@ import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
+import org.spout.engine.scheduler.SpoutTaskManager;
+import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -142,6 +144,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
 	
+	private final SpoutTaskManager taskManager;
+	
 	/**
 	 * Hashcode cache
 	 */
@@ -172,6 +176,16 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.lightingManager = new SpoutWorldLighting(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"));
 		
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
+		
+		AsyncExecutor e = getExecutor();
+		Thread t = null;
+		if (e instanceof Thread) {
+			t = (Thread)e;
+		} else {
+			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
+		}
+		// TODO FIX age (should be persisted)
+		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, getAge());
 	}
 
 	public void start() {
@@ -409,6 +423,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		switch (stage) {
 			case 0: {
 				parallelTaskManager.heartbeat(delta);
+				taskManager.heartbeat(delta);
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
@@ -774,6 +789,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;
+	}
+	
+	@Override
+	public TaskManager getTaskManager() {
+		return taskManager;
 	}
 
 }
