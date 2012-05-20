@@ -3,7 +3,6 @@ package org.spout.engine.scheduler;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +16,10 @@ import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.map.concurrent.TSyncIntObjectHashMap;
@@ -41,6 +42,8 @@ public class SpoutParallelTaskManager implements TaskManager {
 	private final ConcurrentLinkedQueue<SpoutRegion> newRegions = new ConcurrentLinkedQueue<SpoutRegion>();
 
 	private final ConcurrentLinkedQueue<SpoutTask> newTasks = new ConcurrentLinkedQueue<SpoutTask>();
+	
+	private final Scheduler scheduler;
 
 	public SpoutParallelTaskManager(Engine engine) {
 		if (engine == null) {
@@ -49,9 +52,10 @@ public class SpoutParallelTaskManager implements TaskManager {
 		upTime = new AtomicLong(0);
 		this.engine = engine;
 		this.world = null;
+		this.scheduler = engine.getScheduler();
 	}
 	
-	public SpoutParallelTaskManager(SpoutWorld w) {
+	public SpoutParallelTaskManager(Scheduler scheduler, SpoutWorld w) {
 		if (w == null) {
 			throw new IllegalArgumentException("World cannot be set to null");	
 		}
@@ -59,40 +63,46 @@ public class SpoutParallelTaskManager implements TaskManager {
 		this.engine = null;
 		this.world = new ArrayList<World>();
 		this.world.add(w);
+		this.scheduler = scheduler;
 	}
 
 	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
-		return scheduleSyncDelayedTask(plugin, task, 0);
+		return scheduleSyncDelayedTask(plugin, task, TaskPriority.CRITICAL);
 	}
 	
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return scheduleSyncRepeatingTask(plugin, task, delay, -1);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+		return scheduleSyncDelayedTask(plugin, task, 0, priority);
+	}
+	
+	@Override
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
 	}
 
 	@Override
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
-		return schedule(new SpoutTask(this, plugin, task, true, delay, period));
+	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority));
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return scheduleAsyncRepeatingTask(plugin, task, delay, -1, priority);
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task) {
-		return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+		return scheduleAsyncRepeatingTask(plugin, task, 0, -1, priority);
 	}
 
 	@Override
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
+	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 	
 	@Override
-	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task) {
+	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	

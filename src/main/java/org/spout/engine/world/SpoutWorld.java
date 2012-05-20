@@ -140,7 +140,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
-	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
+	protected final SpoutParallelTaskManager parallelTaskManager;
 	
 	/**
 	 * Hashcode cache
@@ -170,6 +170,8 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
 		this.lightingManager = new SpoutWorldLighting(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"));
+		
+		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
 	}
 
 	public void start() {

@@ -175,7 +175,7 @@ public class SpoutRegion extends Region {
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
-		taskManager = new SpoutTaskManager(false, t, world.getAge());
+		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
 	}
 
 	@Override

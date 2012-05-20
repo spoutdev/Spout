@@ -1,9 +1,8 @@
 package org.spout.engine.scheduler;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
-
-import org.spout.api.scheduler.Task;
 
 public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 
@@ -102,6 +101,23 @@ public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException("Not supported");
+	}
+	
+	@Override
+	public String toString() {
+		Iterator<SpoutTask> i = iterator();
+		StringBuilder sb = new StringBuilder("{");
+		boolean first = true;
+		while (i.hasNext()) {
+			SpoutTask t = i.next();
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append("{" + t.getTaskId() + ":" + t.getNextCallTime() + "}");
+		}
+		return sb.append("}").toString();
 	}
 }
 

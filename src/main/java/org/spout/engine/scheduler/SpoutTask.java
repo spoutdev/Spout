@@ -29,9 +29,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.spout.api.Spout;
 import org.spout.api.scheduler.ParallelRunnable;
+import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Named;
 import org.spout.engine.world.SpoutRegion;
 
@@ -47,6 +50,10 @@ public class SpoutTask implements Task {
 	 * The ID of this task.
 	 */
 	private final int taskId;
+	/**
+	 * The task priority
+	 */
+	private final TaskPriority priority;
 	/**
 	 * The Runnable this task is representing.
 	 */
@@ -82,11 +89,26 @@ public class SpoutTask implements Task {
 	private final AtomicBoolean executing;
 	
 	/**
+	 * Indicates if the task is being deferred and when it started
+	 */
+	private long deferBegin = -1;
+	
+	/**
+	 * The manager associated with this task
+	 */
+	private final TaskManager manager;
+	
+	/**
+	 * The scheduler for the engine
+	 */
+	private final Scheduler scheduler;
+	
+	/**
 	 * Creates a new task with the specified number of ticks between consecutive
 	 * calls to {@link #execute()}.
 	 * @param ticks The number of ticks.
 	 */
-	public SpoutTask(TaskManager manager, Object owner, Runnable task, boolean sync, long delay, long period) {
+	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority) {
 		this.taskId = nextTaskId.getAndIncrement();
 		this.nextCallTime = new AtomicLong(manager.getUpTime() + delay);
 		this.alive = new AtomicBoolean(true);
@@ -96,6 +118,9 @@ public class SpoutTask implements Task {
 		this.delay = delay;
 		this.period = period;
 		this.sync = sync;
+		this.priority = priority;
+		this.manager = manager;
+		this.scheduler = scheduler;
 	}
 	
 	/**
@@ -107,9 +132,9 @@ public class SpoutTask implements Task {
 	public SpoutTask getRegionTask(SpoutRegion r) {
 		if (task instanceof ParallelRunnable) {
 			ParallelRunnable newRunnable = ((ParallelRunnable) task).newInstance(r);
-			return new SpoutTask(r.getTaskManager(), owner, newRunnable, sync, delay, period);
+			return new SpoutTask(r.getTaskManager(), scheduler, owner, newRunnable, sync, delay, period, priority);
 		} else {
-			return new SpoutTask(r.getTaskManager(), owner, task, sync, delay, period);
+			return new SpoutTask(r.getTaskManager(), scheduler, owner, task, sync, delay, period, priority);
 		}
 	}
 
@@ -165,26 +190,30 @@ public class SpoutTask implements Task {
 		if (!alive.get()) {
 			return false;
 		}
+
+		if (scheduler.isServerLoaded()) {
+			if (attemptDefer()) {
+				updateCallTime(SpoutScheduler.PULSE_EVERY);
+				return false;
+			}
+		}
 		
 		if (!executing.compareAndSet(false, true)) {
 			return false;
 		}
-		
-		task.run();
-		
-		if (nextCallTimeLock.compareAndSet(false, true)) {
-			nextCallTime.addAndGet(period);
-			nextCallTimeLock.set(false);
-		} else {
-			throw new IllegalStateException("Attempt made to modify next call time when the task was in the queue.");
+
+		try {
+			task.run();
+
+			updateCallTime();
+
+			if (period <= 0) {
+				alive.set(false);
+			}
+		} finally {
+			executing.set(false);
 		}
 
-		if (period <= 0) {
-			alive.set(false);
-		}
-		
-		executing.set(false);
-		
 		return true;
 	}
 	
@@ -221,6 +250,39 @@ public class SpoutTask implements Task {
 			return other.taskId == taskId;
 		} else {
 			return false;
+		}
+	}
+	
+	private boolean attemptDefer() {
+		if (priority.getMaxDeferred() <= 0) {
+			return false;
+		} else if (deferBegin < 0) {
+			deferBegin = manager.getUpTime();
+			return true;
+		} else {
+			if (manager.getUpTime() - deferBegin > priority.getMaxDeferred()) {
+				deferBegin = -1;
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
+	
+	private void updateCallTime() {
+		updateCallTime(period);
+	}
+	
+	private void updateCallTime(long offset) {
+		if (nextCallTimeLock.compareAndSet(false, true)) {
+			long now = manager.getUpTime();
+			if (nextCallTime.addAndGet(offset) <= now) {
+				nextCallTime.set(now + 1);
+			}			
+			nextCallTimeLock.set(false);
+		} else {
+			throw new IllegalStateException("Attempt made to modify next call time when the task was in the queue.");
 		}
 	}
 

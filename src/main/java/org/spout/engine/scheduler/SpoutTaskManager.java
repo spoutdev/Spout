@@ -11,8 +11,10 @@ import java.util.logging.Logger;
 
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.Worker;
 
 public class SpoutTaskManager implements TaskManager {
@@ -31,64 +33,72 @@ public class SpoutTaskManager implements TaskManager {
 	
 	private final Object scheduleLock = new Object();
 	
-	public SpoutTaskManager(boolean mainThread) {
-		this(mainThread, Thread.currentThread());
+	private final Scheduler scheduler;
+	
+	public SpoutTaskManager(Scheduler scheduler, boolean mainThread) {
+		this(scheduler, mainThread, Thread.currentThread());
 	}
 	
-	public SpoutTaskManager(boolean mainThread, Thread t) {
-		this(mainThread, t, 0L);
+	public SpoutTaskManager(Scheduler scheduler, boolean mainThread, Thread t) {
+		this(scheduler, mainThread, t, 0L);
 	}
 	
-	public SpoutTaskManager(boolean mainThread, Thread t, long age) {
+	public SpoutTaskManager(Scheduler scheduler, boolean mainThread, Thread t, long age) {
 		this.taskQueue = new TaskPriorityQueue(t);
 		this.mainThread = mainThread;
 		this.alive = new AtomicBoolean(true);
 		this.upTime = new AtomicLong(age);
+		this.scheduler = scheduler;
 	}
 
 	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
-		return scheduleSyncDelayedTask(plugin, task, 0);
+		return scheduleSyncDelayedTask(plugin, task, 0, TaskPriority.CRITICAL);
 	}
 	
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return scheduleSyncRepeatingTask(plugin, task, delay, -1);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+		return scheduleSyncDelayedTask(plugin, task, 0, priority);
+	}
+	
+	@Override
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
 	}
 
 	@Override
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
-		return schedule(new SpoutTask(this, plugin, task, true, delay, period));
+	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority));
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return scheduleAsyncRepeatingTask(plugin, task, delay, -1, priority);
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task) {
-		return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+		return scheduleAsyncRepeatingTask(plugin, task, 0, -1, priority);
 	}
 
 	@Override
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
+	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
 		if (!alive.get()) {
 			return -1;
 		} else if (!mainThread) {
 			throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 		} else {
-			return schedule(new SpoutTask(this, plugin, task, false, delay, period));
+			return schedule(new SpoutTask(this, scheduler, plugin, task, false, delay, period, priority));
 		}
 	}
 	
 	@Override
-	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task) {
+	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 	public void heartbeat(long delta) {
-		long upTime = this.upTime.getAndAdd(delta);
+		long upTime = this.upTime.addAndGet(delta);
 		while ((taskQueue.hasPendingTasks(upTime))) {
 			SpoutTask currentTask = taskQueue.getPendingTask(upTime);
 			if (!currentTask.isAlive()) {

@@ -40,7 +40,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.SnapshotLock;
 import org.spout.api.scheduler.Task;
-import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
@@ -95,7 +95,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * The number of milliseconds between pulses.
 	 */
-	private static final int PULSE_EVERY = 50;
+	protected static final int PULSE_EVERY = 50;
 	/**
 	 * Target Frames per Second for the renderer
 	 */
@@ -131,7 +131,7 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
 		
-		taskManager = new SpoutTaskManager(true, mainThread);
+		taskManager = new SpoutTaskManager(this, true, mainThread);
 		
 		parallelTaskManager = (SpoutParallelTaskManager)server.getParallelTaskManager();
 	}
@@ -463,37 +463,42 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return taskManager.scheduleSyncDelayedTask(plugin, task, delay);
-	}
-
-	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task);
 	}
-
+	
 	@Override
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
-		return taskManager.scheduleSyncRepeatingTask(plugin, task, delay, period);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return taskManager.scheduleSyncDelayedTask(plugin, task, delay, priority);
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay) {
-		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+		return taskManager.scheduleSyncDelayedTask(plugin, task, priority);
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task) {
-		return taskManager.scheduleAsyncDelayedTask(plugin, task);
+	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+		return taskManager.scheduleSyncRepeatingTask(plugin, task, delay, period, priority);
 	}
 
 	@Override
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period) {
-		return taskManager.scheduleAsyncRepeatingTask(plugin, task, delay, period);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority);
 	}
 
 	@Override
-	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task) {
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+		return taskManager.scheduleAsyncDelayedTask(plugin, task, priority);
+	}
+
+	@Override
+	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+		return taskManager.scheduleAsyncRepeatingTask(plugin, task, delay, period, priority);
+	}
+
+	@Override
+	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
