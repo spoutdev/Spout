@@ -697,7 +697,7 @@ public class SpoutChunk extends Chunk {
 					Player player = ((PlayerController) p.getController()).getPlayer();
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 
-					if (e == null) {
+					if (n == null) {
 						continue;
 					}
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
