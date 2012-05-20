@@ -699,12 +699,12 @@ public class SpoutChunk extends Chunk {
 
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
 						if (e == null) {
-							return;
+							continue;
 						}
 						n.destroyEntity(e);
 					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
 						if (e == null) {
-							return;
+							continue;
 						}
 						n.spawnEntity(e);
 					}
