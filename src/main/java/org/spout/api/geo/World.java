@@ -221,4 +221,9 @@ public interface World extends Source, AreaRegionAccess {
 	 * @return the parallel task manager for the engine
 	 */
 	public TaskManager getParallelTaskManager();
+	
+	/**
+	 * Gets the TaskManager associated with this world
+	 */
+	public abstract TaskManager getTaskManager();
 }
