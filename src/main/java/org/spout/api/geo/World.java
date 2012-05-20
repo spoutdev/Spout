@@ -38,6 +38,7 @@ import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.player.Player;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -204,4 +205,20 @@ public interface World extends Source, AreaRegionAccess {
 	 * Gets the directory where world data is stored
 	 */
 	public File getDirectory();
+	
+	/**
+	 * Gets the task manager responsible for parallel region tasks.<br>
+	 * <br>
+	 * All tasks are submitted to all loaded regions at the start of the next tick.<br>
+	 * <br>
+	 * Repeating tasks are also submitted to all new regions when they are created.<br>
+	 * Repeated tasks are NOT guaranteed to happen in the same tick for all regions, 
+	 * as each task is submitted individually to each region.<br>
+	 * <br>
+	 * This task manager does not support async tasks.
+	 * <br>
+	 * If the Runnable for the task is a ParallelRunnable, then a new instance of the Runnable will be created for each region.
+	 * @return the parallel task manager for the engine
+	 */
+	public TaskManager getParallelTaskManager();
 }

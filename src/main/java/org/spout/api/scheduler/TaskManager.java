@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import org.spout.api.util.thread.Threadsafe;
+
 public interface TaskManager {
 	/**
 	 * Schedules a once off task to occur as soon as possible This task will be
@@ -118,5 +120,15 @@ public interface TaskManager {
 	 * @return Active workers
 	 */
 	public List<Task> getPendingTasks();
+	
+	/**
+	 * Gets the up time for the scheduler.  This is the time since server started for the main schedulers and the age of the world for the Region based schedulers.<br>
+	 * <br>
+	 * It is updated once per tick.
+	 * 
+	 * @return the up time in milliseconds
+	 */
+	@Threadsafe
+	public long getUpTime();
 
 }
