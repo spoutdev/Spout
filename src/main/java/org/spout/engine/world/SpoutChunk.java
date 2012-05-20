@@ -698,8 +698,14 @@ public class SpoutChunk extends Chunk {
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
+						if (e == null) {
+							return;
+						}
 						n.destroyEntity(e);
 					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
+						if (e == null) {
+							return;
+						}
 						n.spawnEntity(e);
 					}
 				}
