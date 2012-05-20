@@ -16,6 +16,16 @@ public interface TaskManager {
 	 * @return the task id of the task
 	 */
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task);
+	/**
+	 * Schedules a once off task to occur as soon as possible This task will be
+	 * executed by the main server thread.
+	 * 
+	 * @param plugin the owner of the task
+	 * @param task the task to execute
+	 * @param priority the priority of the task
+	 * @return the task id of the task
+	 */
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority);
 	
 	/**
 	 * Schedules a once off task to occur after a delay.   This task will be
@@ -24,9 +34,10 @@ public interface TaskManager {
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
+	 * @param priority the priority of the task
 	 * @return the task id of the task
 	 */
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay);
+	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
 
 	/**
 	 * Schedules a repeating task This task will be executed by the main server
@@ -37,9 +48,10 @@ public interface TaskManager {
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
 	 * @param period the repeat period, in ms, of the task, or <= 0 to indicate a single shot task
+	 * @param priority the priority of the task
 	 * @return the task id of the task
 	 */
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period);
+	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
 
 	/**
 	 * Schedules a once off task to occur as soon as possible.  This task will be
@@ -47,9 +59,10 @@ public interface TaskManager {
 	 * 
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
+	 * @param priority the priority of the task
 	 * @return the task id of the task
 	 */
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority);
 	
 	/**
 	 * Schedules a once off task to occur after a delay.  This task will be
@@ -58,9 +71,10 @@ public interface TaskManager {
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
+	 * @param priority the priority of the task
 	 * @return the task id of the task
 	 */
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
 
 	/**
 	 * Schedules a repeating task This task will be executed by a thread managed
@@ -71,9 +85,10 @@ public interface TaskManager {
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
 	 * @param period the repeat period, in ms, of the task, or <= 0 to indicate a single shot task
+	 * @param priority the priority of the task
 	 * @return the task id of the task
 	 */
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period);
+	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
 
 	/**
 	 * Calls a method on the main thread and returns a Future object This task
@@ -84,9 +99,12 @@ public interface TaskManager {
 	 * <b>Note 2:</b> There is at least an average of 10ms latency until the
 	 * isDone() method returns true<br/>
 	 *
+	 * @param plugin the owner of the task
+	 * @param task the Callable to execute
+	 * @param priority the priority of the task
 	 * @return Future Future object related to the task
 	 */
-	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task);
+	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority);
 
 	/**
 	 * Removes task from scheduler
