@@ -38,7 +38,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -63,16 +62,17 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -132,12 +132,16 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The directory where the world data is stored
 	 */
 	private final File worldDirectory;
-
 	/**
 	 * The async thread which handles the calculation of block and sky lighting in the world
 	 */
 	private final SpoutWorldLighting lightingManager;
 
+	/**
+	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
+	 */
+	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
+	
 	/**
 	 * Hashcode cache
 	 */
@@ -402,6 +406,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		switch (stage) {
 			case 0: {
+				parallelTaskManager.heartbeat(delta);
 				float dt = delta / 1000.f;
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
@@ -705,7 +710,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.lightingManager.getExecutor().haltExecutor();
 	}
 
-	protected Collection<SpoutRegion> getRegions() {
+	public Collection<SpoutRegion> getRegions() {
 		return this.regions.getRegions();
 	}
 
@@ -763,4 +768,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	public BlockController getBlockController(int x, int y, int z) {
 		return this.getRegionFromBlock(x, y, z).getBlockController(x, y, z);
 	}
+	
+	@Override
+	public TaskManager getParallelTaskManager() {
+		return parallelTaskManager;
+	}
+
 }

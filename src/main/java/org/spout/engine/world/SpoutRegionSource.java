@@ -35,11 +35,12 @@ import org.spout.api.event.world.RegionUnloadEvent;
 import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
-
+import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class SpoutRegionSource implements Iterable<SpoutRegion> {
@@ -152,6 +153,14 @@ public class SpoutRegionSource implements Iterable<SpoutRegion> {
 				if (!region.getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
+				
+				TaskManager tm = Spout.getEngine().getParallelTaskManager();
+				SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+				ptm.registerRegion(region);
+				
+				TaskManager tmWorld = world.getParallelTaskManager();
+				SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+				ptmWorld.registerRegion(region);
 
 				Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
 

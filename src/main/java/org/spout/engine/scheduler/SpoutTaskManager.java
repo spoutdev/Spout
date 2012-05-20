@@ -239,6 +239,7 @@ public class SpoutTaskManager implements TaskManager {
 		return success;
 	}
 	
+	@Override
 	public long getUpTime() {
 		return upTime.get();
 	}

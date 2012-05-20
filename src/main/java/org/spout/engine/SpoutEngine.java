@@ -32,8 +32,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -48,7 +46,6 @@ import java.util.logging.Logger;
 
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.command.Command;
@@ -61,8 +58,8 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
-import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.CommandException;
@@ -90,7 +87,7 @@ import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-
+import org.spout.api.scheduler.TaskManager;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
@@ -101,6 +98,7 @@ import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
+import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.ConsoleManager;
 import org.spout.engine.util.thread.AsyncManager;
@@ -141,6 +139,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	//The network executor service - Netty dispatches events to this thread
 	protected final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutEngine"));
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
+	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
@@ -523,6 +522,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public SpoutScheduler getScheduler() {
 		return scheduler;
+	}
+	
+	@Override
+	public TaskManager getParallelTaskManager() {
+		return parallelTaskManager;
 	}
 
 	@Override

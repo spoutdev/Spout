@@ -40,6 +40,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.SnapshotLock;
 import org.spout.api.scheduler.Task;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
@@ -117,6 +118,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private Thread renderThread;
 	private final SpoutTaskManager taskManager;
+	private final SpoutParallelTaskManager parallelTaskManager;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 
 	/**
@@ -130,6 +132,8 @@ public final class SpoutScheduler implements Scheduler {
 		renderThread = new RenderThread();
 		
 		taskManager = new SpoutTaskManager(true, mainThread);
+		
+		parallelTaskManager = (SpoutParallelTaskManager)server.getParallelTaskManager();
 	}
 
 	private class RenderThread extends Thread {
@@ -318,6 +322,7 @@ public final class SpoutScheduler implements Scheduler {
 		asyncExecutors.copySnapshot();
 		
 		taskManager.heartbeat(delta);
+		parallelTaskManager.heartbeat(delta);
 
 		List<AsyncExecutor> executors = asyncExecutors.get();
 
@@ -515,6 +520,11 @@ public final class SpoutScheduler implements Scheduler {
 	@Override
 	public List<Task> getPendingTasks() {
 		return taskManager.getPendingTasks();
+	}
+	
+	@Override
+	public long getUpTime() {
+		return taskManager.getUpTime();
 	}
 
 	@Override

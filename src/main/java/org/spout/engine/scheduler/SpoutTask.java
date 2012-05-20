@@ -29,8 +29,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.spout.api.scheduler.ParallelRunnable;
 import org.spout.api.scheduler.Task;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
+import org.spout.engine.world.SpoutRegion;
 
 /**
  * Represents a task which is executed periodically.
@@ -83,7 +86,7 @@ public class SpoutTask implements Task {
 	 * calls to {@link #execute()}.
 	 * @param ticks The number of ticks.
 	 */
-	public SpoutTask(SpoutTaskManager manager, Object owner, Runnable task, boolean sync, long delay, long period) {
+	public SpoutTask(TaskManager manager, Object owner, Runnable task, boolean sync, long delay, long period) {
 		this.taskId = nextTaskId.getAndIncrement();
 		this.nextCallTime = new AtomicLong(manager.getUpTime() + delay);
 		this.alive = new AtomicBoolean(true);
@@ -93,6 +96,21 @@ public class SpoutTask implements Task {
 		this.delay = delay;
 		this.period = period;
 		this.sync = sync;
+	}
+	
+	/**
+	 * Creates a copy of this task for a particular Region
+	 * 
+	 * @param r the region
+	 * @return the new task instance
+	 */
+	public SpoutTask getRegionTask(SpoutRegion r) {
+		if (task instanceof ParallelRunnable) {
+			ParallelRunnable newRunnable = ((ParallelRunnable) task).newInstance(r);
+			return new SpoutTask(r.getTaskManager(), owner, newRunnable, sync, delay, period);
+		} else {
+			return new SpoutTask(r.getTaskManager(), owner, task, sync, delay, period);
+		}
 	}
 
 	/**
@@ -125,6 +143,10 @@ public class SpoutTask implements Task {
 	
 	public long getNextCallTime() {
 		return nextCallTime.get();
+	}
+	
+	protected long getPeriod() {
+		return this.period;
 	}
 
 	/**
@@ -183,6 +205,23 @@ public class SpoutTask implements Task {
 		Object owner = getOwner();
 		String ownerName = owner == null || !(owner instanceof Named) ? "null" : ((Named) owner).getName();
 		return this.getClass().getSimpleName() + "{" + getTaskId() + ", " + ownerName + "}";
+	}
+	
+	@Override
+	public int hashCode() {
+		return taskId;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		} else if (o instanceof SpoutTask) {
+			SpoutTask other = (SpoutTask)o;
+			return other.taskId == taskId;
+		} else {
+			return false;
+		}
 	}
 
 }
