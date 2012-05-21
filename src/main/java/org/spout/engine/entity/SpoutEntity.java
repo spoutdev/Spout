@@ -44,7 +44,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
-import org.spout.api.event.entity.EntityHealthChangeEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -71,7 +70,6 @@ public class SpoutEntity implements Entity, Tickable {
 	private final AtomicReference<Chunk> chunkLive;
 	private final ArrayList<AtomicReference<EntityComponent>> components = new ArrayList<AtomicReference<EntityComponent>>();
 	private final AtomicBoolean observerLive = new AtomicBoolean(false);
-	private final AtomicInteger health = new AtomicInteger(1), maxHealth = new AtomicInteger(1);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private final Transform transform = new Transform();
@@ -387,38 +385,6 @@ public class SpoutEntity implements Entity, Tickable {
 			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
 		}
 		return !invalidAccess;
-	}
-
-	@Override
-	public int getHealth() {
-		return health.get();
-	}
-
-	@Override
-	public void setHealth(int health, Source source) {
-
-		// Event handling
-		int oldHealth = this.health.get();
-		int change = health - oldHealth;
-		EntityHealthChangeEvent event = Spout.getEventManager().callEvent(new EntityHealthChangeEvent(this, source, change));
-		int newHealth = oldHealth + event.getChange();
-
-		//Enforce max health
-		if (newHealth >= maxHealth.get()) {
-			this.health.getAndSet(maxHealth.get());
-		} else {
-			this.health.getAndSet(newHealth);
-		}
-	}
-
-	@Override
-	public void setMaxHealth(int maxHealth) {
-		this.maxHealth.getAndSet(maxHealth);
-	}
-
-	@Override
-	public int getMaxHealth() {
-		return maxHealth.get();
 	}
 
 	@Override
