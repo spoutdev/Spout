@@ -13,12 +13,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: io.netty:netty:3.3.1.Final" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:11.0.2" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty:3.3.1.Final" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:11.0.2" level="project" />
     <orderEntry type="module" module-name="SpoutAPI" />
     <orderEntry type="library" name="Maven: org.spout:spoutnbt:1.0.3-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: net.royawesome:jlibnoise:dev-SNAPSHOT" level="project" />
