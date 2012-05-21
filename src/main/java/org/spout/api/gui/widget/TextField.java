@@ -40,82 +40,32 @@ public class TextField extends AbstractControl {
 	private String text;
 	
 	/**
-	 * <dl>
-	 * 	<dt>Name:</dt>
-	 * 	<dd>returnPressed</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Called:</dt>
-	 * 	<dd>When the user presses ENTER or RETURN</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Arguments:</dt>
-	 * 	<dd>
-	 * 		<i>No arguments</i>
-	 * 	</dd>
-	 * </dl>
+	 * @signal returnPressed When RETURN or ENTER is pressed by the user
+	 * 
+	 * @sarg none
 	 */
 	public static final Signal SIGNAL_RETURN_PRESSED = new Signal("returnPressed");
 	
 	/**
-	 * <dl>
-	 * 	<dt>Name:</dt>
-	 * 	<dd>textChanged</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Called:</dt>
-	 * 	<dd>Whenever the text changes</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Arguments:</dt>
-	 * 	<dd>
-	 * 		<ol>
-	 * 			<li>The new string</li>
-	 * 		</ol>
-	 * 	</dd>
-	 * </dl>
+	 * @signal textChanged Whenever the text changes
+	 * 
+	 * @sarg java.lang.String The new text
 	 */
 	public static final Signal SIGNAL_TEXT_CHANGED = new Signal("textChanged", String.class);
 	
 	/**
-	 * <dl>
-	 * 	<dt>Name:</dt>
-	 * 	<dd>editingFinished</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Called:</dt>
-	 * 	<dd>When the user has not typed for 200ms or focussed another control or pressed Enter</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Arguments:</dt>
-	 * 	<dd>
-	 * 		<ol>
-	 * 			<li>The new string</li>
-	 * 		</ol>
-	 * 	</dd>
-	 * </dl>
+	 * @signal editingFinished When the user has not typed for 200ms or pressed return or focussed another control
+	 * 
+	 * @sarg java.lang.String The new text
 	 */
 	public static final Signal SIGNAL_EDITING_FINISHED = new Signal("editingFinished", String.class);
 	
 	/**
-	 * <dl>
-	 * 	<dt>Name:</dt>
-	 * 	<dd>selectionChanged</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Called:</dt>
-	 * 	<dd>When the selection changed</dd>
-	 * </dl>
-	 * <dl>
-	 * 	<dt>Arguments:</dt>
-	 * 	<dd>
-	 * 		<ol>
-	 * 			<li>Selection start</li>
-	 * 			<li>Selection end (including)</li>
-	 * 			<li>Selected text</li>
-	 * 		</ol>
-	 * 	</dd>
-	 * </dl>
+	 * @signal selectionChanged When the selection changed
+	 * 
+	 * @sarg java.lang.Integer Selection start
+	 * @sarg java.lang.Integer Selection end (including)
+	 * @sarg java.lang.String Selected text
 	 */
 	public static final Signal SIGNAL_SELECTION_CHANGED = new Signal("selectionChanged", Integer.class, Integer.class, String.class);
 	

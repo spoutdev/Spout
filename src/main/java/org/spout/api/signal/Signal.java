@@ -73,6 +73,11 @@ public class Signal {
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("---------------");
+				System.out.println("Error while executing subscribed method to "+this);
+				System.out.println("---------------");
+				e.printStackTrace();
 			}
 		}
 	}
