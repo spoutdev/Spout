@@ -30,25 +30,24 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TInt21TripleHashedTest {
+public class TByteTripleHashedTest {
 
-	public void testValue(int x, int y, int z) {
-		long key = TInt21TripleHashed.key(x, y, z);
-		assertEquals(x, TInt21TripleHashed.key1(key));
-		assertEquals(y, TInt21TripleHashed.key2(key));
-		assertEquals(z, TInt21TripleHashed.key3(key));
+	public void testValue(byte x, byte y, byte z) {
+		int key = TByteTripleHashed.key(x, y, z);
+		assertEquals(x, TByteTripleHashed.key1(key));
+		assertEquals(y, TByteTripleHashed.key2(key));
+		assertEquals(z, TByteTripleHashed.key3(key));
 	}
 
 	@Test
 	public void testHashes() {
-		testValue(-1048575, -1048575, -1048575);
-		testValue(0, 0, 0);
-		testValue(1048575, 1048575, 1048575);
-		testValue(1048575, -1048575, 1048575);
-		testValue(-1048575, 1048575, -1048575);
-		testValue(32423, 14144, 24114);
-		testValue(10475, 104865, 104835);
-		testValue(128, 512, 1024);
-		testValue(-34, 2421, -4452);
+		testValue((byte) 231, (byte) 13, (byte) 65);
+		testValue((byte) 23, (byte) 44, (byte) 85);
+		testValue((byte) 45, (byte) 124, (byte) 214);
+		testValue((byte) 128, (byte) 128, (byte) 128);
+		testValue((byte) 245, (byte) 32, (byte) 21);
+		testValue((byte) 255, (byte) 255, (byte) 255);
+		testValue((byte) 0, (byte) 0, (byte) 0);
+		testValue((byte) 231, (byte) 31, (byte) 12);
 	}
 }
