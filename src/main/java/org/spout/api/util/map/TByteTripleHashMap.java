@@ -24,63 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.set;
-
-import org.spout.api.util.hashing.TIntPairHashed;
-
-import gnu.trove.iterator.TLongIterator;
-import gnu.trove.set.hash.TLongHashSet;
+package org.spout.api.util.map;
 
 /**
- * A simplistic set that supports 2 ints for one value inside the set.
- *
- * @author Afforess
- *
+ * A simplistic map that supports a 3 bytes for keys, using a trove int hashmap in the backend.
  */
-public class TIntPairHashSet extends TIntPairHashed {
-	private TLongHashSet set;
-
-	public TIntPairHashSet() {
-		this(100);
+public class TByteTripleHashMap {
+	protected static final int key(int x, int y, int z) {
+		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
 	}
 
-	public TIntPairHashSet(int capacity) {
-		set = new TLongHashSet(capacity);
+	public static final int key1(int key) {
+		return key >> 16 & 0xFF;
 	}
 
-	public TIntPairHashSet(TIntPairHashSet other) {
-		set = new TLongHashSet(other.set);
+	public static final int key2(int key) {
+		return key & 0xFF;
 	}
 
-	public boolean add(int key1, int key2) {
-		return set.add(key(key1, key2));
-	}
-
-	public boolean contains(int key1, int key2) {
-		return set.contains(key(key1, key2));
-	}
-
-	public void clear() {
-		set.clear();
-	}
-
-	public boolean isEmpty() {
-		return set.isEmpty();
-	}
-
-	public TLongIterator iterator() {
-		return set.iterator();
-	}
-
-	public void addAll(TIntPairHashSet other) {
-		set.addAll(other.set);
-	}
-
-	public boolean remove(int key1, int key2) {
-		return set.remove(key(key1, key2));
-	}
-
-	public int size() {
-		return set.size();
+	public static final int key3(int key) {
+		return key >> 8 & 0xFF;
 	}
 }

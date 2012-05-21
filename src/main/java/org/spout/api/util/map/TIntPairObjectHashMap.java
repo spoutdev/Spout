@@ -33,8 +33,6 @@ import gnu.trove.set.TLongSet;
 
 import java.util.Collection;
 
-import org.spout.api.util.hashing.TIntPairHashed;
-
 /**
  * A simplistic map that supports a pair of integers for keys, using a trove
  * long object hashmap in the backend.
@@ -42,7 +40,7 @@ import org.spout.api.util.hashing.TIntPairHashed;
  * @author Afforess
  *
  */
-public class TIntPairObjectHashMap<K> extends TIntPairHashed {
+public class TIntPairObjectHashMap<K> {
 	protected TLongObjectMap<K> map;
 
 	public TIntPairObjectHashMap() {
@@ -107,5 +105,16 @@ public class TIntPairObjectHashMap<K> extends TIntPairHashed {
 
 	public K[] values() {
 		return map.values();
+	}
+	
+	/**
+	 * Creates a long key from 2 ints
+	 *
+	 * @param key1 an <code>int</code> value
+	 * @param key2 an <code>int</code> value
+	 * @return a long which is the concatenation of key1 and key2
+	 */
+	protected static final long key(int key1, int key2) {
+		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 }

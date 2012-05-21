@@ -159,7 +159,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public BlockMaterial getSubMaterial(short data) {
 		return (BlockMaterial) super.getSubMaterial(data);
 	}
-
+	
 	/**
 	 * Gets the friction of this block
 	 * 
@@ -218,26 +218,6 @@ public class BlockMaterial extends Material implements Placeable {
 	public BlockMaterial setLightLevel(byte level) {
 		this.lightLevel = level;
 		return this;
-	}
-
-	/**
-	 * Gets whether this block material blocks light coming from the sky<br>
-	 * This is used to let vertical sun light pass through this block unaffected<br>
-	 * 
-	 * @return True if it is a sky light obstacle, False if not
-	 */
-	public boolean isSkyLightObstacle() {
-		return this.isHeightLimiter();
-	}
-
-	/**
-	 * Gets whether this block material marks the height of a world<br>
-	 * All solid blocks should return True.
-	 * 
-	 * @return True if this block material marks the height of a world, False if not.
-	 */
-	public boolean isHeightLimiter() {
-		return true;
 	}
 
 	/**

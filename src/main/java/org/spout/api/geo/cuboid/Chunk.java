@@ -60,7 +60,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	/**
 	 * Mask to convert a block integer coordinate into the chunk's base
 	 */
-	public final static int BASE_MASK = CHUNK_SIZE - 1;
+	public final static int BASE_MASK = -CHUNK_SIZE;
 
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE, true);
@@ -143,12 +143,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	public abstract Biome getBiomeType(int x, int y, int z);
 
 	/**
-	 * Orders the server to clear all current lighting information and re-calculate the block and sky lighting<br>
-	 * This is also called when the chunk has just finished the generation and population process
-	 */
-	public abstract void initLighting();
-
-	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
 	 */
@@ -194,30 +188,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * @return data map
 	 */
 	public abstract DefaultedMap<String, Serializable> getDataMap();
-
-	/**
-	 * Gets the x-coordinate of this chunk as a Block coordinate
-	 * @return the x-coordinate of the first block in this chunk
-	 */
-	public int getBlockX() {
-		return this.getX() << CHUNK_SIZE_BITS;
-	}
-
-	/**
-	 * Gets the y-coordinate of this chunk as a Block coordinate
-	 * @return the y-coordinate of the first block in this chunk
-	 */
-	public int getBlockY() {
-		return this.getY() << CHUNK_SIZE_BITS;
-	}
-
-	/**
-	 * Gets the z-coordinate of this chunk as a Block coordinate
-	 * @return the z-coordinate of the first block in this chunk
-	 */
-	public int getBlockZ() {
-		return this.getZ() << CHUNK_SIZE_BITS;
-	}
 
 	/**
 	 * Gets whether the given block coordinates is inside this chunk

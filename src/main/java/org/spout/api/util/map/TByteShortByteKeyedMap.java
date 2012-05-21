@@ -24,18 +24,27 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.hashing;
+package org.spout.api.util.map;
 
-public class TNibbleTripleHashed {
-	/**
-	 * Packs the first 4 most significant bits of each byte into a <code>short</code>
-	 *
-	 * @param key1 a <code>byte</code> value
-	 * @param key2 a <code>byte</code> value
-	 * @param key3 a <code>byte</code> value
-	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
-	 */
-	public static final short key(int key1, int key2, int key3) {
-		return (short) ((key1 & 0xF) << 8 | (key2 & 0xF) << 4 | key3 & 0xF);
+/**
+ * A simplistic map that supports (byte, short, byte) keys, using a trove int *
+ * hashmap in the backend.
+ *
+ */
+public class TByteShortByteKeyedMap {
+	public static final int key(int x, int y, int z) {
+		return (x & 0xFF) << 24 | (z & 0xFF) << 16 | y & 0xFFFF;
+	}
+
+	public static byte getXFromKey(int key) {
+		return (byte) (key >> 24);
+	}
+
+	public static short getYFromKey(int key) {
+		return (short) key;
+	}
+
+	public static byte getZFromKey(int key) {
+		return (byte) (key >> 16);
 	}
 }

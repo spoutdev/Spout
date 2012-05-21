@@ -37,14 +37,9 @@ public class BasicSkyBox extends BlockMaterial {
 		this.setCollision(CollisionStrategy.NOCOLLIDE);
 		this.setOccludes(false);
 	}
-
+	
 	@Override
 	public boolean isPlacementObstacle() {
-		return false;
-	}
-
-	@Override
-	public boolean isHeightLimiter() {
 		return false;
 	}
 

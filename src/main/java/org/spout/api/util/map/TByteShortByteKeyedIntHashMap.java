@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.map;
 
-import org.spout.api.util.hashing.TByteShortByteHashed;
-
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -40,7 +38,7 @@ import gnu.trove.set.TIntSet;
  * @author Afforess
  *
  */
-public class TByteShortByteKeyedIntHashMap extends TByteShortByteHashed {
+public class TByteShortByteKeyedIntHashMap extends TByteShortByteKeyedMap {
 	private TIntIntHashMap map;
 
 	public TByteShortByteKeyedIntHashMap() {

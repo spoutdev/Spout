@@ -112,7 +112,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data);
-
+	
 	/**
 	 * Forces a physics update for the block at (x, y, z)
 	 *
@@ -122,16 +122,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param source of this physics update
 	 */
 	public void updateBlockPhysics(int x, int y, int z, Source source);
-
-	/**
-	 * Forces a lighting update for the block at (x, y, z)
-	 *
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 */
-	public void updateBlockLighting(int x, int y, int z);
-
+	
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
 	 * @param x coordinate of the block
@@ -142,7 +133,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public Block getBlock(int x, int y, int z);
-
+	
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
 	 * @param x coordinate of the block

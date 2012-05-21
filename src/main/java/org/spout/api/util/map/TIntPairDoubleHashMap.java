@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.map;
 
-import org.spout.api.util.hashing.TIntPairHashed;
-
 import gnu.trove.TDoubleCollection;
 import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.map.hash.TLongDoubleHashMap;
@@ -40,7 +38,7 @@ import gnu.trove.set.TLongSet;
  * @author Afforess
  *
  */
-public class TIntPairDoubleHashMap extends TIntPairHashed {
+public class TIntPairDoubleHashMap {
 	private TLongDoubleHashMap map;
 
 	public TIntPairDoubleHashMap() {
@@ -52,15 +50,18 @@ public class TIntPairDoubleHashMap extends TIntPairHashed {
 	}
 
 	public double put(int key1, int key2, double value) {
-		return map.put(key(key1, key2), value);
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		return map.put(key, value);
 	}
 
 	public double get(int key1, int key2) {
-		return map.get(key(key1, key2));
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		return map.get(key);
 	}
 
 	public boolean containsKey(int key1, int key2) {
-		return map.containsKey(key(key1, key2));
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		return map.containsKey(key);
 	}
 
 	public void clear() {
@@ -72,7 +73,8 @@ public class TIntPairDoubleHashMap extends TIntPairHashed {
 	}
 
 	public boolean increment(int key1, int key2) {
-		return map.increment(key(key1, key2));
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		return map.increment(key);
 	}
 
 	public boolean isEmpty() {
@@ -92,7 +94,8 @@ public class TIntPairDoubleHashMap extends TIntPairHashed {
 	}
 
 	public double remove(int key1, int key2) {
-		return map.remove(key(key1, key2));
+		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+		return map.remove(key);
 	}
 
 	public int size() {

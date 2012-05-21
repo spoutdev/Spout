@@ -26,17 +26,17 @@
  */
 package org.spout.api.util.set.concurrent;
 
-import org.spout.api.util.set.TInt21TripleHashSet;
+import org.spout.api.util.set.TInt21HashSet;
 
 import gnu.trove.TCollections;
 import gnu.trove.set.hash.TLongHashSet;
 
 /**
- * A synchronized version of the {@link TInt21TripleHashSet}.
+ * A synchronized version of the {@link TInt21HashSet}.
  *
  * This set is backed by a read/write lock synchronised set.
  */
-public class TSyncInt21HashSet extends TInt21TripleHashSet {
+public class TSyncInt21HashSet extends TInt21HashSet {
 	/**
 	 * Creates a new <code>TSyncInt21HashSet</code> instance backend by a synchronized (thread-safe) {@see TLongSet} instance with an capacity of 100 and the default load factor.
 	 */

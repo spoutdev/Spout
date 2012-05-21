@@ -26,87 +26,74 @@
  */
 package org.spout.api.util.map;
 
-import gnu.trove.TLongCollection;
-import gnu.trove.iterator.TLongLongIterator;
-import gnu.trove.map.hash.TLongLongHashMap;
-import gnu.trove.set.TLongSet;
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.set.hash.TLongHashSet;
 
 /**
- * A simplistic map that supports a pair of integers for keys, using a trove
- * long long hashmap in the backend.
+ * A simplistic set that supports 2 ints for one value inside the set.
  *
  * @author Afforess
  *
  */
-public class TIntPairLongHashMap {
-	private TLongLongHashMap map;
+public class TIntPairHashSet {
+	private TLongHashSet set;
 
-	public TIntPairLongHashMap() {
-		map = new TLongLongHashMap(100);
+	public TIntPairHashSet() {
+		this(100);
 	}
 
-	public TIntPairLongHashMap(int capacity) {
-		map = new TLongLongHashMap(capacity);
+	public TIntPairHashSet(int capacity) {
+		set = new TLongHashSet(capacity);
 	}
 
-	public long put(int key1, int key2, long value) {
+	public TIntPairHashSet(TIntPairHashSet other) {
+		set = new TLongHashSet(other.set);
+	}
+
+	public boolean add(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return map.put(key, value);
+		return set.add(key);
 	}
 
-	public long get(int key1, int key2) {
+	public boolean contains(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return map.get(key);
-	}
-
-	public boolean containsKey(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return map.containsKey(key);
+		return set.contains(key);
 	}
 
 	public void clear() {
-		map.clear();
-	}
-
-	public boolean containsValue(long val) {
-		return map.containsValue(val);
-	}
-
-	public boolean increment(int key1, int key2) {
-		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return map.increment(key);
+		set.clear();
 	}
 
 	public boolean isEmpty() {
-		return map.isEmpty();
+		return set.isEmpty();
 	}
 
-	public TLongLongIterator iterator() {
-		return map.iterator();
+	public TLongIterator iterator() {
+		return set.iterator();
 	}
 
-	public TLongSet keySet() {
-		return map.keySet();
+	public void addAll(TIntPairHashSet other) {
+		set.addAll(other.set);
 	}
 
-	public long[] keys() {
-		return map.keys();
-	}
-
-	public long remove(int key1, int key2) {
+	public boolean remove(int key1, int key2) {
 		long key = (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-		return map.remove(key);
+		return set.remove(key);
 	}
 
 	public int size() {
-		return map.size();
+		return set.size();
 	}
 
-	public TLongCollection valueCollection() {
-		return map.valueCollection();
+	public static int longToKey1(long composite) {
+		return (int) (composite >> 32 & 4294967295L);
 	}
 
-	public long[] values() {
-		return map.values();
+	public static int longToKey2(long composite) {
+		return (int) (composite & 4294967295L);
+	}
+
+	public static long keysToLong(int key1, int key2) {
+		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 }
