@@ -31,6 +31,7 @@ import java.awt.Point;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.TextProperties;
 import org.spout.api.keyboard.Keyboard;
+import org.spout.api.signal.Signal;
 
 public abstract class AbstractButton extends AbstractControl implements Button {
 	private TextProperties textProperties = new TextProperties();
@@ -39,6 +40,13 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 	private boolean checked = false;
 	private boolean checkable = false;
 	private int timeout = -1;
+	
+	{
+		//Emitted when button is clicked
+		registerSignal(new Signal("clicked"));
+		//Emitted when the check state has been toggled. The boolean argument contains the new state
+		registerSignal(new Signal("toggled", Boolean.class));
+	}
 
 	public AbstractButton(String text) {
 		setText("");
@@ -83,7 +91,10 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 	@Override
 	public Button setChecked(boolean check) {
 		if (isCheckable()) {
-			this.checked = check;
+			if(check != this.checked) {
+				this.checked = check;
+				emit("toggled", check);
+			}
 		}
 		return this;
 	}
@@ -105,6 +116,7 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 	@Override
 	public Button click() {
 		setChecked(!isChecked());
+		emit("clicked");
 		return this;
 	}
 

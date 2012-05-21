@@ -31,8 +31,10 @@ import java.awt.Rectangle;
 import org.spout.api.gui.Layout;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
+import org.spout.api.signal.SignalObject;
+import org.spout.api.signal.SignalSubscriberObject;
 
-public abstract class AbstractWidget implements Widget {
+public abstract class AbstractWidget extends SignalSubscriberObject implements Widget {
 	
 	private Rectangle geometry = new Rectangle(), minimumSize = null, maximumSize = null;
 	private Layout layout = null;

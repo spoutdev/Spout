@@ -31,10 +31,16 @@ import java.awt.Point;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.WidgetType;
 import org.spout.api.keyboard.Keyboard;
+import org.spout.api.signal.Signal;
 
 public class Slider extends AbstractControl implements RangedWidget<Integer> {
 
 	private int min, max, value;
+	
+	{
+		//Emitted when the slider was moved. First argument contains the new position
+		registerSignal(new Signal("sliderMoved", Integer.class));
+	}
 	
 	public Slider() {
 	}
@@ -91,6 +97,7 @@ public class Slider extends AbstractControl implements RangedWidget<Integer> {
 			throw new IllegalStateException("value must be inside the range");
 		}
 		this.value = value;
+		emit("sliderMoved", value);
 		return this;
 	}
 

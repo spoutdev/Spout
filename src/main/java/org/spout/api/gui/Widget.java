@@ -29,8 +29,10 @@ package org.spout.api.gui;
 import java.awt.Rectangle;
 
 import org.spout.api.Tickable;
+import org.spout.api.signal.SignalInterface;
+import org.spout.api.signal.SubscriberInterface;
 
-public interface Widget extends Renderable, Tickable {
+public interface Widget extends Renderable, Tickable, SignalInterface, SubscriberInterface {
 	/**
 	 * Gets the applied geometry of the widget
 	 * @return the geometry

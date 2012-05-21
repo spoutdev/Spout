@@ -44,12 +44,12 @@ public class SignalObject implements SignalInterface {
 	protected void emit(String signal, Object ...arguments) {
 		Signal signalO = signals.get(signal);
 		if (signalO != null) {
-			signalO.emit(arguments);
+			signalO.emit(this, arguments);
 		}
 	}
 	
 	protected void emit(Signal signal, Object ...arguments) {
-		signal.emit(arguments);
+		signal.emit(this, arguments);
 	}
 
 	@Override

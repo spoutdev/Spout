@@ -1,3 +1,29 @@
+/*
+ * This file is part of SpoutAPI.
+ *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
 package org.spout.api.gui.widget;
 
 import java.awt.Point;
@@ -5,12 +31,24 @@ import java.awt.Point;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.WidgetType;
 import org.spout.api.keyboard.Keyboard;
+import org.spout.api.signal.Signal;
 
 public class TextField extends AbstractControl {
 	
 	//Represents the caret or the selection if start and end diverge
 	private int selectionStart = 0, selectionEnd = 0;
 	private String text;
+	
+	{
+		//Called when user presses Enter or Return when in focus
+		registerSignal(new Signal("returnPressed"));
+		//Called whenever the text changes, first argument contains the new string
+		registerSignal(new Signal("textChanged", String.class));
+		//Called when the user has not typed for 200ms or focussed another control or pressed Enter, first argument contains the new string
+		registerSignal(new Signal("editingFinished", String.class));
+		//Called when the selection changes, arguments: selection start, selection end (including), selected text as string
+		registerSignal(new Signal("selectionChanged", Integer.class, Integer.class, String.class));
+	}
 	
 	public TextField(String text) {
 		super();

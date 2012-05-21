@@ -44,12 +44,20 @@ public class Signal {
 		this.name = name;
 	}
 	
-	public void emit(Object ...arguments) {
+	public void emit(SignalInterface sender, Object ...arguments) {
 		Iterator<Pair<Object, Method>> iter = subscribes.iterator();
 		while(iter.hasNext()) {
 			Pair<Object, Method> p = iter.next();
 			Object call = p.getLeft();
+			SubscriberInterface sub = null;
+			if(call instanceof SubscriberInterface) {
+				sub = (SubscriberInterface) call;
+				sub.setSender(sender);
+			}
 			Method method = p.getRight();
+			if(sub != null) {
+				sub.setSender(null);
+			}
 			try {
 				method.invoke(call, arguments);
 			} catch (IllegalArgumentException e) {
