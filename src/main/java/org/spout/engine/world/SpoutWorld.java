@@ -705,11 +705,9 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (Region r : regions.getRegions()) {
 			r.unload(save);
 		}
-
-		this.lightingManager.getExecutor().haltExecutor();
 	}
 
-	public Collection<SpoutRegion> getRegions() {
+	public Collection<Region> getRegions() {
 		return this.regions.getRegions();
 	}
 

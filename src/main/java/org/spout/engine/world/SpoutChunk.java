@@ -283,11 +283,6 @@ public class SpoutChunk extends Chunk {
 		parentRegion.updateBlockPhysics(x, y, z, source);
 	}
 
-	@Override
-	public void updateBlockLighting(int x, int y, int z) {
-		checkChunkLoaded();
-	}
-
 	/**
 	 * Gets the sky brightness, may look up from neighbor chunks.
 	 * @param x

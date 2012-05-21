@@ -31,6 +31,8 @@
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.10" level="project" />
     <orderEntry type="library" name="Maven: com.h2database:h2:1.3.166" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.directory.studio:org.apache.commons.collections:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: jline:jline:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.grahamedgecombe.jterminal:jterminal:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.beust:jcommander:1.23" level="project" />
