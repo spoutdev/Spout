@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -30,23 +31,24 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.junit.Test;
+
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.io.store.simple.SimpleStore;
 
 public class BinaryFileStoreTest {
 	File file = new File("test.dat");
-	
+
 	SimpleStore<Integer> subject = new BinaryFileStore(file);
-	
+
 	String[] keys = new String[] {"key1", "key2", "key3", "key4"};
 	int[] ids = new int[] {1, 2, -1, 1000, 77};
-	
+
 	@Test
 	public void basicCheck() {
 		set();
 		check();
 	}
-	
+
 	@Test
 	public void saveReload() {
 		file.delete();
@@ -63,7 +65,7 @@ public class BinaryFileStoreTest {
 			subject.set(keys[i], ids[i]);
 		}
 	}
-	
+
 	private void check() {
 		for (int i = 0; i < keys.length; i++) {
 			assertTrue("Check mismatch", subject.get(keys[i]).equals(ids[i]) );

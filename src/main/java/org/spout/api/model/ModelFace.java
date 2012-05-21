@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -37,7 +38,7 @@ public class ModelFace {
 	
 	
 	
-	public ModelFace(PositionNormalTexture v1, PositionNormalTexture v2, PositionNormalTexture v3 ){
+	public ModelFace(PositionNormalTexture v1, PositionNormalTexture v2, PositionNormalTexture v3 ) {
 		this.v1 = v1;
 		this.v2 = v2;
 		this.v3 = v3;
@@ -45,7 +46,7 @@ public class ModelFace {
 	/**
 	 * Recalculates the normals for this triangle.  All points must be 0'd before this.
 	 */
-	protected void doRecalculateNormals(){
+	protected void doRecalculateNormals() {
 		Vector3 trinormal = MathHelper.cross(v1.position.subtract(v2.position), v2.position.subtract(v3.position)).normalize();
 		v1.normal = v1.normal.add(trinormal).normalize();
 		v2.normal = v2.normal.add(trinormal).normalize();
@@ -53,15 +54,15 @@ public class ModelFace {
 		
 	}
 	
-	Vector3[] getPositions(){
+	Vector3[] getPositions() {
 		return new Vector3[] {v1.position, v2.position, v3.position };		
 	}
 	
-	Vector3[] getNormals(){
+	Vector3[] getNormals() {
 		return new Vector3[] {v1.normal, v2.normal, v3.normal };		
 	}
 	
-	Vector2[] getUVs(){
+	Vector2[] getUVs() {
 		return new Vector2[] { v1.uv, v2.uv, v3.uv };
 	}
 	

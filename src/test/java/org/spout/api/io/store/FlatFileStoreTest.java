@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -36,18 +37,18 @@ import org.spout.api.io.store.simple.SimpleStore;
 
 public class FlatFileStoreTest {
 	File file = new File("test.txt");
-	
+
 	SimpleStore<Integer> subject = new FlatFileStore<Integer>(file, Integer.class);
-	
+
 	String[] keys = new String[] {"key1", "key2", "key3", "key4"};
 	int[] ids = new int[] {1, 2, -1, 1000, 77};
-	
+
 	@Test
 	public void basicCheck() {
 		set();
 		check();
 	}
-	
+
 	@Test
 	public void saveReload() {
 		file.delete();
@@ -64,7 +65,7 @@ public class FlatFileStoreTest {
 			subject.set(keys[i], ids[i]);
 		}
 	}
-	
+
 	private void check() {
 		for (int i = 0; i < keys.length; i++) {
 			assertTrue("Check mismatch", subject.get(keys[i]).equals(ids[i]) );

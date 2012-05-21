@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -206,7 +207,7 @@ public class CommonPluginManager implements PluginManager {
 
 	public void disablePlugins() {
 		for (Plugin plugin : plugins) {
-			if(plugin == metaPlugin) {
+			if (plugin == metaPlugin) {
 				continue;
 			}
 			disablePlugin(plugin);
@@ -223,7 +224,7 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public void enablePlugin(Plugin plugin) {
-		if(plugin == metaPlugin) {
+		if (plugin == metaPlugin) {
 			return;
 		}
 		if (!plugin.isEnabled()) {
@@ -242,7 +243,7 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public void disablePlugin(Plugin plugin) {
-		if(plugin == metaPlugin) {
+		if (plugin == metaPlugin) {
 			return;
 		}
 		if (plugin.isEnabled()) {

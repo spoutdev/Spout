@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -37,11 +38,11 @@ public abstract class CollisionVolume {
 	CollisionStrategy strat  = CollisionStrategy.SOLID;
 	
 	
-	public CollisionStrategy getStrategy(){
+	public CollisionStrategy getStrategy() {
 		return strat;
 	}
 	
-	public void setStrategy(CollisionStrategy strat){
+	public void setStrategy(CollisionStrategy strat) {
 		this.strat = strat;
 	}
 	

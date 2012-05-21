@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -25,36 +26,32 @@
  */
 package org.spout.api;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
+
 /**
- *
  * Tests for ChatColor
  */
 public class ChatColorTest {
 	@Test
 	public void testFromCodeString() {
 		for (ChatColor color : ChatColor.values()) {
-			assertEquals("Color failed: " + color.name(), color,
-					ChatColor.byName(color.toString()));
+			assertEquals("Color failed: " + color.name(), color, ChatColor.byName(color.toString()));
 		}
 	}
 
 	@Test
 	public void testFromName() {
 		for (ChatColor color : ChatColor.values()) {
-			assertEquals("Color failed: " + color.name(), color,
-					ChatColor.byName(color.name()));
+			assertEquals("Color failed: " + color.name(), color, ChatColor.byName(color.name()));
 		}
 	}
 
 	@Test
 	public void testFromId() {
 		for (ChatColor color : ChatColor.values()) {
-			assertEquals("Color failed: " + color.name(), color,
-					ChatColor.byCode(color.getCode()));
+			assertEquals("Color failed: " + color.name(), color, ChatColor.byCode(color.getCode()));
 		}
 	}
 
@@ -69,8 +66,6 @@ public class ChatColorTest {
 
 	@Test
 	public void testStripColor2() {
-		assertEquals(ChatColor.strip(ChatColor.GOLD + "This " + ChatColor.BLUE + "is a "
-				+ ChatColor.BRIGHT_GREEN + "colored " + ChatColor.WHITE + "string."),
-				"This is a colored string.");
+		assertEquals(ChatColor.strip(ChatColor.GOLD + "This " + ChatColor.BLUE + "is a " + ChatColor.BRIGHT_GREEN + "colored " + ChatColor.WHITE + "string."), "This is a colored string.");
 	}
 }

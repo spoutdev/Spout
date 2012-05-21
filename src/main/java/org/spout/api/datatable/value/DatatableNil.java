@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -23,21 +24,19 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-
 package org.spout.api.datatable.value;
 
 import java.io.Serializable;
 
 public class DatatableNil extends DatatableObject {
-
 	public DatatableNil() {
 		this(0);
 	}
-	
+
 	public DatatableNil(int key) {
 		super(key);
 	}
-	
+
 	@Override
 	public void set(Object value) {
 		throw new RuntimeException("This value doesn't exist!");
@@ -47,7 +46,7 @@ public class DatatableNil extends DatatableObject {
 	public boolean compareAndSet(Object expected, Object value) {
 		throw new RuntimeException("This value doesn't exist!");
 	}
-	
+
 	@Override
 	public void setFlags(byte flags) {
 		throw new RuntimeException("This value doesn't exist!");
@@ -99,12 +98,12 @@ public class DatatableNil extends DatatableObject {
 	public byte getObjectTypeId() {
 		return 0;
 	}
-	
+
 	@Override
 	public DatatableObject newInstance(int key) {
 		return new DatatableNil(key);
 	}
-	
+
 	@Override
 	public int fixedLength() {
 		return 0;

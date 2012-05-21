@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -57,7 +58,7 @@ public class ReflectionUtils {
 	 */
 	public static List<Field> getFieldsRecur(Class<?> clazz, boolean includeObject) {
 		List<Field> fields = new ArrayList<Field>();
-		while(clazz != null && (includeObject || !Object.class.equals(clazz))) {
+		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			fields.addAll(Arrays.asList(clazz.getFields()));
 			clazz = clazz.getSuperclass();
 		}
@@ -84,7 +85,7 @@ public class ReflectionUtils {
 	 */
 	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz, boolean includeObject) {
 		List<Field> fields = new ArrayList<Field>();
-		while(clazz != null && (includeObject || !Object.class.equals(clazz))) {
+		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
 			clazz = clazz.getSuperclass();
 		}

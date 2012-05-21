@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -25,14 +26,11 @@
  */
 package org.spout.api.util.config;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- * @author zml2008
- */
-public class ConfigurationHolderTest {
+import org.junit.Test;
 
+public class ConfigurationHolderTest {
 	@Test
 	public void testGetWithDefaultValue() {
 		Configuration config = new MapConfiguration();
@@ -46,7 +44,6 @@ public class ConfigurationHolderTest {
 		config.getNode("path", "with", "value").setValue("valuehere");
 		ConfigurationHolder subject = new ConfigurationHolder(config, (Object)null, "path", "with", "value");
 		assertEquals("valuehere", subject.getValue());
-
 	}
 
 	@Test

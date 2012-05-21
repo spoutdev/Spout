@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,7 +33,7 @@ public class BasicCamera implements Camera {
 	private Matrix projection;
 	private Matrix view;
 	
-	public BasicCamera(Matrix proj, Matrix view){
+	public BasicCamera(Matrix proj, Matrix view) {
 		this.projection = proj;
 		this.view = view;
 	}

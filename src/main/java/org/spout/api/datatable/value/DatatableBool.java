@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DatatableBool extends DatatableObject {
 	private static final byte[] one = new byte[] {(byte)1};
 	private static final byte[] zero = new byte[] {(byte)0};
-	
+
 	private AtomicBoolean data = new AtomicBoolean(false);
 
 	public DatatableBool(int key) {
@@ -84,12 +85,12 @@ public class DatatableBool extends DatatableObject {
 		}
 		set(compressed[0] != 0);
 	}
-	
+
 	@Override
 	public byte getObjectTypeId() {
 		return 1;
 	}
-	
+
 	@Override
 	public DatatableObject newInstance(int key) {
 		return new DatatableBool(key);
@@ -99,5 +100,4 @@ public class DatatableBool extends DatatableObject {
 	public int fixedLength() {
 		return 1;
 	}
-	
 }

@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -56,7 +57,7 @@ public abstract class EntityComponent implements Tickable {
 	/** 
 	 * Called when this component is detached from an entity.
 	 */
-	public void onDetached(){
+	public void onDetached() {
 		
 	}
 }

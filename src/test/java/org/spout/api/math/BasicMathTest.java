@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -26,6 +27,7 @@
 package org.spout.api.math;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.spout.api.math.MathHelper.*;
 import static org.spout.api.math.TestUtils.eps;
 
@@ -39,7 +41,7 @@ public final class BasicMathTest {
 		double[] doubleTestValues = new double[intTestValues.length];
 		double doubleTestResult = intTestResult + 0.03;//Some arbitrary value, doesn't matter!
 
-		for(int i = 0; i < intTestValues.length; i++){
+		for (int i = 0; i < intTestValues.length; i++) {
 			doubleTestValues[i] = intTestValues[i] + 0.03;
 		}
 

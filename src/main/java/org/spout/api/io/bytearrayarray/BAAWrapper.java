@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -139,7 +140,7 @@ public class BAAWrapper {
 			// Spinning lock, then yield and then sleep
 			} else if (!baaRef.compareAndSet(null, openInProgress)) {
 				count++;
-				if (count > 10 ){
+				if (count > 10 ) {
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {

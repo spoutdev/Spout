@@ -1,19 +1,13 @@
-<!--
-	Maven build file for SpoutAPI
-
-	Copyright (c) 2011-2012 SpoutDev <http://www.spout.org>
-	SpoutAPI is licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3, but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
--->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
+	<name>SpoutAPI</name>
 	<groupId>org.spout</groupId>
 	<artifactId>spoutapi</artifactId>
 	<version>dev-SNAPSHOT</version>
-	<name>SpoutAPI</name>
 	<url>http://www.spout.org</url>
+	<inceptionYear>2011</inceptionYear>
 	<description>SpoutAPI is the API framework for the Spout server and client.</description>
 
 	<properties>
@@ -28,21 +22,28 @@
 			<name>SpoutDev License Version 1</name>
 			<url>http://www.spout.org/SpoutDevLicenseV1.txt</url>
 			<distribution>repo</distribution>
+			<comments>GNU Lesser General Public License Version 3, but with a provision that files are released under the MIT license 180 days after they are published</comments>
 		</license>
 	</licenses>
 
 	<!-- Source code -->
 	<scm>
-		<developerConnection>scm:git:git@github.com:SpoutDev/${project.name}.git</developerConnection>
-		<connection>scm:git:git://github.com/SpoutDev/${project.name}.git</connection>
-		<url>https://github.com/SpoutDev/${project.name}</url>
+		<developerConnection>scm:git:git@github.com:SpoutDev/SpoutAPI.git</developerConnection>
+		<connection>scm:git:git://github.com/SpoutDev/SpoutAPI.git</connection>
+		<url>https://github.com/SpoutDev/SpoutAPI</url>
 	</scm>
 
 	<!-- Continuous integration -->
 	<ciManagement>
 		<system>jenkins</system>
-		<url>http://ci.spout.org</url>
+		<url>http://build.spout.org</url>
 	</ciManagement>
+
+	<!-- Issue management -->
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://issues.spout.org</url>
+	</issueManagement>
 
 	<!-- Repository locations -->
 	<repositories>
@@ -51,6 +52,12 @@
 			<url>http://repo.spout.org</url>
 		</repository>
 	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spout-plugins</id>
+			<url>http://repo.spout.org</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<!-- Dependencies -->
 	<dependencies>
@@ -69,7 +76,7 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
-			<version>3.3.1.Final</version>
+			<version>3.4.4.Final</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -81,14 +88,14 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.1</version>
+			<version>2.3</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>11.0.2</version>
+			<version>12.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -122,9 +129,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>slick</groupId>
+			<groupId>org.spout</groupId>
 			<artifactId>slick</artifactId>
-			<version>274</version>
+			<version>0.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -147,9 +154,9 @@
 		</dependency>
 	</dependencies>
 
+	<!-- Build settings -->
 	<build>
 		<defaultGoal>clean package install</defaultGoal>
-		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
 		<!-- Resources -->
 		<resources>
 			<resource>
@@ -163,11 +170,59 @@
 		</resources>
 		<!-- Plugins -->
 		<plugins>
+			<!-- License header formatting plugin -->
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.10.b1</version>
+				<executions>
+					<execution>
+						<phase>clean</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<quiet>true</quiet>
+					<encoding>UTF-8</encoding>
+					<strictCheck>true</strictCheck>
+					<header>${basedir}/HEADER.txt</header>
+					<keywords>
+						<keyword>${project.name}</keyword>
+						<keyword>license</keyword>
+					</keywords>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+					</mapping>
+					<properties>
+						<name>${project.name}</name>
+						<url>${project.url}</url>
+						<license>SpoutDev License Version 1</license>
+						<licenseUrl>http://www.spout.org/SpoutDevLicenseV1.txt</licenseUrl>
+						<copyright>Copyright (c) ${project.inceptionYear}-2012, SpoutDev</copyright>
+					</properties>
+					<includes>
+						<include>src/main/java/**</include>
+						<include>src/test/java/**</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<!-- Version plugin -->
+			<plugin>
+				<groupId>com.sourcesense.maven</groupId>
+				<artifactId>maven-nosnapshot-plugin</artifactId>
+				<version>0.0.7-SNAPSHOT</version>
+				<configuration>
+					<version>${project.version}</version>
+					<propertyName>releaseVersion</propertyName>
+				</configuration>
+			</plugin>
 			<!-- Compile plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>2.4</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -199,12 +254,41 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-                <version>2.10</version>
+				<version>2.12</version>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!-- Eclipse exclusions -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.sourcesense.maven</groupId>
+										<artifactId>maven-nosnapshot-plugin</artifactId>
+										<versionRange>[0.0.7-SNAPSHOT,)</versionRange>
+										<goals>
+											<goal>strip</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

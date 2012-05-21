@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -29,7 +30,7 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DatatableInt extends DatatableObject {
-	
+
 	private final AtomicInteger data = new AtomicInteger(0);
 
 	public DatatableInt(int key) {
@@ -45,7 +46,7 @@ public class DatatableInt extends DatatableObject {
 	public void set(Object value) {
 		throw new IllegalArgumentException("This is an int value, use set(int)");
 	}
-	
+
 	public void set(int value) {
 		data.set(value);
 	}
@@ -74,7 +75,7 @@ public class DatatableInt extends DatatableObject {
 	public byte[] compress() {
 		return compressRaw(asInt());
 	}
-	
+
 	public static byte[] compressRaw(int x) {
 		byte[] compressed = new byte[4];
 		compressed[0] = (byte)(x >> 24);
@@ -88,7 +89,7 @@ public class DatatableInt extends DatatableObject {
 	public void decompress(byte[] compressed) {
 		set(decompressRaw(compressed));
 	}
-	
+
 	public static int decompressRaw(byte[] compressed) {
 		int x = 0;
 		x |= (compressed[0] & 0xFF) << 24;
@@ -97,20 +98,19 @@ public class DatatableInt extends DatatableObject {
 		x |= (compressed[3] & 0xFF) << 0;
 		return x;
 	}
-	
+
 	@Override
 	public byte getObjectTypeId() {
 		return 3;
 	}
-	
+
 	@Override
 	public DatatableObject newInstance(int key) {
 		return new DatatableInt(key);
 	}
-	
+
 	@Override
 	public int fixedLength() {
 		return 4;
 	}
-
 }

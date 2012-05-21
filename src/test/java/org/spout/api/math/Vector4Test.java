@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -26,13 +27,11 @@
 package org.spout.api.math;
 
 import static org.junit.Assert.*;
+
 import static org.spout.api.math.TestUtils.*;
 
 import org.junit.Test;
 
-/**
- * @author yetanotherx
- */
 public class Vector4Test {
 	@Test
 	public void testUnits() {

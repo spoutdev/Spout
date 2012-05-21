@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -251,7 +252,7 @@ public class MathHelper {
 		return new Color(red, green, blue, alpha);
 	}
 
-	public static Quaternion lerp(Quaternion a, Quaternion b, float percent){
+	public static Quaternion lerp(Quaternion a, Quaternion b, float percent) {
 		float x = lerp(a.getX(), b.getX(), percent);
 		float y = lerp(a.getY(), b.getY(), percent);
 		float z = lerp(a.getZ(), b.getZ(), percent);
@@ -261,7 +262,7 @@ public class MathHelper {
 
 	}
 
-	public static Color blend(Color a, Color b){
+	public static Color blend(Color a, Color b) {
 		int red = lerp(a.getRed(), b.getRed(), (a.getAlpha()/255.0));
 		int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha()/255.0));
 		int green = lerp(a.getGreen(), b.getGreen(), (a.getAlpha()/255.0));
@@ -512,7 +513,7 @@ public class MathHelper {
 	 */
 	public static int mean(int... values) {
 		int sum = 0;
-		for(int v : values){
+		for (int v : values) {
 			sum += v;
 		}
 		return sum/values.length;
@@ -525,7 +526,7 @@ public class MathHelper {
 	 */
 	public static double mean(double... values) {
 		double sum = 0;
-		for(double v : values){
+		for (double v : values) {
 			sum += v;
 		}
 		return sum/values.length;
@@ -628,8 +629,8 @@ public class MathHelper {
 	 * @param b
 	 * @return
 	 */
-	public static Quaternion rotationTo(Vector3 a, Vector3 b){
-		if(a == b || a.equals(b)){
+	public static Quaternion rotationTo(Vector3 a, Vector3 b) {
+		if (a == b || a.equals(b)) {
 			return Quaternion.IDENTITY;
 		}
 		//Normalize the input vectors before doing math on them.
@@ -1247,11 +1248,11 @@ public class MathHelper {
 		return ortho;
 	}
 
-	public static Matrix transpose(Matrix in){
+	public static Matrix transpose(Matrix in) {
 		Matrix r = new Matrix(in.dimension);
 
-		for(int i = 0; i < in.dimension; i++){
-			for(int j = 0; j < in.dimension; j++){
+		for (int i = 0; i < in.dimension; i++) {
+			for (int j = 0; j < in.dimension; j++) {
 				r.set(j, i, in.get(i, j));
 			}
 		}

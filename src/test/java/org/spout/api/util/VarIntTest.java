@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -33,23 +34,21 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.junit.Test;
+
 import org.spout.api.util.list.ByteCircularBufferFIFO;
 
 public class VarIntTest {
-
 	private static int LENGTH = 65536;
-	
+
 	private static int threshold1 = 0x00000080;
 	private static int threshold2 = 0x00007F00;
-	
-	
+
 	@Test
 	public void test() throws IOException {
-		
 		int[] ints = new int[LENGTH];
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < ints.length; i++) {
 			ints[i] = r.nextInt();
 		}
@@ -58,65 +57,65 @@ public class VarIntTest {
 		for (int i = 0; i < 2048; i++) {
 			ints[2048 + i] = threshold1 - 1024 + i;
 		}
-	
+
 		// Guarantees all ints from 0 to 255 are included
 		for (int i = 0; i < 2048; i++) {
 			ints[4096 + i] = threshold2 - 1024 + i;
 		}
-		
+
 		ByteCircularBufferFIFO buf = new ByteCircularBufferFIFO();
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			VarInt.writeInt(buf, ints[i]);
 		}
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			int decodedInt = VarInt.readInt(buf);
 			assertTrue("Mismatch for int " + ints[i] + ", decoded = " + decodedInt, ints[i] == decodedInt);
 		}
-		
+
 		boolean thrown = false;
-		
+
 		try {
 			VarInt.readInt(buf);
 		} catch (IllegalStateException ise) {
 			thrown = true;
 		}
-		
+
 		assertTrue("Reading an int from an empty buffer did not throw an exception", thrown);
-		
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
+
 		String s1 = "String 1";
 		String s2 = null;
 		String s3 = "String - alternative length";
 		String s4 = "";
-		
+
 		VarInt.writeString(out, s1);
-		
+
 		VarInt.writeString(out, s2);
-		
+
 		VarInt.writeString(out, s3);
-		
+
 		VarInt.writeString(out, s4);
-		
+
 		byte[] outputArray = out.toByteArray();
-		
+
 		out.close();
-		
+
 		ByteArrayInputStream in = new ByteArrayInputStream(outputArray);
-		
+
 		matchString("String mismatch with read/write string " + s1, s1, VarInt.readString(in));
 
 		matchString("String mismatch with read/write string " + s2, s2, VarInt.readString(in));
-		
+
 		matchString("String mismatch with read/write string " + s3, s3, VarInt.readString(in));
 
 		matchString("String mismatch with read/write string " + s4, s4, VarInt.readString(in));
-		
+
 		in.close();
 	}
-	
+
 	private void matchString(String message, String s1, String s2) {
 		boolean match = (s1 == s2) || (s1 != null && s1.equals(s2));
 		assertTrue(message, match);

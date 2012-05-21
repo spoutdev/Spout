@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -25,10 +26,11 @@
  */
 package org.spout.api.util.config;
 
-import org.junit.Test;
-import org.spout.api.exception.ConfigurationException;
-
 import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import org.spout.api.exception.ConfigurationException;
 
 public class ConfigurationHolderConfigurationTest {
 	private static class TestConfig extends ConfigurationHolderConfiguration {

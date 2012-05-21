@@ -1,9 +1,10 @@
 /*
- * This file is part of Spout (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
- * Spout is licensed under the SpoutDev License Version 1.
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
- * Spout is free software: you can redistribute it and/or modify
+ * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -12,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
- * Spout is distributed in the hope that it will be useful,
+ * SpoutAPI is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
@@ -23,7 +24,6 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-
 package org.spout.api.gui.screen;
 
 import java.awt.Point;
@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+
 import org.spout.api.Tickable;
 import org.spout.api.gui.KeyboardEventHandler;
 import org.spout.api.gui.MouseButton;
@@ -49,35 +50,35 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	 * Contains the visible screens in back-to-front order, that means, the first element is the last screen you can see (and is also a fullscreen)
 	 */
 	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
-	
+
 	public ScreenStack(FullScreen mainScreen) {
-		if(mainScreen == null) {
+		if (mainScreen == null) {
 			throw new IllegalStateException("mainScreen must not be null");
 		}
 		screens.add(mainScreen);
 		visibleScreens.add(mainScreen);
 	}
-	
+
 	/**
 	 * @return the first visible screen
 	 */
 	public Screen getFirstScreen() {
 		return screens.getFirst();
 	}
-	
+
 	/**
 	 * @return all visible screens, ordered back-to-front, that means, the first element is the last screen you can see (and is also a FullScreen)
 	 */
 	public List<Screen> getVisibleScreens() {
 		return Collections.unmodifiableList(visibleScreens);
 	}
-	
+
 	/**
 	 * Opens the given screen. If the screen already exists, it will push it to the front
 	 * @param screen
 	 */
 	public void openScreen(Screen screen) {
-		if(screen != getMainScreen()) {
+		if (screen != getMainScreen()) {
 			screens.remove(screen);
 			screens.addFirst(screen);
 			recalculate();
@@ -85,76 +86,76 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 			printMainScreenWarning("raise");
 		}
 	}
-	
+
 	private void printMainScreenWarning(String verb) {
 		System.out.println("You can't " + verb + " the main screen. To replace it, call setMainScreen with a fullscreen as argument.");
 	}
-	
+
 	/**
 	 * Closes the topmost screen.
 	 */
 	public void closeFirstScreen() {
-		if(screens.size() > 1) {
+		if (screens.size() > 1) {
 			screens.removeFirst();
 			recalculate();
 		} else {
 			printMainScreenWarning("close");
 		}
 	}
-	
+
 	/**
 	 * Closes the given screen.
 	 * @param screen
 	 */
 	public void closeScreen(Screen screen) {
-		if(screen != getMainScreen()) {
+		if (screen != getMainScreen()) {
 			screens.remove(screen);
 			recalculate();
 		} else {
 			printMainScreenWarning("close");
 		}
 	}
-	
+
 	/**
 	 * Sets the main screen to a new instance
 	 * @param mainScreen the new main screen
 	 */
 	public void setMainScreen(FullScreen mainScreen) {
-		if(mainScreen == null) {
+		if (mainScreen == null) {
 			throw new IllegalStateException("Main Screen may not be null");
 		}
 		screens.set(screens.size() - 1, mainScreen);
 	}
-	
+
 	/**
 	 * Gets the main screen
 	 * @return the main screen
 	 */
 	public FullScreen getMainScreen() {
-		if(screens.getLast() instanceof FullScreen || screens.getLast() == null) {
+		if (screens.getLast() instanceof FullScreen || screens.getLast() == null) {
 			return (FullScreen) screens.getLast();
 		} else {
 			//Should never happen
 			throw new IllegalStateException("Main Screen is not a FullScreen");
 		}
 	}
-	
+
 	private void recalculate() {
 		visibleScreens.clear();
-		for(Screen screen:screens) {
+		for (Screen screen:screens) {
 			visibleScreens.addLast(screen);
-			if(screen instanceof FullScreen) {
+			if (screen instanceof FullScreen) {
 				FullScreen fs = (FullScreen) screen;
-				if(!fs.isTransparent()) {
+				if (!fs.isTransparent()) {
 					break;
 				}
 			}
 		}
 	}
-	
+
 	private Screen getHitScreen(Point position) {
-		for(Screen screen:screens) {
-			if(screen.getGeometry().contains(position)) {
+		for (Screen screen:screens) {
+			if (screen.getGeometry().contains(position)) {
 				return screen;
 			}
 		}
@@ -164,7 +165,7 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	@Override
 	public void onMouseDown(Point position, MouseButton button) {
 		Screen screen = getHitScreen(position);
-		if(screen != null) {
+		if (screen != null) {
 			Point screenPosition = new Point(position);
 			screenPosition.translate(-screen.getGeometry().x, -screen.getGeometry().y);
 			getHitScreen(position).onMouseDown(screenPosition, button);
@@ -174,7 +175,7 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	@Override
 	public void onMouseMove(Point from, Point to) {
 		Screen screen = getHitScreen(from);
-		if(screen != null) {
+		if (screen != null) {
 			Point screenPositionFrom = new Point(from);
 			Point screenPositionTo = new Point(to);
 			screenPositionFrom.translate(-screen.getGeometry().x, -screen.getGeometry().y);
@@ -182,7 +183,7 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 			screen.onMouseMove(screenPositionFrom, screenPositionTo);
 		}
 		screen = getHitScreen(to);
-		if(screen != null) {
+		if (screen != null) {
 			Point screenPositionFrom = new Point(from);
 			Point screenPositionTo = new Point(to);
 			screenPositionFrom.translate(-screen.getGeometry().x, -screen.getGeometry().y);
@@ -194,7 +195,7 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	@Override
 	public void onMouseUp(Point position, MouseButton button) {
 		Screen screen = getHitScreen(position);
-		if(screen != null) {
+		if (screen != null) {
 			Point screenPosition = new Point(position);
 			screenPosition.translate(-screen.getGeometry().x, -screen.getGeometry().y);
 			getHitScreen(position).onMouseUp(screenPosition, button);
@@ -213,7 +214,7 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 
 	@Override
 	public void render() {
-		for(Screen screen:visibleScreens) {
+		for (Screen screen:visibleScreens) {
 			GL11.glTranslated(screen.getGeometry().x, screen.getGeometry().y, 0);
 			GL11.glPushMatrix();
 			screen.render();
@@ -224,7 +225,7 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	@Override
 	public void onTick(float dt) {
 		//Invisible screens don't have to be ticked
-		for(Screen screen:visibleScreens) {
+		for (Screen screen:visibleScreens) {
 			screen.onTick(dt);
 		}
 	}

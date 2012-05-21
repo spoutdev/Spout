@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -26,13 +27,14 @@
 package org.spout.api.util.map.concurrent;
 
 import static org.junit.Assert.assertTrue;
-import gnu.trove.TCollections;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import gnu.trove.TCollections;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -108,7 +110,6 @@ public class TSyncIntObjectHashMapTest {
 			System.out.println("Java: " + (java / 1000000.0)/TEST_COUNT + "ms");
 			System.out.println("Reference: " + (reference / 1000000.0)/TEST_COUNT + "ms");
 		}
-
 	}
 
 	private static long runJoin(Thread[] threads, String name) {
@@ -151,7 +152,6 @@ public class TSyncIntObjectHashMapTest {
 			int localCount = count.getAndDecrement();
 
 			while (localCount > 0) {
-
 				if ((localCount & mask) == 0) {
 					map.put(writeBuffer[localCount], writeData[localCount]);
 				} else {
@@ -219,7 +219,6 @@ public class TSyncIntObjectHashMapTest {
 			int localCount = count.getAndDecrement();
 
 			while (localCount > 0) {
-
 				if ((localCount & mask) == 0) {
 					map.put(writeBuffer[localCount], writeData[localCount]);
 				} else {
@@ -232,7 +231,6 @@ public class TSyncIntObjectHashMapTest {
 				localCount = count.getAndDecrement();
 			}
 		}
-
 	}
 
 	public static class ReferenceMap extends Thread {

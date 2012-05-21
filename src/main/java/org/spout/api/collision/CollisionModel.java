@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -40,19 +41,19 @@ public class CollisionModel extends CollisionVolume {
 	
 	Vector3 origin;
 	
-	public CollisionModel(){
+	public CollisionModel() {
 		area = new BoundingBox();
 		
 	}
 	
-	public CollisionModel(CollisionVolume base){
-		if(base instanceof CollisionModel) throw new IllegalArgumentException("Cannot create a collision model with a collision model as an area");
+	public CollisionModel(CollisionVolume base) {
+		if (base instanceof CollisionModel) throw new IllegalArgumentException("Cannot create a collision model with a collision model as an area");
 		area = base;
 	}
 		
 	
-	public void addChild(CollisionVolume child){
-		if(child instanceof CollisionModel){
+	public void addChild(CollisionVolume child) {
+		if (child instanceof CollisionModel) {
 			area.offset(origin);
 			children.add((CollisionModel)child);
 		} else {
@@ -62,7 +63,7 @@ public class CollisionModel extends CollisionVolume {
 		}
 	}
 	
-	public CollisionVolume getVolume(){
+	public CollisionVolume getVolume() {
 		return area;
 	}
 	
@@ -70,7 +71,7 @@ public class CollisionModel extends CollisionVolume {
 	@Override
 	public CollisionVolume offset(Vector3 ammount) {
 		origin = origin.add(ammount);
-		for(CollisionModel m : children){
+		for (CollisionModel m : children) {
 			m.offset(ammount);
 		}
 		return this;
@@ -78,38 +79,38 @@ public class CollisionModel extends CollisionVolume {
 
 	@Override
 	public boolean intersects(CollisionVolume other) {
-		if(other instanceof CollisionModel){
-			if(!area.intersects(((CollisionModel)other).getVolume())) return false;
+		if (other instanceof CollisionModel) {
+			if (!area.intersects(((CollisionModel)other).getVolume())) return false;
 		}
-		if(!area.intersects(other)) return false; //Check us
-		if(children.size() > 0) return true; //We intersect and have no children, it intersects.
-		for(CollisionModel m : children){
-			if(m.intersects(other)) return true;
+		if (!area.intersects(other)) return false; //Check us
+		if (children.size() > 0) return true; //We intersect and have no children, it intersects.
+		for (CollisionModel m : children) {
+			if (m.intersects(other)) return true;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean contains(CollisionVolume other) {
-		if(other instanceof CollisionModel){
-			if(!area.contains(((CollisionModel)other).getVolume())) return false;
+		if (other instanceof CollisionModel) {
+			if (!area.contains(((CollisionModel)other).getVolume())) return false;
 		}
-		if(!area.contains(other)) return false; //Check us
-		if(children.size() > 0) return true; //We intersect and have no children, it intersects.
+		if (!area.contains(other)) return false; //Check us
+		if (children.size() > 0) return true; //We intersect and have no children, it intersects.
 		//TODO: Make this a breadth first search.  Right now it's depth first and it will be slow.
-		for(CollisionModel m : children){
-			if(m.contains(other)) return true;
+		for (CollisionModel m : children) {
+			if (m.contains(other)) return true;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean containsPoint(Vector3 b) {
-		if(!area.containsPoint(b)) return false; //Check us
-		if(children.size() > 0) return true; //We intersect and have no children, it intersects.
+		if (!area.containsPoint(b)) return false; //Check us
+		if (children.size() > 0) return true; //We intersect and have no children, it intersects.
 		//TODO: Make this a breadth first search.  Right now it's depth first and it will be slow.
-		for(CollisionModel m : children){
-			if(m.containsPoint(b)) return true;
+		for (CollisionModel m : children) {
+			if (m.containsPoint(b)) return true;
 		}
 		return false;
 	}
@@ -118,7 +119,7 @@ public class CollisionModel extends CollisionVolume {
 	public Vector3 resolve(CollisionVolume other) {
 		
 		//TODO make this resolve with children
-		if(other instanceof CollisionModel) return area.resolve(((CollisionModel)other).getVolume());
+		if (other instanceof CollisionModel) return area.resolve(((CollisionModel)other).getVolume());
 		return area.resolve(other);
 	}
 

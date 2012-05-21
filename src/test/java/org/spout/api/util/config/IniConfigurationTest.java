@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -25,23 +26,19 @@
  */
 package org.spout.api.util.config;
 
+import static org.junit.Assert.*;
+import static org.spout.api.util.config.commented.CommentedConfigurationNode.LINE_SEPARATOR;
+
 import org.junit.Test;
+
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.commented.CommentedConfigurationNode;
 import org.spout.api.util.config.ini.StringLoadingIniConfiguration;
 
-import static org.spout.api.util.config.commented.CommentedConfigurationNode.LINE_SEPARATOR;
-import static org.junit.Assert.*;
-
-/**
- * @author zml2008
- */
 public class IniConfigurationTest {
 	@Test
 	public void testBasicLoading() throws ConfigurationException {
-		StringLoadingIniConfiguration subject = new StringLoadingIniConfiguration(
-				"[section]" + LINE_SEPARATOR +
-				"node = value" + LINE_SEPARATOR);
+		StringLoadingIniConfiguration subject = new StringLoadingIniConfiguration("[section]" + LINE_SEPARATOR + "node = value" + LINE_SEPARATOR);
 		subject.load();
 		ConfigurationNode sectionNode = subject.getNode("section");
 		assertNotNull(sectionNode);
@@ -55,18 +52,12 @@ public class IniConfigurationTest {
 		StringLoadingIniConfiguration subject = new StringLoadingIniConfiguration(null);
 		subject.getNode("section.node").setValue("value");
 		subject.save();
-		assertEquals("[section]" + LINE_SEPARATOR +
-		"node=value" + LINE_SEPARATOR, subject.getValue());
+		assertEquals("[section]" + LINE_SEPARATOR + "node=value" + LINE_SEPARATOR, subject.getValue());
 	}
 
 	@Test
 	public void testCommentLoading() throws ConfigurationException {
-		StringLoadingIniConfiguration subject = new StringLoadingIniConfiguration(
-				"# This is the first section!" + LINE_SEPARATOR +
-				"[section]" + LINE_SEPARATOR +
-				"# This is a node!" + LINE_SEPARATOR +
-				"# With a multiline comment!" + LINE_SEPARATOR +
-				"node=value" + LINE_SEPARATOR);
+		StringLoadingIniConfiguration subject = new StringLoadingIniConfiguration("# This is the first section!" + LINE_SEPARATOR + "[section]" + LINE_SEPARATOR + "# This is a node!" + LINE_SEPARATOR + "# With a multiline comment!" + LINE_SEPARATOR + "node=value" + LINE_SEPARATOR);
 		subject.load();
 		ConfigurationNode node = subject.getNode("section");
 		assertArrayEquals(new String[] {"This is the first section!"}, ((CommentedConfigurationNode) node).getComment());
@@ -81,10 +72,6 @@ public class IniConfigurationTest {
 		subject.getNode("section", "node").setValue("value");
 		subject.getNode("section", "node").setComment("Node Comment");
 		subject.save();
-		assertEquals("# Hello" + LINE_SEPARATOR +
-		"# World" + LINE_SEPARATOR +
-		"[section]" + LINE_SEPARATOR +
-		"# Node Comment" + LINE_SEPARATOR +
-		"node=value" + LINE_SEPARATOR, subject.getValue());
+		assertEquals("# Hello" + LINE_SEPARATOR + "# World" + LINE_SEPARATOR + "[section]" + LINE_SEPARATOR + "# Node Comment" + LINE_SEPARATOR + "node=value" + LINE_SEPARATOR, subject.getValue());
 	}
 }

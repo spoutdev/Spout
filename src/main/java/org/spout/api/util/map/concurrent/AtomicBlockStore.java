@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -93,7 +94,7 @@ public class AtomicBlockStore<T> {
 
 			for (int i = 0; i < Math.min(blocks.length, size); i++) {
 				short d = 0;
-				if(data != null) {
+				if (data != null) {
 					d = data[i];
 				}
 				

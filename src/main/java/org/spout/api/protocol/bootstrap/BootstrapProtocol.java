@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -40,6 +41,6 @@ public abstract class BootstrapProtocol extends Protocol {
 	}
 
 	public abstract String detectProtocolDefinition(Message message);
-	
+
 	public abstract Protocol getDefaultProtocol();
 }

@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -34,13 +35,13 @@ public class PositionNormalTexture {
 	public Vector3 normal;
 	public Vector2 uv;
 	
-	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 texture){
+	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 texture) {
 		this.position = position;
 		this.normal = normal;
 		this.uv = texture;
 	}
 	
-	public PositionNormalTexture(Vector3 position){
+	public PositionNormalTexture(Vector3 position) {
 		this(position, Vector3.ZERO, Vector2.ZERO);
 	}
 	

@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -30,7 +31,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class TInt21TripleHashedTest {
-
 	public void testValue(int x, int y, int z) {
 		long key = TInt21TripleHashed.key(x, y, z);
 		assertEquals(x, TInt21TripleHashed.key1(key));

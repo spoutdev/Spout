@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -40,7 +41,6 @@ import org.spout.api.render.RenderMode;
  * Represents the client-specific implementation of Minecraft.
  */
 public interface Client extends Engine {
-	
 	/**
 	 * Gets the location of the temporary general cache (used for non-texture
 	 * and non-audio files).
@@ -51,7 +51,6 @@ public interface Client extends Engine {
 	 */
 	public File getTemporaryCache();
 
-
 	/**
 	 * Gets the location of the texture pack directory. This directory is used
 	 * when users select a texture pack from the menu.
@@ -60,7 +59,6 @@ public interface Client extends Engine {
 	 */
 	public File getResourcePackFolder();
 
-	
 	/**
 	 * Gets the location of the achievement and statistic folder for the local
 	 * player.
@@ -85,7 +83,7 @@ public interface Client extends Engine {
 
 	/**
 	 * The Camera object is the viewport into the scene
-	 * 
+	 *
 	 *
 	 * @return the location and view of the camera
 	 */
@@ -97,24 +95,23 @@ public interface Client extends Engine {
 	 */
 	public void setActiveCamera(Camera activeCamera);
 
-
 	/**
 	 * Gets client specific information for plugins.
 	 *
 	 * @return plugin store
 	 */
 	public PluginStore getPluginStore();
-	
+
 	/**
 	 * Gets the current render mode that spoutclient is running in
-	 * 
+	 *
 	 * @return render mode
 	 */
 	public RenderMode getRenderMode();
-	
+
 	/**
 	 * Gets the screen stack
-	 * 
+	 *
 	 * @return screen stack
 	 */
 	public ScreenStack getScreenStack();

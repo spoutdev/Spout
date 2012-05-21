@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -35,14 +36,14 @@ public abstract class Texture extends Resource {
 	
 	protected BufferedImage image;
 	
-	public Texture(BufferedImage baseImage){
+	public Texture(BufferedImage baseImage) {
 		this.image = baseImage;
 	}
 	
-	public int getHeight(){
+	public int getHeight() {
 		return image.getHeight();
 	}
-	public int getWidth(){
+	public int getWidth() {
 		return image.getWidth();
 	}
 	

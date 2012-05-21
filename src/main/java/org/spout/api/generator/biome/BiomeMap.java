@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -56,7 +57,7 @@ public final class BiomeMap {
 		cache0 = new MemoryStoreMap<Vector3, Biome>();
 	}
 	
-	public Biome getBiomeRaw(int index){
+	public Biome getBiomeRaw(int index) {
 		return map.get(Math.abs(index) % map.getSize());
 	}
 
@@ -92,7 +93,7 @@ public final class BiomeMap {
 	 * @return
 	 */
 	public Biome getBiome(Vector3 position, long seed) {
-		if(selector == null) throw new IllegalStateException("Biome Selector is null and cannot set a selector");
+		if (selector == null) throw new IllegalStateException("Biome Selector is null and cannot set a selector");
 		Biome biome = biomeOverrides.get(position);
 		
 		SimpleStoreMap<Vector3, Biome> cacheNew;
@@ -134,7 +135,7 @@ public final class BiomeMap {
 	}
 	
 	public int indexOf(Biome biome) {
-		if(map.reverseGet(biome) != null) {
+		if (map.reverseGet(biome) != null) {
 			return map.reverseGet(biome);
 		} else {
 			return -1;

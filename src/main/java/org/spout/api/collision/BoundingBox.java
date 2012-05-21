@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -348,7 +349,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	}
 
 	public Vector3 resolve(CollisionVolume other) {
-		if(other instanceof BoundingBox){
+		if (other instanceof BoundingBox) {
 			return CollisionHelper.getCollision(this, (BoundingBox)other);
 		}
 		return null;

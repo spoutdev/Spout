@@ -1,15 +1,15 @@
-[![SpoutAPI][Project Logo]][Website]
+[![Spout][Project Logo]][Website]
 What is SpoutAPI?
 -----------------
 SpoutAPI is the API for the Spout server and framework.
 
 Copyright (c) 2011-2012, SpoutDev <http://www.spout.org>
 
-SpoutAPI is licensed under [GNU LESSER GENERAL PUBLIC LICENSE Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
+SpoutAPI is licensed under [GNU Lesser General Public License Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
 
 Who is SpoutDev?
 ----------------
-SpoutDev is the team behind Spout, SpoutAPI, Spoutcraft, SpoutcraftAPI, Spoutcraft Launcher, SpoutPlugin, SpoutPluginAPI, Vanilla, and BukkitBridge.  
+SpoutDev is the team behind the Spout and Spoutcraft projects, Vanilla, BukkitBridge, I See You, and Pipe.  
 [![Afforess](https://secure.gravatar.com/avatar/ea0be49e1e4deac42ed9204ffd95b56c?d=mm&r=pg&s=48)](http://forums.spout.org/members/afforess.2/) 
 [![alta189](https://secure.gravatar.com/avatar/7a087430b2bf9456b8879c5469aadb95?d=mm&r=pg&s=48)](http://forums.spout.org/members/alta189.3/) 
 [![Wulfspider](https://secure.gravatar.com/avatar/6f2a0dcb60cd1ebee57875f9326bc98c?d=mm&r=pg&s=48)](http://forums.spout.org/members/wulfspider.1/) 
@@ -48,20 +48,21 @@ Coding and Pull Request Formatting
 * No 80 column limit or midstatement newlines.
 * Pull requests must compile and work.
 * Pull requests must be formatted properly.
-* Number of commits in a pull request should be kept to a minimum.
+* Sign-off on your ALL commits - this indicates you agree to the terms of our license.
 * No merges should be included in pull requests unless the pull request's purpose is a merge.
-* Signoff on your commits - this indicates you agree to the terms of our license
+* Number of commits in a pull request should be kept to *one commit* and all additional commits must be *squashed*.
+* For clarification, see the full pull request guidelines [here](http://spout.in/prguide).
 
 **Please follow the above conventions if you want your pull request(s) accepted.**
 
 [Project Logo]: http://cdn.spout.org/img/logo/spout_327x150.png
-[License]: http://www.gnu.org/licenses/lgpl.html
+[License]: http://www.spout.org/SpoutDevLicenseV1.txt
 [Website]: http://www.spout.org
 [Forums]: http://forums.spout.org
 [GitHub]: https://github.com/SpoutDev/SpoutAPI
-[Javadoc]: http://jd.spout.org/latest
-[Jenkins]: http://spout.in/ci
-[Issues]: http://spout.in/issues
+[Javadoc]: http://jd.spout.org/server/
+[Jenkins]: http://build.spout.org/job/SpoutAPI
+[Issues]: http://issues.spout.org
 [Twitter]: http://spout.in/twitter
 [Twitter Logo]: http://cdn.spout.org/img/button/twitter_follow_us.png
 [Facebook]: http://spout.in/facebook

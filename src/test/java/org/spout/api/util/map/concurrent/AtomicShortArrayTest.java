@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -42,7 +43,6 @@ public class AtomicShortArrayTest {
 
 	@Before
 	public void setUp() {
-
 		Random rand = new Random();
 
 		arrayData = new short[LENGTH];
@@ -54,11 +54,9 @@ public class AtomicShortArrayTest {
 		}
 
 		shuffle(arrayIndex);
-
 	}
 
 	private void shuffle(int[] deck) {
-
 		Random rand = new Random();
 
 		for (int placed = 0; placed < deck.length; placed++) {
@@ -66,7 +64,6 @@ public class AtomicShortArrayTest {
 			int newIndex = rand.nextInt(remaining);
 			swap(deck, placed, newIndex + placed);
 		}
-
 	}
 
 	private void swap(int[] array, int i1, int i2) {

@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -34,79 +35,75 @@ import java.util.Arrays;
 import org.junit.Test;
 
 public class DatatableSerializableTest {
-
 	@Test
 	public void testDataSubject() throws UnsupportedEncodingException {
-
 		DatatableSerializable s1 = new DatatableSerializable(77);
-		
+
 		FakeObject1 f1 = new FakeObject1(21);
-		
+
 		s1.set(f1);
-		
+
 		byte[] compressed = s1.compress();
-		
+
 		DatatableSerializable s2 = new DatatableSerializable(77);
-		
+
 		s2.decompress(compressed);
-		
+
 		FakeObject1 f2 = (FakeObject1)s2.get();
-		
+
 		assertTrue("Object was not correctly recovered after compression/decompression", f2.x == f1.x);
-		
+
 		assertTrue("Unable to modify class name in serialized string", searchAndReplace(compressed, "FakeObject1", "FakeObject2"));
-		
+
 		s2.decompress(compressed);
-		
+
 		FakeObject2 f3 = (FakeObject2)s2.get();
-		
+
 		assertTrue("FakeObject2 was not correctly recovered after modification of the byte stream", f3.x == f1.x);
-		
+
 		assertTrue("Valid object returned true for isUnknownClass", !s2.isUnknownClass());
-		
+
 		assertTrue("Unable to modify class name in serialized string", searchAndReplace(compressed, "FakeObject2", "FakeObject3"));
-		
+
 		s2.decompress(compressed);
-		
+
 		Serializable f4 = s2.get();
-		
+
 		assertTrue("Null object not returned when attempting to deserialize a non-existant class", f4 == null);
-		
+
 		assertTrue("Unknown object returned false for isUnknownClass", s2.isUnknownClass());
-		
+
 		byte[] recompressed = s2.compress();
-		
+
 		assertTrue("Byte array mis-match when compressing an unknown class", Arrays.equals(recompressed, compressed));
-		
+
 		assertTrue("Unable to modify class name in serialized string", searchAndReplace(compressed, "FakeObject3", "FakeObject1"));
 
 		FakeObject1 f5 = (FakeObject1)s2.get();
-		
+
 		assertTrue("Object was not correctly recovered after compression/decompression", f5.x == f1.x);
-		
+
 		s2.set(null);
-		
+
 		assertTrue("Null object returned true for isUnknownClass", !s2.isUnknownClass());
-		
+
 		assertTrue("Compare and set returned true when expected did not match", !s2.compareAndSet(f5, null));
-		
+
 		assertTrue("Compare and set returned true when expected did not match", !s2.compareAndSet(f5, f5));
-		
+
 		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(null, f5));
-		
+
 		assertTrue("Compare and set returned true when expected did not match", !s2.compareAndSet(null, f5));
-		
+
 		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(f5, f5));
-		
+
 		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(f5, null));
-		
+
 		assertTrue("Datatable has unexpected value", s2.get() == null);
-		
+
 		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(null, f5));
 
 		assertTrue("Datatable has unexpected value", s2.get() == f5);
-
-
 	}
 
 	/*
@@ -118,7 +115,7 @@ public class DatatableSerializableTest {
 	private boolean searchAndReplace(byte[] buf, String o, String n) throws UnsupportedEncodingException {
 		byte[] oldArray = o.getBytes("UTF-8");
 		byte[] newArray = n.getBytes("UTF-8");
-		
+
 		if (oldArray.length != newArray.length) {
 			throw new IllegalArgumentException("Old and new arrays must be equal lengths");
 		}
@@ -145,7 +142,6 @@ public class DatatableSerializableTest {
 	}
 
 	private static class FakeObject1 implements Serializable {
-
 		private static final long serialVersionUID = 1L;
 
 		private long x;
@@ -154,9 +150,8 @@ public class DatatableSerializableTest {
 			this.x = x;
 		}
 	}
-	
-	private static class FakeObject2 implements Serializable {
 
+	private static class FakeObject2 implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private long x;
@@ -165,5 +160,4 @@ public class DatatableSerializableTest {
 			this.x = x;
 		}
 	}
-
 }

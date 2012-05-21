@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -29,7 +30,7 @@ import java.net.URI;
 
 public class Resource {
 	URI path; //TODO set this
-	public URI getPath(){
+	public URI getPath() {
 		return path;
 	}
 	

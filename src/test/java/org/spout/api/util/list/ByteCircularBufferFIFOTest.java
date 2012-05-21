@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,104 +33,102 @@ import org.junit.Test;
 public class ByteCircularBufferFIFOTest {
 	@Test
 	public void test() {
-		
 		ByteCircularBufferFIFO buf = new ByteCircularBufferFIFO();
-		
+
 		writeSequence(buf, 10, 9);
-		
+
 		writeArraySequence(buf, 20, 11);
-		
+
 		readArraySequence(buf, 10, 9);
-		
+
 		writeArraySequence(buf, 30, 45, 13, 69);
-		
+
 		readSequence(buf, 20, 11);
-		
+
 		readArraySequence(buf, 30, 13);
 
 		int b = buf.read();
-		
+
 		assertTrue("Empty FIFO did not readback -1", b == -1);
-		
+
 		writeArraySequence(buf, 40, 45, 17, 69);
-		
+
 		writeSequence(buf, 50, 19);
-		
+
 		buf.skip(17);
-		
+
 		readArraySequence(buf, 50, 77, 19, 111);
-		
+
 		writeSequence(buf, 60, 9);
-		
+
 		long s = buf.skip(11);
-		
+
 		assertTrue("Incorrect number of bytes skipped", s == 9);
-		
+
 		b = buf.read();
-		
+
 		assertTrue("Empty FIFO did not readback -1", b == -1);
-		
+
 		byte[] arr = new byte[30];
-		
+
 		writeSequence(buf, 60, 14);
-		
+
 		int numBytes = buf.read(arr);
-		
+
 		assertTrue("Wrong number of bytes read", numBytes == 14);
-		
+
 		writeSequence(buf, 70, 12);
-		
+
 		numBytes = buf.read(arr, 9, 21);
-		
+
 		assertTrue("Wrong number of bytes read", numBytes == 12);
-		
+
 		buf.trim();
-		
+
 		writeSequence(buf, 80, 94);
-		
+
 		buf.trim();
-		
+
 		writeSequence(buf, 90, 77);
 
 		buf.trim();
-		
+
 		writeSequence(buf, 100, 107);
-		
+
 		buf.trim();
-		
+
 		writeSequence(buf, 110, 214);
-		
+
 		buf.trim();
-		
+
 		readSequence(buf, 80, 94);
-		
+
 		buf.trim();
-		
+
 		readSequence(buf, 90, 77);
-		
+
 		buf.trim();
-		
+
 		readSequence(buf, 100, 107);
-		
+
 		buf.trim();
-		
+
 		readSequence(buf, 110, 214);
-		
+
 		buf.trim();
-		
+
 		b = buf.read();
-		
+
 		assertTrue("Empty FIFO did not readback -1 after trim", b == -1);
-		
 	}
-	
+
 	private void writeSequence(ByteCircularBufferFIFO buf, int start, int arrayLength) {
 		byte[] a = fillArray(start, arrayLength);
 		for (byte b : a) {
 			buf.write(b);
 		}
 	}
-	
+
 	private void readSequence(ByteCircularBufferFIFO buf, int start, int arrayLength) {
 		byte[] a = fillArray(start, arrayLength);
 		byte[] read = new byte[arrayLength];
@@ -141,12 +140,12 @@ public class ByteCircularBufferFIFOTest {
 		}
 		checkArray(a, read, 0, arrayLength, "readSequence");
 	}
-	
+
 	private void writeArraySequence(ByteCircularBufferFIFO buf, int start, int arrayLength) {
 		byte[] a = fillArray(start, arrayLength);
 		buf.write(a);
 	}
-	
+
 	private void readArraySequence(ByteCircularBufferFIFO buf, int start, int arrayLength) {
 		byte[] a = fillArray(start, arrayLength);
 		byte[] read = new byte[arrayLength];
@@ -154,7 +153,7 @@ public class ByteCircularBufferFIFOTest {
 		assertTrue("Incorrect number of bytes read", numBytes == read.length);
 		checkArray(a, read, 0, arrayLength, "readArraySequence without offset");
 	}
-	
+
 	private void writeArraySequence(ByteCircularBufferFIFO buf, int start, int off, int length, int arrayLength) {
 		byte[] a = fillArray(start, length);
 		byte[] write = new byte[arrayLength];
@@ -163,7 +162,7 @@ public class ByteCircularBufferFIFOTest {
 		}
 		buf.write(write, off, length);
 	}
-	
+
 	private void readArraySequence(ByteCircularBufferFIFO buf, int start, int off, int length, int arrayLength) {
 		byte[] a = fillArray(start, length);
 		byte[] read = new byte[arrayLength];
@@ -171,7 +170,7 @@ public class ByteCircularBufferFIFOTest {
 		assertTrue("Incorrect number of bytes read", numBytes == length);
 		checkArray(a, read, off, length, "readArraySequence with offset");
 	}
-	
+
 	private void checkArray(byte[] reference, byte[] read, int off, int length, String message) {
 		for (int i = 0; i < length; i++) {
 			assertTrue("Array mismatch in method " + message, reference[i] == read[off + i]);

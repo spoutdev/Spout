@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,60 +33,54 @@ import java.util.Random;
 import org.junit.Test;
 
 public class DatatableFloatTest {
-	
 	private static final int LENGTH = 1000;
-	
+
 	private Random r = new Random();
 
 	@Test
 	public void testInt() {
-
 		for (int x = 0; x < LENGTH; x++) {
 			checkFloat(r.nextFloat());
 		}
-		
-		checkFloat(0.0F);
-		
-		checkFloat(1.0F);
-		
-		checkFloat(-1.0F);
 
+		checkFloat(0.0F);
+
+		checkFloat(1.0F);
+
+		checkFloat(-1.0F);
 	}
-	
+
 	private void checkFloat(float value) {
 		int key = r.nextInt();
-		
+
 		DatatableFloat f = new DatatableFloat(key);
 
 		f.set(value);
-		
+
 		checkFloat(f, key, value);
-		
+
 		byte[] compressed = f.compress();
-		
+
 		assertTrue("Compressed array wrong length", compressed.length == 4);
-		
+
 		int key2 = r.nextInt();
-		
+
 		DatatableFloat b2 = new DatatableFloat(key2);
-		
+
 		b2.decompress(compressed);
-		
+
 		checkFloat(b2, key2, value);
 	}
-	
-	private void checkFloat(DatatableFloat f, int key, float value) {
-				
-		assertTrue("Wrong key, got " + f.hashCode() + ", expected " + key, f.hashCode() == key);
-		
-		assertTrue("Wrong value", f.get().equals(new Float(value)));
-		
-		assertTrue("Wrong value as bool", f.asBool() == (value != 0.0F));
-		
-		assertTrue("Wrong value as float", f.asFloat() == value);
-		
-		assertTrue("Wrong value as int", f.asInt() == (int)value);
-		
-	}
 
+	private void checkFloat(DatatableFloat f, int key, float value) {
+		assertTrue("Wrong key, got " + f.hashCode() + ", expected " + key, f.hashCode() == key);
+
+		assertTrue("Wrong value", f.get().equals(new Float(value)));
+
+		assertTrue("Wrong value as bool", f.asBool() == (value != 0.0F));
+
+		assertTrue("Wrong value as float", f.asFloat() == value);
+
+		assertTrue("Wrong value as int", f.asInt() == (int)value);
+	}
 }

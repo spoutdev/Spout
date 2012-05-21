@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,8 +33,8 @@ import org.spout.api.Tickable;
 public class GameStateManager implements Tickable {
 	private Stack<GameState> states = new Stack<GameState>();
 	
-	public void pushState(GameState state){
-		if(states.peek() != null) states.peek().onPause(); //Pause the current state
+	public void pushState(GameState state) {
+		if (states.peek() != null) states.peek().onPause(); //Pause the current state
 		
 		states.push(state); //Push the state onto the top of the stack
 		
@@ -43,20 +44,20 @@ public class GameStateManager implements Tickable {
 		
 	}
 	
-	public GameState popState(){
+	public GameState popState() {
 		GameState head = states.pop(); //remove the current state from the stack
 		head.unloadResources();
-		if(states.peek() != null) states.peek().onUnPause(); //unpause the previous state
+		if (states.peek() != null) states.peek().onUnPause(); //unpause the previous state
 		return head;
 	}
 
 	@Override
-	public void onTick(float dt){
-		if(states.peek() != null) states.peek().onTick(dt); //tick the current state
+	public void onTick(float dt) {
+		if (states.peek() != null) states.peek().onTick(dt); //tick the current state
 	}
 	
-	public void onRender(float dt){
-		if(states.peek() != null) states.peek().onTick(dt);
+	public void onRender(float dt) {
+		if (states.peek() != null) states.peek().onTick(dt);
 	}
 	
 	

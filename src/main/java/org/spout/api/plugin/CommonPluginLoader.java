@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -47,8 +48,7 @@ import org.spout.api.exception.UnknownSoftDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginLoader implements PluginLoader {
-
-	public static final String YAML_SPOUT = "spoutplugin.yml";
+	public static final String YAML_SPOUT = "properties.yml";
 	public static final String YAML_OTHER = "plugin.yml";
 
 	protected final Engine game;
@@ -220,17 +220,17 @@ public class CommonPluginLoader implements PluginLoader {
 		JarFile jar = null;
 		InputStream in = null;
 		try {
-			// spout plugin configuration file
+			// Spout plugin properties file
 			jar = new JarFile(paramFile);
 			JarEntry entry = jar.getJarEntry(YAML_SPOUT);
 
-			// fallback: other plugin configuration file
+			// Fallback plugin properties file
 			if (entry == null) {
 				entry = jar.getJarEntry(YAML_OTHER);
 			}
 
 			if (entry == null) {
-				throw new InvalidPluginException("Jar has no plugin.yml or spoutplugin.yml!");
+				throw new InvalidPluginException("Jar has no properties.yml or plugin.yml!");
 			}
 
 			in = jar.getInputStream(entry);

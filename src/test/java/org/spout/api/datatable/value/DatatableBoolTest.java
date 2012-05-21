@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,52 +33,46 @@ import java.util.Random;
 import org.junit.Test;
 
 public class DatatableBoolTest {
-	
 	private Random r = new Random();
 
 	@Test
 	public void testBoolean() {
-
 		checkBool(true);
-		
-		checkBool(false);
 
+		checkBool(false);
 	}
-	
+
 	private void checkBool(boolean value) {
 		int key = r.nextInt();
-		
+
 		DatatableBool b = new DatatableBool(key);
 
 		b.set(value);
-		
+
 		checkBool(b, key, value);
-		
+
 		byte[] compressed = b.compress();
-		
+
 		assertTrue("Compressed array wrong length", compressed.length == 1);
-		
+
 		int key2 = r.nextInt();
-		
+
 		DatatableBool b2 = new DatatableBool(key2);
-		
+
 		b2.decompress(compressed);
-		
+
 		checkBool(b2, key2, value);
 	}
-	
-	private void checkBool(DatatableBool b, int key, boolean value) {
-				
-		assertTrue("Wrong key, got " + b.hashCode() + ", expected " + key, b.hashCode() == key);
-		
-		assertTrue("Wrong value", b.get().equals(new Boolean(value)));
-		
-		assertTrue("Wrong value as bool", b.asBool() == value);
-		
-		//assertTrue("Wrong value as float", b.asFloat());
-		
-		assertTrue("Wrong value as int", b.asInt() == (value ? 1 : 0));
-		
-	}
 
+	private void checkBool(DatatableBool b, int key, boolean value) {
+		assertTrue("Wrong key, got " + b.hashCode() + ", expected " + key, b.hashCode() == key);
+
+		assertTrue("Wrong value", b.get().equals(new Boolean(value)));
+
+		assertTrue("Wrong value as bool", b.asBool() == value);
+
+		//assertTrue("Wrong value as float", b.asFloat());
+
+		assertTrue("Wrong value as int", b.asInt() == (value ? 1 : 0));
+	}
 }

@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -79,12 +80,12 @@ public class DatatableFloat extends DatatableObject {
 	public void decompress(byte[] compressed) {
 		set(Float.intBitsToFloat(DatatableInt.decompressRaw(compressed)));
 	}
-	
+
 	@Override
 	public byte getObjectTypeId() {
 		return 2;
 	}
-	
+
 	@Override
 	public DatatableObject newInstance(int key) {
 		return new DatatableFloat(key);
@@ -94,5 +95,5 @@ public class DatatableFloat extends DatatableObject {
 	public int fixedLength() {
 		return 4;
 	}
-	
+
 }

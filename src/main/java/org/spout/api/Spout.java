@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -77,8 +78,8 @@ public final class Spout {
 	public static boolean debugMode() {
 		return instance.debugMode();
 	}
-	
-	public static void log(String arg){
+
+	public static void log(String arg) {
 		instance.getLogger().info(arg);
 	}
 

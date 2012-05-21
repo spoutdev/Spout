@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -32,60 +33,54 @@ import java.util.Random;
 import org.junit.Test;
 
 public class DatatableIntTest {
-	
 	private static final int LENGTH = 1000;
-	
+
 	private Random r = new Random();
 
 	@Test
 	public void testInt() {
-
 		for (int x = 0; x < LENGTH; x++) {
 			checkInt(r.nextInt());
 		}
-		
-		checkInt(0);
-		
-		checkInt(1);
-		
-		checkInt(-1);
 
+		checkInt(0);
+
+		checkInt(1);
+
+		checkInt(-1);
 	}
-	
+
 	private void checkInt(int value) {
 		int key = r.nextInt();
-		
+
 		DatatableInt i = new DatatableInt(key);
 
 		i.set(value);
-		
+
 		checkInt(i, key, value);
-		
+
 		byte[] compressed = i.compress();
-		
+
 		assertTrue("Compressed array wrong length", compressed.length == 4);
-		
+
 		int key2 = r.nextInt();
-		
+
 		DatatableInt b2 = new DatatableInt(key2);
-		
+
 		b2.decompress(compressed);
-		
+
 		checkInt(b2, key2, value);
 	}
-	
-	private void checkInt(DatatableInt i, int key, int value) {
-				
-		assertTrue("Wrong key, got " + i.hashCode() + ", expected " + key, i.hashCode() == key);
-		
-		assertTrue("Wrong value", i.get().equals(new Integer(value)));
-		
-		assertTrue("Wrong value as bool", i.asBool() == (value != 0));
-		
-		assertTrue("Wrong value as float", i.asFloat() == (float)value);
-		
-		assertTrue("Wrong value as int", i.asInt() == value);
-		
-	}
 
+	private void checkInt(DatatableInt i, int key, int value) {
+		assertTrue("Wrong key, got " + i.hashCode() + ", expected " + key, i.hashCode() == key);
+
+		assertTrue("Wrong value", i.get().equals(new Integer(value)));
+
+		assertTrue("Wrong value as bool", i.asBool() == (value != 0));
+
+		assertTrue("Wrong value as float", i.asFloat() == (float)value);
+
+		assertTrue("Wrong value as int", i.asInt() == value);
+	}
 }

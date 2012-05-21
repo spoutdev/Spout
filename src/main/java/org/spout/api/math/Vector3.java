@@ -1,28 +1,29 @@
 /*
-* This file is part of SpoutAPI (http://www.spout.org/).
-*
-* SpoutAPI is licensed under the SpoutDev License Version 1.
-*
-* SpoutAPI is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* In addition, 180 days after any changes are published, you can use the
-* software, incorporating those changes, under the terms of the MIT license,
-* as described in the SpoutDev License Version 1.
-*
-* SpoutAPI is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License,
-* the MIT license and the SpoutDev License Version 1 along with this program.
-* If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
-* License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
-* including the MIT license.
-*/
+ * This file is part of SpoutAPI.
+ *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
 package org.spout.api.math;
 
 import java.io.Serializable;
@@ -67,21 +68,20 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * Unit Vector with all elements set to 1. (1, 1, 1)
 	 */
 	public final static Vector3 ONE = new Vector3(1, 1, 1);
-	
+
 	/**
 	 * Hashcode caching
 	 */
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashcode = 0;
-	
-	
+
 	protected final float x;
 	protected final float y;
 	protected final float z;
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -94,7 +94,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -105,7 +105,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -116,7 +116,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from an old Vector3
-	 * 
+	 *
 	 * @param o
 	 */
 	public Vector3(Vector3 o) {
@@ -164,7 +164,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds this Vector3 to the value of the Vector3 argument
-	 * 
+	 *
 	 * @param that The Vector3 to add
 	 * @return the new Vector3
 	 */
@@ -174,7 +174,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -186,7 +186,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -198,7 +198,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -210,7 +210,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts the given Vector3 from this Vector3
-	 * 
+	 *
 	 * @param that The Vector3 to subtract
 	 * @return the new Vector3
 	 */
@@ -220,7 +220,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -232,7 +232,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -244,7 +244,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -256,7 +256,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies this Vector3 by the value of the Vector3 argument
-	 * 
+	 *
 	 * @param that The Vector3 to multiply
 	 * @return the new Vector3
 	 */
@@ -266,7 +266,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -278,7 +278,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -290,7 +290,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -302,7 +302,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -312,7 +312,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -322,7 +322,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -332,7 +332,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides the given Vector3 from this Vector3
-	 * 
+	 *
 	 * @param that The Vector3 to divide
 	 * @return the new Vector3
 	 */
@@ -342,7 +342,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -354,7 +354,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -366,7 +366,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -378,7 +378,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -388,7 +388,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -398,7 +398,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 by the given value
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -408,7 +408,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Takes the dot product of two vectors
-	 * 
+	 *
 	 * @param that
 	 * @return
 	 */
@@ -420,7 +420,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * Returns a Vector2 object using the X and Z values of this Vector3. The x
 	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
 	 * becomes the y of the Vector2.
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector2 toVector2() {
@@ -429,7 +429,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Takes the cross product of two vectors
-	 * 
+	 *
 	 * @param that
 	 * @return
 	 */
@@ -440,7 +440,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
 	 * value.
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector3 ceil() {
@@ -450,7 +450,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
 	 * value.
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector3 floor() {
@@ -460,7 +460,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
 	 * value.
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector3 round() {
@@ -469,7 +469,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector3 abs() {
@@ -478,7 +478,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Gets the distance between this Vector3 and a given Vector3.
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -488,7 +488,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Gets the squared distance between this Vector3 and a given Vector3.
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -498,7 +498,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Raises the X, Y, and Z values of this Vector3 to the given power.
-	 * 
+	 *
 	 * @param power
 	 * @return
 	 */
@@ -508,7 +508,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * returns the squared length of the vector
-	 * 
+	 *
 	 * @return
 	 */
 	public float lengthSquared() {
@@ -518,7 +518,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * returns the length of this vector. Note: makes use of Math.sqrt and is
 	 * not cached.
-	 * 
+	 *
 	 * @return
 	 */
 	public float length() {
@@ -527,7 +527,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Returns a fast approximation of this vector's length.
-	 * 
+	 *
 	 * @return
 	 */
 	public float fastLength() {
@@ -536,7 +536,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * returns the vector with a length of 1
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector3 normalize() {
@@ -545,7 +545,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * returns the vector as [x,y,z]
-	 * 
+	 *
 	 * @return
 	 */
 	public float[] toArray() {
@@ -555,7 +555,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
-	 * 
+	 *
 	 * @param transformation
 	 * @return
 	 */
@@ -566,7 +566,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
-	 * 
+	 *
 	 * @param transformation
 	 * @return
 	 */
@@ -597,16 +597,16 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 		return xT.x == yT.x && xT.y == yT.y && xT.z == yT.z;
 	}
 
-	
-	public Quaternion rotationTo(Vector3 other){
+
+	public Quaternion rotationTo(Vector3 other) {
 		return MathHelper.rotationTo(this, other);
 	}
-	
+
 	// All of the below methods use .x, .y, .z instead of .getX() on purpose. Changing them will break AtomicPoint!
 
 	/**
 	 * Generates a unique hash code for this set of values
-	 * 
+	 *
 	 * @return
 	 */
 	@Override

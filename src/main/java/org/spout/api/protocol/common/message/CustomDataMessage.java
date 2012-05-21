@@ -1,9 +1,10 @@
 /*
- * This file is part of Vanilla (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
- * Vanilla is licensed under the SpoutDev License Version 1.
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
- * Vanilla is free software: you can redistribute it and/or modify
+ * SpoutAPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -12,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
- * Vanilla is distributed in the hope that it will be useful,
+ * SpoutAPI is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
@@ -27,6 +28,7 @@ package org.spout.api.protocol.common.message;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
@@ -49,21 +51,19 @@ public class CustomDataMessage extends Message {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("data", data)
-				.append("type", type)
-				.toString();
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE).append("data", data).append("type", type).toString();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {return false;}
-		if (!getClass().equals(obj.getClass())) {return false;}
+		if (obj == null) {
+			return false;
+		}
+		if (!getClass().equals(obj.getClass())) {
+			return false;
+		}
 
 		final CustomDataMessage other = (CustomDataMessage) obj;
-		return new EqualsBuilder()
-				.append(this.data, other.data)
-				.append(this.type, other.type)
-				.isEquals();
+		return new EqualsBuilder().append(this.data, other.data).append(this.type, other.type).isEquals();
 	}
 }

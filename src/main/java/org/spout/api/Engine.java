@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -34,6 +35,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.jboss.netty.channel.group.ChannelGroup;
+
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.EventManager;
@@ -415,14 +417,14 @@ public interface Engine extends Named {
 	 * @return the scheduler
 	 */
 	public Scheduler getScheduler();
-	
+
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
 	 * <br>
 	 * All tasks are submitted to all loaded regions at the start of the next tick.<br>
 	 * <br>
 	 * Repeating tasks are also submitted to all new regions when they are created.<br>
-	 * Repeated tasks are NOT guaranteed to happen in the same tick for all regions, 
+	 * Repeated tasks are NOT guaranteed to happen in the same tick for all regions,
 	 * as each task is submitted individually to each Region.<br>
 	 * <br>
 	 * This task manager does not support async tasks.
@@ -512,5 +514,4 @@ public interface Engine extends Named {
 	 * @return A list of all commands at the time.
 	 */
 	public String[] getAllCommands();
-
 }

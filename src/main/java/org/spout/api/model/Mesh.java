@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -38,16 +39,16 @@ public class Mesh {
 	ModelFace[] faces;
 	
 	
-	protected Mesh(ModelFace[] faces){
+	protected Mesh(ModelFace[] faces) {
 		this.faces = faces;
 	}
 	
 	
-	public static Mesh createCubeMesh(){
+	public static Mesh createCubeMesh() {
 		return createCubeMesh(Vector3.ONE);
 	}
 	
-	public static Mesh createCubeMesh(Vector3 scale){
+	public static Mesh createCubeMesh(Vector3 scale) {
 
 		ModelFace[] faces = new ModelFace[] {
 				new ModelFace(cubeVerts[0], cubeVerts[1], cubeVerts[2]),
@@ -69,7 +70,7 @@ public class Mesh {
 				new ModelFace(cubeVerts[3], cubeVerts[4], cubeVerts[7]),
 		};
 		
-		for(ModelFace face : faces){
+		for (ModelFace face : faces) {
 			face.doRecalculateNormals();
 		}
 		

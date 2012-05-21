@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -123,7 +124,6 @@ public class AtomicBlockStoreTest {
 
 			checkStoreCompressed();
 		}
-
 	}
 
 	private void set(int x, int y, int z, int id, int data) {
@@ -145,8 +145,10 @@ public class AtomicBlockStoreTest {
 
 		if (!useCorrectExpect) {
 			switch (rand.nextInt(2)) {
-			case 0: expectId++; break;
-			case 1: expectData++; break;
+				case 0: expectId++;
+					break;
+				case 1: expectData++;
+					break;
 			}
 		}
 

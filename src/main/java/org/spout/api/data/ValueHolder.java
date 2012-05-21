@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -27,9 +28,6 @@ package org.spout.api.data;
 
 import java.util.List;
 
-/**
- * @author zml2008
- */
 public interface ValueHolder {
 	/**
 	 * Return this node's value as a boolean

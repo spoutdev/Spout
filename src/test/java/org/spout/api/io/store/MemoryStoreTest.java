@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -33,11 +34,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import org.junit.Test;
+
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
-
-import com.google.common.collect.Lists;
 
 public class MemoryStoreTest {
 	SimpleStore<Integer> subject = new MemoryStore<Integer>();
