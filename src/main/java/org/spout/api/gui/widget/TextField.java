@@ -40,24 +40,38 @@ public class TextField extends AbstractControl {
 	private String text;
 	
 	/**
-	 * Called when user presses Enter or Return when in focus
+	 * <b>Called:</b> When the user presses ENTER or RETURN<br/>
+	 * <b>Arguments:</b><br/>
+	 * <i>No arguments</i>
 	 */
 	public static final Signal SIGNAL_RETURN_PRESSED = new Signal("returnPressed");
 	
 	/**
-	 * Called whenever the text changes, first argument contains the new string
+	 * <b>Called:</b> Whenever the text changes<br/>
+	 * <b>Arguments:</b>
+	 * <ul>
+	 * <li>The new string</li>
+	 * </ul>
 	 */
 	public static final Signal SIGNAL_TEXT_CHANGED = new Signal("textChanged", String.class);
 	
 	/**
-	 * Called when the user has not typed for 200ms or focussed another control or pressed Enter
-	 * first argument contains the new string
+	 * <b>Called:</b> When the user has not typed for 200ms or focussed another control or pressed Enter<br/>
+	 * <b>Arguments:</b>
+	 * <ul>
+	 * <li>The new string</li>
+	 * </ul>
 	 */
 	public static final Signal SIGNAL_EDITING_FINISHED = new Signal("editingFinished", String.class);
 	
 	/**
-	 * Called when the selection changes, 
-	 * arguments: selection start, selection end (including), selected text as string
+	 * <b>Called:</b> When the selection changed<br/>
+	 * <b>Arguments:</b>
+	 * <ul>
+	 * <li>Selection start</li>
+	 * <li>Selection end (including)</li>
+	 * <li>Selected text</li>
+	 * </ul>
 	 */
 	public static final Signal SIGNAL_SELECTION_CHANGED = new Signal("selectionChanged", Integer.class, Integer.class, String.class);
 	

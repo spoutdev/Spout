@@ -38,7 +38,7 @@ public abstract class AbstractControl extends AbstractWidget implements Control 
 	private boolean enabled = true;
 
 	/**
-	 * Emitted when the control received focus
+	 * Emitted when the control received focus<br/>
 	 * First argument is the focus reason
 	 */
 	public static final Signal SIGNAL_FOCUS_RECEIVED = new Signal("focusReceived", FocusReason.class);
