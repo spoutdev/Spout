@@ -40,38 +40,82 @@ public class TextField extends AbstractControl {
 	private String text;
 	
 	/**
-	 * <b>Called:</b> When the user presses ENTER or RETURN<br/>
-	 * <b>Arguments:</b><br/>
-	 * <i>No arguments</i>
+	 * <dl>
+	 * 	<dt>Name:</dt>
+	 * 	<dd>returnPressed</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Called:</dt>
+	 * 	<dd>When the user presses ENTER or RETURN</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Arguments:</dt>
+	 * 	<dd>
+	 * 		<i>No arguments</i>
+	 * 	</dd>
+	 * </dl>
 	 */
 	public static final Signal SIGNAL_RETURN_PRESSED = new Signal("returnPressed");
 	
 	/**
-	 * <b>Called:</b> Whenever the text changes<br/>
-	 * <b>Arguments:</b>
-	 * <ul>
-	 * <li>The new string</li>
-	 * </ul>
+	 * <dl>
+	 * 	<dt>Name:</dt>
+	 * 	<dd>textChanged</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Called:</dt>
+	 * 	<dd>Whenever the text changes</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Arguments:</dt>
+	 * 	<dd>
+	 * 		<ul>
+	 * 			<li>The new string</li>
+	 * 		</ul>
+	 * 	</dd>
+	 * </dl>
 	 */
 	public static final Signal SIGNAL_TEXT_CHANGED = new Signal("textChanged", String.class);
 	
 	/**
-	 * <b>Called:</b> When the user has not typed for 200ms or focussed another control or pressed Enter<br/>
-	 * <b>Arguments:</b>
-	 * <ul>
-	 * <li>The new string</li>
-	 * </ul>
+	 * <dl>
+	 * 	<dt>Name:</dt>
+	 * 	<dd>editingFinished</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Called:</dt>
+	 * 	<dd>When the user has not typed for 200ms or focussed another control or pressed Enter</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Arguments:</dt>
+	 * 	<dd>
+	 * 		<ul>
+	 * 			<li>The new string</li>
+	 * 		</ul>
+	 * 	</dd>
+	 * </dl>
 	 */
 	public static final Signal SIGNAL_EDITING_FINISHED = new Signal("editingFinished", String.class);
 	
 	/**
-	 * <b>Called:</b> When the selection changed<br/>
-	 * <b>Arguments:</b>
-	 * <ul>
-	 * <li>Selection start</li>
-	 * <li>Selection end (including)</li>
-	 * <li>Selected text</li>
-	 * </ul>
+	 * <dl>
+	 * 	<dt>Name:</dt>
+	 * 	<dd>selectionChanged</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Called:</dt>
+	 * 	<dd>When the selection changed</dd>
+	 * </dl>
+	 * <dl>
+	 * 	<dt>Arguments:</dt>
+	 * 	<dd>
+	 * 		<ul>
+	 * 			<li>Selection start</li>
+	 * 			<li>Selection end (including)</li>
+	 * 			<li>Selected text</li>
+	 * 		</ul>
+	 * 	</dd>
+	 * </dl>
 	 */
 	public static final Signal SIGNAL_SELECTION_CHANGED = new Signal("selectionChanged", Integer.class, Integer.class, String.class);
 	
