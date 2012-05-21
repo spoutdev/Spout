@@ -28,6 +28,7 @@ package org.spout.api.model;
 
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringUtil;
 
 public class PositionNormalTexture {
 	
@@ -45,6 +46,8 @@ public class PositionNormalTexture {
 		this(position, Vector3.ZERO, Vector2.ZERO);
 	}
 	
-	
+	public String toString(){
+		return StringUtil.toNamedString(this, position, normal, uv);
+	}
 	
 }

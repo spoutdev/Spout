@@ -26,44 +26,58 @@
  */
 package org.spout.api.model;
 
+import java.util.Iterator;
+
+
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.StringUtil;
+import org.apache.commons.collections.iterators.ArrayIterator;
 /**
  * Represents a Triangle for a model face
  * 
  */
-public class ModelFace {
-	PositionNormalTexture v1, v2, v3;
+public class ModelFace implements Iterable<PositionNormalTexture> {
+	
+	PositionNormalTexture[] verts = new PositionNormalTexture[3];
 	
 	
 	
 	public ModelFace(PositionNormalTexture v1, PositionNormalTexture v2, PositionNormalTexture v3 ) {
-		this.v1 = v1;
-		this.v2 = v2;
-		this.v3 = v3;
+		verts[0] = v1;
+		verts[1] = v2;
+		verts[2] = v3;
 	}
 	/**
 	 * Recalculates the normals for this triangle.  All points must be 0'd before this.
 	 */
 	protected void doRecalculateNormals() {
-		Vector3 trinormal = MathHelper.cross(v1.position.subtract(v2.position), v2.position.subtract(v3.position)).normalize();
-		v1.normal = v1.normal.add(trinormal).normalize();
-		v2.normal = v2.normal.add(trinormal).normalize();
-		v3.normal = v3.normal.add(trinormal).normalize();
+		Vector3 trinormal = MathHelper.cross(verts[0].position.subtract(verts[1].position), verts[1].position.subtract(verts[2].position)).normalize();
+		verts[0].normal = verts[0].normal.add(trinormal).normalize();
+		verts[1].normal = verts[1].normal.add(trinormal).normalize();
+		verts[2].normal = verts[2].normal.add(trinormal).normalize();
 		
 	}
 	
 	Vector3[] getPositions() {
-		return new Vector3[] {v1.position, v2.position, v3.position };		
+		return new Vector3[] {verts[0].position, verts[1].position, verts[2].position };		
 	}
 	
 	Vector3[] getNormals() {
-		return new Vector3[] {v1.normal, v2.normal, v3.normal };		
+		return new Vector3[] {verts[0].normal, verts[1].normal, verts[2].normal };		
 	}
 	
 	Vector2[] getUVs() {
-		return new Vector2[] { v1.uv, v2.uv, v3.uv };
+		return new Vector2[] { verts[0].uv, verts[1].uv, verts[2].uv };
 	}
 	
+	public String toString(){
+		return StringUtil.toNamedString(this, verts[0], verts[1], verts[2]);
+	}
+	
+	@Override
+	public Iterator<PositionNormalTexture> iterator() {
+		return new ArrayIterator(verts);
+	}
 }
