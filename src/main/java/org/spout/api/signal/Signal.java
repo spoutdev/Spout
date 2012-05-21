@@ -32,12 +32,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 public class Signal {
 	private Class<?> argumentTypes[];
 	private String name;
-	private LinkedList<Pair<Object, Method>> subscribes = new LinkedList<Pair<Object,Method>>();
+	private LinkedList<Subscription> subscriptions = new LinkedList<Subscription>();
+	
+	private class Subscription {
+		public SignalInterface sender;
+		public Object receiver;
+		public Method method;
+	}
 	
 	public Signal(String name, Class<?> ...argumentTypes) {
 		this.argumentTypes = argumentTypes;
@@ -45,16 +49,19 @@ public class Signal {
 	}
 	
 	public void emit(SignalInterface sender, Object ...arguments) {
-		Iterator<Pair<Object, Method>> iter = subscribes.iterator();
+		Iterator<Subscription> iter = subscriptions.iterator();
 		while(iter.hasNext()) {
-			Pair<Object, Method> p = iter.next();
-			Object call = p.getLeft();
+			Subscription p = iter.next();
+			if(p.sender != sender) {
+				continue;
+			}
+			Object call = p.receiver;
 			SubscriberInterface sub = null;
 			if(call instanceof SubscriberInterface) {
 				sub = (SubscriberInterface) call;
 				sub.setSender(sender);
 			}
-			Method method = p.getRight();
+			Method method = p.method;
 			if(sub != null) {
 				sub.setSender(null);
 			}
@@ -78,18 +85,22 @@ public class Signal {
 		return name;
 	}
 	
-	public void subscribe(Object receiver, Method method) {
+	public void subscribe(SignalInterface sender, Object receiver, Method method) {
 		if (Arrays.equals(method.getParameterTypes(), argumentTypes)) {
 			//TODO make sure that the same object doesn't subscribe twice or more
-			subscribes.add(Pair.of(receiver, method));
+			Subscription sub = new Subscription();
+			sub.sender = sender;
+			sub.receiver = receiver;
+			sub.method = method;
+			subscriptions.add(sub);
 		}
 	}
 	
 	public void unsubscribe(Object receiver) {
-		Iterator<Pair<Object, Method>> iter = subscribes.iterator();
+		Iterator<Subscription> iter = subscriptions.iterator();
 		while (iter.hasNext()) {
-			Pair<Object, Method> next = iter.next();
-			if (next.getLeft() == receiver) {
+			Subscription next = iter.next();
+			if (next.receiver == receiver) {
 				iter.remove();
 				break;
 			}

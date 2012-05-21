@@ -56,7 +56,7 @@ public class SignalObject implements SignalInterface {
 	public boolean subscribe(String signal, Object receiver, Method method) {
 		Signal signalO = signals.get(signal);
 		if (signalO != null) {
-			signalO.subscribe(receiver, method);
+			signalO.subscribe(this, receiver, method);
 			return true;
 		}
 		return false;
@@ -69,7 +69,7 @@ public class SignalObject implements SignalInterface {
 			Method methodO;
 			methodO = receiver.getClass().getMethod(method, signalO.getArgumentTypes());
 			if (methodO != null) {
-				signalO.subscribe(receiver, methodO);
+				signalO.subscribe(this, receiver, methodO);
 				return true;
 			}
 		}
