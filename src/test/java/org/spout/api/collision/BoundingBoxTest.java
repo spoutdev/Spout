@@ -30,9 +30,9 @@ import static org.junit.Assert.*;
 
 import static org.spout.api.math.TestUtils.eps;
 
-import org.spout.api.math.Vector3;;
+import org.spout.api.math.Vector3;
 
-import org.junit.Test
+import org.junit.Test;
 
 public class BoundingBoxTest {
 	private void testValue(String name, Vector3 min1, Vector3 min2) {
