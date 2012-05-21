@@ -26,11 +26,13 @@
 package org.spout.engine.world;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -114,6 +116,13 @@ public class SpoutChunk extends Chunk {
 	protected final byte[] blockLight;
 
 	/**
+	 * When this number of dirty lighting blocks is reached, chunk is re-sent
+	 */
+	protected static final int LIGHTING_THRESHOLD = 64;
+	
+	protected final AtomicInteger lightingDirtyCount = new AtomicInteger(0);
+	
+	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
 	 */
 	protected final TNibbleDualHashSet skyLightQueue;
@@ -128,10 +137,6 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
 
-	/**
-	 * The mask that should be applied to the x, y and z coords
-	 */
-	private final int coordMask;
 	private final SpoutColumn column;
 	private final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	private final AtomicLong lastUnloadCheck = new AtomicLong();
@@ -148,16 +153,18 @@ public class SpoutChunk extends Chunk {
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
-		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new SnapshotableBoolean(snapshotManager, populated);
-		this.skyLight = skyLight != null ? skyLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		for (int i = 0; i < this.skyLight.length; i++) {
-			this.skyLight[i] = 0;
-		}
 		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		this.requiresLightingInit.set(blockLight == null || skyLight == null);
+		if (skyLight == null) {
+			this.requiresLightingInit.set(true);
+			this.skyLight = new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+			Arrays.fill(this.skyLight, (byte) 255);
+		} else {
+			this.skyLight = skyLight;
+			this.requiresLightingInit.set(blockLight == null);
+		}
 
 		if (extraData != null) {
 			this.datatableMap = extraData;
@@ -185,9 +192,9 @@ public class SpoutChunk extends Chunk {
 		}
 		checkChunkLoaded();
 
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, getBlockMaterial(x, y, z).getId(), data);
+		blockStore.setBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, getBlockMaterial(x, y, z).getId(), data);
 
-		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
+		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & BASE_MASK), z);
 
 		return true;
 	}
@@ -197,9 +204,9 @@ public class SpoutChunk extends Chunk {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
-		x &= coordMask;
-		y &= coordMask;
-		z &= coordMask;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
 
 		checkChunkLoaded();
 		blockStore.setBlock(x, y, z, material.getId(), data);
@@ -212,7 +219,7 @@ public class SpoutChunk extends Chunk {
 			if (y >= height - 1) {
 				this.queueSkyLightUpdate(x, z);
 			} else {
-				this.getBlock(x, y, z).updateLighting(false);
+				this.getWorld().updateBlockLighting(x + this.getBlockX(), y, z + this.getBlockZ());
 			}
 		}
 
@@ -222,7 +229,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
+		BlockFullState fullState = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 		short id = fullState.getId();
 		BlockMaterial mat = BlockMaterial.get(id);
 		return mat == null ? BlockMaterial.AIR : mat;
@@ -231,7 +238,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		checkChunkLoaded();
-		return (short) blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
+		return (short) blockStore.getData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 	}
 
 	@Override
@@ -302,11 +309,11 @@ public class SpoutChunk extends Chunk {
 
 	public void initLighting() {
 		this.requiresLightingInit.set(true);
-		this.getWorld().getLightingManager().reportChunkDirty(this.getX(), this.getY(), this.getZ());
+		this.getWorld().getLightingManager().reportChunkDirty(this);
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
-		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
+		return (y & BASE_MASK) << 8 | (z & BASE_MASK) << 4 | (x & BASE_MASK);
 	}
 
 	/**
@@ -316,11 +323,11 @@ public class SpoutChunk extends Chunk {
 	 * @param sky   whether to update the sky lighting
 	 * @param block whether to update the block lighting
 	 */
-	private void queueSkyLightUpdate(int x, int z) {
+	protected void queueSkyLightUpdate(int x, int z) {
 		synchronized (this.skyLightQueue) {
 			this.skyLightQueue.add(x, z);
 		}
-		this.getWorld().getLightingManager().reportChunkDirty(this.getX(), this.getY(), this.getZ());
+		this.getWorld().getLightingManager().reportChunkDirty(this);
 	}
 
 	@Override
@@ -489,6 +496,7 @@ public class SpoutChunk extends Chunk {
 
 	protected void setLightDirty(boolean value) {
 		this.lightDirty.set(value);
+		this.lightingDirtyCount.set(0);
 	}
 
 	public boolean isDirty() {
@@ -847,7 +855,7 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
-		return this.blockStore.compareAndSetBlock(x & coordMask, y & coordMask, z & coordMask, expect.getId(), expect.getData(), expect.getId(), data);
+		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
 
 	@Override

@@ -173,8 +173,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
-		this.lightingManager = new SpoutWorldLighting(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"));
-		
+		this.lightingManager = new SpoutWorldLighting(this);
+		this.lightingManager.start();
+
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
 		
 		AsyncExecutor e = getExecutor();
@@ -513,7 +514,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void updateBlockLighting(int x, int y, int z) {
-		regions.getRegionFromBlock(x, y, z).updateBlockLighting(x, y, z);
+		this.getLightingManager().reportDirty(x, y, z);
 	}
 
 	@Override
@@ -724,7 +725,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (Region r : regions.getRegions()) {
 			r.unload(save);
 		}
-		this.lightingManager.getExecutor().haltExecutor();
+		this.lightingManager.abort();
 	}
 
 	public Collection<SpoutRegion> getRegions() {
