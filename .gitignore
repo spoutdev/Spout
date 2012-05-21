@@ -62,6 +62,7 @@ build.xml
 #########################
 plugins/
 resources/
+!engine/resources/
 cache/
 update/
 data/
