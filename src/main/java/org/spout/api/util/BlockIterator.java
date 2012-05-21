@@ -39,11 +39,20 @@ import org.spout.api.math.Vector3;
  * This class performs ray tracing and iterates along blocks on a line
  */
 public class BlockIterator implements Iterator<Block> {
-	private Point position;
-	private Vector3 direction;
-	private Vector3 stepDirection;
-	private int blocksRead;
-	private int maxDistance;
+	// how many steps on a block line for each unit of length
+	private static final byte STEPS_PER_UNIT = 10;
+	// world to iterate in
+	private final World world;
+	// current position
+	private Vector3 position;
+	// position we're aiming for
+	private final Vector3 end;
+	// vector added to the position at each step
+	private final Vector3 stepDirection;
+	// deltas used for finding out if we're closing in on the end point
+	private float lastDeltaX = Integer.MAX_VALUE;
+	private float lastDeltaZ = Integer.MAX_VALUE;
+	private float lastDeltaY = Integer.MAX_VALUE;
 
 	/**
 	 * Constructs the BlockIterator
@@ -51,49 +60,71 @@ public class BlockIterator implements Iterator<Block> {
 	 * @param world The world to use for tracing
 	 * @param pos of the starting transformation of the trace
 	 * @param maxDistance This is the maximum distance in blocks for the trace.
-	 *            Setting this value above 140 may lead to problems with
-	 *            unloaded chunks. A value of 0 indicates no limit
 	 *
 	 */
 	public BlockIterator(World world, Transform pos, int maxDistance) {
-		this.position = new Point(pos.getPosition());
-		this.direction = new Vector3(MathHelper.getDirectionVector(pos.getRotation()));
+		this.world = world;
+		position = pos.getPosition().floor();
+		final Vector3 direction = MathHelper.getDirectionVector(pos.getRotation());
+		final Vector3 normalizedDirection = direction.normalize();
+		stepDirection = normalizedDirection.divide(STEPS_PER_UNIT);
+		end = normalizedDirection.multiply(maxDistance).add(position).floor();
+	}
 
-		float length = this.direction.length();
-
-		if (length < 0.001f) {
-			throw new IllegalArgumentException("Direction may not be a zero vector");
+	/**
+	 * Constructs the BlockIterator
+	 *
+	 * @param from The starting point
+	 * @param to The end point
+	 * @throws IllegalArgumentException If the worlds from both points differ.
+	 */
+	public BlockIterator(Point from, Point to) {
+		if (!from.getWorld().equals(to.getWorld())) {
+			throw new IllegalArgumentException("Cannot iterate between worlds.");
 		}
-
-		this.direction = this.direction.divide(length);
-		this.stepDirection = this.direction.multiply(0.01f);
-
-		blocksRead = 0;
-		this.maxDistance = maxDistance;
+		world = from.getWorld();
+		position = from.floor();
+		end = to.floor();
+		stepDirection = to.subtract(from).normalize().divide(STEPS_PER_UNIT);
 	}
 
+	@Override
 	public boolean hasNext() {
-		return blocksRead < maxDistance;
+		// if the delta values are decreasing, we're nearing 0
+		// and we're still approaching the end position
+		// else, we've passed it
+		final float currentDeltaX = Math.abs(end.getX() - position.getX());
+		final float currentDeltaY = Math.abs(end.getY() - position.getY());
+		final float currentDeltaZ = Math.abs(end.getZ() - position.getZ());
+		boolean hasNext = false;
+		if (currentDeltaX < lastDeltaX
+				|| currentDeltaY < lastDeltaY
+				|| currentDeltaZ < lastDeltaZ) {
+			hasNext = true;
+		}
+		lastDeltaX = currentDeltaX;
+		lastDeltaY = currentDeltaY;
+		lastDeltaZ = currentDeltaZ;
+		return hasNext;
 	}
 
+	@Override
 	public Block next() {
-		Block current = this.position.getWorld().getBlock(this.position);
-		blocksRead++;
+		final Block requested = world.getBlock(position.round());
 		//translate position to precisely end up at a new block
 		//TODO: Make this more efficient (it needs a calculation to get to the border of the current block)
 		//This requires some sort of distance calculation using a 1x1x1 bounding box
 		//Perhaps use the Collision utilities for this?
-
-		Vector3 currentblock = this.position.floor();
-		Vector3 newblock = currentblock;
-		while (currentblock.equals(newblock)) {
-			this.position = this.position.add(this.stepDirection);
-			newblock = this.position.floor();
+		Vector3 current = position.floor();
+		Vector3 next = current;
+		while (next.floor().equals(current)) {
+			position = position.add(stepDirection);
+			next = position;
 		}
-
-		return current;
+		return requested;
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("Block removal is not supported by this iterator");
 	}
