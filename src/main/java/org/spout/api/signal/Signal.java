@@ -45,7 +45,9 @@ public class Signal {
 	}
 	
 	public void emit(Object ...arguments) {
-		for (Pair<Object, Method> p:subscribes) {
+		Iterator<Pair<Object, Method>> iter = subscribes.iterator();
+		while(iter.hasNext()) {
+			Pair<Object, Method> p = iter.next();
 			Object call = p.getLeft();
 			Method method = p.getRight();
 			try {
