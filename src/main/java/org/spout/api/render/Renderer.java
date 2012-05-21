@@ -88,5 +88,7 @@ public interface Renderer {
 	public abstract void enableNormals();
 
 	public abstract void enableTextures();
+	
+	public abstract int getVertexCount();
 
 }
