@@ -2,16 +2,31 @@ package org.spout.engine.mesh;
 
 import java.util.ArrayList;
 
+import org.spout.api.model.Mesh;
+import org.spout.api.model.ModelFace;
+import org.spout.api.model.PositionNormalTexture;
 import org.spout.api.render.RenderEffect;
 import org.spout.api.render.Renderer;
+import org.spout.api.resource.Resource;
 
-import org.spout.engine.renderer.vertexformat.PositionNormalTexture;
 
-public abstract class BaseMesh {
-	ArrayList<PositionNormalTexture> verts = new ArrayList<PositionNormalTexture>();
+public class BaseMesh extends Resource implements Mesh {
+	ArrayList<ModelFace> faces;
 	ArrayList<RenderEffect> effects = new ArrayList<RenderEffect>();
 	boolean dirty = false;
 
+	
+	public BaseMesh(){
+		faces = new ArrayList<ModelFace>();
+		
+	}
+	
+	public BaseMesh(ArrayList<ModelFace> faces){
+		this.faces = faces;
+	}
+	
+	
+	
 	public void addRenderEffect(RenderEffect effect) {
 		effects.add(effect);
 	}
@@ -37,10 +52,12 @@ public abstract class BaseMesh {
 	}
 
 	protected void batch(Renderer batcher) {
-		for (PositionNormalTexture vert : verts) {
-			batcher.addTexCoord(vert.getTexture());
-			batcher.addNormal(vert.getNormal());
-			batcher.addVertex(vert.getPosition());
+		for (ModelFace face : faces) {
+			for(PositionNormalTexture vert : face){
+				batcher.addTexCoord(vert.uv);
+				batcher.addNormal(vert.normal);
+				batcher.addVertex(vert.position);
+			}
 		}
 	}
 
