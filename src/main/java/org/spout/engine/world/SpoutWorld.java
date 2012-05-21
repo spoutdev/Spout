@@ -93,7 +93,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The region source
 	 */
-	private final SpoutRegionSource regions;
+	private final RegionSource regions;
 	/**
 	 * The world seed.
 	 */
@@ -134,10 +134,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The directory where the world data is stored
 	 */
 	private final File worldDirectory;
-	/**
-	 * The async thread which handles the calculation of block and sky lighting in the world
-	 */
-	private final SpoutWorldLighting lightingManager;
 
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
@@ -164,16 +160,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.name = name;
 		this.generator = generator;
 		entityManager = new EntityManager();
-		regions = new SpoutRegionSource(this, snapshotManager);
+		regions = new RegionSource(this, snapshotManager);
 
 		worldDirectory = new File(FileSystem.WORLDS_DIRECTORY, name);
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-
+		
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
-
-		this.lightingManager = new SpoutWorldLighting(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"));
 		
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
 		
@@ -457,14 +451,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		return server;
 	}
 
-	/**
-	 * Gets the lighting manager that calculates the light for this world
-	 * @return world lighting manager
-	 */
-	public SpoutWorldLighting getLightingManager() {
-		return this.lightingManager;
-	}
-
 	@Override
 	public int getHeight() {
 		// TODO: Variable world height
@@ -508,12 +494,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		regions.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
-	}
-
-	@Override
-	public void updateBlockLighting(int x, int y, int z) {
-		regions.getRegionFromBlock(x, y, z).updateBlockLighting(x, y, z);
+		regions.getRegionFromBlock(x, y, z).queuePhysicsUpdate(x, y, z, source);
 	}
 
 	@Override
@@ -724,6 +705,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		for (Region r : regions.getRegions()) {
 			r.unload(save);
 		}
+
 		this.lightingManager.getExecutor().haltExecutor();
 	}
 

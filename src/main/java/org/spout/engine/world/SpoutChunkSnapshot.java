@@ -98,8 +98,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	public byte getBlockSkyLight(int x, int y, int z) {
 		int index = this.getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
-		if ((index & 1) == 1) {
-			return (byte) ((light >> 4) & 0xF);
+		if ((index & 1) == 0) {
+			return (byte) ((light >> CHUNK_SIZE_BITS) & 0xF);
 		}
 		return (byte) (light & 0xF);
 	}

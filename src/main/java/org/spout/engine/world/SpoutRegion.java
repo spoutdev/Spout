@@ -49,6 +49,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.LoadGenerateOption;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -93,6 +94,11 @@ public class SpoutRegion extends Region {
 	 */
 	private static final int REAP_PER_TICK = 1;
 	/**
+	 * The maximum number of chunks that will be processed for lighting updates
+	 * each tick.
+	 */
+	private static final int LIGHT_PER_TICK = 20;
+	/**
 	 * The segment size to use for chunk storage. The actual size is
 	 * 2^(SEGMENT_SIZE)
 	 */
@@ -109,7 +115,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * The source of this region
 	 */
-	private final SpoutRegionSource source;
+	private final RegionSource source;
 	/**
 	 * Snapshot manager for this region
 	 */
@@ -137,7 +143,12 @@ public class SpoutRegion extends Region {
 	 */
 	//TODO thresholds?
 	private final TByteTripleObjectHashMap<Source> queuedPhysicsUpdates = new TByteTripleObjectHashMap<Source>();
-
+	private final int blockCoordMask;
+	private final int blockShifts;
+	/**
+	 * A queue of chunks that have columns of light that need to be recalculated
+	 */
+	private final Queue<SpoutChunk> lightingQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 	/**
 	 * A queue of chunks that need to be populated
 	 */
@@ -146,13 +157,15 @@ public class SpoutRegion extends Region {
 	
 	private final SpoutTaskManager taskManager;
 
-	public SpoutRegion(SpoutWorld world, float x, float y, float z, SpoutRegionSource source) {
+	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, LoadGenerateOption.NO_LOAD);
 	}
 
-	public SpoutRegion(SpoutWorld world, float x, float y, float z, SpoutRegionSource source, LoadGenerateOption loadopt) {
+	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadGenerateOption loadopt) {
 		super(world, x * Region.EDGE, y * Region.EDGE, z * Region.EDGE);
 		this.source = source;
+		blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
+		blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
 		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getEngine());
 
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
@@ -440,6 +453,12 @@ public class SpoutRegion extends Region {
 		}
 	}
 
+	protected void queueLighting(SpoutChunk c) {
+		if (!lightingQueue.contains(c)) {
+			lightingQueue.add(c);
+		}
+	}
+
 	public void addEntity(Entity e) {
 		Controller controller = e.getController();
 		if (controller instanceof BlockController) {
@@ -457,7 +476,7 @@ public class SpoutRegion extends Region {
 		
 		this.deallocate((SpoutEntity)e);
 	}
-	
+
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0: {
@@ -473,10 +492,9 @@ public class SpoutRegion extends Region {
 					}
 				}
 
-				SpoutWorld world = getWorld();
+				World world = getWorld();
 				int[] updates;
 				Object[] sources;
-				int x, y, z;
 				synchronized (queuedPhysicsUpdates) {
 					updates = queuedPhysicsUpdates.keys();
 					sources = queuedPhysicsUpdates.values();
@@ -485,23 +503,21 @@ public class SpoutRegion extends Region {
 				for (int i = 0; i < updates.length; i++) {
 					int key = updates[i];
 					Source source = (Source) sources[i];
-					x = TByteTripleObjectHashMap.key1(key);
-					y = TByteTripleObjectHashMap.key2(key);
-					z = TByteTripleObjectHashMap.key3(key);
+					int x = TByteTripleObjectHashMap.key1(key);
+					int y = TByteTripleObjectHashMap.key2(key);
+					int z = TByteTripleObjectHashMap.key3(key);
 					//switch region block coords (0-255) to a chunk index
 					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
 					if (chunk != null) {
 						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
 						if (material.hasPhysics()) {
 							//switch region block coords (0-255) to world block coords
-							Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
+							Block block = world.getBlock(x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts), source);
 							material.onUpdate(block);
 						}
 					}
 				}
 
-				//TODO: MOVE TO SEPARATE WORLD THREAD
-				/*
 				for (int i = 0; i < LIGHT_PER_TICK; i++) {
 					SpoutChunk toLight = lightingQueue.poll();
 					if (toLight == null) {
@@ -511,30 +527,6 @@ public class SpoutRegion extends Region {
 						toLight.processQueuedLighting();
 					}
 				}
-				Block block;
-				SpoutChunk chunk;
-				for (int i = 0; i < LIGHT_PER_TICK; i++) {
-					synchronized (queuedLightingUpdates) {
-						if (queuedLightingUpdates.isEmpty()) {
-							break;
-						}
-						updates = queuedLightingUpdates.toArray();
-						queuedLightingUpdates.clear();
-					}
-					//perform lighting updates
-					for (int key : updates) {
-						x = TByteTripleHashSet.key1(key);
-						y = TByteTripleHashSet.key2(key);
-						z = TByteTripleHashSet.key3(key);
-						chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
-						if (chunk != null) {
-							block = chunk.getBlock(x, y, z);
-							block.setSkyLight(block.getReceivingSkyLight());
-							//block.setLight(block.getReceivingLight());
-						}
-					}
-				}
-				*/
 
 				for (int i = 0; i < POPULATE_PER_TICK; i++) {
 					Chunk toPopulate = populationQueue.poll();
@@ -629,7 +621,6 @@ public class SpoutRegion extends Region {
 					}
 				}
 			} else {
-				chunk.setLightDirty(false);
 				synchronizer.sendChunk(chunk);
 			}
 		}
@@ -711,6 +702,18 @@ public class SpoutRegion extends Region {
 		}
 	}
 
+	/**
+	 * Queues a block for a physic update at the next available tick.
+	 * @param x, the block x coordinate
+	 * @param y, the block y coordinate
+	 * @param z, the block z coordinate
+	 */
+	public void queuePhysicsUpdate(int x, int y, int z, Source source) {
+		synchronized (queuedPhysicsUpdates) {
+			queuedPhysicsUpdates.put((byte) (x & blockCoordMask), (byte) (y & blockCoordMask), (byte) (z & blockCoordMask), source);
+		}
+	}
+
 	@Override
 	public int getNumLoadedChunks() {
 		return numberActiveChunks.get();
@@ -721,7 +724,7 @@ public class SpoutRegion extends Region {
 		return "SpoutRegion{ ( " + getX() + ", " + getY() + ", " + getZ() + "), World: " + this.getWorld() + "}";
 	}
 
-	public Thread getExecutionThread() {
+	public Thread getExceutionThread() {
 		return ((ThreadAsyncExecutor) manager.getExecutor());
 	}
 
@@ -850,14 +853,7 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		synchronized (queuedPhysicsUpdates) {
-			queuedPhysicsUpdates.put((byte) (x & BASE_MASK), (byte) (y & BASE_MASK), (byte) (z & BASE_MASK), source);
-		}
-	}
-
-	@Override
-	public void updateBlockLighting(int x, int y, int z) {
-		this.getWorld().updateBlockLighting(x, y, z);
+		this.getChunkFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
 	}
 
 	@Override

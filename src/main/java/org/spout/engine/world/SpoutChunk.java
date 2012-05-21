@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import gnu.trove.set.hash.TByteHashSet;
+
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
@@ -60,7 +62,6 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.HashUtil;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
-import org.spout.api.util.set.TNibbleDualHashSet;
 
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
@@ -112,22 +113,14 @@ public class SpoutChunk extends Chunk {
 	 */
 	protected final byte[] skyLight;
 	protected final byte[] blockLight;
-
 	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
 	 */
-	protected final TNibbleDualHashSet skyLightQueue;
-
+	private final TByteHashSet skyLightQueue;
 	/**
-	 * If set true, the lighting manager will completely re-initialize the lighting in this chunk
+	 * Stores queued column updates for block light to be processed at the next tick
 	 */
-	protected final AtomicBoolean requiresLightingInit = new AtomicBoolean(false);
-
-	/**
-	 * True if this chunk should be resent due to light calculations
-	 */
-	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
-
+	private final TByteHashSet blockLightQueue;
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
@@ -135,6 +128,10 @@ public class SpoutChunk extends Chunk {
 	private final SpoutColumn column;
 	private final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	private final AtomicLong lastUnloadCheck = new AtomicLong();
+	/**
+	 * True if this chunk should be resent due to light calculations
+	 */
+	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
 
 	/**
 	 * Data map and Datatable associated with it
@@ -157,7 +154,6 @@ public class SpoutChunk extends Chunk {
 			this.skyLight[i] = 0;
 		}
 		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
-		this.requiresLightingInit.set(blockLight == null || skyLight == null);
 
 		if (extraData != null) {
 			this.datatableMap = extraData;
@@ -166,7 +162,8 @@ public class SpoutChunk extends Chunk {
 		}
 		this.dataMap = new DataMap(this.datatableMap);
 
-		skyLightQueue = new TNibbleDualHashSet();
+		skyLightQueue = new TByteHashSet();
+		blockLightQueue = new TByteHashSet();
 		column = world.getColumn(((int) x) << Chunk.CHUNK_SIZE_BITS, ((int) z) << Chunk.CHUNK_SIZE_BITS, true);
 		column.registerChunk();
 		columnRegistered.set(true);
@@ -197,25 +194,17 @@ public class SpoutChunk extends Chunk {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
-		x &= coordMask;
-		y &= coordMask;
-		z &= coordMask;
-
 		checkChunkLoaded();
-		blockStore.setBlock(x, y, z, material.getId(), data);
+		BlockMaterial previous = getBlockMaterial(x, y, z);
+		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), data);
 
-		int height = column.getSurfaceHeight(x, z);
-		y += this.getBlockY();
-		column.notifyBlockChange(x, y, z);
+		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
 
-		if (!this.requiresLightingInit.get()) {
-			if (y >= height - 1) {
-				this.queueSkyLightUpdate(x, z);
-			} else {
-				this.getBlock(x, y, z).updateLighting(false);
-			}
+		boolean sky = previous.getOpacity() != material.getOpacity();
+		boolean block = previous.getLightLevel() != material.getLightLevel();
+		if (sky || block) {
+			this.queueLightUpdate(x & coordMask, z & coordMask, sky, block);
 		}
-
 		return true;
 	}
 
@@ -247,7 +236,7 @@ public class SpoutChunk extends Chunk {
 		} else {
 			blockLight[index / 2] = HashUtil.nibbleToByte(old, light);
 		}
-		return blockLight[index / 2] != old;
+		return true;
 	}
 
 	@Override
@@ -258,12 +247,12 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
 		byte old = skyLight[index / 2];
-		if ((index & 1) == 1) {
+		if ((index & 1) == 0) {
 			skyLight[index / 2] = HashUtil.nibbleToByte(light, old);
 		} else {
 			skyLight[index / 2] = HashUtil.nibbleToByte(old, light);
 		}
-		return skyLight[index / 2] != old;
+		return true;
 	}
 
 	@Override
@@ -297,16 +286,93 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public void updateBlockLighting(int x, int y, int z) {
 		checkChunkLoaded();
-		parentRegion.updateBlockLighting(x, y, z);
 	}
 
-	public void initLighting() {
-		this.requiresLightingInit.set(true);
-		this.getWorld().getLightingManager().reportChunkDirty(this.getX(), this.getY(), this.getZ());
+	/**
+	 * Gets the sky brightness, may look up from neighbor chunks.
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return brightness
+	 */
+	private byte getSkyBrightness(int x, int y, int z) {
+		if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE) {
+			return getBlockSkyLight(x, y, z);
+		}
+		SpoutChunk chunk = getWorld().getChunk(getX() + (x >> CHUNK_SIZE_BITS), getY() + (y >> CHUNK_SIZE_BITS), getZ() + (z >> CHUNK_SIZE_BITS), false);
+		if (chunk != null) {
+			return chunk.getBlockLight(x, y, z);
+		}
+		return 0;
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
 		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
+	}
+
+	/**
+	 * Recalculates the sky light in the x, z column.
+	 * <p/>
+	 * May queue more lighting updates in chunks underneath.
+	 * @param x coordinate
+	 * @param z coordinate
+	 */
+	private void recalculateSkyLighting(int x, int z) {
+		SpoutWorld world = getWorld();
+		SpoutChunk aboveChunk = world.getChunk(getX(), getY() + 1, getZ(), false);
+		byte prevValue;
+		if (aboveChunk != null) {
+			//find the sunlight shining through the bottom of the chunk above us
+			prevValue = aboveChunk.getBlockSkyLight(x, 0, z);
+		} else {
+			//assume the sun is shining through ungenerated air
+			prevValue = 0xF;
+		}
+		for (int y = CHUNK_SIZE - 1; y >= 0; --y) {
+			//Check adjacent blocks, skylight spreads horizontally
+			if (prevValue < 0xF) {
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x + 1, y, z) - 1);
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x - 1, y, z) - 1);
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z + 1) - 1);
+				prevValue = (byte) Math.max(prevValue, getSkyBrightness(x, y, z - 1) - 1);
+			}
+
+			//Don't check the opacity unless there is some light
+			if (prevValue > 0) {
+				BlockMaterial type = getBlockMaterial(x, y, z);
+				prevValue -= type.getOpacity();
+				if (prevValue < 0) {
+					prevValue = 0;
+				}
+			}
+
+			this.setBlockSkyLight(x, y, z, prevValue, world);
+		}
+
+		SpoutChunk belowChunk = world.getChunk(getX(), getY() - 1, getZ(), false);
+		if (belowChunk != null) {
+			if (belowChunk.getBlockSkyLight(x, CHUNK_SIZE - 1, z) != prevValue) {
+				belowChunk.queueLightUpdate(x, z, true, false);
+			}
+		}
+	}
+
+	/**
+	 * Recalculates the block light in the x, z column
+	 * <p/>
+	 * May queue more lighting updates in neighbor chunks.
+	 * @param x coordinate
+	 * @param z coordinate
+	 */
+	private void recalculateBlockLighting(int x, int z) {
+		//TODO: this is wrong
+		//Block light has to spread out from the source
+		//And decay 1 for each block away it is from the source
+		//But this does not do that
+		//for (int y = CHUNK_SIZE - 1; y >= 0; --y) {
+		//	BlockMaterial type = getBlockMaterial(x, y, z);
+		//	blockLight.set(toIndex(x, y, z), type.getLightLevel());
+		//}
 	}
 
 	/**
@@ -316,11 +382,49 @@ public class SpoutChunk extends Chunk {
 	 * @param sky   whether to update the sky lighting
 	 * @param block whether to update the block lighting
 	 */
-	private void queueSkyLightUpdate(int x, int z) {
-		synchronized (this.skyLightQueue) {
-			this.skyLightQueue.add(x, z);
+	private void queueLightUpdate(int x, int z, boolean sky, boolean block) {
+		if (!sky && !block) {
+			throw new IllegalStateException("Invalid paramaters");
 		}
-		this.getWorld().getLightingManager().reportChunkDirty(this.getX(), this.getY(), this.getZ());
+		if (sky) {
+			synchronized (skyLightQueue) {
+				skyLightQueue.add(HashUtil.nibbleToByte(x & 0xF, z & 0xF));
+			}
+		}
+		if (block) {
+			synchronized (blockLightQueue) {
+				blockLightQueue.add(HashUtil.nibbleToByte(x & 0xF, z & 0xF));
+			}
+		}
+		parentRegion.queueLighting(this);
+	}
+
+	/**
+	 * Processes the queued lighting updates for this chunk.
+	 * <p/>
+	 * This should only be called from the SpoutRegion that manages this chunk, during the first tick stage.
+	 */
+	protected void processQueuedLighting() {
+		byte[] queue;
+		setLightDirty(skyLightQueue.size() + blockLightQueue.size() > (CHUNK_SIZE * CHUNK_SIZE / 4));
+		synchronized (skyLightQueue) {
+			queue = skyLightQueue.toArray();
+			skyLightQueue.clear();
+		}
+		for (byte b : queue) {
+			int x = HashUtil.byteToNibble1(b);
+			int z = HashUtil.byteToNibble2(b);
+			recalculateSkyLighting(x, z);
+		}
+		synchronized (blockLightQueue) {
+			queue = blockLightQueue.toArray();
+			blockLightQueue.clear();
+		}
+		for (byte b : queue) {
+			int x = HashUtil.byteToNibble1(b);
+			int z = HashUtil.byteToNibble2(b);
+			recalculateBlockLighting(x, z);
+		}
 	}
 
 	@Override
@@ -483,12 +587,12 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 
-	public boolean isLightDirty() {
-		return this.lightDirty.get();
+	public void setLightDirty(boolean dirty) {
+		lightDirty.set(dirty);
 	}
 
-	protected void setLightDirty(boolean value) {
-		this.lightDirty.set(value);
+	public boolean isLightDirty() {
+		return lightDirty.get();
 	}
 
 	public boolean isDirty() {
@@ -576,9 +680,14 @@ public class SpoutChunk extends Chunk {
 		}
 
 		//Recalculate lighting
-		this.initLighting();
+		for (int dx = CHUNK_SIZE - 1; dx >= 0; --dx) {
+			for (int dz = CHUNK_SIZE - 1; dz >= 0; --dz) {
+				queueLightUpdate(dx, dz, true, true);
+			}
+		}
 
 		populated.set(true);
+		parentRegion.onChunkPopulated(this);
 	}
 
 	@Override
@@ -839,9 +948,9 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public Block getBlock(int x, int y, int z, Source source) {
-		x = (x & BASE_MASK) + this.getBlockX();
-		y = (y & BASE_MASK) + this.getBlockY();
-		z = (z & BASE_MASK) + this.getBlockZ();
+		x = (x & BASE_MASK) + (this.getX() << CHUNK_SIZE_BITS);
+		y = (y & BASE_MASK) + (this.getY() << CHUNK_SIZE_BITS);
+		z = (z & BASE_MASK) + (this.getZ() << CHUNK_SIZE_BITS);
 		return new SpoutBlock(this.getWorld(), x, y, z, this, source);
 	}
 

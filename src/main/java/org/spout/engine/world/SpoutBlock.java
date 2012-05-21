@@ -38,7 +38,6 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 
@@ -241,17 +240,24 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public byte getLight() {
-		return MathHelper.max(this.getBlockLight(), this.getSkyLight());
+		return this.getChunk().getBlockLight(this.x, this.y, this.z);
 	}
 
 	@Override
-	public byte getBlockLight() {
-		return this.getChunk().getBlockLight(this.x, this.y, this.z);
+	public Block setLight(byte level) {
+		this.getChunk().setBlockLight(this.x, this.y, this.z, level, this.source);
+		return this;
 	}
 
 	@Override
 	public byte getSkyLight() {
 		return this.getChunk().getBlockSkyLight(this.x, this.y, this.z);
+	}
+
+	@Override
+	public Block setSkyLight(byte level) {
+		this.getChunk().setBlockSkyLight(this.x, this.y, this.z, level, this.source);
+		return this;
 	}
 
 	@Override
@@ -277,45 +283,20 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block update(boolean around) {
-		World world = this.getWorld();
-		world.updateBlockPhysics(this.x, this.y, this.z, this.source);
+		Chunk chunk = this.getChunk();
+		chunk.updateBlockPhysics(this.x, this.y, this.z, this.source);
 		if (around) {
 			//South and North
-			world.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
-			world.updateBlockPhysics(this.x - 1, this.y, this.z, this.source);
+			chunk.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
+			chunk.updateBlockPhysics(this.x - 1, this.y, this.z, this.source);
 
 			//West and East
-			world.updateBlockPhysics(this.x, this.y, this.z + 1, this.source);
-			world.updateBlockPhysics(this.x, this.y, this.z - 1, this.source);
+			chunk.updateBlockPhysics(this.x, this.y, this.z + 1, this.source);
+			chunk.updateBlockPhysics(this.x, this.y, this.z - 1, this.source);
 
 			//Above and Below
-			world.updateBlockPhysics(this.x, this.y + 1, this.z, this.source);
-			world.updateBlockPhysics(this.x, this.y - 1, this.z, this.source);
-		}
-		return this;
-	}
-
-	@Override
-	public Block updateLighting() {
-		return this.updateLighting(true);
-	}
-
-	@Override
-	public Block updateLighting(boolean around) {
-		World world = this.getWorld();
-		world.updateBlockLighting(this.x, this.y, this.z);
-		if (around) {
-			//South and North
-			world.updateBlockLighting(this.x + 1, this.y, this.z);
-			world.updateBlockLighting(this.x - 1, this.y, this.z);
-
-			//West and East
-			world.updateBlockLighting(this.x, this.y, this.z + 1);
-			world.updateBlockLighting(this.x, this.y, this.z - 1);
-
-			//Above and Below
-			world.updateBlockLighting(this.x, this.y + 1, this.z);
-			world.updateBlockLighting(this.x, this.y - 1, this.z);
+			chunk.updateBlockPhysics(this.x, this.y + 1, this.z, this.source);
+			chunk.updateBlockPhysics(this.x, this.y - 1, this.z, this.source);
 		}
 		return this;
 	}
@@ -323,20 +304,5 @@ public class SpoutBlock implements Block {
 	@Override
 	public Biome getBiomeType() {
 		return world.getBiomeType(x, y, z);
-	}
-
-	@Override
-	public byte getBlockLightTo(BlockFace face) {
-		return this.getSubMaterial().occludes(face) ? (byte) 0 : this.getBlockLight();
-	}
-
-	@Override
-	public byte getSkyLightTo(BlockFace face) {
-		return this.getSubMaterial().occludes(face) ? (byte) 0 : this.getSkyLight();
-	}
-
-	@Override
-	public byte getLightTo(BlockFace face) {
-		return this.getSubMaterial().occludes(face) ? (byte) 0 : this.getLight();
 	}
 }

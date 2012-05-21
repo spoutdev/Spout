@@ -44,19 +44,19 @@ import org.spout.api.util.thread.SnapshotRead;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
-public class SpoutRegionSource implements Iterable<SpoutRegion> {
+public class RegionSource implements Iterable<Region> {
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
-	private final TSyncInt21TripleObjectHashMap<SpoutRegion> loadedRegions;
+	private final TSyncInt21TripleObjectHashMap<Region> loadedRegions;
 	/**
 	 * World associated with this region source
 	 */
 	private final SpoutWorld world;
 
-	public SpoutRegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
+	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
-		loadedRegions = new TSyncInt21TripleObjectHashMap<SpoutRegion>();
+		loadedRegions = new TSyncInt21TripleObjectHashMap<Region>();
 	}
 
 	/**
@@ -186,12 +186,12 @@ public class SpoutRegionSource implements Iterable<SpoutRegion> {
 	 * Gets an unmodifiable collection of all loaded regions.
 	 * @return collection of all regions
 	 */
-	public Collection<SpoutRegion> getRegions() {
+	public Collection<Region> getRegions() {
 		return Collections.unmodifiableCollection(loadedRegions.valueCollection());
 	}
 
 	@Override
-	public Iterator<SpoutRegion> iterator() {
+	public Iterator<Region> iterator() {
 		return getRegions().iterator();
 	}
 }
