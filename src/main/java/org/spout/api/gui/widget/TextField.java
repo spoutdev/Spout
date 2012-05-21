@@ -39,15 +39,34 @@ public class TextField extends AbstractControl {
 	private int selectionStart = 0, selectionEnd = 0;
 	private String text;
 	
+	/**
+	 * Called when user presses Enter or Return when in focus
+	 */
+	public static final Signal SIGNAL_RETURN_PRESSED = new Signal("returnPressed");
+	
+	/**
+	 * Called whenever the text changes, first argument contains the new string
+	 */
+	public static final Signal SIGNAL_TEXT_CHANGED = new Signal("textChanged", String.class);
+	
+	/**
+	 * Called when the user has not typed for 200ms or focussed another control or pressed Enter
+	 * first argument contains the new string
+	 */
+	public static final Signal SIGNAL_EDITING_FINISHED = new Signal("editingFinished", String.class);
+	
+	/**
+	 * Called when the selection changes, 
+	 * arguments: selection start, selection end (including), selected text as string
+	 */
+	public static final Signal SIGNAL_SELECTION_CHANGED = new Signal("selectionChanged", Integer.class, Integer.class, String.class);
+	
+	
 	{
-		//Called when user presses Enter or Return when in focus
-		registerSignal(new Signal("returnPressed"));
-		//Called whenever the text changes, first argument contains the new string
-		registerSignal(new Signal("textChanged", String.class));
-		//Called when the user has not typed for 200ms or focussed another control or pressed Enter, first argument contains the new string
-		registerSignal(new Signal("editingFinished", String.class));
-		//Called when the selection changes, arguments: selection start, selection end (including), selected text as string
-		registerSignal(new Signal("selectionChanged", Integer.class, Integer.class, String.class));
+		registerSignal(SIGNAL_RETURN_PRESSED);
+		registerSignal(SIGNAL_TEXT_CHANGED);
+		registerSignal(SIGNAL_EDITING_FINISHED);
+		registerSignal(SIGNAL_SELECTION_CHANGED);
 	}
 	
 	public TextField(String text) {

@@ -32,10 +32,21 @@ import org.spout.api.gui.Control;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.keyboard.Keyboard;
+import org.spout.api.signal.Signal;
 
 public abstract class AbstractControl extends AbstractWidget implements Control {
 	private boolean enabled = true;
 
+	/**
+	 * Emitted when the control received focus
+	 * First argument is the focus reason
+	 */
+	public static final Signal SIGNAL_FOCUS_RECEIVED = new Signal("focusReceived", FocusReason.class);
+	
+	{
+		registerSignal(SIGNAL_FOCUS_RECEIVED);
+	}
+	
 	@Override
 	public void onMouseDown(Point position, MouseButton button) {
 		setFocus(FocusReason.MOUSE_CLICKED);
@@ -69,6 +80,7 @@ public abstract class AbstractControl extends AbstractWidget implements Control 
 	@Override
 	public boolean setFocus(FocusReason reason) {
 		getScreen().setFocussedControl(this);
+		emit(SIGNAL_FOCUS_RECEIVED, reason);
 		return true;
 	}
 

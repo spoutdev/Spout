@@ -41,11 +41,20 @@ public abstract class AbstractButton extends AbstractControl implements Button {
 	private boolean checkable = false;
 	private int timeout = -1;
 	
+	/**
+	 * Emitted when button is clicked
+	 */
+	public static final Signal SIGNAL_CLICKED = new Signal("clicked");
+	
+	/**
+	 * Emitted when the check state has been toggled. 
+	 * The boolean argument contains the new state
+	 */
+	public static final Signal SIGNAL_TOGGLED = new Signal("toggled", Boolean.class);
+	
 	{
-		//Emitted when button is clicked
-		registerSignal(new Signal("clicked"));
-		//Emitted when the check state has been toggled. The boolean argument contains the new state
-		registerSignal(new Signal("toggled", Boolean.class));
+		registerSignal(SIGNAL_CLICKED);
+		registerSignal(SIGNAL_TOGGLED);
 	}
 
 	public AbstractButton(String text) {

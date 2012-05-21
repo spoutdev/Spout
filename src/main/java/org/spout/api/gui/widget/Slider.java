@@ -37,9 +37,14 @@ public class Slider extends AbstractControl implements RangedWidget<Integer> {
 
 	private int min, max, value;
 	
+	/**
+	 * Emitted when the slider was moved. 
+	 * First argument contains the new position
+	 */
+	public static final Signal SIGNAL_SLIDER_MOVED = new Signal("sliderMoved", Integer.class);
+	
 	{
-		//Emitted when the slider was moved. First argument contains the new position
-		registerSignal(new Signal("sliderMoved", Integer.class));
+		registerSignal(SIGNAL_SLIDER_MOVED);
 	}
 	
 	public Slider() {
