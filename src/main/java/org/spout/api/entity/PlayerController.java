@@ -26,7 +26,6 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.inventory.PlayerInventory;
 import org.spout.api.player.Player;
 
 /**
@@ -41,14 +40,6 @@ public interface PlayerController {
 	 * @return
 	 */
 	public Player getPlayer();
-
-	/**
-	 * Creates an inventory for this player
-	 * 
-	 * @param size
-	 * @return inventory
-	 */
-	public PlayerInventory createInventory(int size);
 
 	/**
 	 * If this player needs to replenish supplies after use

@@ -46,13 +46,13 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source{
+public interface Entity extends Source {
 
 	public int getId();
 
 	/**
 	 * Gets the controller for the entity
-	 *
+	 * 
 	 * @return the controller
 	 */
 	@SnapshotRead
@@ -60,7 +60,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Sets the controller for the entity
-	 *
+	 * 
 	 * @param controller
 	 */
 	@DelayedWrite
@@ -68,7 +68,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Sets the controller for the entity
-	 *
+	 * 
 	 * @param controller
 	 */
 	@DelayedWrite
@@ -83,7 +83,6 @@ public interface Entity extends Source{
 
 	public CollisionModel getCollision();
 
-
 	/**
 	 * Called when the entity is set to be sent to clients
 	 */
@@ -91,7 +90,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Returns true if this entity's controller is the provided controller
-	 *
+	 * 
 	 * @param clazz
 	 * @return true if this entity's controller is the provided controller
 	 */
@@ -99,14 +98,14 @@ public interface Entity extends Source{
 
 	/**
 	 * Returns true if this entity is spawned and being Simulated in the world
-	 *
+	 * 
 	 * @return spawned
 	 */
 	public boolean isSpawned();
 
 	/**
 	 * Gets the chunk the entity resides in, or null if unspawned.
-	 *
+	 * 
 	 * @return chunk
 	 */
 	@SnapshotRead
@@ -115,7 +114,7 @@ public interface Entity extends Source{
 	/**
 	 * Gets the region the entity is associated and managed with, or null if
 	 * unspawned.
-	 *
+	 * 
 	 * @return region
 	 */
 	@SnapshotRead
@@ -123,7 +122,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Gets the world the entity is associated with, or null if unspawned.
-	 *
+	 * 
 	 * @return world
 	 */
 	@SnapshotRead
@@ -136,10 +135,10 @@ public interface Entity extends Source{
 
 	/**
 	 * Kills the entity. This takes effect at the next snapshot.
-	 *
+	 * 
 	 * If the entity's position is set before the next snapshot, the entity
 	 * won't be removed.
-	 *
+	 * 
 	 * @return true if the entity was alive
 	 */
 	@DelayedWrite
@@ -148,7 +147,7 @@ public interface Entity extends Source{
 
 	/**
 	 * True if the entity is dead.
-	 *
+	 * 
 	 * @return dead
 	 */
 	@SnapshotRead
@@ -156,7 +155,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Returns the inventory of the entity
-	 *
+	 * 
 	 * @return inventory
 	 */
 	@SnapshotRead
@@ -164,7 +163,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Returns the size of an entity's inventory
-	 *
+	 * 
 	 * @return inventorysize
 	 */
 	@SnapshotRead
@@ -172,7 +171,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Sets the size of an entity's inventory
-	 *
+	 * 
 	 * @return
 	 */
 	@DelayedWrite
@@ -183,7 +182,7 @@ public interface Entity extends Source{
 	 * <br>
 	 * The actual view distance used by the server may not be exactly the value
 	 * that is set.
-	 *
+	 * 
 	 * @param distance the distance in blocks at which the entity can be seen
 	 */
 	@LiveWrite
@@ -191,18 +190,18 @@ public interface Entity extends Source{
 
 	/**
 	 * Gets the maximum distance at which the entity can be seen.<br>
-	 *
+	 * 
 	 * @return the distance in blocks at which the entity can be seen
 	 */
 	@LiveRead
 	public int getViewDistance();
 
-
 	/**
 	 * Sets whether or not the entity is an observer
-	 *
-	 * An entity that is an observer is an entity that keeps chunks loaded in memory
-	 *
+	 * 
+	 * An entity that is an observer is an entity that keeps chunks loaded in
+	 * memory
+	 * 
 	 * @param obs True if the entity should be an observer, false if not
 	 */
 	@DelayedWrite
@@ -210,9 +209,9 @@ public interface Entity extends Source{
 
 	/**
 	 * Tells whether or not the entity is an Observer.
-	 *
+	 * 
 	 * an entity that is an observer will keep chunks loaded in memory.
-	 *
+	 * 
 	 * @return true if the entity is an observer, false if not
 	 */
 	@SnapshotRead
@@ -220,77 +219,91 @@ public interface Entity extends Source{
 
 	/**
 	 * Tells whether or not the entity is an Observer.
-	 *
+	 * 
 	 * an entity that is an observer will keep chunks loaded in memory.
-	 *
+	 * 
 	 * @return true if the entity is an observer, false if not
 	 */
 	@LiveRead
 	public boolean isObserverLive();
 
-
 	/**
-	 * Gets a {@link Transform} representing the current position, scale and rotation of the entity.
+	 * Gets a {@link Transform} representing the current position, scale and
+	 * rotation of the entity.
+	 * 
 	 * @return
 	 */
 	public Transform getTransform();
 
 	/**
-	 * Gets a {@link Transform} representing the last tick's position, scale and rotation of the entity.
+	 * Gets a {@link Transform} representing the last tick's position, scale and
+	 * rotation of the entity.
+	 * 
 	 * @return
 	 */
 	public Transform getLastTransform();
 
 	/**
-	 * Gets the position, scale and rotation of the entity from the given a {@link Transform}.
+	 * Gets the position, scale and rotation of the entity from the given a
+	 * {@link Transform}.
 	 */
 	public void setTransform(Transform transform);
 
 	/**
 	 * Gets the current position of the entity
+	 * 
 	 * @return
 	 */
 	public Point getPosition();
+
 	/**
 	 * Gets the current rotation of the entity
+	 * 
 	 * @return
 	 */
 	public Quaternion getRotation();
+
 	/**
 	 * Gets the current Scale of the entity
+	 * 
 	 * @return
 	 */
 	public Vector3 getScale();
 
-
 	/**
-	 * Sets the position of the entity.
-	 * This must be called in the same thread as the entity lives.
+	 * Sets the position of the entity. This must be called in the same thread
+	 * as the entity lives.
+	 * 
 	 * @param position
 	 */
 	public void setPosition(Point position);
+
 	/**
-	 * Sets the rotation of the entity.
-	 * This must be called in the same thread as the entity lives.
+	 * Sets the rotation of the entity. This must be called in the same thread
+	 * as the entity lives.
+	 * 
 	 * @param rotation
 	 */
 	public void setRotation(Quaternion rotation);
+
 	/**
-	 * Sets the scale of the entity.
-	 * This must be called in the same thread as the entity lives.
+	 * Sets the scale of the entity. This must be called in the same thread as
+	 * the entity lives.
+	 * 
 	 * @param scale
 	 */
 	public void setScale(Vector3 scale);
 
-
 	/**
 	 * Moves the entity by the provided vector
+	 * 
 	 * @param amount
 	 */
 	public void translate(Vector3 amount);
 
 	/**
 	 * Moves the entity by the provided vector
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -299,6 +312,7 @@ public interface Entity extends Source{
 
 	/**
 	 * Rotates the entity about the provided axis by the provided angle
+	 * 
 	 * @param ang
 	 * @param x
 	 * @param y
@@ -308,18 +322,21 @@ public interface Entity extends Source{
 
 	/**
 	 * Rotates the entity by the provided rotation
+	 * 
 	 * @param rot
 	 */
 	public void rotate(Quaternion rot);
 
 	/**
 	 * Scales the entity by the provided amount
+	 * 
 	 * @param amount
 	 */
 	public void scale(Vector3 amount);
 
 	/**
 	 * Scales the entity by the provided amount
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -328,16 +345,21 @@ public interface Entity extends Source{
 
 	/**
 	 * Rolls the entity by the provided amount
+	 * 
 	 * @param ang
 	 */
 	public void roll(float ang);
+
 	/**
 	 * pitches the entity by the provided amount
+	 * 
 	 * @param ang
 	 */
 	public void pitch(float ang);
+
 	/**
 	 * yaws the entity by the provided amount
+	 * 
 	 * @param ang
 	 */
 	public void yaw(float ang);
@@ -355,40 +377,24 @@ public interface Entity extends Source{
 	public void setYaw(float ang);
 
 	/**
-	 * Gets the health of the entity.
-	 * @return the health of the entity.
-	 */
-	public int getHealth();
-
-	/**
-	 * Sets the health of the entity.
-	 */
-	public void setHealth(int health, Source source);
-
-	/**
-	 * Sets the max health of the entity
-	 */
-	public void setMaxHealth(int maxHealth);
-
-	/**
-	 * Gets the max health of the entity
-	 */
-	public int getMaxHealth();
-
-
-	/**
-	 * Attaches a component to this entity.  If it's already attached, it will fail silently
+	 * Attaches a component to this entity. If it's already attached, it will
+	 * fail silently
+	 * 
 	 * @param component
 	 */
 	public void attachComponent(EntityComponent component);
 
 	/**
-	 * removes a component from an entity.  Fails silently if component doesnt exist
+	 * removes a component from an entity. Fails silently if component doesnt
+	 * exist
+	 * 
 	 * @param component
 	 */
 	public void removeComponent(EntityComponent component);
+
 	/**
-	 * True if component is attached.  False if not
+	 * True if component is attached. False if not
+	 * 
 	 * @param component
 	 */
 	public boolean hasComponent(EntityComponent component);
