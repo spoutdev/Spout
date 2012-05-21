@@ -69,9 +69,9 @@ public class TextField extends AbstractControl {
 	 * <dl>
 	 * 	<dt>Arguments:</dt>
 	 * 	<dd>
-	 * 		<ul>
+	 * 		<ol>
 	 * 			<li>The new string</li>
-	 * 		</ul>
+	 * 		</ol>
 	 * 	</dd>
 	 * </dl>
 	 */
@@ -89,9 +89,9 @@ public class TextField extends AbstractControl {
 	 * <dl>
 	 * 	<dt>Arguments:</dt>
 	 * 	<dd>
-	 * 		<ul>
+	 * 		<ol>
 	 * 			<li>The new string</li>
-	 * 		</ul>
+	 * 		</ol>
 	 * 	</dd>
 	 * </dl>
 	 */
@@ -109,11 +109,11 @@ public class TextField extends AbstractControl {
 	 * <dl>
 	 * 	<dt>Arguments:</dt>
 	 * 	<dd>
-	 * 		<ul>
+	 * 		<ol>
 	 * 			<li>Selection start</li>
 	 * 			<li>Selection end (including)</li>
 	 * 			<li>Selected text</li>
-	 * 		</ul>
+	 * 		</ol>
 	 * 	</dd>
 	 * </dl>
 	 */
