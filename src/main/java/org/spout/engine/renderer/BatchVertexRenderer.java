@@ -53,6 +53,11 @@ public abstract class BatchVertexRenderer implements Renderer {
 		renderMode = mode;
 	}
 
+	
+	public int getVertexCount(){
+		return numVerticies;
+	}
+	
 	/* (non-Javadoc)
 		 * @see org.spout.client.renderer.Renderer#begin()
 		 */
@@ -114,7 +119,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 				throw new IllegalStateException("UV Buffer size does not match numVerticies");
 			}
 		}
-
+		if(numVerticies <= 0) return;
 		//Call the overriden flush
 		doFlush();
 
@@ -144,7 +149,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	@Override
 	public final void render() {
 		checkRender();
-
+		if(numVerticies <= 0) return;
 		doRender();
 	}
 
@@ -155,6 +160,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		if (!flushed) {
 			throw new IllegalStateException("Cannon Render Without Flushing the Batch");
 		}
+		
 	}
 
 	/* (non-Javadoc)
