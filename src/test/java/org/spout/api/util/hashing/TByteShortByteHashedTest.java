@@ -31,6 +31,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class TByteShortByteHashedTest {
+
 	public void testValue(byte x, short y, byte z) {
 		int key = TByteShortByteHashed.key(x, y, z);
 		assertEquals(x, TByteShortByteHashed.key1(key));

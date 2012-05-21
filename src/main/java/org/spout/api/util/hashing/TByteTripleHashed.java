@@ -24,25 +24,48 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.map;
+package org.spout.api.util.hashing;
 
-/**
- * A simplistic map that supports a 3 bytes for keys, using a trove int hashmap in the backend.
- */
-public class TByteTripleHashMap {
-	protected static final int key(int x, int y, int z) {
+public class TByteTripleHashed {
+	/**
+	 * Packs the first 8 most significant bits of each byte into an <code>int</code>
+	 *
+	 * @param x an <code>byte</code> value
+	 * @param y an <code>byte</code> value
+	 * @param z an <code>byte</code> value
+	 * @return The first 8 most significant bits of each byte packed into an <code>int</code>
+	 */
+	public static final int key(int x, int y, int z) {
 		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
 	}
 
-	public static final int key1(int key) {
-		return key >> 16 & 0xFF;
+	/**
+	 * Gets the first 8-bit integer value from an int key
+	 * 
+	 * @param key to get from
+	 * @return the first 8-bit integer value in the key
+	 */
+	public static final byte key1(int key) {
+		return (byte) (key >> 16 & 0xFF);
 	}
 
-	public static final int key2(int key) {
-		return key & 0xFF;
+	/**
+	 * Gets the second 8-bit integer value from an int key
+	 * 
+	 * @param key to get from
+	 * @return the second 8-bit integer value in the key
+	 */
+	public static final byte key2(int key) {
+		return (byte) (key & 0xFF);
 	}
 
-	public static final int key3(int key) {
-		return key >> 8 & 0xFF;
+	/**
+	 * Gets the third 8-bit integer value from an int key
+	 * 
+	 * @param key to get from
+	 * @return the third 8-bit integer value in the key
+	 */
+	public static final byte key3(int key) {
+		return (byte) (key >> 8 & 0xFF);
 	}
 }

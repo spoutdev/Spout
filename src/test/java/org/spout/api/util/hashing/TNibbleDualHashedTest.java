@@ -30,25 +30,20 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TInt21TripleHashedTest {
+public class TNibbleDualHashedTest {
 
-	public void testValue(int x, int y, int z) {
-		long key = TInt21TripleHashed.key(x, y, z);
-		assertEquals(x, TInt21TripleHashed.key1(key));
-		assertEquals(y, TInt21TripleHashed.key2(key));
-		assertEquals(z, TInt21TripleHashed.key3(key));
+	public void testValue(byte x, byte y) {
+		byte key = TNibbleDualHashed.key(x, y);
+		assertEquals(x, TNibbleDualHashed.key1(key));
+		assertEquals(y, TNibbleDualHashed.key2(key));
 	}
 
 	@Test
 	public void testHashes() {
-		testValue(-1048575, -1048575, -1048575);
-		testValue(0, 0, 0);
-		testValue(1048575, 1048575, 1048575);
-		testValue(1048575, -1048575, 1048575);
-		testValue(-1048575, 1048575, -1048575);
-		testValue(32423, 14144, 24114);
-		testValue(10475, 104865, 104835);
-		testValue(128, 512, 1024);
-		testValue(-34, 2421, -4452);
+		testValue((byte) 0, (byte) 0);
+		testValue((byte) 15, (byte) 15);
+		testValue((byte) 12, (byte) 14);
+		testValue((byte) 1, (byte) 15);
+		testValue((byte) 13, (byte) 2);
 	}
 }
