@@ -1,6 +1,7 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.spout.api.model.Mesh;
 import org.spout.api.model.ModelFace;
@@ -10,7 +11,7 @@ import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
 
 
-public class BaseMesh extends Resource implements Mesh {
+public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 	ArrayList<ModelFace> faces;
 	ArrayList<RenderEffect> effects = new ArrayList<RenderEffect>();
 	boolean dirty = false;
@@ -54,8 +55,8 @@ public class BaseMesh extends Resource implements Mesh {
 	protected void batch(Renderer batcher) {
 		for (ModelFace face : faces) {
 			for(PositionNormalTexture vert : face){
-				batcher.addTexCoord(vert.uv);
-				batcher.addNormal(vert.normal);
+				//batcher.addTexCoord(vert.uv);
+				//batcher.addNormal(vert.normal);
 				batcher.addVertex(vert.position);
 			}
 		}
@@ -85,5 +86,10 @@ public class BaseMesh extends Resource implements Mesh {
 		this.preRender(batcher);
 		this.render(batcher);
 		this.postRender(batcher);
+	}
+
+	@Override
+	public Iterator<ModelFace> iterator() {
+		return faces.iterator();
 	}
 }

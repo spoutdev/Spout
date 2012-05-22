@@ -40,9 +40,9 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 			}
 			if(s.startsWith("f")){
 				String[] sp = s.split(" ");
-				int face1 = Integer.parseInt(sp[1]);
-				int face2 = Integer.parseInt(sp[2]);
-				int face3 = Integer.parseInt(sp[3]);
+				int face1 = Integer.parseInt(sp[1]) - 1;
+				int face2 = Integer.parseInt(sp[2]) - 1;
+				int face3 = Integer.parseInt(sp[3]) - 1;
 				
 				PositionNormalTexture p = new PositionNormalTexture(verticies.get(face1));
 				PositionNormalTexture p2 = new PositionNormalTexture(verticies.get(face2));
