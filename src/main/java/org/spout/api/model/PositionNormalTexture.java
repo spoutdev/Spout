@@ -50,6 +50,10 @@ public class PositionNormalTexture {
 		this(position, Vector3.ZERO, Vector2.ZERO);
 	}
 	
+	public PositionNormalTexture(Vector3 position, Vector2 texture){
+		this(position, Vector3.ZERO, texture);
+	}
+	
 	public String toString(){
 		return StringUtil.toNamedString(this, position, normal, uv);
 	}
