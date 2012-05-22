@@ -125,7 +125,6 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
-	private final int coordMask;
 	private final SpoutColumn column;
 	private final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	private final AtomicLong lastUnloadCheck = new AtomicLong();
@@ -151,15 +150,14 @@ public class SpoutChunk extends Chunk {
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
-		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new SnapshotableBoolean(snapshotManager, populated);
-		this.skyLight = skyLight != null ? skyLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		this.skyLight = skyLight != null ? skyLight : new byte[CHUNK_VOLUME / 2];
 		for (int i = 0; i < this.skyLight.length; i++) {
 			this.skyLight[i] = 0;
 		}
-		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE / 2];
+		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_VOLUME / 2];
 
 		if (extraData != null) {
 			this.datatableMap = extraData;
@@ -170,7 +168,7 @@ public class SpoutChunk extends Chunk {
 
 		skyLightQueue = new TByteHashSet();
 		blockLightQueue = new TByteHashSet();
-		column = world.getColumn(((int) x) << Chunk.CHUNK_SIZE_BITS, ((int) z) << Chunk.CHUNK_SIZE_BITS, true);
+		column = world.getColumn(this.getBlockX(), this.getBlockZ(), true);
 		column.registerChunk();
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
@@ -189,9 +187,9 @@ public class SpoutChunk extends Chunk {
 		}
 		checkChunkLoaded();
 
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, getBlockMaterial(x, y, z).getId(), data);
+		blockStore.setBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, getBlockMaterial(x, y, z).getId(), data);
 
-		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
+		column.notifyBlockChange(x, this.getBlockY() + (y & BASE_MASK), z);
 
 		return true;
 	}
@@ -203,14 +201,14 @@ public class SpoutChunk extends Chunk {
 		}
 		checkChunkLoaded();
 		BlockMaterial previous = getBlockMaterial(x, y, z);
-		blockStore.setBlock(x & coordMask, y & coordMask, z & coordMask, material.getId(), data);
+		blockStore.setBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, material.getId(), data);
 
-		column.notifyBlockChange(x, (getY() << Chunk.CHUNK_SIZE_BITS) + (y & coordMask), z);
+		column.notifyBlockChange(x, this.getBlockY() + (y & BASE_MASK), z);
 
 		boolean sky = previous.getOpacity() != material.getOpacity();
 		boolean block = previous.getLightLevel() != material.getLightLevel();
 		if (sky || block) {
-			this.queueLightUpdate(x & coordMask, z & coordMask, sky, block);
+			this.queueLightUpdate(x & BASE_MASK, z & BASE_MASK, sky, block);
 		}
 		return true;
 	}
@@ -218,7 +216,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState fullState = blockStore.getFullData(x & coordMask, y & coordMask, z & coordMask);
+		BlockFullState fullState = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 		short id = fullState.getId();
 		BlockMaterial mat = BlockMaterial.get(id);
 		return mat == null ? BlockMaterial.AIR : mat;
@@ -227,7 +225,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		checkChunkLoaded();
-		return (short) blockStore.getData(x & coordMask, y & coordMask, z & coordMask);
+		return (short) blockStore.getData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 	}
 
 	@Override
@@ -308,7 +306,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
-		return (y & coordMask) << 8 | (z & coordMask) << 4 | (x & coordMask);
+		return (y & BASE_MASK) << 8 | (z & BASE_MASK) << 4 | (x & BASE_MASK);
 	}
 
 	/**
@@ -632,7 +630,7 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public Biome getBiomeType(int x, int y, int z) {
-		return biomes.getBiome(x & coordMask, y & coordMask, z & coordMask);
+		return biomes.getBiome(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 	}
 
 	public static enum SaveState {
@@ -948,15 +946,15 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public Block getBlock(int x, int y, int z, Source source) {
-		x = (x & BASE_MASK) + (this.getX() << CHUNK_SIZE_BITS);
-		y = (y & BASE_MASK) + (this.getY() << CHUNK_SIZE_BITS);
-		z = (z & BASE_MASK) + (this.getZ() << CHUNK_SIZE_BITS);
+		x = (x & BASE_MASK) + this.getBlockX();
+		y = (y & BASE_MASK) + this.getBlockY();
+		z = (z & BASE_MASK) + this.getBlockZ();
 		return new SpoutBlock(this.getWorld(), x, y, z, this, source);
 	}
 
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
-		return this.blockStore.compareAndSetBlock(x & coordMask, y & coordMask, z & coordMask, expect.getId(), expect.getData(), expect.getId(), data);
+		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
 
 	@Override
