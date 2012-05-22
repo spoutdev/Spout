@@ -53,7 +53,6 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -176,7 +175,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		this.name = name;
 		this.generator = generator;
-		generator.setWorld(this);
 		this.itemMap = itemMap;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
@@ -192,8 +190,6 @@ public class SpoutWorld extends AsyncManager implements World {
 			this.datatableMap = new GenericDatatableMap();;
 		}
 		this.dataMap = new DataMap(this.datatableMap);
-		
-		
 
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 		
@@ -381,11 +377,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (y < 0 || y > getHeight()) {
 			return null;
 		}
-		if (generator instanceof BiomeGenerator) {
-			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
-		} else {
-			return null;
-		}
+		return getChunkFromBlock(x, y, z).getBiomeType(x, y, z);
 	}
 
 	@Override
@@ -714,6 +706,18 @@ public class SpoutWorld extends AsyncManager implements World {
 		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
 
 		return baa.getBlockOutputStream(key);
+	}
+	
+	@Override
+	public Entity getEntity(UUID uid) {
+		for (Region region : regions) {
+			for (Entity e :region.getAll()) {
+				if (e.getUID().equals(uid)) {
+					return e;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

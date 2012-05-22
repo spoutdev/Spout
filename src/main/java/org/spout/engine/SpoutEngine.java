@@ -70,6 +70,7 @@ import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.generator.EmptyWorldGenerator;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -155,6 +156,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private SpoutPlayer[] emptyPlayerArray = new SpoutPlayer[0];
 	private String logFile;
 	private StringMap engineItemMap = null;
+	private StringMap engineBiomeMap = null;
 	
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
 	private boolean debugMode = false;
@@ -197,6 +199,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
+		//Setup the Biome Registry
+		engineBiomeMap = BiomeRegistry.setupRegistry();
 
 		// Start loading plugins
 		loadPlugins();
@@ -454,7 +458,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		if(world == null) {
 			Spout.getLogger().info("Generating new world named [" + name + "]");
 			
-			File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "items.dat");
+			File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "materials.dat");
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE);
 			
@@ -615,6 +619,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		switch (stage) {
 			case 0:
 				sessions.pulse();
+				engineItemMap.save();
+				engineBiomeMap.save();
 				break;
 		}
 	}
@@ -706,6 +712,17 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
+	
+	@Override
+	public Entity getEntity(UUID uid) {
+		for (World w : loadedWorlds.get().values()) {
+			Entity e = w.getEntity(uid);
+			if (e != null) {
+				return e;
+			}
+		}
+		return null;
+	}
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession session) {
@@ -746,5 +763,23 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	public CommandSource getConsole() {
 		return consoleManager.getCommandSource();
+	}
+	
+	/**
+	 * Gets the item map used across all worlds on the engine
+	 * 
+	 * @return engine map
+	 */
+	public StringMap getEngineItemMap() {
+		return engineItemMap;
+	}
+	
+	/**
+	 * Gets the biome map used accorss all worlds on the engine
+	 * 
+	 * @return biome map
+	 */
+	public StringMap getBiomeMap() {
+		return engineBiomeMap;
 	}
 }

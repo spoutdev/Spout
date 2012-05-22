@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
@@ -21,6 +22,8 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.type.ControllerRegistry;
 import org.spout.api.entity.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.generator.biome.EmptyBiomeManager;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -49,7 +52,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class WorldFiles {
-	private static final byte WORLD_VERSION = 2;
+	private static final byte WORLD_VERSION = 1;
 	private static final byte ENTITY_VERSION = 1;
 
 	public static void saveWorldData(SpoutWorld world) {
@@ -60,6 +63,9 @@ public class WorldFiles {
 			generatorName = Long.toHexString(System.currentTimeMillis());
 			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
 		}
+		
+		//Save the world item map
+		world.getItemMap().save();
 
 		CompoundMap worldTags = new CompoundMap();
 		worldTags.put(new ByteTag("version", (byte)WORLD_VERSION));
@@ -94,7 +100,8 @@ public class WorldFiles {
 			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
 		}
 		
-		File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "items.dat");
+		//Load the world specific item map
+		File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "materials.dat");
 		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 		if (itemMapFile.exists()) {
 			itemStore.load();
@@ -111,14 +118,13 @@ public class WorldFiles {
 				CompoundMap map = dataTag.getValue();
 				GenericDatatableMap extraData = new GenericDatatableMap();
 
+				@SuppressWarnings("unused")
 				byte version = (Byte) map.get("version").getValue();
 				long seed = (Long) map.get("seed").getValue();
 				String savedGeneratorName = (String) map.get("generator").getValue();
 				
-				if (version >= 2) {
-					byte[] extraDataBytes = (byte[])map.get("extraData").getValue();
-					extraData.decompress(extraDataBytes);
-				}
+				byte[] extraDataBytes = (byte[])map.get("extraData").getValue();
+				extraData.decompress(extraDataBytes);
 
 				if (!savedGeneratorName.equals(generatorName)) {
 					Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
@@ -136,16 +142,21 @@ public class WorldFiles {
 				}
 			}
 		}
-		
-		
-		
-		
 
 		return world;
 	}
 
 	public static void saveChunk(SpoutChunk c, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
+		
+		//Switch block ids from engine material ids to world specific ids
+		SpoutWorld world = c.getWorld();
+		StringMap global = ((SpoutEngine)Spout.getEngine()).getEngineItemMap();
+		StringMap itemMap = world.getItemMap();
+		for (int i = 0; i < blocks.length; i++) {
+			blocks[i] = (short) global.convertTo(itemMap, blocks[i]);
+		}
+		
 		chunkTags.put(new ByteTag("version", (byte) 1));
 		chunkTags.put(new ByteTag("format", (byte) 0));
 		chunkTags.put(new IntTag("x", c.getX()));
@@ -157,6 +168,13 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
 		chunkTags.put(new ByteArrayTag("blockLight", blockLight));
 		chunkTags.put(new CompoundTag("entities", saveEntities(c)));
+
+		byte[] biomes = c.getBiomeManager().serialize();
+		if (biomes != null) {
+			chunkTags.put(new StringTag("biomeManager", c.getBiomeManager().getClass().getCanonicalName()));
+			chunkTags.put(new ByteArrayTag("biomes", biomes));
+		}
+
 		chunkTags.put(new ByteArrayTag("extraData", extraData.compress()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
@@ -201,10 +219,37 @@ public class WorldFiles {
 			byte[] blockLight = (byte[]) map.get("blockLight").getValue();
 			byte[] extraData = (byte[]) map.get("extraData").getValue();
 			
+			BiomeManager manager = null;
+			if (map.containsKey("biomes")) {
+				try {
+					String biomeManagerClass = (String) map.get("biomeManager").getValue();
+					byte[] biomes = (byte[]) map.get("biomes").getValue();
+					@SuppressWarnings("unchecked")
+					Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
+					Class<?>[] params = {int.class, int.class, int.class};
+					manager = clazz.getConstructor(params).newInstance(cx, cy, cz);
+					manager.deserialize(biomes);
+				} catch (Exception e) {
+					Spout.getLogger().severe("Failed to read biome data for chunk");
+					e.printStackTrace();
+				}
+			}
+			if (manager == null) {
+				manager = new EmptyBiomeManager(cx, cy, cz);
+			}
+			
+			//Convert world block ids to engine material ids 
+			SpoutWorld world = r.getWorld();
+			StringMap global = ((SpoutEngine)Spout.getEngine()).getEngineItemMap();
+			StringMap itemMap = world.getItemMap();
+			for (int i = 0; i < blocks.length; i++) {
+				blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
+			}
+			
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
-			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, extraDataMap);
+			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
 
 			loadEntities(r, (CompoundMap) map.get("entities").getValue());
 		} catch (IOException e) {
@@ -268,6 +313,10 @@ public class WorldFiles {
 			float qZ = (Float) map.get("quatZ").getValue();
 			float qW = (Float) map.get("quatW").getValue();
 			
+			long msb = (Long) map.get("UUID_msb").getValue();
+			long lsb = (Long) map.get("UUID_lsb").getValue();
+			UUID uid = new UUID(msb, lsb);
+			
 			int view = (Integer) map.get("view").getValue();
 			boolean observer = ((ByteTag) map.get("observer")).getBooleanValue();
 			
@@ -285,13 +334,12 @@ public class WorldFiles {
 			
 			//Setup entity
 			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
-			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, false);
+			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
 			e.setObserver(observer);
 			if (r != null) {
 				r.addEntity(e);
 			}
 			
-			System.out.println("Loading a controller of type: " + type.getName() + " (id: " + e.getId() + ")");
 			return e;
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
@@ -308,9 +356,7 @@ public class WorldFiles {
 
 		map.put(new ByteTag("version", ENTITY_VERSION));
 		map.put(new StringTag("controller", e.getController().getType().getName()));
-		
-		System.out.println("Saving a controller of type: " + e.getController().getType().getName() + " (id: " + e.getId() + ")");
-		
+
 		//Write entity
 		map.put(new FloatTag("posX", e.getPosition().getX()));
 		map.put(new FloatTag("posY", e.getPosition().getY()));
@@ -324,6 +370,9 @@ public class WorldFiles {
 		map.put(new FloatTag("quatY", e.getRotation().getY()));
 		map.put(new FloatTag("quatZ", e.getRotation().getZ()));
 		map.put(new FloatTag("quatW", e.getRotation().getW()));
+		
+		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
+		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
 		
 		map.put(new IntTag("view", e.getViewDistance()));
 		map.put(new ByteTag("observer", e.isObserverLive()));

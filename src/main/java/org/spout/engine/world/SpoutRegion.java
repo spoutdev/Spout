@@ -43,11 +43,14 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.datatable.DataMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
@@ -259,9 +262,9 @@ public class SpoutRegion extends Region {
 		CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), cx << Chunk.CHUNK_SIZE_BITS, cy << Chunk.CHUNK_SIZE_BITS, cz << Chunk.CHUNK_SIZE_BITS, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE, Chunk.CHUNK_SIZE);
 
 		WorldGenerator generator = getWorld().getGenerator();
-		generator.generate(buffer, cx, cy, cz);
+		BiomeManager manager = generator.generate(buffer, cx, cy, cz);
 
-		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray());
+		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray(), manager, (DataMap)buffer.getDataMap());
 	}
 
 	/**
@@ -854,6 +857,11 @@ public class SpoutRegion extends Region {
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		this.getChunkFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
+	}
+
+	@Override
+	public Biome getBiomeType(int x, int y, int z) {
+		return this.getWorld().getBiomeType(x, y, z);
 	}
 
 	@Override

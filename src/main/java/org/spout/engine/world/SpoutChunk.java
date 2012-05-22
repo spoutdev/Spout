@@ -48,6 +48,7 @@ import org.spout.api.entity.PlayerController;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -138,12 +139,17 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
+	
+	/**
+	 * Manages the biomes for this chunk
+	 */
+	private final BiomeManager biomes;
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial) {
-		this(world, region, x, y, z, false, initial, null, null, null, null);
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, BiomeManager manager, DataMap map) {
+		this(world, region, x, y, z, false, initial, null, null, null, manager, map.getRawMap());
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData) {
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = region;
@@ -168,6 +174,7 @@ public class SpoutChunk extends Chunk {
 		column.registerChunk();
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
+		this.biomes = manager;
 	}
 
 	@Override
@@ -625,8 +632,7 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public Biome getBiomeType(int x, int y, int z) {
-		return getWorld().getBiomeType((getX() << CHUNK_SIZE_BITS) + x,
-				(getY() << CHUNK_SIZE_BITS) + y, (getZ() << CHUNK_SIZE_BITS) + z);
+		return biomes.getBiome(x & coordMask, y & coordMask, z & coordMask);
 	}
 
 	public static enum SaveState {
@@ -956,5 +962,9 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
+	}
+	
+	public BiomeManager getBiomeManager() {
+		return biomes;
 	}
 }

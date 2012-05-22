@@ -32,6 +32,8 @@ import java.util.Set;
 
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Entity;
+import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
@@ -46,12 +48,13 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
+	
 	private final Set<WeakReference<Entity>> entities;
 	private final short[] blockIds;
 	private final short[] blockData;
 	private final byte[] blockLight;
 	private final byte[] skyLight;
-
+	private final BiomeManager biomes;
 	private boolean renderDirty = false;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
@@ -71,6 +74,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
+		this.biomes = chunk.getBiomeManager().clone();
 		renderDirty = chunk.isDirty();
 	}
 
@@ -163,5 +167,10 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
 		return null;
+	}
+
+	@Override
+	public Biome getBiomeType(int x, int y, int z) {
+		return biomes.getBiome(x, y, z);
 	}
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,6 +75,7 @@ public class SpoutEntity implements Entity, Tickable {
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private final Transform transform = new Transform();
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
+	private final UUID uid;
 	private boolean justSpawned = true;
 	private boolean observer = false;
 	private boolean attached = false;
@@ -87,9 +89,15 @@ public class SpoutEntity implements Entity, Tickable {
 	private Transform lastTransform = transform;
 	private Point collisionPoint;
 
-	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, boolean load) {
+	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
 		this.transform.set(transform);
+		
+		if (uid != null) {
+			this.uid = uid;
+		} else {
+			this.uid = UUID.randomUUID();
+		}
 
 		chunkLive = new AtomicReference<Chunk>();
 		entityManagerLive = new AtomicReference<EntityManager>();
@@ -112,7 +120,7 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 	
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
-		this(engine, transform, controller, viewDistance, true);
+		this(engine, transform, controller, viewDistance, null, true);
 	}
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller) {
@@ -752,5 +760,10 @@ public class SpoutEntity implements Entity, Tickable {
 	@Override
 	public boolean hasComponent(EntityComponent component) {
 		return components.contains(component);
+	}
+	
+	@Override
+	public UUID getUID() {
+		return uid;
 	}
 }
