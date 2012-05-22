@@ -107,10 +107,6 @@ public class SpoutRegion extends Region {
 	 */
 	private final int SEGMENT_SIZE = 8;
 	/**
-	 * The number of chunks in a region
-	 */
-	private final int REGION_SIZE_CUBED = REGION_SIZE * REGION_SIZE * REGION_SIZE;
-	/**
 	 * The timeout for the chunk storage in ms. If the store isn't accessed
 	 * within that time, it can be automatically shutdown
 	 */
@@ -146,8 +142,6 @@ public class SpoutRegion extends Region {
 	 */
 	//TODO thresholds?
 	private final TByteTripleObjectHashMap<Source> queuedPhysicsUpdates = new TByteTripleObjectHashMap<Source>();
-	private final int blockCoordMask;
-	private final int blockShifts;
 	/**
 	 * A queue of chunks that have columns of light that need to be recalculated
 	 */
@@ -167,8 +161,6 @@ public class SpoutRegion extends Region {
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadGenerateOption loadopt) {
 		super(world, x * Region.EDGE, y * Region.EDGE, z * Region.EDGE);
 		this.source = source;
-		blockCoordMask = Region.REGION_SIZE * Chunk.CHUNK_SIZE - 1;
-		blockShifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
 		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getEngine());
 
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
@@ -183,7 +175,7 @@ public class SpoutRegion extends Region {
 		File regionDirectory = new File(worldDirectory, "region");
 		regionDirectory.mkdirs();
 		File regionFile = new File(regionDirectory, "reg" + getX() + "_" + getY() + "_" + getZ() + ".spr");
-		this.chunkStore = new BAAWrapper(regionFile, SEGMENT_SIZE, REGION_SIZE_CUBED, TIMEOUT);
+		this.chunkStore = new BAAWrapper(regionFile, SEGMENT_SIZE, REGION_CHUNK_VOLUME, TIMEOUT);
 		Thread t;
 		AsyncExecutor e = manager.getExecutor();
 		if (e instanceof Thread) {
@@ -515,7 +507,7 @@ public class SpoutRegion extends Region {
 						BlockMaterial material = chunk.getBlockMaterial(x, y, z);
 						if (material.hasPhysics()) {
 							//switch region block coords (0-255) to world block coords
-							Block block = world.getBlock(x + (getX() << blockShifts), y + (getY() << blockShifts), z + (getZ() << blockShifts), source);
+							Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
 							material.onUpdate(block);
 						}
 					}
@@ -713,7 +705,7 @@ public class SpoutRegion extends Region {
 	 */
 	public void queuePhysicsUpdate(int x, int y, int z, Source source) {
 		synchronized (queuedPhysicsUpdates) {
-			queuedPhysicsUpdates.put((byte) (x & blockCoordMask), (byte) (y & blockCoordMask), (byte) (z & blockCoordMask), source);
+			queuedPhysicsUpdates.put((byte) (x & BASE_MASK), (byte) (y & BASE_MASK), (byte) (z & BASE_MASK), source);
 		}
 	}
 
