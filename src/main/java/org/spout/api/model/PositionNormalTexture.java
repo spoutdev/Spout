@@ -42,6 +42,10 @@ public class PositionNormalTexture {
 		this.uv = texture;
 	}
 	
+	public PositionNormalTexture(Vector3 position, Vector3 normal){
+		this(position, normal, Vector2.ZERO);
+	}
+	
 	public PositionNormalTexture(Vector3 position) {
 		this(position, Vector3.ZERO, Vector2.ZERO);
 	}
