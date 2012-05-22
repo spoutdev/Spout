@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.Tickable;
@@ -40,8 +41,12 @@ import org.spout.api.gui.MouseEventHandler;
 import org.spout.api.gui.Renderable;
 import org.spout.api.gui.Screen;
 import org.spout.api.keyboard.Keyboard;
+import org.spout.api.signal.Signal;
+import org.spout.api.signal.SignalInterface;
+import org.spout.api.signal.SignalSubscriberObject;
+import org.spout.api.signal.SubscriberInterface;
 
-public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEventHandler, Tickable {
+public class ScreenStack extends SignalSubscriberObject implements Renderable, KeyboardEventHandler, MouseEventHandler, Tickable, SubscriberInterface, SignalInterface {
 	/**
 	 * Contains all attached screens in front-to-back order, that means, the topmost screen is the first element
 	 */
@@ -50,6 +55,26 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 	 * Contains the visible screens in back-to-front order, that means, the first element is the last screen you can see (and is also a fullscreen)
 	 */
 	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
+	
+	private int width = -1, height = -1;
+	
+	/**
+	 * @signal resized When the window that contains the screen has been resized
+	 * 
+	 * @sarg java.lang.Integer The new width
+	 * @sarg java.lang.Integer The new height
+	 */
+	public static final Signal SIGNAL_RESIZED = new Signal("resized", Integer.class, Integer.class);
+	
+	{
+		registerSignal(SIGNAL_RESIZED);
+		updateScreenSize();
+	}
+
+	private void updateScreenSize() {
+		width = Display.getWidth();
+		height = Display.getHeight();
+	}
 
 	public ScreenStack(FullScreen mainScreen) {
 		if (mainScreen == null) {
@@ -224,6 +249,11 @@ public class ScreenStack implements Renderable, KeyboardEventHandler, MouseEvent
 
 	@Override
 	public void onTick(float dt) {
+		//Check for resize
+		if(Display.getWidth() != width || Display.getHeight() != height) {
+			updateScreenSize();
+			emit(SIGNAL_RESIZED, width, height);
+		}
 		//Invisible screens don't have to be ticked
 		for (Screen screen:visibleScreens) {
 			screen.onTick(dt);

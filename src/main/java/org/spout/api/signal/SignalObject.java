@@ -91,4 +91,21 @@ public class SignalObject implements SignalInterface {
 		}
 	}
 
+	@Override
+	public boolean subscribe(Signal signal, Object receiver, Method method) {
+		signal.subscribe(this, receiver, method);
+		return true;
+	}
+
+	@Override
+	public boolean subscribe(Signal signal, Object receiver, String method) throws SecurityException, NoSuchMethodException {
+		Method methodO;
+		methodO = receiver.getClass().getMethod(method, signal.getArgumentTypes());
+		if (methodO != null) {
+			signal.subscribe(this, receiver, methodO);
+			return true;
+		}
+		return false;
+	}
+
 }

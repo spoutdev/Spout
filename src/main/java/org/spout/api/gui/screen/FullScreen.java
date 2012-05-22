@@ -30,9 +30,12 @@ import java.awt.Color;
 import java.awt.Rectangle;
 
 import org.lwjgl.opengl.Display;
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.gui.GenericScreen;
 import org.spout.api.gui.ScreenType;
 import org.spout.api.gui.Widget;
+import org.spout.api.plugin.Platform;
 
 /**
  * Defines a fullscreen
@@ -40,8 +43,15 @@ import org.spout.api.gui.Widget;
  */
 public class FullScreen extends GenericScreen {
 	private Color backgroundColor = new Color(0,0,0,0);
-
+	
 	public FullScreen() {
+		if(Spout.getPlatform() == Platform.CLIENT) {
+			try {
+				((Client) Spout.getEngine()).getScreenStack().subscribe(ScreenStack.SIGNAL_RESIZED, this, "onScreenResized");
+			} catch (SecurityException e) {
+			} catch (NoSuchMethodException e) {
+			}
+		}
 	}
 
 	@Override
@@ -78,6 +88,10 @@ public class FullScreen extends GenericScreen {
 	 */
 	public boolean isTransparent() {
 		return backgroundColor.getAlpha() != 0;
+	}
+	
+	public void onScreenResized(int width, int height) {
+		getLayout().relayout();
 	}
 
 	@Override
