@@ -27,6 +27,8 @@
 package org.spout.api.signal;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -110,6 +112,33 @@ public class SignalTest {
 		public void onClick() {
 			gotSignal = true;
 		}
+	}
+	
+	@Test
+	public void testSignalUnsubscribingWhileIterating() throws SecurityException, NoSuchMethodException {
+		gotSignal = false;
+		final SignalTestClass emittingObject = new SignalTestClass();
+
+		Object receiver = new Object() {
+			public void doAction() {
+				emittingObject.unsubscribe(this);
+				gotSignal = true;
+			}
+		};
+		
+		emittingObject.subscribe("clicked", receiver, "doAction");
+		
+		emittingObject.click();
+		
+		assertTrue(gotSignal);
+		
+		gotSignal = false;
+		
+		emittingObject.click();
+		
+		assertFalse(gotSignal);
+		
+		gotSignal = false;
 	}
 
 	public class SignalTestClass extends SignalObject {

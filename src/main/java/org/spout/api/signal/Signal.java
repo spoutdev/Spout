@@ -36,6 +36,7 @@ public class Signal {
 	private Class<?> argumentTypes[];
 	private String name;
 	private LinkedList<Subscription> subscriptions = new LinkedList<Subscription>();
+	private Iterator<Subscription> currentIterator = subscriptions.iterator();
 	
 	private class Subscription {
 		public SignalInterface sender;
@@ -49,35 +50,37 @@ public class Signal {
 	}
 	
 	public void emit(SignalInterface sender, Object ...arguments) {
-		Iterator<Subscription> iter = subscriptions.iterator();
-		while(iter.hasNext()) {
-			Subscription p = iter.next();
-			if(p.sender != sender) {
-				continue;
-			}
-			Object call = p.receiver;
-			SubscriberInterface sub = null;
-			if(call instanceof SubscriberInterface) {
-				sub = (SubscriberInterface) call;
-				sub.setSender(sender);
-			}
-			Method method = p.method;
-			if(sub != null) {
-				sub.setSender(null);
-			}
-			try {
-				method.invoke(call, arguments);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				System.out.println("---------------");
-				System.out.println("Error while executing subscribed method to "+this);
-				System.out.println("---------------");
-				e.printStackTrace();
+		synchronized (currentIterator) {
+			currentIterator = subscriptions.iterator();
+			while(currentIterator.hasNext()) {
+				Subscription p = currentIterator.next();
+				if(p.sender != sender) {
+					continue;
+				}
+				Object call = p.receiver;
+				SubscriberInterface sub = null;
+				if(call instanceof SubscriberInterface) {
+					sub = (SubscriberInterface) call;
+					sub.setSender(sender);
+				}
+				Method method = p.method;
+				if(sub != null) {
+					sub.setSender(null);
+				}
+				try {
+					method.invoke(call, arguments);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					System.out.println("---------------");
+					System.out.println("Error while executing subscribed method to "+this);
+					System.out.println("---------------");
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -91,23 +94,27 @@ public class Signal {
 	}
 	
 	public void subscribe(SignalInterface sender, Object receiver, Method method) {
-		if (Arrays.equals(method.getParameterTypes(), argumentTypes)) {
-			//TODO make sure that the same object doesn't subscribe twice or more
-			Subscription sub = new Subscription();
-			sub.sender = sender;
-			sub.receiver = receiver;
-			sub.method = method;
-			subscriptions.add(sub);
+		synchronized (currentIterator) {
+			if (Arrays.equals(method.getParameterTypes(), argumentTypes)) {
+				//TODO make sure that the same object doesn't subscribe twice or more
+				Subscription sub = new Subscription();
+				sub.sender = sender;
+				sub.receiver = receiver;
+				sub.method = method;
+				subscriptions.add(sub);
+			}
 		}
 	}
 	
 	public void unsubscribe(Object receiver) {
-		Iterator<Subscription> iter = subscriptions.iterator();
-		while (iter.hasNext()) {
-			Subscription next = iter.next();
-			if (next.receiver == receiver) {
-				iter.remove();
-				break;
+		synchronized (currentIterator) {
+			currentIterator = subscriptions.iterator();
+			while (currentIterator.hasNext()) {
+				Subscription next = currentIterator.next();
+				if (next.receiver == receiver) {
+					currentIterator.remove();
+					break;
+				}
 			}
 		}
 	}
