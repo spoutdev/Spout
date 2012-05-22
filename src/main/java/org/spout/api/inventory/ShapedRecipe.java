@@ -35,7 +35,7 @@ import org.spout.api.plugin.Plugin;
 public class ShapedRecipe implements Recipe {
 	private final Plugin plugin;
 	private final String name;
-	private final String type = "SHAPELESS";
+	private final String type = "SHAPED";
 	private ItemStack result;
 	private HashMap<Character, Material> ingredients;
 	private ArrayList<ArrayList<Character>> rows;

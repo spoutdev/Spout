@@ -38,7 +38,7 @@ public class ShapelessRecipe implements Recipe {
 	private ItemStack result;
 	private HashMap<Character, Material> ingredients;
 	private List<Character> amounts;
-	private final String type = "SHAPED";
+	private final String type = "SHAPELESS";
 	private String subType;
 
 	public ShapelessRecipe(Plugin plugin, String name, ItemStack result) {
