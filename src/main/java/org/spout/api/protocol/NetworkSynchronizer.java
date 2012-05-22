@@ -328,7 +328,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		int by = (int) currentPosition.getY();
 		int bz = (int) currentPosition.getZ();
 
-		Point playerChunkBase = Chunk.pointToBase(currentPosition);
+		Point playerChunkBase = currentPosition;
 
 		for (Point p : initializedChunks) {
 			if (p.getManhattanDistance(playerChunkBase) > blockViewDistance) {
