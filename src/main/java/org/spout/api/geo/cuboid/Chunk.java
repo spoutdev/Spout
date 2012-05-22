@@ -60,7 +60,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	/**
 	 * Mask to convert a block integer coordinate into the chunk's base
 	 */
-	public final static int BASE_MASK = -CHUNK_SIZE;
+	public final static int BASE_MASK = CHUNK_SIZE - 1;
 
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE, true);
@@ -196,6 +196,30 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 		return x >> Chunk.CHUNK_SIZE_BITS == this.getX() && y >> Chunk.CHUNK_SIZE_BITS == this.getY() && z >> Chunk.CHUNK_SIZE_BITS == this.getZ();
 	}
 
+	/**
+	 * Gets the x-coordinate of this chunk as a Block coordinate
+	 * @return the x-coordinate of the first block in this chunk
+	 */
+	public int getBlockX() {
+		return this.getX() << CHUNK_SIZE_BITS;
+	}
+
+	/**
+	 * Gets the y-coordinate of this chunk as a Block coordinate
+	 * @return the y-coordinate of the first block in this chunk
+	 */
+	public int getBlockY() {
+		return this.getY() << CHUNK_SIZE_BITS;
+	}
+
+	/**
+	 * Gets the z-coordinate of this chunk as a Block coordinate
+	 * @return the z-coordinate of the first block in this chunk
+	 */
+	public int getBlockZ() {
+		return this.getZ() << CHUNK_SIZE_BITS;
+	}
+	
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & BASE_MASK, (int) p.getY() & BASE_MASK, (int) p.getZ() & BASE_MASK);
 	}

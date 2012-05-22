@@ -382,6 +382,17 @@ public class MathHelper {
 	}
 
 	/**
+	 * Gets the maximum byte value from two values
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return the maximum value
+	 */
+	public static byte max(byte value1, byte value2) {
+		return value1 > value2 ? value1 : value2;
+	}
+
+	/**
 	 * Rounds an integer up to the next power of 2.
 	 *
 	 * @param x
