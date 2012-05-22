@@ -61,8 +61,6 @@ build.xml
 # Spout Runtime Folders #
 #########################
 plugins/
-resources/
-!engine/resources/
 cache/
 update/
 data/
