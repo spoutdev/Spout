@@ -40,6 +40,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
@@ -52,7 +53,9 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 
 import org.spout.engine.SpoutServer;
+import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.world.SpoutWorld;
 
 /**
  * A single connection to the server, which may or may not be associated with a
@@ -149,7 +152,7 @@ public final class SpoutSession implements Session {
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
 	@Override
-	public Player getPlayer() {
+	public SpoutPlayer getPlayer() {
 		return player;
 	}
 
@@ -314,12 +317,16 @@ public final class SpoutSession implements Session {
 
 			PlayerSaveEvent saveEvent = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
 			if (!saveEvent.isSaved()) {
-				
+
 			}
 
 			//If its null or can't be get, just ignore it
 			//If disconnect fails, we just ignore it for now.
 			try {
+				final Entity entity = player.getEntity();
+				if (entity != null) {
+					((SpoutWorld) entity.getWorld()).removePlayer(player);
+				}
 				player.disconnect();
 			} catch (Exception e) {
 			}

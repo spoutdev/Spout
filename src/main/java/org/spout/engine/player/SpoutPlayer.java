@@ -47,15 +47,17 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
+import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.TextWrapper;
+import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer implements Player {
 	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();
 	private SpoutSession session;
 	private final String name;
 	private final AtomicReference<String> displayName = new AtomicReference<String>();
-	private final AtomicReference<Entity> entityLive = new AtomicReference<Entity>();
+	private final AtomicReference<SpoutEntity> entityLive = new AtomicReference<SpoutEntity>();
 	private Entity entity;
 	private final AtomicReference<NetworkSynchronizer> synchronizerLive = new AtomicReference<NetworkSynchronizer>();
 	private NetworkSynchronizer synchronizer;
@@ -70,7 +72,7 @@ public class SpoutPlayer implements Player {
 		hashcode = name.hashCode();
 	}
 
-	public SpoutPlayer(String name, Entity entity, SpoutSession session) {
+	public SpoutPlayer(String name, SpoutEntity entity, SpoutSession session) {
 		this(name);
 		sessionLive.set(session);
 		this.session = session;
@@ -132,9 +134,11 @@ public class SpoutPlayer implements Player {
 	@DelayedWrite
 	public boolean disconnect() {
 		if (onlineLive.compareAndSet(true, false)) {
-			entityLive.get().kill();
+			final SpoutEntity entity = entityLive.getAndSet(null);
+			if (entity != null) {
+				entity.kill();
+			}
 			sessionLive.set(null);
-			entityLive.set(null);
 			synchronizerLive.set(null);
 			return true;
 		} else {
@@ -143,7 +147,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	@DelayedWrite
-	public boolean connect(SpoutSession session, Entity entity) {
+	public boolean connect(SpoutSession session, SpoutEntity entity) {
 		if (onlineLive.compareAndSet(false, true)) {
 			sessionLive.set(session);
 			entityLive.set(entity);

@@ -159,7 +159,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	
+
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
 	private boolean debugMode = false;
 
@@ -170,7 +170,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public void init(String[] args) {
-		
+
 		registerWithScheduler(scheduler);
 		if (!getExecutor().startExecutor()) {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
@@ -198,7 +198,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			getLogger().log(Level.SEVERE, "Error loading config: {0}", e);
 		}
 		consoleManager.setupConsole(SpoutConfiguration.CONSOLE_TYPE.getString());
-		
+
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
 		//Setup the Biome Registry
@@ -211,7 +211,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		if (loadedWorlds.getLive().size() == 0) {
 			throw new IllegalStateException("There are no loaded worlds!  You must install a plugin that creates a world (Did you forget Vanilla?)");
 		}
-		
+
 		//Pick the default world from the configuration
 		World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
 		if (world != null) {
@@ -460,11 +460,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		SpoutWorld world = WorldFiles.loadWorldData(this, name, generator, engineItemMap);
 		if(world == null) {
 			Spout.getLogger().info("Generating new world named [" + name + "]");
-			
+
 			File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "materials.dat");
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE);
-			
+
 			world = new SpoutWorld(name, this, random.nextLong(), generator, itemMap, null);
 			WorldFiles.saveWorldData(world);
 		}
@@ -498,7 +498,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		for (SpoutPlayer player : getOnlinePlayers()) {
 			player.kick(message);
 		}
-		
+
 		for (SpoutWorld world : this.getLiveWorlds()) {
 			world.unload(true);
 		}
@@ -509,7 +509,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		group.close();
 		bootstrapProtocols.clear();
 		executor.shutdown();
-		
+
 	}
 
 	@Override
@@ -546,7 +546,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public SpoutScheduler getScheduler() {
 		return scheduler;
 	}
-	
+
 	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;
@@ -717,7 +717,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
-	
+
 	@Override
 	public Entity getEntity(UUID uid) {
 		for (World w : loadedWorlds.get().values()) {
@@ -734,7 +734,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		SpoutPlayer player = null;
 
 		// The new player needs a corresponding entity
-		Entity newEntity = new SpoutEntity(this, getDefaultWorld().getSpawnPoint(), null);
+		SpoutEntity newEntity = new SpoutEntity(this, getDefaultWorld().getSpawnPoint(), null);
 
 		boolean success = false;
 
@@ -769,25 +769,25 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public CommandSource getConsole() {
 		return consoleManager.getCommandSource();
 	}
-	
+
 	/**
 	 * Gets the item map used across all worlds on the engine
-	 * 
+	 *
 	 * @return engine map
 	 */
 	public StringMap getEngineItemMap() {
 		return engineItemMap;
 	}
-	
+
 	/**
 	 * Gets the biome map used accorss all worlds on the engine
-	 * 
+	 *
 	 * @return biome map
 	 */
 	public StringMap getBiomeMap() {
 		return engineBiomeMap;
 	}
-	
+
 	public boolean isSetupComplete() {
 		return setupComplete.get();
 	}
