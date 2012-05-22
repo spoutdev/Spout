@@ -32,23 +32,24 @@ import java.lang.reflect.InvocationTargetException;
 import org.spout.api.generic.GenericType;
 import org.spout.api.gui.widget.CheckBox;
 import org.spout.api.gui.widget.GenericLabel;
+import org.spout.api.gui.widget.Group;
 import org.spout.api.gui.widget.ProgressBar;
 import org.spout.api.gui.widget.PushButton;
 import org.spout.api.gui.widget.RadioButton;
 import org.spout.api.gui.widget.Slider;
 import org.spout.api.gui.widget.TextField;
-import org.spout.api.plugin.Plugin;
 
 public class WidgetType extends GenericType<Widget> {
 
-	public static final WidgetType SCREEN = new WidgetType(GenericScreen.class, -1);
-	public static final WidgetType LABEL = new WidgetType(GenericLabel.class, 0);
-	public static final WidgetType PUSHBUTTON = new WidgetType(PushButton.class, 1);
-	public static final WidgetType CHECKBOX = new WidgetType(CheckBox.class, 2);
-	public static final WidgetType RADIOBUTTON = new WidgetType(RadioButton.class, 3);
-	public static final WidgetType SLIDER = new WidgetType(Slider.class, 4);
-	public static final WidgetType PROGRESSBAR = new WidgetType(ProgressBar.class, 5);
-	public static final WidgetType TEXTFIELD = new WidgetType(TextField.class, 6);
+	public static final WidgetType SCREEN = 		new WidgetType(GenericScreen.class,    -1); //
+	public static final WidgetType LABEL = 			new WidgetType(GenericLabel.class, 		0); //
+	public static final WidgetType PUSHBUTTON = 	new WidgetType(PushButton.class, 		1); //
+	public static final WidgetType CHECKBOX = 		new WidgetType(CheckBox.class, 			2); //
+	public static final WidgetType RADIOBUTTON = 	new WidgetType(RadioButton.class, 		3); //
+	public static final WidgetType SLIDER = 		new WidgetType(Slider.class, 			4); //
+	public static final WidgetType PROGRESSBAR = 	new WidgetType(ProgressBar.class, 		5); //
+	public static final WidgetType TEXTFIELD = 		new WidgetType(TextField.class, 		6); //
+	public static final WidgetType GROUP = 			new WidgetType(Group.class, 			7); //
 	
 	public WidgetType(Class<? extends Widget> clazz, int id) {
 		super(clazz, id);
