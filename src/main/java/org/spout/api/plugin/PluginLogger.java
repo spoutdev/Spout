@@ -26,24 +26,29 @@
  */
 package org.spout.api.plugin;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.spout.api.Spout;
+import org.spout.api.event.server.PluginLoggerEvent;
 
 public class PluginLogger extends Logger {
+    private final String tag;
+    private Plugin plugin;
+    
+    protected PluginLogger(Plugin plugin) {
+        super(plugin.getClass().getCanonicalName(), null);
+        setLevel(Level.ALL);
+        setParent(plugin.getGame().getLogger());
+        tag = "[" + plugin.getDescription().getName() + "] ";
+        this.plugin = plugin;
+    }
 
-	private final String tag;
-
-	protected PluginLogger(Plugin plugin) {
-		super(plugin.getClass().getCanonicalName(), null);
-		setLevel(Level.ALL);
-		setParent(plugin.getGame().getLogger());
-		tag = "[" + plugin.getDescription().getName() + "] ";
-	}
-
-	@Override
-	public void log(LogRecord logRecord) {
-		logRecord.setMessage(tag + logRecord.getMessage());
-		super.log(logRecord);
-	}
+    @Override
+    public void log(LogRecord logRecord) {
+        Spout.getEventManager().callEvent(new PluginLoggerEvent(plugin, logRecord));
+        logRecord.setMessage(tag + logRecord.getMessage());
+        super.log(logRecord);
+    }
 }
