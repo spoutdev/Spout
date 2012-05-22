@@ -35,8 +35,8 @@ import org.spout.api.plugin.Plugin;
 
 public class CommonRecipeManager implements RecipeManager {
 
-	private Map<Plugin, Map<String, Recipe>> registeredRecipes = new ConcurrentHashMap<Plugin, Map<String, Recipe>>();
-	private Set<Recipe> allRecipes = Collections.newSetFromMap(new HashMap<Recipe, Boolean>());
+	private final Map<Plugin, Map<String, Recipe>> registeredRecipes = new ConcurrentHashMap<Plugin, Map<String, Recipe>>();
+	private final Set<Recipe> allRecipes = Collections.newSetFromMap(new HashMap<Recipe, Boolean>());
 
 	public CommonRecipeManager() {
 	}
@@ -47,10 +47,10 @@ public class CommonRecipeManager implements RecipeManager {
 		Map<String, Recipe> recipes = registeredRecipes.get(plugin);
 		if (recipes == null) {
 			recipes = new ConcurrentHashMap<String, Recipe>();
+			registeredRecipes.put(plugin, recipes);
 		}
 		recipes.put(recipe.getName(), recipe);
 		allRecipes.add(recipe);
-		registeredRecipes.put(plugin, recipes);
 	}
 
 	@Override
