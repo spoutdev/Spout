@@ -29,6 +29,7 @@ package org.spout.api.gui.widget;
 import java.awt.Rectangle;
 
 import org.spout.api.gui.Layout;
+import org.spout.api.gui.Palette;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.signal.SignalSubscriberObject;
@@ -38,6 +39,7 @@ public abstract class AbstractWidget extends SignalSubscriberObject implements W
 	private Rectangle geometry = new Rectangle(), minimumSize = null, maximumSize = null;
 	private Layout layout = null;
 	private Screen screen = null;
+	private Palette palette = null;
 
 	@Override
 	public Rectangle getGeometry() {
@@ -101,4 +103,16 @@ public abstract class AbstractWidget extends SignalSubscriberObject implements W
 	public void onTick(float dt) {
 		
 	}
+
+	@Override
+	public Palette getPalette() {
+		return palette;
+	}
+
+	@Override
+	public Widget setPalette(Palette palette) {
+		this.palette = palette;
+		return this;
+	}
+	
 }

@@ -112,4 +112,17 @@ public interface Widget extends Renderable, Tickable, SignalInterface, Subscribe
 	 * @return the widget type
 	 */
 	public WidgetType getWidgetType();
+	
+	/**
+	 * Gets the current palette of the widget
+	 * @return the palette
+	 */
+	public Palette getPalette();
+	
+	/**
+	 * Sets the palette of the widget
+	 * @param palette the palette to set
+	 * @returnt the instance for chained calls
+	 */
+	public Widget setPalette(Palette palette);
 }
