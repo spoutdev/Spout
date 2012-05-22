@@ -37,7 +37,7 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.model.Model;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
-	protected short id = -1;
+	private final short id;
 	private final short data;
 	private final String name;
 	private final boolean isSubMaterial;
@@ -48,20 +48,49 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private short maxData = Short.MAX_VALUE;
 	private Map<Short, Material> submaterials = null;
 
+	/**
+	 * Creates and registers a material
+	 * 
+	 * @param name of the material
+	 */
 	public Material(String name) {
 		this.isSubMaterial = false;
 		this.displayName = name;
-		this.name = name.replace(' ', '_');
+		this.name = getClass().getCanonicalName() + "_" + name.replace(' ', '_');
 		this.parent = this;
 		this.data = 0;
+		this.id = (short) MaterialRegistry.register(this);
 	}
 
+	/**
+	 * Creates and registers a material
+	 * 
+	 * @param name of the material
+	 * @param data
+	 * @param parent material
+	 */
 	public Material(String name, int data, Material parent) {
 		this.isSubMaterial = true;
 		this.displayName = name;
 		this.name = name.replace(' ', '_');
 		this.parent = parent;
 		this.data = (short) data;
+		this.id = (short) MaterialRegistry.register(this);
+	}
+	
+	/**
+	 * Creates a material with a reserved id
+	 * 
+	 * @param name of the material
+	 * @param id to reserve
+	 */
+	protected Material(String name, short id) {
+		this.isSubMaterial = true;
+		this.displayName = name;
+		this.name = name.replace(' ', '_');
+		this.parent = this;
+		this.data = 0;
+		this.id = (short) MaterialRegistry.register(this, id);
 	}
 
 	public final short getId() {
@@ -74,7 +103,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return data value
 	 */
-	public final short getData() {
+	public short getData() {
 		return this.data;
 	}
 
@@ -141,7 +170,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 				if (this.submaterials == null) {
 					this.submaterials = new HashMap<Short, Material>();
 				}
-				this.submaterials.put(material.getData(), material);
+				this.submaterials.put(material.data, material);
 			} else {
 				throw new IllegalArgumentException("Sub Material is registered to a material different than the parent!");
 			}
@@ -300,5 +329,10 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return "Material {" + getName() + "}";
 	}
 }

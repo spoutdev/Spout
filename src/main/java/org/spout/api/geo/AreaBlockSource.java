@@ -27,6 +27,7 @@
 package org.spout.api.geo;
 
 import org.spout.api.entity.BlockController;
+import org.spout.api.generator.biome.Biome;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -86,4 +87,15 @@ public interface AreaBlockSource {
 	 */
 	@SnapshotRead
 	public BlockController getBlockController(int x, int y, int z);
+	
+	/**
+	 * Gets the biome type at the coordinates.
+	 * Returns {@code null} if no biomes are present.
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return The biome type at the location, or null if no biome exists.
+	 */
+	public Biome getBiomeType(int x, int y, int z);
 }

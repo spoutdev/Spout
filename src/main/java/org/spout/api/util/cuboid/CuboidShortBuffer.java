@@ -26,29 +26,49 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
 public class CuboidShortBuffer extends CuboidBuffer {
 	private final short[] buffer;
+	private final DataMap dataMap;
 	private CuboidShortBuffer source;
 
-	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] buffer) {
+	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] buffer, DataMap map) {
 		super(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.buffer = buffer;
+		if (map != null) {
+			this.dataMap = map;
+		} else {
+			this.dataMap = new DataMap(new GenericDatatableMap());
+		}
 	}
 
 	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ]);
+		this(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], null);
+	}
+	
+	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, DataMap map) {
+		this(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], map);
 	}
 
 	public CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)]);
+		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], null);
+	}
+	
+	public CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ, DataMap map) {
+		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], map);
 	}
 
 	public CuboidShortBuffer(Point base, Vector3 size) {
-		this(base.getWorld(), (int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())]);
+		this(base.getWorld(), (int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], null);
+	}
+	
+	public CuboidShortBuffer(Point base, Vector3 size, DataMap map) {
+		this(base.getWorld(), (int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], map);
 	}
 
 	@Override
@@ -94,5 +114,9 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		for (int i = 0; i < buffer.length; i++) {
 			buffer[i] = id;
 		}
+	}
+	
+	public DataMap getDataMap() {
+		return dataMap;
 	}
 }

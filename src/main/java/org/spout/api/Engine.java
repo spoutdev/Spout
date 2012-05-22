@@ -38,6 +38,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
@@ -215,6 +216,19 @@ public interface Engine extends Named {
 	 * @return data
 	 */
 	public File getDataFolder();
+	
+	/**
+	 * Gets the entity with the matching unique id
+	 * <br/> <br/>
+	 * Performs a search on each world and then searches each world respectively
+	 * for the entity, stopping when it is found, or after all the worlds have
+	 * been searched upon failure.
+	 * 
+	 * @param uid to search and match
+	 * @return entity that matched the uid, or null if none was found
+	 */
+	@SnapshotRead
+	public Entity getEntity(UUID uid);
 
 	/**
 	 * Gets the player by the given username. <br/>

@@ -27,13 +27,15 @@
 package org.spout.api.generator;
 
 
-import org.spout.api.geo.World;
+import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.generator.biome.EmptyBiomeManager;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 public class EmptyWorldGenerator implements WorldGenerator {
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
 		blockData.flood(BlockMaterial.AIR.getId());
+		return new EmptyBiomeManager(chunkX, chunkY, chunkZ);
 	}
 
 	public Populator[] getPopulators() {
@@ -43,6 +45,4 @@ public class EmptyWorldGenerator implements WorldGenerator {
 	public String getName() {
 		return "EmptyWorld";
 	}
-	
-	public void setWorld(World world) { }
 }

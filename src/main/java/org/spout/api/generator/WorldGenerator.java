@@ -26,7 +26,7 @@
  */
 package org.spout.api.generator;
 
-import org.spout.api.geo.World;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 public interface WorldGenerator {
@@ -42,8 +42,11 @@ public interface WorldGenerator {
 	 * WorldGeneratorUtils are used.
 	 *
 	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
+	 * @param chunkX coordinate
+	 * @param chunkY coordinate
+	 * @param chunkZ coordinate
 	 */
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ);
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ);
 
 	/**
 	 * Gets an array of Populators for the world generator
@@ -56,11 +59,4 @@ public interface WorldGenerator {
 	 * Gets the name of the generator.  This name should be unique to prevent two generators overwriting the same world
 	 */
 	public String getName();
-	
-	/**
-	 * Sets the world this generator is attached to
-	 * 
-	 * @param world attached to
-	 */
-	public void setWorld(World world);
 }

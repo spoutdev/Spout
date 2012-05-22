@@ -27,13 +27,12 @@
 package org.spout.api.generator.biome;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Set;
 
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.math.Vector3;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
@@ -48,13 +47,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		populators.add(new BiomePopulator(biomes));
 		registerBiomes();
 	}
-	
-	@Override
-	public void setWorld(World world) {
-		this.world = world;
-		biomes.setWorld(world);
-	}
-	
+
 	public World getWorld() {
 		return world;
 	}
@@ -77,16 +70,22 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	}
 
 	@Override
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
 		final int x = chunkX << Chunk.CHUNK_SIZE_BITS;
 		final int z = chunkZ << Chunk.CHUNK_SIZE_BITS;
 		final long seed = blockData.getWorld().getSeed();
-
+		final int chunkMask = Chunk.CHUNK_SIZE - 1;
+		Simple2DBiomeManager biomeManager = new Simple2DBiomeManager(chunkX, chunkY, chunkZ);
+		byte[] biomeData = new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE];
 		for (int dx = x; dx < x + Chunk.CHUNK_SIZE; ++dx) {
 			for (int dz = z; dz < z + Chunk.CHUNK_SIZE; ++dz) {
-				biomes.getBiome(dx, dz, seed).generateColumn(blockData, dx, chunkY, dz);
+				Biome biome = biomes.getBiome(dx, dz, seed);
+				biome.generateColumn(blockData, dx, chunkY, dz);
+				biomeData[(dz & chunkMask) << 4 | (dx & chunkMask)] = (byte) biome.getId();
 			}
 		}
+		biomeManager.deserialize(biomeData);
+		return biomeManager;
 	}
 
 	@Override
@@ -106,12 +105,8 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		return biomes.getBiome(x, z, seed);
 	}
 
-	public Collection<Biome> getBiomes() {
+	public Set<Biome> getBiomes() {
 		return biomes.getBiomes();
-	}
-
-	public void setBiome(Vector3 loc, Biome type) {
-		biomes.setBiome(loc, type);
 	}
 
 	public int indexOf(Biome biome) {

@@ -38,16 +38,30 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
  * Defines an abstract biome.
  */
 public abstract class Biome {
+	private int id;
+	private boolean registered = false;
 	List<Decorator> decorators = new ArrayList<Decorator>();
 
 	public Biome(Decorator... decorators) {
 		this.decorators.addAll(Arrays.asList(decorators));
+		BiomeRegistry.register(this);
 	}
 
 	public final void decorate(Chunk chunk, Random random) {
 		for (Decorator b : decorators) {
 			b.populate(chunk, random);
 		}
+	}
+	
+	protected final void setId(int id) {
+		if (!registered) {
+			this.id = id;
+			registered = true;
+		}
+	}
+	
+	protected final int getId() {
+		return id;
 	}
 
 	public abstract void generateColumn(CuboidShortBuffer blockData, int x, int chunkY, int z);

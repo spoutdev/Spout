@@ -43,11 +43,11 @@ import org.spout.api.util.flag.ByteFlagContainer;
 
 public class BlockMaterial extends Material implements Placeable {
 
-	public static final BlockMaterial AIR = register(new BasicAir(), 0);
-	public static final BlockMaterial SOLID = register(new BlockMaterial("solid").setHardness(1.f), 10000);
-	public static final BlockMaterial UNBREAKABLE = register(new BlockMaterial("Unbreakable").setHardness(100.f), 10001);
-	public static final BlockMaterial SKYBOX = register(new BasicSkyBox(), 10002);
-	public static final BlockMaterial ERROR = register(new BlockMaterial("Missing Plugin").setHardness((100.f)), 10003);
+	public static final BlockMaterial AIR = new BasicAir();
+	public static final BlockMaterial SOLID = new BlockMaterial("solid").setHardness(1.f);
+	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
+	public static final BlockMaterial SKYBOX = new BasicSkyBox();
+	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 	
 	public BlockMaterial(String name) {
 		super(name);
@@ -55,6 +55,10 @@ public class BlockMaterial extends Material implements Placeable {
 
 	public BlockMaterial(String name, int data, Material parent) {
 		super(name, data, parent);
+	}
+	
+	protected BlockMaterial(String name, short id) {
+		super(name, id);
 	}
 
 	/**

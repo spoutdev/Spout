@@ -1,7 +1,6 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of SpoutAPI (http://www.spout.org/).
  *
- * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -26,38 +25,25 @@
  */
 package org.spout.api.generator.biome;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.io.store.map.MemoryStoreMap;
 import org.spout.api.io.store.map.SimpleStoreMap;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.math.Vector3;
 
 /**
  * A simple store wrapper that holds biomes and the selector.
  */
 public final class BiomeMap {
-	private final SimpleStoreMap<Vector3, Biome> biomeOverrides;
 	private final SimpleStoreMap<Integer, Biome> map;
-	private World world = null;
-	private final int MINIMUM_BIOME_SIZE = 4;
 	private BiomeSelector selector;
 
 	public BiomeMap() {
 		map = new MemoryStoreMap<Integer, Biome>();
-		biomeOverrides = new MemoryStoreMap<Vector3, Biome>();
 	}
-	
-	public void setWorld(World world) {
-		this.world = world;
-	}
-	
-	public Biome getBiomeRaw(int index) {
+
+	public Biome getBiomeRaw(int index){
 		return map.get(Math.abs(index) % map.getSize());
 	}
 
@@ -70,56 +56,27 @@ public final class BiomeMap {
 		map.set(map.getSize(), biome);
 	}
 
-	public void setBiome(Vector3 loc, Biome biome) {
-		biomeOverrides.set(loc, biome);
-	}
-
-	/**
-	 * TODO This needs to generate a noise function relying on x and z to generate a map that is [0-map.getSize()] so that we can select
-	 * Biomes for the biome generator
-	 */
 	public Biome getBiome(int x, int z, long seed) {
 		return getBiome(x, 0, z, seed);
 	}
 
-	public Biome getBiome(int x, int y, int z, long seed) {
-		return getBiome(new Vector3(x, y, z), seed);
-	}
-
-	/**
-	 * Returns the biome at the current location.  If the position has a override, that override is used.
-	 * @param position
-	 * @param seed
-	 * @return
-	 */
 	public Biome getBiome(Vector3 position, long seed) {
-		if (selector == null) throw new IllegalStateException("Biome Selector is null and cannot set a selector");
-		Biome biome = biomeOverrides.get(position);
-		if (biome != null) {
-			return biome;
-		}
-		if (world != null) {
-			Chunk chunk = world.getChunkFromBlock(position, false);
-			if (chunk != null) {
-				DefaultedMap<String, Serializable> map = chunk.getDataMap();
-				
-				if (map.containsKey("BiomeData")) {
-					
-				}
-			}
-		}
-
-		return null;
+		return getBiome((int)position.getX(), (int)position.getY(), (int)position.getZ(), seed);
 	}
 	
-	public Collection<Biome> getBiomes() {
-		Set<Biome> biomes = new HashSet<Biome> (map.getValues());
-		biomes.addAll(biomeOverrides.getValues());
-		return biomes;
+	public Biome getBiome(int x, int y, int z, long seed) {
+		if(selector == null) {
+			throw new IllegalStateException("Biome Selector is null and cannot set a selector");
+		}
+		return selector.pickBiome(x, y, z, seed);
+	}
+	
+	public Set<Biome> getBiomes() {
+		return new HashSet<Biome> (map.getValues());
 	}
 	
 	public int indexOf(Biome biome) {
-		if (map.reverseGet(biome) != null) {
+		if(map.reverseGet(biome) != null) {
 			return map.reverseGet(biome);
 		} else {
 			return -1;

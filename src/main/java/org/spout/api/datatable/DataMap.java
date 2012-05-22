@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.datatable.value.DatatableBool;
 import org.spout.api.datatable.value.DatatableFloat;
 import org.spout.api.datatable.value.DatatableInt;
@@ -335,5 +336,53 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 			current = null;
 			map.remove(keys.get(index));
 		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder toString = new StringBuilder("DataMap {");
+		for (Map.Entry<? extends String, ? extends Serializable> e : entrySet()) {
+			toString.append("(");
+			toString.append(e.getKey());
+			toString.append(", ");
+			toString.append(e.getValue());
+			toString.append("), ");
+		}
+		toString.delete(toString.length() - 3, toString.length());
+		toString.append("}");
+		return toString.toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		HashCodeBuilder builder = new HashCodeBuilder();
+		for (Map.Entry<? extends String, ? extends Serializable> e : entrySet()) {
+			builder.append(e.getKey());
+			builder.append(e.getValue());
+		}
+		return builder.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof DataMap)) {
+			return false;
+		}
+		DataMap other = (DataMap)obj;
+		if (isEmpty() && other.isEmpty()) {
+			return true;
+		}
+		for (Map.Entry<? extends String, ? extends Serializable> e : entrySet()) {
+			Serializable value = e.getValue();
+			Serializable otherValue = other.get(e.getKey());
+			if (value != null) {
+				if (!value.equals(otherValue)) {
+					return false;
+				}
+			} else if (otherValue != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

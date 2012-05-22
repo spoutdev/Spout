@@ -36,7 +36,6 @@ import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
@@ -88,6 +87,18 @@ public interface World extends Source, AreaRegionAccess {
 	 */
 	@LiveRead
 	public int getSurfaceHeight(int x, int z);
+	
+	/**
+	 * Gets the entity with the matching unique id
+	 * <br/> <br/>
+	 * Performs a search on each region for the entity, stopping when it
+	 * is found, or after all the worlds have been searched upon failure.
+	 * 
+	 * @param uid to search and match
+	 * @return entity that matched the uid, or null if none was found
+	 */
+	@SnapshotRead
+	public Entity getEntity(UUID uid);
 
 	/**
 	 * Create a new Entity for initialization
@@ -162,14 +173,6 @@ public interface World extends Source, AreaRegionAccess {
 	 * @return The height of this world in blocks
 	 */
 	public int getHeight();
-
-	/**
-	 * Gets the biome type at the coordinates,
-	 * if the world generator used uses biomes.
-	 *
-	 * @return The biome type at the location, or null if no biome exists.
-	 */
-	public Biome getBiomeType(int x, int y, int z);
 
 	/**
 	 * Gets all entities with the specified type.

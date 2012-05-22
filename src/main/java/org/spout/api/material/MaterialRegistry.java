@@ -40,7 +40,9 @@ public abstract class MaterialRegistry {
 	private final static int MAX_SIZE = 1 << 16;
 	@SuppressWarnings("unchecked")
 	private final static AtomicReference<Material>[] materialLookup = new AtomicReference[MAX_SIZE];
-	private static StringMap materialRegistry = null;
+	private static boolean setup = false;
+	private final static BinaryFileStore store = new BinaryFileStore();
+	private final static StringMap materialRegistry = new StringMap(null, store, 1, Short.MAX_VALUE);;
 
 	static {
 		for (int i = 0; i < materialLookup.length; i++) {
@@ -52,36 +54,16 @@ public abstract class MaterialRegistry {
 	 * Sets up the material registry for it's first use. May not be called more than once.
 	 */
 	public static StringMap setupRegistry() {
-		if (materialRegistry == null) {
-			File serverItemMap = new File(Spout.getEngine().getWorldFolder(), "server.dat");
-			BinaryFileStore store = new BinaryFileStore(serverItemMap);
+		if (!setup) {
+			File serverItemMap = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "materials.dat");
+			store.setFile(serverItemMap);
 			if (serverItemMap.exists()) {
 				store.load();
 			}
-			materialRegistry = new StringMap(null, store, 0, Short.MAX_VALUE);
+			setup = true;
 			return materialRegistry;
 		} else {
-			throw new IllegalStateException("Can not set up material registry twice!");
-		}
-	}
-	
-	protected static <T extends Material> T register(T material, int id) {
-		if (material.isSubMaterial()) {
-			material.getParentMaterial().registerSubMaterial(material);
-			nameLookup.put(material.getName().toLowerCase(), material);
-			return material;
-		} else {
-			if (id != Integer.MAX_VALUE && materialRegistry.register(material.getName(), id)){ 
-				material.id = (short)id;
-			} else {
-				material.id = (short)materialRegistry.register(material.getName());
-			}
-			if (!materialLookup[id].compareAndSet(null, material)) {
-				throw new IllegalArgumentException("Another material is already mapped to id: " + material.getId() + "!");
-			} else {
-				nameLookup.put(material.getName().toLowerCase(), material);
-				return material;
-			}
+			throw new IllegalStateException("Can not setup material registry twice!");
 		}
 	}
 
@@ -90,8 +72,35 @@ public abstract class MaterialRegistry {
 	 * 
 	 * @param material to register
 	 */
-	public static <T extends Material> T register(T material) {
-		return register(material, Integer.MAX_VALUE);
+	protected static int register(Material material) {
+		if (material.isSubMaterial()) {
+			material.getParentMaterial().registerSubMaterial(material);
+			nameLookup.put(material.getName().toLowerCase(), material);
+			return material.getParentMaterial().getId();
+		} else {
+			int id = materialRegistry.register(material.getName());
+			if (!materialLookup[id].compareAndSet(null, material)) {
+				throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
+			} else {
+				nameLookup.put(material.getName().toLowerCase(), material);
+				return id;
+			}
+		}
+	}
+	
+	/**
+	 * Registers the material in the material lookup service
+	 * 
+	 * @param material to register
+	 */
+	protected static int register(Material material, int id) {
+		materialRegistry.register(material.getName(), id);
+		if (!materialLookup[id].compareAndSet(null, material)) {
+			throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
+		} else {
+			nameLookup.put(material.getName().toLowerCase(), material);
+			return id;
+		}
 	}
 
 	/**

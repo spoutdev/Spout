@@ -44,12 +44,24 @@ import java.util.Map.Entry;
  */
 public class BinaryFileStore extends MemoryStore<Integer> implements SimpleStore<Integer> {
 
-	private final File file;
+	private File file;
 	private boolean dirty = false;
 
 	public BinaryFileStore(File file) {
 		super();
 		this.file = file;
+	}
+	
+	public BinaryFileStore() {
+		this(null);
+	}
+	
+	public synchronized void setFile(File file) {
+		this.file = file;
+	}
+	
+	public synchronized File getFile() {
+		return file;
 	}
 
 	@Override

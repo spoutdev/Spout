@@ -71,7 +71,6 @@ public class StringMap {
 		this.minId = minId;
 		this.maxId = maxId;
 		nextId = new AtomicInteger(minId);
-
 	}
 	
 	/**

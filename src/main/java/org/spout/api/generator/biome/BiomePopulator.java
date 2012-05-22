@@ -43,6 +43,10 @@ public final class BiomePopulator implements Populator {
 
 	@Override
 	public final void populate(Chunk chunk, Random random) {
-		map.getBiome(chunk.getX(), chunk.getZ(), chunk.getWorld().getSeed()).decorate(chunk, random);
+		//TODO: is using the biome in the corner of the chunk a good way to decorate it?
+		Biome biome = chunk.getBiomeType(0, 0, 0);
+		if (biome != null) {
+			biome.decorate(chunk, random);
+		}
 	}
 }

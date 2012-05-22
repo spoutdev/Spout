@@ -28,6 +28,10 @@ package org.spout.api.inventory;
 
 import java.io.IOException;
 import java.io.Serializable;
+
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.source.DataSource;
@@ -46,7 +50,8 @@ public class ItemStack implements MaterialState, Serializable {
 	private Material material;
 	private int amount;
 	private short data;
-	private CompoundMap auxData;
+	private CompoundMap nbtData = null;
+	private DataMap auxData;
 
 	/**
 	 * Creates a new ItemStack from the specified Material of the specified
@@ -61,8 +66,21 @@ public class ItemStack implements MaterialState, Serializable {
 	 * specified amount
 	 */
 	public ItemStack(Material material, short data, int amount) {
+		this(material, data, amount, null);
+	}
+	
+	/**
+	 * Creates a new ItemStack from the specified Material and data of the
+	 * specified amount, with the specified aux data
+	 */
+	public ItemStack(Material material, short data, int amount, DataMap auxData) {
 		this.setMaterial(material).setData(data);
 		this.amount = amount;
+		if (auxData != null) {
+			this.auxData = auxData;
+		} else {
+			this.auxData = new DataMap(new GenericDatatableMap());
+		}
 	}
 
 	/**
@@ -109,15 +127,24 @@ public class ItemStack implements MaterialState, Serializable {
 	}
 
 	/**
+	 * Gets the map containing the aux data for this stack
+	 * 
+	 * @return the aux data
+	 */
+	public DefaultedMap<String, Serializable> getAuxData() {
+		return auxData;
+	}
+	
+	/**
 	 * returns a copy of the map containing the aux data for this stack
 	 * 
 	 * @return the aux data
 	 */
-	public CompoundMap getAuxData() {
-		if (auxData == null) {
+	public CompoundMap getNBTData() {
+		if (nbtData == null) {
 			return null;
 		} else {
-			return new CompoundMap(auxData);
+			return new CompoundMap(nbtData);
 		}
 	}
 
@@ -126,19 +153,19 @@ public class ItemStack implements MaterialState, Serializable {
 	 * 
 	 * @return the item stack
 	 */
-	public ItemStack setAuxData(CompoundMap auxData) {
-		if (auxData == null) {
-			this.auxData = null;
+	public ItemStack setNBTData(CompoundMap nbtData) {
+		if (nbtData == null) {
+			this.nbtData = null;
 		} else {
-			this.auxData = new CompoundMap(auxData);
+			this.nbtData = new CompoundMap(nbtData);
 		}
 		return this;
 	}
 
 	@Override
 	public ItemStack clone() {
-		ItemStack newStack = new ItemStack(material, data, amount);
-		newStack.setAuxData(auxData);
+		ItemStack newStack = new ItemStack(material, data, amount, auxData);
+		newStack.setNBTData(nbtData);
 		return newStack;
 	}
 
@@ -152,12 +179,12 @@ public class ItemStack implements MaterialState, Serializable {
 	}
 
 	public boolean equalsIgnoreSize(ItemStack other) {
-		return material.equals(other.material) && data == other.data && LogicUtil.bothNullOrEqual(auxData, other.auxData);
+		return material.equals(other.material) && data == other.data && auxData.equals(other.auxData) && LogicUtil.bothNullOrEqual(nbtData, other.nbtData);
 	}
 
 	@Override
 	public String toString() {
-		return "ItemStack{" + "material=" + material + ",id=" + material.getId() + ",data=" + data + ",amount=" + amount + ",auxData=" + auxData + '}';
+		return "ItemStack{" + "material=" + material + ",id=" + material.getId() + ",data=" + data + ",amount=" + amount + ",nbtData=" + nbtData + '}';
 	}
 
 	@Override
@@ -274,6 +301,9 @@ public class ItemStack implements MaterialState, Serializable {
 	 * @return the max stack size
 	 */
 	public int getMaxStackSize() {
+		if (!auxData.isEmpty() || (nbtData != null && !nbtData.isEmpty())) {
+			return 1;
+		}
 		return this.getSubMaterial().getMaxStackSize();
 	}
 
@@ -292,11 +322,18 @@ public class ItemStack implements MaterialState, Serializable {
 		out.writeShort(material.getData());
 		out.writeInt(amount);
 		out.writeShort(data);
+		byte[] auxData = this.auxData.getRawMap().compress();
+		if (auxData != null) {
+			out.writeInt(auxData.length);
+			out.write(auxData);
+		} else {
+			out.writeInt(0);
+		}
 		
-		if (auxData != null && !auxData.isEmpty()) {
+		if (nbtData != null && !nbtData.isEmpty()) {
 			out.writeBoolean(true);
 			NBTOutputStream os = new NBTOutputStream(out, false);
-			os.writeTag(new CompoundTag("auxData", auxData));
+			os.writeTag(new CompoundTag("nbtData", nbtData));
 		} else {
 			out.writeBoolean(false);
 		}
@@ -310,12 +347,19 @@ public class ItemStack implements MaterialState, Serializable {
 		}
 		amount = in.readInt();
 		data = in.readShort();
+		int auxDataSize = in.readInt();
+		if (auxDataSize > 0) {
+			byte[] auxData = new byte[auxDataSize];
+			GenericDatatableMap map = new GenericDatatableMap();
+			map.decompress(auxData);
+			this.auxData = new DataMap(map);
+		}
 		
-		boolean hasAuxData = in.readBoolean();
-		if (hasAuxData) {
+		boolean hasNBTData = in.readBoolean();
+		if (hasNBTData) {
 			NBTInputStream is = new NBTInputStream(in, false);
 			CompoundTag tag = (CompoundTag) is.readTag();
-			auxData = tag.getValue();
+			nbtData = tag.getValue();
 		}
 		
 		if (material == null) throw new ClassNotFoundException("No material matching {" + matId + ", " + matData + "} was found!");

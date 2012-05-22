@@ -39,7 +39,7 @@ import org.spout.api.math.Vector3;
  * short id, or a short id, a short data value and a reference to a &lt;T&gt;
  * object.
  */
-public class AtomicBlockStore<T> {
+public final class AtomicBlockStore<T> {
 	private final int side;
 	private final int shift;
 	private final int doubleShift;
@@ -131,7 +131,7 @@ public class AtomicBlockStore<T> {
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a
 	 *         single short record
 	 */
-	public final int getSequence(int x, int y, int z) {
+	public int getSequence(int x, int y, int z) {
 		checkCompressing();
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -171,7 +171,7 @@ public class AtomicBlockStore<T> {
 	 * @return true if the sequence number has not changed and expected is not
 	 *         DatatableSequenceNumber.ATOMIC
 	 */
-	public final boolean testSequence(int x, int y, int z, int expected) {
+	public boolean testSequence(int x, int y, int z, int expected) {
 
 		if (expected == DatatableSequenceNumber.ATOMIC) {
 			return false;
@@ -245,7 +245,7 @@ public class AtomicBlockStore<T> {
 	 * @param z the z coordinate
 	 * @return the block data
 	 */
-	public final int getData(int x, int y, int z) {
+	public int getData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -284,7 +284,7 @@ public class AtomicBlockStore<T> {
 	 * @param z the z coordinate
 	 * @return the block auxiliary data
 	 */
-	public final T getAuxData(int x, int y, int z) {
+	public T getAuxData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -607,7 +607,7 @@ public class AtomicBlockStore<T> {
 	 * @param the array to place the data
 	 * @return the array
 	 */
-	public final short[] getDataArray(short[] array) {
+	public short[] getDataArray(short[] array) {
 		int length = blockIds.length();
 		if (array == null || array.length != length) {
 			array = new short[length];
@@ -629,7 +629,7 @@ public class AtomicBlockStore<T> {
 	 * This method should only be called when the store is guaranteed not to be
 	 * accessed from any other thread.<br>
 	 */
-	public final void compress() {
+	public void compress() {
 		if (!compressing.compareAndSet(false, true)) {
 			throw new IllegalStateException("Compression started while compression was in progress");
 		}
@@ -656,7 +656,7 @@ public class AtomicBlockStore<T> {
 	 *
 	 * @return the size of the arrays
 	 */
-	public final int getSize() {
+	public int getSize() {
 		checkCompressing();
 		return auxStore.getSize();
 	}
@@ -666,7 +666,7 @@ public class AtomicBlockStore<T> {
 	 *
 	 * @return the size of the arrays
 	 */
-	public final int getEntries() {
+	public int getEntries() {
 		checkCompressing();
 		return auxStore.getEntries();
 	}
@@ -741,7 +741,7 @@ public class AtomicBlockStore<T> {
 		}
 	}
 
-	private final void checkCompressing() {
+	private void checkCompressing() {
 		if (compressing.get()) {
 			throw new IllegalStateException("Attempting to access block store during compression phase");
 		}
@@ -752,7 +752,7 @@ public class AtomicBlockStore<T> {
 	 *
 	 * @return true if interrupted during the wait
 	 */
-	private final boolean atomicWait() {
+	private boolean atomicWait() {
 		waiting.incrementAndGet();
 		try {
 			synchronized (this) {
@@ -771,7 +771,7 @@ public class AtomicBlockStore<T> {
 	/**
 	 * Notifies all waiting threads
 	 */
-	private final void atomicNotify() {
+	private void atomicNotify() {
 		if (waiting.getAndAdd(0) > 0) {
 			synchronized (this) {
 				notifyAll();

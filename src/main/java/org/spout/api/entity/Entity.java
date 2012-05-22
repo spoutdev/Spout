@@ -26,6 +26,8 @@
  */
 package org.spout.api.entity;
 
+import java.util.UUID;
+
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.component.EntityComponent;
@@ -82,6 +84,15 @@ public interface Entity extends Source {
 	public void setCollision(CollisionModel model);
 
 	public CollisionModel getCollision();
+	
+	/**
+	 * Gets the entity's persistent unique id. 
+	 * 
+	 * Can be used to look up the entity, and persists between starts.
+	 * 
+	 * @return persistent uid
+	 */
+	public UUID getUID();
 
 	/**
 	 * Called when the entity is set to be sent to clients
