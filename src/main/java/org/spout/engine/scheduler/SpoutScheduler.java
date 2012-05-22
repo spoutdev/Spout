@@ -45,6 +45,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
@@ -359,9 +360,11 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-					AsyncExecutorUtils.dumpAllStacks();
-					AsyncExecutorUtils.checkForDeadlocks();
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+						AsyncExecutorUtils.dumpAllStacks();
+						AsyncExecutorUtils.checkForDeadlocks();
+					}
 				}
 			}
 			stage++;
@@ -386,9 +389,11 @@ public final class SpoutScheduler implements Scheduler {
 				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 				joined = true;
 			} catch (TimeoutException e) {
-				server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-				AsyncExecutorUtils.dumpAllStacks();
-				AsyncExecutorUtils.checkForDeadlocks();
+				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+					server.getLogger().info("Copy Snapshot had not completed after " + (PULSE_EVERY << 4) + "ms");
+					AsyncExecutorUtils.dumpAllStacks();
+					AsyncExecutorUtils.checkForDeadlocks();
+				}
 			}
 		}
 
@@ -408,8 +413,10 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-					AsyncExecutorUtils.dumpAllStacks();
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+						AsyncExecutorUtils.dumpAllStacks();
+					}
 				}
 			}
 
@@ -427,8 +434,10 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-					AsyncExecutorUtils.dumpAllStacks();
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+						AsyncExecutorUtils.dumpAllStacks();
+					}
 				}
 			}
 		} finally {

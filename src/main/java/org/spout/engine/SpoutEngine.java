@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -157,6 +158,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
+	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
 	private boolean debugMode = false;
@@ -224,6 +226,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		scheduler.startMainThread();
+		setupComplete.set(true);
 	}
 
 	public void loadPlugins() {
@@ -491,6 +494,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void stop(String message) {
+		setupComplete.set(false);
 		for (SpoutPlayer player : getOnlinePlayers()) {
 			player.kick(message);
 		}
@@ -505,6 +509,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		group.close();
 		bootstrapProtocols.clear();
 		executor.shutdown();
+		
 	}
 
 	@Override
@@ -781,5 +786,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	 */
 	public StringMap getBiomeMap() {
 		return engineBiomeMap;
+	}
+	
+	public boolean isSetupComplete() {
+		return setupComplete.get();
 	}
 }

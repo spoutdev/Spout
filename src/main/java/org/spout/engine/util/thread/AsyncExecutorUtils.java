@@ -68,10 +68,10 @@ public class AsyncExecutorUtils {
 	 */
 	public static void checkForDeadlocks() {
 		Logger log = Spout.getLogger();
-		log.info("Checking for deadlocks");
 		ThreadMXBean tmx = ManagementFactory.getThreadMXBean();
 		long[] ids = tmx.findDeadlockedThreads();
 		if (ids != null) {
+			log.info("Checking for deadlocks");
 			ThreadInfo[] infos = tmx.getThreadInfo(ids, true, true);
 			log.info("The following threads are deadlocked:");
 			for (ThreadInfo ti : infos) {

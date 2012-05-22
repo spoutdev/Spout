@@ -734,8 +734,15 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (save) {
 			WorldFiles.saveWorldData(this);
 		}
-		for (Region r : regions.getRegions()) {
+		Collection<Region> regions = this.regions.getRegions();
+		final int total = Math.max(1, regions.size());
+		int progress = 0;
+		for (Region r : regions) {
 			r.unload(save);
+			progress++;
+			if (save && progress % 4 == 0) {
+				Spout.getLogger().info("Saving world [" + getName() + "], " + (int)(progress * 100F / total) + "% Complete");
+			}
 		}
 	}
 
