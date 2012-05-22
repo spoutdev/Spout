@@ -64,7 +64,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	/**
 	 * Mask to convert a block integer coordinate into the point base
 	 */
-	public final static int POINT_BASE_MASK = -CHUNK_SIZE; //Really?!
+	public final static int POINT_BASE_MASK = -CHUNK_SIZE;
 	
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE, true);
@@ -223,7 +223,16 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	public int getBlockZ() {
 		return this.getZ() << CHUNK_SIZE_BITS;
 	}
-	
+
+	/**
+	 * Converts a point in such a way that it points to the first block (the base block) of the chunk<br>
+	 * This is similar to performing the following operation on the x, y and z coordinate:<br>
+	 * - Convert to the chunk coordinate<br>
+	 * - Multiply by chunk size
+	 * 
+	 * @param p point to get the chunk base of
+	 * @return The chunk base block position
+	 */
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & POINT_BASE_MASK, (int) p.getY() & POINT_BASE_MASK, (int) p.getZ() & POINT_BASE_MASK);
 	}
