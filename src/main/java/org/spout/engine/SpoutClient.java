@@ -131,11 +131,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void start() {
 		super.start();
 		scheduler.startRenderThread();
+		
 	}
 
 	public void initRenderer() {
 		createWindow();
-
+		
 		System.out.println("SpoutClient Information");
 		System.out.println("Operating System: " + System.getProperty("os.name"));
 		System.out.println("Renderer Mode: " + this.getRenderMode().toString());
@@ -154,7 +155,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		System.out.println(extensions);
 
-
+		FileSystem.postStartup();
+		
+		
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		System.out.println(activeCamera.getProjection());
 		shader = (Shader)FileSystem.getResource("shader://Vanilla/garbageName.smf");

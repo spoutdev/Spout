@@ -82,7 +82,7 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 
 	@Override
 	public String getFallbackResourceName() {
-		return "fallback.smf";
+		return "shader://Spout/fallbacks/fallback.smf";
 	}
 	
 }

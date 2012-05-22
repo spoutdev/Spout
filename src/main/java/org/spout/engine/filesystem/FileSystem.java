@@ -57,6 +57,7 @@ public class FileSystem {
 	static ResourcePathResolver[] searchpaths;
 	static final HashMap<String, ResourceLoader<? extends Resource>> LOADERS = new HashMap<String, ResourceLoader<? extends Resource>>();
 	static final HashMap<URI, Resource> LOADED_RESOURCES = new HashMap<URI, Resource>();
+	
 
 	public static void init() {
 		if (Spout.getPlatform() == Platform.CLIENT) {
@@ -92,25 +93,47 @@ public class FileSystem {
 		registerLoader("texture", new TextureLoader());
 		registerLoader("shader", new ShaderLoader());
 		registerLoader("mesh", new MeshLoader());
+		
 	}
 
-	public static InputStream getResourceStream(URI path) {
 	
+	public static void postStartup(){
+		loadFallbacks();
+	}
+	
+	private static void loadFallbacks(){
+		for(ResourceLoader<?> s : LOADERS.values()){
+			FileSystem.loadResource(s.getFallbackResourceName());
+		}
+	}
+	
+	public static InputStream getResourceStream(URI path) throws ResourceNotFoundException {
+		
+		
 		for (int i = 0; i < searchpaths.length; i++) {
 			if (searchpaths[i].existsInPath(path)) {
 				return searchpaths[i].getStream(path);
 			}
 		}
 		Spout.getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
-		//Open our jar and grab the fallback file
+		
+		
+		//Open our jar and grab the fallback 'file' scheme
 		String scheme = path.getScheme();
 		if(scheme.equals("file")){
 			return FileSystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
 		}
 		
+		//Still can't find it? Throw a ResourceNotFound exception and give out fallbacks
+		throw new ResourceNotFoundException(path.toString());
+		
+		
+		
+		/*
 		String name = LOADERS.get(scheme).getFallbackResourceName();	
 		InputStream stream = FileSystem.class.getResourceAsStream("/fallbacks/" + name);
 		return stream;
+		*/
 	}
 	
 	public static InputStream getResourceStream(String path){
@@ -128,13 +151,15 @@ public class FileSystem {
 		LOADERS.put(protocol, loader);
 	}
 
-	public static void loadResource(URI path) {
+	public static void loadResource(URI path) throws ResourceNotFoundException {
 		String protocol = path.getScheme();
 		if (!LOADERS.containsKey(protocol)) {
 			throw new IllegalArgumentException("Unknown resource type: " + protocol);
 		}
+
 		Resource r = LOADERS.get(protocol).getResource(path);
 		LOADED_RESOURCES.put(path, r);
+		
 	}
 
 	public static void loadResource(String path) {
@@ -142,7 +167,6 @@ public class FileSystem {
 			URI upath = new URI(path);
 			loadResource(upath);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -150,7 +174,21 @@ public class FileSystem {
 	public static Resource getResource(URI path) {
 		if (!LOADED_RESOURCES.containsKey(path)) {
 			Spout.getLogger().warning("Late Precache of resource: " + path.toString());
-			loadResource(path);
+			try	{
+				loadResource(path);
+			} catch(ResourceNotFoundException e){
+				String scheme = path.getScheme();
+				String name = LOADERS.get(scheme).getFallbackResourceName();
+				try {
+					URI fallbackName = new URI(name);
+					return LOADED_RESOURCES.get(fallbackName);
+				} catch (URISyntaxException e1) {
+					
+					e1.printStackTrace();
+					return null;
+				}
+				
+			}
 		}
 		return LOADED_RESOURCES.get(path);
 	}
