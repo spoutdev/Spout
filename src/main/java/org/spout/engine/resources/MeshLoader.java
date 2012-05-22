@@ -40,16 +40,48 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 			}
 			if(s.startsWith("f")){
 				String[] sp = s.split(" ");
-				int face1 = Integer.parseInt(sp[1]) - 1;
-				int face2 = Integer.parseInt(sp[2]) - 1;
-				int face3 = Integer.parseInt(sp[3]) - 1;
 				
-				PositionNormalTexture p = new PositionNormalTexture(verticies.get(face1));
-				PositionNormalTexture p2 = new PositionNormalTexture(verticies.get(face2));
-				PositionNormalTexture p3 = new PositionNormalTexture(verticies.get(face3));
+				if(sp[1].contains("//")){
+					ArrayList<PositionNormalTexture> ar = new ArrayList<PositionNormalTexture>();
+					for(int i = 1; i <= 3; i++){
+						String[] sn = sp[i].split("//");
+						int pos = Integer.parseInt(sn[0]);
+						int norm = Integer.parseInt(sn[1]);
+						ar.add(new PositionNormalTexture(verticies.get(pos - 1), normals.get(norm -1)));
+											
+					}
+					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));
+					ar.clear();
+					
+				} else if(sp[1].contains("/")){
+					ArrayList<PositionNormalTexture> ar = new ArrayList<PositionNormalTexture>();
+					for(int i = 1; i <= 3; i++){
+						String[] sn = sp[i].split("/");
+						int pos = Integer.parseInt(sn[0]);
+						int uv = Integer.parseInt(sn[1]);
+						ar.add(new PositionNormalTexture(verticies.get(pos - 1), uvs.get(uv -1)));
+											
+					}
+					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));
+					ar.clear();
+					
+					
+				} else {
+					int face1 = Integer.parseInt(sp[1]) - 1;
+					int face2 = Integer.parseInt(sp[2]) - 1;
+					int face3 = Integer.parseInt(sp[3]) - 1;
+					
+					PositionNormalTexture p = new PositionNormalTexture(verticies.get(face1));
+					PositionNormalTexture p2 = new PositionNormalTexture(verticies.get(face2));
+					PositionNormalTexture p3 = new PositionNormalTexture(verticies.get(face3));
+					
+					faces.add(new ModelFace(p, p2, p3));
+					
+					
+				}
 				
-				faces.add(new ModelFace(p, p2, p3));
 				
+			
 				
 			}
 				
