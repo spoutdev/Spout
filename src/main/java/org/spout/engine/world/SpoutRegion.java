@@ -150,7 +150,7 @@ public class SpoutRegion extends Region {
 	 * A queue of chunks that need to be populated
 	 */
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
-	private final Map<Vector3, BlockController> blockControllers = new HashMap<Vector3, BlockController>();
+	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 	
 	private final SpoutTaskManager taskManager;
 
@@ -458,17 +458,21 @@ public class SpoutRegion extends Region {
 		Controller controller = e.getController();
 		if (controller instanceof BlockController) {
 			Point pos = e.getPosition();
-			setBlockController(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), (BlockController) controller);
+			Vector3 vpos = new Vector3(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
+			Entity old = blockEntities.put(vpos, e);
+			if (old != null) {
+				old.kill();
+			}
 		}
 		this.allocate((SpoutEntity) e);
 	}
 
 	public void removeEntity(Entity e) {
 		Vector3 pos = e.getPosition().floor();
-		if (blockControllers.containsKey(pos)) {
-			blockControllers.remove(pos);
+		Entity be = blockEntities.get(pos);
+		if (be == e) {
+			blockEntities.remove(pos);
 		}
-		
 		this.deallocate((SpoutEntity)e);
 	}
 
@@ -498,9 +502,9 @@ public class SpoutRegion extends Region {
 				for (int i = 0; i < updates.length; i++) {
 					int key = updates[i];
 					Source source = (Source) sources[i];
-					int x = TByteTripleObjectHashMap.key1(key);
-					int y = TByteTripleObjectHashMap.key2(key);
-					int z = TByteTripleObjectHashMap.key3(key);
+					int x = TByteTripleObjectHashMap.key1(key) & 0xFF;
+					int y = TByteTripleObjectHashMap.key2(key) & 0xFF;
+					int z = TByteTripleObjectHashMap.key3(key) & 0xFF;
 					//switch region block coords (0-255) to a chunk index
 					Chunk chunk = chunks[x >> Chunk.CHUNK_SIZE_BITS][y >> Chunk.CHUNK_SIZE_BITS][z >> Chunk.CHUNK_SIZE_BITS].get();
 					if (chunk != null) {
@@ -697,18 +701,6 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	/**
-	 * Queues a block for a physic update at the next available tick.
-	 * @param x, the block x coordinate
-	 * @param y, the block y coordinate
-	 * @param z, the block z coordinate
-	 */
-	public void queuePhysicsUpdate(int x, int y, int z, Source source) {
-		synchronized (queuedPhysicsUpdates) {
-			queuedPhysicsUpdates.put((byte) (x & BASE_MASK), (byte) (y & BASE_MASK), (byte) (z & BASE_MASK), source);
-		}
-	}
-
 	@Override
 	public int getNumLoadedChunks() {
 		return numberActiveChunks.get();
@@ -829,26 +821,32 @@ public class SpoutRegion extends Region {
 	@Override
 	public void setBlockController(int x, int y, int z, BlockController controller) {
 		Vector3 pos = new Vector3(x, y, z);
-		if (controller == null && controller.getParent() != null) {
-			controller.getParent().setController(null);
-			blockControllers.remove(pos);
-
-		}
-		else if (controller != null && controller.getParent() == null) {
+		Entity entity = blockEntities.get(pos);
+		if (entity != null) {
+			if (controller != null) {
+				//hotswap
+				entity.setController(controller);
+			} else {
+				//remove old
+				entity.kill();
+			}
+		} else if (controller != null) {
+			//spawn new entity with controller
 			this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), controller);
-		} else {
-			blockControllers.put(pos, controller);
 		}
 	}
 
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
-		return blockControllers.get(new Vector3(x, y, z));
+		Entity entity = blockEntities.get(new Vector3(x, y, z));
+		return entity == null ? null : (BlockController) entity.getController();
 	}
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		this.getChunkFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
+		synchronized (queuedPhysicsUpdates) {
+			queuedPhysicsUpdates.put((byte) (x & BASE_MASK), (byte) (y & BASE_MASK), (byte) (z & BASE_MASK), source);
+		}
 	}
 
 	@Override

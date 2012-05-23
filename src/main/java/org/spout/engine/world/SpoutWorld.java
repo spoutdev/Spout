@@ -514,7 +514,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		regions.getRegionFromBlock(x, y, z).queuePhysicsUpdate(x, y, z, source);
+		regions.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
 	}
 
 	@Override
