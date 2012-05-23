@@ -307,6 +307,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		checkChunkLoaded();
+		this.getRegion().updateBlockPhysics(x, y, z, source);
 	}
 
 	/**
