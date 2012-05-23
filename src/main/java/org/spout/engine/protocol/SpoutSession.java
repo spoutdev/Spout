@@ -205,7 +205,9 @@ public final class SpoutSession implements Session {
 	public void send(Message message, boolean force) {
 		try {
 			if (force || this.state == State.GAME) {
-				channel.write(message);
+				if (channel.isOpen()) {
+					channel.write(message);
+				}
 			} else {
 				sendQueue.add(message);
 			}
@@ -356,5 +358,10 @@ public final class SpoutSession implements Session {
 	@Override
 	public Engine getGame() {
 		return server;
+	}
+
+	@Override
+	public boolean isConnected() {
+		return channel.isOpen();
 	}
 }
