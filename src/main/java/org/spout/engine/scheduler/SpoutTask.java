@@ -29,13 +29,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.spout.api.Spout;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.ParallelRunnable;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Named;
+import org.spout.engine.scheduler.parallel.ParallelTaskInfo;
 import org.spout.engine.world.SpoutRegion;
 
 /**
@@ -104,6 +105,11 @@ public class SpoutTask implements Task {
 	private final Scheduler scheduler;
 	
 	/**
+	 * Info about sub-tasks
+	 */
+	private ParallelTaskInfo parallelInfo;
+	
+	/**
 	 * Creates a new task with the specified number of ticks between consecutive
 	 * calls to {@link #execute()}.
 	 * @param ticks The number of ticks.
@@ -131,7 +137,7 @@ public class SpoutTask implements Task {
 	 */
 	public SpoutTask getRegionTask(SpoutRegion r) {
 		if (task instanceof ParallelRunnable) {
-			ParallelRunnable newRunnable = ((ParallelRunnable) task).newInstance(r);
+			ParallelRunnable newRunnable = ((ParallelRunnable) task).newInstance(r, this);
 			return new SpoutTask(r.getTaskManager(), scheduler, owner, newRunnable, sync, delay, period, priority);
 		} else {
 			return new SpoutTask(r.getTaskManager(), scheduler, owner, task, sync, delay, period, priority);
@@ -284,6 +290,19 @@ public class SpoutTask implements Task {
 		} else {
 			throw new IllegalStateException("Attempt made to modify next call time when the task was in the queue.");
 		}
+	}
+
+	@Override
+	public Task getChildTask(Region region) {
+		if (parallelInfo == null) {
+			throw new UnsupportedOperationException("This methods is only supported for parent parallel tasks");
+		} else {
+			return parallelInfo.getTask(region);
+		}
+	}
+	
+	public void setParallelInfo(ParallelTaskInfo info) {
+		this.parallelInfo = info;
 	}
 
 }

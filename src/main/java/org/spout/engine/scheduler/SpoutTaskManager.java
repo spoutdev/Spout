@@ -129,7 +129,7 @@ public class SpoutTaskManager implements TaskManager {
 		}
 	}
 	
-	protected int schedule(SpoutTask task) {
+	public int schedule(SpoutTask task) {
 		synchronized (scheduleLock) {
 			addTask(task);
 			taskQueue.add(task);

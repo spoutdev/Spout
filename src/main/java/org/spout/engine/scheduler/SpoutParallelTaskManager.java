@@ -1,19 +1,14 @@
 package org.spout.engine.scheduler;
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.spout.api.Engine;
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.Scheduler;
@@ -24,6 +19,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.map.concurrent.TSyncIntObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncIntObjectMap;
+import org.spout.engine.scheduler.parallel.ParallelTaskInfo;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
@@ -134,6 +130,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 				if (previous != null) {
 					info = previous;
 				}
+				task.setParallelInfo(info);
 			}
 			Collection<World> worlds = (this.world == null) ? engine.getWorlds() : world;
 			for (World w : worlds) {
@@ -210,104 +207,6 @@ public class SpoutParallelTaskManager implements TaskManager {
 	@Override
 	public long getUpTime() {
 		return upTime.get();
-	}
-	
-	private static class RegionIdPair {
-		private final int taskId;
-		private final WeakReference<SpoutRegion> region;
-		
-		public RegionIdPair(int id, SpoutRegion r, ReferenceQueue<SpoutRegion> q) {
-			this.taskId = id;
-			this.region = new MarkedWeakReference<SpoutRegion, RegionIdPair>(r, this, q);
-		}
-		
-		public final SpoutRegion getRegion() {
-			return region.get();
-		}
-		
-		public final int getTaskId() {
-			return taskId;
-		}
-	}
-	
-	private static class MarkedWeakReference<T, M> extends WeakReference<T> {
-		
-		private final M mark;
-		
-		public MarkedWeakReference(T r, M mark, ReferenceQueue<T> q) {
-			super(r, q);
-			this.mark = mark;
-		}
-		
-		public MarkedWeakReference(T r, M mark) {
-			super(r);
-			this.mark = mark;
-		}
-		
-		public M getMark() {
-			return mark;
-		}
-		
-	}
-	
-	private static class ParallelTaskInfo {
-		
-		public static final ParallelTaskInfo[] EMPTY_ARRAY = new ParallelTaskInfo[0];
-		
-		private final Set<RegionIdPair> children = new HashSet<RegionIdPair>();
-		
-		private final Set<SpoutRegion> regions = new HashSet<SpoutRegion>();
-		
-		private final ReferenceQueue<SpoutRegion> refQueue = new ReferenceQueue<SpoutRegion>();
-		
-		private final SpoutTask task;
-		
-		private boolean alive = true;
-		
-		public ParallelTaskInfo(SpoutTask task) {
-			this.task = task;
-		}
-		
-		public synchronized boolean add(SpoutRegion region) {
-			if (!regions.add(region)) {
-				return false;
-			} if (!alive) {
-				return false;
-			} else {
-				SpoutTask newTask = task.getRegionTask(region);
-				if (newTask == null) {
-					Spout.getLogger().info("Unable to create parallel task for " + task);
-				}
-				int newId = ((SpoutTaskManager)region.getTaskManager()).schedule(newTask);
-				children.add(new RegionIdPair(newId, region, refQueue));
-				return true;
-			}
-		}
-		
-		@SuppressWarnings("unchecked")
-		public synchronized void prune() {
-			MarkedWeakReference<SpoutRegion, RegionIdPair> ref = null;
-			while ((ref = (MarkedWeakReference<SpoutRegion, RegionIdPair>)refQueue.poll()) != null) {
-				RegionIdPair p = ref.getMark();
-				children.remove(p);
-			}
-		}
-		
-		public synchronized void stop() {
-			alive = false;
-			for (RegionIdPair regionId : children) {
-				SpoutRegion r = regionId.getRegion();
-				if (r != null) {
-					r.getTaskManager().cancelTask(regionId.getTaskId());
-				}
-			}
-		}
-		
-		// Doesn't need synchronized since it is a final variable
-		public SpoutTask getTask() {
-			return task;
-		}
-		
 	}
 	
 }
