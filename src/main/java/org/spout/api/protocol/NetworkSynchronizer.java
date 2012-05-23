@@ -61,10 +61,11 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		entity.setObserver(true);
 		session = owner.getSession();
 		blockViewDistance = entity.getViewDistance();
-		viewDistance = (blockViewDistance + Chunk.CHUNK_SIZE - 1) / Chunk.CHUNK_SIZE; //round up 1
+		viewDistance = blockViewDistance / Chunk.CHUNK_SIZE;
+		targetSize = blockViewDistance / 2;
 	}
 
-	private final static int TARGET_SIZE = 5 * Chunk.CHUNK_SIZE;
+	private final int targetSize;
 	private final static int CHUNKS_PER_TICK = 200;
 
 	private final int viewDistance;
@@ -251,6 +252,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				activeChunks.add(p);
 				i.remove();
 				chunksSent++;
+				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 
 			i = chunkSendQueue.iterator();
@@ -261,6 +263,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				activeChunks.add(p);
 				i.remove();
 				chunksSent++;
+				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 
 			if (teleported && entity != null) {
@@ -348,7 +351,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 					double distance = base.getManhattanDistance(playerChunkBase);
 					if (distance <= blockViewDistance) {
 						if (!activeChunks.contains(base)) {
-							if (distance <= TARGET_SIZE) {
+							if (distance <= targetSize) {
 								priorityChunkSendQueue.add(base);
 							} else {
 								chunkSendQueue.add(base);
