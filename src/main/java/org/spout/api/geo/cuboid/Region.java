@@ -220,7 +220,7 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 		//Cut down on work by getting only players in the same world.
 		for (Player plr : getWorld().getPlayers()) {
 			//Do not count the entity passing in as a closest player if that entity is a player
-			if (plr.getEntity() == entity) {
+			if (!plr.isOnline() || plr.getEntity() == entity) {
 				continue;
 			}
 			int distance = (int) MathHelper.distanceSquared(position, plr.getEntity().getPosition());
