@@ -590,7 +590,7 @@ public class SpoutEntity implements Entity, Tickable {
 		if (controllerLive.get() instanceof PlayerController) {
 			return;
 		}
-		int viewDistance = (getViewDistance() + 15) / Chunk.CHUNK_SIZE; //round up
+		final int viewDistance = getViewDistance() / Chunk.CHUNK_SIZE;
 		World w = transform.getPosition().getWorld();
 		int cx = chunkLive.get().getX();
 		int cy = chunkLive.get().getY();
