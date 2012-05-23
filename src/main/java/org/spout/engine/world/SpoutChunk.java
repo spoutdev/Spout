@@ -26,6 +26,7 @@
 package org.spout.engine.world;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -114,6 +115,18 @@ public class SpoutChunk extends Chunk {
 	 */
 	protected final byte[] skyLight;
 	protected final byte[] blockLight;
+	
+	/**
+	 * Temporary array used to initialize block and sky lighting for chunks<br>
+	 * Will be replaced with actual routines!
+	 */
+	private final static byte[] DARK = new byte[Chunk.CHUNK_VOLUME / 2];
+	private final static byte[] LIGHT = new byte[Chunk.CHUNK_VOLUME / 2];
+
+	static {
+		Arrays.fill(LIGHT, (byte) 255);
+	}
+
 	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
 	 */
@@ -153,11 +166,20 @@ public class SpoutChunk extends Chunk {
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new SnapshotableBoolean(snapshotManager, populated);
-		this.skyLight = skyLight != null ? skyLight : new byte[CHUNK_VOLUME / 2];
-		for (int i = 0; i < this.skyLight.length; i++) {
-			this.skyLight[i] = 0;
+
+		//initialize or load the basic lighting (TODO: Better routines)
+		if (skyLight == null) {
+			this.skyLight = new byte[CHUNK_VOLUME / 2];
+			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, this.skyLight, 0, this.skyLight.length);
+		} else {
+			this.skyLight = skyLight;
 		}
-		this.blockLight = blockLight != null ? blockLight : new byte[CHUNK_VOLUME / 2];
+		if (blockLight == null) {
+			this.blockLight = new byte[CHUNK_VOLUME / 2];
+			System.arraycopy(DARK, 0, this.blockLight, 0, this.blockLight.length);
+		} else {
+			this.blockLight = blockLight;
+		}
 
 		if (extraData != null) {
 			this.datatableMap = extraData;
