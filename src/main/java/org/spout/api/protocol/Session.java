@@ -156,4 +156,12 @@ public interface Session {
 	}
 
 	public Engine getGame();
+	
+	/**
+	 * True if this session is open and connected.
+	 * If the session is closed, all packets will be silently ignored.
+	 * 
+	 * @return is connected
+	 */
+	public boolean isConnected();
 }
