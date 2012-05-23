@@ -160,7 +160,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		System.out.println(activeCamera.getProjection());
-		shader = (Shader)FileSystem.getResource("shader://Vanilla/garbageName.smf");
+		shader = (Shader)FileSystem.getResource("shader://Vanilla/garbageName.ssf");
 		renderer = new PrimitiveBatch();
 		renderer.getRenderer().setShader(shader);
 
