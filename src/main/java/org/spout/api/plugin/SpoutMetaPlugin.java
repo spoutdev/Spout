@@ -103,6 +103,6 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public File getFile() {
-		return new File(game.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+		return new File(game.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
 	}
 }
