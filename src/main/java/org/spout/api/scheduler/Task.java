@@ -26,7 +26,7 @@
  */
 package org.spout.api.scheduler;
 
-import org.spout.api.plugin.Plugin;
+import org.spout.api.geo.cuboid.Region;
 
 /**
  * Represents a task being executed by the scheduler
@@ -66,4 +66,12 @@ public interface Task {
 	 * @return true if the task is executing
 	 */
 	public boolean isExecuting();
+	
+	/**
+	 * Get child task for a given Region
+	 * 
+	 * @param region the Region
+	 * @return the child task, or null if none
+	 */
+	public Task getChildTask(Region region);
 }
