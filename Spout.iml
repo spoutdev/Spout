@@ -13,7 +13,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="SpoutAPI" />
+    <orderEntry type="module" module-name="spoutapi" />
     <orderEntry type="library" name="Maven: org.spout:spoutnbt:1.0.3-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: net.royawesome:jlibnoise:dev-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty:3.4.4.Final" level="project" />
