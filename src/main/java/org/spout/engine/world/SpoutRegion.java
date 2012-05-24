@@ -911,8 +911,13 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public Set<Player> getPlayers() {
-		// TODO Auto-generated method stub
-		return null;
+		HashSet<Player> players = new HashSet<Player>();
+		for (PlayerController player : this.entityManager.getPlayers()) {
+			if (player.getPlayer() != null) {
+				players.add(player.getPlayer());
+			}
+		}
+		return players;
 	}
 	
 	/**

@@ -72,6 +72,8 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
+import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -818,10 +820,140 @@ public class SpoutWorld extends AsyncManager implements World {
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;
 	}
-	
+
 	@Override
 	public TaskManager getTaskManager() {
 		return taskManager;
 	}
 
+	/**
+	 * Gets a set of nearby players to the point, inside of the range
+	 * 
+	 * @param position of the center
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Point position, int range) {
+		return getNearbyPlayers(position, null, range);
+	}
+
+	/**
+	 * Gets a set of nearby players to the entity, inside of the range
+	 * 
+	 * @param entity marking the center and which is ignored
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Entity entity, int range) {
+		return getNearbyPlayers(entity.getPosition(), entity, range);
+	}
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range.
+	 * The search will ignore the specified entity.
+	 * 
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
+		Set<Player> foundPlayers = new HashSet<Player>();
+		final int RANGE_SQUARED = range * range;
+		
+		for (Player plr : getPlayersNearRegion(position, range)) {
+			if (plr.getEntity() != ignore) {
+				double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
+				if (distance < RANGE_SQUARED) {
+					foundPlayers.add(plr);
+				}
+			}
+		}
+
+		return foundPlayers;
+	}
+
+	/**
+	 * Finds all the players inside of the regions inside the range area
+	 * 
+	 * @param position to search from
+	 * @param range to search for regions
+	 * @return nearby region's players
+	 */
+	private Set<Player> getPlayersNearRegion(Point position, int range) {
+		final int REGION_SIZE = Region.REGION_SIZE * Chunk.CHUNK_SIZE;
+		Region center = this.getRegionFromBlock(position);
+		
+		HashSet<Player> players = new HashSet<Player>();
+		final int regions = (range + REGION_SIZE - 1) / REGION_SIZE; //round up 1 region size
+		for (int dx = -regions; dx < regions; dx++) {
+			for (int dy = -regions; dy < regions; dy++) {
+				for (int dz = -regions; dz < regions; dz++) {
+					Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, false);
+					if (region != null) {
+						players.addAll(region.getPlayers());
+					}
+				}
+			}
+		}
+		return players;
+	}
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param position to search from
+	 * @param entity to ignore while searching
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Point position, Entity ignore, int range) {
+		Player best = null;
+		double bestDistance = range * range;
+
+		for (Player plr : getPlayersNearRegion(position, range)) {
+			if (plr.getEntity() != ignore) {
+				double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = plr;
+				}
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * 
+	 * @param entity to search from
+	 * @param entity to ignore while searching
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Point position, int range) {
+		return getNearestPlayer(position, null, range);
+	}
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * 
+	 * @param entity to search from
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Entity entity, int range) {
+		return getNearestPlayer(entity.getPosition(), entity, range);
+	}
 }
