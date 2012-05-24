@@ -49,6 +49,7 @@ import org.spout.api.player.Player;
 import org.spout.api.protocol.event.ProtocolEvent;
 import org.spout.api.protocol.event.ProtocolEventExecutor;
 import org.spout.api.protocol.event.ProtocolEventListener;
+import org.spout.api.scheduler.TickStage;
 
 public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
@@ -162,6 +163,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	}
 
 	public void onDeath() {
+		TickStage.checkStage(TickStage.FINALIZE);
 		death = true;
 		entity = null;
 		for (Point p : initializedChunks) {
