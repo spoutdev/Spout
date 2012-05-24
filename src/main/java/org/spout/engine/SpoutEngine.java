@@ -146,8 +146,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	//The network executor service - Netty dispatches events to this thread
 	protected final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutEngine"));
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
+	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
 	protected SpoutConfiguration config = new SpoutConfiguration();

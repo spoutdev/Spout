@@ -55,7 +55,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 
 /**
- * A class which handles scheduling for the server {@link SpoutTask}s.<br>
+ * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
  * <br>
  * Tasks can be submitted to the scheduler for execution by the main thread.
  * These tasks are executed during a period where none of the auxiliary threads
@@ -102,9 +102,9 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	private static final int TARGET_FPS = 60;
 	/**
-	 * The server this scheduler is managing for.
+	 * The engine this scheduler is managing for.
 	 */
-	private final Engine server;
+	private final Engine engine;
 	/**
 	 * A snapshot manager for local snapshot variables
 	 */
@@ -119,22 +119,20 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private Thread renderThread;
 	private final SpoutTaskManager taskManager;
-	private final SpoutParallelTaskManager parallelTaskManager;
+	//private final SpoutParallelTaskManager parallelTaskManager;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 
 	/**
 	 * Creates a new task scheduler.
 	 */
-	public SpoutScheduler(Engine server) {
+	public SpoutScheduler(Engine engine) {
 
-		this.server = server;
+		this.engine = engine;
 
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
 		
 		taskManager = new SpoutTaskManager(this, true, mainThread);
-		
-		parallelTaskManager = (SpoutParallelTaskManager)server.getParallelTaskManager();
 	}
 
 	private class RenderThread extends Thread {
@@ -236,7 +234,7 @@ public final class SpoutScheduler implements Scheduler {
 			// Halt the executor for the Server
 			for (AsyncExecutor e : asyncExecutors.get()) {
 				if (!(e.getManager() instanceof SpoutServer)) {
-					throw new IllegalStateException("Only the server should be left to shutdown");
+					throw new IllegalStateException("Only the engine should be left to shutdown");
 				} else {
 					if (!e.haltExecutor()) {
 						throw new IllegalStateException("Unable to halt SpoutServer executor");
@@ -247,7 +245,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshot(asyncExecutors.get());
 			} catch (InterruptedException ex) {
-				SpoutServer.logger.log(Level.SEVERE, "Error while shutting down server: {0}", ex.getMessage());
+				SpoutServer.logger.log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
 		}
 	}
@@ -306,7 +304,7 @@ public final class SpoutScheduler implements Scheduler {
 				renderThread.join(timeout);
 			}
 		} catch (InterruptedException e) {
-			server.getLogger().info("Main thread interrupted when shutting down");
+			engine.getLogger().info("Main thread interrupted when shutting down");
 		}
 		if (timeout > 0) {
 			taskManager.shutdown(timeout);
@@ -323,7 +321,7 @@ public final class SpoutScheduler implements Scheduler {
 		asyncExecutors.copySnapshot();
 		
 		taskManager.heartbeat(delta);
-		parallelTaskManager.heartbeat(delta);
+		((SpoutParallelTaskManager)engine.getParallelTaskManager()).heartbeat(delta);
 
 		List<AsyncExecutor> executors = asyncExecutors.get();
 
@@ -361,7 +359,7 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 						AsyncExecutorUtils.checkForDeadlocks();
 					}
@@ -390,7 +388,7 @@ public final class SpoutScheduler implements Scheduler {
 				joined = true;
 			} catch (TimeoutException e) {
 				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-					server.getLogger().info("Copy Snapshot had not completed after " + (PULSE_EVERY << 4) + "ms");
+					engine.getLogger().info("Copy Snapshot had not completed after " + (PULSE_EVERY << 4) + "ms");
 					AsyncExecutorUtils.dumpAllStacks();
 					AsyncExecutorUtils.checkForDeadlocks();
 				}
@@ -414,7 +412,7 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 					}
 				}
@@ -435,7 +433,7 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						server.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
+						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 					}
 				}
@@ -459,9 +457,9 @@ public final class SpoutScheduler implements Scheduler {
 			if (!success) {
 				delay *= 1.5;
 				List<Plugin> violatingPlugins = snapshotLock.getLockingPlugins(threshold);
-				server.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
+				engine.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
 				for (Plugin p : violatingPlugins) {
-					server.getLogFile().indexOf(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
+					engine.getLogFile().indexOf(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
 				}
 			}
 		}
