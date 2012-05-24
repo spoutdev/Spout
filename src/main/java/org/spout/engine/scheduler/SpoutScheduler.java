@@ -119,7 +119,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private Thread renderThread;
 	private final SpoutTaskManager taskManager;
-	//private final SpoutParallelTaskManager parallelTaskManager;
+	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 
 	/**
@@ -321,7 +321,11 @@ public final class SpoutScheduler implements Scheduler {
 		asyncExecutors.copySnapshot();
 		
 		taskManager.heartbeat(delta);
-		((SpoutParallelTaskManager)engine.getParallelTaskManager()).heartbeat(delta);
+		
+		if (parallelTaskManager == null) {
+			parallelTaskManager = ((SpoutParallelTaskManager)engine.getParallelTaskManager());
+		}
+		parallelTaskManager.heartbeat(delta);
 
 		List<AsyncExecutor> executors = asyncExecutors.get();
 
