@@ -868,7 +868,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		final int RANGE_SQUARED = range * range;
 		
 		for (Player plr : getPlayersNearRegion(position, range)) {
-			if (plr.getEntity() != ignore) {
+			if (plr.getEntity() != ignore && plr.getEntity() != null) {
 				double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundPlayers.add(plr);
@@ -919,7 +919,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		double bestDistance = range * range;
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
-			if (plr.getEntity() != ignore) {
+			if (plr.getEntity() != ignore && plr.getEntity() != null) {
 				double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
