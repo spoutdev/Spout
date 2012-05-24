@@ -26,8 +26,6 @@
  */
 package org.spout.api.geo.cuboid;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.spout.api.entity.Controller;
@@ -35,16 +33,11 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.MathHelper;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
-import org.spout.api.util.thread.Threadsafe;
 
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
@@ -144,95 +137,6 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	@LiveRead
 	public abstract Set<Player> getPlayers();
 
-	/**
-	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
-	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
-	 * consider using getNearestPlayer instead.
-	 * @param position of the center
-	 * @param range to look for
-	 * @return A set of nearby Players
-	 */
-	@LiveRead
-	@Threadsafe
-	public Set<Player> getNearbyPlayers(Point position, int range) {
-		return getNearbyPlayers(position, null, range);
-	}
-
-	/**
-	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
-	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
-	 * consider using getNearestPlayer instead.
-	 * @param entity marking the center and which is ignored
-	 * @param range to look for
-	 * @return A set of nearby Players
-	 */
-	@LiveRead
-	@Threadsafe
-	public Set<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getPosition(), entity, range);
-	}
-
-	/**
-	 * Gets a read-only copy of the nearest players in range of the entity specified. The list
-	 * returned will NOT be in order of nearest to not as nearest player. If this matters to you,
-	 * consider using getNearestPlayer instead.
-	 * @param position of the center
-	 * @param ignore Entity to ignore
-	 * @param range to look for
-	 * @return A set of nearby Players
-	 */
-	@LiveRead
-	@Threadsafe
-	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
-		Set<Player> foundPlayers = new HashSet<Player>();
-		final int RANGESQUARED = range * range;
-
-		//Cut down on work by getting only players in the same world.
-		for (Player plr : getWorld().getPlayers()) {
-			//Do not count the entity passing in as a closest player if that entity is a player
-			if (plr == null || plr.getEntity() == null || plr.getEntity() == ignore || plr.getEntity().getTransform() == new Transform(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO)) {
-				continue;
-			}
-			double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
-			//Only add players that are within range.
-			if (distance < RANGESQUARED) {
-				foundPlayers.add(plr);
-			}
-		}
-
-		return Collections.unmodifiableSet(foundPlayers);
-	}
-
-	/**
-	 * Gets the absolute closest player from the specified entity within a specified range.
-	 * @param entity
-	 * @param range
-	 * @return
-	 */
-	@LiveRead
-	@Threadsafe
-	public Player getNearestPlayer(Entity entity, int range) {
-		Player best = null;
-		Vector3 position = entity.getPosition();
-		int bestDistance = Integer.MAX_VALUE;
-		final int RANGESQUARED = range * range;
-
-		//Cut down on work by getting only players in the same world.
-		for (Player plr : getWorld().getPlayers()) {
-			//Do not count the entity passing in as a closest player if that entity is a player
-			if (!plr.isOnline() || plr.getEntity() == entity) {
-				continue;
-			}
-			int distance = (int) MathHelper.distanceSquared(position, plr.getEntity().getPosition());
-			if (distance < RANGESQUARED && distance < bestDistance) {
-				best = plr;
-				bestDistance = distance;
-			}
-		}
-
-		return best;
-	}
-	
 	/**
 	 * Gets the TaskManager associated with this region
 	 */

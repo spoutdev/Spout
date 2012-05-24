@@ -239,4 +239,73 @@ public interface World extends Source, AreaRegionAccess {
 	 * Gets the TaskManager associated with this world
 	 */
 	public abstract TaskManager getTaskManager();
+	
+	/**
+	 * Gets a set of nearby players to the point, inside of the range
+	 * 
+	 * @param position of the center
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Point position, int range);
+
+	/**
+	 * Gets a set of nearby players to the entity, inside of the range
+	 * 
+	 * @param entity marking the center and which is ignored
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Entity entity, int range);
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range.
+	 * The search will ignore the specified entity.
+	 * 
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range);
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param position to search from
+	 * @param entity to ignore while searching
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Point position, Entity ignore, int range);
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * 
+	 * @param entity to search from
+	 * @param entity to ignore while searching
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Point position, int range);
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * 
+	 * @param entity to search from
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Entity entity, int range);
 }
