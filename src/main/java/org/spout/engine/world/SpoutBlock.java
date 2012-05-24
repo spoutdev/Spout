@@ -283,20 +283,20 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block update(boolean around) {
-		Chunk chunk = this.getChunk();
-		chunk.updateBlockPhysics(this.x, this.y, this.z, this.source);
+		World world = this.getWorld();
+		world.updateBlockPhysics(this.x, this.y, this.z, this.source);
 		if (around) {
 			//South and North
-			chunk.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
-			chunk.updateBlockPhysics(this.x - 1, this.y, this.z, this.source);
+			world.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
+			world.updateBlockPhysics(this.x - 1, this.y, this.z, this.source);
 
 			//West and East
-			chunk.updateBlockPhysics(this.x, this.y, this.z + 1, this.source);
-			chunk.updateBlockPhysics(this.x, this.y, this.z - 1, this.source);
+			world.updateBlockPhysics(this.x, this.y, this.z + 1, this.source);
+			world.updateBlockPhysics(this.x, this.y, this.z - 1, this.source);
 
 			//Above and Below
-			chunk.updateBlockPhysics(this.x, this.y + 1, this.z, this.source);
-			chunk.updateBlockPhysics(this.x, this.y - 1, this.z, this.source);
+			world.updateBlockPhysics(this.x, this.y + 1, this.z, this.source);
+			world.updateBlockPhysics(this.x, this.y - 1, this.z, this.source);
 		}
 		return this;
 	}
