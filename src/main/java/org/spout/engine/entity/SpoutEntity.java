@@ -575,6 +575,8 @@ public class SpoutEntity implements Entity, Tickable {
 	private void removeObserver() {
 		//Player view distance is handled in the network synchronizer
 		if (controllerLive.get() instanceof PlayerController) {
+			Player p = ((PlayerController)controllerLive.get()).getPlayer();
+			p.getNetworkSynchronizer().onDeath();
 			return;
 		}
 		for (SpoutChunk chunk : observingChunks) {
