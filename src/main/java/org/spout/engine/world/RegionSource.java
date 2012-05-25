@@ -36,7 +36,6 @@ import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.TaskManager;
-import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;

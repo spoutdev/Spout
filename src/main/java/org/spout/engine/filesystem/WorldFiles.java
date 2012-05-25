@@ -34,6 +34,7 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
@@ -54,6 +55,7 @@ import org.spout.nbt.stream.NBTOutputStream;
 public class WorldFiles {
 	private static final byte WORLD_VERSION = 1;
 	private static final byte ENTITY_VERSION = 1;
+	private static final byte CHUNK_VERSION = 1;
 
 	public static void saveWorldData(SpoutWorld world) {
 		File worldData = new File(world.getDirectory(), "world.dat");
@@ -157,7 +159,7 @@ public class WorldFiles {
 			blocks[i] = (short) global.convertTo(itemMap, blocks[i]);
 		}
 		
-		chunkTags.put(new ByteTag("version", (byte) 1));
+		chunkTags.put(new ByteTag("version", CHUNK_VERSION));
 		chunkTags.put(new ByteTag("format", (byte) 0));
 		chunkTags.put(new IntTag("x", c.getX()));
 		chunkTags.put(new IntTag("y", c.getY()));
@@ -249,7 +251,7 @@ public class WorldFiles {
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
-			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
+			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
 
 			loadEntities(r, (CompoundMap) map.get("entities").getValue());
 		} catch (IOException e) {

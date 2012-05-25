@@ -76,7 +76,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
-	private static final long UNLOAD_PERIOD = 60000;
+	protected static final long UNLOAD_PERIOD = 60000;
 	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.
@@ -85,11 +85,11 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
-	private final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
+	protected final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
 	/**
 	 * The parent region that manages this chunk
 	 */
-	private final SpoutRegion parentRegion;
+	protected final SpoutRegion parentRegion;
 	/**
 	 * Holds if the chunk is populated
 	 */
@@ -97,31 +97,31 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Snapshot Manager
 	 */
-	private final SnapshotManager snapshotManager = new SnapshotManager();
+	protected final SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * A set of all entities who are observing this chunk
 	 */
-	private final SnapshotableHashMap<Entity, Integer> observers = new SnapshotableHashMap<Entity, Integer>(snapshotManager);
+	protected final SnapshotableHashMap<Entity, Integer> observers = new SnapshotableHashMap<Entity, Integer>(snapshotManager);
 	/**
 	 * A set of entities contained in the chunk
 	 */
 	// Hash set should return "dirty" list
-	private final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
+	protected final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
 	/**
 	 * Stores a short value of the sky light
 	 * <p/>
 	 * Note: These do not need to be thread-safe as long as only one thread (the region)
 	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
-	protected final byte[] skyLight;
-	protected final byte[] blockLight;
+	protected byte[] skyLight;
+	protected byte[] blockLight;
 	
 	/**
 	 * Temporary array used to initialize block and sky lighting for chunks<br>
 	 * Will be replaced with actual routines!
 	 */
-	private final static byte[] DARK = new byte[Chunk.CHUNK_VOLUME / 2];
-	private final static byte[] LIGHT = new byte[Chunk.CHUNK_VOLUME / 2];
+	protected final static byte[] DARK = new byte[Chunk.CHUNK_VOLUME / 2];
+	protected final static byte[] LIGHT = new byte[Chunk.CHUNK_VOLUME / 2];
 
 	static {
 		Arrays.fill(LIGHT, (byte) 255);
@@ -130,27 +130,27 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Stores queued column updates for skylight to be processed at the next tick
 	 */
-	private final TByteHashSet skyLightQueue;
+	protected final TByteHashSet skyLightQueue;
 	/**
 	 * Stores queued column updates for block light to be processed at the next tick
 	 */
-	private final TByteHashSet blockLightQueue;
+	protected final TByteHashSet blockLightQueue;
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
-	private final SpoutColumn column;
-	private final AtomicBoolean columnRegistered = new AtomicBoolean(true);
-	private final AtomicLong lastUnloadCheck = new AtomicLong();
+	protected final SpoutColumn column;
+	protected final AtomicBoolean columnRegistered = new AtomicBoolean(true);
+	protected final AtomicLong lastUnloadCheck = new AtomicLong();
 	/**
 	 * True if this chunk should be resent due to light calculations
 	 */
-	private final AtomicBoolean lightDirty = new AtomicBoolean(false);
+	protected final AtomicBoolean lightDirty = new AtomicBoolean(false);
 
 	/**
 	 * Data map and Datatable associated with it
 	 */
-	private final DatatableMap datatableMap;
-	private final DataMap dataMap;
+	protected final DatatableMap datatableMap;
+	protected final DataMap dataMap;
 	
 	/**
 	 * Manages the biomes for this chunk

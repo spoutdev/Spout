@@ -256,7 +256,7 @@ public class SpoutRegion extends Region {
 		WorldGenerator generator = getWorld().getGenerator();
 		BiomeManager manager = generator.generate(buffer, cx, cy, cz);
 
-		return new SpoutChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray(), manager, (DataMap)buffer.getDataMap());
+		return new FilteredChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray(), manager, (DataMap)buffer.getDataMap());
 	}
 
 	/**
