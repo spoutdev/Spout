@@ -83,10 +83,23 @@ public interface World extends Source, AreaRegionAccess {
 	 * 
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
-	 * @return the highest of the 
+	 * @return the highest of the highest block
 	 */
 	@LiveRead
 	public int getSurfaceHeight(int x, int z);
+	
+	/**
+	 * Gets the height of the highest block in the given (x, z) column.<br>
+	 * <br>
+	 * Blocks which are completely transparent are ignored.
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @param load height map is loaded if necessary
+	 * @return the highest of the highest block
+	 */
+	@LiveRead
+	public int getSurfaceHeight(int x, int z, boolean load);
 	
 	/**
 	 * Gets the entity with the matching unique id
