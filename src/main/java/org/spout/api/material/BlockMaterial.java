@@ -244,14 +244,6 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Returns true if the block is transparent, false if not.
-	 * @return True if opacity is 0, false if more than.
-	 */
-	public boolean isTransparent() {
-		return this.opacity == 0;
-	}
-
-	/**
 	 * Sets the amount of light blocked by this block.
 	 * 
 	 * 0xF (15) represents a fully opaque block.
