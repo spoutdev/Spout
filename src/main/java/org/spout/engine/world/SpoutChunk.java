@@ -115,7 +115,7 @@ public class SpoutChunk extends Chunk {
 	 */
 	protected byte[] skyLight;
 	protected byte[] blockLight;
-	
+
 	/**
 	 * Temporary array used to initialize block and sky lighting for chunks<br>
 	 * Will be replaced with actual routines!
@@ -145,6 +145,10 @@ public class SpoutChunk extends Chunk {
 	 * True if this chunk should be resent due to light calculations
 	 */
 	protected final AtomicBoolean lightDirty = new AtomicBoolean(false);
+	/**
+	 * True if this chunk requires a full lighting re-initialization
+	 */
+	protected final AtomicBoolean isLightingInit = new AtomicBoolean(false);
 
 	/**
 	 * Data map and Datatable associated with it
@@ -714,6 +718,11 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean isPopulated() {
 		return populated.get();
+	}
+
+	@Override
+	public void initLighting() {
+		this.isLightingInit.set(true);
 	}
 
 	public boolean addEntity(SpoutEntity entity) {
