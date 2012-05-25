@@ -621,15 +621,20 @@ public class SpoutWorld extends AsyncManager implements World {
 		//TODO: colliding entities
 		return colliding;
 	}
-
+	
 	@Override
-	public int getSurfaceHeight(int x, int z) {
-		SpoutColumn column = getColumn(x, z);
+	public int getSurfaceHeight(int x, int z, boolean load) {
+		SpoutColumn column = getColumn(x, z, load);
 		if (column == null) {
 			return Integer.MIN_VALUE;
 		} else {
 			return column.getSurfaceHeight(x, z);
 		}
+	}
+
+	@Override
+	public int getSurfaceHeight(int x, int z) {
+		return getSurfaceHeight(x, z, false);
 	}
 
 	/**
