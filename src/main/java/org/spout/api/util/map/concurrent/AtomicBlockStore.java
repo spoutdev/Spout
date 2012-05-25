@@ -541,7 +541,9 @@ public final class AtomicBlockStore<T> {
 	 * @return true if compression would reduce the store size
 	 */
 	public final boolean needsCompression() {
-		return (auxStore.getEntries() << 3) / 3 < auxStore.getSize();
+		int entries = auxStore.getEntries();
+		int size = auxStore.getSize();
+		return size > 1 && (entries << 3) / 3 < size;
 	}
 
 	/**
