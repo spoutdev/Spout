@@ -27,6 +27,7 @@
 package org.spout.api.entity;
 
 import org.spout.api.entity.type.ControllerType;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 
 /**
@@ -47,5 +48,13 @@ public abstract class BlockController extends Controller {
 	 */
 	public BlockMaterial getMaterial() {
 		return blockMaterial;
+	}
+
+	/**
+	 * Gets the block of this block controller
+	 * @return the block
+	 */
+	public Block getBlock() {
+		return this.getParent().getWorld().getBlock(this.getParent().getPosition());
 	}
 }
