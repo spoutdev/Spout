@@ -39,6 +39,9 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 	
 	private final IntVector3 center;
 	private final IntVector3 step;
+	private int distance;
+	private final int maxDistance;
+	private boolean hasNext;
 	private boolean first = true;
 	
 	public OutwardIterator() {
@@ -46,10 +49,17 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 	}
 	
 	public OutwardIterator(int x, int y, int z) {
+		this(x, y, z, Integer.MAX_VALUE);
+	}
+	
+	public OutwardIterator(int x, int y, int z, int maxDistance) {
 		super(x, y, z);
 		center = new IntVector3(x, y, z);
 		step = new IntVector3(0, 0, 0);
 		first = true;
+		distance = 0;
+		this.maxDistance = maxDistance;
+		this.hasNext = true;
 	}
 
 	/**
@@ -67,11 +77,13 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 		center.setY(y);
 		center.setZ(z);
 		first = true;
+		hasNext = true;
+		distance = 0;
 	}
 	
 	@Override
 	public boolean hasNext() {
-		return true;
+		return hasNext;
 	}
 
 	@Override
@@ -91,6 +103,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 				setY((center.getY() << 1) - getY() - 1);
 				step.setX(0);
 				step.setZ(0);
+				distance++;
 			} else if (dx == 0) {
 				// Reached end of horizontal slice
 				// Move up to next slice
@@ -128,9 +141,16 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 					step.setZ(1);
 				}
 			}
+			add(step);
+			if (distance == 0 || (dx == 0 && dz == 1 && dy >= maxDistance - 1)) {
+				hasNext = false;
+			}
 		}
-		add(step);
 		return this;
+	}
+	
+	public int getDistance() {
+		return distance;
 	}
 
 	@Override

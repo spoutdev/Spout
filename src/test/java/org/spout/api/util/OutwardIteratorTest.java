@@ -38,26 +38,29 @@ public class OutwardIteratorTest {
 	
 	private final int SIZE = 40;
 	
+	private final int DIST = SIZE / 3;
+	
 	private final int[][][] hits = new int[SIZE][SIZE][SIZE];
+	
+	IntVector3 center = new IntVector3(SIZE / 2, SIZE / 2, SIZE / 2);
 	
 	@Test
 	public void test() {
 		
-		IntVector3 center = new IntVector3(SIZE / 2, SIZE / 2, SIZE / 2);
-		
-		Iterator<IntVector3> itr = new OutwardIterator(center.getX(), center.getY(), center.getZ());
-		
+		OutwardIterator itr = new OutwardIterator(center.getX(), center.getY(), center.getZ(), DIST);
 		
 		int prev = -1;
-		
-		for (int i = 0; i < 8 * SIZE * SIZE * SIZE; i++) {
+
+		while (itr.hasNext()) {
 			IntVector3 next = itr.next();
 			int dist = getDistance(center, next);
+			System.out.println(next);
+			assertTrue("Distance readback is incorrect", dist == itr.getDistance());
 			assertTrue("Iterator moved inwards", dist >= prev);
 			add(next);
 		}
 		
-		assertTrue("All locations were not hit", check());
+		check();
 		
 	}
 	
@@ -78,9 +81,9 @@ public class OutwardIteratorTest {
 		for (int x = 0; x < SIZE; x++) {
 			for (int y = 0; y < SIZE; y++) {
 				for (int z = 0; z < SIZE; z++) {
-					if (hits[x][y][z] != 1) {
-						return false;
-					}
+					int distance = getDistance(center, new IntVector3(x, y, z));
+					assertTrue("Location missed " + x + " " + y + " " + z, distance > DIST || hits[x][y][z] == 1);
+					assertTrue("Location out of range hit " + x + " " + y + " " + z, distance <= DIST || hits[x][y][z] == 0);
 				}
 			}
 		}

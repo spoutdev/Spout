@@ -295,6 +295,10 @@ public class Point extends Vector3 {
 		return getClass().getSimpleName() + StringUtil.toString(world, x, y, z);
 	}
 	
+	public String toBlockString() {
+		return "{" + world.getName() + ":" + getBlockX() + ", " + getBlockY() + "," + getBlockZ() + "}";
+	}
+	
 	//Custom serialization logic because world can not be made serializable
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.writeFloat(this.x);

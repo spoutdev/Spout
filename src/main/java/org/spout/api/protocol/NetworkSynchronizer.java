@@ -44,12 +44,14 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.event.ProtocolEvent;
 import org.spout.api.protocol.event.ProtocolEventExecutor;
 import org.spout.api.protocol.event.ProtocolEventListener;
 import org.spout.api.scheduler.TickStage;
+import org.spout.api.util.OutwardIterator;
 
 public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
@@ -349,26 +351,22 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		int cx = bx >> Chunk.CHUNK_SIZE_BITS;
 		int cy = by >> Chunk.CHUNK_SIZE_BITS;
 		int cz = bz >> Chunk.CHUNK_SIZE_BITS;
-
-		// TODO - circle loading
-		for (int x = cx - viewDistance; x < cx + viewDistance; x++) {
-			for (int y = cy - viewDistance; y < cy + viewDistance; y++) {
-				for (int z = cz - viewDistance; z < cz + viewDistance; z++) {
-					Point base = new Point(world, x << Chunk.CHUNK_SIZE_BITS, y << Chunk.CHUNK_SIZE_BITS, z << Chunk.CHUNK_SIZE_BITS);
-					double distance = base.getManhattanDistance(playerChunkBase);
-					if (distance <= blockViewDistance) {
-						if (!activeChunks.contains(base)) {
-							if (distance <= targetSize) {
-								priorityChunkSendQueue.add(base);
-							} else {
-								chunkSendQueue.add(base);
-							}
-						}
-						if (!initializedChunks.contains(base)) {
-							chunkInitQueue.add(base);
-						}
-					}
+		
+		Iterator<IntVector3> itr = new OutwardIterator(cx, cy, cz, viewDistance);
+		int distance = 0;
+		
+		while (itr.hasNext()) {
+			IntVector3 v = itr.next();
+			Point base = new Point(world, v.getX() << Chunk.CHUNK_SIZE_BITS, v.getY() << Chunk.CHUNK_SIZE_BITS, v.getZ() << Chunk.CHUNK_SIZE_BITS);
+			if (!activeChunks.contains(base)) {
+				if (distance <= targetSize) {
+					priorityChunkSendQueue.add(base);
+				} else {
+					chunkSendQueue.add(base);
 				}
+			}
+			if (!initializedChunks.contains(base)) {
+				chunkInitQueue.add(base);
 			}
 		}
 	}
