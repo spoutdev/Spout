@@ -25,6 +25,7 @@
  */
 package org.spout.engine.world;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +46,13 @@ public class FilteredChunk extends SpoutChunk{
 	private final AtomicBoolean uniform;
 	private final AtomicInteger uniformId = new AtomicInteger(0);
 	private final AtomicReference<BlockMaterial> material = new AtomicReference<BlockMaterial>(null);
+
+	protected final static byte[] DARK = new byte[Chunk.CHUNK_VOLUME / 2];
+	protected final static byte[] LIGHT = new byte[Chunk.CHUNK_VOLUME / 2];
+
+	static {
+		Arrays.fill(LIGHT, (byte) 255);
+	}
 
 	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, BiomeManager manager, DataMap map) {
 		this(world, region, x, y, z, false, initial, null, null, null, manager, map.getRawMap());
@@ -161,7 +169,14 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockLight(x, y, z);
 	}
-	
+
+	@Override
+	public void initLighting() {
+		if (!uniform.get()) {
+			super.initLighting();
+		}
+	}
+
 	@Override
 	public void syncSave() {
 		if (uniform.get()) {
@@ -184,10 +199,10 @@ public class FilteredChunk extends SpoutChunk{
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			
+
 			byte[] skyLight = new byte[CHUNK_VOLUME / 2];
 			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, skyLight, 0, skyLight.length);
-			
+
 			byte[] blockLight = new byte[CHUNK_VOLUME / 2];
 			System.arraycopy(DARK, 0, blockLight, 0, blockLight.length);
 			return new SpoutChunkSnapshot(this, initial, new short[Chunk.CHUNK_VOLUME], blockLight, skyLight, entities);
