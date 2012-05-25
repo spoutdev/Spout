@@ -74,15 +74,30 @@ public class Inventory extends InventoryBase {
 	 * This viewer will be notified of item changes in this Inventory.
 	 * 
 	 * @param viewer to add
+	 * @param whether to perform an update on the viewers
 	 * @return True if the viewer was added, False if not
 	 */
-	public boolean addViewer(InventoryViewer viewer) {
+	public boolean addViewer(InventoryViewer viewer, boolean update) {
 		if (viewers.contains(viewer)) {
 			return false;
 		}
 		viewers.add(viewer);
-		viewer.updateAll(this, contents);
+		
+		if (update) {
+			viewer.updateAll(this, contents);
+		}
 		return true;
+	}
+	
+	/**
+	 * Adds a single {@link InventoryViewer} to this Inventory<br>
+	 * This viewer will be notified of item changes in this Inventory.
+	 * 
+	 * @param viewer to add
+	 * @return True if the viewer was added, False if not
+	 */
+	public boolean addViewer(InventoryViewer viewer) {
+		return addViewer(viewer, true);
 	}
 
 	/**
