@@ -889,15 +889,17 @@ public class SpoutWorld extends AsyncManager implements World {
 	private Set<Player> getPlayersNearRegion(Point position, int range) {
 		final int REGION_SIZE = Region.REGION_SIZE * Chunk.CHUNK_SIZE;
 		Region center = this.getRegionFromBlock(position);
-		
-		HashSet<Player> players = new HashSet<Player>();
-		final int regions = (range + REGION_SIZE - 1) / REGION_SIZE; //round up 1 region size
-		for (int dx = -regions; dx < regions; dx++) {
-			for (int dy = -regions; dy < regions; dy++) {
-				for (int dz = -regions; dz < regions; dz++) {
-					Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, false);
-					if (region != null) {
-						players.addAll(region.getPlayers());
+
+		if (center != null) {
+			HashSet<Player> players = new HashSet<Player>();
+			final int regions = (range + REGION_SIZE - 1) / REGION_SIZE; //round up 1 region size
+			for (int dx = -regions; dx < regions; dx++) {
+				for (int dy = -regions; dy < regions; dy++) {
+					for (int dz = -regions; dz < regions; dz++) {
+						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, false);
+						if (region != null) {
+							players.addAll(region.getPlayers());
+						}
 					}
 				}
 			}
