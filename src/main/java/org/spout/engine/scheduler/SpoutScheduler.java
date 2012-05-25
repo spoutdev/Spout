@@ -233,11 +233,11 @@ public final class SpoutScheduler implements Scheduler {
 
 			// Halt the executor for the Server
 			for (AsyncExecutor e : asyncExecutors.get()) {
-				if (!(e.getManager() instanceof SpoutServer)) {
+				if (!(e.getManager() instanceof SpoutEngine)) {
 					throw new IllegalStateException("Only the engine should be left to shutdown");
 				} else {
 					if (!e.haltExecutor()) {
-						throw new IllegalStateException("Unable to halt SpoutServer executor");
+						throw new IllegalStateException("Unable to halt engine executor");
 					}
 				}
 			}
