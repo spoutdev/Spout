@@ -159,7 +159,9 @@ public class SpoutEntity implements Entity, Tickable {
 				cont.onAttached();
 				attached = true;
 			}
-			cont.onTick(dt);
+			if (!isDead() && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
+				cont.onTick(dt);
+			}
 		}
 
 		//Copy values last (position may change during controller or session pulses)
