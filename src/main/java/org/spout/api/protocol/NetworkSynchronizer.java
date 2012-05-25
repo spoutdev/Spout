@@ -86,6 +86,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	private boolean death = false;
 	private boolean first = true;
 	private volatile boolean teleported = false;
+	private volatile boolean worldChanged = false;
 	private Point lastPosition = null;
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
@@ -190,7 +191,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
-				worldChanged(currentPosition.getWorld());
+				worldChanged = true;
 				teleported = true;
 			}
 
@@ -268,6 +269,11 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			if (teleported && entity != null) {
+				Point ep = entity.getPosition();
+				if (worldChanged) {
+					worldChanged(ep.getWorld());
+					worldChanged = false;
+				}
 				sendPosition(entity.getPosition(), entity.getRotation());
 				first = false;
 				teleported = false;
