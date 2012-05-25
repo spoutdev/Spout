@@ -403,10 +403,17 @@ public class BlockMaterial extends Material implements Placeable {
 	 * Called when an entity interacts with this block material in the world
 	 *
 	 * @param entity that is interacting with this material
-	 * @param position of the block interacted by the entity
 	 * @param type of interaction
 	 * @param clickedFace of the material clicked
 	 */
 	public void onInteractBy(Entity entity, Block block, Action type, BlockFace clickedFace) {
+	}
+
+	/**
+	 * Returns true if the block is transparent, false if not.
+	 * @return True if opacity is 0, false if more than.
+	 */
+	public boolean isTransparent() {
+		return this.opacity == 0;
 	}
 }
