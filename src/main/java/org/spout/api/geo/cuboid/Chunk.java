@@ -151,6 +151,11 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	public abstract void populate();
 
 	/**
+	 * Initializes the lighting in this chunk
+	 */
+	public abstract void initLighting();
+
+	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
 	 *
