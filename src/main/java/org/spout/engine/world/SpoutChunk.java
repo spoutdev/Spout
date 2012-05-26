@@ -149,7 +149,6 @@ public class SpoutChunk extends Chunk {
 	 * True if this chunk requires a full lighting re-initialization
 	 */
 	protected final AtomicBoolean isLightingInit = new AtomicBoolean(false);
-
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -198,6 +197,7 @@ public class SpoutChunk extends Chunk {
 		column.registerChunk();
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
+		blockStore.resetDirtyArrays();	// Clear false dirty state on freshly loaded chunk
 		this.biomes = manager;
 	}
 
