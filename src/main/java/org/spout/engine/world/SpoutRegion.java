@@ -28,11 +28,13 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -210,8 +212,10 @@ public class SpoutRegion extends Region {
 			AtomicReference<SpoutChunk> ref = chunks[x][y][z];
 
 			boolean success = false;
+			
+			List<SpoutEntity> newEntities = new ArrayList<SpoutEntity>(100);
 
-			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z));
+			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), newEntities);
 			if (newChunk == null) {
 				if (!loadopt.generateIfNeeded()) {
 					return null;
@@ -227,6 +231,10 @@ public class SpoutRegion extends Region {
 					numberActiveChunks.incrementAndGet();
 					if (!newChunk.isPopulated()) {
 						nonPopulatedChunks.add(newChunk);
+					}
+					for (SpoutEntity entity : newEntities) {
+						entity.setupInitialChunk(entity.getTransform());
+						addEntity(entity);
 					}
 					runningChunksQueue.add(newChunk);
 					return newChunk;

@@ -3,11 +3,13 @@ package org.spout.engine.filesystem;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -38,7 +40,6 @@ import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
-
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -197,10 +198,10 @@ public class WorldFiles {
 		}
 	}
 
-	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis) {
+	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, List<SpoutEntity> loadedEntities) {
 		SpoutChunk chunk = null;
 		NBTInputStream is = null;
-
+		
 		try {
 			if (dis == null) {
 				//The inputstream is null because no chunk data exists
@@ -253,7 +254,7 @@ public class WorldFiles {
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
 
-			loadEntities(r, (CompoundMap) map.get("entities").getValue());
+			loadEntities(r, (CompoundMap) map.get("entities").getValue(), loadedEntities);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -267,10 +268,10 @@ public class WorldFiles {
 		return chunk;
 	}
 
-	private static void loadEntities(SpoutRegion r, CompoundMap map) {
+	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
 		if (r != null && map != null) {
 			for (Tag tag : map) {
-				loadEntity(r, (CompoundTag) tag);
+				loadedEntities.add(loadEntity(r, (CompoundTag) tag));
 			}
 		}
 	}
@@ -289,7 +290,7 @@ public class WorldFiles {
 		return tagMap;
 	}
 
-	private static Entity loadEntity(SpoutRegion r, CompoundTag tag) {
+	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
 		CompoundMap map = tag.getValue();
 
 		@SuppressWarnings("unused")
@@ -338,9 +339,6 @@ public class WorldFiles {
 			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
 			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
 			e.setObserver(observer);
-			if (r != null) {
-				r.addEntity(e);
-			}
 			
 			return e;
 		} else {

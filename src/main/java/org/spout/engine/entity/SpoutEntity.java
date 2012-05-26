@@ -104,8 +104,7 @@ public class SpoutEntity implements Entity, Tickable {
 		controllerLive = new AtomicReference<Controller>();
 
 		if (transform != null && load) {
-			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
-			entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
+			setupInitialChunk(transform);
 		}
 
 		viewDistanceLive.set(viewDistance);
@@ -129,6 +128,14 @@ public class SpoutEntity implements Entity, Tickable {
 
 	public SpoutEntity(SpoutEngine engine, Point point, Controller controller) {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
+	}
+	
+	/**
+	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
+	 */
+	public void setupInitialChunk(Transform transform) {
+		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
+		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
 	}
 
 	@Override
