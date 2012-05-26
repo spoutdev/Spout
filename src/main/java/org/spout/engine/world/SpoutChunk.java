@@ -259,18 +259,22 @@ public class SpoutChunk extends Chunk {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
-		light &= 0xFF;
-		
+		light &= 0xF;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
+
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
-		byte old = blockLight[index / 2];
 		byte oldLight;
 		if ((index & 1) == 0) {
-			oldLight = NibblePairHashed.key1(old);
-			blockLight[index / 2] = NibblePairHashed.key(light, old);
+			index >>= 1;
+			oldLight = NibblePairHashed.key1(blockLight[index]);
+			blockLight[index] = NibblePairHashed.setKey1(blockLight[index], light);
 		} else {
-			oldLight = NibblePairHashed.key2(old);
-			blockLight[index / 2] = NibblePairHashed.key(old, light);
+			index >>= 1;
+			oldLight = NibblePairHashed.key2(blockLight[index]);
+			blockLight[index] = NibblePairHashed.setKey2(blockLight[index], light);
 		}
 		if (light > oldLight) {
 			//light increased
@@ -289,7 +293,7 @@ public class SpoutChunk extends Chunk {
 	public byte getBlockLight(int x, int y, int z) {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
-		byte light = blockLight[index / 2];
+		byte light = blockLight[index >> 1];
 		if ((index & 1) == 0) {
 			return NibblePairHashed.key1(light);
 		} else {
@@ -303,19 +307,23 @@ public class SpoutChunk extends Chunk {
 			throw new NullPointerException("Source can not be null");
 		}
 		light &= 0xF;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
 
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
-		byte old = skyLight[index / 2];
 		byte oldLight;
-
 		if ((index & 1) == 1) {
-			oldLight = NibblePairHashed.key1(old);
-			skyLight[index / 2] = NibblePairHashed.key(light, old);
+			index >>= 1;
+			oldLight = NibblePairHashed.key1(skyLight[index]);
+			skyLight[index] = NibblePairHashed.setKey1(skyLight[index], light);
 		} else {
-			oldLight = NibblePairHashed.key2(old);
-			skyLight[index / 2] = NibblePairHashed.key(old, light);
+			index >>= 1;
+			oldLight = NibblePairHashed.key2(skyLight[index]);
+			skyLight[index] = NibblePairHashed.setKey2(skyLight[index], light);
 		}
+
 		if (light > oldLight) {
 			//light increased
 			getWorld().getLightingManager().skyLightGreater.add(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
@@ -333,7 +341,7 @@ public class SpoutChunk extends Chunk {
 	public byte getBlockSkyLight(int x, int y, int z) {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
-		byte light = skyLight[index / 2];
+		byte light = skyLight[index >> 1];
 		if ((index & 1) == 1) {
 			return NibblePairHashed.key1(light);
 		} else {
