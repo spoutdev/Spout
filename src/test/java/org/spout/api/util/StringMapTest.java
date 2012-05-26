@@ -26,20 +26,19 @@
  */
 package org.spout.api.util;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.spout.api.io.store.simple.FlatFileStore;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
@@ -76,6 +75,12 @@ public class StringMapTest {
 		serverMap = new StringMap(null, serverStore, minValue, maxValue);
 
 		readWorldFiles();
+	}
+	
+	@After
+	public void cleanUp() {
+		world1File.delete();
+		world2File.delete();
 	}
 
 	@Test
