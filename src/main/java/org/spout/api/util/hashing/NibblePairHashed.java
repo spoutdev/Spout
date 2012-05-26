@@ -35,7 +35,27 @@ public class NibblePairHashed {
 	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
 	 */
 	public static byte key(int key1, int key2) {
-		return (byte) ((byte) key1 << 4 | ((byte) key2 & 0xF));
+		return (byte) (((key1 & 0xF) << 4) | (key2 & 0xF));
+	}
+
+	/**
+	 * Sets 4 most significant bits in the composite to the 4 least significant bits in the key
+	 * @param composite
+	 * @param key2
+	 * @return
+	 */
+	public static byte setKey1(int composite, int key1) {
+		return (byte) (((key1 & 0xF) << 4) | (composite & 0xF));
+	}
+
+	/**
+	 * Sets 4 least significant bits in the composite to the 4 least significant bits in the key
+	 * @param composite
+	 * @param key2
+	 * @return
+	 */
+	public static byte setKey2(int composite, int key2) {
+		return (byte) ((composite & 0xF0) | (key2 & 0xF));
 	}
 
 	/**
@@ -45,7 +65,7 @@ public class NibblePairHashed {
 	 * @return the 4 most significant bits in a byte
 	 */
 	public static byte key1(int composite) {
-		return (byte) (((byte) composite >> 4) & 0xF);
+		return (byte) ((composite >> 4) & 0xF);
 	}
 
 	/**
@@ -55,6 +75,6 @@ public class NibblePairHashed {
 	 * @return the 4 least significant bits in a byte
 	 */
 	public static byte key2(int composite) {
-		return (byte) ((byte) composite & 0xF);
+		return (byte) (composite & 0xF);
 	}
 }
