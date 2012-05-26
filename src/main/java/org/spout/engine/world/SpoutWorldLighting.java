@@ -18,9 +18,9 @@ public class SpoutWorldLighting extends Thread implements Source {
 		private TLongIterator iter; //temporary
 
 		public void add(int x, int y, int z) {
-			synchronized (updates) {
-				//updates.add(x, y, z);
-			}
+			//synchronized (updates) {
+			//	updates.add(x, y, z);
+			//}
 		}
 
 		public boolean transfer(TLongList list) {
