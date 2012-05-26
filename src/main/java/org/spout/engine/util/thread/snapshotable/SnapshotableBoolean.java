@@ -25,6 +25,8 @@
  */
 package org.spout.engine.util.thread.snapshotable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -33,11 +35,11 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable object that supports primitive booleans
  */
 public class SnapshotableBoolean implements Snapshotable {
-	private volatile boolean next;
+	private AtomicBoolean next;
 	private boolean snapshot;
 
 	public SnapshotableBoolean(SnapshotManager manager, boolean initial) {
-		next = initial;
+		next = new AtomicBoolean(initial);
 		snapshot = initial;
 		manager.add(this);
 	}
@@ -48,7 +50,18 @@ public class SnapshotableBoolean implements Snapshotable {
 	 */
 	@DelayedWrite
 	public void set(boolean next) {
-		this.next = next;
+		this.next.set(next);
+	}
+	
+	/**
+	 * Sets the next value but only if the current next value is the given value
+	 * 
+	 * @param expect
+	 * @param next
+	 * @return true on success
+	 */
+	public boolean compareAndSet(boolean expect, boolean next) {
+		return this.next.compareAndSet(expect, next);
 	}
 
 	/**
@@ -66,7 +79,7 @@ public class SnapshotableBoolean implements Snapshotable {
 	 */
 	@LiveRead
 	public boolean getLive() {
-		return next;
+		return next.get();
 	}
 
 	/**
@@ -74,6 +87,6 @@ public class SnapshotableBoolean implements Snapshotable {
 	 */
 	@Override
 	public void copySnapshot() {
-		snapshot = next;
+		snapshot = next.get();
 	}
 }
