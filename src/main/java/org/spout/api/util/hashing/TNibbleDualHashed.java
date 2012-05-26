@@ -35,7 +35,7 @@ public class TNibbleDualHashed {
 	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
 	 */
 	public static byte key(int key1, int key2) {
-		return (byte) (key1 << 4 | (key2 & 0xF));
+		return (byte) ((byte) key1 << 4 | ((byte) key2 & 0xF));
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class TNibbleDualHashed {
 	 * @return the 4 most significant bits in a byte
 	 */
 	public static byte key1(int composite) {
-		return (byte) ((composite >> 4) & 0xF);
+		return (byte) (((byte) composite >> 4) & 0xF);
 	}
 
 	/**
@@ -55,6 +55,6 @@ public class TNibbleDualHashed {
 	 * @return the 4 least significant bits in a byte
 	 */
 	public static byte key2(int composite) {
-		return (byte) (composite & 0xF);
+		return (byte) ((byte) composite & 0xF);
 	}
 }

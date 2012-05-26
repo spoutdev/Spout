@@ -95,7 +95,6 @@ public class BlockMaterial extends Material implements Placeable {
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
-	private byte lightLevel = 0;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 	private ControllerType controller = null;
 
@@ -209,19 +208,8 @@ public class BlockMaterial extends Material implements Placeable {
 	 * 
 	 * @return light level
 	 */
-	public byte getLightLevel() {
-		return this.lightLevel;
-	}
-
-	/**
-	 * Sets the amount of light this block emits
-	 * 
-	 * @param level
-	 * @return this material
-	 */
-	public BlockMaterial setLightLevel(byte level) {
-		this.lightLevel = level;
-		return this;
+	public byte getLightLevel(short data) {
+		return 0;
 	}
 
 	/**

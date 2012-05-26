@@ -76,38 +76,4 @@ public abstract class HashUtil {
 	public static long intToLong(int key1, int key2) {
 		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
-
-	/**
-	 * Returns the 4 most significant bits in the byte value.
-	 * 
-	 * @param composite to separate
-	 * @return the 4 most significant bits in a byte
-	 */
-	public static byte byteToNibble1(int composite) {
-		return (byte) ((composite >> 4) & 0xF);
-	}
-
-	/**
-	 * Returns the 4 least significant bits in the byte  value.
-	 * 
-	 * @param composite to separate
-	 * @return the 4 least significant bits in a byte
-	 */
-	public static byte byteToNibble2(int composite) {
-		return (byte) (composite & 0xF);
-	}
-
-	/**
-	 * Squashes 2 nible values into 1 byte, with the first value in
-	 * the most significant bits and the second value in the least
-	 * significant bits.
-	 * 
-	 * @param key1 to sqaush
-	 * @param key2 to sqaush
-	 * @return squashed byte
-	 */
-	public static byte nibbleToByte(int key1, int key2) {
-		return (byte) (key1 << 4 | (key2 & 0xF));
-	}
-
 }
