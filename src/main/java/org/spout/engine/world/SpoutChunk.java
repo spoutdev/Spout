@@ -63,6 +63,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -285,7 +286,9 @@ public class SpoutChunk extends Chunk {
 		} else {
 			return false;
 		}
-		this.setLightDirty(true);
+		if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
+			this.setLightDirty(true);
+		}
 		return true;
 	}
 
@@ -333,7 +336,9 @@ public class SpoutChunk extends Chunk {
 		} else {
 			return false;
 		}
-		this.setLightDirty(true);
+		if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
+			this.setLightDirty(true);
+		}
 		return true;
 	}
 
