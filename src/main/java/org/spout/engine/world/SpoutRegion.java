@@ -98,11 +98,6 @@ public class SpoutRegion extends Region {
 	 */
 	private static final int REAP_PER_TICK = 1;
 	/**
-	 * The maximum number of chunks that will be processed for lighting updates
-	 * each tick.
-	 */
-	private static final int LIGHT_PER_TICK = 20;
-	/**
 	 * The segment size to use for chunk storage. The actual size is
 	 * 2^(SEGMENT_SIZE)
 	 */
@@ -143,10 +138,6 @@ public class SpoutRegion extends Region {
 	 */
 	//TODO thresholds?
 	private final TByteTripleObjectHashMap<Source> queuedPhysicsUpdates = new TByteTripleObjectHashMap<Source>();
-	/**
-	 * A queue of chunks that have columns of light that need to be recalculated
-	 */
-	private final Queue<SpoutChunk> lightingQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 	/**
 	 * A queue of chunks that need to be populated
 	 */
@@ -455,12 +446,6 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	protected void queueLighting(SpoutChunk c) {
-		if (!lightingQueue.contains(c)) {
-			lightingQueue.add(c);
-		}
-	}
-
 	public void addEntity(Entity e) {
 		Controller controller = e.getController();
 		if (controller instanceof BlockController) {
@@ -521,16 +506,6 @@ public class SpoutRegion extends Region {
 							Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
 							material.onUpdate(block);
 						}
-					}
-				}
-
-				for (int i = 0; i < LIGHT_PER_TICK; i++) {
-					SpoutChunk toLight = lightingQueue.poll();
-					if (toLight == null) {
-						break;
-					}
-					if (toLight.isLoaded()) {
-						toLight.processQueuedLighting();
 					}
 				}
 
