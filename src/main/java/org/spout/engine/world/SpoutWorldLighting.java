@@ -8,7 +8,7 @@ import org.spout.api.Source;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
-import org.spout.api.util.hashing.TInt21TripleHashed;
+import org.spout.api.util.hashing.Int21TripleHashed;
 import org.spout.api.util.set.TInt21TripleHashSet;
 
 public class SpoutWorldLighting extends Thread implements Source {
@@ -56,7 +56,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 		}
 
 		public DiamondLightModel load(long key) {
-			return this.load(TInt21TripleHashed.key1(key), TInt21TripleHashed.key2(key), TInt21TripleHashed.key3(key));
+			return this.load(Int21TripleHashed.key1(key), Int21TripleHashed.key2(key), Int21TripleHashed.key3(key));
 		}
 
 		public DiamondLightModel load(int x, int y, int z) {

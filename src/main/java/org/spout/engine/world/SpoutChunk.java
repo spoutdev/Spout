@@ -60,7 +60,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.hashing.TNibbleDualHashed;
+import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 import org.spout.engine.entity.SpoutEntity;
@@ -266,11 +266,11 @@ public class SpoutChunk extends Chunk {
 		byte old = blockLight[index / 2];
 		byte oldLight;
 		if ((index & 1) == 0) {
-			oldLight = TNibbleDualHashed.key1(old);
-			blockLight[index / 2] = TNibbleDualHashed.key(light, old);
+			oldLight = NibblePairHashed.key1(old);
+			blockLight[index / 2] = NibblePairHashed.key(light, old);
 		} else {
-			oldLight = TNibbleDualHashed.key2(old);
-			blockLight[index / 2] = TNibbleDualHashed.key(old, light);
+			oldLight = NibblePairHashed.key2(old);
+			blockLight[index / 2] = NibblePairHashed.key(old, light);
 		}
 		if (light > oldLight) {
 			//light increased
@@ -291,9 +291,9 @@ public class SpoutChunk extends Chunk {
 		int index = getBlockIndex(x, y, z);
 		byte light = blockLight[index / 2];
 		if ((index & 1) == 0) {
-			return TNibbleDualHashed.key1(light);
+			return NibblePairHashed.key1(light);
 		} else {
-			return TNibbleDualHashed.key2(light);
+			return NibblePairHashed.key2(light);
 		}
 	}
 
@@ -310,11 +310,11 @@ public class SpoutChunk extends Chunk {
 		byte oldLight;
 
 		if ((index & 1) == 1) {
-			oldLight = TNibbleDualHashed.key1(old);
-			skyLight[index / 2] = TNibbleDualHashed.key(light, old);
+			oldLight = NibblePairHashed.key1(old);
+			skyLight[index / 2] = NibblePairHashed.key(light, old);
 		} else {
-			oldLight = TNibbleDualHashed.key2(old);
-			skyLight[index / 2] = TNibbleDualHashed.key(old, light);
+			oldLight = NibblePairHashed.key2(old);
+			skyLight[index / 2] = NibblePairHashed.key(old, light);
 		}
 		if (light > oldLight) {
 			//light increased
@@ -335,9 +335,9 @@ public class SpoutChunk extends Chunk {
 		int index = getBlockIndex(x, y, z);
 		byte light = skyLight[index / 2];
 		if ((index & 1) == 1) {
-			return TNibbleDualHashed.key1(light);
+			return NibblePairHashed.key1(light);
 		} else {
-			return TNibbleDualHashed.key2(light);
+			return NibblePairHashed.key2(light);
 		}
 	}
 
