@@ -540,8 +540,13 @@ public class SpoutChunk extends Chunk {
 		return old;
 	}
 
-	public void copySnapshotRun() throws InterruptedException {
+	/**
+	 * @return true if the chunk can be skipped
+	 * @throws InterruptedException
+	 */
+	public boolean copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
+		return entities.get().size() == 0;	
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
@@ -570,6 +575,7 @@ public class SpoutChunk extends Chunk {
 			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
 		}
 		checkChunkLoaded();
+		parentRegion.unSkipChunk(this);
 		TickStage.checkStage(TickStage.FINALIZE);
 		int distance = (int) ((SpoutEntity) entity).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(entity, distance);
@@ -584,6 +590,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean removeObserver(Entity entity) {
 		checkChunkLoaded();
+		parentRegion.unSkipChunk(this);
 		TickStage.checkStage(TickStage.FINALIZE);
 		Integer oldDistance = observers.remove(entity);
 		if (oldDistance != null) {
@@ -728,12 +735,14 @@ public class SpoutChunk extends Chunk {
 	public boolean addEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
+		parentRegion.unSkipChunk(this);
 		return entities.add(entity);
 	}
 
 	public boolean removeEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
+		parentRegion.unSkipChunk(this);
 		return entities.remove(entity);
 	}
 

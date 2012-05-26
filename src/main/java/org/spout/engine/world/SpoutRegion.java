@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -153,6 +154,9 @@ public class SpoutRegion extends Region {
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 	
 	private final SpoutTaskManager taskManager;
+	
+	private final LinkedHashSet<SpoutChunk> runningChunks = new LinkedHashSet<SpoutChunk>();
+	private final ConcurrentLinkedQueue<SpoutChunk> runningChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, LoadGenerateOption.NO_LOAD);
@@ -233,6 +237,7 @@ public class SpoutRegion extends Region {
 					if (!newChunk.isPopulated()) {
 						nonPopulatedChunks.add(newChunk);
 					}
+					runningChunksQueue.add(newChunk);
 					return newChunk;
 				} else {
 					newChunk.deregisterFromColumn(false);
@@ -287,6 +292,9 @@ public class SpoutRegion extends Region {
 
 			((SpoutChunk) currentChunk).setUnloaded();
 
+			runningChunksQueue.remove(currentChunk);
+			runningChunks.remove(currentChunk);
+			
 			if (num == 0) {
 				return true;
 			} else if (num < 0) {
@@ -384,16 +392,15 @@ public class SpoutRegion extends Region {
 	public void copySnapshotRun() throws InterruptedException {
 		entityManager.copyAllSnapshots();
 
-		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
-			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
-				for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
-					Chunk chunk = chunks[dx][dy][dz].get();
-					if (chunk != null) {
-						((SpoutChunk) chunk).copySnapshotRun();
-					}
-				}
+		Iterator<SpoutChunk> itr = runningChunks.iterator();
+		
+		while (itr.hasNext()) {
+			SpoutChunk c = itr.next();
+			if (c.copySnapshotRun()) {
+				itr.remove();
 			}
 		}
+		
 		snapshotManager.copyAllSnapshots();
 
 		boolean empty = false;
@@ -647,9 +654,11 @@ public class SpoutRegion extends Region {
 						}
 						spoutChunk.resetDirtyArrays();
 					}
-					spoutChunk.preSnapshot();
 				}
 			}
+		}
+		for (SpoutChunk c : runningChunks) {
+			c.preSnapshot();
 		}
 	}
 
@@ -941,5 +950,13 @@ public class SpoutRegion extends Region {
 	@Override
 	public TaskManager getTaskManager() {
 		return taskManager;
+	}
+	
+	public void skipChunk(SpoutChunk chunk) {
+		runningChunks.remove(chunk);
+	}
+	
+	public void unSkipChunk(SpoutChunk chunk) {
+		runningChunks.add(chunk);
 	}
 }
