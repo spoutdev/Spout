@@ -38,6 +38,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.util.hashing.NibblePairHashed;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
 	/**
@@ -100,23 +101,24 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
-		int index = this.getBlockIndex(x, y, z);
-		byte light = skyLight[index / 2];
+		int index = getBlockIndex(x, y, z);
+		byte light = skyLight[index >> 1];
 		if ((index & 1) == 1) {
-			return (byte) ((light >> 4) & 0xF);
+			return NibblePairHashed.key1(light);
 		} else {
-			return (byte) (light & 0xF);
+			return NibblePairHashed.key2(light);
 		}
 	}
 
 	@Override
 	public byte getBlockLight(int x, int y, int z) {
-		int index = this.getBlockIndex(x, y, z);
-		byte light = blockLight[index / 2];
-		if ((index & 1) == 0) {
-			return (byte) ((light >> CHUNK_SIZE_BITS) & 0xF);
+		int index = getBlockIndex(x, y, z);
+		byte light = blockLight[index >> 1];
+		if ((index & 1) == 1) {
+			return NibblePairHashed.key1(light);
+		} else {
+			return NibblePairHashed.key2(light);
 		}
-		return (byte) (light & 0xF);
 	}
 
 	@Override

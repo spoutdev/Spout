@@ -13,14 +13,21 @@ import org.spout.api.util.set.TInt21TripleHashSet;
 
 public class SpoutWorldLighting extends Thread implements Source {
 
-	public static class Section {
+	public static class Section {		
 		private final TInt21TripleHashSet updates = new TInt21TripleHashSet();
 		private TLongIterator iter; //temporary
+		private final SpoutWorldLighting instance;
+
+		public Section(SpoutWorldLighting instance) {
+			this.instance = instance;
+		}
 
 		public void add(int x, int y, int z) {
-			//synchronized (updates) {
-			//	updates.add(x, y, z);
-			//}
+			if (this.instance.running) {
+				synchronized (updates) {
+					updates.add(x, y, z);
+				}
+			}
 		}
 
 		public boolean transfer(TLongList list) {
@@ -60,6 +67,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 		}
 
 		public DiamondLightModel load(int x, int y, int z) {
+			System.out.println("LOAD: " + x + "/" + y + "/" + z);
 			this.center.load(x, y, z);
 			for (Element element : this.neighbours) {
 				element.load(x, y, z);
@@ -69,10 +77,12 @@ public class SpoutWorldLighting extends Thread implements Source {
 
 		public void doGreater() {
 			for (Element element : this.neighbours) {
-				if (!center.material.occludes(element.offset)) {
-					if (!element.material.occludes(element.offset.getOpposite())) {
-						if (center.lightToNeighbours > element.light) {
-							element.setLight(center.lightToNeighbours);
+				if (element.material != null) {
+					if (!center.material.occludes(element.offset)) {
+						if (!element.material.occludes(element.offset.getOpposite())) {
+							if (center.lightToNeighbours > element.light) {
+								element.setLight(center.lightToNeighbours);
+							}
 						}
 					}
 				}
@@ -87,8 +97,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 			}
 
 			@Override
-			public void load(int x, int y, int z) {
-				super.load(x, y, z);
+			public void loadLight() {
 				this.blockLight = this.material.getLightLevel(this.data);
 				this.light = this.chunk.getBlockLight(x, y, z);
 			}
@@ -109,14 +118,15 @@ public class SpoutWorldLighting extends Thread implements Source {
 			}
 
 			@Override
-			public void load(int x, int y, int z) {
-				super.load(x, y, z);
+			public void loadLight() {
 				this.light = this.chunk.getBlockSkyLight(x, y, z);
 			}
 
 			@Override
 			public void setLight(byte light) {
 				if (this.light != 15) {
+					System.out.println("[" + this.x + "/" + this.y + "/" + this.z + "] = " + light);
+					this.light = light;
 					this.chunk.setBlockSkyLight(this.x, this.y, this.z, light, this.world);
 				}
 			}
@@ -141,24 +151,31 @@ public class SpoutWorldLighting extends Thread implements Source {
 				this.x = x + (int) this.offset.getOffset().getX();
 				this.y = y + (int) this.offset.getOffset().getY();
 				this.z = z + (int) this.offset.getOffset().getZ();
-				this.chunk = this.world.getChunkFromBlock(x, y, z, true);
-				this.material = this.chunk.getBlockMaterial(x, y, z);
-				this.data = this.chunk.getBlockData(x, y, z);
-				this.material = this.material.getSubMaterial(this.data);
-				this.lightToNeighbours = (byte) (this.light - this.material.getOpacity() - 1);
-				if (this.lightToNeighbours < 0) {
-					this.lightToNeighbours = 0;
+				this.chunk = this.world.getChunkFromBlock(x, y, z, false);
+				if (this.chunk == null || !this.chunk.isLoaded()) {
+					this.material = null;
+				} else {
+					this.material = this.chunk.getBlockMaterial(x, y, z);
+					this.data = this.chunk.getBlockData(x, y, z);
+					this.material = this.material.getSubMaterial(this.data);
+					this.lightToNeighbours = (byte) (this.light - this.material.getOpacity() - 1);
+					if (this.lightToNeighbours < 0) {
+						this.lightToNeighbours = 0;
+					}
+					this.loadLight();
 				}
 			}
+
+			public abstract void loadLight();
 
 			public abstract void setLight(byte light);
 		}
 	}
 
-	public final Section skyLightGreater = new Section();
-	public final Section skyLightLesser = new Section();
-	public final Section blockLightGreater = new Section();
-	public final Section blockLightLesser = new Section();
+	public final Section skyLightGreater = new Section(this);
+	public final Section skyLightLesser = new Section(this);
+	public final Section blockLightGreater = new Section(this);
+	public final Section blockLightLesser = new Section(this);
 	private final SpoutWorld world;
 	private boolean running = true;
 
@@ -173,7 +190,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 
 	@Override
 	public void run() {
-		this.running = true; //TODO: For now block light smoothing is DISABLED until it is stable enough.
+		this.running = false; //TODO: For now block light smoothing is DISABLED until it is stable enough.
 		TLongList updates = new TLongArrayList();
 		TLongIterator iter;
 		DiamondLightModel skyModel = new DiamondLightModel(this.world, true);
