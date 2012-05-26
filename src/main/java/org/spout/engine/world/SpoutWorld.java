@@ -67,8 +67,9 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.scheduler.TaskManager;
-import org.spout.api.util.HashUtil;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.hashing.IntPairHashed;
+import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
@@ -141,6 +142,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * The directory where the world data is stored
 	 */
 	private final File worldDirectory;
+	/**
+	 * The async thread which handles the calculation of block and sky lighting in the world
+	 */
+	private final SpoutWorldLighting lightingManager;
 
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
@@ -194,7 +199,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.dataMap = new DataMap(this.datatableMap);
 
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
-		
+
+		this.lightingManager = new SpoutWorldLighting(this);
+		this.lightingManager.start();
+
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
 		
 		AsyncExecutor e = getExecutor();
@@ -473,6 +481,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		return server;
 	}
 
+	/**
+	 * Gets the lighting manager that calculates the light for this world
+	 * @return world lighting manager
+	 */
+	public SpoutWorldLighting getLightingManager() {
+		return this.lightingManager;
+	}
+
 	@Override
 	public int getHeight() {
 		// TODO: Variable world height
@@ -644,7 +660,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param z the z coordinate
 	 */
 	public void removeColumn(int x, int z, SpoutColumn column) {
-		long key = HashUtil.intToLong(x, z);
+		long key = IntPairHashed.key(x, z);
 		columns.remove(key, column);
 	}
 
@@ -659,7 +675,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutColumn getColumn(int x, int z, boolean create) {
 		int colX = x >> SpoutColumn.COLUMN_SIZE_BITS;
 		int colZ = z >> SpoutColumn.COLUMN_SIZE_BITS;
-		long key = HashUtil.intToLong(colX, colZ);
+		long key = IntPairHashed.key(colX, colZ);
 		SpoutColumn column = columns.get(key);
 		if (create && column == null) {
 			SpoutColumn newColumn = new SpoutColumn(this, colX, colZ);
@@ -701,7 +717,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		BAAWrapper baa = getColumnHeightMapBAA(x, z);
 
-		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
+		int key = NibblePairHashed.key(x, z) & 0xFF;
 
 		return baa.getBlockInputStream(key);
 	}
@@ -710,7 +726,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		BAAWrapper baa = getColumnHeightMapBAA(x, z);
 
-		int key = HashUtil.nibbleToByte(x, z) & 0xFF;
+		int key = NibblePairHashed.key(x, z) & 0xFF;
 
 		return baa.getBlockOutputStream(key);
 	}
@@ -738,6 +754,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	public void unload(boolean save) {
+		this.getLightingManager().abort();
 		if (save) {
 			WorldFiles.saveWorldData(this);
 		}

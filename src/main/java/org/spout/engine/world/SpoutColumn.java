@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
@@ -159,19 +158,11 @@ public class SpoutColumn {
 		int xx = (this.x << COLUMN_SIZE_BITS) + (x & BIT_MASK);
 		int yy = y;
 		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
-		return isAir(world.getBlockMaterial(xx, yy, zz));
+		return world.getBlockMaterial(xx, yy, zz).isTransparent();
 	}
 
 	private boolean isAir(Chunk c, int x, int y, int z) {
-		return isAir(c.getBlockMaterial(x, y, z));
-	}
-
-	private boolean isAir(BlockMaterial m) {
-		if (m == null) {
-			return false;
-		} else {
-			return m.getOpacity() == 0;
-		}
+		return c.getBlockMaterial(x, y, z).isTransparent();
 	}
 
 	private AtomicInteger getAtomicInteger(int x, int z) {
