@@ -41,6 +41,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder DEFAULT_WORLD = new ConfigurationHolder("world", "default-world");
 	public static final ConfigurationHolder USE_WHITELIST = new ConfigurationHolder(false, "use-whitelist");
 	public static final ConfigurationHolder VIEW_DISTANCE = new ConfigurationHolder(10, "view-distance");
+	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "live-lighting");
 	public static final ConfigurationHolder WHITELIST = new ConfigurationHolder(Arrays.asList("Notch", "ez", "jeb"), "whitelist");
 	public static final ConfigurationHolder WORLDS = new ConfigurationHolder("default", "worlds");
 
