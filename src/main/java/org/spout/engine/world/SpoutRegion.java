@@ -580,6 +580,9 @@ public class SpoutRegion extends Region {
 
 	public void haltRun() throws InterruptedException {
 	}
+	
+	private int dx = 0;
+	private int dy = 0;
 
 	public void finalizeRun() throws InterruptedException {
 		// Compress at most 1 chunk per tick per region
@@ -588,19 +591,24 @@ public class SpoutRegion extends Region {
 		int reaped = 0;
 
 		long worldAge = getWorld().getAge();
+		
+		dy++;
+		if (dy >= Region.REGION_SIZE) {
+			dy = 0;
+			dx++;
+			if (dx >= Region.REGION_SIZE) {
+				dx = 0;
+			}
+		}
 
-		for (int dx = 0; dx < Region.REGION_SIZE && !chunkCompressed; dx++) {
-			for (int dy = 0; dy < Region.REGION_SIZE && !chunkCompressed; dy++) {
-				for (int dz = 0; dz < Region.REGION_SIZE && !chunkCompressed; dz++) {
-					Chunk chunk = chunks[dx][dy][dz].get();
-					if (chunk != null) {
-						chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
+		for (int dz = 0; dz < Region.REGION_SIZE && !chunkCompressed; dz++) {
+			Chunk chunk = chunks[dx][dy][dz].get();
+			if (chunk != null) {
+				chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
 
-						if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
-							((SpoutChunk) chunk).unload(true);
-							reaped++;
-						}
-					}
+				if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
+					((SpoutChunk) chunk).unload(true);
+					reaped++;
 				}
 			}
 		}
