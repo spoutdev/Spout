@@ -33,7 +33,7 @@ import gnu.trove.set.TLongSet;
 
 import java.util.Collection;
 
-import org.spout.api.util.hashing.TIntPairHashed;
+import org.spout.api.util.hashing.IntPairHashed;
 
 /**
  * A simplistic map that supports a pair of integers for keys, using a trove
@@ -42,7 +42,7 @@ import org.spout.api.util.hashing.TIntPairHashed;
  * @author Afforess
  *
  */
-public class TIntPairObjectHashMap<K> extends TIntPairHashed {
+public class TIntPairObjectHashMap<K> extends IntPairHashed {
 	protected TLongObjectMap<K> map;
 
 	public TIntPairObjectHashMap() {

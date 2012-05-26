@@ -26,35 +26,16 @@
  */
 package org.spout.api.util.hashing;
 
-public class TIntPairHashed {
+public class NibbleTripleHashed {
 	/**
-	 * Creates a long key from 2 ints
+	 * Packs the first 4 most significant bits of each byte into a <code>short</code>
 	 *
-	 * @param key1 an <code>int</code> value
-	 * @param key2 an <code>int</code> value
-	 * @return a long which is the concatenation of key1 and key2
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>byte</code> value
+	 * @param key3 a <code>byte</code> value
+	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
 	 */
-	public static final long key(int key1, int key2) {
-		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
-	}
-
-	/**
-	 * Gets the first 32-bit integer value from an long key
-	 * 
-	 * @param key to get from
-	 * @return the first 32-bit integer value in the key
-	 */
-	public static int key1(long key) {
-		return (int) (key >> 32 & 0xFFFFFFFFL);
-	}
-
-	/**
-	 * Gets the second 32-bit integer value from an long key
-	 * 
-	 * @param key to get from
-	 * @return the second 32-bit integer value in the key
-	 */
-	public static int key2(long key) {
-		return (int) (key & 0xFFFFFFFFL);
+	public static final short key(int key1, int key2, int key3) {
+		return (short) ((key1 & 0xF) << 8 | (key2 & 0xF) << 4 | key3 & 0xF);
 	}
 }

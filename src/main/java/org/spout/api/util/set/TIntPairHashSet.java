@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.set;
 
-import org.spout.api.util.hashing.TIntPairHashed;
+import org.spout.api.util.hashing.IntPairHashed;
 
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.hash.TLongHashSet;
@@ -37,7 +37,7 @@ import gnu.trove.set.hash.TLongHashSet;
  * @author Afforess
  *
  */
-public class TIntPairHashSet extends TIntPairHashed {
+public class TIntPairHashSet extends IntPairHashed {
 	private TLongHashSet set;
 
 	public TIntPairHashSet() {

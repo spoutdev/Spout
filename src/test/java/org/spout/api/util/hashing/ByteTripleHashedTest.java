@@ -26,35 +26,28 @@
  */
 package org.spout.api.util.hashing;
 
-public class TNibbleDualHashed {
-	/**
-	 * Packs the first 4 most significant bits of each byte into a <code>byte</code>
-	 *
-	 * @param key1 a <code>byte</code> value
-	 * @param key2 a <code>byte</code> value
-	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
-	 */
-	public static byte key(int key1, int key2) {
-		return (byte) ((byte) key1 << 4 | ((byte) key2 & 0xF));
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class ByteTripleHashedTest {
+
+	public void testValue(byte x, byte y, byte z) {
+		int key = ByteTripleHashed.key(x, y, z);
+		assertEquals(x, ByteTripleHashed.key1(key));
+		assertEquals(y, ByteTripleHashed.key2(key));
+		assertEquals(z, ByteTripleHashed.key3(key));
 	}
 
-	/**
-	 * Returns the 4 most significant bits in the byte value.
-	 * 
-	 * @param composite to separate
-	 * @return the 4 most significant bits in a byte
-	 */
-	public static byte key1(int composite) {
-		return (byte) (((byte) composite >> 4) & 0xF);
-	}
-
-	/**
-	 * Returns the 4 least significant bits in the byte value.
-	 * 
-	 * @param composite to separate
-	 * @return the 4 least significant bits in a byte
-	 */
-	public static byte key2(int composite) {
-		return (byte) ((byte) composite & 0xF);
+	@Test
+	public void testHashes() {
+		testValue((byte) 231, (byte) 13, (byte) 65);
+		testValue((byte) 23, (byte) 44, (byte) 85);
+		testValue((byte) 45, (byte) 124, (byte) 214);
+		testValue((byte) 128, (byte) 128, (byte) 128);
+		testValue((byte) 245, (byte) 32, (byte) 21);
+		testValue((byte) 255, (byte) 255, (byte) 255);
+		testValue((byte) 0, (byte) 0, (byte) 0);
+		testValue((byte) 231, (byte) 31, (byte) 12);
 	}
 }

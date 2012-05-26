@@ -26,50 +26,46 @@
  */
 package org.spout.api.util.hashing;
 
-public class TInt21TripleHashed {
+public class ByteTripleHashed {
 	/**
-	 * Packs the most significant and the twenty least significant of each int into a <code>long</code>
+	 * Packs the first 8 most significant bits of each byte into an <code>int</code>
 	 *
-	 * @param x an <code>int</code> value
-	 * @param y an <code>int</code> value
-	 * @param z an <code>int</code> value
-	 * @return the most significant and the twenty least significant of each int packed into a <code>long</code>
+	 * @param x an <code>byte</code> value
+	 * @param y an <code>byte</code> value
+	 * @param z an <code>byte</code> value
+	 * @return The first 8 most significant bits of each byte packed into an <code>int</code>
 	 */
-	public static final long key(int x, int y, int z) {
-		return ((long) ((x >> 11) & 0x100000 | x & 0xFFFFF)) << 42 | ((long) ((y >> 11) & 0x100000 | y & 0xFFFFF)) << 21 | ((z >> 11) & 0x100000 | z & 0xFFFFF);
+	public static final int key(int x, int y, int z) {
+		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
 	}
 
 	/**
-	 * Gets the first 21-bit integer value from a long key
+	 * Gets the first 8-bit integer value from an int key
 	 * 
 	 * @param key to get from
-	 * @return the first 21-bit integer value in the key
+	 * @return the first 8-bit integer value in the key
 	 */
-	public static final int key1(long key) {
-		return keyInt((key >> 42) & 0x1FFFFF);
+	public static final byte key1(int key) {
+		return (byte) (key >> 16 & 0xFF);
 	}
 
 	/**
-	 * Gets the second 21-bit integer value from a long key
+	 * Gets the second 8-bit integer value from an int key
 	 * 
 	 * @param key to get from
-	 * @return the second 21-bit integer value in the key
+	 * @return the second 8-bit integer value in the key
 	 */
-	public static final int key2(long key) {
-		return keyInt((key >> 21) & 0x1FFFFF);
+	public static final byte key2(int key) {
+		return (byte) (key & 0xFF);
 	}
 
 	/**
-	 * Gets the third 21-bit integer value from a long key
+	 * Gets the third 8-bit integer value from an int key
 	 * 
 	 * @param key to get from
-	 * @return the third 21-bit integer value in the key
+	 * @return the third 8-bit integer value in the key
 	 */
-	public static final int key3(long key) {
-		return keyInt(key & 0x1FFFFF);
-	}
-
-	private static final int keyInt(long key) {
-		return (int) (key - ((key & 0x100000) << 1));
+	public static final byte key3(int key) {
+		return (byte) (key >> 8 & 0xFF);
 	}
 }

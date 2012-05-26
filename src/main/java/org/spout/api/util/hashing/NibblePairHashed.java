@@ -26,26 +26,35 @@
  */
 package org.spout.api.util.hashing;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-public class TIntPairHashedTest {
-
-	public void testValue(int x, int y) {
-		long key = TIntPairHashed.key(x, y);
-		assertEquals(x, TIntPairHashed.key1(key));
-		assertEquals(y, TIntPairHashed.key2(key));
+public class NibblePairHashed {
+	/**
+	 * Packs the first 4 most significant bits of each byte into a <code>byte</code>
+	 *
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>byte</code> value
+	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
+	 */
+	public static byte key(int key1, int key2) {
+		return (byte) ((byte) key1 << 4 | ((byte) key2 & 0xF));
 	}
 
-	@Test
-	public void testHashes() {
-		testValue(Integer.MIN_VALUE, Integer.MIN_VALUE);
-		testValue(Integer.MAX_VALUE, Integer.MAX_VALUE);
-		testValue(0, 0);
-		testValue(2422, 65262);
-		testValue(373743, -435451);
-		testValue(33321, -5631);
-		testValue(-4096, 2048);
+	/**
+	 * Returns the 4 most significant bits in the byte value.
+	 * 
+	 * @param composite to separate
+	 * @return the 4 most significant bits in a byte
+	 */
+	public static byte key1(int composite) {
+		return (byte) (((byte) composite >> 4) & 0xF);
+	}
+
+	/**
+	 * Returns the 4 least significant bits in the byte value.
+	 * 
+	 * @param composite to separate
+	 * @return the 4 least significant bits in a byte
+	 */
+	public static byte key2(int composite) {
+		return (byte) ((byte) composite & 0xF);
 	}
 }

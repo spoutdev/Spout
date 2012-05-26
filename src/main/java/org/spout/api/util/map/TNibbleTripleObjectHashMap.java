@@ -28,7 +28,7 @@ package org.spout.api.util.map;
 
 import java.util.Collection;
 
-import org.spout.api.util.hashing.TNibbleTripleHashed;
+import org.spout.api.util.hashing.NibbleTripleHashed;
 
 import gnu.trove.iterator.TShortObjectIterator;
 import gnu.trove.map.TShortObjectMap;
@@ -39,7 +39,7 @@ import gnu.trove.set.TShortSet;
  * A simplistic map that supports a 3 nibbles (4 bits) for keys, using a trove
  * short object hashmap in the backend.
  */
-public class TNibbleTripleObjectHashMap<K> extends TNibbleTripleHashed {
+public class TNibbleTripleObjectHashMap<K> extends NibbleTripleHashed {
 	protected TShortObjectMap<K> map;
 
 	public TNibbleTripleObjectHashMap() {

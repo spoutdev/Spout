@@ -26,46 +26,26 @@
  */
 package org.spout.api.util.hashing;
 
-public class TByteShortByteHashed {
-	/**
-	 * Creates a long key from 2 bytes and a short
-	 *
-	 * @param key1 a <code>byte</code> value
-	 * @param key2 a <code>short</code> value
-	 * @param key3 a <code>byte</code> value
-	 * @return a long which is the concatenation of key1, key2 and key3
-	 */
-	public static final int key(int key1, int key2, int key3) {
-		return (key1 & 0xFF) << 24 | (key3 & 0xFF) << 16 | key2 & 0xFFFF;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class IntPairHashedTest {
+
+	public void testValue(int x, int y) {
+		long key = IntPairHashed.key(x, y);
+		assertEquals(x, IntPairHashed.key1(key));
+		assertEquals(y, IntPairHashed.key2(key));
 	}
 
-	/**
-	 * Gets the first 8-bit integer value from a long key
-	 * 
-	 * @param key to get from
-	 * @return the first 8-bit integer value in the key
-	 */
-	public static byte key1(int key) {
-		return (byte) (key >> 24);
-	}
-
-	/**
-	 * Gets the second 16-bit integer value from a long key
-	 * 
-	 * @param key to get from
-	 * @return the second 16-bit integer value in the key
-	 */
-	public static short key2(int key) {
-		return (short) key;
-	}
-
-	/**
-	 * Gets the third 8-bit integer value from a long key
-	 * 
-	 * @param key to get from
-	 * @return the third 8-bit integer value in the key
-	 */
-	public static byte key3(int key) {
-		return (byte) (key >> 16);
+	@Test
+	public void testHashes() {
+		testValue(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		testValue(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		testValue(0, 0);
+		testValue(2422, 65262);
+		testValue(373743, -435451);
+		testValue(33321, -5631);
+		testValue(-4096, 2048);
 	}
 }
