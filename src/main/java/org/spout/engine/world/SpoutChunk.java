@@ -267,7 +267,7 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
 		byte oldLight;
-		if ((index & 1) == 0) {
+		if ((index & 1) == 1) {
 			index >>= 1;
 			oldLight = NibblePairHashed.key1(blockLight[index]);
 			blockLight[index] = NibblePairHashed.setKey1(blockLight[index], light);
@@ -294,7 +294,7 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
 		byte light = blockLight[index >> 1];
-		if ((index & 1) == 0) {
+		if ((index & 1) == 1) {
 			return NibblePairHashed.key1(light);
 		} else {
 			return NibblePairHashed.key2(light);
@@ -616,7 +616,9 @@ public class SpoutChunk extends Chunk {
 				e.printStackTrace();
 			}
 		}
-		this.initLighting();
+
+		//this.initLighting(); //TODO: We aren't ready for this!
+		//this.setLightDirty(false);
 		parentRegion.onChunkPopulated(this);
 	}
 
@@ -652,6 +654,8 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 		}
+
+		this.setLightDirty(true);
 	}
 
 	public boolean addEntity(SpoutEntity entity) {
