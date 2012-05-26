@@ -37,12 +37,12 @@ public final class BasicAir extends BlockMaterial {
 		this.setCollision(CollisionStrategy.NOCOLLIDE).setOpacity((byte) 0);
 		this.setOccludes(false);
 	}
-	
+
 	@Override
 	public boolean isPlacementObstacle() {
 		return false;
 	}
-	
+
 	@Override
 	public void onDestroy(Block block) {
 	}

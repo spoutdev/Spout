@@ -26,35 +26,29 @@
  */
 package org.spout.api.util.hashing;
 
-public class TNibbleDualHashed {
-	/**
-	 * Packs the first 4 most significant bits of each byte into a <code>byte</code>
-	 *
-	 * @param key1 a <code>byte</code> value
-	 * @param key2 a <code>byte</code> value
-	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
-	 */
-	public static byte key(int key1, int key2) {
-		return (byte) (key1 << 4 | (key2 & 0xF));
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class Int21TripleHashedTest {
+
+	public void testValue(int x, int y, int z) {
+		long key = Int21TripleHashed.key(x, y, z);
+		assertEquals(x, Int21TripleHashed.key1(key));
+		assertEquals(y, Int21TripleHashed.key2(key));
+		assertEquals(z, Int21TripleHashed.key3(key));
 	}
 
-	/**
-	 * Returns the 4 most significant bits in the byte value.
-	 * 
-	 * @param composite to separate
-	 * @return the 4 most significant bits in a byte
-	 */
-	public static byte key1(int composite) {
-		return (byte) ((composite >> 4) & 0xF);
-	}
-
-	/**
-	 * Returns the 4 least significant bits in the byte value.
-	 * 
-	 * @param composite to separate
-	 * @return the 4 least significant bits in a byte
-	 */
-	public static byte key2(int composite) {
-		return (byte) (composite & 0xF);
+	@Test
+	public void testHashes() {
+		testValue(-1048575, -1048575, -1048575);
+		testValue(0, 0, 0);
+		testValue(1048575, 1048575, 1048575);
+		testValue(1048575, -1048575, 1048575);
+		testValue(-1048575, 1048575, -1048575);
+		testValue(32423, 14144, 24114);
+		testValue(10475, 104865, 104835);
+		testValue(128, 512, 1024);
+		testValue(-34, 2421, -4452);
 	}
 }

@@ -26,35 +26,35 @@
  */
 package org.spout.api.util.hashing;
 
-public class TIntPairHashed {
+public class NibblePairHashed {
 	/**
-	 * Creates a long key from 2 ints
+	 * Packs the first 4 most significant bits of each byte into a <code>byte</code>
 	 *
-	 * @param key1 an <code>int</code> value
-	 * @param key2 an <code>int</code> value
-	 * @return a long which is the concatenation of key1 and key2
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>byte</code> value
+	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
 	 */
-	public static final long key(int key1, int key2) {
-		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
+	public static byte key(int key1, int key2) {
+		return (byte) ((byte) key1 << 4 | ((byte) key2 & 0xF));
 	}
 
 	/**
-	 * Gets the first 32-bit integer value from an long key
+	 * Returns the 4 most significant bits in the byte value.
 	 * 
-	 * @param key to get from
-	 * @return the first 32-bit integer value in the key
+	 * @param composite to separate
+	 * @return the 4 most significant bits in a byte
 	 */
-	public static int key1(long key) {
-		return (int) (key >> 32 & 0xFFFFFFFFL);
+	public static byte key1(int composite) {
+		return (byte) (((byte) composite >> 4) & 0xF);
 	}
 
 	/**
-	 * Gets the second 32-bit integer value from an long key
+	 * Returns the 4 least significant bits in the byte value.
 	 * 
-	 * @param key to get from
-	 * @return the second 32-bit integer value in the key
+	 * @param composite to separate
+	 * @return the 4 least significant bits in a byte
 	 */
-	public static int key2(long key) {
-		return (int) (key & 0xFFFFFFFFL);
+	public static byte key2(int composite) {
+		return (byte) ((byte) composite & 0xF);
 	}
 }

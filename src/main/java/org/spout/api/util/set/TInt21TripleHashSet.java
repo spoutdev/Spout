@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.set;
 
-import org.spout.api.util.hashing.TInt21TripleHashed;
+import org.spout.api.util.hashing.Int21TripleHashed;
 
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TLongSet;
@@ -36,7 +36,7 @@ import gnu.trove.set.hash.TLongHashSet;
  * A hash set that uses three 21bit integers as key, backed by a long trove
  * hashset. 1 bit is wasted.
  */
-public class TInt21TripleHashSet extends TInt21TripleHashed {
+public class TInt21TripleHashSet extends Int21TripleHashed {
 	protected TLongSet set;
 
 	/**

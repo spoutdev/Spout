@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.set;
 
-import org.spout.api.util.hashing.TNibbleDualHashed;
+import org.spout.api.util.hashing.NibblePairHashed;
 
 import gnu.trove.iterator.TByteIterator;
 import gnu.trove.set.TByteSet;
@@ -36,7 +36,7 @@ import gnu.trove.set.hash.TByteHashSet;
  * A hash set that uses two 4-bit integers as key, backed by a byte trove
  * hashset.
  */
-public class TNibbleDualHashSet extends TNibbleDualHashed {
+public class TNibbleDualHashSet extends NibblePairHashed {
 	protected TByteSet set;
 
 	public TNibbleDualHashSet() {

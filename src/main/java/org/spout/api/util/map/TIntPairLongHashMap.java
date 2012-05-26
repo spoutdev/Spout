@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.map;
 
-import org.spout.api.util.hashing.TIntPairHashed;
+import org.spout.api.util.hashing.IntPairHashed;
 
 import gnu.trove.TLongCollection;
 import gnu.trove.iterator.TLongLongIterator;
@@ -40,7 +40,7 @@ import gnu.trove.set.TLongSet;
  * @author Afforess
  *
  */
-public class TIntPairLongHashMap extends TIntPairHashed {
+public class TIntPairLongHashMap extends IntPairHashed {
 	private TLongLongHashMap map;
 
 	public TIntPairLongHashMap() {

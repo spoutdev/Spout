@@ -26,46 +26,24 @@
  */
 package org.spout.api.util.hashing;
 
-public class TByteTripleHashed {
-	/**
-	 * Packs the first 8 most significant bits of each byte into an <code>int</code>
-	 *
-	 * @param x an <code>byte</code> value
-	 * @param y an <code>byte</code> value
-	 * @param z an <code>byte</code> value
-	 * @return The first 8 most significant bits of each byte packed into an <code>int</code>
-	 */
-	public static final int key(int x, int y, int z) {
-		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class NibblePairHashedTest {
+
+	public void testValue(byte x, byte y) {
+		byte key = NibblePairHashed.key(x, y);
+		assertEquals(x, NibblePairHashed.key1(key));
+		assertEquals(y, NibblePairHashed.key2(key));
 	}
 
-	/**
-	 * Gets the first 8-bit integer value from an int key
-	 * 
-	 * @param key to get from
-	 * @return the first 8-bit integer value in the key
-	 */
-	public static final byte key1(int key) {
-		return (byte) (key >> 16 & 0xFF);
-	}
-
-	/**
-	 * Gets the second 8-bit integer value from an int key
-	 * 
-	 * @param key to get from
-	 * @return the second 8-bit integer value in the key
-	 */
-	public static final byte key2(int key) {
-		return (byte) (key & 0xFF);
-	}
-
-	/**
-	 * Gets the third 8-bit integer value from an int key
-	 * 
-	 * @param key to get from
-	 * @return the third 8-bit integer value in the key
-	 */
-	public static final byte key3(int key) {
-		return (byte) (key >> 8 & 0xFF);
+	@Test
+	public void testHashes() {
+		testValue((byte) 0, (byte) 0);
+		testValue((byte) 15, (byte) 15);
+		testValue((byte) 12, (byte) 14);
+		testValue((byte) 1, (byte) 15);
+		testValue((byte) 13, (byte) 2);
 	}
 }

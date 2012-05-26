@@ -26,46 +26,16 @@
  */
 package org.spout.api.util.hashing;
 
-public class TByteShortByteHashed {
+public class NibbleTripleHashed {
 	/**
-	 * Creates a long key from 2 bytes and a short
+	 * Packs the first 4 most significant bits of each byte into a <code>short</code>
 	 *
 	 * @param key1 a <code>byte</code> value
-	 * @param key2 a <code>short</code> value
+	 * @param key2 a <code>byte</code> value
 	 * @param key3 a <code>byte</code> value
-	 * @return a long which is the concatenation of key1, key2 and key3
+	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
 	 */
-	public static final int key(int key1, int key2, int key3) {
-		return (key1 & 0xFF) << 24 | (key3 & 0xFF) << 16 | key2 & 0xFFFF;
-	}
-
-	/**
-	 * Gets the first 8-bit integer value from a long key
-	 * 
-	 * @param key to get from
-	 * @return the first 8-bit integer value in the key
-	 */
-	public static byte key1(int key) {
-		return (byte) (key >> 24);
-	}
-
-	/**
-	 * Gets the second 16-bit integer value from a long key
-	 * 
-	 * @param key to get from
-	 * @return the second 16-bit integer value in the key
-	 */
-	public static short key2(int key) {
-		return (short) key;
-	}
-
-	/**
-	 * Gets the third 8-bit integer value from a long key
-	 * 
-	 * @param key to get from
-	 * @return the third 8-bit integer value in the key
-	 */
-	public static byte key3(int key) {
-		return (byte) (key >> 16);
+	public static final short key(int key1, int key2, int key3) {
+		return (short) ((key1 & 0xF) << 8 | (key2 & 0xF) << 4 | key3 & 0xF);
 	}
 }

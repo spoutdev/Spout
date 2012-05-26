@@ -28,7 +28,7 @@ package org.spout.api.util.map;
 
 import java.util.Collection;
 
-import org.spout.api.util.hashing.TInt21TripleHashed;
+import org.spout.api.util.hashing.Int21TripleHashed;
 
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
@@ -39,7 +39,7 @@ import gnu.trove.set.TLongSet;
  * A simplistic map that supports a 3 21 bit integers for keys, using a trove
  * long Object hashmap in the backend. 1 bit is wasted.
  */
-public class TInt21TripleObjectHashMap<K> extends TInt21TripleHashed {
+public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 	protected TLongObjectMap<K> map;
 
 	/**

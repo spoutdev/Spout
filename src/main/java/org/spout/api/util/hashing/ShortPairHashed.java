@@ -26,16 +26,37 @@
  */
 package org.spout.api.util.hashing;
 
-public class TNibbleTripleHashed {
+public class ShortPairHashed {
 	/**
-	 * Packs the first 4 most significant bits of each byte into a <code>short</code>
-	 *
-	 * @param key1 a <code>byte</code> value
-	 * @param key2 a <code>byte</code> value
-	 * @param key3 a <code>byte</code> value
-	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
+	 * Squashes 2 short values into 1 int, with the first value in
+	 * the most significant bits and the second value in the least
+	 * significant bits.
+	 * 
+	 * @param key1 to squash
+	 * @param key2 to squash
+	 * @return squashed int
 	 */
-	public static final short key(int key1, int key2, int key3) {
-		return (short) ((key1 & 0xF) << 8 | (key2 & 0xF) << 4 | key3 & 0xF);
+	public static int key(short key1, short key2) {
+		return (int) key1 << 16 | key2 & 0xFFFF;
+	}
+
+	/**
+	 * Returns the 16 most significant bits (short) in the int value.
+	 * 
+	 * @param composite to separate
+	 * @return the 16 most significant bits in an int
+	 */
+	public static short key1(int composite) {
+		return (short) ((composite >> 16) & 0xFFFF);
+	}
+
+	/**
+	 * Returns the 16 least significant bits (short) in the int value.
+	 * 
+	 * @param composite to separate
+	 * @return the 16 least significant bits in an int
+	 */
+	public static short key2(int composite) {
+		return (short) (composite & 0xFFFF);
 	}
 }

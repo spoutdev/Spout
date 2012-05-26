@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.set;
 
-import org.spout.api.util.hashing.TByteTripleHashed;
+import org.spout.api.util.hashing.ByteTripleHashed;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
@@ -36,7 +36,7 @@ import gnu.trove.set.hash.TIntHashSet;
  * A hash set that uses three 8 bit integers as key, backed by a int trove
  * hashset.
  */
-public class TByteTripleHashSet extends TByteTripleHashed {
+public class TByteTripleHashSet extends ByteTripleHashed {
 	protected TIntSet set;
 
 	public TByteTripleHashSet() {

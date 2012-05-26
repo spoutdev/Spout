@@ -26,24 +26,35 @@
  */
 package org.spout.api.util.hashing;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-public class TNibbleDualHashedTest {
-
-	public void testValue(byte x, byte y) {
-		byte key = TNibbleDualHashed.key(x, y);
-		assertEquals(x, TNibbleDualHashed.key1(key));
-		assertEquals(y, TNibbleDualHashed.key2(key));
+public class IntPairHashed {
+	/**
+	 * Creates a long key from 2 ints
+	 *
+	 * @param key1 an <code>int</code> value
+	 * @param key2 an <code>int</code> value
+	 * @return a long which is the concatenation of key1 and key2
+	 */
+	public static final long key(int key1, int key2) {
+		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 
-	@Test
-	public void testHashes() {
-		testValue((byte) 0, (byte) 0);
-		testValue((byte) 15, (byte) 15);
-		testValue((byte) 12, (byte) 14);
-		testValue((byte) 1, (byte) 15);
-		testValue((byte) 13, (byte) 2);
+	/**
+	 * Gets the first 32-bit integer value from an long key
+	 * 
+	 * @param key to get from
+	 * @return the first 32-bit integer value in the key
+	 */
+	public static int key1(long key) {
+		return (int) (key >> 32 & 0xFFFFFFFFL);
+	}
+
+	/**
+	 * Gets the second 32-bit integer value from an long key
+	 * 
+	 * @param key to get from
+	 * @return the second 32-bit integer value in the key
+	 */
+	public static int key2(long key) {
+		return (int) (key & 0xFFFFFFFFL);
 	}
 }

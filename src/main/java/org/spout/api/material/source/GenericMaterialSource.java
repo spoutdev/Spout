@@ -28,7 +28,7 @@ package org.spout.api.material.source;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.util.HashUtil;
+import org.spout.api.util.hashing.ShortPairHashed;
 
 public class GenericMaterialSource implements MaterialSource {
 	private final BlockMaterial material;
@@ -48,17 +48,17 @@ public class GenericMaterialSource implements MaterialSource {
 	public short getData() {
 		return this.data;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "{material=" + this.material + ",data=" + this.data + "}";
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return HashUtil.shortToInt(this.material.getId(), this.data);
+		return ShortPairHashed.key(this.material.getId(), this.data);
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (other == this) {

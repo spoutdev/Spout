@@ -30,24 +30,22 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TByteShortByteHashedTest {
+public class IntPairHashedTest {
 
-	public void testValue(byte x, short y, byte z) {
-		int key = TByteShortByteHashed.key(x, y, z);
-		assertEquals(x, TByteShortByteHashed.key1(key));
-		assertEquals(y, TByteShortByteHashed.key2(key));
-		assertEquals(z, TByteShortByteHashed.key3(key));
+	public void testValue(int x, int y) {
+		long key = IntPairHashed.key(x, y);
+		assertEquals(x, IntPairHashed.key1(key));
+		assertEquals(y, IntPairHashed.key2(key));
 	}
 
 	@Test
 	public void testHashes() {
-		testValue((byte) 231, (short) 6352, (byte) 65);
-		testValue((byte) 23, (short) 23235, (byte) 85);
-		testValue((byte) 45, (short) 2566, (byte) 214);
-		testValue((byte) 128, (short) 128, (byte) 128);
-		testValue((byte) 245, (short) 32, (byte) 21);
-		testValue((byte) 255, (short) 30000, (byte) 255);
-		testValue((byte) 0, (short) -30000, (byte) 0);
-		testValue((byte) 231, (short) -24214, (byte) 12);
+		testValue(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		testValue(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		testValue(0, 0);
+		testValue(2422, 65262);
+		testValue(373743, -435451);
+		testValue(33321, -5631);
+		testValue(-4096, 2048);
 	}
 }
