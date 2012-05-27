@@ -210,9 +210,9 @@ public class SpoutEntity implements Entity, Tickable {
 	public void resolve() {
 		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
 
-		Vector3 offset = this.lastTransform.getPosition().subtract(collisionPoint);
 		Point from = lastTransform.getPosition();
 		Point to;
+		Vector3 offset = from.subtract(collisionPoint);
 		for (CollisionVolume box : colliding) {
 			Vector3 collision = this.collision.resolve(box);
 			if (collision != null) {
