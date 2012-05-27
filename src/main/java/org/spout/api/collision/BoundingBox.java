@@ -298,7 +298,6 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	}
 
 	public boolean intersects(CollisionVolume other) {
-		Spout.log(other.getClass().toString());
 		if (other instanceof BoundingBox) {
 			return intersects((BoundingBox) other);
 		} else if (other instanceof BoundingSphere) {
