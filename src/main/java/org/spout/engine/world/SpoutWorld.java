@@ -625,15 +625,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 			for (int dy = minY - 1; dy < maxY; dy++) {
 				for (int dz = minZ; dz < maxZ; dz++) {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
-					Spout.log("Model: " + model.toString());
-					Spout.log("Model volume: " + model.getVolume().toString());
-					Spout.log("Material: " + material.getName());
 					mutable.set((BoundingBox) material.getBoundingArea());
-					Spout.log("Material bounding area: " + material.getBoundingArea().toString());
 					BoundingBox box = mutable.offset(dx, dy, dz);
-					Spout.log("Offset bounding box: " + box.toString());
 					if (box.intersects(model.getVolume())) {
-						Spout.log("Found intersection");
 						colliding.add(mutable.clone());
 					}
 				}
