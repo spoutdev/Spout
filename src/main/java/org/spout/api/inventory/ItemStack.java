@@ -47,6 +47,8 @@ import org.spout.nbt.stream.NBTOutputStream;
  * Represents a stack of items
  */
 public class ItemStack implements MaterialState, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private Material material;
 	private int amount;
 	private short data;

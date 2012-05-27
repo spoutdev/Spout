@@ -38,6 +38,8 @@ import org.spout.api.util.StringUtil;
  * new Vector4.
  */
 public class Vector4 implements Comparable<Vector4>, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Represents the Zero vector (0, 0, 0, 0)
 	 */

@@ -40,6 +40,8 @@ import org.spout.api.util.StringUtil;
  * Represents a position in a World
  */
 public class Point extends Vector3 {
+	private static final long serialVersionUID = 1L;
+
 	protected final World world;
 	public static final Point invalid = new Point(null, 0, 0, 0);
 	

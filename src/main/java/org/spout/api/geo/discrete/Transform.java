@@ -36,6 +36,8 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.thread.Threadsafe;
 
 public class Transform implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	private Point position = Point.invalid;
 	private Quaternion rotation = Quaternion.IDENTITY;
 	private Vector3 scale = Vector3.ONE;

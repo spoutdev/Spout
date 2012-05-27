@@ -40,6 +40,8 @@ import org.spout.api.util.StringUtil;
  * construct a new Vector2Polar.
  */
 public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Represents the Zero vector (0 at 0 degrees)
 	 */

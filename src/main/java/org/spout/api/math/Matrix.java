@@ -31,7 +31,9 @@ import java.io.Serializable;
 /**
  * Representation of a square matrix
  */
-public class Matrix implements Serializable{
+public class Matrix implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	int dimension;
 	float[] data;
 

@@ -34,6 +34,8 @@ import org.spout.api.util.StringUtil;
  * Represents a rotation around a unit 4d circle.
  */
 public class Quaternion implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	protected final float x, y, z, w;
 	protected transient volatile Vector3 cachedAngle = null;
 

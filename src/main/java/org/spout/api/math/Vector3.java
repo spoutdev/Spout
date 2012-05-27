@@ -35,6 +35,8 @@ import org.spout.api.util.StringUtil;
  * Represents a 3d vector.
  */
 public class Vector3 implements Comparable<Vector3>, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Vector with all elements set to 0. (0, 0, 0)
 	 */

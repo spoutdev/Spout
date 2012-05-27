@@ -33,6 +33,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author zml2008
  */
 public class SpoutToStringStyle extends ToStringStyle {
+	private static final long serialVersionUID = 1L;
+
 	public static final SpoutToStringStyle INSTANCE = new SpoutToStringStyle();
 	private SpoutToStringStyle() {
 		super();
