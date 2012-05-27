@@ -88,7 +88,7 @@ import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public class SpoutWorld extends AsyncManager implements World {
+public final class SpoutWorld extends AsyncManager implements World {
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
