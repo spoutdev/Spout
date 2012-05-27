@@ -250,7 +250,7 @@ public class FilteredChunk extends SpoutChunk{
 	}
 	
 	@Override
-	public boolean isAir() {
-		return uniform.get() && uniformId.get() == BlockMaterial.AIR.getId();
+	public boolean isUniform() {
+		return uniform.get();
 	}
 }

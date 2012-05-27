@@ -114,7 +114,7 @@ public class SpoutColumn {
 			return;
 		}
 
-		if (((SpoutChunk)c).isAir()) {
+		if (((SpoutChunk)c).isUniform()) {
 			return;
 		}
 

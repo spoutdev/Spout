@@ -939,11 +939,11 @@ public class SpoutChunk extends Chunk {
 	}
 
 	/**
-	 * True if the chunk is uniform air blocks
+	 * True if the chunk is all uniform blocks
 	 * 
-	 * @return air
+	 * @return uniform
 	 */
-	public boolean isAir() {
+	public boolean isUniform() {
 		return false;
 	}
 }
