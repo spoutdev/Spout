@@ -248,4 +248,9 @@ public class FilteredChunk extends SpoutChunk{
 			super.resetDirtyArrays();
 		}
 	}
+	
+	@Override
+	public boolean isAir() {
+		return uniform.get() && uniformId.get() == BlockMaterial.AIR.getId();
+	}
 }

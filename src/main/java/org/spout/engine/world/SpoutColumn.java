@@ -114,6 +114,10 @@ public class SpoutColumn {
 			return;
 		}
 
+		if (((SpoutChunk)c).isAir()) {
+			return;
+		}
+
 		for (int yy = maxY; yy >= y; yy--) {
 			if (!isAir(c, x, yy, z)) {
 				notifyBlockChange(v, x, yy, z);

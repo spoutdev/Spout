@@ -937,4 +937,13 @@ public class SpoutChunk extends Chunk {
 	public BiomeManager getBiomeManager() {
 		return biomes;
 	}
+
+	/**
+	 * True if the chunk is uniform air blocks
+	 * 
+	 * @return air
+	 */
+	public boolean isAir() {
+		return false;
+	}
 }
