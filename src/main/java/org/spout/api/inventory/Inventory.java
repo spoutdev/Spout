@@ -39,7 +39,7 @@ import org.spout.api.material.source.MaterialSource;
  * inventory, slot ordering starts in the lower-left corner at zero, going
  * left-to-right for each row.
  */
-public class Inventory implements Serializable {
+public class Inventory implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 0L;
 	private final ItemStack[] contents;
