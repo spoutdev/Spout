@@ -27,10 +27,6 @@
 package org.spout.api.gui;
 
 import java.awt.Color;
-import java.awt.Font;
-
-import java.awt.Color;
-
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;

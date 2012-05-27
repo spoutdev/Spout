@@ -27,13 +27,10 @@
 package org.spout.api.player;
 
 import java.net.InetAddress;
-import java.util.Stack;
-
 import org.spout.api.Source;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
-import org.spout.api.gui.Screen;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;

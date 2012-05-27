@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.list;
 
-import java.io.InputStream;
-
 public class ByteCircularBufferFIFO {
 
 	private static final byte[] emptyArray = new byte[0];

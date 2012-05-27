@@ -29,8 +29,6 @@ package org.spout.api.util;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-import java.util.Iterator;
-
 import org.junit.Test;
 import org.spout.api.math.IntVector3;
 

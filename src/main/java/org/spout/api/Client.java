@@ -27,12 +27,8 @@
 package org.spout.api;
 
 import java.io.File;
-import java.util.Stack;
-
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
-import org.spout.api.gui.Palette;
-import org.spout.api.gui.Screen;
 import org.spout.api.gui.screen.ScreenStack;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;

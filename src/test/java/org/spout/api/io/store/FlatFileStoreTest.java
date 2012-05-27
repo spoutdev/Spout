@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.junit.Test;
-import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.io.store.simple.FlatFileStore;
 import org.spout.api.io.store.simple.SimpleStore;
 
