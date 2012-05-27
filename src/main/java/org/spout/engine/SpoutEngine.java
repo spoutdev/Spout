@@ -300,6 +300,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public String[] getAllAddresses() {
+		// FIXME: This is equivalent to "return null;" right now, since the field is never ever written.
 		return allAddresses;
 	}
 

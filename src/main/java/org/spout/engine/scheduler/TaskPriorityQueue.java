@@ -74,6 +74,7 @@ public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 		if (task != null) {
 			task.lockNextCallTime();
 		}
+		// FIXME: PriorityQueue doesn't support null elements, so TaskPriorityQueue probably shouldn't, either.
 		return super.add(task);
 	}
 	
