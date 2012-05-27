@@ -668,43 +668,6 @@ public class SpoutEntity implements Entity, Tickable {
 		return clazz.isAssignableFrom(controllerLive.get().getClass());
 	}
 
-	private int inventorySize;
-	private Inventory inventory;
-
-	@Override
-	public int getInventorySize() {
-		return inventorySize;
-	}
-
-	@Override
-	public void setInventorySize(int newsize) {
-		if (inventorySize == newsize || controllerLive.get() == null) {
-			return;
-		}
-		inventorySize = newsize;
-		if (inventory != null && getInventory().getSize() != inventorySize) {
-			inventory = null;
-			controllerLive.get().data().put("inventory", null);
-		}
-	}
-
-	@Override
-	public Inventory getInventory() {
-		if (getInventorySize() <= 0 || controllerLive.get() == null) {
-			return null;
-		}
-		if (inventory == null) {
-
-			if (!controllerLive.get().data().containsKey("inventory")) {
-				inventory = controllerLive == null ? new Inventory(getInventorySize()) : controllerLive.get().createInventory(getInventorySize());
-				controllerLive.get().data().put("inventory", inventory);
-			} else {
-				inventory = (Inventory) controllerLive.get().data().get("inventory");
-			}
-		}
-		return inventory;
-	}
-
 	@Override
 	public void onSync() {
 		//Forward to controller for now, but we may want to do some sync logic here for the entity.
