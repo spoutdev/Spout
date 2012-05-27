@@ -463,7 +463,7 @@ public final class SpoutScheduler implements Scheduler {
 				List<Plugin> violatingPlugins = snapshotLock.getLockingPlugins(threshold);
 				engine.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
 				for (Plugin p : violatingPlugins) {
-					engine.getLogFile().indexOf(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
+					engine.getLogger().info(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
 				}
 			}
 		}
