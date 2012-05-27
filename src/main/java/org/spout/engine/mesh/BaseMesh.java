@@ -37,7 +37,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 	}
 
 	public RenderEffect[] getEffects() {
-		return (RenderEffect[]) effects.toArray();
+		return effects.toArray(new RenderEffect[effects.size()]);
 	}
 
 	private void preBatch(Renderer batcher) {
