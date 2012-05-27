@@ -45,6 +45,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
 import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
+import org.spout.api.event.entity.EntityMoveEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -182,7 +183,7 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 
 	/**
-	 * Called right before resolving collisions. This is necessary to make sure all entities'
+	 * Called right before resolving collisions. This is necessary to make sure all entities
 	 * get their collisions set.
 	 * @return
 	 */
@@ -207,53 +208,34 @@ public class SpoutEntity implements Entity, Tickable {
 	 * move events fired
 	 */
 	public void resolve() {
-		if (Spout.debugMode()) {
-		//	System.out.println("COLLISION DEBUGGING");
-		//	System.out.println("Current Collision: " + this.collision.toString());
-		}
-
 		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
 
 		Vector3 offset = this.lastTransform.getPosition().subtract(collisionPoint);
+		Point from = lastTransform.getPosition();
+		Point to;
 		for (CollisionVolume box : colliding) {
-			if (Spout.debugMode()) {
-			//	System.out.println("Colliding box: " + box.toString());
-			}
 			Vector3 collision = this.collision.resolve(box);
-			if (Spout.debugMode()) {
-			//	System.out.println("Collision vector: " + collision.toString());
-			}
 			if (collision != null) {
+				//Allow controllers to manipulate the collision first and then continue resolve
+				controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
 				collision = collision.subtract(collisionPoint);
-				if (Spout.debugMode()) {
-				//	System.out.println("Collision point: " + collision.toString() + " Collision vector: " + collision);
-				}
+				float x = offset.getX() + collision.getX();
+				float y = offset.getY() + collision.getY();
+				float z = offset.getZ() + collision.getZ();
 
-				if (collision.getX() != 0F) {
-					offset = new Vector3(collision.getX(), offset.getY(), offset.getZ());
-				}
-				if (collision.getY() != 0F) {
-					offset = new Vector3(offset.getX(), collision.getY(), offset.getZ());
-				}
-				if (collision.getZ() != 0F) {
-					offset = new Vector3(offset.getX(), offset.getY(), collision.getZ());
-				}
-
-				if (Spout.debugMode()) {
-				//	System.out.println("Collision offset: " + offset.toString());
-				}
 				if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-					this.setPosition(collisionPoint.add(offset));
-					if (Spout.debugMode()) {
-					//	System.out.println("New Position: " + this.getPosition());
+					to = from.add(collisionPoint.add(x, y, z));
+					//If both points are equal here then no collision adjustment occurred.
+					if (!from.equals(to)) {
+						EntityMoveEvent event = new EntityMoveEvent(this, from, to);
+						Spout.getEngine().getEventManager().callEvent(event);
+						if (!event.isCancelled()) {
+							setPosition(to);
+						}
 					}
 				}
-
-				controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
 			}
 		}
-
-		//Check to see if we should fire off a Move event
 	}
 
 	@Override
