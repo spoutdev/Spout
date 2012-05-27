@@ -156,6 +156,7 @@ public class DatatableSerializableTest {
 
 		private long x;
 
+		@SuppressWarnings("unused")
 		public FakeObject2(long x) {
 			this.x = x;
 		}

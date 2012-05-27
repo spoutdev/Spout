@@ -120,6 +120,7 @@ public class SignalTest {
 		final SignalTestClass emittingObject = new SignalTestClass();
 
 		Object receiver = new Object() {
+			@SuppressWarnings("unused")
 			public void doAction() {
 				emittingObject.unsubscribe(this);
 				gotSignal = true;

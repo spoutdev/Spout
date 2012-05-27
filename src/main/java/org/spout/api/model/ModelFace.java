@@ -76,6 +76,7 @@ public class ModelFace implements Iterable<PositionNormalTexture> {
 		return StringUtil.toNamedString(this, verts[0], verts[1], verts[2]);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<PositionNormalTexture> iterator() {
 		return new ArrayIterator(verts);
