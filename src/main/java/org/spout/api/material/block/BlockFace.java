@@ -35,14 +35,14 @@ import org.spout.api.util.flag.ByteFlagMask;
  * Indicates the face of a Block
  */
 public enum BlockFace implements ByteFlagMask {
-	TOP(0x0, 0, 1, 0),
-	BOTTOM(0x1, 0, -1, 0, TOP),
-	NORTH(0x2, -1, 0, 0),
-	SOUTH(0x4, 1, 0, 0, NORTH),
-	EAST(0x8, 0, 0, -1),
-	WEST(0xf, 0, 0, 1, EAST),
-	THIS(0x20, 0, 0, 0);
-
+	TOP(0x1, 0, 1, 0),
+	BOTTOM(0x2, 0, -1, 0, TOP),
+	NORTH(0x4, -1, 0, 0),
+	SOUTH(0x8, 1, 0, 0, NORTH),
+	EAST(0x10, 0, 0, -1),
+	WEST(0x20, 0, 0, 1, EAST),
+	THIS(0x40, 0, 0, 0);
+	
 	private final byte mask;
 	private Vector3 offset;
 	private Quaternion direction;
