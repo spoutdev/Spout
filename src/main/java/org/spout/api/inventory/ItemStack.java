@@ -180,6 +180,12 @@ public class ItemStack implements MaterialState, Serializable {
 		return equalsIgnoreSize(stack) && amount == stack.amount;
 	}
 
+	@Override
+	public int hashCode() {
+		// FIXME: Add a proper hashCode method!
+		throw new UnsupportedOperationException("hashCode is not supported.");
+	}
+
 	public boolean equalsIgnoreSize(ItemStack other) {
 		return material.equals(other.material) && data == other.data && auxData.equals(other.auxData) && LogicUtil.bothNullOrEqual(nbtData, other.nbtData);
 	}
