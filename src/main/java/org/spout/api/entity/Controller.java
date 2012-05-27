@@ -59,13 +59,6 @@ public abstract class Controller extends EntityComponent{
 	}
 
 	/**
-	 * TODO: This method needs to be moved to a more appropriate place.
-	 */
-	public Inventory createInventory(int size) {
-		return new Inventory(size);
-	}
-
-	/**
 	 * TODO: These methods should be given the appropriate annotation that makes it clear they shouldn't be used by plugins.
 	 */
 	/**

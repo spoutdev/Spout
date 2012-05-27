@@ -165,30 +165,6 @@ public interface Entity extends Source {
 	public boolean isDead();
 
 	/**
-	 * Returns the inventory of the entity
-	 * 
-	 * @return inventory
-	 */
-	@SnapshotRead
-	public Inventory getInventory();
-
-	/**
-	 * Returns the size of an entity's inventory
-	 * 
-	 * @return inventorysize
-	 */
-	@SnapshotRead
-	public int getInventorySize();
-
-	/**
-	 * Sets the size of an entity's inventory
-	 * 
-	 * @return
-	 */
-	@DelayedWrite
-	public void setInventorySize(int size);
-
-	/**
 	 * Sets the maximum distance at which the entity can be seen.<br>
 	 * <br>
 	 * The actual view distance used by the server may not be exactly the value
