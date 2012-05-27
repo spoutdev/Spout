@@ -27,6 +27,7 @@
 package org.spout.api.protocol.common.message;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import org.spout.api.protocol.Message;
@@ -52,6 +53,11 @@ public class CustomDataMessage extends Message {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE).append("data", data).append("type", type).toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(61, 33).append(data).append(type).toHashCode();
 	}
 
 	@Override

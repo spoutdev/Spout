@@ -33,7 +33,6 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.entity.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.inventory.Inventory;
 import org.spout.api.map.DefaultedMap;
 
 public abstract class Controller extends EntityComponent{

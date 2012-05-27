@@ -26,6 +26,7 @@
  */
 package org.spout.api.collision;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.math.Vector3;
 
 public class BoundingBox extends CollisionVolume implements Cloneable {
@@ -359,6 +360,11 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	public Vector3 getPosition() {
 		
 		return min;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(7, 27).append(min).append(max).toHashCode();
 	}
 	
 	@Override

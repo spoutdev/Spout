@@ -26,6 +26,8 @@
  */
 package org.spout.api.util;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Represents a single parameter - this is used for things like mob metadata.
  *
@@ -121,6 +123,11 @@ public class Parameter<T> {
 	@Override
 	public String toString() {
 		return "Parameter{type=" + type + ",index=" + index + ",value=" + value + "}";
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(19, 91).append(type).append(index).append(value).toHashCode();
 	}
 
 	@Override

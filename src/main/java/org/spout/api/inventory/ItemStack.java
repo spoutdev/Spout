@@ -29,6 +29,7 @@ package org.spout.api.inventory;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.map.DefaultedMap;
@@ -169,6 +170,11 @@ public class ItemStack implements MaterialState, Serializable, Cloneable {
 		ItemStack newStack = new ItemStack(material, data, amount, auxData);
 		newStack.setNBTData(nbtData);
 		return newStack;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(91,15).append(material).append(auxData).append(nbtData).append(amount).toHashCode();
 	}
 
 	@Override

@@ -26,6 +26,7 @@
  */
 package org.spout.api.material.block;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
 public class BlockFullState implements Cloneable {
@@ -59,6 +60,11 @@ public class BlockFullState implements Cloneable {
 	@Override
 	public String toString() {
 		return StringUtil.toNamedString(this, this.id, this.data);
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(77, 81).append(id).append(data).toHashCode();
 	}
 
 	@Override
