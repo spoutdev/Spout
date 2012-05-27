@@ -26,6 +26,7 @@
  */
 package org.spout.api.collision;
 
+import org.spout.api.Spout;
 import org.spout.api.math.Vector3;
 
 public class BoundingBox extends CollisionVolume implements Cloneable {
@@ -297,6 +298,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	}
 
 	public boolean intersects(CollisionVolume other) {
+		Spout.log(other.getClass().toString());
 		if (other instanceof BoundingBox) {
 			return intersects((BoundingBox) other);
 		} else if (other instanceof BoundingSphere) {

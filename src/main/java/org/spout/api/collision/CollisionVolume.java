@@ -34,7 +34,6 @@ import org.spout.api.math.Vector3;
  *
  */
 public abstract class CollisionVolume {
-	
 	CollisionStrategy strat  = CollisionStrategy.SOLID;
 	
 	
@@ -73,7 +72,7 @@ public abstract class CollisionVolume {
 	/**
 	 * Checks if the volume contains the other Vector3.
 	 *
-	 * @param p
+	 * @param b
 	 * @return
 	 */
 	public abstract boolean containsPoint(Vector3 b);
@@ -81,8 +80,7 @@ public abstract class CollisionVolume {
 	/**
 	 * Defines a sweep test from one start to an end
 	 *
-	 * @param start
-	 * @param end
+	 * @param other
 	 * @return
 	 */
 	public abstract Vector3 resolve(CollisionVolume other);

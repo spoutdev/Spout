@@ -44,7 +44,7 @@ public class BoundingBoxTest {
 
 	private void testValue(BoundingBox b1, BoundingBox b2) {
 		testValue("Min", b1.min, b2.min);
-		testValue("MAx", b1.max, b2.max);
+		testValue("Max", b1.max, b2.max);
 	}
 
 	/**
@@ -86,5 +86,17 @@ public class BoundingBoxTest {
 		Vector3 b = new Vector3(8f, 11f, 8f);
 
 		testValue("Size", a.getSize(), b);
+	}
+
+	@Test
+	public void testIntersects() {
+		BoundingBox a = new BoundingBox(-2f, -3f, -4f, 6f, 8f, 4f);
+		BoundingBox b = new BoundingBox(-2f, -3f, -4f, 6f, 10f, 4f);
+		assertTrue(a.intersects(b));
+
+		BoundingBox c = new BoundingBox(1, 1, 1, 1, 1, 1);
+		BoundingBox d = new BoundingBox(-10, -10, -10, -10, -10, -10);
+		d.offset(11, 11, 11);
+		assertTrue(c.intersects(d));
 	}
 }
