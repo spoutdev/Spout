@@ -75,12 +75,6 @@ public class BlockFullState implements Cloneable {
 	}
 
 	@Override
-	public int hashCode() {
-		// FIXME: Add a proper hashCode method!
-		throw new UnsupportedOperationException("hashCode is not supported.");
-	}
-
-	@Override
 	public BlockFullState clone() {
 		return new BlockFullState(id, data);
 	}

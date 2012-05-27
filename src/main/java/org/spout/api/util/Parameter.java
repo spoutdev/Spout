@@ -131,10 +131,4 @@ public class Parameter<T> {
 		Parameter<?> param = (Parameter<?>) other;
 		return type == param.type && index == param.index && value.equals(param.value);
 	}
-
-	@Override
-	public int hashCode() {
-		// FIXME: Add a proper hashCode method!
-		throw new UnsupportedOperationException("hashCode is not supported.");
-	}
 }
