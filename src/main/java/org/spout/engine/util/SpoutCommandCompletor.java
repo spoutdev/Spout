@@ -18,8 +18,9 @@ public class SpoutCommandCompletor implements Completor {
 		this.engine = engine;
 	}
 	@Override
-	@SuppressWarnings("unchecked")
-	public int complete(String buffer, int cursor, List candidates) {
+	public int complete(String buffer, int cursor, @SuppressWarnings("rawtypes") List rawCandidates) {
+		@SuppressWarnings("unchecked")
+		List<String> candidates = rawCandidates;
 		String start = (buffer == null) ? "" : buffer;
 		TreeSet<String> all = new TreeSet<String>();
 		all.addAll(engine.getRootCommand().getChildNames());

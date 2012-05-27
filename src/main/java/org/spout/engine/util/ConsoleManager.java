@@ -51,6 +51,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.ConsoleHandler;
@@ -68,8 +69,6 @@ import jline.Completor;
 import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
-import jline.SimpleCompletor;
-
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.command.CommandSource;
@@ -126,7 +125,9 @@ public final class ConsoleManager {
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 
-		for (Completor c : new ArrayList<Completor>(reader.getCompletors())) {
+		@SuppressWarnings("unchecked")
+		final Collection<Completor> completors = reader.getCompletors();
+		for (Completor c : new ArrayList<Completor>(completors)) {
 			reader.removeCompletor(c);
 		}
 

@@ -54,7 +54,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
 
 	private volatile int maxPlayers = 20;
-	private volatile String[] allAddresses;
 	/**
 	 * If the server has a whitelist or not.
 	 */

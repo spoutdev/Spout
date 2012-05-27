@@ -44,7 +44,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.PlayerProtocol;
@@ -53,7 +52,6 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 
 import org.spout.engine.SpoutServer;
-import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
 
@@ -66,6 +64,7 @@ public final class SpoutSession implements Session {
 	 * The number of ticks which are elapsed before a client is disconnected due
 	 * to a timeout.
 	 */
+	@SuppressWarnings("unused")
 	private static final int TIMEOUT_TICKS = 20 * 60;
 	/**
 	 * The server this session belongs to.

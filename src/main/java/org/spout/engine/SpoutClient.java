@@ -287,7 +287,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	}
 
-	
+	@SuppressWarnings("unused")
 	private void renderVisibleChunks(SpoutWorld world) {
 		
 		for (int x = -1; x < 1; x++) {

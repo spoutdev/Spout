@@ -50,7 +50,6 @@ import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.TextWrapper;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer implements Player {
 	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();

@@ -6,12 +6,6 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL30;
-
-import org.spout.api.Client;
-import org.spout.api.Spout;
-import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 
 public class ClientTexture extends Texture {

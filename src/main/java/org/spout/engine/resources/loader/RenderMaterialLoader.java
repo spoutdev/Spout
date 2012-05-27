@@ -19,13 +19,14 @@ public class RenderMaterialLoader extends BasicResourceLoader<RenderMaterial> {
 	@Override
 	public RenderMaterial getResource(InputStream stream) {
 		Yaml yaml = new Yaml();
-		Map<String, ?> resource = (Map<String, ?>) yaml.load(stream);
+		Map<?, ?> resource = (Map<?, ?>) yaml.load(stream);
 		
 		if(!(resource.get("Shader") instanceof String)) {
 			throw new IllegalStateException("Tried to load a shader but wasn't given a path");
 		}
 		
 		String in = (String)resource.get("Shader");
+		@SuppressWarnings("unused")
 		Shader s = (Shader)FileSystem.getResource(in);
 		
 		
