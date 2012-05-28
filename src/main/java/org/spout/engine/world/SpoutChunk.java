@@ -762,7 +762,7 @@ public class SpoutChunk extends Chunk {
 	// Handles network updates for all entities that were
 	// - in the chunk at the last snapshot
 	// - were not in a chunk at the last snapshot and are now in this chunk
-	public void preSnapshot() {
+	public void syncEntities() {
 		Map<Entity, Integer> observerSnapshot = observers.get();
 		Map<Entity, Integer> observerLive = observers.getLive();
 

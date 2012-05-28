@@ -767,8 +767,20 @@ public class SpoutRegion extends Region{
 				}
 			}
 		}
-		for (SpoutChunk c : runningChunks) {
-			c.preSnapshot();
+		int mask = REGION_SIZE - 1;
+		Iterator<SpoutChunk> itr = runningChunks.iterator();
+		while (itr.hasNext()) {
+			SpoutChunk c = itr.next();
+			
+			int cx = c.getX() & mask;
+			int cy = c.getY() & mask;
+			int cz = c.getZ() & mask;
+			
+			if (c == getChunk(cx, cy, cz, false)) {
+				c.syncEntities();
+			} else {
+				itr.remove();
+			}
 		}
 	}
 
