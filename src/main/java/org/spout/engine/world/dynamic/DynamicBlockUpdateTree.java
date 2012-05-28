@@ -32,6 +32,7 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
 	private final static int regionMask = (Chunk.CHUNK_SIZE * Region.REGION_SIZE) - 1;
+	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
@@ -146,19 +147,31 @@ public class DynamicBlockUpdateTree {
 		
 		if (m instanceof DynamicBlockMaterial) {
 			DynamicBlockMaterial dm = (DynamicBlockMaterial)m;
-			Vector3 range = (force) ? Vector3.ZERO : dm.maxRange();
-			int rx = (int)range.getX();
-			int ry = (int)range.getY();
-			int rz = (int)range.getZ();
-			if (rx < 0 || ry < 0 || rz < 0) {
+			Vector3[] range = (force) ? zeroVector3Array : dm.maxRange();
+			if (range == null || range.length < 1) {
+				range = zeroVector3Array;
+			}
+			Vector3 rangeHigh = range[0];
+			Vector3 rangeLow = range.length < 2 ? range[0] : range[1];
+
+			int rhx = (int)rangeHigh.getX();
+			int rhy = (int)rangeHigh.getY();
+			int rhz = (int)rangeHigh.getZ();
+			if (rhx < 0 || rhy < 0 || rhz < 0) {
 				throw new IllegalArgumentException("Max range values must be greater or equal to 0");
 			}
-			int maxx = bx + rx;
-			int maxy = by + ry;
-			int maxz = bz + rz;
-			int minx = bx - rx;
-			int miny = by - ry;
-			int minz = bz - rz;
+			int rlx = (int)rangeLow.getX();
+			int rly = (int)rangeLow.getY();
+			int rlz = (int)rangeLow.getZ();
+			if (rlx < 0 || rly < 0 || rlz < 0) {
+				throw new IllegalArgumentException("Max range values must be greater or equal to 0");
+			}
+			int maxx = bx + rhx;
+			int maxy = by + rhy;
+			int maxz = bz + rhz;
+			int minx = bx - rlx;
+			int miny = by - rly;
+			int minz = bz - rlz;
 			int rs = Region.REGION_SIZE * Chunk.CHUNK_SIZE;
 			if (maxx >= rs || maxy >= rs || maxz >= rs || minx < 0 || miny < 0 || minz < 0) {
 				return false;
