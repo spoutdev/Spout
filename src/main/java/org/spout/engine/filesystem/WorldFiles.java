@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -33,6 +34,7 @@ import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
@@ -127,21 +129,21 @@ public class WorldFiles {
 				GenericDatatableMap extraData = new GenericDatatableMap();
 
 				@SuppressWarnings("unused")
-				byte version = (Byte) map.get("version").getValue();
-				long seed = (Long) map.get("seed").getValue();
-				String savedGeneratorName = (String) map.get("generator").getValue();
+				byte version = SafeCast.toByte(toTagValue(map.get("version")), (byte)0);
+				long seed = SafeCast.toLong(toTagValue(map.get("seed")), new Random().nextLong());
+				String savedGeneratorName = SafeCast.toString(toTagValue(map.get("generator")), "");
 				
-				long lsb = (Long) map.get("UUID_lsb").getValue();
-				long msb = (Long) map.get("UUID_msb").getValue();
+				long lsb = SafeCast.toLong(toTagValue(map.get("UUID_lsb")), new Random().nextLong());
+				long msb = SafeCast.toLong(toTagValue(map.get("UUID_msb")), new Random().nextLong());
 				
-				byte[] extraDataBytes = (byte[])map.get("extraData").getValue();
+				byte[] extraDataBytes = SafeCast.toByteArray(toTagValue(map.get("extraData")), new byte[0]);
 				extraData.decompress(extraDataBytes);
 
 				if (!savedGeneratorName.equals(generatorName)) {
 					Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 				}
 				
-				long age = (Long) map.get("age").getValue();
+				long age = SafeCast.toLong(toTagValue(map.get("age")), 0L);
 
 				world = new SpoutWorld(name, engine, seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
 			} catch (IOException e) {
@@ -226,12 +228,12 @@ public class WorldFiles {
 			int cy = (r.getY() << Region.REGION_SIZE_BITS) + y;
 			int cz = (r.getZ() << Region.REGION_SIZE_BITS) + z;
 
-			boolean populated = ((ByteTag) map.get("populated")).getBooleanValue();
-			short[] blocks = (short[]) map.get("blocks").getValue();
-			short[] data = (short[]) map.get("data").getValue();
-			byte[] skyLight = (byte[]) map.get("skyLight").getValue();
-			byte[] blockLight = (byte[]) map.get("blockLight").getValue();
-			byte[] extraData = (byte[]) map.get("extraData").getValue();
+			boolean populated = SafeCast.toGeneric(map.get("populated"), new ByteTag("", false), ByteTag.class).getBooleanValue();
+			short[] blocks = SafeCast.toShortArray(toTagValue(map.get("blocks")), null);
+			short[] data = SafeCast.toShortArray(toTagValue(map.get("data")), null);
+			byte[] skyLight = SafeCast.toByteArray(toTagValue(map.get("skyLight")), null);
+			byte[] blockLight = SafeCast.toByteArray(toTagValue(map.get("blockLight")), null);
+			byte[] extraData = SafeCast.toByteArray(toTagValue(map.get("extraData")), null);
 			
 			BiomeManager manager = null;
 			if (map.containsKey("biomes")) {
@@ -265,8 +267,11 @@ public class WorldFiles {
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
 
-			loadEntities(r, (CompoundMap) map.get("entities").getValue(), dataForRegion.loadedEntities);
-			loadDynamicUpdates((List<CompoundTag>)map.get("dynamic_updates").getValue(), dataForRegion.loadedUpdates);
+			CompoundMap entityMap = SafeCast.toGeneric(toTagValue(map.get("entities")), null, CompoundMap.class);
+			loadEntities(r, entityMap , dataForRegion.loadedEntities);
+			
+			List<CompoundTag> updateList = SafeCast.toGeneric(toTagValue(map.get("dynamic_updates")), null, List.class);
+			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -283,7 +288,10 @@ public class WorldFiles {
 	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
 		if (r != null && map != null) {
 			for (Tag tag : map) {
-				loadedEntities.add(loadEntity(r, (CompoundTag) tag));
+				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
+				if (e != null) {
+					loadedEntities.add(e);
+				}
 			}
 		}
 	}
@@ -306,8 +314,8 @@ public class WorldFiles {
 		CompoundMap map = tag.getValue();
 
 		@SuppressWarnings("unused")
-		byte version = (Byte) map.get("version").getValue();
-		String name = (String) map.get("controller").getValue();
+		byte version = SafeCast.toByte(toTagValue(map.get("version")), (byte)0);
+		String name = SafeCast.toString(toTagValue(map.get("controller")), "");
 		
 		ControllerType type = ControllerRegistry.get(name);
 		if (type == null) {
@@ -315,31 +323,37 @@ public class WorldFiles {
 		} else if (type.canCreateController()) {
 			
 			//Read entity
-			float pX = (Float) map.get("posX").getValue();
-			float pY = (Float) map.get("posY").getValue();
-			float pZ = (Float) map.get("posZ").getValue();
+			Float pX = SafeCast.toFloat(toTagValue(map.get("posX")), Float.MAX_VALUE);
+			Float pY = SafeCast.toFloat(toTagValue(map.get("posY")), Float.MAX_VALUE);
+			Float pZ = SafeCast.toFloat(toTagValue(map.get("posZ")), Float.MAX_VALUE);
 			
-			float sX = (Float) map.get("scaleX").getValue();
-			float sY = (Float) map.get("scaleY").getValue();
-			float sZ = (Float) map.get("scaleZ").getValue();
+			if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
+				return null;
+			}
 			
-			float qX = (Float) map.get("quatX").getValue();
-			float qY = (Float) map.get("quatY").getValue();
-			float qZ = (Float) map.get("quatZ").getValue();
-			float qW = (Float) map.get("quatW").getValue();
+			float sX = SafeCast.toFloat(toTagValue(map.get("scaleX")), 1.0F);
+			float sY = SafeCast.toFloat(toTagValue(map.get("scaleY")), 1.0F);
+			float sZ = SafeCast.toFloat(toTagValue(map.get("scaleZ")), 1.0F);
 			
-			long msb = (Long) map.get("UUID_msb").getValue();
-			long lsb = (Long) map.get("UUID_lsb").getValue();
+			float qX = SafeCast.toFloat(toTagValue(map.get("quatX")), 0.0F);
+			float qY = SafeCast.toFloat(toTagValue(map.get("quatY")), 0.0F);
+			float qZ = SafeCast.toFloat(toTagValue(map.get("quatZ")), 0.0F);
+			float qW = SafeCast.toFloat(toTagValue(map.get("quatW")), 1.0F);
+			
+			long msb = SafeCast.toLong(toTagValue(map.get("UUID_msb")), new Random().nextLong());
+			long lsb = SafeCast.toLong(toTagValue(map.get("UUID_lsb")), new Random().nextLong());
 			UUID uid = new UUID(msb, lsb);
 			
-			int view = (Integer) map.get("view").getValue();
-			boolean observer = ((ByteTag) map.get("observer")).getBooleanValue();
+			int view = SafeCast.toInt(toTagValue(map.get("view")), 0);
+			boolean observer = SafeCast.toGeneric(toTagValue(map.get("observer")), new ByteTag("", (byte)0), ByteTag.class).getBooleanValue();
 			
 			//Setup controller
 			Controller controller = type.createController();
 			try {
-				if (((ByteTag) map.get("controller_data_exists")).getBooleanValue()) {
-					byte[] data = ((ByteArrayTag)map.get("controller_data")).getValue();
+				boolean controllerDataExists = SafeCast.toGeneric(toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte)0), ByteTag.class).getBooleanValue();
+
+				if (controllerDataExists) {
+					byte[] data = SafeCast.toByteArray(toTagValue(map.get("controller_data")), new byte[0]);
 					DatatableMap dataMap = ((DataMap)controller.data()).getRawMap();
 					dataMap.decompress(data);
 				}
@@ -438,17 +452,32 @@ public class WorldFiles {
 	
 	private static void loadDynamicUpdates(List<CompoundTag> list, List<DynamicBlockUpdate> loadedUpdates) {
 		if (list != null) {
-			for (Tag t : list) {
-				loadedUpdates.add(loadDynamicUpdate((CompoundTag)t));
+			for (CompoundTag t : list) {
+				DynamicBlockUpdate update = loadDynamicUpdate(t);
+				if (update != null) {
+					loadedUpdates.add(update);
+				}
 			}
 		}
 	}
 	
 	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag t) {
 		CompoundMap map = t.getValue();
-		int packed = (Integer)map.get("packed").getValue();
-		long nextUpdate = (Long)map.get("nextUpdate").getValue();
-		long lastUpdate = (Long)map.get("lastUpdate").getValue();
-		return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate);
+		int packed = SafeCast.toInt(toTagValue(map.get("packed")), -1);
+		long nextUpdate = SafeCast.toLong(toTagValue(map.get("nextUpdate")), -1L);
+		long lastUpdate = SafeCast.toLong(toTagValue(map.get("lastUpdate")), -1L);
+		if (packed < 0 || nextUpdate < 0) {
+			return null;
+		} else {
+			return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate);
+		}
+	}
+	
+	private static Object toTagValue(Tag t) {
+		if (t == null) {
+			return null;
+		} else {
+			return t.getValue();
+		}
 	}
 }
