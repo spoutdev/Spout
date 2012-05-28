@@ -26,6 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import org.spout.api.entity.Controller;
@@ -38,12 +39,11 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
-import org.spout.api.util.thread.Threadsafe;
 
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
  */
-public abstract class Region extends Cube implements AreaChunkAccess {
+public abstract class Region extends Cube implements AreaChunkAccess, Iterable<Chunk>  {
 	/**
 	 * Number of chunks on a side of a region
 	 */
@@ -154,4 +154,53 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 	 * Gets the TaskManager associated with this region
 	 */
 	public abstract TaskManager getTaskManager();
+	
+	@Override
+	public Iterator<Chunk> iterator() {
+		return new ChunkIterator();
+	}
+	
+	private class ChunkIterator implements Iterator<Chunk> {
+		private Chunk next;
+		public ChunkIterator() {
+			for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
+				for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
+					for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
+						next = getChunk(dx, dy, dz, false);
+						if (next != null) {
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return next != null;
+		}
+
+		@Override
+		public Chunk next() {
+			Chunk current = next;
+			next = null;
+			for (int dx = current.getX(); dx < Region.REGION_SIZE; dx++) {
+				for (int dy = current.getY(); dy < Region.REGION_SIZE; dy++) {
+					for (int dz = current.getZ(); dz < Region.REGION_SIZE; dz++) {
+						next = getChunk(dx, dy, dz, false);
+						if (next != null) {
+							break;
+						}
+					}
+				}
+			}
+			return current;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Operation not supported");
+		}
+		
+	}
 }
