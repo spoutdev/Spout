@@ -76,11 +76,14 @@ import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.world.dynamic.DynamicBlockUpdate;
+import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
 public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -150,7 +153,10 @@ public class SpoutRegion extends Region {
 	
 	private final LinkedHashSet<SpoutChunk> runningChunks = new LinkedHashSet<SpoutChunk>();
 	private final ConcurrentLinkedQueue<SpoutChunk> runningChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
-
+	
+	private final DynamicBlockUpdateTree dynamicBlockTree = new DynamicBlockUpdateTree(this);
+	private List<DynamicBlockUpdate> multiRegionUpdates = null;
+	
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, LoadGenerateOption.NO_LOAD);
 	}
@@ -294,6 +300,8 @@ public class SpoutRegion extends Region {
 			runningChunksQueue.remove(currentChunk);
 			runningChunks.remove(currentChunk);
 			
+			removeDynamicBlockUpdates(currentChunk);
+			
 			if (num == 0) {
 				return true;
 			} else if (num < 0) {
@@ -428,6 +436,23 @@ public class SpoutRegion extends Region {
 
 		if (empty) {
 			source.removeRegion(this);
+		}
+
+
+		if (multiRegionUpdates != null) {
+			final List<DynamicBlockUpdate> finalMultiRegionUpdates = multiRegionUpdates;
+			final DynamicBlockUpdateTree finalTree = dynamicBlockTree;
+			final long worldAge = getWorld().getAge();
+			multiRegionUpdates = null;
+
+			((SpoutScheduler)Spout.getScheduler()).scheduleCoreTask(new Runnable() {
+				@Override
+				public void run() {
+					for (DynamicBlockUpdate dm : finalMultiRegionUpdates) {
+						finalTree.updateDynamicBlock(worldAge, dm, true);
+					}
+				}
+			});
 		}
 	}
 
@@ -568,12 +593,17 @@ public class SpoutRegion extends Region {
 	private int dy = 0;
 
 	public void finalizeRun() throws InterruptedException {
+		
+		long worldAge = getWorld().getAge();
+
+		dynamicBlockTree.commitPending(worldAge);
+		multiRegionUpdates = dynamicBlockTree.updateDynamicBlocks(worldAge);
+		
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
 		int reaped = 0;
 
-		long worldAge = getWorld().getAge();
 		
 		dy++;
 		if (dy >= Region.REGION_SIZE) {
@@ -949,5 +979,48 @@ public class SpoutRegion extends Region {
 	
 	public void unSkipChunk(SpoutChunk chunk) {
 		runningChunks.add(chunk);
+	}
+
+	@Override
+	public void resetDynamicBlock(int x, int y, int z) {
+		dynamicBlockTree.resetBlockUpdates(x, y, z);
+	}
+	
+	public void resetDynamicBlock(Block b) {
+		resetDynamicBlock(b.getX(), b.getY(), b.getZ());
+	}
+
+	// TODO - save needs to call this method
+	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {
+		Set<DynamicBlockUpdate> updates = dynamicBlockTree.getDynamicBlockUpdates(c);
+		int size = updates.size();
+		if (multiRegionUpdates != null) {
+			size += multiRegionUpdates.size();
+		}
+		List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(size);
+		list.addAll(updates);
+		if (multiRegionUpdates != null) {
+			for (DynamicBlockUpdate dm : multiRegionUpdates) {
+				if (dm.isInChunk(c)) {
+					list.add(dm);
+				}
+			}
+		}
+		return list;
+	}
+	
+	public boolean removeDynamicBlockUpdates(Chunk c) {
+		boolean removed = dynamicBlockTree.removeDynamicBlockUpdates(c);
+		if (multiRegionUpdates != null) {
+			Iterator<DynamicBlockUpdate> itr = multiRegionUpdates.iterator();
+			while (itr.hasNext()) {
+				DynamicBlockUpdate dm = itr.next();
+				if (dm.isInChunk(c)) {
+					removed = true;
+					itr.remove();
+				}
+			}
+		}
+		return removed;
 	}
 }

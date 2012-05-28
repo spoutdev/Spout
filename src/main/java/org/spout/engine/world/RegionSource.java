@@ -41,6 +41,7 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
+import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
@@ -90,11 +91,9 @@ public class RegionSource implements Iterable<Region> {
 			return;
 		}
 
-		// TODO - this should probably be in a separate scheduler stage, as it has to fire first
-
 		// removeRegion is called during snapshot copy on the Region thread (when the last chunk is removed)
 		// Needs re-syncing to a safe moment
-		world.getEngine().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
+		((SpoutScheduler)Spout.getEngine().getScheduler()).scheduleCoreTask(new Runnable() {
 			@Override
 			public void run() {
 				int x = r.getX();

@@ -54,6 +54,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.DynamicBlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -62,7 +63,6 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
@@ -236,6 +236,9 @@ public class SpoutChunk extends Chunk {
 					world.setBlockSkyLight(x, y, z, (byte) 15, source);
 				}
 			}
+		}
+		if (material instanceof DynamicBlockMaterial) {
+			((SpoutRegion)parentRegion).resetDynamicBlock(x, y, z);
 		}
 		return true;
 	}

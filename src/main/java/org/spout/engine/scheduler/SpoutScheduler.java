@@ -27,6 +27,7 @@ package org.spout.engine.scheduler;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -121,6 +122,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
+	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	/**
 	 * Creates a new task scheduler.
@@ -319,6 +321,16 @@ public final class SpoutScheduler implements Scheduler {
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
+		
+		Runnable r;
+		while ((r = coreTaskQueue.poll()) != null) {
+			try {
+				r.run();
+			} catch (Exception e) {
+				Spout.log("Exception thrown when executing core task");
+				e.printStackTrace();
+			}
+		}
 		
 		taskManager.heartbeat(delta);
 		
@@ -574,5 +586,18 @@ public final class SpoutScheduler implements Scheduler {
 				return false;
 			}
 		}
+	}
+	
+	/**
+	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br>
+	 * <br>
+	 * Tasks are executed in the order that they are received.<br>
+	 * <br>
+	 * It is used for region unloading and multi-region dynamic block updates
+	 * 
+	 * @param r
+	 */
+	public void scheduleCoreTask(Runnable r) {
+		coreTaskQueue.add(r);
 	}
 }

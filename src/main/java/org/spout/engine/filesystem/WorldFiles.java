@@ -39,6 +39,7 @@ import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -395,5 +396,16 @@ public class WorldFiles {
 		CompoundTag tag = new CompoundTag("entity_" + e.getId(), map);
 
 		return tag;
+	}
+	
+	private static Tag saveDynamicUpdate(DynamicBlockUpdate update) {
+		CompoundMap map = new CompoundMap();
+		
+		map.put(new IntTag("packed", update.getPacked()));
+		map.put(new LongTag("NextUpdate", update.getNextUpdate()));
+		map.put(new LongTag("LastUpdate", update.getLastUpdate()));
+		
+		return new CompoundTag("update", map);
+		
 	}
 }
