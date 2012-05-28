@@ -29,7 +29,7 @@ package org.spout.api.material;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.math.Vector3;
 
-public interface DynamicBlockMaterial {
+public interface DynamicMaterial {
 	
 	/**
 	 * Gets the maximum range, r, for the range of effect of this dynamic block.<br>
