@@ -171,9 +171,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 	private final StringMap itemMap;
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator, StringMap itemMap, DatatableMap extraData) {
+	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
 		super(1, new ThreadAsyncExecutor(), server);
-		uid = UUID.randomUUID();
+		this.uid = uid;
 		this.server = server;
 		this.seed = seed;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
@@ -214,17 +214,6 @@ public final class SpoutWorld extends AsyncManager implements World {
 		}
 		// TODO FIX age (should be persisted)
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, getAge());
-	}
-
-	public void start() {
-		//load spawn regions
-		for (int dx = -1; dx < 1; dx++) {
-			for (int dy = -1; dy < 1; dy++) {
-				for (int dz = -1; dz < 1; dz++) {
-					regions.getRegion(dx, dy, dz, LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED);
-				}
-			}
-		}
 	}
 
 	@Override
@@ -269,7 +258,6 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public UUID getUID() {
-		// TODO non-null
 		return uid;
 	}
 

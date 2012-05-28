@@ -74,6 +74,8 @@ public class WorldFiles {
 		worldTags.put(new ByteTag("version", (byte)WORLD_VERSION));
 		worldTags.put(new LongTag("seed", world.getSeed()));
 		worldTags.put(new StringTag("generator", generatorName));
+		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
+		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
 		worldTags.put(new ByteArrayTag("extraData", ((DataMap)world.getDataMap()).getRawMap().compress()));
 
 		CompoundTag worldTag = new CompoundTag(world.getName(), worldTags);
@@ -126,6 +128,9 @@ public class WorldFiles {
 				long seed = (Long) map.get("seed").getValue();
 				String savedGeneratorName = (String) map.get("generator").getValue();
 				
+				long lsb = (Long) map.get("UUID_lsb").getValue();
+				long msb = (Long) map.get("UUID_msb").getValue();
+				
 				byte[] extraDataBytes = (byte[])map.get("extraData").getValue();
 				extraData.decompress(extraDataBytes);
 
@@ -133,7 +138,7 @@ public class WorldFiles {
 					Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 				}
 
-				world = new SpoutWorld(name, engine, seed, generator, itemMap, extraData);
+				world = new SpoutWorld(name, engine, seed, generator, new UUID(msb, lsb), itemMap, extraData);
 			} catch (IOException e) {
 				Spout.getLogger().log(Level.SEVERE, "Error saving load data for " + name, e);
 			} finally {
