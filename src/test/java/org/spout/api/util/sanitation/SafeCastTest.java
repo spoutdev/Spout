@@ -55,6 +55,13 @@ public class SafeCastTest {
 	}
 	
 	@Test
+	public void testFloat() {
+		assertTrue("Unable to process valid cast", SafeCast.toFloat(new Byte((byte)22), 111.1F) == 111.1F);
+		assertTrue("Default did not work (wrong type)",  SafeCast.toFloat(new Integer(22), 9.2F) == 9.2F);
+		assertTrue("Default did not work (null)",  SafeCast.toFloat(null, 9.2F) == 9.2F);
+	}
+	
+	@Test
 	public void testByteArray() {
 		byte[] array = new byte[10];
 		byte[] backup = new byte[10];

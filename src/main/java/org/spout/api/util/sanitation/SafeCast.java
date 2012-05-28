@@ -52,6 +52,14 @@ public class SafeCast {
 		}
 	}
 	
+	public static float toFloat(Object o, float def) {
+		if (o instanceof Float) {
+			return (Float)o;
+		} else {
+			return def;
+		}
+	}
+	
 	public static byte[] toByteArray(Object o, byte[] def) {
 		if (o instanceof byte[]) {
 			return (byte[])o;
