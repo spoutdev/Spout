@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -46,6 +47,7 @@ import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.FloatTag;
 import org.spout.nbt.IntTag;
+import org.spout.nbt.ListTag;
 import org.spout.nbt.LongTag;
 import org.spout.nbt.ShortArrayTag;
 import org.spout.nbt.StringTag;
@@ -176,6 +178,7 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
 		chunkTags.put(new ByteArrayTag("blockLight", blockLight));
 		chunkTags.put(new CompoundTag("entities", saveEntities(c)));
+		chunkTags.put(saveDynamicUpdates(c));
 
 		byte[] biomes = c.getBiomeManager().serialize();
 		if (biomes != null) {
@@ -203,7 +206,7 @@ public class WorldFiles {
 		}
 	}
 
-	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, List<SpoutEntity> loadedEntities) {
+	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
 		NBTInputStream is = null;
 		
@@ -259,7 +262,8 @@ public class WorldFiles {
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
 
-			loadEntities(r, (CompoundMap) map.get("entities").getValue(), loadedEntities);
+			loadEntities(r, (CompoundMap) map.get("entities").getValue(), dataForRegion.loadedEntities);
+			loadDynamicUpdates((List<CompoundTag>)map.get("dynamic_updates").getValue(), dataForRegion.loadedUpdates);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -403,14 +407,45 @@ public class WorldFiles {
 		return tag;
 	}
 	
-	private static Tag saveDynamicUpdate(DynamicBlockUpdate update) {
+	private static ListTag<CompoundTag> saveDynamicUpdates(SpoutChunk c) {
+		List<DynamicBlockUpdate> updates = ((SpoutRegion)c.getRegion()).getDynamicBlockUpdates(c);
+		
+		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
+
+		for (DynamicBlockUpdate update : updates) {
+			CompoundTag tag = saveDynamicUpdate(update);
+			if (tag != null) {
+				list.add(tag);
+			}
+		}
+
+		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
+	}
+	
+	private static CompoundTag saveDynamicUpdate(DynamicBlockUpdate update) {
 		CompoundMap map = new CompoundMap();
 		
 		map.put(new IntTag("packed", update.getPacked()));
-		map.put(new LongTag("NextUpdate", update.getNextUpdate()));
-		map.put(new LongTag("LastUpdate", update.getLastUpdate()));
+		map.put(new LongTag("nextUpdate", update.getNextUpdate()));
+		map.put(new LongTag("lastUpdate", update.getLastUpdate()));
 		
 		return new CompoundTag("update", map);
 		
+	}
+	
+	private static void loadDynamicUpdates(List<CompoundTag> list, List<DynamicBlockUpdate> loadedUpdates) {
+		if (list != null) {
+			for (Tag t : list) {
+				loadedUpdates.add(loadDynamicUpdate((CompoundTag)t));
+			}
+		}
+	}
+	
+	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag t) {
+		CompoundMap map = t.getValue();
+		int packed = (Integer)map.get("packed").getValue();
+		long nextUpdate = (Long)map.get("nextUpdate").getValue();
+		long lastUpdate = (Long)map.get("lastUpdate").getValue();
+		return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate);
 	}
 }

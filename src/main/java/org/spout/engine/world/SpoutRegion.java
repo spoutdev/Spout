@@ -81,6 +81,7 @@ import org.spout.api.util.thread.LiveRead;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -231,9 +232,9 @@ public class SpoutRegion extends Region{
 
 			boolean success = false;
 
-			List<SpoutEntity> newEntities = new ArrayList<SpoutEntity>(100);
+			ChunkDataForRegion dataForRegion = new ChunkDataForRegion();
 
-			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), newEntities);
+			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 
 			boolean generated = false;
 
@@ -254,10 +255,11 @@ public class SpoutRegion extends Region{
 					if (!newChunk.isPopulated()) {
 						nonPopulatedChunks.add(newChunk);
 					}
-					for (SpoutEntity entity : newEntities) {
+					for (SpoutEntity entity : dataForRegion.loadedEntities) {
 						entity.setupInitialChunk(entity.getTransform());
 						addEntity(entity);
 					}
+					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
 					runningChunksQueue.add(newChunk);
 
 					Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
@@ -1083,12 +1085,14 @@ public class SpoutRegion extends Region{
 	// TODO - save needs to call this method
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {
 		Set<DynamicBlockUpdate> updates = dynamicBlockTree.getDynamicBlockUpdates(c);
-		int size = updates.size();
+		int size = updates == null ? 0 : updates.size();
 		if (multiRegionUpdates != null) {
 			size += multiRegionUpdates.size();
 		}
 		List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(size);
-		list.addAll(updates);
+		if (updates != null) {
+			list.addAll(updates);
+		}
 		if (multiRegionUpdates != null) {
 			for (DynamicBlockUpdate dm : multiRegionUpdates) {
 				if (dm.isInChunk(c)) {
