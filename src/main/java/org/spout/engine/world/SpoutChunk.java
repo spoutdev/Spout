@@ -175,6 +175,7 @@ public class SpoutChunk extends Chunk {
 		column.registerChunk();
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
+		blockStore.resetDirtyArrays();	// Clear false dirty state on freshly loaded chunk
 		this.biomes = manager;
 	}
 

@@ -53,6 +53,10 @@ import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
+import org.spout.api.event.chunk.ChunkLoadEvent;
+import org.spout.api.event.chunk.ChunkPopulateEvent;
+import org.spout.api.event.chunk.ChunkUnloadEvent;
+import org.spout.api.event.chunk.ChunkUpdatedEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
@@ -226,15 +230,19 @@ public class SpoutRegion extends Region {
 			AtomicReference<SpoutChunk> ref = chunks[x][y][z];
 
 			boolean success = false;
-			
+
 			List<SpoutEntity> newEntities = new ArrayList<SpoutEntity>(100);
 
 			SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), newEntities);
+
+			boolean generated = false;
+
 			if (newChunk == null) {
 				if (!loadopt.generateIfNeeded()) {
 					return null;
 				}
 				newChunk = generateChunk(x, y, z);
+				generated = true;
 			}
 
 			while (!success) {
@@ -251,6 +259,9 @@ public class SpoutRegion extends Region {
 						addEntity(entity);
 					}
 					runningChunksQueue.add(newChunk);
+
+					Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
+
 					return newChunk;
 				} else {
 					newChunk.deregisterFromColumn(false);
@@ -583,7 +594,16 @@ public class SpoutRegion extends Region {
 
 				Chunk toUnload = unloadQueue.poll();
 				if (toUnload != null) {
-					toUnload.unload(true);
+					boolean do_unload = true;
+					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
+						if (event.isCancelled()) {
+							do_unload = false;
+						}
+					}
+					if (do_unload) {
+						toUnload.unload(true);
+					}
 				}
 
 				break;
@@ -649,8 +669,17 @@ public class SpoutRegion extends Region {
 				chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
 
 				if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
-					((SpoutChunk) chunk).unload(true);
-					reaped++;
+					boolean do_unload = true;
+					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
+						if (event.isCancelled()) {
+							do_unload = false;
+						}
+					}
+					if (do_unload) {
+						((SpoutChunk) chunk).unload(true);
+						reaped++;
+					}
 				}
 			}
 		}
@@ -681,6 +710,32 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
+	
+	private void processChunkUpdatedEvent(SpoutChunk chunk) {
+		/* If no listeners, quit */
+		if (ChunkUpdatedEvent.getHandlerList().getRegisteredListeners().length == 0) {
+			return;
+		}
+		ChunkUpdatedEvent evt;
+		if (chunk.isDirtyOverflow()) {	/* If overflow, notify for whole chunk */
+			evt = new ChunkUpdatedEvent(chunk, null);
+		}
+		else {
+			ArrayList<Vector3> lst = new ArrayList<Vector3>();
+			boolean done = false;
+			for (int i = 0; !done; i++) {
+				Vector3 v = chunk.getDirtyBlock(i);
+				if (v != null) {
+					lst.add(v);
+				}
+				else {
+					done = true;
+				}
+			}
+			evt = new ChunkUpdatedEvent(chunk, lst);
+		}
+		Spout.getEventManager().callDelayedEvent(evt);
+	}
 
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
@@ -702,6 +757,8 @@ public class SpoutRegion extends Region {
 							}
 							syncChunkToPlayers(spoutChunk, entity);
 						}
+						processChunkUpdatedEvent(spoutChunk);
+						
 						spoutChunk.resetDirtyArrays();
 						spoutChunk.setLightDirty(false);
 					}
@@ -759,6 +816,7 @@ public class SpoutRegion extends Region {
 		if (!isPopulatingChunks) {
 			nonPopulatedChunks.remove(chunk);
 		}
+		Spout.getEventManager().callDelayedEvent(new ChunkPopulateEvent(chunk));
 	}
 
 	@Override
