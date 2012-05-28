@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
@@ -105,17 +107,22 @@ public class SpoutColumn {
 	}
 
 	public void notifyChunkAdded(Chunk c, int x, int z) {
-		int y = c.getY() << Chunk.CHUNK_SIZE_BITS;
-
-		AtomicInteger v = getAtomicInteger(x, z);
+		int y = c.getBlockY();
 		int maxY = y + Chunk.CHUNK_SIZE - 1;
+		AtomicInteger v = getAtomicInteger(x, z);
 
 		if (maxY < v.get()) {
 			return;
 		}
 
-		if (((SpoutChunk)c).isUniform()) {
-			return;
+		if (c instanceof FilteredChunk) {
+			if (((FilteredChunk) c).isUniform()) {
+				//simplified version
+				if (!isAir(c, x, maxY, z)) {
+					notifyBlockChange(v, x, maxY, z);
+				}
+				return;
+			}
 		}
 
 		for (int yy = maxY; yy >= y; yy--) {
@@ -162,11 +169,15 @@ public class SpoutColumn {
 		int xx = (this.x << COLUMN_SIZE_BITS) + (x & BIT_MASK);
 		int yy = y;
 		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
-		return world.getBlockMaterial(xx, yy, zz).isTransparent();
+		return isAir(world.getBlockMaterial(xx, yy, zz));
 	}
 
 	private boolean isAir(Chunk c, int x, int y, int z) {
-		return c.getBlockMaterial(x, y, z).isTransparent();
+		return isAir(c.getBlockMaterial(x, y, z));
+	}
+
+	private boolean isAir(BlockMaterial material) {
+		return material.isTransparent() && !material.occludes(BlockFace.TOP) && !material.occludes(BlockFace.BOTTOM);
 	}
 
 	private AtomicInteger getAtomicInteger(int x, int z) {

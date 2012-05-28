@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -125,6 +126,11 @@ public class SpoutChunk extends Chunk {
 	 * True if this chunk should be resent due to light calculations
 	 */
 	protected final AtomicBoolean lightDirty = new AtomicBoolean(false);
+	/**
+	 * If -1, there are no changes. If higher, there are changes and the number denotes how many ticks these have been there.<br>
+	 * Every time a change is committed the value is set to 0. The region will increment it as well.
+	 */
+	protected final AtomicInteger lightingCounter = new AtomicInteger(-1);
 
 	/**
 	 * Data map and Datatable associated with it
@@ -222,23 +228,29 @@ public class SpoutChunk extends Chunk {
 			SpoutWorld world = this.getWorld();
 
 			//Update block lighting
-			this.setBlockLight(x, y, z, material.getLightLevel(data), source);
+			if (!this.setBlockLight(x, y, z, material.getLightLevel(data), source)) {
+				//if the light level is left unchanged, refresh lighting from neighbors
+				world.getLightingManager().blockLight.addRefresh(x, y, z);
+			}
 
 			//Update sky lighting
 			if (newheight > oldheight) {
 				//set sky light of blocks below to 0
 				for (y = oldheight; y < newheight; y++) {
-					world.setBlockSkyLight(x, y, z, (byte) 0, source);
+					world.setBlockSkyLight(x, y + 1, z, (byte) 0, source);
 				}
 			} else if (newheight < oldheight) {
 				//set sky light of blocks above to 15
 				for (y = newheight; y < oldheight; y++) {
-					world.setBlockSkyLight(x, y, z, (byte) 15, source);
+					world.setBlockSkyLight(x, y + 1, z, (byte) 15, source);
 				}
+			} else if (!this.setBlockSkyLight(x, y, z, (byte) 0, source)) {
+				//if the light level is left unchanged, refresh lighting from neighbors
+				world.getLightingManager().skyLight.addRefresh(x, y, z);
 			}
 		}
 		if (material instanceof DynamicBlockMaterial) {
-			((SpoutRegion)parentRegion).resetDynamicBlock(x, y, z);
+			parentRegion.resetDynamicBlock(x, y, z);
 		}
 		return true;
 	}
@@ -246,8 +258,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState fullState = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
-		short id = fullState.getId();
+		short id = (short) blockStore.getBlockId(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 		BlockMaterial mat = BlockMaterial.get(id);
 		return mat == null ? BlockMaterial.AIR : mat;
 	}
@@ -282,16 +293,14 @@ public class SpoutChunk extends Chunk {
 		}
 		if (light > oldLight) {
 			//light increased
-			getWorld().getLightingManager().blockLightGreater.add(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			getWorld().getLightingManager().blockLight.addGreater(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else if (light < oldLight) {
 			//light decreased
-			getWorld().getLightingManager().blockLightLesser.add(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			getWorld().getLightingManager().blockLight.addLesser(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else {
 			return false;
 		}
-		if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
-			this.setLightDirty(true);
-		}
+		this.notifyLightChange();
 		return true;
 	}
 
@@ -332,16 +341,14 @@ public class SpoutChunk extends Chunk {
 
 		if (light > oldLight) {
 			//light increased
-			getWorld().getLightingManager().skyLightGreater.add(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			getWorld().getLightingManager().skyLight.addGreater(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else if (light < oldLight) {
 			//light decreased
-			getWorld().getLightingManager().skyLightLesser.add(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			getWorld().getLightingManager().skyLight.addLesser(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else {
 			return false;
 		}
-		if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
-			this.setLightDirty(true);
-		}
+		this.notifyLightChange();
 		return true;
 	}
 
@@ -354,6 +361,14 @@ public class SpoutChunk extends Chunk {
 			return NibblePairHashed.key1(light);
 		} else {
 			return NibblePairHashed.key2(light);
+		}
+	}
+
+	private void notifyLightChange() {
+		if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
+			if (this.lightingCounter.getAndSet(0) == -1) {
+				this.parentRegion.reportChunkLightDirty(this.getX(), this.getY(), this.getZ());
+			}
 		}
 	}
 
@@ -543,7 +558,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public boolean isDirty() {
-		return blockStore.isDirty();
+		return lightDirty.get() || blockStore.isDirty();
 	}
 
 	public boolean isDirtyOverflow() {
@@ -625,8 +640,9 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 
-		//this.initLighting(); //TODO: We aren't ready for this!
-		//this.setLightDirty(false);
+		if (SpoutConfiguration.LIGHTING_ENABLED.getBoolean()) {
+			this.initLighting();
+		}
 		parentRegion.onChunkPopulated(this);
 	}
 
@@ -652,18 +668,21 @@ public class SpoutChunk extends Chunk {
 		}
 
 		//Report the columns that require a sky-light update
-		maxY = this.getBlockY() + CHUNK_SIZE - 1;
+		minY = this.getBlockY();
+		maxY = minY + CHUNK_SIZE;
 		for (x = 0; x < CHUNK_SIZE; x++) {
 			for (z = 0; z < CHUNK_SIZE; z++) {
-				minY = this.column.getSurfaceHeight(x, z);
+				y = this.column.getSurfaceHeight(x, z) + 1;
+				if (y < minY) {
+					y = minY;
+				}
+
 				//fill area above height with light
-				for (y = minY; y <= maxY; y++) {
+				for (; y < maxY; y++) {
 					this.setBlockSkyLight(x, y, z, (byte) 15, world);
 				}
 			}
 		}
-
-		this.setLightDirty(true);
 	}
 
 	public boolean addEntity(SpoutEntity entity) {
@@ -936,17 +955,8 @@ public class SpoutChunk extends Chunk {
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
 	}
-	
+
 	public BiomeManager getBiomeManager() {
 		return biomes;
-	}
-
-	/**
-	 * True if the chunk is all uniform blocks
-	 * 
-	 * @return uniform
-	 */
-	public boolean isUniform() {
-		return false;
 	}
 }
