@@ -113,7 +113,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * The current world age.
 	 */
-	private SnapshotableLong age = new SnapshotableLong(snapshotManager, 0L);
+	private SnapshotableLong age;
 	/**
 	 * The world's UUID.
 	 */
@@ -171,7 +171,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	private final StringMap itemMap;
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, Engine server, long seed, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
+	public SpoutWorld(String name, Engine server, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
 		super(1, new ThreadAsyncExecutor(), server);
 		this.uid = uid;
 		this.server = server;
@@ -212,8 +212,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
-		// TODO FIX age (should be persisted)
-		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, getAge());
+
+		this.age = new SnapshotableLong(snapshotManager, age);
+		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
 	}
 
 	@Override

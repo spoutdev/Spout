@@ -465,7 +465,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE);
 
-			world = new SpoutWorld(name, this, random.nextLong(), generator, UUID.randomUUID(), itemMap, null);
+			world = new SpoutWorld(name, this, random.nextLong(), 0L, generator, UUID.randomUUID(), itemMap, null);
 			WorldFiles.saveWorldData(world);
 		}
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);

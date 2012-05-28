@@ -79,6 +79,7 @@ public class WorldFiles {
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
 		worldTags.put(new ByteArrayTag("extraData", ((DataMap)world.getDataMap()).getRawMap().compress()));
+		worldTags.put(new LongTag("age", world.getAge()));
 
 		CompoundTag worldTag = new CompoundTag(world.getName(), worldTags);
 
@@ -139,8 +140,10 @@ public class WorldFiles {
 				if (!savedGeneratorName.equals(generatorName)) {
 					Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 				}
+				
+				long age = (Long) map.get("age").getValue();
 
-				world = new SpoutWorld(name, engine, seed, generator, new UUID(msb, lsb), itemMap, extraData);
+				world = new SpoutWorld(name, engine, seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
 			} catch (IOException e) {
 				Spout.getLogger().log(Level.SEVERE, "Error saving load data for " + name, e);
 			} finally {
