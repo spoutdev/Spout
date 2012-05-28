@@ -121,4 +121,15 @@ public class AdministrationCommands {
 			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloaded '" + pluginName + "'.");
 		}
 	}
+	
+	@Command(aliases = "help", usage = "", desc = "Lists all commands registered with the server", min= 0, max = 0)
+	@CommandPermissions("spout.command.help")
+	public void helpMenu(CommandContext args, CommandSource source) throws CommandException {
+			source.sendMessage("/Stop [Message]");
+			source.sendMessage("/Kick [Player] <Message>");
+			source.sendMessage("/Reload [Plugin]");
+			source.sendMessage("/Say [Message]");
+			source.sendMessage("/Msg <Target> <Message>");
+			source.sendMessage(server.getRootCommand().getChildCommands().iterator().toString());
+	}
 }
