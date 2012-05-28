@@ -27,12 +27,49 @@
 package org.spout.api.gui.layout;
 
 import org.spout.api.gui.LayoutType;
-
+import org.spout.api.gui.Widget;
+import org.spout.api.gui.attribute.Attribute;
 
 public class FreeLayout extends AbstractLayout {
 	@Override
 	public void relayout() {
-		//TODO: layout based on left, top, right, bottom properties in the attributes. Waiting for the attribute system to be merged.
+		int width = getParent().getGeometry().width;
+		int height = getParent().getGeometry().height;
+
+		//TODO check for percent in the unit
+		for (Widget w : getWidgets()) {
+			Attribute left, top, right, bottom;
+			left = w.getAttribute("left");
+			top = w.getAttribute("top");
+			right = w.getAttribute("right");
+			bottom = w.getAttribute("bottom");
+
+			if (left != null) {
+				int l = left.getValue().getIntValue();
+				w.getGeometry().x = l;
+				if (right != null) {
+					int r = right.getValue().getIntValue();
+					w.getGeometry().width = r - l;
+				}
+			} else if (right != null) {
+				int wi = w.getGeometry().width;
+				int r = right.getValue().getIntValue();
+				w.getGeometry().x = width - wi - r;
+			}
+			
+			if(top != null) {
+				int t = top.getValue().getIntValue();
+				w.getGeometry().y = t;
+				if(bottom != null) {
+					int b = bottom.getValue().getIntValue();
+					w.getGeometry().height = b - t;
+				}
+			} else if (bottom != null) {
+				int he = w.getGeometry().height;
+				int b = bottom.getValue().getIntValue();
+				w.getGeometry().y = height - he - b;
+			}
+		}
 	}
 
 	@Override
