@@ -38,6 +38,7 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.Threadsafe;
 
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
@@ -136,6 +137,18 @@ public abstract class Region extends Cube implements AreaChunkAccess {
 
 	@LiveRead
 	public abstract Set<Player> getPlayers();
+
+	/**
+	 * Flags the block location as a possible dynamic block.  This list is checked during the finalize part of the tick.<br>
+	 * <br>
+	 * This will clear any dynamic block updates for the given block and cause a new sequence to start.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	@DelayedWrite
+	public abstract void resetDynamicBlock(int x, int y, int z);
 
 	/**
 	 * Gets the TaskManager associated with this region
