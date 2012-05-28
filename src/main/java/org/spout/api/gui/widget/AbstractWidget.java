@@ -32,6 +32,8 @@ import org.spout.api.gui.Layout;
 import org.spout.api.gui.Palette;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
+import org.spout.api.gui.attribute.Attribute;
+import org.spout.api.gui.attribute.SimpleAttributeStore;
 import org.spout.api.signal.SignalSubscriberObject;
 
 public abstract class AbstractWidget extends SignalSubscriberObject implements Widget {
@@ -40,6 +42,7 @@ public abstract class AbstractWidget extends SignalSubscriberObject implements W
 	private Layout layout = null;
 	private Screen screen = null;
 	private Palette palette = null;
+	private SimpleAttributeStore attributeStore = new SimpleAttributeStore();
 
 	@Override
 	public Rectangle getGeometry() {
@@ -113,6 +116,21 @@ public abstract class AbstractWidget extends SignalSubscriberObject implements W
 	public Widget setPalette(Palette palette) {
 		this.palette = palette;
 		return this;
+	}
+
+	@Override
+	public boolean hasAttribute(String name) {
+		return attributeStore.hasAttribute(name);
+	}
+
+	@Override
+	public Attribute getAttribute(String name) {
+		return attributeStore.getAttribute(name);
+	}
+
+	@Override
+	public void setAttribute(Attribute value) {
+		attributeStore.setAttribute(value);
 	}
 	
 }
