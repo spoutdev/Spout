@@ -975,6 +975,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public boolean setCuboid(CuboidBuffer buffer, Plugin plugin) {
+		//TODO: this seems to not work correctly
 		if (plugin == null) {
 			throw new NullPointerException("Plugin can not be null");
 		}
