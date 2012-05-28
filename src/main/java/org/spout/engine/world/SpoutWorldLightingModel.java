@@ -47,6 +47,7 @@ public class SpoutWorldLightingModel {
 	private TLongIterator iter; //temporary
 	private final SpoutWorldLighting instance;
 	private final TLongList updates = new TLongArrayList();
+	private final boolean sky;
 
 	/**
 	 * The maximum amount of resolves performed per operation per tick
@@ -54,6 +55,7 @@ public class SpoutWorldLightingModel {
 	public static final int MAX_PER_TICK = 200;
 
 	public SpoutWorldLightingModel(SpoutWorldLighting instance, boolean sky) {
+		this.sky = sky;
 		this.instance = instance;
 		SpoutWorld world = instance.getWorld();
 		this.center = sky ? new SkyElement(world, BlockFace.THIS, this.center) : new BlockElement(world, BlockFace.THIS, this.center);
@@ -108,85 +110,94 @@ public class SpoutWorldLightingModel {
 	 */
 	public void resolve() {
 		long key;
-		int x, y, z, i;
-		//Lesser
-		for (i = 0; i < MAX_PER_TICK && this.load(greater); i++) {
-			iter = this.updates.iterator();
-			while (iter.hasNext()) {
-				key = iter.next();
-				x = Int21TripleHashed.key1(key);
-				y = Int21TripleHashed.key2(key);
-				z = Int21TripleHashed.key3(key);
-				this.resolveGreater(x, y, z);
+		int x = 0, y = 0, z = 0, i;
+		try {
+			//Lesser
+			for (i = 0; i < MAX_PER_TICK && this.load(greater); i++) {
+				iter = this.updates.iterator();
+				while (iter.hasNext()) {
+					key = iter.next();
+					x = Int21TripleHashed.key1(key);
+					y = Int21TripleHashed.key2(key);
+					z = Int21TripleHashed.key3(key);
+					this.resolveGreater(x, y, z);
+				}
 			}
-		}
-		//Greater
-		for (i = 0; i < MAX_PER_TICK && this.load(lesser); i++) {
-			iter = this.updates.iterator();
-			while (iter.hasNext()) {
-				key = iter.next();
-				x = Int21TripleHashed.key1(key);
-				y = Int21TripleHashed.key2(key);
-				z = Int21TripleHashed.key3(key);
-				this.resolveLesser(x + 1, y, z);
-				this.resolveLesser(x - 1, y, z);
-				this.resolveLesser(x, y + 1, z);
-				this.resolveLesser(x, y - 1, z);
-				this.resolveLesser(x, y, z + 1);
-				this.resolveLesser(x, y, z - 1);
+			//Greater
+			for (i = 0; i < MAX_PER_TICK && this.load(lesser); i++) {
+				iter = this.updates.iterator();
+				while (iter.hasNext()) {
+					key = iter.next();
+					x = Int21TripleHashed.key1(key);
+					y = Int21TripleHashed.key2(key);
+					z = Int21TripleHashed.key3(key);
+					this.resolveLesser(x + 1, y, z);
+					this.resolveLesser(x - 1, y, z);
+					this.resolveLesser(x, y + 1, z);
+					this.resolveLesser(x, y - 1, z);
+					this.resolveLesser(x, y, z + 1);
+					this.resolveLesser(x, y, z - 1);
+				}
 			}
-		}
-		//Refresh
-		for (i = 0; i < MAX_PER_TICK && this.load(refresh); i++) {
-			iter = this.updates.iterator();
-			while (iter.hasNext()) {
-				key = iter.next();
-				x = Int21TripleHashed.key1(key);
-				y = Int21TripleHashed.key2(key);
-				z = Int21TripleHashed.key3(key);
-				this.resolveRefresh(x, y, z);
+			//Refresh
+			for (i = 0; i < MAX_PER_TICK && this.load(refresh); i++) {
+				iter = this.updates.iterator();
+				while (iter.hasNext()) {
+					key = iter.next();
+					x = Int21TripleHashed.key1(key);
+					y = Int21TripleHashed.key2(key);
+					z = Int21TripleHashed.key3(key);
+					this.resolveRefresh(x, y, z);
+				}
 			}
+		} catch (Throwable t) {
+			String type = sky ? "sky" : "block";
+			System.out.println("An exception occurred while resolving " + type + " lighting at block [" + x + "/" + y + "/" + z + "/" + this.instance.getWorld() + "]:");
+			t.printStackTrace();
 		}
 	}
 
 	public void resolveRefresh(int x, int y, int z) {
-		this.load(x, y, z);
-		for (Element element : this.neighbors) {
-			if (element.isEmittingToCenter()) {
-				if (element.light - center.opacity > center.light) {
-					center.setLight((byte) (element.light - center.opacity));
+		if (this.load(x, y, z)) {
+			for (Element element : this.neighbors) {
+				if (element.isEmittingToCenter()) {
+					if (element.light - center.opacity > center.light) {
+						center.setLight((byte) (element.light - center.opacity));
+					}
 				}
 			}
 		}
 	}
 
 	public void resolveGreater(int x, int y, int z) {
-		this.load(x, y, z);
-		for (Element element : this.neighbors) {
-			if (element.isReceivingFromCenter()) {
-				if (center.light - element.opacity > element.light) {
-					element.setLight((byte) (center.light - element.opacity));
+		if (this.load(x, y, z)) {
+			for (Element element : this.neighbors) {
+				if (element.isReceivingFromCenter()) {
+					if (center.light - element.opacity > element.light) {
+						element.setLight((byte) (center.light - element.opacity));
+					}
 				}
 			}
 		}
 	}
 
 	public void resolveLesser(int x, int y, int z) {
-		this.load(x, y, z);
-		if (center.light == 15) {
-			//direct source - don't even bother!
-			this.addGreater(x, y, z);
-		} else if (center.light > 0) {
-			//check if it has a surrounding source
-			for (Element element : this.neighbors) {
-				if (element.isEmittingToCenter()) {
-					if (element.light - center.opacity == center.light) {
-						this.addGreater(x, y, z);
-						return;
+		if (this.load(x, y, z)) {
+			if (center.light == 15) {
+				//direct source - don't even bother!
+				this.addGreater(x, y, z);
+			} else if (center.light > 0) {
+				//check if it has a surrounding source
+				for (Element element : this.neighbors) {
+					if (element.isEmittingToCenter()) {
+						if (element.light - center.opacity == center.light) {
+							this.addGreater(x, y, z);
+							return;
+						}
 					}
 				}
+				center.setLight((byte) 0);
 			}
-			center.setLight((byte) 0);
 		}
 	}
 
@@ -196,12 +207,15 @@ public class SpoutWorldLightingModel {
 	public final Element[] neighbors;
 	public final Element center;
 
-	public SpoutWorldLightingModel load(int x, int y, int z) {
+	public boolean load(int x, int y, int z) {
 		this.center.load(x, y, z);
+		if (this.center.material == null) {
+			return false;
+		}
 		for (Element element : this.neighbors) {
 			element.load(x, y, z);
 		}
-		return this;
+		return true;
 	}
 
 	public static class BlockElement extends Element {
