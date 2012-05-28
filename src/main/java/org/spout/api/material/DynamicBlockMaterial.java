@@ -29,30 +29,35 @@ package org.spout.api.material;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.math.Vector3;
 
-
 public interface DynamicBlockMaterial {
 	
 	/**
 	 * Gets the maximum range, r, for the range of effect of this dynamic block.<br>
 	 * <br>
-	 * All effects are assumed to occur within the cuboid from<br>
+	 * The cuboid is defined by a Vector3 array.<br>
 	 * <br>
-	 * (x - rx, y - ry, z - rz) to (x + rx, y + ry, z + rz),<br>
+	 * Assuming rh is the first element of the array, rl is the second, and x, y and z are the coordinates of the dynamic block, 
+	 * then all effects are restricted to the cuboid from<br>
+	 * <br>
+	 * (x - rl.x, y - rl.y, z - rl.z) to (x + rh.x, y + rh.y, z + rh.z),<br>
 	 * <br>
 	 * inclusive.<br>
+	 * <br>
+	 * If the array is only a single element long, then rl and rh are assumed to be equal.
 	 * <br> 
-	 * If the cuboid is not contained within a single region, then the update method will be executed by the main thread.
+	 * If the cuboid is not contained within a single region, then the update method will be executed by the main thread.<br>
+	 * <br>
 	 * 
 	 * @return the r vector
 	 */
-	public Vector3 maxRange();
+	public Vector3[] maxRange();
 	
 	/**
 	 * Performs a dynamic update of the block.  This occurs during the start of the FINALIZE part of the tick, for Region specific updates, or during TICKSTART, for updates which span multiple regions.<br>
 	 * <br>
 	 * World updates must NOT make updates outside of the cuboid defined by the maxRange method.<br>
 	 * <br>
-	 * This method is always called on the first tick after a block is flagged as dynamic, but with the first parameter set to true.<br>
+	 * This method is always called on the first tick after a block is flagged as dynamic, but with the last parameter set to true.<br>
 	 * <br>
 	 * Note: No updates should be performed during this first update.
 	 * 
