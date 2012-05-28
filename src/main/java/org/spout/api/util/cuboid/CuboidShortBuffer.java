@@ -50,7 +50,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], null);
 	}
-	
+
 	public CuboidShortBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, DataMap map) {
 		this(world, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], map);
 	}
@@ -58,7 +58,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 	public CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
 		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], null);
 	}
-	
+
 	public CuboidShortBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ, DataMap map) {
 		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], map);
 	}
@@ -66,7 +66,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 	public CuboidShortBuffer(Point base, Vector3 size) {
 		this(base.getWorld(), (int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], null);
 	}
-	
+
 	public CuboidShortBuffer(Point base, Vector3 size, DataMap map) {
 		this(base.getWorld(), (int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], map);
 	}
@@ -97,6 +97,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		}
 	}
 
+	@Override
 	public short get(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {

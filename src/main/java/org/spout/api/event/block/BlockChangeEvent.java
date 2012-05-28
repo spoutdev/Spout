@@ -38,8 +38,9 @@ import org.spout.api.material.block.BlockSnapshot;
 public class BlockChangeEvent extends BlockEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	public BlockChangeEvent(Block block, Source source) {
+	public BlockChangeEvent(Block block, BlockSnapshot initial, Source source) {
 		super(block, source);
+		this.snapshot = initial;
 	}
 
 	private BlockSnapshot snapshot;

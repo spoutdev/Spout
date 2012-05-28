@@ -171,6 +171,8 @@ public abstract class CuboidBuffer {
 	public abstract void copyElement(int thisIndex, int sourceIndex, int runLength);
 
 	public abstract void setSource(CuboidBuffer source);
+	
+	public abstract short get(int x, int y, int z);
 
 	@Override
 	public String toString() {

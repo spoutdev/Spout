@@ -40,8 +40,11 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.player.Player;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
@@ -321,4 +324,14 @@ public interface World extends Source, AreaRegionAccess {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range);
+	
+	/**
+	 * Sets the cuboid area to the values inside of the cuboid buffer.
+	 * 
+	 * @param buffer
+	 * @param plugin that is setting the cuboid area
+	 * @return false if the set fails
+	 */
+	@LiveWrite
+	public boolean setCuboid(CuboidBuffer buffer, Plugin plugin);
 }
