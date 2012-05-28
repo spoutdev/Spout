@@ -25,6 +25,8 @@
  */
 package org.spout.engine.world;
 
+import gnu.trove.iterator.TIntIterator;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -69,6 +71,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
+import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.engine.entity.EntityManager;
@@ -143,6 +146,11 @@ public class SpoutRegion extends Region {
 	 */
 	//TODO thresholds?
 	private final TByteTripleObjectHashMap<Source> queuedPhysicsUpdates = new TByteTripleObjectHashMap<Source>();
+	/**
+	 * The chunks that received a lighting change and need an update
+	 */
+	private final TByteTripleHashSet lightDirtyChunks = new TByteTripleHashSet();
+
 	/**
 	 * A queue of chunks that need to be populated
 	 */
@@ -516,6 +524,27 @@ public class SpoutRegion extends Region {
 					}
 				}
 
+				//for those chunks that had lighting updated - refresh
+				synchronized (lightDirtyChunks) {
+					if (!lightDirtyChunks.isEmpty()) {
+						int key;
+						int x, y, z;
+						TIntIterator iter = lightDirtyChunks.iterator();
+						while (iter.hasNext()) {
+							key = iter.next();
+							x = TByteTripleHashSet.key1(key);
+							y = TByteTripleHashSet.key2(key);
+							z = TByteTripleHashSet.key3(key);
+							SpoutChunk chunk = this.getChunk(x, y, z);
+							if (chunk != null && chunk.lightingCounter.incrementAndGet() > 20) {
+								chunk.lightingCounter.set(-1);
+								chunk.setLightDirty(true);
+								iter.remove();
+							}
+						}
+					}
+				}
+				
 				World world = getWorld();
 				int[] updates;
 				Object[] sources;
@@ -674,6 +703,7 @@ public class SpoutRegion extends Region {
 							syncChunkToPlayers(spoutChunk, entity);
 						}
 						spoutChunk.resetDirtyArrays();
+						spoutChunk.setLightDirty(false);
 					}
 				}
 			}
@@ -876,6 +906,12 @@ public class SpoutRegion extends Region {
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		synchronized (queuedPhysicsUpdates) {
 			queuedPhysicsUpdates.put((byte) (x & BASE_MASK), (byte) (y & BASE_MASK), (byte) (z & BASE_MASK), source);
+		}
+	}
+
+	protected void reportChunkLightDirty(int x, int y, int z) {
+		synchronized (lightDirtyChunks) {
+			lightDirtyChunks.add(x & (REGION_SIZE - 1), y & (REGION_SIZE - 1), z & (REGION_SIZE - 1));
 		}
 	}
 

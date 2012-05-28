@@ -98,6 +98,10 @@ public class FilteredChunk extends SpoutChunk{
 		}
 	}
 
+	public boolean isUniform() {
+		return uniform.get();
+	}
+
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, Source source) {
 		if (uniform.get()) {
@@ -247,10 +251,5 @@ public class FilteredChunk extends SpoutChunk{
 		if (!uniform.get()) {
 			super.resetDirtyArrays();
 		}
-	}
-	
-	@Override
-	public boolean isUniform() {
-		return uniform.get();
 	}
 }
