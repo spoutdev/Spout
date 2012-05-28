@@ -215,12 +215,13 @@ public class DynamicBlockUpdateTree {
 			if (!queuedUpdates.remove(previous)) {
 				throw new IllegalStateException("Dynamic block update missing from queue when removed");
 			}
-			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previous.getChunkPacked());
-			if (chunkSet == null || !chunkSet.remove(update)) {
+			int previousPacked = previous.getChunkPacked();
+			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previousPacked);
+			if (chunkSet == null || !chunkSet.remove(previous)) {
 				throw new IllegalStateException("Dynamic block update missing from chunk when removed");
 			} else {
 				if (chunkSet.size() == 0) {
-					if (chunkToUpdateMap.remove(previous.getChunkPacked()) == null) {
+					if (chunkToUpdateMap.remove(previousPacked) == null) {
 						throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
 					}
 				}
