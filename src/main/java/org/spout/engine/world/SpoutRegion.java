@@ -92,7 +92,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
-public class SpoutRegion extends Region {
+public class SpoutRegion extends Region{
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
@@ -477,7 +477,7 @@ public class SpoutRegion extends Region {
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
 		boolean empty = false;
-		SpoutChunk c = (SpoutChunk) getChunk(x, y, z, LoadGenerateOption.NO_LOAD);
+		SpoutChunk c = (SpoutChunk) getChunk(x, y, z, false);
 		if (c != null) {
 			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
 			if (oldState.isSave()) {
@@ -802,10 +802,6 @@ public class SpoutRegion extends Region {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		entityManager.deallocate(entity);
-	}
-
-	public Iterator<SpoutEntity> iterator() {
-		return entityManager.iterator();
 	}
 
 	public EntityManager getEntityManager() {
