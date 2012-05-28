@@ -45,6 +45,7 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.PlayerController;
+import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.generator.biome.Biome;
@@ -53,15 +54,18 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
+import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.engine.SpoutConfiguration;
@@ -205,17 +209,33 @@ public class SpoutChunk extends Chunk {
 
 		return true;
 	}
-
+	
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
+		return setBlockMaterial(x, y, z, material, data, source, true);
+	}
+
+	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source, boolean event) {
 		x &= BASE_MASK;
 		y &= BASE_MASK;
 		z &= BASE_MASK;
 
 		checkChunkLoaded();
+		
+		if (event) {
+			Block block = new SpoutBlock(getWorld(), x, y, z, source);
+			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), source);
+			Spout.getEngine().getEventManager().callEvent(blockEvent);
+			if (blockEvent.isCancelled()) {
+				return false;
+			}
+			material = blockEvent.getSnapshot().getMaterial();
+			data = blockEvent.getSnapshot().getData();
+		}
+		
 		blockStore.setBlock(x, y, z, material.getId(), data);
 
 		int oldheight = column.getSurfaceHeight(x, z);
@@ -254,6 +274,31 @@ public class SpoutChunk extends Chunk {
 			parentRegion.resetDynamicBlock(x, y, z);
 		}
 		return true;
+	}
+	
+	protected void setCuboid(CuboidBuffer buffer) {
+		Point base = buffer.getBase();
+		Vector3 size = buffer.getSize();
+		
+		int startX = base.getBlockX() - (getX() * Chunk.CHUNK_SIZE);
+		int startY = base.getBlockY() - (getX() * Chunk.CHUNK_SIZE);
+		int startZ = base.getBlockZ() - (getX() * Chunk.CHUNK_SIZE);
+		
+		int endX = (base.getBlockX() + (int)size.getX()) - (getX() * Chunk.CHUNK_SIZE);
+		int endY = (base.getBlockY() + (int)size.getY()) - (getX() * Chunk.CHUNK_SIZE);
+		int endZ = (base.getBlockZ() + (int)size.getZ()) - (getX() * Chunk.CHUNK_SIZE);
+		
+		endX &= 0xF;
+		endY &= 0xF;
+		endZ &= 0xF;
+		
+		for (int dx = startX; dx < endX; dx++) {
+			for (int dy = startY; dy < endY; dy++) {
+				for (int dz = startZ; dz < endZ; dz++) {
+					setBlockMaterial(dx, dy, dz, BlockMaterial.get(buffer.get(dx, dy, dz)), (short)0, null, false);
+				}
+			}
+		}
 	}
 
 	@Override

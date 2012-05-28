@@ -51,6 +51,7 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadGenerateOption;
@@ -66,8 +67,10 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
@@ -968,5 +971,29 @@ public final class SpoutWorld extends AsyncManager implements World {
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
 		return getNearestPlayer(entity.getPosition(), entity, range);
+	}
+
+	@Override
+	public boolean setCuboid(CuboidBuffer buffer, Plugin plugin) {
+		if (plugin == null) {
+			throw new NullPointerException("Plugin can not be null");
+		}
+		CuboidChangeEvent event = new CuboidChangeEvent(buffer, plugin);
+		Spout.getEngine().getEventManager().callEvent(event);
+		if (event.isCancelled()) {
+			return false;
+		}
+		
+		Chunk start = getChunkFromBlock(buffer.getBase());
+		Chunk end = getChunkFromBlock(buffer.getBase().add(buffer.getSize()));
+		for (int dx = start.getX(); dx < end.getX(); dx++) {
+			for (int dy = start.getY(); dy < end.getY(); dy++) {
+				for (int dz = start.getZ(); dz < end.getZ(); dz++) {
+					Chunk chunk = getChunk(dx, dy, dz);
+					((SpoutChunk)chunk).setCuboid(buffer);
+				}
+			}
+		}
+		return true;
 	}
 }
