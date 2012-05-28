@@ -47,6 +47,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private int maxStackSize = 64;
 	private short maxData = Short.MAX_VALUE;
 	private Map<Short, Material> submaterials = null;
+	private final short dataMask;
 
 	/**
 	 * Creates and registers a material
@@ -60,6 +61,23 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = this;
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this);
+		this.dataMask = -1;
+	}
+	
+	/**
+	 * Creates and registers a material
+	 * 
+	 * @param dataMask for the material
+	 * @param name of the material
+	 */
+	public Material(short dataMask, String name) {
+		this.isSubMaterial = false;
+		this.displayName = name;
+		this.name = getClass().getCanonicalName() + "_" + name.replace(' ', '_');
+		this.parent = this;
+		this.data = 0;
+		this.id = (short) MaterialRegistry.register(this);
+		this.dataMask = dataMask;
 	}
 
 	/**
@@ -76,6 +94,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = parent;
 		this.data = (short) data;
 		this.id = (short) MaterialRegistry.register(this);
+		this.dataMask = parent.getDataMask();
 	}
 	
 	/**
@@ -91,6 +110,23 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = this;
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this, id);
+		this.dataMask = -1;
+	}
+	
+	/**
+	 * Creates a material with a reserved id
+	 * 
+	 * @param name of the material
+	 * @param id to reserve
+	 */
+	protected Material(short dataMask, String name, short id) {
+		this.isSubMaterial = true;
+		this.displayName = name;
+		this.name = name.replace(' ', '_');
+		this.parent = this;
+		this.data = 0;
+		this.id = (short) MaterialRegistry.register(this, id);
+		this.dataMask = dataMask;
 	}
 
 	public final short getId() {
@@ -105,6 +141,16 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public short getData() {
 		return this.data;
+	}
+	
+	/**
+	 * Gets the data mask for this material, and sub-materials.  When determining 
+	 * sub-material, this mask is applied to the data before the comparison is performed.
+	 * 
+	 * @return data mask
+	 */
+	public short getDataMask() {
+		return this.dataMask;
 	}
 
 	/**
@@ -146,9 +192,10 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public Material getSubMaterial(short data) {
 		if (this.hasSubMaterials()) {
-			Material material = this.submaterials.get(data);
+			short maskedData = (short)(data & dataMask);
+			Material material = this.submaterials.get(maskedData);
 			if (material != null) {
-				return material.getSubMaterial(data);
+				return material.getSubMaterial(maskedData);
 			}
 		}
 		return this;

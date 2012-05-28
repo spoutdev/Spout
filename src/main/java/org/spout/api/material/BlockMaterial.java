@@ -52,6 +52,10 @@ public class BlockMaterial extends Material implements Placeable {
 	public BlockMaterial(String name) {
 		super(name);
 	}
+	
+	public BlockMaterial(short dataMask, String name) {
+		super(dataMask, name);
+	}
 
 	public BlockMaterial(String name, int data, Material parent) {
 		super(name, data, parent);
@@ -59,6 +63,10 @@ public class BlockMaterial extends Material implements Placeable {
 	
 	protected BlockMaterial(String name, short id) {
 		super(name, id);
+	}
+	
+	protected BlockMaterial(short dataMask, String name, short id) {
+		super(dataMask, name, id);
 	}
 
 	/**
