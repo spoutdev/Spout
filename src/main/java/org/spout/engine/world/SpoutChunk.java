@@ -55,7 +55,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.DynamicBlockMaterial;
+import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -250,7 +250,7 @@ public class SpoutChunk extends Chunk {
 				world.getLightingManager().skyLight.addRefresh(x, y, z);
 			}
 		}
-		if (material instanceof DynamicBlockMaterial) {
+		if (material instanceof DynamicMaterial) {
 			parentRegion.resetDynamicBlock(x, y, z);
 		}
 		return true;

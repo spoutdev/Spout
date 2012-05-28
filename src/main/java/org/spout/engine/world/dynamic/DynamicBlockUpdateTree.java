@@ -14,7 +14,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.DynamicBlockMaterial;
+import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TickStage;
@@ -102,8 +102,8 @@ public class DynamicBlockUpdateTree {
 			Block b =  c.getBlock(bx, by, bz);
 			Material m = b.getMaterial();
 			
-			if (m instanceof DynamicBlockMaterial) {
-				DynamicBlockMaterial dm = (DynamicBlockMaterial)m;
+			if (m instanceof DynamicMaterial) {
+				DynamicMaterial dm = (DynamicMaterial)m;
 				long nextUpdate = dm.update(b, 0, 0, true);
 				if (nextUpdate > 0) {
 					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime));
@@ -145,8 +145,8 @@ public class DynamicBlockUpdateTree {
 		Block b =  c.getBlock(bx, by, bz);
 		Material m = b.getMaterial();
 		
-		if (m instanceof DynamicBlockMaterial) {
-			DynamicBlockMaterial dm = (DynamicBlockMaterial)m;
+		if (m instanceof DynamicMaterial) {
+			DynamicMaterial dm = (DynamicMaterial)m;
 			Vector3[] range = (force) ? zeroVector3Array : dm.maxRange();
 			if (range == null || range.length < 1) {
 				range = zeroVector3Array;
