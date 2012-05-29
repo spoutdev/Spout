@@ -239,11 +239,12 @@ public class SpoutEntity implements Entity, Tickable {
 				if (!event.isCancelled()) {
 					setPosition(to);
 				}
-			}
-			event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
-			Spout.getEngine().getEventManager().callEvent(event);
-			if (event.isCancelled()) {
-				setPosition(lastTransform.getPosition());
+			} else {
+				event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
+				Spout.getEngine().getEventManager().callEvent(event);
+				if (event.isCancelled()) {
+					setPosition(lastTransform.getPosition());
+				}
 			}
 		}
 
