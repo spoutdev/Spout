@@ -946,6 +946,26 @@ public class SpoutRegion extends Region{
 	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, source);
 	}
+	
+	@Override
+	public short setBlockDataBits(int x, int y, int z, short bits) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits);
+	}
+
+	@Override
+	public short clearBlockDataBits(int x, int y, int z, short bits) {
+		return this.getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits);
+	}
+
+	@Override
+	public int getBlockDataField(int x, int y, int z, int bits) {
+		return this.getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
+	}
+
+	@Override
+	public int setBlockDataField(int x, int y, int z, int bits, int value) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value);
+	}
 
 	@Override
 	public void setBlockController(int x, int y, int z, BlockController controller) {
@@ -1130,4 +1150,5 @@ public class SpoutRegion extends Region{
 		}
 		return removed;
 	}
+	
 }

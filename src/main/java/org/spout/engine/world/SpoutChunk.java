@@ -146,6 +146,20 @@ public class SpoutChunk extends Chunk {
 	 * Manages the biomes for this chunk
 	 */
 	private final BiomeManager biomes;
+	
+	/**
+	 * Shift cache array for shifting fields
+	 */
+	private final static int[] shiftCache = new int[65536];
+	static {
+		for (int i = 0; i < shiftCache.length; i++) {
+			int shift = 0;
+			while ((i > 0) && (i >> shift) << shift == i) {
+				shift++;
+			}
+			shiftCache[i] = shift - 1;
+		}
+	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, BiomeManager manager, DataMap map) {
 		this(world, region, x, y, z, false, initial, null, null, null, manager, map.getRawMap());
@@ -1001,6 +1015,81 @@ public class SpoutChunk extends Chunk {
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
+	
+	@Override
+	public short setBlockDataBits(int x, int y, int z, short bits) {
+		
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
+
+		boolean success = false;
+		short oldData = 0;
+		while (!success) {
+			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
+			oldData = state.getData();
+			short oldId = state.getId();
+			short newData = (short)(oldData | bits);
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
+		}
+		return oldData;
+	}
+
+	@Override
+	public short clearBlockDataBits(int x, int y, int z, short bits) {
+		
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
+
+		boolean success = false;
+		short oldData = 0;
+		while (!success) {
+			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
+			oldData = state.getData();
+			short oldId = state.getId();
+			short newData = (short)(oldData & (~bits));
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
+		}
+		return oldData;
+	}
+
+	@Override
+	public int getBlockDataField(int x, int y, int z, int bits) {
+		
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
+
+		int shift = shiftCache[bits];
+		
+		BlockFullState state = this.blockStore.getFullData(bx, by, bz);
+		
+		return (state.getData() & bits) >> (shift);
+	}
+
+	@Override
+	public int setBlockDataField(int x, int y, int z, int bits, int value) {
+		
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
+		
+		int shift = shiftCache[bits];
+
+		boolean success = false;
+		short oldData = 0;
+		while (!success) {
+			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
+			oldData = state.getData();
+			short oldId = state.getId();
+			
+			short newData = (short)(((value << shift) & bits) | (oldData & (~bits)));
+			
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
+		}
+		return (oldData & bits) >> shift;
+	}
 
 	@Override
 	public DefaultedMap<String, Serializable> getDataMap() {
@@ -1010,4 +1099,5 @@ public class SpoutChunk extends Chunk {
 	public BiomeManager getBiomeManager() {
 		return biomes;
 	}
+
 }
