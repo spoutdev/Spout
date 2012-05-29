@@ -164,8 +164,8 @@ public class SpoutRegion extends Region{
 	
 	private final SpoutTaskManager taskManager;
 	
-	private final LinkedHashSet<SpoutChunk> runningChunks = new LinkedHashSet<SpoutChunk>();
-	private final ConcurrentLinkedQueue<SpoutChunk> runningChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
+	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
+	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 	
 	private final DynamicBlockUpdateTree dynamicBlockTree = new DynamicBlockUpdateTree(this);
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
@@ -260,7 +260,7 @@ public class SpoutRegion extends Region{
 						addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
-					runningChunksQueue.add(newChunk);
+					occupiedChunksQueue.add(newChunk);
 
 					Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
@@ -318,8 +318,8 @@ public class SpoutRegion extends Region{
 
 			((SpoutChunk) currentChunk).setUnloaded();
 
-			runningChunksQueue.remove(currentChunk);
-			runningChunks.remove(currentChunk);
+			occupiedChunksQueue.remove(currentChunk);
+			occupiedChunks.remove(currentChunk);
 			
 			removeDynamicBlockUpdates(currentChunk);
 			
@@ -420,9 +420,10 @@ public class SpoutRegion extends Region{
 	public void copySnapshotRun() throws InterruptedException {
 		entityManager.copyAllSnapshots();
 
-		Iterator<SpoutChunk> itr = runningChunks.iterator();
+		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 		
 		while (itr.hasNext()) {
+			// NOTE : This is only called for chunks with contain entities.
 			SpoutChunk c = itr.next();
 			if (c.copySnapshotRun()) {
 				itr.remove();
@@ -768,7 +769,7 @@ public class SpoutRegion extends Region{
 			}
 		}
 		int mask = REGION_SIZE - 1;
-		Iterator<SpoutChunk> itr = runningChunks.iterator();
+		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 		while (itr.hasNext()) {
 			SpoutChunk c = itr.next();
 			
@@ -1078,11 +1079,11 @@ public class SpoutRegion extends Region{
 	}
 	
 	public void skipChunk(SpoutChunk chunk) {
-		runningChunks.remove(chunk);
+		occupiedChunks.remove(chunk);
 	}
 	
 	public void unSkipChunk(SpoutChunk chunk) {
-		runningChunks.add(chunk);
+		occupiedChunks.add(chunk);
 	}
 
 	@Override
