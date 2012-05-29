@@ -602,9 +602,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
 		//TODO Make this more general
-		final int minX = MathHelper.floor(model.getPosition().getX());
-		final int minY = MathHelper.floor(model.getPosition().getY());
-		final int minZ = MathHelper.floor(model.getPosition().getZ());
+		final int minX = MathHelper.floor(model.getVolume().getPosition().getX());
+		final int minY = MathHelper.floor(model.getVolume().getPosition().getY());
+		final int minZ = MathHelper.floor(model.getVolume().getPosition().getZ());
 		final int maxX = minX + 1;
 		final int maxY = minY + 1;
 		final int maxZ = minZ + 1;
@@ -614,7 +614,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
 
 		for (int dx = minX; dx < maxX; dx++) {
-			for (int dy = minY - 1; dy < maxY; dy++) {
+			for (int dy = minY; dy < maxY; dy++) {
 				for (int dz = minZ; dz < maxZ; dz++) {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
 					mutable.set((BoundingBox) material.getBoundingArea());
