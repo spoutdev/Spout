@@ -54,6 +54,8 @@ import org.spout.engine.util.thread.ThreadsafetyManager;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
+import org.spout.engine.world.SpoutRegionManager;
+import org.spout.engine.world.SpoutWorld;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -378,6 +380,19 @@ public final class SpoutScheduler implements Scheduler {
 						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 						AsyncExecutorUtils.checkForDeadlocks();
+						for (AsyncExecutor executor : executors) {
+							if (!executor.isPulseFinished()) {
+								if (executor.getManager() instanceof SpoutRegionManager) {
+									SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
+									engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
+								} else if (executor.getManager() instanceof SpoutWorld) {
+									SpoutWorld w = (SpoutWorld)executor.getManager();
+									engine.getLogger().info("World has not completed pulse " + w);
+								} else {
+									engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
+								}
+							}
+						}
 					}
 				}
 			}

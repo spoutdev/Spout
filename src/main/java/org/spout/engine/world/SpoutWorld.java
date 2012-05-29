@@ -175,7 +175,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, Engine server, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
-		super(1, new ThreadAsyncExecutor(), server);
+		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), server);
 		this.uid = uid;
 		this.server = server;
 		this.seed = seed;
@@ -737,7 +737,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public String toString() {
-		return "SpoutWorld{ " + getName() + " UUID: " + this.uid + " Age: " + this.getAge() + "}";
+		return toString(this.name, this.uid, this.getAge());
+	}
+	
+	private static String toString(String name, UUID uid, long age) {
+		return "SpoutWorld{ " + name + " UUID: " + uid + " Age: " + age + "}";
 	}
 
 	@Override

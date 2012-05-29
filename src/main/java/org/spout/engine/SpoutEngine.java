@@ -164,7 +164,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private boolean debugMode = false;
 
 	public SpoutEngine() {
-		super(1, new ThreadAsyncExecutor());
+		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
 		logFile = "logs" + File.separator + "log-%D.txt";
 		consoleManager = new ConsoleManager(this);
 	}

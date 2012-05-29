@@ -54,10 +54,6 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
 
-	public ThreadAsyncExecutor() {
-		super();
-	}
-
 	public ThreadAsyncExecutor(String name) {
 		super(name);
 	}

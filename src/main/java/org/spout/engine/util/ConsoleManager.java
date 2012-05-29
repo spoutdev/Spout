@@ -234,6 +234,11 @@ public final class ConsoleManager {
 	}
 
 	private class ConsoleCommandThread extends Thread {
+		
+		public ConsoleCommandThread() {
+			super("Console Manager");
+		}
+		
 		@Override
 		public void run() {
 			String command;
