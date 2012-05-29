@@ -229,12 +229,21 @@ public class SpoutEntity implements Entity, Tickable {
 				}
 			}
 		}
-		//Handle both controller movement and any collision offset
-		if (to != null && (!lastTransform.getPosition().equals(to) || !lastTransform.getPosition().equals(transform.getPosition()))) {
-			EntityMoveEvent event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
+		//Handle throwing proper EntityMoveEvent
+		if (!lastTransform.getPosition().equals(transform.getPosition())) {
+			EntityMoveEvent event;
+			//Check for collision offset
+			if (to != null && !lastTransform.getPosition().equals(to)) {
+				event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
+				Spout.getEngine().getEventManager().callEvent(event);
+				if (!event.isCancelled()) {
+					setPosition(to);
+				}
+			}
+			event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
 			Spout.getEngine().getEventManager().callEvent(event);
-			if (!event.isCancelled()) {
-				setPosition(to);
+			if (event.isCancelled()) {
+				setPosition(lastTransform.getPosition());
 			}
 		}
 
