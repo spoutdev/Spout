@@ -171,21 +171,14 @@ public class SpoutEntity implements Entity, Tickable {
 			}
 		}
 
-		//Copy values last (position may change during controller or session pulses)
-		if (!isDead() && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
+		/**
+		 * Copy over live chunk and entity manager values if this entity is valid. Transform copying is handled in
+		 * resolve (Tick Stage 2Pre).
+		 */
+		if (!isDead() && getPosition() != null && getWorld() != null) {
 			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
-			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition(), false));
-			
+			chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), false));
 			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
-			if (!lastTransform.getPosition().equals(transform.getPosition())) {
-				EntityMoveEvent event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
-				Spout.getEngine().getEventManager().callEvent(event);
-				if (event.isCancelled()) {
-					setPosition(lastTransform.getPosition());
-					return;
-				}
-			}
-			lastTransform = transform.copy();
 		}
 	}
 
@@ -195,54 +188,57 @@ public class SpoutEntity implements Entity, Tickable {
 	 * @return
 	 */
 	public boolean preResolve() {
-		//Don't need to do collisions if we have no collision volume
-		if (this.collision == null || this.getWorld() == null || controllerLive.get() == null) {
+		//Do not perform collisions if position or world or controller is null
+		if (getPosition() == null || getWorld() == null || controllerLive.get() == null) {
 			return false;
 		}
 
 		//Set collision point at the current position of the entity.
-		collisionPoint = this.transform.getPosition();
+		collisionPoint = transform.getPosition();
 
 		//Move the collision volume to the new position
-		this.collision.setPosition(collisionPoint);
+		collision.setPosition(collisionPoint);
 
 		//This will let SpoutRegion know it should call resolve for this entity.
 		return true;
 	}
 
 	/**
-	 * Called when the tick is finished and collisions need to be resolved and
-	 * move events fired
+	 * Called when the stage 1 is finished, collisions need to be resolved and
+	 * move events fired.
 	 */
 	public void resolve() {
-		List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
-
 		Point from = lastTransform.getPosition();
-		Point to;
-		Vector3 offset = from.subtract(collisionPoint);
-		for (CollisionVolume box : colliding) {
-			Vector3 collision = this.collision.resolve(box);
-			if (collision != null) {
-				//Allow controllers to manipulate the collision first and then continue resolve
-				controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
-				collision = collision.subtract(collisionPoint);
-				float x = offset.getX() + collision.getX();
-				float y = offset.getY() + collision.getY();
-				float z = offset.getZ() + collision.getZ();
+		Point to = null;
+		if (collision != null) {
+			List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
+			Vector3 offset = from.subtract(collisionPoint);
+			for (CollisionVolume box : colliding) {
+				Vector3 collision = this.collision.resolve(box);
+				if (collision != null) {
+					//Allow controllers to manipulate the collision first and then continue resolve
+					controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
+					collision = collision.subtract(collisionPoint);
+					float x = offset.getX() + collision.getX();
+					float y = offset.getY() + collision.getY();
+					float z = offset.getZ() + collision.getZ();
 
-				if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-					to = from.add(collisionPoint.add(x, y, z));
-					//If both points are equal here then no collision adjustment occurred.
-					if (!from.equals(to)) {
-						EntityMoveEvent event = new EntityMoveEvent(this, from, to);
-						Spout.getEngine().getEventManager().callEvent(event);
-						if (!event.isCancelled()) {
-							setPosition(to);
-						}
+					if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
+						to = from.add(collisionPoint.add(x, y, z));
 					}
 				}
 			}
 		}
+		//Handle both controller movement and any collision offset
+		if (!from.equals(to) || !from.equals(transform.getPosition())) {
+			EntityMoveEvent event = new EntityMoveEvent(this, from, to);
+			Spout.getEngine().getEventManager().callEvent(event);
+			if (!event.isCancelled()) {
+				setPosition(to);
+			}
+		}
+
+		lastTransform = transform.copy();
 	}
 
 	@Override
