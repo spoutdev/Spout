@@ -166,7 +166,7 @@ public class SpoutEntity implements Entity, Tickable {
 				cont.onAttached();
 				attached = true;
 			}
-			if (!isDead() && this.transform.getPosition() != null && this.transform.getPosition().getWorld() != null) {
+			if (!isDead() && getPosition() != null && getWorld() != null) {
 				cont.onTick(dt);
 			}
 		}
@@ -203,7 +203,6 @@ public class SpoutEntity implements Entity, Tickable {
 	 * move events fired.
 	 */
 	public void resolve() {
-		Point from = lastTransform.getPosition();
 		Point to = null;
 		if (collision != null) {
 			//Set collision point at the current position of the entity.
@@ -213,7 +212,7 @@ public class SpoutEntity implements Entity, Tickable {
 			collision.setPosition(collisionPoint);
 
 			List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
-			Vector3 offset = from.subtract(collisionPoint);
+			Vector3 offset = lastTransform.getPosition().subtract(collisionPoint);
 			for (CollisionVolume box : colliding) {
 				Vector3 collision = this.collision.resolve(box);
 				if (collision != null) {
@@ -225,14 +224,14 @@ public class SpoutEntity implements Entity, Tickable {
 					float z = offset.getZ() + collision.getZ();
 
 					if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-						to = from.add(collisionPoint.add(x, y, z));
+						to = lastTransform.getPosition().add(collisionPoint.add(x, y, z));
 					}
 				}
 			}
 		}
 		//Handle both controller movement and any collision offset
-		if (!from.equals(to) || !from.equals(transform.getPosition())) {
-			EntityMoveEvent event = new EntityMoveEvent(this, from, to);
+		if (to != null && (!lastTransform.getPosition().equals(to) || !lastTransform.getPosition().equals(transform.getPosition()))) {
+			EntityMoveEvent event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
 			Spout.getEngine().getEventManager().callEvent(event);
 			if (!event.isCancelled()) {
 				setPosition(to);
@@ -588,7 +587,7 @@ public class SpoutEntity implements Entity, Tickable {
 			return;
 		}
 		final int viewDistance = getViewDistance() / Chunk.CHUNK_SIZE;
-		World w = transform.getPosition().getWorld();
+		World w = getWorld();
 		int cx = chunkLive.get().getX();
 		int cy = chunkLive.get().getY();
 		int cz = chunkLive.get().getZ();
