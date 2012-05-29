@@ -147,6 +147,7 @@ public class RegionSource implements Iterable<Region> {
 			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 			if (current != null) {
+				((SpoutScheduler)Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
 				return current;
 			} else {
 				if (!region.getManager().getExecutor().startExecutor()) {
