@@ -31,9 +31,21 @@ import org.spout.api.scheduler.TickStage;
 public class IllegalTickSequenceException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
+	
+	public IllegalTickSequenceException(int allowedStages, int restrictedStages, Thread t, int actualStage) {
+		super(getMessage(allowedStages, restrictedStages, t, actualStage));
+	}
 
 	public IllegalTickSequenceException(int allowedStages, int actualStage) {
 		super("Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(allowedStages) + ") were allowed");
+	}
+	
+	private static String getMessage(int allowedStages, int restrictedStages, Thread t, int actualStage) {
+		if (Thread.currentThread() != t) {
+			return "Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(allowedStages) + ") were allowed";
+		} else {
+			return "Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(restrictedStages) + ") were allowed for owning thread " + t;
+		}
 	}
 
 }

@@ -134,5 +134,30 @@ public class TickStage {
 			throw new IllegalTickSequenceException(allowedStages, stage);
 		}
 	}
+	
+	/**
+	 * Checks if the current thread is the owner thread and the current stage is one of the restricted stages, or that the current stage is one of the open stages
+	 *
+	 * @param allowedStages the OR of all the open stages
+	 * @param restrictedStages the OR of all restricted stages
+	 * @param ownerThread the thread that has restricted access
+	 */
+	public static void checkStage(int allowedStages, int restrictedStages, Thread ownerThread) {
+		if ((stage & allowedStages) == 0 && ((stage & restrictedStages) == 0) || Thread.currentThread() != ownerThread) {
+			throw new IllegalTickSequenceException(allowedStages, restrictedStages, ownerThread, stage);
+		}
+	}
+	
+	/**
+	 * Checks if the current thread is the owner thread and the current stage is one of the restricted stages
+	 *
+	 * @param restrictedStages the OR of all restricted stages
+	 * @param ownerThread the thread that has restricted access
+	 */
+	public static void checkStage(int restrictedStages, Thread ownerThread) {
+		if (((stage & restrictedStages) == 0) || Thread.currentThread() != ownerThread) {
+			throw new IllegalTickSequenceException(0, restrictedStages, ownerThread, stage);
+		}
+	}
 
 }
