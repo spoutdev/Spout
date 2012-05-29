@@ -177,6 +177,14 @@ public class SpoutEntity implements Entity, Tickable {
 			chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition(), false));
 			
 			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
+			if (!lastTransform.getPosition().equals(transform.getPosition())) {
+				EntityMoveEvent event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
+				Spout.getEngine().getEventManager().callEvent(event);
+				if (event.isCancelled()) {
+					setPosition(lastTransform.getPosition());
+					return;
+				}
+			}
 			lastTransform = transform.copy();
 		}
 	}
