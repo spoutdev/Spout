@@ -173,7 +173,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 		/**
 		 * Copy over live chunk and entity manager values if this entity is valid. Transform copying is handled in
-		 * resolve (Tick Stage 2Pre).
+		 * resolve (TiRoyck Stage 2Pre).
 		 */
 		if (!isDead() && getPosition() != null && getWorld() != null) {
 			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
@@ -185,6 +185,7 @@ public class SpoutEntity implements Entity, Tickable {
 	/**
 	 * Called right before resolving collisions. This is necessary to make sure all entities
 	 * get their collisions set.
+	 *
 	 * @return
 	 */
 	public boolean preResolve() {
@@ -192,12 +193,6 @@ public class SpoutEntity implements Entity, Tickable {
 		if (getPosition() == null || getWorld() == null || controllerLive.get() == null) {
 			return false;
 		}
-
-		//Set collision point at the current position of the entity.
-		collisionPoint = transform.getPosition();
-
-		//Move the collision volume to the new position
-		collision.setPosition(collisionPoint);
 
 		//This will let SpoutRegion know it should call resolve for this entity.
 		return true;
@@ -211,6 +206,12 @@ public class SpoutEntity implements Entity, Tickable {
 		Point from = lastTransform.getPosition();
 		Point to = null;
 		if (collision != null) {
+			//Set collision point at the current position of the entity.
+			collisionPoint = getPosition();
+
+			//Move the collision volume to the new position
+			collision.setPosition(collisionPoint);
+
 			List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
 			Vector3 offset = from.subtract(collisionPoint);
 			for (CollisionVolume box : colliding) {
