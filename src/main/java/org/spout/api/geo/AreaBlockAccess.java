@@ -114,6 +114,68 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data);
 	
 	/**
+	 * Sets the given bits in the data for the block at (x, y, z)<br>
+	 * <br>
+	 * newData = oldData | (bits)
+	 * 
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param bits the bits to set
+	 * @return the old data for the block
+	 */
+	@LiveWrite
+	public short setBlockDataBits(int x, int y, int z, short bits);
+	
+	/**
+	 * Clears the given bits in the data for the block at (x, y, z)<br>
+	 * <br>
+	 * newData = oldData & (~bits)
+	 * 
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param bits the bits to clear
+	 * @return the old data for the block
+	 */
+	@LiveWrite
+	public short clearBlockDataBits(int x, int y, int z, short bits);
+	
+	/**
+	 * Gets the data field from the block at (x, y, z)<br>
+	 * <br>
+	 * field = (data & bits) >> (shift)<br>
+	 * <br>
+	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
+	 * 
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param bits the bits of the field
+	 * @return the field value
+	 */
+	@Threadsafe
+	public int getBlockDataField(int x, int y, int z, int bits);
+	
+	/**
+	 * Sets the data field from the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br>
+	 * <br>
+	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>
+	 * <br>
+	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
+	 * 
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param bits the bits of the field
+	 * @param value the new value of the field
+	 * @return the old value of the field
+	 */
+	@LiveWrite
+	@Threadsafe
+	public int setBlockDataField(int x, int y, int z, int bits, int value);
+	
+	/**
 	 * Forces a physics update for the block at (x, y, z)
 	 *
 	 * @param x coordinate of the block
