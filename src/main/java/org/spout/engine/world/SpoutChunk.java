@@ -77,6 +77,13 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
+	
+	/**
+	 * Multi-thread write access to the block store is only allowed during the allowed stages.  
+	 * During the restricted stages, only the region thread may modify the block store.
+	 */
+	private static final int restrictedStages = TickStage.FINALIZE;
+	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
@@ -147,6 +154,8 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final BiomeManager biomes;
 	
+	private final Thread regionThread;
+	
 	/**
 	 * Shift cache array for shifting fields
 	 */
@@ -195,6 +204,7 @@ public class SpoutChunk extends Chunk {
 		lastUnloadCheck.set(world.getAge());
 		blockStore.resetDirtyArrays();	// Clear false dirty state on freshly loaded chunk
 		this.biomes = manager;
+		this.regionThread = region.getExceutionThread();
 	}
 
 	@Override
@@ -212,6 +222,8 @@ public class SpoutChunk extends Chunk {
 		z &= BASE_MASK;
 
 		checkChunkLoaded();
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+
 		BlockMaterial material = this.getBlockMaterial(x, y, z);
 		blockStore.setBlock(x, y, z, material.getId(), data);
 
@@ -238,6 +250,7 @@ public class SpoutChunk extends Chunk {
 		z &= BASE_MASK;
 
 		checkChunkLoaded();
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 		
 		if (event) {
 			Block block = new SpoutBlock(getWorld(), x, y, z, source);
@@ -606,6 +619,8 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public boolean compressIfRequired() {
+		checkChunkLoaded();
+		TickStage.checkStage(restrictedStages, regionThread);
 		if (blockStore.needsCompression()) {
 			blockStore.compress();
 			return true;
@@ -1013,11 +1028,16 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+		checkChunkLoaded();
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
 	
 	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits) {
+		
+		checkChunkLoaded();
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 		
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
@@ -1038,6 +1058,9 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public short clearBlockDataBits(int x, int y, int z, short bits) {
 		
+		checkChunkLoaded();
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
@@ -1057,6 +1080,8 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		
+		checkChunkLoaded();
+		
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
@@ -1070,6 +1095,9 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value) {
+		
+		checkChunkLoaded();
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 		
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
