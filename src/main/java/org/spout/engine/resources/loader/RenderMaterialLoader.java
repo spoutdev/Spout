@@ -40,59 +40,63 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 		Map<String, Object> params = (Map<String, Object>) resource.get("MaterialParams");
 
-
 		//Loop through the params and replace
 		Set<Map.Entry<String, Object>> entrySet = params.entrySet();
-		for(Map.Entry<String, Object> entry : entrySet){
-			if(entry.getValue() instanceof String){
-				String val = (String)entry.getValue();
-				if(val.contains("://")){ //its a resource!
+		for (Map.Entry<String, Object> entry : entrySet) {
+			if (entry.getValue() instanceof String) {
+				String val = (String) entry.getValue();
+				if (val.contains("://")) { //its a resource!
 					Resource r = FileSystem.getResource(val);
-					if(r instanceof Texture && !((Texture)r).isLoaded()) ((Texture)r).load();
-					params.put(entry.getKey(), r);					
+					if (r instanceof Texture && !((Texture) r).isLoaded()) {
+						((Texture) r).load();
+					}
+					params.put(entry.getKey(), r);
 				}
-				
-				
+
 				//TODO: clean this up
-				if(val.contains("(")){ //It's a Vector or a color!
-					String valueString = val.substring(val.indexOf('(')+1, val.lastIndexOf(')'));
+				if (val.contains("(")) { //It's a Vector or a color!
+					String valueString = val.substring(val.indexOf('(') + 1, val.lastIndexOf(')'));
 					System.out.println(valueString);
-					if(val.startsWith("color")){
+					if (val.startsWith("color")) {
 						String[] values = valueString.split(",");
-						if(values.length < 3) throw new IllegalArgumentException("Colors need atleast 3 components");
-						if(values.length == 3) {
+						if (values.length < 3) {
+							throw new IllegalArgumentException("Colors need atleast 3 components");
+						}
+						if (values.length == 3) {
 							Color col = new Color(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), 1.0f);
 							params.put(entry.getKey(), col);
 						}
-						if(values.length == 4) {
+						if (values.length == 4) {
 							Color col = new Color(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
 							params.put(entry.getKey(), col);
 						}
 					}
-					if(val.startsWith("vector2")){
+					if (val.startsWith("vector2")) {
 						String[] values = valueString.split(",");
-						if(values.length < 2) throw new IllegalArgumentException("Colors need atleast 2 components");
-						Vector2 vec = new Vector2(Float.parseFloat(values[0]),Float.parseFloat(values[1]));
+						if (values.length < 2) {
+							throw new IllegalArgumentException("Colors need atleast 2 components");
+						}
+						Vector2 vec = new Vector2(Float.parseFloat(values[0]), Float.parseFloat(values[1]));
 						params.put(entry.getKey(), vec);
 					}
-					if(val.startsWith("vector3")){
+					if (val.startsWith("vector3")) {
 						String[] values = valueString.split(",");
-						if(values.length < 3) throw new IllegalArgumentException("Colors need atleast 3 components");
-						Vector3 vec = new Vector3(Float.parseFloat(values[0]),Float.parseFloat(values[1]), Float.parseFloat(values[2]));
+						if (values.length < 3) {
+							throw new IllegalArgumentException("Colors need atleast 3 components");
+						}
+						Vector3 vec = new Vector3(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]));
 						params.put(entry.getKey(), vec);
 					}
-					if(val.startsWith("vector4")){
+					if (val.startsWith("vector4")) {
 						String[] values = valueString.split(",");
-						if(values.length < 4) throw new IllegalArgumentException("Colors need atleast 3 components");
-						Vector4 vec = new Vector4(Float.parseFloat(values[0]),Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
+						if (values.length < 4) {
+							throw new IllegalArgumentException("Colors need atleast 3 components");
+						}
+						Vector4 vec = new Vector4(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
 						params.put(entry.getKey(), vec);
 					}
 				}
-
-
-
 			}
-
 		}
 
 		ClientRenderMaterial mat = new ClientRenderMaterial(s, params);

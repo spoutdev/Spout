@@ -19,12 +19,11 @@ import org.spout.api.material.Material;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.hashing.ByteTripleHashed;
+
 import org.spout.engine.world.SpoutRegion;
 
 public class DynamicBlockUpdateTree {
-	
 	private final SpoutRegion region;
-	
 	private TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<DynamicBlockUpdate>();
 	private TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<DynamicBlockUpdate>();
 	private TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<HashSet<DynamicBlockUpdate>>();
@@ -32,26 +31,27 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
 	private final static int regionMask = (Chunk.CHUNK_SIZE * Region.REGION_SIZE) - 1;
-	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
-	
+	private final static Vector3[] zeroVector3Array = new Vector3[]{Vector3.ZERO};
+
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
 	}
-	
+
 	public void resetBlockUpdates(int x, int y, int z) {
 		x &= regionMask;
 		y &= regionMask;
 		z &= regionMask;
 		resetBlockUpdatesRaw(new Point(region.getWorld(), x, y, z));
 	}
-	
+
 	private void resetBlockUpdatesRaw(Point p) {
 		pending.add(p);
 	}
-	
+
 	public void addDynamicBlockUpdates(List<DynamicBlockUpdate> list) {
 		pendingLists.add(list);
 	}
+
 	/**
 	 * NOTE: Do NOT modify the returned set
 	 */
@@ -74,7 +74,7 @@ public class DynamicBlockUpdateTree {
 			return true;
 		}
 	}
-	
+
 	public void commitPending(long currentTime) {
 		TickStage.checkStage(TickStage.FINALIZE);
 		List<DynamicBlockUpdate> l;
@@ -92,18 +92,18 @@ public class DynamicBlockUpdateTree {
 			int bx = p.getBlockX() & regionMask;
 			int by = p.getBlockY() & regionMask;
 			int bz = p.getBlockZ() & regionMask;
-			
+
 			int rShift = Region.REGION_SIZE_BITS;
 			Chunk c = region.getChunk(bx >> rShift, by >> rShift, bz >> rShift, false);
 			if (c == null) {
 				continue;
 			}
-			
-			Block b =  c.getBlock(bx, by, bz);
+
+			Block b = c.getBlock(bx, by, bz);
 			Material m = b.getMaterial();
-			
+
 			if (m instanceof DynamicMaterial) {
-				DynamicMaterial dm = (DynamicMaterial)m;
+				DynamicMaterial dm = (DynamicMaterial) m;
 				long nextUpdate = dm.update(b, 0, 0, true);
 				if (nextUpdate > 0) {
 					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime));
@@ -112,12 +112,12 @@ public class DynamicBlockUpdateTree {
 		}
 		processed.clear();
 	}
-	
+
 	public List<DynamicBlockUpdate> updateDynamicBlocks(long currentTime) {
 		DynamicBlockUpdate first;
-		
+
 		ArrayList<DynamicBlockUpdate> multiRegionUpdates = null;
-		
+
 		while ((first = getNextUpdate(currentTime)) != null) {
 			if (!updateDynamicBlock(currentTime, first, false)) {
 				if (multiRegionUpdates == null) {
@@ -128,25 +128,25 @@ public class DynamicBlockUpdateTree {
 		}
 		return multiRegionUpdates;
 	}
-	
+
 	public boolean updateDynamicBlock(long currentTime, DynamicBlockUpdate update, boolean force) {
 		int bx = update.getX();
 		int by = update.getY();
 		int bz = update.getZ();
-		
+
 		int rShift = Region.REGION_SIZE_BITS;
 		Chunk c = region.getChunk(bx >> rShift, by >> rShift, bz >> rShift, false);
-		
+
 		if (c == null) {
 			// TODO - this shouldn't happen - maybe a warning
 			return true;
 		}
-		
-		Block b =  c.getBlock(bx, by, bz);
+
+		Block b = c.getBlock(bx, by, bz);
 		Material m = b.getMaterial();
-		
+
 		if (m instanceof DynamicMaterial) {
-			DynamicMaterial dm = (DynamicMaterial)m;
+			DynamicMaterial dm = (DynamicMaterial) m;
 			Vector3[] range = (force) ? zeroVector3Array : dm.maxRange();
 			if (range == null || range.length < 1) {
 				range = zeroVector3Array;
@@ -154,15 +154,15 @@ public class DynamicBlockUpdateTree {
 			Vector3 rangeHigh = range[0];
 			Vector3 rangeLow = range.length < 2 ? range[0] : range[1];
 
-			int rhx = (int)rangeHigh.getX();
-			int rhy = (int)rangeHigh.getY();
-			int rhz = (int)rangeHigh.getZ();
+			int rhx = (int) rangeHigh.getX();
+			int rhy = (int) rangeHigh.getY();
+			int rhz = (int) rangeHigh.getZ();
 			if (rhx < 0 || rhy < 0 || rhz < 0) {
 				throw new IllegalArgumentException("Max range values must be greater or equal to 0");
 			}
-			int rlx = (int)rangeLow.getX();
-			int rly = (int)rangeLow.getY();
-			int rlz = (int)rangeLow.getZ();
+			int rlx = (int) rangeLow.getX();
+			int rly = (int) rangeLow.getY();
+			int rlz = (int) rangeLow.getZ();
 			if (rlx < 0 || rly < 0 || rlz < 0) {
 				throw new IllegalArgumentException("Max range values must be greater or equal to 0");
 			}
@@ -186,7 +186,7 @@ public class DynamicBlockUpdateTree {
 			return true;
 		}
 	}
-	
+
 	public DynamicBlockUpdate getNextUpdate(long currentTime) {
 		if (queuedUpdates.isEmpty()) {
 			return null;
@@ -201,13 +201,13 @@ public class DynamicBlockUpdateTree {
 					} else {
 						return first;
 					}
-				}  else {
+				} else {
 					return null;
 				}
 			}
 		}
 	}
-	
+
 	private boolean add(DynamicBlockUpdate update) {
 		boolean alreadyPresent = remove(update);
 		queuedUpdates.add(update);
@@ -220,7 +220,7 @@ public class DynamicBlockUpdateTree {
 		chunkSet.add(update);
 		return alreadyPresent;
 	}
-	
+
 	private boolean remove(DynamicBlockUpdate update) {
 		int packed = update.getPacked();
 		DynamicBlockUpdate previous = blockToUpdateMap.remove(packed);

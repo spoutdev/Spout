@@ -12,9 +12,8 @@ import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
 public class BasicShader extends ClientShader {
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
-
 	public BasicShader() {
-	 
+
 	}
 
 	public void assign(boolean compatabilityMode) {

@@ -23,7 +23,6 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-
 package org.spout.engine;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -47,6 +46,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
+
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
@@ -66,6 +66,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
+
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.filesystem.FileSystem;
 import org.spout.engine.mesh.BaseMesh;
@@ -80,19 +81,13 @@ import com.beust.jcommander.Parameter;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final String name = "Spout Client";
-
 	private Camera activeCamera;
 	private final Vector2 resolution = new Vector2(854, 480);
 	private final float aspectRatio = resolution.getX() / resolution.getY();
-
 	private ScreenStack screenStack;
-
-	@Parameter(names = "-Rendermode", converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20" )
+	@Parameter(names = "-Rendermode", converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20")
 	RenderMode rmode = RenderMode.GL30;
-
-
 	TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
-
 	RenderMaterial material;
 
 	public static void main(String[] args) {
@@ -124,19 +119,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void init(String[] args) {
 		super.init(args);
-
 	}
 
 	@Override
 	public void start() {
 		super.start();
 		scheduler.startRenderThread();
-		
 	}
 
 	public void initRenderer() {
 		createWindow();
-		
+
 		System.out.println("SpoutClient Information");
 		System.out.println("Operating System: " + System.getProperty("os.name"));
 		System.out.println("Renderer Mode: " + this.getRenderMode().toString());
@@ -145,52 +138,48 @@ public class SpoutClient extends SpoutEngine implements Client {
 		System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
 		System.out.println("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		String extensions = "Extensions Supported: ";
-		if(rmode == RenderMode.GL30){
+		if (rmode == RenderMode.GL30) {
 			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
 				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
 			}
-		}
-		else{
+		} else {
 			extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
 		}
 		System.out.println(extensions);
 
 		FileSystem.postStartup();
-		
-		
+
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		renderer = new PrimitiveBatch();
-	
+
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		Spout.log("Loading Texture");
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		Spout.log("Loading Material");
 		material = (RenderMaterial) FileSystem.getResource("material://Vanilla/resources/materials/terrain.smt");
-		
+
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
 		//screenStack = new ScreenStack(new LoadingScreen());
 		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
 	}
-	
+
 	BaseMesh bunny;
 
-	private void createWindow(){
+	private void createWindow() {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 
-
 			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 				createMacWindow();
-
 			} else {
-				if(rmode == RenderMode.GL11){
+				if (rmode == RenderMode.GL11) {
 					ContextAttribs ca = new ContextAttribs(1, 5);
 					Display.create(new PixelFormat(8, 24, 0), ca);
-				} else if (rmode == RenderMode.GL20){
+				} else if (rmode == RenderMode.GL20) {
 					ContextAttribs ca = new ContextAttribs(2, 1);
 					Display.create(new PixelFormat(8, 24, 0), ca);
-				}else if(rmode == RenderMode.GL30){
+				} else if (rmode == RenderMode.GL30) {
 
 					ContextAttribs ca = new ContextAttribs(3, 2).withForwardCompatible(false);
 					Display.create(new PixelFormat(8, 24, 0), ca);
@@ -198,36 +187,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 
 			Display.setTitle("Spout Client");
-
 		} catch (LWJGLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
-
 	}
 
-
-	private void createMacWindow() throws LWJGLException{
+	private void createMacWindow() throws LWJGLException {
 
 		String[] ver = System.getProperty("os.version").split("\\.");
 
-		if(this.rmode == RenderMode.GL30){
+		if (this.rmode == RenderMode.GL30) {
 			if (Integer.parseInt(ver[1]) >= 7) {
 				ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);
 				Display.create(new PixelFormat(8, 24, 0), ca);
 			} else {
 				throw new UnsupportedOperationException("Cannot create a 3.0 context without OSX 10.7_");
 			}
-
-		}else {
+		} else {
 			Display.create();
 		}
-
-
 	}
-
 
 	Texture texture;
 	PrimitiveBatch renderer;
@@ -235,7 +215,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	long ticks = 0;
 	BatchVertexRenderer textureTest;
 	//Graphics graphics;
-
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -256,10 +235,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//renderer.addMesh(bunny);
 		//((BatchVertexRenderer)renderer.getRenderer()).dumpBuffers();
 		//renderer.end();
-		
+
 		//renderer.draw();
 
-	
 		textureTest.begin(material);
 		textureTest.getShader().setUniform("View", activeCamera.getView());
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
@@ -278,38 +256,37 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest.addVertex(1, 0);
 		textureTest.end();
 		textureTest.render();
-		
+
 		/*
-		Object[] worlds = this.getLiveWorlds().toArray();
-		SpoutWorld world = (SpoutWorld)worlds[0];
-		renderVisibleChunks(world);
-		
-		
-	
-		for(Object b : chunkRenderers.values()){
-			PrimitiveBatch batch = (PrimitiveBatch)b;
-			batch.getRenderer().getShader().setUniform("View", view);
-			batch.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
-			Spout.log("Drawing: " + batch.getRenderer().getVertexCount() + " Verticies");
-			batch.draw();
-		}
-	*/
+		 Object[] worlds = this.getLiveWorlds().toArray();
+		 SpoutWorld world = (SpoutWorld)worlds[0];
+		 renderVisibleChunks(world);
+
+
+
+		 for(Object b : chunkRenderers.values()){
+			 PrimitiveBatch batch = (PrimitiveBatch)b;
+			 batch.getRenderer().getShader().setUniform("View", view);
+			 batch.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
+			 Spout.log("Drawing: " + batch.getRenderer().getVertexCount() + " Verticies");
+			 batch.draw();
+		 }
+	 */
 
 	}
 
 	@SuppressWarnings("unused")
 	private void renderVisibleChunks(SpoutWorld world) {
-		
+
 		for (int x = -1; x < 1; x++) {
 			for (int y = 0; y < 5; y++) {
 				for (int z = -1; z < 1; z++) {
 					SpoutChunk c = world.getChunk(x, y, z);
 					ChunkSnapshot snap = c.getSnapshot();
-					buildChunk((SpoutChunkSnapshot)snap);
+					buildChunk((SpoutChunkSnapshot) snap);
 				}
 			}
 		}
-		
 	}
 
 	private void buildChunk(SpoutChunkSnapshot snap) {
@@ -319,20 +296,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return;
 		}*/
 
-		if(firstSeen){
+		if (firstSeen) {
 			PrimitiveBatch b = new PrimitiveBatch();
 			//b.getRenderer().setShader(shader);
 			chunkRenderers.put(snap.getX(), snap.getY(), snap.getZ(), b);
 			Spout.log("Got a new chunk at " + snap.toString());
-		}		
-		
+		}
+
 		PrimitiveBatch batch = chunkRenderers.get(snap.getX(), snap.getY(), snap.getZ());
 		//batch.begin();
 		for (int x = 0; x < ChunkSnapshot.CHUNK_SIZE; x++) {
 			for (int y = 0; y < ChunkSnapshot.CHUNK_SIZE; y++) {
 				for (int z = 0; z < ChunkSnapshot.CHUNK_SIZE; z++) {
 					BlockMaterial m = snap.getBlockMaterial(x, y, z);
-					
+
 					Color col = getColor(m);
 					if (m.isSolid()) {
 						batch.addCube(new Vector3(x, y, z), Vector3.ONE, col, sides);
@@ -445,8 +422,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		String[] files = null;
 		String osPath = "";
 
-		if(SystemUtils.IS_OS_WINDOWS) {
-			files = new String[] {
+		if (SystemUtils.IS_OS_WINDOWS) {
+			files = new String[]{
 					"jinput-dx8_64.dll",
 					"jinput-dx8.dll",
 					"jinput-raw_64.dll",
@@ -459,14 +436,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 			};
 			osPath = "windows/";
 		} else if (SystemUtils.IS_OS_MAC) {
-			files = new String[] {
+			files = new String[]{
 					"libjinput-osx.jnilib",
 					"liblwjgl.jnilib",
 					"openal.dylib",
 			};
 			osPath = "mac/";
-		} else if(SystemUtils.IS_OS_LINUX) {
-			files = new String[] {
+		} else if (SystemUtils.IS_OS_LINUX) {
+			files = new String[]{
 					"liblwjgl.so",
 					"liblwjgl64.so",
 					"libopenal.so",
@@ -503,5 +480,4 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Display.destroy();
 		super.stop();
 	}
-
 }

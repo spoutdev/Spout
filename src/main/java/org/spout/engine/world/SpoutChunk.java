@@ -68,6 +68,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
@@ -82,7 +83,6 @@ public class SpoutChunk extends Chunk {
 	 */
 	private static final int restrictedStages = TickStage.FINALIZE;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
-
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
@@ -123,7 +123,6 @@ public class SpoutChunk extends Chunk {
 	 */
 	protected byte[] skyLight;
 	protected byte[] blockLight;
-
 	/**
 	 * The mask that should be applied to the x, y and z coords
 	 */
@@ -139,23 +138,19 @@ public class SpoutChunk extends Chunk {
 	 * Every time a change is committed the value is set to 0. The region will increment it as well.
 	 */
 	protected final AtomicInteger lightingCounter = new AtomicInteger(-1);
-
 	/**
 	 * Data map and Datatable associated with it
 	 */
 	protected final DatatableMap datatableMap;
 	protected final DataMap dataMap;
-
 	/**
 	 * Manages the biomes for this chunk
 	 */
 	private final BiomeManager biomes;
-	
 	/**
 	 * Shift cache array for shifting fields
 	 */
 	private final static int[] shiftCache = new int[65536];
-
 	/**
 	 * The thread associated with the region
 	 */
@@ -195,7 +190,8 @@ public class SpoutChunk extends Chunk {
 		if (extraData != null) {
 			this.datatableMap = extraData;
 		} else {
-			this.datatableMap = new GenericDatatableMap();;
+			this.datatableMap = new GenericDatatableMap();
+			;
 		}
 		this.dataMap = new DataMap(this.datatableMap);
 
@@ -203,7 +199,7 @@ public class SpoutChunk extends Chunk {
 		column.registerChunk();
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
-		blockStore.resetDirtyArrays();	// Clear false dirty state on freshly loaded chunk
+		blockStore.resetDirtyArrays();    // Clear false dirty state on freshly loaded chunk
 		this.biomes = manager;
 		this.regionThread = region.getExceutionThread();
 	}
@@ -236,7 +232,7 @@ public class SpoutChunk extends Chunk {
 
 		return true;
 	}
-	
+
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
 		if (source == null) {
@@ -263,7 +259,7 @@ public class SpoutChunk extends Chunk {
 			material = blockEvent.getSnapshot().getMaterial();
 			data = blockEvent.getSnapshot().getData();
 		}
-		
+
 		blockStore.setBlock(x, y, z, material.getId(), data);
 
 		int oldheight = column.getSurfaceHeight(x, z);
@@ -303,27 +299,27 @@ public class SpoutChunk extends Chunk {
 		}
 		return true;
 	}
-	
+
 	protected void setCuboid(CuboidBuffer buffer) {
 		Point base = buffer.getBase();
 		Vector3 size = buffer.getSize();
-		
+
 		int startX = base.getBlockX() - (getX() * Chunk.CHUNK_SIZE);
 		int startY = base.getBlockY() - (getX() * Chunk.CHUNK_SIZE);
 		int startZ = base.getBlockZ() - (getX() * Chunk.CHUNK_SIZE);
-		
-		int endX = (base.getBlockX() + (int)size.getX()) - (getX() * Chunk.CHUNK_SIZE);
-		int endY = (base.getBlockY() + (int)size.getY()) - (getX() * Chunk.CHUNK_SIZE);
-		int endZ = (base.getBlockZ() + (int)size.getZ()) - (getX() * Chunk.CHUNK_SIZE);
-		
+
+		int endX = (base.getBlockX() + (int) size.getX()) - (getX() * Chunk.CHUNK_SIZE);
+		int endY = (base.getBlockY() + (int) size.getY()) - (getX() * Chunk.CHUNK_SIZE);
+		int endZ = (base.getBlockZ() + (int) size.getZ()) - (getX() * Chunk.CHUNK_SIZE);
+
 		endX &= 0xF;
 		endY &= 0xF;
 		endZ &= 0xF;
-		
+
 		for (int dx = startX; dx < endX; dx++) {
 			for (int dy = startY; dy < endY; dy++) {
 				for (int dz = startZ; dz < endZ; dz++) {
-					setBlockMaterial(dx, dy, dz, BlockMaterial.get(buffer.get(dx, dy, dz)), (short)0, null, false);
+					setBlockMaterial(dx, dy, dz, BlockMaterial.get(buffer.get(dx, dy, dz)), (short) 0, null, false);
 				}
 			}
 		}
@@ -554,7 +550,7 @@ public class SpoutChunk extends Chunk {
 	public boolean copySnapshotRun() throws InterruptedException {
 		// NOTE : This is only called for chunks with contain entities.
 		snapshotManager.copyAllSnapshots();
-		return entities.get().size() == 0;	
+		return entities.get().size() == 0;
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
@@ -1039,7 +1035,7 @@ public class SpoutChunk extends Chunk {
 		checkBlockStoreUpdateAllowed();
 		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
-	
+
 	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits) {
 		checkChunkLoaded();
@@ -1055,7 +1051,7 @@ public class SpoutChunk extends Chunk {
 			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 			oldData = state.getData();
 			short oldId = state.getId();
-			short newData = (short)(oldData | bits);
+			short newData = (short) (oldData | bits);
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return oldData;
@@ -1076,7 +1072,7 @@ public class SpoutChunk extends Chunk {
 			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 			oldData = state.getData();
 			short oldId = state.getId();
-			short newData = (short)(oldData & (~bits));
+			short newData = (short) (oldData & (~bits));
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return oldData;
@@ -1085,15 +1081,15 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		checkChunkLoaded();
-		
+
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
 
 		int shift = shiftCache[bits];
-		
+
 		BlockFullState state = this.blockStore.getFullData(bx, by, bz);
-		
+
 		return (state.getData() & bits) >> (shift);
 	}
 
@@ -1104,7 +1100,7 @@ public class SpoutChunk extends Chunk {
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
-		
+
 		int shift = shiftCache[bits];
 
 		boolean success = false;
@@ -1113,9 +1109,9 @@ public class SpoutChunk extends Chunk {
 			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 			oldData = state.getData();
 			short oldId = state.getId();
-			
-			short newData = (short)(((value << shift) & bits) | (oldData & (~bits)));
-			
+
+			short newData = (short) (((value << shift) & bits) | (oldData & (~bits)));
+
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return (oldData & bits) >> shift;
@@ -1129,5 +1125,4 @@ public class SpoutChunk extends Chunk {
 	public BiomeManager getBiomeManager() {
 		return biomes;
 	}
-
 }

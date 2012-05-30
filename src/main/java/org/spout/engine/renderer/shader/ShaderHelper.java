@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 public class ShaderHelper {
-
 	public static int compileShader(String source, int type) {
 
 		int shader = GL20.glCreateShader(type);
@@ -23,7 +22,6 @@ public class ShaderHelper {
 		return shader;
 	}
 
-
 	public static String readShaderSource(String file) throws FileNotFoundException {
 
 		FileInputStream in = new FileInputStream(file);
@@ -37,5 +35,4 @@ public class ShaderHelper {
 
 		return src.toString();
 	}
-
 }

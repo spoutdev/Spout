@@ -72,7 +72,7 @@ public abstract class PulsableThread extends Thread {
 	 * Puts the current thread to sleep until the current pulse operation has
 	 * completed
 	 * @param millis the time in milliseconds to wait before throwing a
-	 *               TimeoutException
+	 * TimeoutException
 	 */
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException {
 		if (millis == 0) {

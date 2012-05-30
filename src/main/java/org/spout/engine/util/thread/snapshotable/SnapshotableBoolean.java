@@ -52,10 +52,9 @@ public class SnapshotableBoolean implements Snapshotable {
 	public void set(boolean next) {
 		this.next.set(next);
 	}
-	
+
 	/**
 	 * Sets the next value but only if the current next value is the given value
-	 * 
 	 * @param expect
 	 * @param next
 	 * @return true on success
