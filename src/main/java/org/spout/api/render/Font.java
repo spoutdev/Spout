@@ -26,6 +26,8 @@
  */
 package org.spout.api.render;
 
+import java.awt.Rectangle;
+
 /**
  * Font interface.  
  * 
@@ -40,5 +42,7 @@ public interface Font {
 	public float getCharHeight();
 	
 	public float getSpaceWidth();
+	
+	public Rectangle getPixelBounds(int index);
 	
 }
