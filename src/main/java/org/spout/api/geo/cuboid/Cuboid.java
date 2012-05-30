@@ -37,7 +37,7 @@ import org.spout.api.math.Vector3;
 public class Cuboid {
 	protected Point base;
 	protected Vector3 size;
-	private final boolean immutable;
+	protected final boolean immutable;
 	private final int x;
 	private final int y;
 	private final int z;
