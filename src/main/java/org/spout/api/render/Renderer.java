@@ -35,9 +35,10 @@ import org.spout.api.math.Vector4;
 public interface Renderer {
 
 	/**
-	 * Begin batching render calls
+	 * Begins batching calls
+	 * @param material RenderMaterial to render with
 	 */
-	public abstract void begin();
+	public abstract void begin(RenderMaterial material);
 
 	/**
 	 * Ends batching and flushes cache to the GPU
@@ -78,9 +79,7 @@ public interface Renderer {
 	public abstract void addTexCoord(float u, float v);
 
 	public abstract void addTexCoord(Vector2 uv);
-
-	public abstract void setShader(Shader shader);
-	
+		
 	public abstract Shader getShader();
 
 	public abstract void enableColors();
