@@ -159,11 +159,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		Spout.log("Loading Texture");
-		texture = (Texture) FileSystem.getResource("texture://Vanilla/resources/terrain.png");
-		texture.load(); //Loads texture to GPU
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		Spout.log("Loading Material");
-		material = (RenderMaterial) FileSystem.getResource("material://Spout/fallbacks/test.smt");
+		material = (RenderMaterial) FileSystem.getResource("material://Spout/resources/materials/GUIMaterial.smt");
 		
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
@@ -254,8 +252,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest.begin(material);
 		textureTest.getShader().setUniform("View", activeCamera.getView());
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
-		textureTest.getShader().setUniform("tex", texture);
-
+	
 		
 		textureTest.addTexCoord(0, 0);
 		textureTest.addVertex(0, 0);

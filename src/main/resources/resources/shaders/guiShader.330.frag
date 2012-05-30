@@ -2,11 +2,12 @@
 
 in vec4 color;
 in vec2 uvcoord;
-uniform sampler2D tex;
+uniform sampler2D Diffuse;
+
 
 layout(location=0) out vec4 outputColor;
 
 void main()
 {
-	outputColor = texture(tex, uvcoord) * color;
+	outputColor = texture(Diffuse, uvcoord) * color;
 } 

@@ -107,4 +107,9 @@ public class ClientTexture extends Texture {
 
 		//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 	}
+
+	@Override
+	public boolean isLoaded() {
+		return textureID != -1;
+	}
 }

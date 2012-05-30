@@ -34,7 +34,13 @@ import org.spout.api.render.RenderMode;
 import org.spout.engine.renderer.shader.ShaderVariableNotFoundException;
 
 public abstract class ShaderVariable {
-	public static final boolean variableError = false;
+	/**
+	 * Error levels
+	 * 0 - No message
+	 * 1 - Warn in Console
+	 * 2 - Throw Exception
+	 */
+	public static final int variableError = 0;
 	int program;
 	int location;
 
@@ -57,9 +63,9 @@ public abstract class ShaderVariable {
 		//
 		//If we want to have a debug mode, switch the final bool to true to throw an exception if the variable doesn't exist.
 		//This is the same as treating warnings as errors, and could be useful for debugging shaders.
-		if (this.location == -1 && !variableError) {
+		if (this.location == -1 && variableError == 1) {
 			System.out.println("[Warning] Shader Variable: " + name + " not found! (Was it optimized out?)");
-		} else if (this.location == -1 && variableError) {
+		} else if (this.location == -1 && variableError == 2) {
 			throw new ShaderVariableNotFoundException(name);
 		}
 	}

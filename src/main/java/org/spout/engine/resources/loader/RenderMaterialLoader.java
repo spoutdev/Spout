@@ -12,6 +12,8 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.Shader;
+import org.spout.api.render.Texture;
+import org.spout.api.resource.Resource;
 
 import org.spout.engine.filesystem.BasicResourceLoader;
 import org.spout.engine.filesystem.FileSystem;
@@ -44,7 +46,15 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		for(Map.Entry<String, Object> entry : entrySet){
 			if(entry.getValue() instanceof String){
 				String val = (String)entry.getValue();
-				if(val.contains("(")){
+				if(val.contains("://")){ //its a resource!
+					Resource r = FileSystem.getResource(val);
+					if(r instanceof Texture && !((Texture)r).isLoaded()) ((Texture)r).load();
+					params.put(entry.getKey(), r);					
+				}
+				
+				
+				//TODO: clean this up
+				if(val.contains("(")){ //It's a Vector or a color!
 					String valueString = val.substring(val.indexOf('(')+1, val.lastIndexOf(')'));
 					System.out.println(valueString);
 					if(val.startsWith("color")){
