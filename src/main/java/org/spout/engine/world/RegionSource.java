@@ -40,6 +40,7 @@ import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -73,9 +74,9 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the block x, y, z coordinates
-	 * @param x    the x coordinate
-	 * @param y    the y coordinate
-	 * @param z    the z coordinate
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param loadopt to control whether to load or generate the region, if needed
 	 * @return region
 	 */
@@ -93,7 +94,7 @@ public class RegionSource implements Iterable<Region> {
 
 		// removeRegion is called during snapshot copy on the Region thread (when the last chunk is removed)
 		// Needs re-syncing to a safe moment
-		((SpoutScheduler)Spout.getEngine().getScheduler()).scheduleCoreTask(new Runnable() {
+		((SpoutScheduler) Spout.getEngine().getScheduler()).scheduleCoreTask(new Runnable() {
 			@Override
 			public void run() {
 				int x = r.getX();
@@ -102,13 +103,13 @@ public class RegionSource implements Iterable<Region> {
 				boolean success = loadedRegions.remove(x, y, z, r);
 				if (success) {
 					r.getManager().getExecutor().haltExecutor();
-					
+
 					TaskManager tm = Spout.getEngine().getParallelTaskManager();
-					SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+					SpoutParallelTaskManager ptm = (SpoutParallelTaskManager) tm;
 					ptm.unRegisterRegion(r);
-					
+
 					TaskManager tmWorld = world.getParallelTaskManager();
-					SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+					SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager) tmWorld;
 					ptmWorld.unRegisterRegion(r);
 
 					Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
@@ -133,11 +134,11 @@ public class RegionSource implements Iterable<Region> {
 	 * Gets the region associated with the region x, y, z coordinates <br/>
 	 * <p/>
 	 * Will load or generate a region if requested.
-	 * @param x    the x coordinate
-	 * @param y    the y coordinate
-	 * @param z    the z coordinate
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
 	 * @param loadopt whether to load or generate the region if one does not exist
-	 *             at the coordinates
+	 * at the coordinates
 	 * @return region
 	 */
 	@LiveRead
@@ -155,19 +156,19 @@ public class RegionSource implements Iterable<Region> {
 			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 			if (current != null) {
-				((SpoutScheduler)Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
+				((SpoutScheduler) Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
 				return current;
 			} else {
 				if (!region.getManager().getExecutor().startExecutor()) {
 					throw new IllegalStateException("Unable to start region executor");
 				}
-				
+
 				TaskManager tm = Spout.getEngine().getParallelTaskManager();
-				SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+				SpoutParallelTaskManager ptm = (SpoutParallelTaskManager) tm;
 				ptm.registerRegion(region);
-				
+
 				TaskManager tmWorld = world.getParallelTaskManager();
-				SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+				SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager) tmWorld;
 				ptmWorld.registerRegion(region);
 
 				Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));

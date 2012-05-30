@@ -69,6 +69,7 @@ import jline.Completor;
 import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.command.CommandSource;
@@ -234,11 +235,10 @@ public final class ConsoleManager {
 	}
 
 	private class ConsoleCommandThread extends Thread {
-		
 		public ConsoleCommandThread() {
 			super("Console Manager");
 		}
-		
+
 		@Override
 		public void run() {
 			String command;

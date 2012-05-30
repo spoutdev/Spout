@@ -9,12 +9,12 @@ import org.spout.api.resource.ResourceLoader;
 
 public abstract class BasicResourceLoader<E extends Resource> implements ResourceLoader<E> {
 	public abstract String getFallbackResourceName();
-	
+
 	@Override
 	public abstract E getResource(InputStream stream);
 
 	@Override
-	public E getResource(URI resource) throws ResourceNotFoundException{
+	public E getResource(URI resource) throws ResourceNotFoundException {
 		InputStream s = FileSystem.getResourceStream(resource);
 		E r = getResource(s);
 		try {

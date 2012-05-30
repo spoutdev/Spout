@@ -40,13 +40,13 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+
 import org.spout.engine.filesystem.WorldFiles;
 
-public class FilteredChunk extends SpoutChunk{
+public class FilteredChunk extends SpoutChunk {
 	private final AtomicBoolean uniform;
 	private final AtomicInteger uniformId = new AtomicInteger(0);
 	private final AtomicReference<BlockMaterial> material = new AtomicReference<BlockMaterial>(null);
-
 	protected final static byte[] DARK = new byte[Chunk.CHUNK_VOLUME / 2];
 	protected final static byte[] LIGHT = new byte[Chunk.CHUNK_VOLUME / 2];
 
@@ -82,18 +82,18 @@ public class FilteredChunk extends SpoutChunk{
 	private synchronized void initialize() {
 		if (uniform.get()) {
 			short[] initial = new short[Chunk.CHUNK_VOLUME];
-			short id = (short)uniformId.get();
+			short id = (short) uniformId.get();
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
 			this.blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, initial);
-			
+
 			this.skyLight = new byte[CHUNK_VOLUME / 2];
 			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, this.skyLight, 0, this.skyLight.length);
-			
+
 			this.blockLight = new byte[CHUNK_VOLUME / 2];
 			System.arraycopy(DARK, 0, this.blockLight, 0, this.blockLight.length);
-			
+
 			uniform.set(false);
 		}
 	}
@@ -117,7 +117,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.setBlockMaterial(x, y, z, material, data, source);
 	}
-	
+
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		if (uniform.get()) {
@@ -125,7 +125,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockMaterial(x, y, z);
 	}
-	
+
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		if (uniform.get()) {
@@ -133,7 +133,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockData(x, y, z);
 	}
-	
+
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		if (uniform.get()) {
@@ -141,7 +141,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.compareAndSetData(x, y, z, expect, data);
 	}
-	
+
 	@Override
 	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
 		if (uniform.get()) {
@@ -149,7 +149,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.setBlockLight(x, y, z, light, source);
 	}
-	
+
 	@Override
 	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
 		if (uniform.get()) {
@@ -157,7 +157,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.setBlockSkyLight(x, y, z, light, source);
 	}
-	
+
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
 		if (uniform.get()) {
@@ -165,7 +165,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockSkyLight(x, y, z);
 	}
-	
+
 	@Override
 	public byte getBlockLight(int x, int y, int z) {
 		if (uniform.get()) {
@@ -185,7 +185,7 @@ public class FilteredChunk extends SpoutChunk{
 	public void syncSave() {
 		if (uniform.get()) {
 			short[] initial = new short[Chunk.CHUNK_VOLUME];
-			short id = (short)uniformId.get();
+			short id = (short) uniformId.get();
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
@@ -194,12 +194,12 @@ public class FilteredChunk extends SpoutChunk{
 			super.syncSave();
 		}
 	}
-	
+
 	@Override
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		if (uniform.get()) {
 			short[] initial = new short[Chunk.CHUNK_VOLUME];
-			short id = (short)uniformId.get();
+			short id = (short) uniformId.get();
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
@@ -213,7 +213,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getSnapshot(entities);
 	}
-	
+
 	@Override
 	public boolean compressIfRequired() {
 		if (uniform.get()) {
@@ -221,7 +221,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.compressIfRequired();
 	}
-	
+
 	@Override
 	public boolean isDirty() {
 		if (uniform.get()) {

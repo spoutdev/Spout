@@ -10,20 +10,16 @@ import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TickStage;
+
 import org.spout.engine.scheduler.SpoutTask;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.world.SpoutRegion;
 
 public class ParallelTaskInfo {
-
 	public static final ParallelTaskInfo[] EMPTY_ARRAY = new ParallelTaskInfo[0];
-
 	private final Set<RegionIdPair> children = new HashSet<RegionIdPair>();
-
 	private final Map<SpoutRegion, SpoutTask> regions = new HashMap<SpoutRegion, SpoutTask>();
-
 	private final SpoutTask task;
-
 	private boolean alive = true;
 
 	public ParallelTaskInfo(SpoutTask task) {
@@ -89,5 +85,4 @@ public class ParallelTaskInfo {
 	public SpoutTask getTask() {
 		return task;
 	}
-
 }

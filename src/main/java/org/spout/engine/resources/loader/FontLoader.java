@@ -1,13 +1,11 @@
 package org.spout.engine.resources.loader;
 
-
 import java.io.InputStream;
 
 import org.spout.engine.filesystem.BasicResourceLoader;
 import org.spout.engine.resources.ClientFont;
 
-public class FontLoader extends BasicResourceLoader<ClientFont>{
-
+public class FontLoader extends BasicResourceLoader<ClientFont> {
 	@Override
 	public String getFallbackResourceName() {
 		// TODO Auto-generated method stub
@@ -19,5 +17,4 @@ public class FontLoader extends BasicResourceLoader<ClientFont>{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

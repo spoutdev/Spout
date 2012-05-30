@@ -36,6 +36,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Named;
+
 import org.spout.engine.scheduler.parallel.ParallelTaskInfo;
 import org.spout.engine.world.SpoutRegion;
 
@@ -71,7 +72,7 @@ public class SpoutTask implements Task {
 	 * The number of ticks between each call to the Runnable.
 	 */
 	private final long period;
-	/** 
+	/**
 	 * Indicates if the task is a synchronous task or an async task
 	 */
 	private final boolean sync;
@@ -88,27 +89,23 @@ public class SpoutTask implements Task {
 	 * A flag indicating if the task is actually executing
 	 */
 	private final AtomicBoolean executing;
-	
 	/**
 	 * Indicates if the task is being deferred and when it started
 	 */
 	private long deferBegin = -1;
-	
 	/**
 	 * The manager associated with this task
 	 */
 	private final TaskManager manager;
-	
 	/**
 	 * The scheduler for the engine
 	 */
 	private final Scheduler scheduler;
-	
 	/**
 	 * Info about sub-tasks
 	 */
 	private ParallelTaskInfo parallelInfo;
-	
+
 	/**
 	 * Creates a new task with the specified number of ticks between consecutive
 	 * calls to {@link #execute()}.
@@ -128,10 +125,9 @@ public class SpoutTask implements Task {
 		this.manager = manager;
 		this.scheduler = scheduler;
 	}
-	
+
 	/**
 	 * Creates a copy of this task for a particular Region
-	 * 
 	 * @param r the region
 	 * @return the new task instance
 	 */
@@ -156,7 +152,7 @@ public class SpoutTask implements Task {
 	public boolean isSync() {
 		return sync;
 	}
-	
+
 	@Override
 	public boolean isExecuting() {
 		return executing.get();
@@ -166,16 +162,16 @@ public class SpoutTask implements Task {
 	public Object getOwner() {
 		return owner;
 	}
-	
+
 	@Override
 	public boolean isAlive() {
 		return alive.get();
 	}
-	
+
 	public long getNextCallTime() {
 		return nextCallTime.get();
 	}
-	
+
 	protected long getPeriod() {
 		return this.period;
 	}
@@ -189,7 +185,6 @@ public class SpoutTask implements Task {
 
 	/**
 	 * Executes the task.  The task will fail to execute if it is no longer running, if it is called early, or if it is already executing.
-	 * 
 	 * @return The task successfully executed.
 	 */
 	boolean pulse() {
@@ -203,7 +198,7 @@ public class SpoutTask implements Task {
 				return false;
 			}
 		}
-		
+
 		if (!executing.compareAndSet(false, true)) {
 			return false;
 		}
@@ -222,13 +217,13 @@ public class SpoutTask implements Task {
 
 		return true;
 	}
-	
+
 	public void lockNextCallTime() {
 		if (!nextCallTimeLock.compareAndSet(false, true)) {
 			throw new IllegalStateException("Task added in the queue twice without being removed");
 		}
 	}
-	
+
 	public void unlockNextCallTime() {
 		if (!nextCallTimeLock.compareAndSet(true, false)) {
 			throw new IllegalStateException("Task removed from the queue before being added");
@@ -241,24 +236,24 @@ public class SpoutTask implements Task {
 		String ownerName = owner == null || !(owner instanceof Named) ? "null" : ((Named) owner).getName();
 		return this.getClass().getSimpleName() + "{" + getTaskId() + ", " + ownerName + "}";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return taskId;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
 			return true;
 		} else if (o instanceof SpoutTask) {
-			SpoutTask other = (SpoutTask)o;
+			SpoutTask other = (SpoutTask) o;
 			return other.taskId == taskId;
 		} else {
 			return false;
 		}
 	}
-	
+
 	private boolean attemptDefer() {
 		if (priority.getMaxDeferred() <= 0) {
 			return false;
@@ -275,17 +270,16 @@ public class SpoutTask implements Task {
 		}
 	}
 
-	
 	private void updateCallTime() {
 		updateCallTime(period);
 	}
-	
+
 	private void updateCallTime(long offset) {
 		if (nextCallTimeLock.compareAndSet(false, true)) {
 			long now = manager.getUpTime();
 			if (nextCallTime.addAndGet(offset) <= now) {
 				nextCallTime.set(now + 1);
-			}			
+			}
 			nextCallTimeLock.set(false);
 		} else {
 			throw new IllegalStateException("Attempt made to modify next call time when the task was in the queue.");
@@ -300,9 +294,8 @@ public class SpoutTask implements Task {
 			return parallelInfo.getTask(region);
 		}
 	}
-	
+
 	public void setParallelInfo(ParallelTaskInfo info) {
 		this.parallelInfo = info;
 	}
-
 }

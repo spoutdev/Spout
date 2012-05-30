@@ -52,7 +52,6 @@ import com.beust.jcommander.JCommander;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
-
 	private volatile int maxPlayers = 20;
 	/**
 	 * If the server has a whitelist or not.

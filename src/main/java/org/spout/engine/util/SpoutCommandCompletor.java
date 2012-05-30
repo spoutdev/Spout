@@ -1,6 +1,7 @@
 package org.spout.engine.util;
 
 import jline.Completor;
+
 import org.spout.api.Engine;
 
 import java.util.List;
@@ -17,8 +18,11 @@ public class SpoutCommandCompletor implements Completor {
 	public SpoutCommandCompletor(Engine engine) {
 		this.engine = engine;
 	}
+
 	@Override
-	public int complete(String buffer, int cursor, @SuppressWarnings("rawtypes") List rawCandidates) {
+	public int complete(String buffer, int cursor,
+						@SuppressWarnings("rawtypes")
+						List rawCandidates) {
 		@SuppressWarnings("unchecked")
 		List<String> candidates = rawCandidates;
 		String start = (buffer == null) ? "" : buffer;

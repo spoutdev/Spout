@@ -48,7 +48,6 @@ public class SpoutWorldLightingModel {
 	private final SpoutWorldLighting instance;
 	private final TLongList updates = new TLongArrayList();
 	private final boolean sky;
-
 	/**
 	 * The maximum amount of resolves performed per operation per tick
 	 */
@@ -255,7 +254,7 @@ public class SpoutWorldLightingModel {
 		public void loadLight() {
 			this.light = this.chunk.getBlockSkyLight(x, y, z);
 		}
-		
+
 		@Override
 		public void setLight(byte light) {
 			if (this.light != 15) {
@@ -335,7 +334,7 @@ public class SpoutWorldLightingModel {
 				this.loadLight();
 			}
 		}
-		
+
 		public abstract void loadLight();
 
 		public abstract void setLight(byte light);
