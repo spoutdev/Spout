@@ -105,7 +105,7 @@ public class TickStage {
 				} else {
 					sb.append(", ");
 				}
-				sb.append(getStage(num));
+				sb.append(getStage(checkNum));
 			}
 			scan = scan << 1;
 		}
@@ -143,7 +143,7 @@ public class TickStage {
 	 * @param ownerThread the thread that has restricted access
 	 */
 	public static void checkStage(int allowedStages, int restrictedStages, Thread ownerThread) {
-		if ((stage & allowedStages) == 0 && ((stage & restrictedStages) == 0) || Thread.currentThread() != ownerThread) {
+		if ((stage & allowedStages) == 0 && (((stage & restrictedStages) == 0) || Thread.currentThread() != ownerThread)) {
 			throw new IllegalTickSequenceException(allowedStages, restrictedStages, ownerThread, stage);
 		}
 	}
