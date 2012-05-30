@@ -55,4 +55,7 @@ public abstract class Texture extends Resource {
 	@ClientOnly
 	public abstract void bind();
 	
+	@ClientOnly
+	public abstract boolean isLoaded();
+	
 }
