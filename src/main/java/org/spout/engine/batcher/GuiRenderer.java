@@ -11,12 +11,12 @@ import org.spout.api.render.Renderer;
 import org.spout.api.render.Texture;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.resources.ClientFont;
-import org.spout.engine.resources.RenderMaterial;
+import org.spout.engine.resources.ClientRenderMaterial;
 
 public class GuiRenderer {
 	static Renderer renderer;
-	static RenderMaterial guiMaterial;
-	static RenderMaterial textMaterial;
+	static ClientRenderMaterial guiMaterial;
+	static ClientRenderMaterial textMaterial;
 	
 	
 	public static void init(){
@@ -32,7 +32,7 @@ public class GuiRenderer {
 	public static void renderString(String s, float x, float y, Font font, Color color){
 		
 		
-		renderer.begin();
+		renderer.begin(null);
 		float lx = x;
 		float height = font.getCharHeight();
 		for(char c : s.toCharArray()){

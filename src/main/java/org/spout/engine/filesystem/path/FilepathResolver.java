@@ -43,8 +43,6 @@ public class FilepathResolver implements ResourcePathResolver {
 	@Override
 	public boolean existsInPath(String file, String path) {
 		File f = new File(path + File.separator + file);
-		System.out.println(f.getPath());
-		System.out.println(f.exists());
 		return f.exists();
 	}
 

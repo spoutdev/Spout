@@ -49,7 +49,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	protected void doFlush() {
-		if (activeShader == null) {
+		if (activeMaterial.getShader() == null) {
 			throw new IllegalStateException("Batch must have a shader attached");
 		}
 		if (vbos != -1) {
@@ -80,7 +80,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		vBuffer.flip();
 		//GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vBuffer, GL15.GL_STATIC_DRAW);
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
-		activeShader.enableAttribute("vPosition", 4, GL11.GL_FLOAT, 0, offset);
+		activeMaterial.getShader().enableAttribute("vPosition", 4, GL11.GL_FLOAT, 0, offset);
 		offset += numVerticies * 4 * SIZE_FLOAT;
 		if (useColors) {
 
@@ -90,7 +90,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 
-			activeShader.enableAttribute("vColor", 4, GL11.GL_FLOAT, 0, offset);
+			activeMaterial.getShader().enableAttribute("vColor", 4, GL11.GL_FLOAT, 0, offset);
 			offset += numVerticies * 4 * SIZE_FLOAT;
 		}
 		if (useNormals) {
@@ -101,7 +101,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 
-			activeShader.enableAttribute("vNormal", 4, GL11.GL_FLOAT, 0, offset);
+			activeMaterial.getShader().enableAttribute("vNormal", 4, GL11.GL_FLOAT, 0, offset);
 			offset += numVerticies * 4 * SIZE_FLOAT;
 		}
 		if (useTextures) {
@@ -112,11 +112,11 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 
-			activeShader.enableAttribute("vTexCoord", 2, GL11.GL_FLOAT, 0, offset);
+			activeMaterial.getShader().enableAttribute("vTexCoord", 2, GL11.GL_FLOAT, 0, offset);
 			offset += numVerticies * 2 * SIZE_FLOAT;
 		}
 
-		activeShader.assign();
+		activeMaterial.assign();
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		GL30.glBindVertexArray(vao);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
 
-		activeShader.assign();
+		activeMaterial.assign();
 		GL11.glDrawArrays(renderMode, 0, numVerticies);
 	}
 }

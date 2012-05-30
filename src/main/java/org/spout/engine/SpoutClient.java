@@ -60,6 +60,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
@@ -87,8 +88,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Parameter(names = "-Rendermode", converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20")
 	RenderMode rmode = RenderMode.GL30;
 	TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
-	Shader shader;
 
+	RenderMaterial material;
+	
+	
+	
+	
 	public static void main(String[] args) {
 		boolean inJar = false;
 
@@ -150,21 +155,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		System.out.println(activeCamera.getProjection());
-		shader = (Shader) FileSystem.getResource("shader://Vanilla/garbageName.ssf");
 		renderer = new PrimitiveBatch();
-		renderer.getRenderer().setShader(shader);
-
+	
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-
+		Spout.log("Loading Texture");
 		texture = (Texture) FileSystem.getResource("texture://Vanilla/resources/terrain.png");
 		texture.load(); //Loads texture to GPU
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		textureTest.setShader(shader);
-
+		Spout.log("Loading Material");
+		material = (RenderMaterial) FileSystem.getResource("material://Spout/fallbacks/test.smt");
+		
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
 		//screenStack = new ScreenStack(new LoadingScreen());
-		bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
+		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
 
 		Matrix view = MathHelper.createLookAt(new Vector3(2, 0, 0), Vector3.ZERO, Vector3.UP);
 
@@ -235,8 +239,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
 
-		renderer.getRenderer().getShader().setUniform("View", view);
-		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
+		//renderer.getRenderer().getShader().setUniform("View", view);
+		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 
 		//renderer.begin();
 		//renderer.addCube(Vector3.ZERO,Vector3.ONE, Color.RED, sides);
@@ -246,11 +250,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//renderer.draw();
 
+	
+		textureTest.begin(material);
 		textureTest.getShader().setUniform("View", activeCamera.getView());
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
 		textureTest.getShader().setUniform("tex", texture);
 
-		textureTest.begin();
+		
 		textureTest.addTexCoord(0, 0);
 		textureTest.addVertex(0, 0);
 		textureTest.addTexCoord(1, 0);
@@ -308,13 +314,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		if (firstSeen) {
 			PrimitiveBatch b = new PrimitiveBatch();
-			b.getRenderer().setShader(shader);
+			//b.getRenderer().setShader(shader);
 			chunkRenderers.put(snap.getX(), snap.getY(), snap.getZ(), b);
 			Spout.log("Got a new chunk at " + snap.toString());
 		}
 
 		PrimitiveBatch batch = chunkRenderers.get(snap.getX(), snap.getY(), snap.getZ());
-		batch.begin();
+		//batch.begin();
 		for (int x = 0; x < ChunkSnapshot.CHUNK_SIZE; x++) {
 			for (int y = 0; y < ChunkSnapshot.CHUNK_SIZE; y++) {
 				for (int z = 0; z < ChunkSnapshot.CHUNK_SIZE; z++) {

@@ -39,12 +39,13 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	protected void doFlush() {
-		if (!(activeShader instanceof BasicShader)) {
+		//TODO: Use fallback material modes for this
+		if (!(activeMaterial.getShader() instanceof BasicShader)) {
 			throw new IllegalStateException("Need Basic Shader in 1.1 mode");
 		}
 
 		GL11.glNewList(displayList, GL11.GL_COMPILE);
-		((BasicShader) activeShader).assign(true);
+		((BasicShader) activeMaterial.getShader()).assign(true);
 		GL11.glPushMatrix();
 		GL11.glBegin(renderMode);
 		for (int i = 0; i < numVerticies; i += 1) {

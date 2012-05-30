@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.ModelFace;
 import org.spout.api.model.PositionNormalTexture;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 
 import org.spout.engine.mesh.BaseMesh;
@@ -25,9 +26,9 @@ public class PrimitiveBatch {
 		return renderer;
 	}
 
-	public void begin() {
+	public void begin(RenderMaterial material) {
 		renderer.enableColors();
-		renderer.begin();
+		renderer.begin(material);
 	}
 
 	public void addCube(Vector3 location, Vector3 scale, Color c, boolean[] sides) {

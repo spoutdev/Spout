@@ -4,17 +4,20 @@ import java.awt.Color;
 import java.util.Map;
 import java.util.Set;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 import org.spout.api.resource.Resource;
 
-public class RenderMaterial extends Resource {
+public class ClientRenderMaterial extends Resource implements RenderMaterial {
 	Shader shader;
 	Map<String, Object> materialParameters;
 	
-	public RenderMaterial(Shader s, Map<String, Object> params){
+	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this.shader = s;
 		this.materialParameters = params;
 	}
@@ -41,11 +44,23 @@ public class RenderMaterial extends Resource {
 				shader.setUniform(entry.getKey(), (Color)entry.getValue());
 			}
 		}
-
+		//TODO: make view and projection dependent on Material params
+		shader.setUniform("View", ((Client)Spout.getEngine()).getActiveCamera().getView());
+		shader.setUniform("Projection", ((Client)Spout.getEngine()).getActiveCamera().getProjection());
+		
 		shader.assign();
 
 	}
+
+	@Override
+	public Object getValue(String name) {
+		return materialParameters.get(name);
+	}
 	
+	@Override
+	public Shader getShader(){
+		return shader;
+	}
 	
 	
 }

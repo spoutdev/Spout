@@ -39,7 +39,9 @@ import org.spout.api.resource.ResourcePathResolver;
 
 import org.spout.engine.filesystem.path.FilepathResolver;
 import org.spout.engine.filesystem.path.JarfileResolver;
+import org.spout.engine.resources.loader.FontLoader;
 import org.spout.engine.resources.loader.MeshLoader;
+import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
 import org.spout.engine.resources.loader.TextureLoader;
 
@@ -92,6 +94,8 @@ public class FileSystem {
 		registerLoader("texture", new TextureLoader());
 		registerLoader("shader", new ShaderLoader());
 		registerLoader("mesh", new MeshLoader());
+		registerLoader("material", new RenderMaterialLoader());
+		//registerLoader("font", new FontLoader());
 	}
 
 	public static void postStartup() {

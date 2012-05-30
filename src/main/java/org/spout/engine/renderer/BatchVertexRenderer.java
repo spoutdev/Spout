@@ -35,6 +35,7 @@ import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
@@ -72,7 +73,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	boolean useColors = false;
 	boolean useNormals = false;
 	boolean useTextures = false;
-	Shader activeShader = null;
+	RenderMaterial activeMaterial = null;
 
 	public BatchVertexRenderer(int mode) {
 		renderMode = mode;
@@ -86,7 +87,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 			 * @see org.spout.client.renderer.Renderer#begin()
 			 */
 	@Override
-	public void begin() {
+	public void begin(RenderMaterial material) {
 		if (batching) {
 			throw new IllegalStateException("Already Batching!");
 		}
@@ -98,6 +99,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 		uvBuffer.clear();
 
 		numVerticies = 0;
+		
+		this.activeMaterial = material;
 	}
 
 	/* (non-Javadoc)
@@ -335,26 +338,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 		addTexCoord(uv.getX(), uv.getY());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#setShader(org.spout.client.renderer.shader.Shader)
-		 */
-	@Override
-	public void setShader(Shader shader) {
-		if (shader == null) {
-			try {
-				activeShader = new EmptyShader();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			activeShader = shader;
-		}
-	}
 
 	@Override
 	public Shader getShader() {
-		return activeShader;
+		return activeMaterial.getShader();
 	}
 
 	/* (non-Javadoc)
