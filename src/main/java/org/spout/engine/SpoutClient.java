@@ -166,7 +166,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-		texture = (Texture) FileSystem.getResource("texture://Vanilla/res/terrain.png");
+		texture = (Texture) FileSystem.getResource("texture://Vanilla/resources/terrain.png");
 		texture.load(); //Loads texture to GPU
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		textureTest.setShader(shader);
