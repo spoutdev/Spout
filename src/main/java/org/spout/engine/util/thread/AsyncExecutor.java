@@ -94,7 +94,7 @@ public interface AsyncExecutor {
 	 * The first stage in a tick is stage zero
 	 * @param stage the stage number for the tick
 	 * @param delta the time since the last tick in ms (only relevant for stage
-	 * 0)
+	 *              0)
 	 * @return false if the executor was active
 	 */
 	public boolean startTick(int stage, long delta);
@@ -125,7 +125,7 @@ public interface AsyncExecutor {
 	 * Puts the current thread to sleep until the current pulse operation has
 	 * completed
 	 * @param millis the time in milliseconds to wait before throwing a
-	 * TimeoutException
+	 *               TimeoutException
 	 */
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException;
 

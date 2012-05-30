@@ -28,8 +28,8 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.Collection;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -39,7 +39,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -79,7 +78,6 @@ import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -151,20 +149,25 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * The async thread which handles the calculation of block and sky lighting in the world
 	 */
 	private final SpoutWorldLighting lightingManager;
+
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
+	
 	private final SpoutTaskManager taskManager;
+	
 	/**
 	 * Hashcode cache
 	 */
 	private final int hashcode;
+	
 	/**
 	 * Data map and Datatable associated with it
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
+	
 	/**
 	 * String item map, used to convert local id's to the server id
 	 */
@@ -190,12 +193,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-
+		
 		if (extraData != null) {
 			this.datatableMap = extraData;
 		} else {
-			this.datatableMap = new GenericDatatableMap();
-			;
+			this.datatableMap = new GenericDatatableMap();;
 		}
 		this.dataMap = new DataMap(this.datatableMap);
 
@@ -205,11 +207,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 		this.lightingManager.start();
 
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
-
+		
 		AsyncExecutor e = getExecutor();
 		Thread t = null;
 		if (e instanceof Thread) {
-			t = (Thread) e;
+			t = (Thread)e;
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
@@ -371,7 +373,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		int z = MathHelper.floor(position.getZ());
 		return this.getChunkFromBlock(x, y, z, loadopt);
 	}
-
+	
 	@Override
 	public Biome getBiomeType(int x, int y, int z) {
 		if (y < 0 || y > getHeight()) {
@@ -519,7 +521,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
 	}
-
+	
 	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits) {
 		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits);
@@ -647,7 +649,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		//TODO: colliding entities
 		return colliding;
 	}
-
+	
 	@Override
 	public int getSurfaceHeight(int x, int z, boolean load) {
 		SpoutColumn column = getColumn(x, z, load);
@@ -665,6 +667,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Removes a column corresponding to the given Column coordinates
+	 * 
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
@@ -675,6 +678,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
+	 * 
 	 * @param x the x block coordinate
 	 * @param z the z block coordinate
 	 * @param create true to create the column if it doesn't exist
@@ -738,11 +742,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 		return baa.getBlockOutputStream(key);
 	}
-
+	
 	@Override
 	public Entity getEntity(UUID uid) {
 		for (Region region : regions) {
-			for (Entity e : region.getAll()) {
+			for (Entity e :region.getAll()) {
 				if (e.getUID().equals(uid)) {
 					return e;
 				}
@@ -755,7 +759,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public String toString() {
 		return toString(this.name, this.uid, this.getAge());
 	}
-
+	
 	private static String toString(String name, UUID uid, long age) {
 		return "SpoutWorld{ " + name + " UUID: " + uid + " Age: " + age + "}";
 	}
@@ -777,7 +781,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 			r.unload(save);
 			progress++;
 			if (save && progress % 4 == 0) {
-				Spout.getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");
+				Spout.getLogger().info("Saving world [" + getName() + "], " + (int)(progress * 100F / total) + "% Complete");
 			}
 		}
 	}
@@ -845,7 +849,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
 	}
-
+	
 	public StringMap getItemMap() {
 		return itemMap;
 	}
@@ -862,6 +866,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
+	 * 
 	 * @param position of the center
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -874,6 +879,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
+	 * 
 	 * @param entity marking the center and which is ignored
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -887,6 +893,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * Gets a set of nearby players to the point, inside of the range.
 	 * The search will ignore the specified entity.
+	 * 
 	 * @param position of the center
 	 * @param ignore Entity to ignore
 	 * @param range to look for
@@ -897,7 +904,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
 		Set<Player> foundPlayers = new HashSet<Player>();
 		final int RANGE_SQUARED = range * range;
-
+		
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr.getEntity() != ignore && plr.getEntity() != null) {
 				double distance = MathHelper.distanceSquared(position, plr.getEntity().getPosition());
@@ -912,6 +919,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Finds all the players inside of the regions inside the range area
+	 * 
 	 * @param position to search from
 	 * @param range to search for regions
 	 * @return nearby region's players
@@ -964,6 +972,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
+	 * 
 	 * @param entity to search from
 	 * @param entity to ignore while searching
 	 * @param range to search
@@ -977,6 +986,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
+	 * 
 	 * @param entity to search from
 	 * @param range to search
 	 * @return nearest player
@@ -998,17 +1008,18 @@ public final class SpoutWorld extends AsyncManager implements World {
 		if (event.isCancelled()) {
 			return false;
 		}
-
+		
 		Chunk start = getChunkFromBlock(buffer.getBase());
 		Chunk end = getChunkFromBlock(buffer.getBase().add(buffer.getSize()));
 		for (int dx = start.getX(); dx < end.getX(); dx++) {
 			for (int dy = start.getY(); dy < end.getY(); dy++) {
 				for (int dz = start.getZ(); dz < end.getZ(); dz++) {
 					Chunk chunk = getChunk(dx, dy, dz);
-					((SpoutChunk) chunk).setCuboid(buffer);
+					((SpoutChunk)chunk).setCuboid(buffer);
 				}
 			}
 		}
 		return true;
 	}
+
 }

@@ -41,6 +41,9 @@ import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutServer;
 
+/**
+ * Commands related to server administration
+ */
 public class AdministrationCommands {
 	private final SpoutServer server;
 

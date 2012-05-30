@@ -317,4 +317,5 @@ public class SpoutPlayer implements Player {
 	public PlayerInputState input() {
 		return inputState;
 	}
+
 }

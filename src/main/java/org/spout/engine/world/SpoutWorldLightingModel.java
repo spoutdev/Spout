@@ -25,15 +25,15 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.iterator.TLongIterator;
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
-
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.util.hashing.Int21TripleHashed;
 import org.spout.api.util.set.TInt21TripleHashSet;
+
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TLongArrayList;
 
 /**
  * This model can store a diamond-shaped model of blocks to perform lighting on.<br>
@@ -48,6 +48,7 @@ public class SpoutWorldLightingModel {
 	private final SpoutWorldLighting instance;
 	private final TLongList updates = new TLongArrayList();
 	private final boolean sky;
+
 	/**
 	 * The maximum amount of resolves performed per operation per tick
 	 */
@@ -254,7 +255,7 @@ public class SpoutWorldLightingModel {
 		public void loadLight() {
 			this.light = this.chunk.getBlockSkyLight(x, y, z);
 		}
-
+		
 		@Override
 		public void setLight(byte light) {
 			if (this.light != 15) {
@@ -334,7 +335,7 @@ public class SpoutWorldLightingModel {
 				this.loadLight();
 			}
 		}
-
+		
 		public abstract void loadLight();
 
 		public abstract void setLight(byte light);

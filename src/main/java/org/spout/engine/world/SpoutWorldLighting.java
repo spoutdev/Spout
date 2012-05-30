@@ -26,10 +26,10 @@
 package org.spout.engine.world;
 
 import org.spout.api.Source;
-
 import org.spout.engine.SpoutConfiguration;
 
 public class SpoutWorldLighting extends Thread implements Source {
+
 	public final SpoutWorldLightingModel skyLight;
 	public final SpoutWorldLightingModel blockLight;
 	private final SpoutWorld world;
@@ -64,8 +64,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 
 			try {
 				Thread.sleep(50);
-			} catch (InterruptedException ex) {
-			}
+			} catch (InterruptedException ex) {}
 		}
 	}
 }

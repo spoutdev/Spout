@@ -117,7 +117,7 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Creates a new session.
-	 * @param server The server this session belongs to.
+	 * @param server  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
 	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol) {
@@ -159,7 +159,7 @@ public final class SpoutSession implements Session {
 	 * Sets the player associated with this session.
 	 * @param player The new player.
 	 * @throws IllegalStateException if there is already a player associated
-	 * with this session.
+	 *                               with this session.
 	 */
 	public void setPlayer(SpoutPlayer player) {
 		if (this.player != null) {
@@ -201,7 +201,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * Sends a message to the client.
 	 * @param message The message.
-	 * @param force if this message is used in the identification stages of communication
+	 * @param force   if this message is used in the identification stages of communication
 	 */
 	@Override
 	public void send(Message message, boolean force) {
@@ -289,7 +289,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * Adds a message to the unprocessed queue.
 	 * @param message The message.
-	 * @param <T> The type of message.
+	 * @param <T>     The type of message.
 	 */
 	@Override
 	public <T extends Message> void messageReceived(T message) {

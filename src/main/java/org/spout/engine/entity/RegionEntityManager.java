@@ -27,28 +27,27 @@ package org.spout.engine.entity;
 
 import org.spout.engine.world.SpoutRegion;
 
-public final class RegionEntityManager extends EntityManager {
+public final class RegionEntityManager extends EntityManager{
 	private final SpoutRegion region;
-
 	public RegionEntityManager(SpoutRegion region) {
 		super();
-		if (region == null) {
-			throw new NullPointerException("Region can not be null!");
-		}
+		if (region == null) throw new NullPointerException("Region can not be null!");
 		this.region = region;
 	}
-
+	
 	@Override
 	public int allocate(SpoutEntity entity) {
 		return allocate(entity, region);
 	}
-
+	
 	/**
 	 * The region this entity manager oversees
+	 * 
 	 * @return region
 	 */
 	@Override
 	public final SpoutRegion getRegion() {
 		return region;
 	}
+
 }

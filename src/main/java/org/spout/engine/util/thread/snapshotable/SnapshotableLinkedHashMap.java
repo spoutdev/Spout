@@ -62,7 +62,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map
-	 * @param key the key
+	 * @param key   the key
 	 * @param value the value
 	 * @return the old value
 	 */
@@ -76,7 +76,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map, if no value exists for the key
-	 * @param key the key
+	 * @param key   the key
 	 * @param value the value
 	 * @return the old value
 	 */
@@ -107,7 +107,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
-	 * @param key the key
+	 * @param key   the key
 	 * @param value the value
 	 * @return true if the key/value pair was removed
 	 */

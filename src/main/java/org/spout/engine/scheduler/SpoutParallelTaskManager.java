@@ -19,19 +19,26 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.map.concurrent.TSyncIntObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncIntObjectMap;
-
 import org.spout.engine.scheduler.parallel.ParallelTaskInfo;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutParallelTaskManager implements TaskManager {
+	
 	private final Engine engine;
+	
 	private final Collection<World> world;
+	
 	private final AtomicLong upTime;
+	
 	private long lastPrune = 0;
+	
 	private final TSyncIntObjectMap<ParallelTaskInfo> activeTasks = new TSyncIntObjectHashMap<ParallelTaskInfo>();
+	
 	private final ConcurrentLinkedQueue<SpoutRegion> newRegions = new ConcurrentLinkedQueue<SpoutRegion>();
+
 	private final ConcurrentLinkedQueue<SpoutTask> newTasks = new ConcurrentLinkedQueue<SpoutTask>();
+	
 	private final Scheduler scheduler;
 
 	public SpoutParallelTaskManager(Engine engine) {
@@ -43,10 +50,10 @@ public class SpoutParallelTaskManager implements TaskManager {
 		this.world = null;
 		this.scheduler = engine.getScheduler();
 	}
-
+	
 	public SpoutParallelTaskManager(Scheduler scheduler, SpoutWorld w) {
 		if (w == null) {
-			throw new IllegalArgumentException("World cannot be set to null");
+			throw new IllegalArgumentException("World cannot be set to null");	
 		}
 		upTime = new AtomicLong(0);
 		this.engine = null;
@@ -59,12 +66,12 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleSyncDelayedTask(plugin, task, TaskPriority.CRITICAL);
 	}
-
+	
 	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
 		return scheduleSyncDelayedTask(plugin, task, 0, priority);
 	}
-
+	
 	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
@@ -89,12 +96,12 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
-
+	
 	@Override
 	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
+	
 	public void heartbeat(long delta) {
 		if (engine != null) {
 			TickStage.checkStage(TickStage.TICKSTART);
@@ -127,9 +134,9 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 			Collection<World> worlds = (this.world == null) ? engine.getWorlds() : world;
 			for (World w : worlds) {
-				SpoutWorld sw = (SpoutWorld) w;
+				SpoutWorld sw = (SpoutWorld)w;
 				for (Region r : sw.getRegions()) {
-					info.add((SpoutRegion) r);
+					info.add((SpoutRegion)r);
 				}
 			}
 		}
@@ -139,7 +146,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 		}
 	}
-
+	
 	protected int schedule(SpoutTask task) {
 		ParallelTaskInfo info = new ParallelTaskInfo(task);
 		if (task.getPeriod() > 0) {
@@ -148,7 +155,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 		newTasks.add(task);
 		return task.getTaskId();
 	}
-
+	
 	public void registerRegion(SpoutRegion r) {
 		newRegions.add(r);
 	}
@@ -174,7 +181,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 		}
 	}
-
+	
 	@Override
 	public void cancelAllTasks() {
 		int[] keys = activeTasks.keys();
@@ -196,9 +203,10 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public List<Task> getPendingTasks() {
 		throw new UnsupportedOperationException("The operation is not supported");
 	}
-
+	
 	@Override
 	public long getUpTime() {
 		return upTime.get();
 	}
+	
 }

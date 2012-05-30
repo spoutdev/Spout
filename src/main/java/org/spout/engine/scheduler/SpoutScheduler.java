@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
-
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
@@ -46,7 +45,6 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
@@ -137,7 +135,7 @@ public final class SpoutScheduler implements Scheduler {
 
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
-
+		
 		taskManager = new SpoutTaskManager(this, true, mainThread);
 	}
 
@@ -153,9 +151,9 @@ public final class SpoutScheduler implements Scheduler {
 			int rate = (int) ((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
 			while (!shutdown) {
-				if (Display.isCloseRequested()) {
+				if(Display.isCloseRequested()){
 					c.stop();
-					break;
+					break;	
 				}
 				long startTime = System.currentTimeMillis();
 				long delta = startTime - lastTick;
@@ -170,7 +168,9 @@ public final class SpoutScheduler implements Scheduler {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
 				}
+				
 			}
+			
 		}
 	}
 
@@ -212,7 +212,7 @@ public final class SpoutScheduler implements Scheduler {
 					heavyLoad.set(true);
 				}
 			}
-
+			
 			heavyLoad.set(false);
 
 			asyncExecutors.copySnapshot();
@@ -294,16 +294,17 @@ public final class SpoutScheduler implements Scheduler {
 	public void stop() {
 		stop(0);
 	}
-
+	
 	/**
 	 * Stops the scheduler and waits for all tasks to complete
+	 * 
 	 * @param timeout the time in ms, after the main thread completes, to wait for all the tasks to stop
 	 */
 	public void stop(long timeout) {
 		shutdown = true;
 		try {
 			mainThread.join(timeout);
-			if (renderThread != null) {
+			if(renderThread != null){
 				renderThread.join(timeout);
 			}
 		} catch (InterruptedException e) {
@@ -322,7 +323,7 @@ public final class SpoutScheduler implements Scheduler {
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
-
+		
 		Runnable r;
 		while ((r = coreTaskQueue.poll()) != null) {
 			try {
@@ -332,11 +333,11 @@ public final class SpoutScheduler implements Scheduler {
 				e.printStackTrace();
 			}
 		}
-
+		
 		taskManager.heartbeat(delta);
-
+		
 		if (parallelTaskManager == null) {
-			parallelTaskManager = ((SpoutParallelTaskManager) engine.getParallelTaskManager());
+			parallelTaskManager = ((SpoutParallelTaskManager)engine.getParallelTaskManager());
 		}
 		parallelTaskManager.heartbeat(delta);
 
@@ -375,17 +376,17 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
 						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 						AsyncExecutorUtils.checkForDeadlocks();
 						for (AsyncExecutor executor : executors) {
 							if (!executor.isPulseFinished()) {
 								if (executor.getManager() instanceof SpoutRegionManager) {
-									SpoutRegionManager m = (SpoutRegionManager) executor.getManager();
+									SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
 									engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
 								} else if (executor.getManager() instanceof SpoutWorld) {
-									SpoutWorld w = (SpoutWorld) executor.getManager();
+									SpoutWorld w = (SpoutWorld)executor.getManager();
 									engine.getLogger().info("World has not completed pulse " + w);
 								} else {
 									engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
@@ -417,7 +418,7 @@ public final class SpoutScheduler implements Scheduler {
 				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 				joined = true;
 			} catch (TimeoutException e) {
-				if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
+				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
 					engine.getLogger().info("Copy Snapshot had not completed after " + (PULSE_EVERY << 4) + "ms");
 					AsyncExecutorUtils.dumpAllStacks();
 					AsyncExecutorUtils.checkForDeadlocks();
@@ -441,7 +442,7 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
 						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 					}
@@ -462,7 +463,7 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
 						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
 						AsyncExecutorUtils.dumpAllStacks();
 					}
@@ -503,7 +504,7 @@ public final class SpoutScheduler implements Scheduler {
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task);
 	}
-
+	
 	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task, delay, priority);
@@ -563,7 +564,7 @@ public final class SpoutScheduler implements Scheduler {
 	public List<Task> getPendingTasks() {
 		return taskManager.getPendingTasks();
 	}
-
+	
 	@Override
 	public long getUpTime() {
 		return taskManager.getUpTime();
@@ -587,7 +588,7 @@ public final class SpoutScheduler implements Scheduler {
 	public long getRemainingTickTime() {
 		return PULSE_EVERY - getTickTime();
 	}
-
+	
 	@Override
 	public boolean isServerLoaded() {
 		if (heavyLoad.get()) {
@@ -601,13 +602,14 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-
+	
 	/**
 	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br>
 	 * <br>
 	 * Tasks are executed in the order that they are received.<br>
 	 * <br>
 	 * It is used for region unloading and multi-region dynamic block updates
+	 * 
 	 * @param r
 	 */
 	public void scheduleCoreTask(Runnable r) {

@@ -39,6 +39,7 @@ public class TripleInt {
 	public final int x;
 	public final int y;
 	public final int z;
+	
 	/**
 	 * Hashcode caching
 	 */

@@ -49,6 +49,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The mask that should be applied to the x, y and z coords
 	 */
 	private final int coordMask;
+	
 	private final Set<WeakReference<Entity>> entities;
 	private final short[] blockIds;
 	private final short[] blockData;
@@ -157,13 +158,14 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		return skyLight;
 	}
 
-	public boolean isRenderDirty() {
+	public boolean isRenderDirty(){
 		return renderDirty;
 	}
 
-	public void setRenderDirty(boolean val) {
+	public void setRenderDirty(boolean val){
 		renderDirty = false;
 	}
+
 
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
