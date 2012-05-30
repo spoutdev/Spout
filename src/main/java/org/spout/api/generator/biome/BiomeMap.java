@@ -64,18 +64,18 @@ public final class BiomeMap {
 	public Biome getBiome(Vector3 position, long seed) {
 		return getBiome((int)position.getX(), (int)position.getY(), (int)position.getZ(), seed);
 	}
-	
+
 	public Biome getBiome(int x, int y, int z, long seed) {
 		if(selector == null) {
 			throw new IllegalStateException("Biome Selector is null and cannot set a selector");
 		}
 		return selector.pickBiome(x, y, z, seed);
 	}
-	
+
 	public Set<Biome> getBiomes() {
-		return new HashSet<Biome> (map.getValues());
+		return new HashSet<Biome>(map.getValues());
 	}
-	
+
 	public int indexOf(Biome biome) {
 		if(map.reverseGet(biome) != null) {
 			return map.reverseGet(biome);
