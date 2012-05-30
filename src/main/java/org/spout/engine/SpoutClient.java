@@ -154,23 +154,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 		FileSystem.postStartup();
 
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
-		System.out.println(activeCamera.getProjection());
 		renderer = new PrimitiveBatch();
 	
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		Spout.log("Loading Texture");
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		Spout.log("Loading Material");
-		material = (RenderMaterial) FileSystem.getResource("material://Spout/resources/materials/GUIMaterial.smt");
+		material = (RenderMaterial) FileSystem.getResource("material://Vanilla/resources/materials/terrain.smt");
 		
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
 		//screenStack = new ScreenStack(new LoadingScreen());
 		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
 
-		Matrix view = MathHelper.createLookAt(new Vector3(2, 0, 0), Vector3.ZERO, Vector3.UP);
+	
 
-		System.out.println(view);
+
 	}
 
 	BaseMesh bunny;
