@@ -14,7 +14,9 @@ public class ClientTexture extends Texture {
 	public ClientTexture(BufferedImage baseImage) {
 		super(baseImage);
 	}
-
+	protected ClientTexture(){
+		super(null);		
+	}
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
 		return new ClientTexture(image.getSubimage(x, y, w, h));
@@ -98,7 +100,7 @@ public class ClientTexture extends Texture {
 		//	GL30.glGenerateMipmap(textureID);
 		//}
 
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, height, width, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 
 		//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 	}
