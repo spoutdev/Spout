@@ -1,21 +1,20 @@
 package org.spout.engine.scheduler.parallel;
 
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 
 import org.spout.engine.world.SpoutRegion;
 
 public class RegionIdPair {
 	private final int taskId;
-	private final WeakReference<SpoutRegion> region;
+	private final SpoutRegion region;
 	
-	public RegionIdPair(int id, SpoutRegion r, ReferenceQueue<SpoutRegion> q) {
+	public RegionIdPair(int id, SpoutRegion r) {
 		this.taskId = id;
-		this.region = new MarkedWeakReference<SpoutRegion, RegionIdPair>(r, this, q);
+		this.region = r;
 	}
 	
 	public final SpoutRegion getRegion() {
-		return region.get();
+		return region;
 	}
 	
 	public final int getTaskId() {

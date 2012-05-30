@@ -31,12 +31,12 @@ public class SpoutParallelTaskManager implements TaskManager {
 	
 	private final AtomicLong upTime;
 	
-	private long lastPrune = 0;
-	
 	private final TSyncIntObjectMap<ParallelTaskInfo> activeTasks = new TSyncIntObjectHashMap<ParallelTaskInfo>();
 	
 	private final ConcurrentLinkedQueue<SpoutRegion> newRegions = new ConcurrentLinkedQueue<SpoutRegion>();
 
+	private final ConcurrentLinkedQueue<SpoutRegion> deadRegions = new ConcurrentLinkedQueue<SpoutRegion>();
+	
 	private final ConcurrentLinkedQueue<SpoutTask> newTasks = new ConcurrentLinkedQueue<SpoutTask>();
 	
 	private final Scheduler scheduler;
@@ -108,17 +108,6 @@ public class SpoutParallelTaskManager implements TaskManager {
 		} else {
 			TickStage.checkStage(TickStage.STAGE1);
 		}
-		long upTime = this.upTime.getAndAdd(delta);
-		if (upTime - lastPrune > 1000) {
-			lastPrune = upTime;
-			int[] keys = activeTasks.keys();
-			for (int key : keys) {
-				ParallelTaskInfo info = activeTasks.get(key);
-				if (info != null) {
-					info.prune();
-				}
-			}
-		}
 		SpoutRegion region;
 		SpoutTask task;
 		while ((task = newTasks.poll()) != null) {
@@ -145,6 +134,14 @@ public class SpoutParallelTaskManager implements TaskManager {
 				info.add(region);
 			}
 		}
+		while ((region = deadRegions.poll()) != null) {
+			while (newRegions.remove(region))
+				;
+			for (ParallelTaskInfo info : activeTasks.values(ParallelTaskInfo.EMPTY_ARRAY)) {
+				while (info.remove(region))
+					;
+			}
+		}
 	}
 	
 	protected int schedule(SpoutTask task) {
@@ -158,6 +155,11 @@ public class SpoutParallelTaskManager implements TaskManager {
 	
 	public void registerRegion(SpoutRegion r) {
 		newRegions.add(r);
+	}
+	
+	public void unRegisterRegion(SpoutRegion r) {
+		TickStage.checkStage(TickStage.TICKSTART);
+		deadRegions.add(r);
 	}
 
 	@Override

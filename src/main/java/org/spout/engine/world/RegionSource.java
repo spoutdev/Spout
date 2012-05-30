@@ -102,6 +102,14 @@ public class RegionSource implements Iterable<Region> {
 				boolean success = loadedRegions.remove(x, y, z, r);
 				if (success) {
 					r.getManager().getExecutor().haltExecutor();
+					
+					TaskManager tm = Spout.getEngine().getParallelTaskManager();
+					SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+					ptm.unRegisterRegion(r);
+					
+					TaskManager tmWorld = world.getParallelTaskManager();
+					SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+					ptmWorld.unRegisterRegion(r);
 
 					Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
 				}
