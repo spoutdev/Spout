@@ -35,9 +35,6 @@ import org.spout.api.player.Player;
 
 import org.spout.engine.SpoutServer;
 
-/**
- * @author zml2008
- */
 public class MessagingCommands {
 	private final SpoutServer server;
 

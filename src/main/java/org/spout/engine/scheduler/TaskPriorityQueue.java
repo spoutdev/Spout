@@ -5,34 +5,30 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
-
 	private static final long serialVersionUID = 1L;
-	
 	private final Thread taskThread;
 
 	public TaskPriorityQueue() {
 		this(Thread.currentThread());
 	}
-	
+
 	public TaskPriorityQueue(Thread t) {
 		super(20, new Comparator<SpoutTask>() {
 			@Override
 			public int compare(SpoutTask task1, SpoutTask task2) {
 				long diff = task1.getNextCallTime() - task2.getNextCallTime();
 				return diff < 0 ? -1 :
-					   diff > 0 ? +1 :
-						           0;
+						diff > 0 ? +1 :
+								0;
 			}
-			
 		});
 		taskThread = t;
 	}
-	
+
 	/**
 	 * Gets the first pending task on the queue.  A task is considered pending if its next call time is less than or equal to the given current time.<br>
 	 * <br>
-	 * NOTE: This method should only be called from a single thread.  
-	 * 
+	 * NOTE: This method should only be called from a single thread.
 	 * @param currentTime the current time
 	 * @return the first pending task, or null if no task is pending
 	 */
@@ -53,10 +49,9 @@ public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Indicates if there are any pending tasks on the queue.  A task is considered pending if its next call time is less than or equal to the given current time.<br>
-	 * 
 	 * @param currentTime the current time
 	 * @return true if there are any pending tasks
 	 */
@@ -68,7 +63,7 @@ public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 			return true;
 		}
 	}
-	
+
 	@Override
 	public boolean add(SpoutTask task) {
 		if (task != null) {
@@ -76,7 +71,7 @@ public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 		}
 		return super.add(task);
 	}
-	
+
 	@Override
 	public SpoutTask poll() {
 		SpoutTask task = super.poll();
@@ -85,24 +80,24 @@ public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
 		}
 		return task;
 	}
-	
+
 	@Override
 	public boolean remove(Object task) {
 		if (super.remove(task)) {
 			if (task instanceof SpoutTask) {
-				((SpoutTask)task).unlockNextCallTime();
+				((SpoutTask) task).unlockNextCallTime();
 			}
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException("Not supported");
 	}
-	
+
 	@Override
 	public String toString() {
 		Iterator<SpoutTask> i = iterator();

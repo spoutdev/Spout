@@ -71,10 +71,9 @@ public class PrimitiveBatch {
 		renderer.addVertex(d);
 	}
 
-	
-	public void addMesh(BaseMesh mesh){
-		for(ModelFace face : mesh){
-			for(PositionNormalTexture vert : face){
+	public void addMesh(BaseMesh mesh) {
+		for (ModelFace face : mesh) {
+			for (PositionNormalTexture vert : face) {
 				//renderer.addTexCoord(vert.uv);
 				//renderer.addNormal(vert.normal);
 				renderer.addColor(Color.red);
@@ -82,7 +81,7 @@ public class PrimitiveBatch {
 			}
 		}
 	}
-	
+
 	public void end() {
 		renderer.end();
 	}

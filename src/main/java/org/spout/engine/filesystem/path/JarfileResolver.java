@@ -35,34 +35,34 @@ import java.util.jar.JarFile;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.resource.ResourcePathResolver;
+
 import org.spout.engine.filesystem.FileSystem;
 
-public class JarfileResolver implements ResourcePathResolver{
+public class JarfileResolver implements ResourcePathResolver {
 	public JarfileResolver() {
-		
+
 	}
 
 	File pluginsFolder = FileSystem.PLUGIN_DIRECTORY;
 
-	
-	
-	
-	private JarFile getJar(String path) throws IOException{
+	private JarFile getJar(String path) throws IOException {
 		Plugin p = Spout.getEngine().getPluginManager().getPlugin(path);
 		System.out.println("path: " + path);
-		if(p == null) return null;
+		if (p == null) {
+			return null;
+		}
 		System.out.println(p.getName());
 		return new JarFile(p.getFile());
 	}
-	
+
 	@Override
 	public boolean existsInPath(String file, String path) {
 		boolean has = false;
 		JarFile f = null;
 		try {
-			
+
 			f = getJar(path);
-			if(f == null) {
+			if (f == null) {
 				Spout.log("Tried to get file " + file + " from plugin " + path + " but it isn't loaded!");
 				return false; //If the plugin doesn't exist, we don't have the file
 			}

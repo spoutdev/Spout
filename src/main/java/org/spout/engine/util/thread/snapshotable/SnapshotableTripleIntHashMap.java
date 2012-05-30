@@ -64,9 +64,9 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Adds an object to the map
-	 * @param x     x coordinate
-	 * @param y     y coordinate
-	 * @param z     z coordinate
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param z z coordinate
 	 * @param value the value
 	 * @return the previous value
 	 */
@@ -81,9 +81,9 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Adds an object to the map, if not already present
-	 * @param x     x coordinate
-	 * @param y     y coordinate
-	 * @param z     z coordinate
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param z z coordinate
 	 * @param value the value
 	 * @return the current value, or null on success
 	 */
@@ -127,9 +127,9 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	 * <p/>
 	 * This method will have no effect if the key does not map to the given
 	 * value when the removal is attempted
-	 * @param x     x coordinate
-	 * @param y     y coordinate
-	 * @param z     z coordinate
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param z z coordinate
 	 * @param value the value
 	 * @return true if the value was removed
 	 */

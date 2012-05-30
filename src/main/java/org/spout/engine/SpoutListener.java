@@ -1,4 +1,3 @@
-
 /*
  * This file is part of Spout (http://www.spout.org/).
  *
@@ -117,5 +116,4 @@ public class SpoutListener implements Listener {
 		}
 		event.getReceivers().put(server.getConsole(), Result.DEFAULT);
 	}
-
 }

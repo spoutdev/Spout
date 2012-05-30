@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.beust.jcommander.JCommander;
+
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -48,11 +50,8 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 
-import com.beust.jcommander.JCommander;
-
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
-
 	private volatile int maxPlayers = 20;
 	/**
 	 * If the server has a whitelist or not.

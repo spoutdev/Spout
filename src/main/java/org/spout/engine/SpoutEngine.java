@@ -45,8 +45,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.beust.jcommander.Parameter;
+
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -92,8 +95,8 @@ import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-import org.spout.api.util.StringMap;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.util.StringMap;
 
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.MessagingCommands;
@@ -117,11 +120,8 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
-import com.beust.jcommander.Parameter;
-
 public class SpoutEngine extends AsyncManager implements Engine {
 	public static final Logger logger = Logger.getLogger("Spout");
-
 	private final String name = "Spout Engine";
 	private final File pluginDirectory = FileSystem.PLUGIN_DIRECTORY;
 	private final File configDirectory = FileSystem.CONFIG_DIRECTORY;
@@ -139,10 +139,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final RootCommand rootCommand = new RootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
-
 	private volatile int maxPlayers = 20;
 	private volatile String[] allAddresses;
-
 	//The network executor service - Netty dispatches events to this thread
 	protected final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutEngine"));
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
@@ -159,8 +157,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-
-	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
+	@Parameter(names = {"-debug", "-d", "--debug", "--d"}, description = "Debug Mode")
 	private boolean debugMode = false;
 
 	public SpoutEngine() {
@@ -458,7 +455,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		SpoutWorld world = WorldFiles.loadWorldData(this, name, generator, engineItemMap);
-		if(world == null) {
+		if (world == null) {
 			Spout.getLogger().info("Generating new world named [" + name + "]");
 
 			File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "materials.dat");
@@ -508,7 +505,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		group.close();
 		bootstrapProtocols.clear();
 		executor.shutdown();
-
 	}
 
 	@Override
@@ -771,7 +767,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	/**
 	 * Gets the item map used across all worlds on the engine
-	 *
 	 * @return engine map
 	 */
 	public StringMap getEngineItemMap() {
@@ -780,7 +775,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	/**
 	 * Gets the biome map used accorss all worlds on the engine
-	 *
 	 * @return biome map
 	 */
 	public StringMap getBiomeMap() {

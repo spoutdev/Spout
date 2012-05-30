@@ -10,24 +10,19 @@ import org.spout.api.render.RenderEffect;
 import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
 
-
 public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 	ArrayList<ModelFace> faces;
 	ArrayList<RenderEffect> effects = new ArrayList<RenderEffect>();
 	boolean dirty = false;
 
-	
-	public BaseMesh(){
+	public BaseMesh() {
 		faces = new ArrayList<ModelFace>();
-		
 	}
-	
-	public BaseMesh(ArrayList<ModelFace> faces){
+
+	public BaseMesh(ArrayList<ModelFace> faces) {
 		this.faces = faces;
 	}
-	
-	
-	
+
 	public void addRenderEffect(RenderEffect effect) {
 		effects.add(effect);
 	}
@@ -54,7 +49,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 
 	protected void batch(Renderer batcher) {
 		for (ModelFace face : faces) {
-			for(PositionNormalTexture vert : face){
+			for (PositionNormalTexture vert : face) {
 				//batcher.addTexCoord(vert.uv);
 				//batcher.addNormal(vert.normal);
 				batcher.addVertex(vert.position);

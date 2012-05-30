@@ -25,8 +25,6 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.iterator.TIntIterator;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,6 +43,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+
+import gnu.trove.iterator.TIntIterator;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -78,6 +78,7 @@ import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -93,7 +94,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
-public class SpoutRegion extends Region{
+public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
@@ -155,21 +156,17 @@ public class SpoutRegion extends Region{
 	 * The chunks that received a lighting change and need an update
 	 */
 	private final TByteTripleHashSet lightDirtyChunks = new TByteTripleHashSet();
-
 	/**
 	 * A queue of chunks that need to be populated
 	 */
 	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
-	
 	private final SpoutTaskManager taskManager;
-	
 	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
 	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
-	
 	private final DynamicBlockUpdateTree dynamicBlockTree = new DynamicBlockUpdateTree(this);
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
-	
+
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, LoadGenerateOption.NO_LOAD);
 	}
@@ -195,7 +192,7 @@ public class SpoutRegion extends Region{
 		Thread t;
 		AsyncExecutor e = manager.getExecutor();
 		if (e instanceof Thread) {
-			t = (Thread)e;
+			t = (Thread) e;
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
@@ -218,7 +215,7 @@ public class SpoutRegion extends Region{
 	public SpoutChunk getChunk(int x, int y, int z, boolean load) {
 		return this.getChunk(x, y, z, load ? LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED : LoadGenerateOption.NO_LOAD);
 	}
-	
+
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadGenerateOption loadopt) {
@@ -287,7 +284,7 @@ public class SpoutRegion extends Region{
 		WorldGenerator generator = getWorld().getGenerator();
 		BiomeManager manager = generator.generate(buffer, cx, cy, cz);
 
-		return new FilteredChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray(), manager, (DataMap)buffer.getDataMap());
+		return new FilteredChunk(getWorld(), this, cx, cy, cz, buffer.getRawArray(), manager, (DataMap) buffer.getDataMap());
 	}
 
 	/**
@@ -311,7 +308,7 @@ public class SpoutRegion extends Region{
 		boolean success = current.compareAndSet(currentChunk, null);
 		if (success) {
 			int num = numberActiveChunks.decrementAndGet();
-			
+
 			for (Entity e : currentChunk.getLiveEntities()) {
 				e.kill();
 			}
@@ -320,9 +317,9 @@ public class SpoutRegion extends Region{
 
 			occupiedChunksQueue.remove(currentChunk);
 			occupiedChunks.remove(currentChunk);
-			
+
 			removeDynamicBlockUpdates(currentChunk);
-			
+
 			if (num == 0) {
 				return true;
 			} else if (num < 0) {
@@ -421,7 +418,7 @@ public class SpoutRegion extends Region{
 		entityManager.copyAllSnapshots();
 
 		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
-		
+
 		while (itr.hasNext()) {
 			// NOTE : This is only called for chunks with contain entities.
 			SpoutChunk c = itr.next();
@@ -429,7 +426,7 @@ public class SpoutRegion extends Region{
 				itr.remove();
 			}
 		}
-		
+
 		snapshotManager.copyAllSnapshots();
 
 		boolean empty = false;
@@ -460,14 +457,13 @@ public class SpoutRegion extends Region{
 			source.removeRegion(this);
 		}
 
-
 		if (multiRegionUpdates != null) {
 			final List<DynamicBlockUpdate> finalMultiRegionUpdates = multiRegionUpdates;
 			final DynamicBlockUpdateTree finalTree = dynamicBlockTree;
 			final long worldAge = getWorld().getAge();
 			multiRegionUpdates = null;
 
-			((SpoutScheduler)Spout.getScheduler()).scheduleCoreTask(new Runnable() {
+			((SpoutScheduler) Spout.getScheduler()).scheduleCoreTask(new Runnable() {
 				@Override
 				public void run() {
 					for (DynamicBlockUpdate dm : finalMultiRegionUpdates) {
@@ -520,7 +516,7 @@ public class SpoutRegion extends Region{
 		if (be == e) {
 			blockEntities.remove(pos);
 		}
-		this.deallocate((SpoutEntity)e);
+		this.deallocate((SpoutEntity) e);
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
@@ -558,7 +554,7 @@ public class SpoutRegion extends Region{
 						}
 					}
 				}
-				
+
 				World world = getWorld();
 				int[] updates;
 				Object[] sources;
@@ -640,23 +636,22 @@ public class SpoutRegion extends Region{
 
 	public void haltRun() throws InterruptedException {
 	}
-	
+
 	private int dx = 0;
 	private int dy = 0;
 
 	public void finalizeRun() throws InterruptedException {
-		
+
 		long worldAge = getWorld().getAge();
 
 		dynamicBlockTree.commitPending(worldAge);
 		multiRegionUpdates = dynamicBlockTree.updateDynamicBlocks(worldAge);
-		
+
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
 		int reaped = 0;
 
-		
 		dy++;
 		if (dy >= Region.REGION_SIZE) {
 			dy = 0;
@@ -686,7 +681,7 @@ public class SpoutRegion extends Region{
 				}
 			}
 		}
-		
+
 		//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
 		entityManager.finalizeRun();
 	}
@@ -713,25 +708,23 @@ public class SpoutRegion extends Region{
 			}
 		}
 	}
-	
+
 	private void processChunkUpdatedEvent(SpoutChunk chunk) {
 		/* If no listeners, quit */
 		if (ChunkUpdatedEvent.getHandlerList().getRegisteredListeners().length == 0) {
 			return;
 		}
 		ChunkUpdatedEvent evt;
-		if (chunk.isDirtyOverflow()) {	/* If overflow, notify for whole chunk */
+		if (chunk.isDirtyOverflow()) {    /* If overflow, notify for whole chunk */
 			evt = new ChunkUpdatedEvent(chunk, null);
-		}
-		else {
+		} else {
 			ArrayList<Vector3> lst = new ArrayList<Vector3>();
 			boolean done = false;
 			for (int i = 0; !done; i++) {
 				Vector3 v = chunk.getDirtyBlock(i);
 				if (v != null) {
 					lst.add(v);
-				}
-				else {
+				} else {
 					done = true;
 				}
 			}
@@ -761,7 +754,7 @@ public class SpoutRegion extends Region{
 							syncChunkToPlayers(spoutChunk, entity);
 						}
 						processChunkUpdatedEvent(spoutChunk);
-						
+
 						spoutChunk.resetDirtyArrays();
 						spoutChunk.setLightDirty(false);
 					}
@@ -772,11 +765,11 @@ public class SpoutRegion extends Region{
 		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 		while (itr.hasNext()) {
 			SpoutChunk c = itr.next();
-			
+
 			int cx = c.getX() & mask;
 			int cy = c.getY() & mask;
 			int cz = c.getZ() & mask;
-			
+
 			if (c == getChunk(cx, cy, cz, false)) {
 				c.syncEntities();
 			} else {
@@ -946,7 +939,7 @@ public class SpoutRegion extends Region{
 	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, source);
 	}
-	
+
 	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits) {
 		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits);
@@ -1074,18 +1067,15 @@ public class SpoutRegion extends Region{
 		}
 		return players;
 	}
-	
+
 	/**
 	 * Test if region file exists
-	 * 
 	 * @param world world
 	 * @param x region x coordinate
 	 * @param y region y coordinate
 	 * @param z region z coordinate
-	 * 
 	 * @return true if exists, false if doesn't exist
 	 */
-	
 	public static boolean regionFileExists(SpoutWorld world, int x, int y, int z) {
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
@@ -1097,11 +1087,11 @@ public class SpoutRegion extends Region{
 	public TaskManager getTaskManager() {
 		return taskManager;
 	}
-	
+
 	public void skipChunk(SpoutChunk chunk) {
 		occupiedChunks.remove(chunk);
 	}
-	
+
 	public void unSkipChunk(SpoutChunk chunk) {
 		occupiedChunks.add(chunk);
 	}
@@ -1110,7 +1100,7 @@ public class SpoutRegion extends Region{
 	public void resetDynamicBlock(int x, int y, int z) {
 		dynamicBlockTree.resetBlockUpdates(x, y, z);
 	}
-	
+
 	public void resetDynamicBlock(Block b) {
 		resetDynamicBlock(b.getX(), b.getY(), b.getZ());
 	}
@@ -1135,7 +1125,7 @@ public class SpoutRegion extends Region{
 		}
 		return list;
 	}
-	
+
 	public boolean removeDynamicBlockUpdates(Chunk c) {
 		boolean removed = dynamicBlockTree.removeDynamicBlockUpdates(c);
 		if (multiRegionUpdates != null) {
@@ -1150,5 +1140,4 @@ public class SpoutRegion extends Region{
 		}
 		return removed;
 	}
-	
 }

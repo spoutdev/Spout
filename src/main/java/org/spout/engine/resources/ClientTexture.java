@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
 import org.spout.api.render.Texture;
 
 public class ClientTexture extends Texture {
@@ -14,9 +15,7 @@ public class ClientTexture extends Texture {
 	public ClientTexture(BufferedImage baseImage) {
 		super(baseImage);
 	}
-	protected ClientTexture(){
-		super(null);		
-	}
+
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
 		return new ClientTexture(image.getSubimage(x, y, w, h));
@@ -69,7 +68,7 @@ public class ClientTexture extends Texture {
 
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_BASE_LEVEL, 0);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);
-		
+
 		//Bilinear Filter the closest mipmap
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
@@ -100,7 +99,7 @@ public class ClientTexture extends Texture {
 		//	GL30.glGenerateMipmap(textureID);
 		//}
 
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, height, width, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 
 		//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 	}

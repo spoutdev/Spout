@@ -50,11 +50,11 @@ public class SpoutWorker implements Worker, Runnable {
 		}, name);
 		this.taskManager = taskManager;
 	}
-	
+
 	public void start() {
 		thread.start();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return id;
