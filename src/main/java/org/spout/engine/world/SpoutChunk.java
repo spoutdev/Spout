@@ -223,7 +223,7 @@ public class SpoutChunk extends Chunk {
 		z &= BASE_MASK;
 
 		checkChunkLoaded();
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		checkBlockStoreUpdateAllowed();
 
 		BlockMaterial material = this.getBlockMaterial(x, y, z);
 		blockStore.setBlock(x, y, z, material.getId(), data);
@@ -251,7 +251,7 @@ public class SpoutChunk extends Chunk {
 		z &= BASE_MASK;
 
 		checkChunkLoaded();
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		checkBlockStoreUpdateAllowed();
 
 		if (event) {
 			Block block = new SpoutBlock(getWorld(), x, y, z, source);
@@ -624,7 +624,7 @@ public class SpoutChunk extends Chunk {
 		TickStage.checkStage(restrictedStages, regionThread);
 		if (blockStore.needsCompression()) {
 			checkChunkLoaded();
-			TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+			checkBlockStoreUpdateAllowed();
 			blockStore.compress();
 			return true;
 		} else {
@@ -672,6 +672,10 @@ public class SpoutChunk extends Chunk {
 		if (saveState.get() == SaveState.UNLOADED) {
 			throw new ChunkAccessException("Chunk has been unloaded");
 		}
+	}
+	
+	private void checkBlockStoreUpdateAllowed() {
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 	}
 
 	@Override
@@ -1032,14 +1036,14 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		checkChunkLoaded();
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		checkBlockStoreUpdateAllowed();
 		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
 	
 	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits) {
 		checkChunkLoaded();
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		checkBlockStoreUpdateAllowed();
 
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
@@ -1060,7 +1064,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public short clearBlockDataBits(int x, int y, int z, short bits) {
 		checkChunkLoaded();
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		checkBlockStoreUpdateAllowed();
 
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
@@ -1096,7 +1100,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value) {
 		checkChunkLoaded();
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		checkBlockStoreUpdateAllowed();
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
