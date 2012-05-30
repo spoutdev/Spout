@@ -43,6 +43,6 @@ public interface Font {
 	
 	public float getSpaceWidth();
 	
-	public Rectangle getPixelBounds(int index);
+	public Rectangle getPixelBounds(char ch);
 	
 }
