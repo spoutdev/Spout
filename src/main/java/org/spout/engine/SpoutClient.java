@@ -261,13 +261,34 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.getRenderer().getShader().setUniform("View", view);
 		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		
-		renderer.begin();
+		//renderer.begin();
 		//renderer.addCube(Vector3.ZERO,Vector3.ONE, Color.RED, sides);
-		renderer.addMesh(bunny);
+		//renderer.addMesh(bunny);
 		//((BatchVertexRenderer)renderer.getRenderer()).dumpBuffers();
-		renderer.end();
+		//renderer.end();
 		
-		renderer.draw();
+		//renderer.draw();
+		
+		textureTest.getShader().setUniform("View", activeCamera.getView());			  	
+		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());		 	  	
+		textureTest.getShader().setUniform("tex", texture);
+		
+		textureTest.begin();
+		textureTest.addTexCoord(0, 0);
+		textureTest.addVertex(0, 0);
+		textureTest.addTexCoord(1, 0);
+		textureTest.addVertex(1, 0);
+		textureTest.addTexCoord(0, 1);
+		textureTest.addVertex(0, 1);
+
+		textureTest.addTexCoord(0, 1);
+		textureTest.addVertex(0, 1);
+		textureTest.addTexCoord(1, 1);
+		textureTest.addVertex(1, 1);
+		textureTest.addTexCoord(1, 0);
+		textureTest.addVertex(1, 0);
+		textureTest.end();
+		textureTest.render();
 		
 		/*
 		Object[] worlds = this.getLiveWorlds().toArray();
