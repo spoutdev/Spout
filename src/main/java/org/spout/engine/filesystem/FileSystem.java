@@ -95,12 +95,8 @@ public class FileSystem {
 		registerLoader("texture", new TextureLoader());
 		registerLoader("shader", new ShaderLoader());
 		registerLoader("mesh", new MeshLoader());
-<<<<<<< HEAD
 		registerLoader("material", new RenderMaterialLoader());
 		//registerLoader("font", new FontLoader());
-=======
-		
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 	}
 
 	

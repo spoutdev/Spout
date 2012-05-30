@@ -93,16 +93,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
 
-<<<<<<< HEAD
 	RenderMaterial material;
-	
-	
-	
-	
-=======
 
-
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 	public static void main(String[] args) {
 		boolean inJar = false;
 
@@ -167,11 +159,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
-<<<<<<< HEAD
-=======
-		System.out.println(activeCamera.getProjection());
-		shader = (Shader)FileSystem.getResource("shader://Vanilla/garbageName.ssf");
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 		renderer = new PrimitiveBatch();
 	
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -183,19 +170,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
 		//screenStack = new ScreenStack(new LoadingScreen());
-<<<<<<< HEAD
 		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
-
-	
-
-
-=======
-		bunny = (BaseMesh)FileSystem.getResource("mesh://Vanilla/bunny.obj");
-		
-		Matrix view = MathHelper.createLookAt(new Vector3(2,0,0), Vector3.ZERO, Vector3.UP);
-		
-		System.out.println(view);
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 	}
 	
 	BaseMesh bunny;
@@ -272,20 +247,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cz = 2 * Math.cos(Math.toRadians(ticks));
 		double cy = 2 * Math.sin(Math.toRadians(ticks));
 
-<<<<<<< HEAD
 		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
 
 		//renderer.getRenderer().getShader().setUniform("View", view);
 		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
-
-=======
-		Matrix view = MathHelper.createLookAt(new Vector3(cx,cy,cz), Vector3.ZERO, Vector3.UP);
-		
-				
-		renderer.getRenderer().getShader().setUniform("View", view);
-		renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
-		
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 		//renderer.begin();
 		//renderer.addCube(Vector3.ZERO,Vector3.ONE, Color.RED, sides);
 		//renderer.addMesh(bunny);
@@ -293,22 +258,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//renderer.end();
 		
 		//renderer.draw();
-<<<<<<< HEAD
 
 	
 		textureTest.begin(material);
 		textureTest.getShader().setUniform("View", activeCamera.getView());
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
-	
-		
-=======
-		
-		textureTest.getShader().setUniform("View", activeCamera.getView());			  	
-		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());		 	  	
-		textureTest.getShader().setUniform("tex", texture);
-		
-		textureTest.begin();
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 		textureTest.addTexCoord(0, 0);
 		textureTest.addVertex(0, 0);
 		textureTest.addTexCoord(1, 0);

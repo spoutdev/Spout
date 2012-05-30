@@ -49,15 +49,9 @@ public class JarfileResolver implements ResourcePathResolver{
 	
 	private JarFile getJar(String path) throws IOException{
 		Plugin p = Spout.getEngine().getPluginManager().getPlugin(path);
-<<<<<<< HEAD
 		if (p == null) {
 			return null;
 		}
-=======
-		System.out.println("path: " + path);
-		if(p == null) return null;
-		System.out.println(p.getName());
->>>>>>> parent of 751169a... Cleanup of SpoutEngine. You are welcome @RoyAwesome.
 		return new JarFile(p.getFile());
 	}
 	
