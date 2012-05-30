@@ -66,8 +66,15 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	public final static int POINT_BASE_MASK = -CHUNK_SIZE;
 	
+	private final int blockX;
+	private final int blockY;
+	private final int blockZ;
+	
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), CHUNK_SIZE, true);
+		blockX = super.getX() << CHUNK_SIZE_BITS;
+		blockY = super.getY() << CHUNK_SIZE_BITS;
+		blockZ = super.getZ() << CHUNK_SIZE_BITS;
 	}
 
 	/**
@@ -208,7 +215,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * @return the x-coordinate of the first block in this chunk
 	 */
 	public int getBlockX() {
-		return this.getX() << CHUNK_SIZE_BITS;
+		return blockX;
 	}
 
 	/**
@@ -216,7 +223,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * @return the y-coordinate of the first block in this chunk
 	 */
 	public int getBlockY() {
-		return this.getY() << CHUNK_SIZE_BITS;
+		return blockY;
 	}
 
 	/**
@@ -224,7 +231,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * @return the z-coordinate of the first block in this chunk
 	 */
 	public int getBlockZ() {
-		return this.getZ() << CHUNK_SIZE_BITS;
+		return blockZ;
 	}
 
 	/**
