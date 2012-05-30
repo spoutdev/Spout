@@ -26,8 +26,10 @@
  */
 package org.spout.api.util;
 
+import gnu.trove.list.array.TIntArrayList;
+
 public class StringUtil {
-	
+
 	/**
 	 * Wraps all components in between brackets delimited by ','-signs
 	 * 
@@ -37,7 +39,49 @@ public class StringUtil {
 	public static String toString(Object... components) {
 		return toNamedString(null, components);
 	}
-	
+
+	/**
+	 * Converts a String expression of elements into an integer array<br>
+	 * For example: "12-34, 35, 36, 11-0"
+	 * 
+	 * @param elements to convert
+	 * @return the converted result
+	 */
+	public static int[] getIntArray(String elements) {
+		if (elements == null || elements.isEmpty()) {
+			return new int[0];
+		}
+		TIntArrayList values = new TIntArrayList();
+		int index;
+		int start, end;
+		for (String element : elements.split(",")) {
+			element = element.trim();
+			index = element.indexOf('-');
+			try {
+				if (index != -1) {
+					start = Integer.parseInt(element.substring(0, index).trim());
+					end = Integer.parseInt(element.substring(index + 1).trim());
+					if (end == start) {
+						values.add(start);
+					} else if (end > start) {
+						for (index = start; index <= end; index++) {
+							values.add(index);
+						}
+					} else {
+						for (index = start; index >= end; index--) {
+							values.add(index);
+						}
+					}
+				} else {
+					values.add(Integer.parseInt(element));
+				}
+			} catch (NumberFormatException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return values.toArray();
+	}
+
 	/**
 	 * Wraps all components in between brackets delimited by ','-signs, 
 	 * appending the class name in front of it.
@@ -61,7 +105,7 @@ public class StringUtil {
 		b.append('}');
 		return b.toString();
 	}
-		
+
 	public static int getLevenshteinDistance(String s, String t) {
 		if (s == null || t == null) {
 			throw new IllegalArgumentException("Strings must not be null");
@@ -82,7 +126,7 @@ public class StringUtil {
 
 		   Effectively, the difference between the two implementations is this one does not
 		   cause an out of memory condition when calculating the LD over two very large strings.
-		*/
+		 */
 
 		int n = s.length(); // length of s
 		int m = t.length(); // length of t
