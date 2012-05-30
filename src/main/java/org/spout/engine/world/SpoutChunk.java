@@ -77,20 +77,18 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
-	
 	/**
-	 * Multi-thread write access to the block store is only allowed during the allowed stages.  
-	 * During the restricted stages, only the region thread may modify the block store.
+	 * Multi-thread write access to the block store is only allowed during the allowed stages. During the restricted stages, only the region thread may modify the block store.
 	 */
 	private static final int restrictedStages = TickStage.FINALIZE;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
+
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
 	protected static final long UNLOAD_PERIOD = 60000;
 	/**
-	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
-	 * and auxiliary data = null, the block is stored as a short.
+	 * Storage for block ids, data and auxiliary data. For blocks with data = 0 and auxiliary data = null, the block is stored as a short.
 	 */
 	protected AtomicBlockStore<DatatableMap> blockStore;
 	/**
@@ -121,8 +119,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Stores a short value of the sky light
 	 * <p/>
-	 * Note: These do not need to be thread-safe as long as only one thread (the region)
-	 * is allowed to modify the values. If setters are provided, this will need to be made safe.
+	 * Note: These do not need to be thread-safe as long as only one thread (the region) is allowed to modify the values. If setters are provided, this will need to be made safe.
 	 */
 	protected byte[] skyLight;
 	protected byte[] blockLight;
@@ -154,12 +151,16 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final BiomeManager biomes;
 	
-	private final Thread regionThread;
-	
 	/**
 	 * Shift cache array for shifting fields
 	 */
 	private final static int[] shiftCache = new int[65536];
+
+	/**
+	 * The thread associated with the region
+	 */
+	private final Thread regionThread;
+
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
 			int shift = 0;
@@ -227,10 +228,10 @@ public class SpoutChunk extends Chunk {
 		BlockMaterial material = this.getBlockMaterial(x, y, z);
 		blockStore.setBlock(x, y, z, material.getId(), data);
 
-		//Data component does not alter height of the world. Change this?
-		//column.notifyBlockChange(x, this.getBlockY() + y, z);
+		// Data component does not alter height of the world. Change this?
+		// column.notifyBlockChange(x, this.getBlockY() + y, z);
 
-		//Update block lighting
+		// Update block lighting
 		this.setBlockLight(x, y, z, material.getLightLevel(data), source);
 
 		return true;
@@ -251,7 +252,7 @@ public class SpoutChunk extends Chunk {
 
 		checkChunkLoaded();
 		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
-		
+
 		if (event) {
 			Block block = new SpoutBlock(getWorld(), x, y, z, source);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), source);
@@ -275,25 +276,25 @@ public class SpoutChunk extends Chunk {
 		if (this.isPopulated()) {
 			SpoutWorld world = this.getWorld();
 
-			//Update block lighting
+			// Update block lighting
 			if (!this.setBlockLight(x, y, z, material.getLightLevel(data), source)) {
-				//if the light level is left unchanged, refresh lighting from neighbors
+				// if the light level is left unchanged, refresh lighting from neighbors
 				world.getLightingManager().blockLight.addRefresh(x, y, z);
 			}
 
-			//Update sky lighting
+			// Update sky lighting
 			if (newheight > oldheight) {
-				//set sky light of blocks below to 0
+				// set sky light of blocks below to 0
 				for (y = oldheight; y < newheight; y++) {
 					world.setBlockSkyLight(x, y + 1, z, (byte) 0, source);
 				}
 			} else if (newheight < oldheight) {
-				//set sky light of blocks above to 15
+				// set sky light of blocks above to 15
 				for (y = newheight; y < oldheight; y++) {
 					world.setBlockSkyLight(x, y + 1, z, (byte) 15, source);
 				}
 			} else if (!this.setBlockSkyLight(x, y, z, (byte) 0, source)) {
-				//if the light level is left unchanged, refresh lighting from neighbors
+				// if the light level is left unchanged, refresh lighting from neighbors
 				world.getLightingManager().skyLight.addRefresh(x, y, z);
 			}
 		}
@@ -369,10 +370,10 @@ public class SpoutChunk extends Chunk {
 			blockLight[index] = NibblePairHashed.setKey2(blockLight[index], light);
 		}
 		if (light > oldLight) {
-			//light increased
+			// light increased
 			getWorld().getLightingManager().blockLight.addGreater(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else if (light < oldLight) {
-			//light decreased
+			// light decreased
 			getWorld().getLightingManager().blockLight.addLesser(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else {
 			return false;
@@ -417,10 +418,10 @@ public class SpoutChunk extends Chunk {
 		}
 
 		if (light > oldLight) {
-			//light increased
+			// light increased
 			getWorld().getLightingManager().skyLight.addGreater(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else if (light < oldLight) {
-			//light decreased
+			// light decreased
 			getWorld().getLightingManager().skyLight.addLesser(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 		} else {
 			return false;
@@ -622,6 +623,8 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		TickStage.checkStage(restrictedStages, regionThread);
 		if (blockStore.needsCompression()) {
+			checkChunkLoaded();
+			TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 			blockStore.compress();
 			return true;
 		} else {
@@ -738,7 +741,7 @@ public class SpoutChunk extends Chunk {
 		Arrays.fill(this.blockLight, (byte) 0);
 		Arrays.fill(this.skyLight, (byte) 0);
 
-		//Initialize block lighting
+		// Initialize block lighting
 		for (x = 0; x < CHUNK_SIZE; x++) {
 			for (y = 0; y < CHUNK_SIZE; y++) {
 				for (z = 0; z < CHUNK_SIZE; z++) {
@@ -747,7 +750,7 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 
-		//Report the columns that require a sky-light update
+		// Report the columns that require a sky-light update
 		minY = this.getBlockY();
 		maxY = minY + CHUNK_SIZE;
 		for (x = 0; x < CHUNK_SIZE; x++) {
@@ -757,7 +760,7 @@ public class SpoutChunk extends Chunk {
 					y = minY;
 				}
 
-				//fill area above height with light
+				// fill area above height with light
 				for (; y < maxY; y++) {
 					this.setBlockSkyLight(x, y, z, (byte) 15, world);
 				}
@@ -796,7 +799,7 @@ public class SpoutChunk extends Chunk {
 		Map<Entity, Integer> observerSnapshot = observers.get();
 		Map<Entity, Integer> observerLive = observers.getLive();
 
-		//If we are observed and not populated, queue population
+		// If we are observed and not populated, queue population
 		if (!isPopulated() && observers.getLive().size() > 0) {
 			parentRegion.queueChunkForPopulation(this);
 		}
@@ -818,7 +821,7 @@ public class SpoutChunk extends Chunk {
 				if (playerDistanceNew == null) {
 					playerDistanceNew = Integer.MAX_VALUE;
 				}
-				//Player Network sync
+				// Player Network sync
 				if (p.getController() instanceof PlayerController) {
 					Player player = ((PlayerController) p.getController()).getPlayer();
 
@@ -1035,10 +1038,9 @@ public class SpoutChunk extends Chunk {
 	
 	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits) {
-		
 		checkChunkLoaded();
 		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
-		
+
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
@@ -1057,10 +1059,9 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public short clearBlockDataBits(int x, int y, int z, short bits) {
-		
 		checkChunkLoaded();
 		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
-		
+
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
@@ -1079,7 +1080,6 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public int getBlockDataField(int x, int y, int z, int bits) {
-		
 		checkChunkLoaded();
 		
 		int bx = x & BASE_MASK;
@@ -1095,10 +1095,8 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value) {
-		
 		checkChunkLoaded();
 		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
-		
 		int bx = x & BASE_MASK;
 		int by = y & BASE_MASK;
 		int bz = z & BASE_MASK;
