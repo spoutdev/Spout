@@ -16,6 +16,10 @@ public class ClientTexture extends Texture {
 		super(baseImage);
 	}
 
+	protected ClientTexture() {
+		super(null);
+	}
+
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
 		return new ClientTexture(image.getSubimage(x, y, w, h));
