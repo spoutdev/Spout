@@ -3,6 +3,7 @@ package org.spout.engine.resources;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
@@ -10,8 +11,13 @@ import java.awt.image.BufferedImage;
 
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font{
+	private  static final String asciiset;
 	private static final FontRenderContext DEFAULT_CONTEXT = new FontRenderContext(null, true, true);
 	
+	static {
+		asciiset = getASCII();
+		
+	}
 	
 	private static final String getASCII(){
 		StringBuilder sb = new StringBuilder();
@@ -19,9 +25,15 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		return sb.toString();
 	}
 	
+	public static final String getCharset(){
+		return asciiset;
+	}
+	
+	
+	
 	Font ttfFont;
 	
-	private final String asciiset;
+	
 	private GlyphVector vec;
 
 
@@ -38,7 +50,6 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		//because getStringBounds(" ") returns 0
 		spaceWidth = (float)(ttfFont.getStringBounds("a a", DEFAULT_CONTEXT).getWidth() - ttfFont.getStringBounds("aa", DEFAULT_CONTEXT).getWidth());
 		
-		asciiset = getASCII();
 		
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
@@ -71,6 +82,10 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 
 	public float getSpaceWidth() {
 		return spaceWidth;
+	}
+	
+	public Rectangle getPixelBounds(char c){
+		return vec.getGlyphPixelBounds(asciiset.indexOf(c), DEFAULT_CONTEXT, 0, ttfFont.getSize());
 	}
 	
 }
