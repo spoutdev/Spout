@@ -68,6 +68,18 @@ public class Inventory extends InventoryBase {
 	public void setItem(int slot, ItemStack item) {
 		this.checkSlotRange(slot);
 		contents[slot] = item == null || item.getAmount() == 0 ? null : item.clone();
-		this.notifyViewers(slot, item);
+		if (this.getNotifyViewers()) {
+			this.notifyViewers(slot, item);
+		}
+	}
+
+	@Override
+	public void setContents(ItemStack[] contents) {
+		for (int i = 0; i < this.contents.length; i++) {
+			this.contents[i] = contents[i];
+		}
+		if (this.getNotifyViewers()) {
+			this.notifyViewers();
+		}
 	}
 }
