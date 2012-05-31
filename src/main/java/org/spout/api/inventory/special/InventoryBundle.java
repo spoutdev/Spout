@@ -121,18 +121,40 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 
 	@Override
 	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
-		for (InventoryBase inv : this.inventories) {
-			if (inv == inventory) {
-				this.notifyViewers(slot, item);
-				return;
-			} else {
-				slot += inv.getSize();
+		if (this.getNotifyViewers()) {
+			for (InventoryBase inv : this.inventories) {
+				if (inv == inventory) {
+					this.notifyViewers(slot, item);
+					return;
+				} else {
+					slot += inv.getSize();
+				}
 			}
 		}
 	}
 
 	@Override
 	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
-		this.notifyViewers(this.getContents());
+		if (this.getNotifyViewers()) {
+			this.notifyViewers(this.getContents());
+		}
+	}
+
+	@Override
+	public void setContents(ItemStack[] contents) {
+		boolean old = this.getNotifyViewers();
+		this.setNotifyViewers(false);
+		ItemStack[] current;
+		int index = 0;
+		for (InventoryBase inventory : this.inventories) {
+			current = new ItemStack[inventory.getSize()];
+			System.arraycopy(contents, index, current, 0, current.length);
+			index += current.length;
+			inventory.setContents(current);
+		}
+		if (old) {
+			this.setNotifyViewers(true);
+			this.notifyViewers();
+		}
 	}
 }

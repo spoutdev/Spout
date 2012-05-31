@@ -42,6 +42,7 @@ public abstract class InventoryBase implements Serializable {
 
 	private final List<InventoryViewer> viewers = new ArrayList<InventoryViewer>();
 	private int currentSlot = 0;
+	private boolean notify = true;
 
 	/**
 	 * Adds a single {@link InventoryViewer} to this Inventory<br>
@@ -90,13 +91,36 @@ public abstract class InventoryBase implements Serializable {
 	}
 
 	/**
-	 * Notifies all viewers of all the current items in this inventory
-	 * @param items of this inventory
+	 * Notifies all viewers of items in this inventory
+	 * @param items of this inventory to notify
 	 */
 	public void notifyViewers(ItemStack[] items) {
 		for (InventoryViewer viewer : this.getViewers()) {
 			viewer.updateAll(this, items);
 		}
+	}
+
+	/**
+	 * Notifies all viewers of all the current items in this inventory
+	 */
+	public void notifyViewers() {
+		this.notifyViewers(this.getContents());
+	}
+
+	/**
+	 * Gets whether this inventory sends notifications to viewers when items are set
+	 * @return True if it sends notifications, False if not
+	 */
+	public boolean getNotifyViewers() {
+		return this.notify;
+	}
+
+	/**
+	 * Sets whether this inventory sends notifications to viewers when items are set
+	 * @param notify
+	 */
+	public void setNotifyViewers(boolean notify) {
+		this.notify = notify;
 	}
 
 	/**
@@ -188,6 +212,14 @@ public abstract class InventoryBase implements Serializable {
 	public abstract ItemStack[] getContents();
 
 	/**
+	 * Sets the contents of this inventory<br>
+	 * Note that the contents still reference back to the items
+	 * 
+	 * @param contents to put in
+	 */
+	public abstract void setContents(ItemStack[] contents);
+
+	/**
 	 * Gets the contents of this Inventory<br>
 	 * The Item Stacks no longer reference back in this Inventory
 	 * 
@@ -219,7 +251,7 @@ public abstract class InventoryBase implements Serializable {
 	 * @param item to set to
 	 */
 	public abstract void setItem(int slot, ItemStack item);
-	
+
 	/**
 	 * Adds a given amount to the data of the item at the slot index<br><br>
 	 * 

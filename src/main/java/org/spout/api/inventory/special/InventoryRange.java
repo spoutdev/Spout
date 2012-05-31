@@ -99,13 +99,22 @@ public class InventoryRange extends InventoryBase implements InventoryViewer {
 
 	@Override
 	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
-		if (inventory == this.parent) {
+		if (inventory == this.parent && this.getNotifyViewers()) {
 			this.notifyViewers(slot - this.offset, item);
 		}
 	}
 
 	@Override
 	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
-		this.notifyViewers(this.getContents());
+		if (this.getNotifyViewers()) {
+			this.notifyViewers(this.getContents());
+		}
+	}
+
+	@Override
+	public void setContents(ItemStack[] contents) {
+		for (int i = 0; i < this.getSize(); i++) {
+			this.setItem(i, contents[i]);
+		}
 	}
 }
