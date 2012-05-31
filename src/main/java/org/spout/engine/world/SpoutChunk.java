@@ -443,10 +443,8 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private void notifyLightChange() {
-		if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
-			if (this.lightingCounter.getAndSet(0) == -1) {
-				this.parentRegion.reportChunkLightDirty(this.getX(), this.getY(), this.getZ());
-			}
+		if (this.lightingCounter.getAndSet(0) == -1) {
+			this.parentRegion.reportChunkLightDirty(this.getX(), this.getY(), this.getZ());
 		}
 	}
 
@@ -642,6 +640,10 @@ public class SpoutChunk extends Chunk {
 
 	public boolean isDirty() {
 		return lightDirty.get() || blockStore.isDirty();
+	}
+
+	public boolean isCalculatingLighting() {
+		return this.lightingCounter.get() >= 0;
 	}
 
 	public boolean isDirtyOverflow() {
