@@ -204,7 +204,9 @@ public class SpoutEntity implements Entity, Tickable {
 	 */
 	public void resolve() {
 		Point to = null;
-		if (collision != null) {
+
+		//Handle Player collisions elsewhere
+		if (collision != null && !(controllerLive.get() instanceof PlayerController)) {
 			//Set collision point at the current position of the entity.
 			collisionPoint = getPosition();
 
