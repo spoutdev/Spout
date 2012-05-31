@@ -528,4 +528,17 @@ public interface Engine extends Named {
 	 * @return A list of all commands at the time.
 	 */
 	public String[] getAllCommands();
+	
+	
+	/**
+	 * Gets an abstract representation of the engine Filesystem.
+	 * 
+	 * The Filesystem handles the loading of all resources. 
+	 * 
+	 * On the client, loading a resource will load the resource from the harddrive.  
+	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
+	 * 
+	 */
+	public Filesystem getFilesystem();
+	
 }
