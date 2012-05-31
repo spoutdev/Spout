@@ -377,22 +377,7 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-						AsyncExecutorUtils.dumpAllStacks();
-						AsyncExecutorUtils.checkForDeadlocks();
-						for (AsyncExecutor executor : executors) {
-							if (!executor.isPulseFinished()) {
-								if (executor.getManager() instanceof SpoutRegionManager) {
-									SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
-									engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
-								} else if (executor.getManager() instanceof SpoutWorld) {
-									SpoutWorld w = (SpoutWorld)executor.getManager();
-									engine.getLogger().info("World has not completed pulse " + w);
-								} else {
-									engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
-								}
-							}
-						}
+						logLongDurationTick("Stage " + stage, executors);
 					}
 				}
 			}
@@ -419,9 +404,7 @@ public final class SpoutScheduler implements Scheduler {
 				joined = true;
 			} catch (TimeoutException e) {
 				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-					engine.getLogger().info("Copy Snapshot had not completed after " + (PULSE_EVERY << 4) + "ms");
-					AsyncExecutorUtils.dumpAllStacks();
-					AsyncExecutorUtils.checkForDeadlocks();
+					logLongDurationTick("Finalize", executors);
 				}
 			}
 		}
@@ -443,8 +426,7 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-						AsyncExecutorUtils.dumpAllStacks();
+						logLongDurationTick("Pre Snapshot", executors);
 					}
 				}
 			}
@@ -464,8 +446,7 @@ public final class SpoutScheduler implements Scheduler {
 					joined = true;
 				} catch (TimeoutException e) {
 					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						engine.getLogger().info("Tick had not completed after " + (PULSE_EVERY << 4) + "ms");
-						AsyncExecutorUtils.dumpAllStacks();
+						logLongDurationTick("Copy Snapshot", executors);
 					}
 				}
 			}
@@ -614,5 +595,24 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	public void scheduleCoreTask(Runnable r) {
 		coreTaskQueue.add(r);
+	}
+	
+	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
+		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
+		AsyncExecutorUtils.dumpAllStacks();
+		AsyncExecutorUtils.checkForDeadlocks();
+		for (AsyncExecutor executor : executors) {
+			if (!executor.isPulseFinished()) {
+				if (executor.getManager() instanceof SpoutRegionManager) {
+					SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
+					engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
+				} else if (executor.getManager() instanceof SpoutWorld) {
+					SpoutWorld w = (SpoutWorld)executor.getManager();
+					engine.getLogger().info("World has not completed pulse " + w);
+				} else {
+					engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
+				}
+			}
+		}
 	}
 }
