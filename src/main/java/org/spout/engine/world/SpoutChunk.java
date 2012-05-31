@@ -579,12 +579,13 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public boolean refreshObserver(Entity entity) {
-		TickStage.checkStage(TickStage.FINALIZE);
+		TickStage.checkStage(TickStage.STAGE2P);
 		if (!entity.isObserver()) {
 			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
 		}
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
+		TickStage.checkStage(TickStage.FINALIZE);
 		int distance = (int) ((SpoutEntity) entity).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(entity, distance);
 		if (oldDistance == null) {
