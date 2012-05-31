@@ -32,6 +32,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
@@ -249,4 +250,47 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public Block getBlock(Vector3 position, Source source);
+	
+	/**
+	 * Resets all dynamic material updates queued for the given location. This list is checked during the finalize part of the tick, and will cause the onPlacement method to be called.<br>
+	 *
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	@DelayedWrite
+	public abstract void resetDynamicBlock(int x, int y, int z);
+	
+	/**
+	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	@DelayedWrite
+	public abstract void queueDynamicUpdate(int x, int y, int z);
+	
+	/**
+	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param nextUpdate the update time
+	 */
+	@DelayedWrite
+	public abstract void queueDynamicUpdate(int x, int y, int z, long nextUpdate);
+	
+	/**
+	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param nextUpdate the update time
+	 * @param hint a non-persistent hint for the update
+	 */
+	@DelayedWrite
+	public abstract void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint);
 }

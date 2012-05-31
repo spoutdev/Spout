@@ -139,18 +139,6 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 	public abstract Set<Player> getPlayers();
 
 	/**
-	 * Flags the block location as a possible dynamic block.  This list is checked during the finalize part of the tick.<br>
-	 * <br>
-	 * This will clear any dynamic block updates for the given block and cause a new sequence to start.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 */
-	@DelayedWrite
-	public abstract void resetDynamicBlock(int x, int y, int z);
-
-	/**
 	 * Gets the TaskManager associated with this region
 	 */
 	public abstract TaskManager getTaskManager();
