@@ -132,5 +132,13 @@ public abstract class AbstractWidget extends SignalSubscriberObject implements W
 	public void setAttribute(Attribute value) {
 		attributeStore.setAttribute(value);
 	}
+
+	public Error[] setStylesheet(String css) {
+		return attributeStore.setStylesheet(css);
+	}
+
+	public String getStylesheet() {
+		return attributeStore.getStylesheet();
+	}
 	
 }

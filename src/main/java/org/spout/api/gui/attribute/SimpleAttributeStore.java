@@ -61,24 +61,30 @@ public class SimpleAttributeStore implements AttributeStore {
 			if (splt.length == 2) {
 				String name = splt[0];
 				AttributeUnit unit = null;
-				for(String text:AttributeUnit.getAllTexts()) {
-					if(text.isEmpty()) { 
+				for (String text : AttributeUnit.getAllTexts()) {
+					if (text.isEmpty()) {
 						continue;
 					}
-					if(splt[1].endsWith(text)) {
+					if (splt[1].endsWith(text)) {
 						unit = AttributeUnit.getByText(text);
-						//Remove the unit from the text to parse the value
-						splt[1] = splt[1].replaceAll(text+"^", ""); //TODO check if this works
+						// Remove the unit from the text to parse the value
+						splt[1] = splt[1].replaceAll(text + "^", ""); // TODO
+																		// check
+																		// if
+																		// this
+																		// works
 						break;
 					}
 				}
-				if(unit == null) {
+				if (unit == null) {
 					unit = AttributeUnit.NONE;
 				}
 				Object value = fromCSSString(splt[1]);
-				setAttribute(new Attribute(name, new AttributeValue(value), unit));
+				setAttribute(new Attribute(name, new AttributeValue(value),
+						unit));
 			} else {
-				errors.add(new Error("More than 1 ':' found in attribute assignment"));
+				errors.add(new Error(
+						"More than 1 ':' found in attribute assignment"));
 			}
 		}
 		return errors.toArray(new Error[0]);
@@ -94,10 +100,28 @@ public class SimpleAttributeStore implements AttributeStore {
 		}
 		return stylesheet;
 	}
-	
+
 	public static Object fromCSSString(String attribute) {
-		//TODO add colors, integer, double parsing
-		return null;
+		try {
+			return Integer.getInteger(attribute);
+		} catch (NumberFormatException e) {
+		}
+		try {
+			return Double.parseDouble(attribute);
+		} catch (NumberFormatException e) {
+		}
+		// TODO add colors
+		if (attribute.startsWith("#")) {
+
+		}
+		if (attribute.matches("rgb\\([0-9]{1,3},[0-9]{1,3},[0-9]{1,3}\\)")) {
+
+		}
+		if (attribute
+				.matches("rgba\\([0-9]{1,3},[0-9]{1,3},[0-9]{1,3},[0-9]{1,3}\\)")) {
+
+		}
+		return attribute;
 	}
 
 	public static String toCSSString(Object value) {
