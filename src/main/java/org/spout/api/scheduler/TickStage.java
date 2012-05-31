@@ -130,9 +130,19 @@ public class TickStage {
 	 * @param allowedStages the OR of all the allowed stages
 	 */
 	public static void checkStage(int allowedStages) {
-		if ((stage & allowedStages) == 0) {
+		if (!testStage(allowedStages)) {
 			throw new IllegalTickSequenceException(allowedStages, stage);
 		}
+	}
+	
+	/**
+	 * Checks if the current stages is one of the valid allowed stages, but does not throw an exception.
+	 *
+	 * @param allowedStages the OR of all the allowed stages
+	 * @return true if the current stage is one of the allowed stages
+	 */
+	public static boolean testStage(int allowedStages) {
+		return (stage & allowedStages) != 0;
 	}
 	
 	/**
