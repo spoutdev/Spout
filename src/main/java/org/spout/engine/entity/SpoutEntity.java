@@ -173,7 +173,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 		/**
 		 * Copy over live chunk and entity manager values if this entity is valid. Transform copying is handled in
-		 * resolve (TiRoyck Stage 2Pre).
+		 * resolve (Tick Stage 2Pre).
 		 */
 		if (!isDead() && getPosition() != null && getWorld() != null) {
 			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
