@@ -31,10 +31,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import org.spout.api.Filesystem;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Platform;
 import org.spout.api.resource.Resource;
 import org.spout.api.resource.ResourceLoader;
+import org.spout.api.resource.ResourceNotFoundException;
 import org.spout.api.resource.ResourcePathResolver;
 
 import org.spout.engine.filesystem.path.FilepathResolver;
@@ -45,7 +47,7 @@ import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
 import org.spout.engine.resources.loader.TextureLoader;
 
-public class FileSystem {
+public class SharedFilesystem implements Filesystem {
 	/**
 	 * Plugins live in this folder (SERVER and CLIENT)
 	 */
@@ -56,12 +58,12 @@ public class FileSystem {
 	public static final File UPDATE_DIRECTORY = new File("update");
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
-	static ResourcePathResolver[] searchpaths;
-	static final HashMap<String, ResourceLoader<? extends Resource>> LOADERS = new HashMap<String, ResourceLoader<? extends Resource>>();
-	static final HashMap<URI, Resource> LOADED_RESOURCES = new HashMap<URI, Resource>();
+	ResourcePathResolver[] searchpaths;
+	final HashMap<String, ResourceLoader<? extends Resource>> LOADERS = new HashMap<String, ResourceLoader<? extends Resource>>();
+	final HashMap<URI, Resource> LOADED_RESOURCES = new HashMap<URI, Resource>();
 	
 
-	public static void init() {
+	public void init() {
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			if (!RESOURCE_FOLDER.exists()) {
 				RESOURCE_FOLDER.mkdirs();
@@ -100,17 +102,19 @@ public class FileSystem {
 	}
 
 	
-	public static void postStartup(){
+
+	public void postStartup(){
 		loadFallbacks();
 	}
 	
-	private static void loadFallbacks(){
+	private void loadFallbacks(){
 		for(ResourceLoader<?> s : LOADERS.values()){
-			FileSystem.loadResource(s.getFallbackResourceName());
+			loadResource(s.getFallbackResourceName());
 		}
 	}
 	
-	public static InputStream getResourceStream(URI path) throws ResourceNotFoundException {
+	
+	public InputStream getResourceStream(URI path) throws ResourceNotFoundException {
 		
 		
 		for (int i = 0; i < searchpaths.length; i++) {
@@ -124,7 +128,7 @@ public class FileSystem {
 		//Open our jar and grab the fallback 'file' scheme
 		String scheme = path.getScheme();
 		if(scheme.equals("file")){
-			return FileSystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
+			return SharedFilesystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
 		}
 		
 		//Still can't find it? Throw a ResourceNotFound exception and give out fallbacks
@@ -139,7 +143,8 @@ public class FileSystem {
 		*/
 	}
 	
-	public static InputStream getResourceStream(String path){
+	
+	public InputStream getResourceStream(String path){
 		try {
 			return getResourceStream(new URI(path));
 		} catch (URISyntaxException e) {
@@ -147,14 +152,16 @@ public class FileSystem {
 		}
 	}
 
-	public static void registerLoader(String protocol, ResourceLoader<? extends Resource> loader) {
+	
+	public void registerLoader(String protocol, ResourceLoader<? extends Resource> loader) {
 		if (LOADERS.containsKey(protocol)) {
 			return;
 		}
 		LOADERS.put(protocol, loader);
 	}
 
-	public static void loadResource(URI path) throws ResourceNotFoundException {
+	
+	public void loadResource(URI path) throws ResourceNotFoundException {
 		String protocol = path.getScheme();
 		if (!LOADERS.containsKey(protocol)) {
 			throw new IllegalArgumentException("Unknown resource type: " + protocol);
@@ -165,7 +172,8 @@ public class FileSystem {
 		
 	}
 
-	public static void loadResource(String path) {
+	
+	public void loadResource(String path) {
 		try {
 			URI upath = new URI(path);
 			loadResource(upath);
@@ -174,7 +182,8 @@ public class FileSystem {
 		}
 	}
 
-	public static Resource getResource(URI path) {
+	
+	public Resource getResource(URI path) {
 		if (!LOADED_RESOURCES.containsKey(path)) {
 			Spout.getLogger().warning("Late Precache of resource: " + path.toString());
 			try	{
@@ -196,7 +205,7 @@ public class FileSystem {
 		return LOADED_RESOURCES.get(path);
 	}
 
-	public static Resource getResource(String path) {
+	public Resource getResource(String path) {
 		try {
 			URI upath = new URI(path);
 			return getResource(upath);

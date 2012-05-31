@@ -16,7 +16,7 @@ import org.spout.api.render.Texture;
 import org.spout.api.resource.Resource;
 
 import org.spout.engine.filesystem.BasicResourceLoader;
-import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.filesystem.SharedFilesystem;
 import org.spout.engine.resources.ClientRenderMaterial;
 
 public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMaterial> {
@@ -36,7 +36,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 		String in = (String) resource.get("Shader");
 		Spout.log(in);
-		Shader s = (Shader) FileSystem.getResource(in);
+		Shader s = (Shader) Spout.getFilesystem().getResource(in);
 
 		Map<String, Object> params = (Map<String, Object>) resource.get("MaterialParams");
 
@@ -47,7 +47,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 			if(entry.getValue() instanceof String){
 				String val = (String)entry.getValue();
 				if(val.contains("://")){ //its a resource!
-					Resource r = FileSystem.getResource(val);
+					Resource r = Spout.getFilesystem().getResource(val);
 					if(r instanceof Texture && !((Texture)r).isLoaded()) ((Texture)r).load();
 					params.put(entry.getKey(), r);					
 				}

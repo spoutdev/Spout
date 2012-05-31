@@ -111,14 +111,14 @@ public class WorldFiles {
 		}
 		
 		//Load the world specific item map
-		File itemMapFile = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "materials.dat");
+		File itemMapFile = new File(new File(SharedFilesystem.WORLDS_DIRECTORY, name), "materials.dat");
 		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 		if (itemMapFile.exists()) {
 			itemStore.load();
 		}
 		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
 
-		File worldData = new File(new File(FileSystem.WORLDS_DIRECTORY, name), "world.dat");
+		File worldData = new File(new File(SharedFilesystem.WORLDS_DIRECTORY, name), "world.dat");
 
 		if (worldData.exists()) {
 			NBTInputStream is = null;

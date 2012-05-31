@@ -43,7 +43,8 @@ import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 
-import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.filesystem.ServerFilesystem;
+import org.spout.engine.filesystem.SharedFilesystem;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
@@ -76,12 +77,13 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public SpoutServer() {
+		this.filesystem = new ServerFilesystem();
 	}
 
 	public static void main(String[] args) {
 		SpoutServer server = new SpoutServer();
 		Spout.setEngine(server);
-		FileSystem.init();
+		Spout.getFilesystem().init();
 		new JCommander(server, args);
 		server.init(args);
 		server.start();
@@ -90,7 +92,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void start() {
 		super.start();
-
+		
 		banManager = new FlatFileBanManager(this);
 
 		getEventManager().registerEvents(new SpoutListener(this), this);

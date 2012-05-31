@@ -11,7 +11,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.engine.filesystem.BasicResourceLoader;
-import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.filesystem.SharedFilesystem;
 import org.spout.engine.renderer.shader.ClientShader;
 import org.yaml.snakeyaml.Yaml;
 
@@ -37,8 +37,8 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 			String fragShader = shaderfiles.get("Fragment").toString();
 			String vertShader = shaderfiles.get("Vertex").toString();
 			
-			String fragSrc = readShaderSource(FileSystem.getResourceStream(fragShader));
-			String vertSrc = readShaderSource(FileSystem.getResourceStream(vertShader));
+			String fragSrc = readShaderSource(Spout.getFilesystem().getResourceStream(fragShader));
+			String vertSrc = readShaderSource(Spout.getFilesystem().getResourceStream(vertShader));
 			
 			shader = new ClientShader(vertSrc, fragSrc, true);
 			
@@ -48,8 +48,8 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 			String fragShader = shaderfiles.get("Fragment").toString();
 			String vertShader = shaderfiles.get("Vertex").toString();
 			
-			String fragSrc = readShaderSource(FileSystem.getResourceStream(fragShader));
-			String vertSrc = readShaderSource(FileSystem.getResourceStream(vertShader));
+			String fragSrc = readShaderSource(Spout.getFilesystem().getResourceStream(fragShader));
+			String vertSrc = readShaderSource(Spout.getFilesystem().getResourceStream(vertShader));
 			
 			shader = new ClientShader(vertSrc, fragSrc, true);
 			

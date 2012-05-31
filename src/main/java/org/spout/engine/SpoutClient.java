@@ -67,7 +67,8 @@ import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.batcher.PrimitiveBatch;
-import org.spout.engine.filesystem.FileSystem;
+import org.spout.engine.filesystem.ClientFilesystem;
+import org.spout.engine.filesystem.SharedFilesystem;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.util.RenderModeConverter;
@@ -111,20 +112,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		SpoutClient c = new SpoutClient();
 		Spout.setEngine(c);
-		FileSystem.init();
+		Spout.getFilesystem().init();
 		new JCommander(c, args);
 		c.init(args);
 		c.start();
 	}
 
 	public SpoutClient() {
-		// TODO Auto-generated constructor stub
+		this.filesystem = new ClientFilesystem();
 	}
 
 	@Override
 	public void init(String[] args) {
 		super.init(args);
-
+		
 	}
 
 	@Override
@@ -155,7 +156,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		System.out.println(extensions);
 
-		FileSystem.postStartup();
+		Spout.getFilesystem().postStartup();
 		
 		
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
@@ -165,7 +166,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Spout.log("Loading Texture");
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		Spout.log("Loading Material");
-		material = (RenderMaterial) FileSystem.getResource("material://Vanilla/resources/materials/terrain.smt");
+		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Vanilla/resources/materials/terrain.smt");
 		
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 

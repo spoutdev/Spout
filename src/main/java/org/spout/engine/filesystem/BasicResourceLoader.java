@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import org.spout.api.Spout;
 import org.spout.api.resource.Resource;
 import org.spout.api.resource.ResourceLoader;
+import org.spout.api.resource.ResourceNotFoundException;
 
 public abstract class BasicResourceLoader<E extends Resource> implements ResourceLoader<E> {
 	public abstract String getFallbackResourceName();
@@ -15,7 +17,7 @@ public abstract class BasicResourceLoader<E extends Resource> implements Resourc
 
 	@Override
 	public E getResource(URI resource) throws ResourceNotFoundException{
-		InputStream s = FileSystem.getResourceStream(resource);
+		InputStream s = Spout.getFilesystem().getResourceStream(resource);
 		E r = getResource(s);
 		try {
 			s.close();
