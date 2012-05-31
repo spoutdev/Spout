@@ -78,6 +78,7 @@ import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -120,6 +121,10 @@ public class SpoutRegion extends Region{
 	 * within that time, it can be automatically shutdown
 	 */
 	public static final int TIMEOUT = 30000;
+	/**
+	 * How many ticks to delay sending the entire chunk after lighting calculation has completed
+	 */
+	public static final int LIGHT_SEND_TICK_DELAY = 10;
 	/**
 	 * The source of this region
 	 */
@@ -550,9 +555,11 @@ public class SpoutRegion extends Region{
 							y = TByteTripleHashSet.key2(key);
 							z = TByteTripleHashSet.key3(key);
 							SpoutChunk chunk = this.getChunk(x, y, z);
-							if (chunk != null && chunk.lightingCounter.incrementAndGet() > 20) {
+							if (chunk != null && chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
 								chunk.lightingCounter.set(-1);
-								chunk.setLightDirty(true);
+								if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
+									chunk.setLightDirty(true);
+								}
 								iter.remove();
 							}
 						}
@@ -708,7 +715,7 @@ public class SpoutRegion extends Region{
 						}
 					}
 				}
-			} else {
+			} else if (!chunk.isCalculatingLighting()) {
 				synchronizer.sendChunk(chunk);
 			}
 		}
