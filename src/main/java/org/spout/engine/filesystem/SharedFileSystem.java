@@ -31,7 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import org.spout.api.Filesystem;
+import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Platform;
 import org.spout.api.resource.Resource;
@@ -47,7 +47,7 @@ import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
 import org.spout.engine.resources.loader.TextureLoader;
 
-public class SharedFilesystem implements Filesystem {
+public class SharedFileSystem implements FileSystem {
 	/**
 	 * Plugins live in this folder (SERVER and CLIENT)
 	 */
@@ -128,7 +128,7 @@ public class SharedFilesystem implements Filesystem {
 		//Open our jar and grab the fallback 'file' scheme
 		String scheme = path.getScheme();
 		if(scheme.equals("file")){
-			return SharedFilesystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
+			return SharedFileSystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
 		}
 		
 		//Still can't find it? Throw a ResourceNotFound exception and give out fallbacks

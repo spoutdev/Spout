@@ -35,14 +35,14 @@ import java.util.jar.JarFile;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.resource.ResourcePathResolver;
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 
 public class JarfileResolver implements ResourcePathResolver{
 	public JarfileResolver() {
 		
 	}
 
-	File pluginsFolder = SharedFilesystem.PLUGIN_DIRECTORY;
+	File pluginsFolder = SharedFileSystem.PLUGIN_DIRECTORY;
 
 	
 	

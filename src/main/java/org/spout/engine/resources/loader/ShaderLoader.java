@@ -11,7 +11,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.engine.filesystem.BasicResourceLoader;
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.renderer.shader.ClientShader;
 import org.yaml.snakeyaml.Yaml;
 

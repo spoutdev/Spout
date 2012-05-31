@@ -67,8 +67,8 @@ import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.batcher.PrimitiveBatch;
-import org.spout.engine.filesystem.ClientFilesystem;
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.ClientFileSystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.util.RenderModeConverter;
@@ -119,7 +119,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClient() {
-		this.filesystem = new ClientFilesystem();
+		this.filesystem = new ClientFileSystem();
 	}
 
 	@Override

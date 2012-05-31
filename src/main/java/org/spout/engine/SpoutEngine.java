@@ -49,7 +49,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
-import org.spout.api.Filesystem;
+import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -101,7 +101,7 @@ import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
@@ -124,10 +124,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public static final Logger logger = Logger.getLogger("Spout");
 
 	private final String name = "Spout Engine";
-	private final File pluginDirectory = SharedFilesystem.PLUGIN_DIRECTORY;
-	private final File configDirectory = SharedFilesystem.CONFIG_DIRECTORY;
-	private final File updateDirectory = SharedFilesystem.UPDATE_DIRECTORY;
-	private final File dataDirectory = SharedFilesystem.DATA_DIRECTORY;
+	private final File pluginDirectory = SharedFileSystem.PLUGIN_DIRECTORY;
+	private final File configDirectory = SharedFileSystem.CONFIG_DIRECTORY;
+	private final File updateDirectory = SharedFileSystem.UPDATE_DIRECTORY;
+	private final File dataDirectory = SharedFileSystem.DATA_DIRECTORY;
 	private final Random random = new Random();
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
@@ -160,7 +160,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	protected Filesystem filesystem;
+	protected FileSystem filesystem;
 
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
 	private boolean debugMode = false;
@@ -463,7 +463,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		if(world == null) {
 			Spout.getLogger().info("Generating new world named [" + name + "]");
 
-			File itemMapFile = new File(new File(SharedFilesystem.WORLDS_DIRECTORY, name), "materials.dat");
+			File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE);
 
@@ -794,7 +794,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public Filesystem getFilesystem() {
+	public FileSystem getFilesystem() {
 		return filesystem;
 	}
 }

@@ -31,11 +31,11 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 
 public class ZipfileResolver extends FilepathResolver {
 	public ZipfileResolver() {
-		super(SharedFilesystem.RESOURCE_FOLDER.getPath());
+		super(SharedFileSystem.RESOURCE_FOLDER.getPath());
 	}
 
 	@Override

@@ -43,8 +43,8 @@ import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 
-import org.spout.engine.filesystem.ServerFilesystem;
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.ServerFileSystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
@@ -77,7 +77,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public SpoutServer() {
-		this.filesystem = new ServerFilesystem();
+		this.filesystem = new ServerFileSystem();
 	}
 
 	public static void main(String[] args) {

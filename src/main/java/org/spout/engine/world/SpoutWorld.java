@@ -81,7 +81,7 @@ import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.SharedFilesystem;
+import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutTaskManager;
@@ -189,7 +189,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
 
-		worldDirectory = new File(SharedFilesystem.WORLDS_DIRECTORY, name);
+		worldDirectory = new File(SharedFileSystem.WORLDS_DIRECTORY, name);
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
