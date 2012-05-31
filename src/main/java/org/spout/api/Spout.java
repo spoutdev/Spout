@@ -87,7 +87,7 @@ public final class Spout {
 		return instance.getClass().getPackage().getImplementationVersion();
 	}
 	
-	public static Filesystem getFilesystem() {
+	public static FileSystem getFilesystem() {
 		return instance.getFilesystem();
 	}
 }

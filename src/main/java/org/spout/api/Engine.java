@@ -539,6 +539,6 @@ public interface Engine extends Named {
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
 	 * 
 	 */
-	public Filesystem getFilesystem();
+	public FileSystem getFilesystem();
 	
 }

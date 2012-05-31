@@ -24,13 +24,34 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api;
 
-public interface RenderMaterial {
-	
-	public Object getValue(String name);
-	
-	public Shader getShader();
-	
-	public void assign();
+
+import java.io.InputStream;
+import java.net.URI;
+
+import org.spout.api.resource.Resource;
+import org.spout.api.resource.ResourceLoader;
+import org.spout.api.resource.ResourceNotFoundException;
+
+public interface FileSystem {
+
+	public abstract void init();
+
+	public abstract void postStartup();
+
+	public abstract InputStream getResourceStream(URI path) throws ResourceNotFoundException;
+
+	public abstract InputStream getResourceStream(String path);
+
+	public abstract void registerLoader(String protocol, ResourceLoader<? extends Resource> loader);
+
+	public abstract void loadResource(URI path) throws ResourceNotFoundException;
+
+	public abstract void loadResource(String path);
+
+	public abstract Resource getResource(URI path);
+
+	public abstract Resource getResource(String path);
+
 }
