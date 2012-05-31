@@ -28,49 +28,69 @@ package org.spout.api.inventory;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public class CommonRecipeManager implements RecipeManager {
 
-	private final Map<Plugin, Map<String, Recipe>> registeredRecipes = new ConcurrentHashMap<Plugin, Map<String, Recipe>>();
-	private final Set<Recipe> allRecipes = Collections.newSetFromMap(new HashMap<Recipe, Boolean>());
+	private final Map<Plugin, Set<Recipe>> registeredRecipes = new ConcurrentHashMap<Plugin, Set<Recipe>>();
+	private final Set<Recipe> allRecipes = Collections.newSetFromMap(new ConcurrentHashMap<Recipe, Boolean>());
 
 	public CommonRecipeManager() {
 	}
 
 	@Override
-	public void addRecipe(Recipe recipe) {
+	@SuppressWarnings("unchecked")
+	public boolean addRecipe(Recipe recipe) {
 		Plugin plugin = recipe.getPlugin();
-		Map<String, Recipe> recipes = registeredRecipes.get(plugin);
+		Set<Recipe> recipes = registeredRecipes.get(plugin);
 		if (recipes == null) {
-			recipes = new ConcurrentHashMap<String, Recipe>();
+			recipes = Collections.newSetFromMap(new ConcurrentHashMap<Recipe, Boolean>());
 			registeredRecipes.put(plugin, recipes);
 		}
-		recipes.put(recipe.getName(), recipe);
-		allRecipes.add(recipe);
+		recipes.add(recipe);
+		return allRecipes.add(recipe);
 	}
 
 	@Override
-	public Recipe getRecipe(Plugin plugin, String recipe) {
+	public Set<Recipe> getRecipes(Plugin plugin, Material result) {
 		if (!registeredRecipes.containsKey(plugin)) {
 			return null;
 		}
-		return registeredRecipes.get(plugin).get(recipe);
+		Set<Recipe> recipes = new HashSet<Recipe>();
+		for (Recipe recipe : getRecipes(plugin)) {
+			if (recipe.getResult().getMaterial() == result) {
+				recipes.add(recipe);
+			}
+		}
+		return recipes;
 	}
 
 	@Override
-	public Recipe removeRecipe(Plugin plugin, String recipe) {
+	public Set<Recipe> getRecipes(Plugin plugin) {
 		if (!registeredRecipes.containsKey(plugin)) {
 			return null;
 		}
-		Map<String, Recipe> forPlugin = registeredRecipes.get(plugin);
-		Recipe safe = forPlugin.get(recipe);
-		forPlugin.remove(recipe);
-		allRecipes.remove(safe);
-		return safe;
+		return Collections.unmodifiableSet(registeredRecipes.get(plugin));
+	}
+	
+	@Override
+	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe) {
+		return removeRecipe(oldRecipe) && addRecipe(newRecipe);
+	}
+		
+	@Override
+	public boolean removeRecipe(Recipe recipe) {
+		if (!registeredRecipes.containsKey(recipe.getPlugin())) {
+			return false;
+		}
+		Set<Recipe> forPlugin = registeredRecipes.get(recipe.getPlugin());
+		return forPlugin.remove(recipe) && allRecipes.remove(recipe);
 	}
 	
 	@Override

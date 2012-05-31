@@ -26,69 +26,76 @@
  */
 package org.spout.api.inventory;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public class ShapelessRecipe implements Recipe {
-	private final String name;
 	private final Plugin plugin;
-	private ItemStack result;
-	private HashMap<Character, Material> ingredients;
-	private List<Character> amounts;
-	private final String type = "SHAPELESS";
-	private String subType;
+	private final ItemStack result;
+	private final List<Material> ingredients;
 
-	public ShapelessRecipe(Plugin plugin, String name, ItemStack result) {
+	public ShapelessRecipe(Plugin plugin, ItemStack result, List<Material> ingredients) {
 		this.plugin = plugin;
-		this.name = name;
 		this.result = result;
-		ingredients = new HashMap<Character, Material>();
+		this.ingredients = ingredients;
 	}
 
+	public ShapelessRecipe(RecipeBuilder<?> builder) {
+		this.plugin = builder.plugin;
+		this.result = builder.result;
+		this.ingredients = builder.ingredients;
+	}
+
+	@Override
 	public ItemStack getResult() {
 		return result;
 	}
-
-	public ShapelessRecipe setResult(ItemStack result) {
-		this.result = result;
-		return this;
+	
+	@Override
+	public List<Material> getIngredients() {
+		return Collections.unmodifiableList(ingredients);
 	}
 
-	public ShapelessRecipe addIngredient(Character symbol, Material ingredient) {
-		ingredients.put(symbol, ingredient);
-		return this;
-	}
-
-	public ShapelessRecipe setAmounts(List<Character> amounts) {
-		this.amounts = amounts;
-		return this;
-	}
-
+	@Override
 	public Plugin getPlugin() {
 		return plugin;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ShapelessRecipe other = (ShapelessRecipe) obj;
+		if (this.plugin != other.plugin && (this.plugin == null || !this.plugin.equals(other.plugin))) {
+			return false;
+		}
+		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
+			return false;
+		}
+		List<Material> materials = new ArrayList<Material>();
+		List<Material> materials2 = new ArrayList<Material>();
+		materials.addAll(ingredients);
+		materials2.addAll(other.ingredients);
+		materials.removeAll(other.ingredients);
+		materials2.removeAll(ingredients);
+		if (!materials.isEmpty() || !materials2.isEmpty()) {
+			return false;
+		}
+		return true;
 	}
-
-	public List<Character> getAmounts() {
-		return amounts;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public String getSubType() {
-		return subType;
-	}
-
-	public Recipe setSubType(String subType) {
-		this.subType = subType;
-		return this;
+	
+	@Override
+	public int hashCode() {
+		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredients).build();
 	}
 }

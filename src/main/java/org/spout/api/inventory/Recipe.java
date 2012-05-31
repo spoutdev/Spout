@@ -26,20 +26,15 @@
  */
 package org.spout.api.inventory;
 
+import java.util.List;
+
+import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public interface Recipe {
 	public Plugin getPlugin();
 
-	public String getName();
-
 	public ItemStack getResult();
-
-	public Recipe setResult(ItemStack result);
-
-	public String getType();
-
-	public String getSubType();
-
-	public Recipe setSubType(String subType);
+	
+	public List<Material> getIngredients();
 }
