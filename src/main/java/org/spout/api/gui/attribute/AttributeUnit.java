@@ -27,6 +27,7 @@
 package org.spout.api.gui.attribute;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class AttributeUnit {
 
@@ -40,6 +41,10 @@ public class AttributeUnit {
 	
 	private static HashMap<Integer, AttributeUnit> idStore = new HashMap<Integer, AttributeUnit>();
 	private static HashMap<String, AttributeUnit> textStore = new HashMap<String, AttributeUnit>();
+	
+	public static Set<String> getAllTexts() {
+		return textStore.keySet();
+	}
 	
 	public static AttributeUnit getByText(String text) {
 		return textStore.get(text);

@@ -28,10 +28,44 @@ package org.spout.api.gui.attribute;
 
 public interface AttributeStore {
 
+	/**
+	 * @param name
+	 *            the name of the attribute to look for
+	 * @return if an attribute with the given name exists in this store
+	 */
 	public boolean hasAttribute(String name);
 
+	/**
+	 * @param name
+	 *            the name of the attribute to look for
+	 * @return the attribute for the given name, or null if not found
+	 */
 	public Attribute getAttribute(String name);
 
+	/**
+	 * Sets the attribute value to this store. The name of the attribute is
+	 * obtained by value.getName()
+	 * 
+	 * @param value
+	 *            the attribute to set
+	 */
 	public void setAttribute(Attribute value);
 
+	/**
+	 * Sets the attributes as a css-formatted stylesheet which is then parsed.<br/>
+	 * If an error occurs, no exception is thrown, instead it keeps on parsing -
+	 * if possible - and returns all errors as an array
+	 * 
+	 * @param css
+	 *            the stylesheet to parse
+	 * @returns an array of parse errors, if any
+	 */
+	public Error[] setStylesheet(String css);
+
+	/**
+	 * @return the effective stylesheet which contains all attributes<br/>
+	 *         Please note, this is NOT neccessarily the stylesheet you set with
+	 *         setStylesheet(), but a compilation of all the attributes
+	 */
+	public String getStylesheet();
 }

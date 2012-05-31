@@ -1262,4 +1262,12 @@ public class MathHelper {
 	public static int index(int x, int y, int dim) {
 		return x * dim + y;
 	}
+
+	public static String decToHex(int dec, int minDigits) {
+		String ret = Integer.toHexString(dec);
+		while (ret.length() < minDigits) {
+			ret = "0"+ret;
+		}
+		return ret;
+	}
 }
