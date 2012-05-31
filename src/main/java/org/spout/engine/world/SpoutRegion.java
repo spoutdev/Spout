@@ -1118,10 +1118,22 @@ public class SpoutRegion extends Region{
 		dynamicBlockTree.resetBlockUpdates(x, y, z);
 	}
 	
-	public void resetDynamicBlock(Block b) {
-		resetDynamicBlock(b.getX(), b.getY(), b.getZ());
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
+		dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, hint);
 	}
 
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate);
+	}
+
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z) {
+		dynamicBlockTree.queueBlockUpdates(x, y, z);
+	}
+
+	
 	// TODO - save needs to call this method
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {
 		Set<DynamicBlockUpdate> updates = dynamicBlockTree.getDynamicBlockUpdates(c);

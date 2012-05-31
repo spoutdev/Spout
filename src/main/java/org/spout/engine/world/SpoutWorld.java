@@ -548,6 +548,26 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
+	public void resetDynamicBlock(int x, int y, int z) {
+		regions.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
+	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
+		regions.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, hint);
+	}
+
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		regions.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
+	}
+
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z) {
+		regions.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
+	}
+	
+	@Override
 	public Transform getSpawnPoint() {
 		return spawnLocation.copy();
 	}

@@ -328,6 +328,26 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 	}
+	
+	@Override
+	public void resetDynamicBlock(int x, int y, int z) {
+		parentRegion.resetDynamicBlock((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK);
+	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
+		parentRegion.queueDynamicUpdate((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK, nextUpdate, hint);
+	}
+
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		parentRegion.queueDynamicUpdate((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK, nextUpdate);
+	}
+
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z) {
+		parentRegion.queueDynamicUpdate((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK);
+	}
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {

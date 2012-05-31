@@ -13,14 +13,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.hashing.ByteTripleHashed;
 import org.spout.engine.world.SpoutRegion;
 
+/**
+ * This class contains the dynamic block updates.  There are 3 data structures that are kept in sync.<br>
+ * <br>
+ * blockToUpdateMap - This maps the packed (x, y, z) block coords to the DynamicBlockUpdates for that block (stored as a linked list)
+ * chunkToUpdateMap - this maps the packed (x, y, z) chunk coords to the DynamicBlockUpdates for that chunk (stored as a hashset)
+ * queuedUpdates - the actual queue of dynamic updates, stored in a TreeMap
+ */
 public class DynamicBlockUpdateTree {
 	
 	private final SpoutRegion region;
@@ -28,7 +33,8 @@ public class DynamicBlockUpdateTree {
 	private TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<DynamicBlockUpdate>();
 	private TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<DynamicBlockUpdate>();
 	private TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<HashSet<DynamicBlockUpdate>>();
-	private ConcurrentLinkedQueue<Point> pending = new ConcurrentLinkedQueue<Point>();
+	private ConcurrentLinkedQueue<PointAlone> pending = new ConcurrentLinkedQueue<PointAlone>();
+	private ConcurrentLinkedQueue<PointAlone> resetPending = new ConcurrentLinkedQueue<PointAlone>();
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
 	private final static int regionMask = (Chunk.CHUNK_SIZE * Region.REGION_SIZE) - 1;
@@ -37,16 +43,33 @@ public class DynamicBlockUpdateTree {
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
 	}
-	
+
 	public void resetBlockUpdates(int x, int y, int z) {
 		x &= regionMask;
 		y &= regionMask;
 		z &= regionMask;
-		resetBlockUpdatesRaw(new Point(region.getWorld(), x, y, z));
+		resetPending.add(new PointAlone(null, x, y, z));
 	}
 	
-	private void resetBlockUpdatesRaw(Point p) {
-		pending.add(p);
+	public void queueBlockUpdates(int x, int y, int z) {
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
+		pending.add(new PointAlone(null, x, y, z));
+	}
+	
+	public void queueBlockUpdates(int x, int y, int z, long updateTime) {
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
+		pending.add(new PointLongPair(x, y, z, updateTime));
+	}
+	
+	public void queueBlockUpdates(int x, int y, int z, long updateTime, Object hint) {
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
+		pending.add(new PointLongObjectTriplet(x, y, z, updateTime, hint));
 	}
 	
 	public void addDynamicBlockUpdates(List<DynamicBlockUpdate> list) {
@@ -83,15 +106,18 @@ public class DynamicBlockUpdateTree {
 				add(update);
 			}
 		}
-		Point p;
-		while ((p = pending.poll()) != null) {
-			int packed = ByteTripleHashed.key(p.getBlockX(), p.getBlockY(), p.getBlockZ());
+		processed.clear();
+		PointAlone p;
+		while ((p = resetPending.poll()) != null) {
+			int packed = DynamicBlockUpdate.getPointPacked(p);
 			if (!processed.add(packed)) {
 				continue;
 			}
 			int bx = p.getBlockX() & regionMask;
 			int by = p.getBlockY() & regionMask;
 			int bz = p.getBlockZ() & regionMask;
+			
+			removeAll(DynamicBlockUpdate.getBlockPacked(bx, by, bz));
 			
 			int rShift = Region.REGION_SIZE_BITS;
 			Chunk c = region.getChunk(bx >> rShift, by >> rShift, bz >> rShift, false);
@@ -104,11 +130,26 @@ public class DynamicBlockUpdateTree {
 			
 			if (m instanceof DynamicMaterial) {
 				DynamicMaterial dm = (DynamicMaterial)m;
-				long nextUpdate = dm.update(b, 0, 0, true);
+				long nextUpdate = dm.onPlacement(b, region, currentTime);
 				if (nextUpdate > 0) {
-					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime));
+					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime, null));
 				}
 			}
+		}
+		while ((p = pending.poll()) != null) {
+			int packed = DynamicBlockUpdate.getPointPacked(p);
+			if (!processed.add(packed)) {
+				continue;
+			}
+			int bx = p.getBlockX() & regionMask;
+			int by = p.getBlockY() & regionMask;
+			int bz = p.getBlockZ() & regionMask;
+			
+			Object hint = p.getHint();
+			long updateTime = p.getUpdateTime();
+			
+			add(new DynamicBlockUpdate(bx, by, bz, updateTime, -1, hint));
+			
 		}
 		processed.clear();
 	}
@@ -176,9 +217,9 @@ public class DynamicBlockUpdateTree {
 			if (maxx >= rs || maxy >= rs || maxz >= rs || minx < 0 || miny < 0 || minz < 0) {
 				return false;
 			} else {
-				long nextUpdate = dm.update(b, update.getNextUpdate(), update.getLastUpdate(), false);
+				long nextUpdate = dm.update(b, region, update.getNextUpdate(), update.getLastUpdate(), update.getHint());
 				if (nextUpdate > 0) {
-					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime));
+					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime, null));
 				}
 				return true;
 			}
@@ -209,9 +250,16 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	private boolean add(DynamicBlockUpdate update) {
-		boolean alreadyPresent = remove(update);
+		boolean alreadyPresent = false;
 		queuedUpdates.add(update);
-		blockToUpdateMap.put(update.getPacked(), update);
+		int key = update.getPacked();
+		DynamicBlockUpdate previous = blockToUpdateMap.putIfAbsent(key, update);
+		if (previous != null) {
+			DynamicBlockUpdate newRoot = previous.add(update);
+			if (newRoot != previous) {
+				blockToUpdateMap.put(key, newRoot);
+			}
+		}
 		HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(update.getChunkPacked());
 		if (chunkSet == null) {
 			chunkSet = new HashSet<DynamicBlockUpdate>();
@@ -221,10 +269,21 @@ public class DynamicBlockUpdateTree {
 		return alreadyPresent;
 	}
 	
+	/**
+	 * Removes a specific update
+	 * 
+	 * @param update the update to remove
+	 * @return true if the update was removed
+	 */
 	private boolean remove(DynamicBlockUpdate update) {
-		int packed = update.getPacked();
-		DynamicBlockUpdate previous = blockToUpdateMap.remove(packed);
-		if (previous != null) {
+		boolean removed = false;
+		DynamicBlockUpdate previous = blockToUpdateMap.remove(update.getPacked());
+		while (previous != null) {
+			if (previous != update) {
+				previous = previous.getNext();
+				continue;
+			}
+			removed = true;
 			if (!queuedUpdates.remove(previous)) {
 				throw new IllegalStateException("Dynamic block update missing from queue when removed");
 			}
@@ -238,6 +297,37 @@ public class DynamicBlockUpdateTree {
 						throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
 					}
 				}
+			}
+			previous = previous.getNext();
+		}
+		return removed;
+	}
+		
+	/**
+	 * Removes all updates with at the given block location
+	 * 
+	 * @param update the packed value for the block location
+	 * @return true if at least one update was removed
+	 */
+	private boolean removeAll(int packed) {
+		DynamicBlockUpdate previous = blockToUpdateMap.remove(packed);
+		if (previous != null) {
+			while (previous != null) {
+				if (!queuedUpdates.remove(previous)) {
+					throw new IllegalStateException("Dynamic block update missing from queue when removed");
+				}
+				int previousPacked = previous.getChunkPacked();
+				HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previousPacked);
+				if (chunkSet == null || !chunkSet.remove(previous)) {
+					throw new IllegalStateException("Dynamic block update missing from chunk when removed");
+				} else {
+					if (chunkSet.size() == 0) {
+						if (chunkToUpdateMap.remove(previousPacked) == null) {
+							throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
+						}
+					}
+				}
+				previous = previous.getNext();
 			}
 			return true;
 		} else {

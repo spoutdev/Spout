@@ -469,7 +469,7 @@ public class WorldFiles {
 		if (packed < 0 || nextUpdate < 0) {
 			return null;
 		} else {
-			return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate);
+			return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate, null);
 		}
 	}
 	
