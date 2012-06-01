@@ -174,7 +174,7 @@ public class DynamicBlockUpdateTree {
 			Object hint = p.getHint();
 			long updateTime = p.getUpdateTime();
 			
-			add(new DynamicBlockUpdate(bx, by, bz, updateTime, -1, hint));
+			add(new DynamicBlockUpdate(bx, by, bz, updateTime, currentTime, hint));
 			
 		}
 		processed.clear();
