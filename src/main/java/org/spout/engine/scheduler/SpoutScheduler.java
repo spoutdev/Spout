@@ -613,6 +613,13 @@ public final class SpoutScheduler implements Scheduler {
 				} else {
 					engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
 				}
+				if (executor instanceof Thread) {
+					StackTraceElement[] stackTrace = ((Thread)executor).getStackTrace();
+					engine.getLogger().info("Thread for stalled manager is executing");
+					for (StackTraceElement e : stackTrace) {
+						engine.getLogger().info("\tat " + e);
+					}
+				}
 			}
 		}
 	}
