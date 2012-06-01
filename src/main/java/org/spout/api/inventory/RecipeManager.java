@@ -27,6 +27,8 @@
 package org.spout.api.inventory;
 
 import java.util.Set;
+
+import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public interface RecipeManager {
@@ -37,18 +39,37 @@ public interface RecipeManager {
 	 * name already exists, it will update the database and the recipe.yml
 	 * 
 	 * @param recipe to register
+	 * @return  true if successful
 	 */
-	public void addRecipe(Recipe recipe);
+	public boolean addRecipe(Recipe recipe);
 
 	/**
-	 * Gets a recipe registered to this games recipe database, based on the
-	 * plugin and name of the recipe.
+	 * Gets a set of recipe registered to this game recipe database, based on the
+	 * plugin and result of the recipe.
 	 * 
 	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return the recipe if it's found, otherwise null
+	 * @param result 
+	 * @return the recipes if they're found, otherwise null
 	 */
-	public Recipe getRecipe(Plugin plugin, String recipe);
+	public Set<Recipe> getRecipes(Plugin plugin, Material result);
+		
+	/**
+	 * Gets a recipe registered to this games recipe database, based on the
+	 * plugin.
+	 * 
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise null
+	 */
+	public Set<Recipe> getRecipes(Plugin plugin);
+		
+	/**
+	 * Replaces an old recipe with a new one.
+	 * 
+	 * @param oldRecipe 
+	 * @param newRecipe 
+	 * @return true if fully successful
+	 */
+	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe);
 
 	/**
 	 * Removes a recipe from the games recipes database, then returns the
@@ -58,11 +79,10 @@ public interface RecipeManager {
 	 * It returns a reference to the removed recipe if you want to back it up
 	 * for safe keeping still. *WARNING*
 	 * 
-	 * @param plugin that the recipe belongs to
-	 * @param recipe name
-	 * @return recipe that was removed
+	 * @param recipe what to remove
+	 * @return true if successful, false if not
 	 */
-	public Recipe removeRecipe(Plugin plugin, String recipe);
+	public boolean removeRecipe(Recipe recipe);
 	
 	
 	/**

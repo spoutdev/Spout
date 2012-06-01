@@ -27,77 +27,90 @@
 package org.spout.api.inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public class ShapedRecipe implements Recipe {
 	private final Plugin plugin;
-	private final String name;
-	private final String type = "SHAPED";
-	private ItemStack result;
-	private HashMap<Character, Material> ingredients;
-	private ArrayList<ArrayList<Character>> rows;
-	private String subType;
+	private final ItemStack result;
+	private final HashMap<Character, Material> ingredientsMap;
+	private final List<List<Character>> rows;
 
-	public ShapedRecipe(Plugin plugin, String name, ItemStack result) {
+	public ShapedRecipe(Plugin plugin, ItemStack result, HashMap<Character, Material> ingredients, List<List<Character>> rows) {
 		this.plugin = plugin;
-		this.name = name;
 		this.result = result;
-		ingredients = new HashMap<Character, Material>();
-		rows = new ArrayList<ArrayList<Character>>();
+		this.ingredientsMap = ingredients;
+		this.rows = rows;
 	}
 
+	public ShapedRecipe(RecipeBuilder<?> builder) {
+		this.plugin = builder.plugin;
+		this.result = builder.result;
+		this.ingredientsMap = builder.ingredientsMap;
+		this.rows = builder.rows;
+	}
+	
+	@Override
 	public ItemStack getResult() {
 		return result;
 	}
-
-	public ShapedRecipe setResult(ItemStack result) {
-		this.result = result;
-		return this;
-	}
-
-	public ShapedRecipe addIngredient(Character symbol, Material ingredient) {
-		ingredients.put(symbol, ingredient);
-		return this;
-	}
-
-	public ShapedRecipe addRow(ArrayList<Character> row) {
-		rows.add(row);
-		return this;
-	}
-
+	
+	@Override
 	public Plugin getPlugin() {
 		return plugin;
 	}
-
-	public String getName() {
-		return name;
+	
+	@Override
+	public List<Material> getIngredients() {
+		List<Material> list = new ArrayList<Material>();
+		for (Material m : ingredientsMap.values()) {
+			list.add(m);
+		}
+		return list;
+	}
+	
+	public HashMap<Character, Material> getIngredientsMap() {
+		return ingredientsMap;
 	}
 
-	public HashMap<Character, Material> getIngredients() {
-		return ingredients;
+ 
+	public List<List<Character>> getRows() {
+		return Collections.unmodifiableList(rows);
 	}
 
-	public ArrayList<ArrayList<Character>> getRows() {
-		return rows;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ShapedRecipe other = (ShapedRecipe) obj;
+		if (this.plugin != other.plugin && (this.plugin == null || !this.plugin.equals(other.plugin))) {
+			return false;
+		}
+		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
+			return false;
+		}
+		// TODO extend this to allow different characters that map to the same material to be equal?
+		if (this.ingredientsMap != other.ingredientsMap && (this.ingredientsMap == null || !this.ingredientsMap.equals(other.ingredientsMap))) {
+			return false;
+		}
+		if (this.rows != other.rows && (this.rows == null || !this.rows.equals(other.rows))) {
+			return false;
+		}
+		return true;
 	}
 
-	public ArrayList<Character> getRow(int row) {
-		return rows.get(row);
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public String getSubType() {
-		return subType;
-	}
-
-	public Recipe setSubType(String subType) {
-		this.subType = subType;
-		return this;
+	@Override
+	public int hashCode() {
+		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredientsMap).append(rows).build();
 	}
 }
