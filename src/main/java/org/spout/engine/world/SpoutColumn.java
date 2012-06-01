@@ -38,6 +38,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
@@ -178,7 +179,7 @@ public class SpoutColumn {
 	}
 
 	private boolean isAir(BlockMaterial material) {
-		return material.isTransparent() && !material.occludes(BlockFace.TOP) && !material.occludes(BlockFace.BOTTOM);
+		return material.isTransparent() && !material.getOcclusion().getAny(BlockFaces.BT);
 	}
 
 	private AtomicInteger getAtomicInteger(int x, int z) {
