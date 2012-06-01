@@ -26,14 +26,14 @@
  */
 package org.spout.api.material;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
@@ -46,7 +46,9 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private String displayName;
 	private int maxStackSize = 64;
 	private short maxData = Short.MAX_VALUE;
-	private Map<Short, Material> submaterials = null;
+	private Material[] submaterials = null;
+	private Material[] submaterialsContiguous = null;
+	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
 
 	/**
@@ -134,12 +136,12 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	}
 
 	/**
-	 * Gets the data value associated with this material. Will return 0 if this
-	 * material does not have or is not a sub material.
+	 * Gets the data value associated with this material. if this material does not have 
+	 * or is not a sub material, then (getData() & getDataMask()) is equal to zero.  
 	 * 
 	 * @return data value
 	 */
-	public short getData() {
+	public final short getData() {
 		return this.data;
 	}
 	
@@ -149,7 +151,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return data mask
 	 */
-	public short getDataMask() {
+	public final short getDataMask() {
 		return this.dataMask;
 	}
 
@@ -177,10 +179,28 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @return an array of sub materials
 	 */
 	public final Material[] getSubMaterials() {
-		if (this.hasSubMaterials()) {
-			return this.submaterials.values().toArray(new Material[0]);
-		} else {
+		if (this.submaterials == null) {
 			return new Material[0];
+		} else {
+			if (submaterialsDirty) {
+				int materialCount = 0;
+				for (int i = 0; i < this.submaterials.length; i++) {
+					if (this.submaterials[i] != null) {
+						materialCount++;
+					}
+				}
+				Material[] newSubmaterials = new Material[materialCount];
+				materialCount = 0;
+				for (int i = 0; i < this.submaterials.length; i++) {
+					if (this.submaterials[i] != null) {
+						newSubmaterials[materialCount++] = this.submaterials[i];
+					}
+				}
+				this.submaterialsContiguous = newSubmaterials;
+				submaterialsDirty = false;
+			}
+			Material[] sm = submaterialsContiguous;
+			return Arrays.copyOf(sm, sm.length);
 		}
 	}
 
@@ -193,7 +213,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public Material getSubMaterial(short data) {
 		if (this.hasSubMaterials()) {
 			short maskedData = (short)(data & dataMask);
-			Material material = this.submaterials.get(maskedData);
+			Material material = this.submaterials[maskedData];
 			if (material != null) {
 				return material.getSubMaterial(maskedData);
 			}
@@ -212,17 +232,38 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param material to register
 	 */
 	public final void registerSubMaterial(Material material) {
-		if (material.isSubMaterial) {
-			if (material.getParentMaterial() == this) {
-				if (this.submaterials == null) {
-					this.submaterials = new HashMap<Short, Material>();
-				}
-				this.submaterials.put(material.data, material);
-			} else {
-				throw new IllegalArgumentException("Sub Material is registered to a material different than the parent!");
+		submaterialsDirty = true;
+		try {
+			int data = material.data & 0xFFFF;
+			if ((data & dataMask) != data) {
+				throw new IllegalArgumentException("Sub material data value has non-zero bits outside data mask");
 			}
-		} else {
-			throw new IllegalArgumentException("Material is not a valid sub material!");
+			if (material.isSubMaterial) {
+				if (material.getParentMaterial() == this) {
+					if (this.submaterials == null) {
+						this.submaterials = new Material[16];
+					}
+					if (data >= this.submaterials.length) {
+						int newSize = MathHelper.roundUpPow2(data + (data >> 1));
+						Material[] newSubmaterials = new Material[newSize];
+						for (int i = 0; i < submaterials.length; i++) {
+							newSubmaterials[i] = submaterials[i];
+						}
+						this.submaterials = newSubmaterials;
+					}
+					if (this.submaterials[data] == null) {
+						this.submaterials[data] = material;
+					} else {
+						throw new IllegalArgumentException("Two sub material registered for the same data value");
+					}
+				} else {
+					throw new IllegalArgumentException("Sub Material is registered to a material different than the parent!");
+				}
+			} else {
+				throw new IllegalArgumentException("Material is not a valid sub material!");
+			}
+		} finally {
+			submaterialsDirty = true;
 		}
 	}
 
