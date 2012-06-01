@@ -132,6 +132,11 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 	public static final BlockFaces NSWEB = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST, BlockFace.BOTTOM);
 
 	/**
+	 * The [bottom-top] faces
+	 */
+	public static final BlockFaces BT = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP);
+
+	/**
 	 * The [top-bottom-north-south-east-west-this] faces
 	 */
 	public static final BlockFaces ALL = new BlockFaces(BlockFace.values());
