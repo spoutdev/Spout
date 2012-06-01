@@ -1,1 +1,3 @@
-java -jar spout-dev-SNAPSHOT.jar -debug
+@echo off
+
+java -jar spout*.jar -debug

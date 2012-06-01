@@ -42,6 +42,7 @@ Thumbs.db
 # Project files #
 #################
 .classpath
+.externalToolBuilders
 .project
 .settings
 MANIFEST.MF
@@ -52,19 +53,22 @@ build
 dist
 nbproject
 build.xml
+nb-configuration.xml
 
 # IntelliJ IDEA files #
 #######################
 .idea
 *.iml
+*.ipr
+*.iws
 
-# Spout Runtime Folders #
+# Spout runtime folders #
 #########################
-plugins/
-cache/
-update/
-data/
-config/
-logs/
-worlds/
-
+/cache
+/config
+/data
+/logs
+/plugins
+/resources
+/update
+/worlds

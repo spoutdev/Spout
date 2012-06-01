@@ -1,6 +1,7 @@
 /*
- * This file is part of Spout (http://www.spout.org/).
+ * This file is part of Spout.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * Spout is licensed under the SpoutDev License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify
