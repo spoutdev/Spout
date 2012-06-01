@@ -26,6 +26,7 @@
  */
 package org.spout.engine.world;
 
+import org.spout.api.Spout;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
@@ -33,8 +34,6 @@ import org.spout.api.util.hashing.Int21TripleHashed;
 import org.spout.api.util.set.TInt21TripleHashSet;
 
 import gnu.trove.iterator.TLongIterator;
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
 
 /**
  * This model can store a diamond-shaped model of blocks to perform lighting on.<br>
@@ -47,9 +46,28 @@ public class SpoutWorldLightingModel {
 	private final TInt21TripleHashSet greater = new TInt21TripleHashSet();
 	private TLongIterator iter; //temporary
 	private final SpoutWorldLighting instance;
-	private final TLongList updates = new TLongArrayList();
+	private long[] updates = new long[0];
+	private int updateCount = 0;
 	private final boolean sky;
 
+	//Used to debug and log statistics
+	private int changes = 0;
+	private long lastResolveTime = 0;
+	private long processTime = 0;
+
+	public void reportChanges() {
+		if (this.changes > 0) {
+			if (Spout.debugMode()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append("[debug] Finished processing ").append(this.changes).append(sky ? " sky" : " block");
+				builder.append(" lighting operations in ").append(((double) processTime / 1E6D)).append(" ms");
+				System.out.println(builder);
+			}
+			this.changes = 0;
+			this.processTime = 0;
+		}
+	}
+	
 	/**
 	 * The maximum amount of resolves performed per operation per tick
 	 */
@@ -59,7 +77,7 @@ public class SpoutWorldLightingModel {
 		this.sky = sky;
 		this.instance = instance;
 		SpoutWorld world = instance.getWorld();
-		this.center = sky ? new SkyElement(world, BlockFace.THIS, this.center) : new BlockElement(world, BlockFace.THIS, this.center);
+		this.center = sky ? new SkyElement(world, BlockFace.THIS, null) : new BlockElement(world, BlockFace.THIS, null);
 		this.neighbors = new Element[6];
 		for (int i = 0; i < this.neighbors.length; i++) {
 			BlockFace face = BlockFaces.NESWBT.get(i);
@@ -92,14 +110,18 @@ public class SpoutWorldLightingModel {
 	}
 
 	public boolean load(TInt21TripleHashSet coordinates) {
-		this.updates.clear();
+		this.updateCount = 0;
 		synchronized (coordinates) {
 			if (coordinates.isEmpty()) {
 				return false;
 			}
+			this.updateCount = coordinates.size();
+			if (this.updateCount > this.updates.length) {
+				this.updates = new long[this.updateCount + 100];
+			}
 			iter = coordinates.iterator();
-			while (iter.hasNext()) {
-				this.updates.add(iter.next());
+			for (int i = 0; i < this.updateCount && iter.hasNext(); i++) {
+				this.updates[i] = iter.next();
 			}
 			coordinates.clear();
 			return true;
@@ -109,15 +131,17 @@ public class SpoutWorldLightingModel {
 	/*
 	 * Routines to perform lighting updates
 	 */
-	public void resolve() {
+	public boolean resolve() {
+		this.lastResolveTime = System.nanoTime();
 		long key;
-		int x = 0, y = 0, z = 0, i;
+		int x = 0, y = 0, z = 0, i, j;
+		int newChanges = 0;
 		try {
 			//Lesser
 			for (i = 0; i < MAX_PER_TICK && this.load(greater); i++) {
-				iter = this.updates.iterator();
-				while (iter.hasNext()) {
-					key = iter.next();
+				newChanges += this.updateCount;
+				for (j = 0; j < this.updateCount; j++) {
+					key = this.updates[j];
 					x = Int21TripleHashed.key1(key);
 					y = Int21TripleHashed.key2(key);
 					z = Int21TripleHashed.key3(key);
@@ -126,9 +150,9 @@ public class SpoutWorldLightingModel {
 			}
 			//Greater
 			for (i = 0; i < MAX_PER_TICK && this.load(lesser); i++) {
-				iter = this.updates.iterator();
-				while (iter.hasNext()) {
-					key = iter.next();
+				newChanges += this.updateCount;
+				for (j = 0; j < this.updateCount; j++) {
+					key = this.updates[j];
 					x = Int21TripleHashed.key1(key);
 					y = Int21TripleHashed.key2(key);
 					z = Int21TripleHashed.key3(key);
@@ -142,13 +166,14 @@ public class SpoutWorldLightingModel {
 			}
 			//Refresh
 			for (i = 0; i < MAX_PER_TICK && this.load(refresh); i++) {
-				iter = this.updates.iterator();
-				while (iter.hasNext()) {
-					key = iter.next();
+				newChanges += this.updateCount;
+				for (j = 0; j < this.updateCount; j++) {
+					key = this.updates[j];
 					x = Int21TripleHashed.key1(key);
 					y = Int21TripleHashed.key2(key);
 					z = Int21TripleHashed.key3(key);
 					this.resolveRefresh(x, y, z);
+					this.changes++;
 				}
 			}
 		} catch (Throwable t) {
@@ -156,6 +181,9 @@ public class SpoutWorldLightingModel {
 			System.out.println("An exception occurred while resolving " + type + " lighting at block [" + x + "/" + y + "/" + z + "/" + this.instance.getWorld() + "]:");
 			t.printStackTrace();
 		}
+		this.changes += newChanges;
+		this.processTime += System.nanoTime() - lastResolveTime;
+		return newChanges > 0;
 	}
 
 	public void resolveRefresh(int x, int y, int z) {
@@ -283,7 +311,7 @@ public class SpoutWorldLightingModel {
 		public Element(SpoutWorld world, BlockFace offset, Element center) {
 			this.offset = offset;
 			this.world = world;
-			this.center = center;
+			this.center = center == null ? this : center;;
 		}
 
 		/**
@@ -325,7 +353,11 @@ public class SpoutWorldLightingModel {
 			this.x = x + (int) this.offset.getOffset().getX();
 			this.y = y + (int) this.offset.getOffset().getY();
 			this.z = z + (int) this.offset.getOffset().getZ();
-			this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, false);
+			if (center.chunk != null && center.chunk.isLoaded() && center.chunk.containsBlock(this.x, this.y, this.z)) {
+				this.chunk = center.chunk;
+			} else {
+				this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, false);
+			}
 			if (this.chunk == null || !this.chunk.isLoaded()) {
 				this.material = null;
 			} else {
