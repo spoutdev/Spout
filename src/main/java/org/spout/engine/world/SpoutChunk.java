@@ -59,6 +59,8 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicMaterial;
+import org.spout.api.material.Material;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.math.MathHelper;
@@ -227,8 +229,22 @@ public class SpoutChunk extends Chunk {
 		checkBlockStoreUpdateAllowed();
 
 		BlockMaterial material = this.getBlockMaterial(x, y, z);
-		blockStore.setBlock(x, y, z, material.getId(), data);
+		BlockFullState oldState = blockStore.getAndSetBlock(x, y, z, material.getId(), data);
 
+		if (((oldState.getData() ^ data) & material.getDataMask()) != 0) {
+			Material oldMaterial = MaterialRegistry.get(oldState);
+			if (material instanceof DynamicMaterial) {
+				if (oldMaterial instanceof BlockMaterial) {
+					BlockMaterial oldBlockMaterial = (BlockMaterial)oldMaterial;
+					if (!oldBlockMaterial.isCompatibleWith(material) || !material.isCompatibleWith(oldBlockMaterial)) {
+						parentRegion.resetDynamicBlock(x, y, z);
+					}
+				} else {
+					parentRegion.resetDynamicBlock(x, y, z);
+				}
+			}
+		}
+		
 		// Data component does not alter height of the world. Change this?
 		// column.notifyBlockChange(x, this.getBlockY() + y, z);
 
@@ -265,7 +281,7 @@ public class SpoutChunk extends Chunk {
 			data = blockEvent.getSnapshot().getData();
 		}
 		
-		blockStore.setBlock(x, y, z, material.getId(), data);
+		Material oldMaterial = MaterialRegistry.get(blockStore.getAndSetBlock(x, y, z, material.getId(), data));
 
 		int oldheight = column.getSurfaceHeight(x, z);
 		y += this.getBlockY();
@@ -300,7 +316,14 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 		if (material instanceof DynamicMaterial) {
-			parentRegion.resetDynamicBlock(x, y, z);
+			if (oldMaterial instanceof BlockMaterial) {
+				BlockMaterial oldBlockMaterial = (BlockMaterial)oldMaterial;
+				if (!oldBlockMaterial.isCompatibleWith(material) || !material.isCompatibleWith(oldBlockMaterial)) {
+					parentRegion.resetDynamicBlock(x, y, z);
+				}
+			} else {
+				parentRegion.resetDynamicBlock(x, y, z);
+			}
 		}
 		return true;
 	}
@@ -1060,6 +1083,7 @@ public class SpoutChunk extends Chunk {
 	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
+		// TODO - this should probably trigger a dynamic block reset
 		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
 	
@@ -1079,6 +1103,7 @@ public class SpoutChunk extends Chunk {
 			oldData = state.getData();
 			short oldId = state.getId();
 			short newData = (short)(oldData | bits);
+			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return oldData;
@@ -1100,6 +1125,7 @@ public class SpoutChunk extends Chunk {
 			oldData = state.getData();
 			short oldId = state.getId();
 			short newData = (short)(oldData & (~bits));
+			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return oldData;
@@ -1139,6 +1165,7 @@ public class SpoutChunk extends Chunk {
 			
 			short newData = (short)(((value << shift) & bits) | (oldData & (~bits)));
 			
+			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return (oldData & bits) >> shift;
