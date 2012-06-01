@@ -56,7 +56,7 @@ public class SpoutWorldLightingModel {
 	private long processTime = 0;
 
 	public void reportChanges() {
-		if (this.changes > 0) {
+		if (this.changes > 1000) {
 			if (Spout.debugMode()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("[debug] Finished processing ").append(this.changes).append(sky ? " sky" : " block");
@@ -67,7 +67,7 @@ public class SpoutWorldLightingModel {
 			this.processTime = 0;
 		}
 	}
-	
+
 	/**
 	 * The maximum amount of resolves performed per operation per tick
 	 */
@@ -187,7 +187,7 @@ public class SpoutWorldLightingModel {
 	}
 
 	public void resolveRefresh(int x, int y, int z) {
-		if (this.load(x, y, z)) {
+		if (this.loadReceive(x, y, z)) {
 			for (Element element : this.neighbors) {
 				if (element.isEmittingToCenter()) {
 					if (element.light - center.opacity > center.light) {
@@ -199,7 +199,7 @@ public class SpoutWorldLightingModel {
 	}
 
 	public void resolveGreater(int x, int y, int z) {
-		if (this.load(x, y, z)) {
+		if (this.loadSend(x, y, z)) {
 			for (Element element : this.neighbors) {
 				if (element.isReceivingFromCenter()) {
 					if (center.light - element.opacity > element.light) {
@@ -211,7 +211,7 @@ public class SpoutWorldLightingModel {
 	}
 
 	public void resolveLesser(int x, int y, int z) {
-		if (this.load(x, y, z)) {
+		if (this.loadReceive(x, y, z)) {
 			if (center.light == 15) {
 				//direct source - don't even bother!
 				this.addGreater(x, y, z);
@@ -236,7 +236,34 @@ public class SpoutWorldLightingModel {
 	public final Element[] neighbors;
 	public final Element center;
 
-	public boolean load(int x, int y, int z) {
+	/**
+	 * Loads the block model assuming the center block will receive light from surrounding blocks
+	 * @param x coordinate of the center block
+	 * @param y coordinate of the center block
+	 * @param z coordinate of the center block
+	 * @return True if it was successful
+	 */
+	public boolean loadReceive(int x, int y, int z) {
+		this.center.load(x, y, z);
+		if (this.center.material == null || this.center.material.getOcclusion().get(BlockFaces.NESWBT)) {
+			return false;
+		}
+		for (Element element : this.neighbors) {
+			if (!this.center.material.getOcclusion().get(element.offset)) {
+				element.load(x, y, z);
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Loads the block model assuming the center block will send to surrounding blocks
+	 * @param x coordinate of the center block
+	 * @param y coordinate of the center block
+	 * @param z coordinate of the center block
+	 * @return True if it was successful
+	 */
+	public boolean loadSend(int x, int y, int z) {
 		this.center.load(x, y, z);
 		if (this.center.material == null) {
 			return false;
@@ -325,10 +352,10 @@ public class SpoutWorldLightingModel {
 		 * Checks if this element can send light to the center
 		 */
 		public boolean isEmittingToCenter() {
-			if (material == null || center.material.occludes(offset)) {
+			if (material == null || center.material.getOcclusion().get(offset)) {
 				return false;
 			} else {
-				return this.isSource() || !material.occludes(offset.getOpposite());
+				return this.isSource() || !material.getOcclusion().get(offset.getOpposite());
 			}
 		}
 
@@ -337,10 +364,10 @@ public class SpoutWorldLightingModel {
 		 * @return
 		 */
 		public boolean isReceivingFromCenter() {
-			if (material == null || material.occludes(offset.getOpposite())) {
+			if (material == null || material.getOcclusion().get(offset.getOpposite())) {
 				return false;
 			} else {
-				return center.isSource() || !center.material.occludes(offset);
+				return center.isSource() || !center.material.getOcclusion().get(offset);
 			}
 		}
 
