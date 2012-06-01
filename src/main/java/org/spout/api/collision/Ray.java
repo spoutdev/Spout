@@ -69,7 +69,7 @@ public class Ray extends CollisionVolume {
 
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
-			return intersects(other);
+			//return intersects((BoundingBox) other);
 		}
 		if (other instanceof BoundingSphere) {
 			return intersects((BoundingSphere) other);
@@ -77,7 +77,10 @@ public class Ray extends CollisionVolume {
 		if (other instanceof Segment) {
 			//return intersects((Segment)other);
 		}
-		return other instanceof Plane && intersects(other);
+		if (other instanceof Plane) {
+			//return intersects((Plane) other);
+		}
+		return false;
 	}
 
 	public boolean contains(CollisionVolume other) {
