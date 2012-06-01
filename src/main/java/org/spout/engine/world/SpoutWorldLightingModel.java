@@ -56,7 +56,7 @@ public class SpoutWorldLightingModel {
 	private long processTime = 0;
 
 	public void reportChanges() {
-		if (this.changes > 0) {
+		if (this.changes > 1000) {
 			if (Spout.debugMode()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("[debug] Finished processing ").append(this.changes).append(sky ? " sky" : " block");
@@ -67,7 +67,7 @@ public class SpoutWorldLightingModel {
 			this.processTime = 0;
 		}
 	}
-	
+
 	/**
 	 * The maximum amount of resolves performed per operation per tick
 	 */
