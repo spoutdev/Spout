@@ -320,29 +320,9 @@ public final class AtomicBlockStore<T> {
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param fullState a BlockFullState object to store the return value, or
-	 *            null to generate a new one
 	 * @return the full state of the block
 	 */
 	public BlockFullState getFullData(int x, int y, int z) {
-		return getFullData(x, y, z, null);
-	}
-
-	/**
-	 * Atomically gets the full set of data associated with the block.<br>
-	 * <br>
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param input is a BlockFullState object to store the return value, or
-	 *            null to generate a new one
-	 * @return the full state of the block
-	 */
-	public BlockFullState getFullData(int x, int y, int z, BlockFullState input) {
-		if (input == null) {
-			input = new BlockFullState();
-		}
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -356,15 +336,13 @@ public final class AtomicBlockStore<T> {
 				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
-					input.setId(auxStore.getId(blockId));
-					input.setData(auxStore.getData(blockId));
+					BlockFullState state = new BlockFullState(auxStore.getId(blockId), auxStore.getData(blockId));
 					if (testSequence(x, y, z, seq)) {
-						return input;
+						return state;
 					}
 				} else {
-					input.setId(blockId);
-					input.setData((short) 0);
-					return input;
+					BlockFullState state = new BlockFullState(blockId, (short) 0);
+					return state;
 				}
 			}
 		} finally {
@@ -388,6 +366,21 @@ public final class AtomicBlockStore<T> {
 	public void setBlock(int x, int y, int z, MaterialSource material) {
 		setBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
+	
+	/**
+	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
+	 * <br>
+	 * If the data is 0 and the auxData is null, then the block will be stored
+	 * as a single short.<br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param fullState the new state of the Block
+	 */
+	public BlockFullState getAndSetBlock(int x, int y, int z, MaterialSource material) {
+		return getAndSetBlock(x, y, z, material.getMaterial().getId(), material.getData());
+	}
 
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
@@ -403,6 +396,28 @@ public final class AtomicBlockStore<T> {
 	 * @param auxData the block auxiliary data
 	 */
 	public void setBlock(int x, int y, int z, short id, short data) {
+		getAndSetBlockRaw(x, y, z, id, data);
+	}
+		
+	/**
+	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
+	 * <br>
+	 * If the data is 0 and the auxData is null, then the block will be stored
+	 * as a single short.<br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param id the block id
+	 * @param data the block data
+	 * @param auxData the block auxiliary data
+	 * @return the old state of the block
+	 */
+	public BlockFullState getAndSetBlock(int x, int y, int z, short id, short data) {
+		return getAndSetBlockRaw(x, y, z, id, data);
+	}
+	
+	private BlockFullState getAndSetBlockRaw(int x, int y, int z, short id, short data) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -420,27 +435,24 @@ public final class AtomicBlockStore<T> {
 						continue;
 					}
 					if (oldReserved) {
-						if (!auxStore.remove(oldBlockId)) {
-							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-						}
+						int oldInt = auxStore.remove(oldBlockId);
+						return new BlockFullState(oldInt);
+					} else {
+						return new BlockFullState(oldBlockId, (short) 0);
 					}
-					return;
 				} else {
 					int newIndex = auxStore.add(id, data, null);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
-						if (auxStore.remove(newIndex)) {
-							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-						}
+						auxStore.remove(newIndex);
 						continue;
 					}
 					if (oldReserved) {
-						if (!auxStore.remove(oldBlockId)) {
-							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-						}
+						int oldInt = auxStore.remove(oldBlockId);
+						return new BlockFullState(oldInt);
+					} else {
+						return new BlockFullState(oldBlockId, (short) 0);
 					}
-					return;
 				}
-
 			}
 		} finally {
 			markDirty(x, y, z);
@@ -501,24 +513,18 @@ public final class AtomicBlockStore<T> {
 						continue;
 					}
 					if (oldReserved) {
-						if (!auxStore.remove(oldBlockId)) {
-							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-						}
+						auxStore.remove(oldBlockId);
 					}
 					markDirty(x, y, z);
 					return true;
 				} else {
 					int newIndex = auxStore.add(newId, newData, null);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
-						if (!auxStore.remove(newIndex)) {
-							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-						}
+						auxStore.remove(newIndex);
 						continue;
 					}
 					if (oldReserved) {
-						if (!auxStore.remove(oldBlockId)) {
-							throw new IllegalStateException("setBlock() tried to remove old record, but it had already been removed");
-						}
+						auxStore.remove(oldBlockId);
 					}
 					markDirty(x, y, z);
 					return true;

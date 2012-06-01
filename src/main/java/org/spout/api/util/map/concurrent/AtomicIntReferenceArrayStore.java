@@ -288,8 +288,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * <br>
 	 *
 	 * @param index the index
+	 * @return the int for old entry, or 0 if none
 	 */
-	public boolean remove(int index) {
+	public int remove(int index) {
 		index = toInternal(index);
 
 		while (true) {
@@ -298,13 +299,14 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			try {
+				int oldInt = intArray.get()[index];
 				T current = auxArray.get()[index];
 				if (current == EMPTY) {
-					return false;
+					throw new IllegalStateException("Expected to remove a record but no record was found");
 				}
 				auxArray.get()[index] = EMPTY;
 				entries.decrementAndGet();
-				return true;
+				return oldInt;
 			} finally {
 				seqArray.get().set(index, DatatableSequenceNumber.get());
 				atomicNotify();

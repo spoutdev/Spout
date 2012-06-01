@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
+import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.StringMap;
 
 public abstract class MaterialRegistry {
@@ -114,6 +115,24 @@ public abstract class MaterialRegistry {
 			return null;
 		}
 		return materialLookup[id].get();
+	}
+	
+	/**
+	 * Gets the material for the given BlockFullState
+	 * 
+	 * @param state the full state of the block
+	 */
+	public static Material get(BlockFullState state) {
+		short id = state.getId();
+		if (id < 0 || id >= materialLookup.length) {
+			return null;
+		}
+		Material material = materialLookup[id].get();
+		if (material == null) {
+			return null;
+		} else {
+			return material.getSubMaterial(state.getData());
+		}
 	}
 
 	/**

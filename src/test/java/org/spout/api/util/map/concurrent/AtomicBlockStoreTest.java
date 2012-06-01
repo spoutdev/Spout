@@ -67,8 +67,6 @@ public class AtomicBlockStoreTest {
 		System.out.println();
 		System.out.println("-- Starting random access --");
 
-		BlockFullState fullData = new BlockFullState();
-
 		for (int i = 0; i < 32768; i++) {
 			short id = (short)(rand.nextInt());
 			short data = (short)(((rand.nextInt() & 0x3) != 0) ? (0) : (rand.nextInt()));
@@ -80,7 +78,7 @@ public class AtomicBlockStoreTest {
 			} else {
 				compareAndSet(x, y, z, id, data, rand.nextBoolean(), rand);
 			}
-			check(x, y, z, fullData);
+			check(x, y, z);
 		}
 
 		System.out.println();
@@ -165,10 +163,10 @@ public class AtomicBlockStoreTest {
 		checkForResize();
 	}
 
-	private void check(int x, int y, int z, BlockFullState fullData) {
+	private void check(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 
-		fullData = store.getFullData(x, y, z, null);
+		BlockFullState fullData = store.getFullData(x, y, z);
 		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getData() == data[index]);
 		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getId() == ids[index]);
 	}
@@ -192,13 +190,11 @@ public class AtomicBlockStoreTest {
 	}
 
 	private void checkStoreLeaks() {
-		BlockFullState fullData = new BlockFullState();
-
 		int entries = 0;
 		for (int x = 15; x >= 0; x--) {
 			for (int y = 15; y >= 0; y--) {
 				for (int z = 15; z >= 0; z--) {
-					fullData = store.getFullData(x, y, z, null);
+					BlockFullState fullData = store.getFullData(x, y, z);
 					if (fullData.getData() != 0 || (fullData.getId() & 0xC000) == 0xC000 ) {
 						entries++;
 					}
@@ -215,11 +211,10 @@ public class AtomicBlockStoreTest {
 	}
 
 	private void checkStoreValues() {
-		BlockFullState fullData = new BlockFullState();
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				for (int y = 0; y < 16; y++) {
-					check(x, y, z, fullData);
+					check(x, y, z);
 				}
 			}
 		}

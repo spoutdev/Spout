@@ -30,10 +30,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
 public class BlockFullState implements Cloneable {
-	private short id;
-	private short data;
-
-	public BlockFullState() {
+	private final short id;
+	private final short data;
+	
+	public BlockFullState(int idAndData) {
+		id = (short)(idAndData >> 16);
+		data = (short)(idAndData);
 	}
 
 	public BlockFullState(short id, short data) {
@@ -45,16 +47,8 @@ public class BlockFullState implements Cloneable {
 		return id;
 	}
 
-	public final void setId(short id) {
-		this.id = id;
-	}
-
 	public final short getData() {
 		return data;
-	}
-
-	public final void setData(short data) {
-		this.data = data;
 	}
 
 	@Override

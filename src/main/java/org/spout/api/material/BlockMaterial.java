@@ -412,4 +412,16 @@ public class BlockMaterial extends Material implements Placeable {
 	public boolean isTransparent() {
 		return this.opacity == 0;
 	}
+	
+	/**
+	 * Called by the dynamic block update system.  If a material is changed into a
+	 * material that it is not compatible with, then this will automatically trigger
+	 * a block reset.
+	 * 
+	 * @param m the other material
+	 * @return true if the two materials are compatible
+	 */
+	public boolean isCompatibleWith(BlockMaterial m) {
+		return (m.getId() == getId() && ((m.getData() ^ getData()) & getDataMask()) == 0);
+	}
 }
