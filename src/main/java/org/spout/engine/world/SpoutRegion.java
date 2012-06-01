@@ -720,7 +720,7 @@ public class SpoutRegion extends Region{
 						}
 					}
 				}
-			} else if (chunk.canSend()) {
+			} else {
 				synchronizer.sendChunk(chunk);
 			}
 		}
