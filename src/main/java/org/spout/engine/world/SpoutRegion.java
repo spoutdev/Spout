@@ -556,7 +556,11 @@ public class SpoutRegion extends Region{
 							y = TByteTripleHashSet.key2(key);
 							z = TByteTripleHashSet.key3(key);
 							SpoutChunk chunk = this.getChunk(x, y, z);
-							if (chunk != null && chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
+							if (chunk == null || !chunk.isLoaded()) {
+								iter.remove();
+								continue;
+							}
+							if (chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
 								chunk.lightingCounter.set(-1);
 								if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
 									chunk.setLightDirty(true);
@@ -716,12 +720,12 @@ public class SpoutRegion extends Region{
 						}
 					}
 				}
-			} else if (!chunk.isCalculatingLighting()) {
+			} else if (chunk.canSend()) {
 				synchronizer.sendChunk(chunk);
 			}
 		}
 	}
-	
+
 	private void processChunkUpdatedEvent(SpoutChunk chunk) {
 		/* If no listeners, quit */
 		if (ChunkUpdatedEvent.getHandlerList().getRegisteredListeners().length == 0) {
