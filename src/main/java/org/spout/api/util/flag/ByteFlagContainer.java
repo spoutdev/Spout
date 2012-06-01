@@ -60,12 +60,25 @@ public class ByteFlagContainer {
 	}
 
 	/**
-	 * Gets the current state of a bit using a mask
+	 * Gets the current state of one or more bits using a mask<br>
+	 * If multiple bits are contained in the mask, all bits have to match
+	 * 
 	 * @param mask to use
-	 * @return if the bit is set
+	 * @return True if all of the bits in the mask are set, False if not
 	 */
 	public boolean get(ByteFlagMask mask) {
 		return LogicUtil.getBit(this.flag, mask.getMask());
+	}
+
+	/**
+	 * Gets the current state of one or more bits using a mask<br>
+	 * If multiple bits are contained in the mask, one of these bits have to match
+	 * 
+	 * @param mask containing the bit flags
+	 * @return True if one of the bits in the mask are set, False if not
+	 */
+	public boolean getAny(ByteFlagMask mask) {
+		return (this.flag & mask.getMask()) != 0;
 	}
 
 	/**

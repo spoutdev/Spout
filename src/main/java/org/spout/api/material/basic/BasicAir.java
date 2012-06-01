@@ -34,8 +34,7 @@ public final class BasicAir extends BlockMaterial {
 
 	public BasicAir() {
 		super("Air", (short) 0);
-		this.setCollision(CollisionStrategy.NOCOLLIDE).setOpacity((byte) 0);
-		this.setOccludes(false);
+		this.setCollision(CollisionStrategy.NOCOLLIDE).setTransparent();
 	}
 
 	@Override

@@ -39,6 +39,7 @@ import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
+import org.spout.api.math.MathHelper;
 import org.spout.api.util.flag.ByteFlagContainer;
 
 public class BlockMaterial extends Material implements Placeable {
@@ -99,7 +100,7 @@ public class BlockMaterial extends Material implements Placeable {
 		}
 	}
 
-	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFaces.NESWB);
+	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFaces.NESWBT);
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
@@ -244,12 +245,32 @@ public class BlockMaterial extends Material implements Placeable {
 	 * 
 	 * 0xF (15) represents a fully opaque block.
 	 * 
-	 * @param level of opacity
+	 * @param level of opacity, a value from 0 to 15
 	 * @return this material
 	 */
-	public BlockMaterial setOpacity(byte level) {
-		this.opacity = level;
+	public BlockMaterial setOpacity(int level) {
+		this.opacity = (byte) MathHelper.clamp(level, 0, 15);
 		return this;
+	}
+
+	/**
+	 * Turns this Block Material in a fully opaque block, not letting light through from any side<br>
+	 * Sets opacity to 15 and sets occlusion to all faces
+	 * 
+	 * @return this Block Material
+	 */
+	public BlockMaterial setOpaque() {
+		return this.setOpacity(15).setOcclusion(BlockFaces.NESWBT);
+	}
+
+	/**
+	 * Turns this Block Material in a fully transparent block, letting light through from all sides<br>
+	 * Sets the opacity to 0 and sets occlusion to none
+	 * 
+	 * @return this Block Material
+	 */
+	public BlockMaterial setTransparent() {
+		return this.setOpacity(0).setOcclusion(BlockFaces.NONE);
 	}
 
 	/**
@@ -333,46 +354,24 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets if this block occludes all faces
-	 * @param value whether it occludes
-	 * @return this block material
+	 * Gets the occluded faces of this Block Material<br>
+	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * @return the occluded faces
 	 */
-	public BlockMaterial setOccludes(boolean value) {
-		this.occlusion.set(value ? BlockFaces.NESWBT : BlockFaces.NONE);
-		return this;
+	public ByteFlagContainer getOcclusion() {
+		return this.occlusion;
 	}
 
 	/**
-	 * Sets if a certain face of the block occludes
-	 * @param face to set it of
-	 * @param value whether it occludes
-	 * @return this block material
+	 * Sets the occludes faces of this Block Material
+	 * @param faces to make this Block Material occlude
+	 * @return this Block Material
 	 */
-	public BlockMaterial setOccludes(BlockFace face, boolean value) {
-		if (face == BlockFace.THIS) {
-			throw new IllegalArgumentException("Can not set occlusion state on block face THIS.");
-		}
-		this.occlusion.set(face, value);
+	public BlockMaterial setOcclusion(BlockFaces faces) {
+		this.occlusion.set(faces);
 		return this;
 	}
-	
-	/**
-	 * Gets if a certain block face occludes
-	 * @param face to get it of
-	 * @return if the block face occludes
-	 */
-	public boolean occludes(BlockFace face) {
-		return this.occlusion.get(face);
-	}
-	
-	/**
-	 * Gets if this block material has occlusion
-	 * @return whether there is occlusion
-	 */
-	public boolean occludes() {
-		return this.occlusion.isDirty();
-	}
-	
+
 	/**
 	 * Sets the collision strategy to use for this block
 	 * 
@@ -383,12 +382,12 @@ public class BlockMaterial extends Material implements Placeable {
 		this.collision.setStrategy(strategy);
 		return this;
 	}
-	
+
 	@Override
 	public boolean canPlace(Block block, short data, BlockFace against, boolean isClickedBlock) {
 		return true;
 	}
-	
+
 	@Override
 	public boolean onPlacement(Block block, short data, BlockFace against, boolean isClickedBlock) {
 		block.setMaterial(this, data).update(true);
