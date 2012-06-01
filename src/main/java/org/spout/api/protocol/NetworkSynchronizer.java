@@ -253,20 +253,24 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 				Point p = i.next();
 				Chunk c = p.getWorld().getChunkFromBlock(p, true);
-				sendChunk(c);
-				activeChunks.add(p);
-				i.remove();
-				chunksSent++;
+				if (c.canSend()) {
+					sendChunk(c);
+					activeChunks.add(p);
+					i.remove();
+					chunksSent++;
+				}
 			}
 
 			i = chunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 				Point p = i.next();
 				Chunk c = p.getWorld().getChunkFromBlock(p, true);
-				sendChunk(c);
-				activeChunks.add(p);
-				i.remove();
-				chunksSent++;
+				if (c.canSend()) {
+					sendChunk(c);
+					activeChunks.add(p);
+					i.remove();
+					chunksSent++;
+				}
 				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 

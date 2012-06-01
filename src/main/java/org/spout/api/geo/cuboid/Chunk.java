@@ -35,6 +35,8 @@ import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
@@ -163,6 +165,13 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	public abstract void initLighting();
 
 	/**
+	 * Gets whether this chunk is ready to be sent to a player<br>
+	 * It will return False when sending it could cause incomplete chunk information
+	 * @return True if it can be sent, False if not
+	 */
+	public abstract boolean canSend();
+
+	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
 	 *
@@ -232,6 +241,44 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	public int getBlockZ() {
 		return blockZ;
+	}
+
+	/**
+	 * Gets a chunk relative to this chunk
+	 * @param offset of the chunk relative to this chunk
+	 * @param load True to load the chunk if it is not yet loaded
+	 * @return The Chunk, or null if not loaded and load is False
+	 */
+	public Chunk getRelative(Vector3 offset, boolean load) {
+		return this.getWorld().getChunk(this.getX() + (int) offset.getX(), this.getY() + (int) offset.getY(), this.getZ() + (int) offset.getZ(), load);
+	}
+
+	/**
+	 * Gets a chunk relative to this chunk, loads if needed
+	 * @param offset of the chunk relative to this chunk
+	 * @return The Chunk
+	 */
+	public Chunk getRelative(Vector3 offset) {
+		return this.getRelative(offset, true);
+	}
+
+	/**
+	 * Gets a chunk relative to this chunk
+	 * @param offset of the chunk relative to this chunk
+	 * @param load True to load the chunk if it is not yet loaded
+	 * @return The Chunk, or null if not loaded and load is False
+	 */
+	public Chunk getRelative(BlockFace offset, boolean load) {
+		return this.getRelative(offset.getOffset(), load);
+	}
+
+	/**
+	 * Gets a chunk relative to this chunk, loads if needed
+	 * @param offset of the chunk relative to this chunk
+	 * @return The Chunk
+	 */
+	public Chunk getRelative(BlockFace offset) {
+		return this.getRelative(offset.getOffset());
 	}
 
 	/**
