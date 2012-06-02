@@ -36,8 +36,7 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialSource;
-import org.spout.api.material.source.MaterialState;
+import org.spout.api.material.source.MaterialData;
 import org.spout.api.util.LogicUtil;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
@@ -47,9 +46,10 @@ import org.spout.nbt.stream.NBTOutputStream;
 /**
  * Represents a stack of items
  */
-public class ItemStack implements MaterialState, Serializable, Cloneable {
+public class ItemStack implements MaterialData, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
+	// Do NOT allow material to be changed
 	private Material material;
 	private int amount;
 	private short data;
@@ -77,7 +77,8 @@ public class ItemStack implements MaterialState, Serializable, Cloneable {
 	 * specified amount, with the specified aux data
 	 */
 	public ItemStack(Material material, short data, int amount, DataMap auxData) {
-		this.setMaterial(material).setData(data);
+		this.material = material;
+		this.setData(data);
 		this.amount = amount;
 		if (auxData != null) {
 			this.auxData = auxData;
@@ -196,34 +197,15 @@ public class ItemStack implements MaterialState, Serializable, Cloneable {
 	}
 
 	@Override
-	public ItemStack setMaterial(MaterialSource material) {
-		Material mat = material == null ? null : material.getMaterial();
-		if (mat == null) {
-			throw new IllegalArgumentException("Material can not be null!");
-		} else {
-			this.material = material.getMaterial().getRoot();
-			this.setData(material);
-		}
-		return this;
-	}
-
-	@Override
-	public ItemStack setMaterial(MaterialSource material, DataSource datasource) {
-		return this.setMaterial(material, datasource.getData());
-	}
-
-	@Override
-	public ItemStack setMaterial(MaterialSource material, int data) {
-		return this.setMaterial(material).setData(data);
-	}
-
-	@Override
 	public ItemStack setData(DataSource datasource) {
 		return this.setData(datasource.getData());
 	}
 
 	@Override
 	public ItemStack setData(int data) {
+		if (((data ^ material.getData()) & material.getDataMask()) != 0) {
+			throw new IllegalArgumentException("Data value passed to item stack would cause a sub-material change.  This may be caused by an incorrectly set dataMask setting");
+		}
 		this.data = (short) data;
 		return this;
 	}
