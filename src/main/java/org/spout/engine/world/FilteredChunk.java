@@ -40,7 +40,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.map.concurrent.AtomicBlockStore;
+import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.engine.filesystem.WorldFiles;
 
 public class FilteredChunk extends SpoutChunk{
@@ -87,7 +87,7 @@ public class FilteredChunk extends SpoutChunk{
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			this.blockStore = new AtomicBlockStore(Chunk.CHUNK_SIZE_BITS, 10, initial);
+			this.blockStore = new AtomicBlockStoreImpl(Chunk.CHUNK_SIZE_BITS, 10, initial);
 			
 			this.skyLight = new byte[CHUNK_VOLUME / 2];
 			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, this.skyLight, 0, this.skyLight.length);

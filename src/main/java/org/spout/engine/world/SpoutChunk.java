@@ -71,6 +71,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
+import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
@@ -180,7 +181,7 @@ public class SpoutChunk extends Chunk {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		parentRegion = region;
-		blockStore = new AtomicBlockStore(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
+		blockStore = new AtomicBlockStoreImpl(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new AtomicBoolean(populated);
 
 		if (skyLight == null) {
