@@ -36,17 +36,27 @@ import org.spout.api.material.Material;
 public class InventoryTest {
 	private int size = 10;
 	private Inventory subject = new Inventory(size);
-	private ItemStack testing = new ItemStack(new Material("Testing") {}, (short) 1, 1);
-	private ItemStack testing2 = new ItemStack(new Material("Testing2") {}, (short) 3, 5);
+	private Material parentMaterial = new Material((short) 0x0001, "Parent") {
+	};
+	private Material childMaterial = new Material("Child", (short) 0x0001, parentMaterial) {
+	};
+
+	private ItemStack testing = new ItemStack(parentMaterial, (short) 2, 1);
+	private ItemStack testingSubMaterial = new ItemStack(childMaterial, (short) 91, 1);
+	private ItemStack testing2 = new ItemStack(new Material((short) 0, "Testing2", (short) 0) {
+	}, (short) 3, 5);
 
 	@Before
 	public void setUp() {
 		subject.addItem(testing, true);
+		subject.addItem(testingSubMaterial, true);
 	}
 
 	@Test
 	public void testContains() {
 		assertTrue(subject.contains(testing));
 		assertTrue(!subject.contains(testing2));
+		assertTrue(subject.contains(testingSubMaterial));
 	}
+
 }
