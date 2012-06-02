@@ -73,7 +73,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	private final int blockZ;
 	
 	public Chunk(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), CHUNK_SIZE, true);
+		super(new Point(world, x, y, z), CHUNK_SIZE);
 		blockX = super.getX() << CHUNK_SIZE_BITS;
 		blockY = super.getY() << CHUNK_SIZE_BITS;
 		blockZ = super.getZ() << CHUNK_SIZE_BITS;

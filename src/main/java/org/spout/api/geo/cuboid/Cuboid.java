@@ -35,9 +35,8 @@ import org.spout.api.math.Vector3;
  * Represents a Cuboid shaped volume that is located somewhere in a world.
  */
 public class Cuboid {
-	protected Point base;
-	protected Vector3 size;
-	protected final boolean immutable;
+	protected final Point base;
+	protected final Vector3 size;
 	private final int x;
 	private final int y;
 	private final int z;
@@ -47,18 +46,18 @@ public class Cuboid {
 	 */
 	private volatile boolean hashed = false;
 	private volatile int hashcode = 0;
-	
-	public Cuboid(Point base, Vector3 size) {
-		this(base, size, false);
-	}
 
-	public Cuboid(Point base, Vector3 size, boolean immutable) {
-		this.base = new Point(base);
-		this.size = new Vector3(size);
-		this.immutable = immutable;
-		this.x = getXRaw();
-		this.y = getYRaw();
-		this.z = getZRaw();
+	/**
+	 * Constructs a cubiod with the point as the base point, and 
+	 * @param base
+	 * @param size
+	 */
+	public Cuboid(Point base, Vector3 size) {
+		this.base = base;
+		this.size = size;
+		this.x = (int) (base.getX() / size.getX());
+		this.y = (int) (base.getY() / size.getY());
+		this.z = (int) (base.getZ() / size.getZ());
 	}
 
 	public Point getBase() {
@@ -70,39 +69,15 @@ public class Cuboid {
 	}
 
 	public int getX() {
-		if (immutable) {
-			return x;
-		} else {
-			return getXRaw();
-		}
+		return x;
 	}
 	
-	private int getXRaw() {
-		return (int) (base.getX() / size.getX());
-	}
-
 	public int getY() {
-		if (immutable) {
-			return y;
-		} else {
-			return getYRaw();
-		}
-	}
-	
-	private int getYRaw() {
-		return (int) (base.getY() / size.getY());
+		return y;
 	}
 
 	public int getZ() {
-		if (immutable) {
-			return z;
-		} else {
-			return getZRaw();
-		}
-	}
-	
-	private int getZRaw() {
-		return (int) (base.getZ() / size.getZ());
+		return z;
 	}
 
 	public World getWorld() {

@@ -70,7 +70,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 	public static final int REGION_CHUNK_VOLUME = REGION_SIZE * REGION_SIZE * REGION_SIZE;
 
 	public Region(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), EDGE, true);
+		super(new Point(world, x, y, z), EDGE);
 	}
 
 	/**

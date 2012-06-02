@@ -36,8 +36,4 @@ public class Cube extends Cuboid {
 	public Cube(Point base, float size) {
 		super(base, new Vector3(size, size, size));
 	}
-	
-	public Cube(Point base, float size, boolean immutable) {
-		super(base, new Vector3(size, size, size), immutable);
-	}
 }
