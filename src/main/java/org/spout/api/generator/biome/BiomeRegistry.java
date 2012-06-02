@@ -40,13 +40,13 @@ public final class BiomeRegistry {
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
 	private final static StringMap biomeRegistry = new StringMap(null, store, 1, MAX_BIOMES);
-	
+
 	static {
 		for (int i = 0; i < biomes.length; i++) {
 			biomes[i] = new AtomicReference<Biome>();
 		}
 	}
-	
+
 	/**
 	 * Sets up the biome registry for the first use
 	 */
@@ -63,10 +63,10 @@ public final class BiomeRegistry {
 			throw new IllegalStateException("Can not setup biome registry twice!");
 		}
 	}
-	
+
 	/**
 	 * Registers a biome and assigns it an id
-	 * 
+	 *
 	 * @param biome
 	 */
 	protected static void register(Biome biome) {
@@ -74,10 +74,10 @@ public final class BiomeRegistry {
 		biomes[id].set(biome);
 		biome.setId(id);
 	}
-	
+
 	/**
 	 * Gets the biome associated with the biome id
-	 * 
+	 *
 	 * @param id
 	 * @return biome
 	 */
