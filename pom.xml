@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
@@ -13,9 +12,15 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jlibnoiseVersion>dev-SNAPSHOT</jlibnoiseVersion>
-		<nbtVersion>1.0.3-SNAPSHOT</nbtVersion>
+		<noiseVersion>dev-SNAPSHOT</noiseVersion>
+		<nbtVersion>1.0.4-SNAPSHOT</nbtVersion>
 	</properties>
+
+	<!-- Organization -->
+	<organization>
+		<name>SpoutDev</name>
+		<url>http://www.spout.org</url>
+	</organization>
 
 	<!-- License -->
 	<licenses>
@@ -37,13 +42,13 @@
 	<!-- Continuous integration -->
 	<ciManagement>
 		<system>jenkins</system>
-		<url>http://build.spout.org</url>
+		<url>http://build.spout.org/job/SpoutAPI</url>
 	</ciManagement>
 
 	<!-- Issue management -->
 	<issueManagement>
-		<system>JIRA</system>
-		<url>http://issues.spout.org</url>
+		<system>jira</system>
+		<url>http://issues.spout.org/browse/SPOUTAPI</url>
 	</issueManagement>
 
 	<!-- Repository locations -->
@@ -64,33 +69,20 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.spout</groupId>
-			<artifactId>spoutnbt</artifactId>
+			<artifactId>simplenbt</artifactId>
 			<version>${nbtVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.royawesome</groupId>
 			<artifactId>jlibnoise</artifactId>
-			<version>${jlibnoiseVersion}</version>
+			<version>${noiseVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
-			<version>3.4.4.Final</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.16.1-GA</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
-			<type>jar</type>
+			<version>3.4.6.Final</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -100,9 +92,21 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.3</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.studio</groupId>
+			<artifactId>org.apache.commons.collections</artifactId>
+			<version>3.2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -115,12 +119,6 @@
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<version>1.10</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.3.166</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -153,16 +151,11 @@
 			<version>1.2.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.directory.studio</groupId>
-			<artifactId>org.apache.commons.collections</artifactId>
-			<version>3.2.1</version>
-		</dependency>
 	</dependencies>
 
 	<!-- Build settings -->
 	<build>
-		<defaultGoal>clean package install</defaultGoal>
+		<defaultGoal>clean install</defaultGoal>
 		<!-- Resources -->
 		<resources>
 			<resource>
@@ -203,10 +196,10 @@
 					</mapping>
 					<properties>
 						<name>${project.name}</name>
-						<url>${project.url}</url>
+						<url>${project.organization.url}</url>
 						<license>SpoutDev License Version 1</license>
 						<licenseUrl>http://www.spout.org/SpoutDevLicenseV1.txt</licenseUrl>
-						<copyright>Copyright (c) ${project.inceptionYear}-2012, SpoutDev</copyright>
+						<copyright>Copyright (c) ${project.inceptionYear}-2012, ${project.organization.name}</copyright>
 					</properties>
 					<includes>
 						<include>src/main/java/**</include>
@@ -214,17 +207,25 @@
 					</includes>
 				</configuration>
 			</plugin>
-			<!-- Version plugin -->
+			<!-- Version strip plugin -->
 			<plugin>
 				<groupId>com.sourcesense.maven</groupId>
 				<artifactId>maven-nosnapshot-plugin</artifactId>
 				<version>0.0.7-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>strip</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<version>${project.version}</version>
 					<propertyName>releaseVersion</propertyName>
 				</configuration>
 			</plugin>
-			<!-- Compile plugin -->
+			<!-- Compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -232,6 +233,12 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+					<compilerArguments>
+						<Xlint:all/>
+						<O>-Xlint:-path</O>
+					</compilerArguments>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
 			<!-- JAR dependency addition plugin -->
@@ -245,14 +252,6 @@
 						<goals>
 							<goal>shade</goal>
 						</goals>
-						<configuration>
-							<artifactSet>
-								<excludes>
-									<exclude>junit:junit</exclude>
-									<exclude>org.hamcrest:hamcrest-library</exclude>
-								</excludes>
-							</artifactSet>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -286,7 +285,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
