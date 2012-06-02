@@ -17,6 +17,12 @@
 		<buildNumber>0</buildNumber>
 	</properties>
 
+	<!-- Organization -->
+	<organization>
+		<name>SpoutDev</name>
+		<url>http://www.spout.org</url>
+	</organization>
+
 	<!-- License -->
 	<licenses>
 		<license>
@@ -143,10 +149,10 @@
 					</mapping>
 					<properties>
 						<name>${project.name}</name>
-						<url>${project.url}</url>
+						<url>${project.organization.url}</url>
 						<license>SpoutDev License Version 1</license>
 						<licenseUrl>http://www.spout.org/SpoutDevLicenseV1.txt</licenseUrl>
-						<copyright>Copyright (c) ${project.inceptionYear}-2012, SpoutDev</copyright>
+						<copyright>Copyright (c) ${project.inceptionYear}-2012, ${project.organization.name}</copyright>
 					</properties>
 					<includes>
 						<include>src/main/java/**</include>
@@ -154,7 +160,7 @@
 					</includes>
 				</configuration>
 			</plugin>
-			<!-- Version plugin -->
+			<!-- Version strip plugin -->
 			<plugin>
 				<groupId>com.sourcesense.maven</groupId>
 				<artifactId>maven-nosnapshot-plugin</artifactId>
@@ -172,7 +178,7 @@
 					<propertyName>releaseVersion</propertyName>
 				</configuration>
 			</plugin>
-			<!-- Compile plugin -->
+			<!-- Compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -180,6 +186,10 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+					<compilerArguments>
+						<O>-Xlint:all</O>
+						<O>-Xlint:-path</O>
+					</compilerArguments>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 				</configuration>
@@ -195,10 +205,10 @@
 							<Main-Class>org.spout.engine.SpoutServer</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
 							<Implementation-Version>${releaseVersion}-b${buildNumber}</Implementation-Version>
-							<Implementation-Vendor>SpoutDev</Implementation-Vendor>
+							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
 							<Specification-Title>SpoutAPI</Specification-Title>
 							<Specification-Version>${apiVersion}</Specification-Version>
-							<Specification-Vendor>SpoutDev</Specification-Vendor>
+							<Specification-Vendor>${project.organization.name}</Specification-Vendor>
 							<Sealed>true</Sealed>
 						</manifestEntries>
 						<manifestSections>
@@ -266,7 +276,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
