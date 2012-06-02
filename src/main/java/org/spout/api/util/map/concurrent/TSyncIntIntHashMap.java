@@ -57,6 +57,8 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 	private final int mapCount;
 	private final int mapMask;
 	private final int hashScramble;
+	private final int noEntryKey;
+	private final int noEntryValue;
 	private final ReadWriteLock[] lockArray;
 	private final TIntIntMap[] mapArray;
 	private final AtomicInteger totalKeys = new AtomicInteger(0);
@@ -95,6 +97,31 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 	 * @param loadFactor the load factor for the map
 	 */
 	public TSyncIntIntHashMap(int mapCount, int initialCapacity, float loadFactor) {
+		this(mapCount, initialCapacity, loadFactor, 0);
+	}
+
+	/**
+	 * Creates a synchronised map based on the Trove int object map
+	 *
+	 * @param mapCount the number of sub-maps
+	 * @param initialCapacity the initial capacity of the map
+	 * @param loadFactor the load factor for the map
+	 * @param noEntryKey the key used to indicate a null key
+	 */
+	public TSyncIntIntHashMap(int mapCount, int initialCapacity, float loadFactor, int noEntryKey) {
+		this(mapCount, initialCapacity, loadFactor, noEntryKey, 0);
+	}
+	
+	/**
+	 * Creates a synchronised map based on the Trove int object map
+	 *
+	 * @param mapCount the number of sub-maps
+	 * @param initialCapacity the initial capacity of the map
+	 * @param loadFactor the load factor for the map
+	 * @param noEntryKey the key used to indicate a null key
+	 * @param noEntryValue the value used to indicate a null value
+	 */
+	public TSyncIntIntHashMap(int mapCount, int initialCapacity, float loadFactor, int noEntryKey, int noEntryValue) {
 		if (mapCount > 0x100000) {
 			throw new IllegalArgumentException("Map count exceeds valid range");
 		}
@@ -105,9 +132,11 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		mapArray = new TIntIntHashMap[mapCount];
 		lockArray = new ReadWriteLock[mapCount];
 		for (int i = 0; i < mapCount; i++) {
-			mapArray[i] = new TIntIntHashMap(initialCapacity / mapCount, loadFactor);
+			mapArray[i] = new TIntIntHashMap(initialCapacity / mapCount, loadFactor, noEntryKey, noEntryValue);
 			lockArray[i] = new ReentrantReadWriteLock();
 		}
+		this.noEntryKey = noEntryKey;
+		this.noEntryValue = noEntryValue;
 	}
 
 	public void clear() {
@@ -281,7 +310,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 
 	@Override
 	public int getNoEntryValue() {
-		throw new UnsupportedOperationException();
+		return noEntryValue;
 	}
 
 	@Override
@@ -361,6 +390,6 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 
 	@Override
 	public int getNoEntryKey() {
-		throw new UnsupportedOperationException();
+		return noEntryKey;
 	}
 }
