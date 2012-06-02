@@ -52,35 +52,32 @@ import org.spout.api.math.MathHelper;
  *
  * @param <T> the type of the Object in the {int, &lt;T&gt;} pair
  */
-public final class AtomicIntReferenceArrayStore<T> {
-	@SuppressWarnings("unchecked")
-	private final T EMPTY = (T) new Object();
+public final class AtomicIntArrayStore {
 
 	private final int SPINS = 10;
 	private final int MAX_FAIL_THRESHOLD = 256;
 
 	private final int maxLength;
-	private AtomicInteger length = new AtomicInteger(0);
-	private AtomicInteger entries = new AtomicInteger(0);
-	private AtomicInteger scan = new AtomicInteger(0);
+	private final AtomicInteger length = new AtomicInteger(0);
+	private final AtomicInteger entries = new AtomicInteger(0);
+	private final AtomicInteger scan = new AtomicInteger(0);
 	private final int reservedMask;
 
-	private AtomicReference<AtomicIntegerArray> seqArray;
-	private AtomicReference<T[]> auxArray;
-	private AtomicReference<int[]> intArray;
+	private final AtomicReference<boolean[]> emptyArray;
+	private final AtomicReference<AtomicIntegerArray> seqArray;
+	private final AtomicReference<int[]> intArray;
 
 	private AtomicInteger waiting = new AtomicInteger(0);
 
-	public AtomicIntReferenceArrayStore(int maxEntries) {
+	public AtomicIntArrayStore(int maxEntries) {
 		this(maxEntries, 0.49);
 	}
 
-	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor) {
+	public AtomicIntArrayStore(int maxEntries, double loadFactor) {
 		this(maxEntries, loadFactor, 0);
 	}
 
-	@SuppressWarnings("unchecked")
-	public AtomicIntReferenceArrayStore(int maxEntries, double loadFactor, int initialSize) {
+	public AtomicIntArrayStore(int maxEntries, double loadFactor, int initialSize) {
 		this.maxLength = MathHelper.roundUpPow2((int) (maxEntries / loadFactor));
 		this.reservedMask = -MathHelper.roundUpPow2(maxLength) & 0xFFFF;
 
@@ -88,9 +85,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 		this.entries.set(0);
 
 		intArray = new AtomicReference<int[]>(new int[this.length.get()]);
-		auxArray = new AtomicReference<T[]>((T[]) new Object[this.length.get()]);
 		seqArray = new AtomicReference<AtomicIntegerArray>(new AtomicIntegerArray(this.length.get()));
-		emptyFill(auxArray.get(), seqArray.get());
+		emptyArray = new AtomicReference<boolean[]>(new boolean[this.length.get()]);
+		emptyFill(emptyArray.get(), seqArray.get());
 	}
 
 	/**
@@ -202,44 +199,6 @@ public final class AtomicIntReferenceArrayStore<T> {
 	}
 
 	/**
-	 * Gets the auxiliary data at a given index.<br>
-	 * <br>
-	 * If there is no data (int or auxiliary data) stored at the index, then the
-	 * return value is the EMPTY object.<br>
-	 * <br>
-	 * If there is no auxiliary data, but there is int data, then the method
-	 * returns null.<br>
-	 * <br>
-	 * This EMPTY object is NOT a valid &lt;T&gt; object.<br>
-	 * <br>
-	 *
-	 * @param index the index
-	 * @return the auxiliary data object, null, or EMPTY
-	 */
-	public final T getAuxData(int index) {
-		index = toInternal(index);
-		int spins = 0;
-		boolean interrupted = false;
-		while (true) {
-			if (spins++ > SPINS) {
-				interrupted |= atomicWait();
-			}
-			int initialSequence = seqArray.get().get(index);
-			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
-				continue;
-			}
-			T auxData = auxArray.get()[index];
-			if (!seqArray.get().compareAndSet(index, initialSequence, initialSequence)) {
-				continue;
-			}
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-			return auxData;
-		}
-	}
-
-	/**
 	 * Adds an entry to the store. The auxData parameter should be set to null
 	 * to indicate no auxiliary data.<br>
 	 * <br>
@@ -252,10 +211,7 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 * @param auxData the auxiliary data
 	 * @return the index that the entry was stored in the array
 	 */
-	public final int add(short id, short data, T auxData) {
-		if (auxData == EMPTY) {
-			throw new IllegalArgumentException("The EMPTY singleton may not be passed as auxilary data");
-		}
+	public final int add(short id, short data) {
 		entries.incrementAndGet();
 
 		while (true) {
@@ -268,12 +224,12 @@ public final class AtomicIntReferenceArrayStore<T> {
 				continue;
 			}
 			try {
-				if (auxArray.get()[testIndex] != EMPTY) {
+				if (!emptyArray.get()[testIndex]) {
 					continue;
 				}
 				int idAndData = id << 16 | data & 0xFFFF;
 				intArray.get()[testIndex] = idAndData;
-				auxArray.get()[testIndex] = auxData;
+				emptyArray.get()[testIndex] = false;
 				return toExternal(testIndex);
 			} finally {
 				seqArray.get().set(testIndex, DatatableSequenceNumber.get());
@@ -300,11 +256,11 @@ public final class AtomicIntReferenceArrayStore<T> {
 			}
 			try {
 				int oldInt = intArray.get()[index];
-				T current = auxArray.get()[index];
-				if (current == EMPTY) {
+				boolean current = emptyArray.get()[index];
+				if (current) {
 					throw new IllegalStateException("Expected to remove a record but no record was found");
 				}
-				auxArray.get()[index] = EMPTY;
+				emptyArray.get()[index] = true;
 				entries.decrementAndGet();
 				return oldInt;
 			} finally {
@@ -409,25 +365,24 @@ public final class AtomicIntReferenceArrayStore<T> {
 
 			//
 			int[] newIntArray = new int[newLength];
-			@SuppressWarnings("unchecked")
-			T[] newAuxArray = (T[]) new Object[newLength];
+			boolean[] newEmptyArray = new boolean[newLength];
 			AtomicIntegerArray newSeqArray = new AtomicIntegerArray(newLength);
-			emptyFill(newAuxArray, null);
+			emptyFill(newEmptyArray, null);
 
 			// Copy the state of the current array to the new array
 			for (int i = 0; i < length.get(); i++) {
 				newIntArray[i] = intArray.get()[i];
-				newAuxArray[i] = auxArray.get()[i];
+				newEmptyArray[i] = emptyArray.get()[i];
 				newSeqArray.set(i, DatatableSequenceNumber.UNSTABLE);
 			}
 
 			// Set the top half of the new array to unstable and EMPTY
 			for (int i = length.get(); i < newLength; i++) {
 				newSeqArray.set(i, DatatableSequenceNumber.UNSTABLE);
-				newAuxArray[i] = EMPTY;
+				newEmptyArray[i] = true;
 			}
 			intArray.set(newIntArray);
-			auxArray.set(newAuxArray);
+			emptyArray.set(newEmptyArray);
 			seqArray.set(newSeqArray);
 
 			int oldLength = length.get();
@@ -472,9 +427,9 @@ public final class AtomicIntReferenceArrayStore<T> {
 	 *
 	 * @param array the array to fill
 	 */
-	private final void emptyFill(T[] array, AtomicIntegerArray iArray) {
+	private final void emptyFill(boolean[] array, AtomicIntegerArray iArray) {
 		for (int i = 0; i < array.length; i++) {
-			array[i] = EMPTY;
+			array[i] = true;
 			if (iArray != null) {
 				iArray.set(i, DatatableSequenceNumber.get());
 			}

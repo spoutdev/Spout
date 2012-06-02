@@ -39,13 +39,13 @@ import org.spout.api.math.Vector3;
  * short id, or a short id, a short data value and a reference to a &lt;T&gt;
  * object.
  */
-public final class AtomicBlockStore<T> {
+public final class AtomicBlockStore {
 	private final int side;
 	private final int shift;
 	private final int doubleShift;
 	private final AtomicShortArray blockIds;
-	private AtomicIntReferenceArrayStore<T> auxStore; //TODO: Replace with AtomicShortArray!
 	private final AtomicBoolean compressing = new AtomicBoolean(false);
+	private AtomicIntArrayStore auxStore;
 	private final byte[] dirtyX;
 	private final byte[] dirtyY;
 	private final byte[] dirtyZ;
@@ -70,16 +70,12 @@ public final class AtomicBlockStore<T> {
 	}
 	
 	public AtomicBlockStore(int shift, int dirtySize, short[] blocks, short[] data) {
-		this(shift, dirtySize, blocks, data, null);
-	}
-
-	public AtomicBlockStore(int shift, int dirtySize, short[] blocks, short[] data, T[] auxData) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
 		int size = side * side * side;
 		blockIds = new AtomicShortArray(size);
-		auxStore = new AtomicIntReferenceArrayStore<T>(size);
+		auxStore = new AtomicIntArrayStore(size);
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
@@ -275,45 +271,6 @@ public final class AtomicBlockStore<T> {
 	}
 
 	/**
-	 * Gets the block auxiliary data for a block at a particular location.<br>
-	 * <br>
-	 * Block data ranges from 0 to 65535.
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return the block auxiliary data
-	 */
-	public T getAuxData(int x, int y, int z) {
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				int seq = getSequence(x, y, z);
-				short blockId = blockIds.get(index);
-				if (auxStore.isReserved(blockId)) {
-					T auxData = auxStore.getAuxData(blockId);
-					if (testSequence(x, y, z, seq)) {
-						return auxData;
-					}
-				} else {
-					return null;
-				}
-			}
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
-
-	/**
 	 * Atomically gets the full set of data associated with the block.<br>
 	 * <br>
 	 *
@@ -441,7 +398,7 @@ public final class AtomicBlockStore<T> {
 						return new BlockFullState(oldBlockId, (short) 0);
 					}
 				} else {
-					int newIndex = auxStore.add(id, data, null);
+					int newIndex = auxStore.add(id, data);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
 						auxStore.remove(newIndex);
 						continue;
@@ -518,7 +475,7 @@ public final class AtomicBlockStore<T> {
 					markDirty(x, y, z);
 					return true;
 				} else {
-					int newIndex = auxStore.add(newId, newData, null);
+					int newIndex = auxStore.add(newId, newData);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
 						auxStore.remove(newIndex);
 						continue;
@@ -642,14 +599,13 @@ public final class AtomicBlockStore<T> {
 			throw new IllegalStateException("Compression started while compression was in progress");
 		}
 		int length = side * side * side;
-		AtomicIntReferenceArrayStore<T> newAuxStore = new AtomicIntReferenceArrayStore<T>(side * side * side);
+		AtomicIntArrayStore newAuxStore = new AtomicIntArrayStore(side * side * side);
 		for (int i = 0; i < length; i++) {
 			short blockId = blockIds.get(i);
 			if (auxStore.isReserved(blockId)) {
 				short storedId = auxStore.getId(blockId);
 				short storedData = auxStore.getData(blockId);
-				T storedAuxData = auxStore.getAuxData(blockId);
-				int newIndex = newAuxStore.add(storedId, storedData, storedAuxData);
+				int newIndex = newAuxStore.add(storedId, storedData);
 				if (!blockIds.compareAndSet(i, blockId, (short) newIndex)) {
 					throw new IllegalStateException("Unstable block id data during compression step");
 				}
