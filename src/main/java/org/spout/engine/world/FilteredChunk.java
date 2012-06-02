@@ -35,7 +35,6 @@ import org.spout.api.Source;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
@@ -48,8 +47,8 @@ public class FilteredChunk extends SpoutChunk{
 	private final AtomicInteger uniformId = new AtomicInteger(0);
 	private final AtomicReference<BlockMaterial> material = new AtomicReference<BlockMaterial>(null);
 
-	protected final static byte[] DARK = new byte[Chunk.CHUNK_VOLUME / 2];
-	protected final static byte[] LIGHT = new byte[Chunk.CHUNK_VOLUME / 2];
+	protected final static byte[] DARK = new byte[BLOCKS.HALF_VOLUME];
+	protected final static byte[] LIGHT = new byte[BLOCKS.HALF_VOLUME];
 
 	static {
 		Arrays.fill(LIGHT, (byte) 255);
@@ -82,17 +81,17 @@ public class FilteredChunk extends SpoutChunk{
 
 	private synchronized void initialize() {
 		if (uniform.get()) {
-			short[] initial = new short[Chunk.CHUNK_VOLUME];
+			short[] initial = new short[BLOCKS.VOLUME];
 			short id = (short)uniformId.get();
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			this.blockStore = new AtomicBlockStoreImpl(Chunk.CHUNK_SIZE_BITS, 10, initial);
+			this.blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, initial);
 			
-			this.skyLight = new byte[CHUNK_VOLUME / 2];
+			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, this.skyLight, 0, this.skyLight.length);
 			
-			this.blockLight = new byte[CHUNK_VOLUME / 2];
+			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(DARK, 0, this.blockLight, 0, this.blockLight.length);
 			
 			uniform.set(false);
@@ -185,12 +184,12 @@ public class FilteredChunk extends SpoutChunk{
 	@Override
 	public void syncSave() {
 		if (uniform.get()) {
-			short[] initial = new short[Chunk.CHUNK_VOLUME];
+			short[] initial = new short[BLOCKS.VOLUME];
 			short id = (short)uniformId.get();
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			WorldFiles.saveChunk(this, initial, new short[Chunk.CHUNK_VOLUME], this.getY() < 4 ? DARK : LIGHT, DARK, datatableMap, this.parentRegion.getChunkOutputStream(this));
+			WorldFiles.saveChunk(this, initial, new short[BLOCKS.VOLUME], this.getY() < 4 ? DARK : LIGHT, DARK, datatableMap, this.parentRegion.getChunkOutputStream(this));
 		} else {
 			super.syncSave();
 		}
@@ -199,18 +198,18 @@ public class FilteredChunk extends SpoutChunk{
 	@Override
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		if (uniform.get()) {
-			short[] initial = new short[Chunk.CHUNK_VOLUME];
+			short[] initial = new short[BLOCKS.VOLUME];
 			short id = (short)uniformId.get();
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
 
-			byte[] skyLight = new byte[CHUNK_VOLUME / 2];
+			byte[] skyLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, skyLight, 0, skyLight.length);
 
-			byte[] blockLight = new byte[CHUNK_VOLUME / 2];
+			byte[] blockLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(DARK, 0, blockLight, 0, blockLight.length);
-			return new SpoutChunkSnapshot(this, initial, new short[Chunk.CHUNK_VOLUME], blockLight, skyLight, entities);
+			return new SpoutChunkSnapshot(this, initial, new short[BLOCKS.VOLUME], blockLight, skyLight, entities);
 		}
 		return super.getSnapshot(entities);
 	}
