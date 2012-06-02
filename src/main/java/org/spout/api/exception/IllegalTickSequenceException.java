@@ -42,7 +42,7 @@ public class IllegalTickSequenceException extends RuntimeException {
 	
 	private static String getMessage(int allowedStages, int restrictedStages, Thread t, int actualStage) {
 		if (Thread.currentThread() != t) {
-			return "Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(allowedStages) + ") were allowed";
+			return "Method called by non-owning thread during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(allowedStages) + ") were allowed";
 		} else {
 			return "Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(restrictedStages) + ") were allowed for owning thread " + t;
 		}

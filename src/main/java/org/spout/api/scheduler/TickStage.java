@@ -166,7 +166,7 @@ public class TickStage {
 	 */
 	public static void checkStage(int restrictedStages, Thread ownerThread) {
 		if (((stage & restrictedStages) == 0) || Thread.currentThread() != ownerThread) {
-			throw new IllegalTickSequenceException(0, restrictedStages, ownerThread, stage);
+			throw new IllegalTickSequenceException(restrictedStages, 0, ownerThread, stage);
 		}
 	}
 
