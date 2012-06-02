@@ -75,7 +75,6 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
-import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 
@@ -93,7 +92,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0 and auxiliary data = null, the block is stored as a short.
 	 */
-	protected AtomicBlockStore<DatatableMap> blockStore;
+	protected AtomicBlockStore blockStore;
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
@@ -181,7 +180,7 @@ public class SpoutChunk extends Chunk {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		parentRegion = region;
-		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
+		blockStore = new AtomicBlockStore(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new AtomicBoolean(populated);
 
 		if (skyLight == null) {

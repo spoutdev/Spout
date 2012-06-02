@@ -87,7 +87,7 @@ public class FilteredChunk extends SpoutChunk{
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			this.blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, initial);
+			this.blockStore = new AtomicBlockStore(Chunk.CHUNK_SIZE_BITS, 10, initial);
 			
 			this.skyLight = new byte[CHUNK_VOLUME / 2];
 			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, this.skyLight, 0, this.skyLight.length);
