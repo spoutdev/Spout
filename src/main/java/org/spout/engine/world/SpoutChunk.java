@@ -773,7 +773,7 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void populate(boolean force) {
-		if (this.populated.get() && !force) {
+		if (this.populated.getAndSet(true) && !force) {
 			return;
 		}
 
@@ -791,7 +791,6 @@ public class SpoutChunk extends Chunk {
 		if (SpoutConfiguration.LIGHTING_ENABLED.getBoolean()) {
 			this.initLighting();
 		}
-		this.populated.set(true);
 		parentRegion.onChunkPopulated(this);
 	}
 
