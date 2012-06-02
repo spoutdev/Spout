@@ -26,10 +26,6 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
@@ -39,78 +35,7 @@ import org.spout.api.math.Vector3;
  * short id, or a short id, a short data value and a reference to a &lt;T&gt;
  * object.
  */
-public final class AtomicBlockStore {
-	private final int side;
-	private final int shift;
-	private final int doubleShift;
-	private final AtomicShortArray blockIds;
-	private final AtomicBoolean compressing = new AtomicBoolean(false);
-	private AtomicIntArrayStore auxStore;
-	private final byte[] dirtyX;
-	private final byte[] dirtyY;
-	private final byte[] dirtyZ;
-	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
-	private final AtomicInteger waiting = new AtomicInteger(0);
-	private final int SPINS = 10;
-
-	public AtomicBlockStore(int shift) {
-		this(shift, 10);
-	}
-	
-	public AtomicBlockStore(int shift, short[] initial) {
-		this(shift, 10, initial);
-	}
-	
-	public AtomicBlockStore(int shift, int dirtySize) {
-		this(shift, dirtySize, null);
-	}
-
-	public AtomicBlockStore(int shift, int dirtySize, short[] initial) {
-		this(shift, dirtySize, initial, null);
-	}
-	
-	public AtomicBlockStore(int shift, int dirtySize, short[] blocks, short[] data) {
-		this.side = 1 << shift;
-		this.shift = shift;
-		this.doubleShift = shift << 1;
-		int size = side * side * side;
-		blockIds = new AtomicShortArray(size);
-		auxStore = new AtomicIntArrayStore(size);
-		dirtyX = new byte[dirtySize];
-		dirtyY = new byte[dirtySize];
-		dirtyZ = new byte[dirtySize];
-		if (blocks != null) {
-			int x = 0;
-			int z = 0;
-			int y = 0;
-			int max = (1 << shift) - 1;
-
-			for (int i = 0; i < Math.min(blocks.length, size); i++) {
-				short d = 0;
-				if (data != null) {
-					d = data[i];
-				}
-				
-				this.setBlock(x, y, z, blocks[i], d);
-				
-				if (x < max) {
-					x++;
-				} else {
-					x = 0;
-					if (z < max) {
-						z++;
-					} else {
-						z = 0;
-						if (y < max) {
-							y++;
-						} else {
-							y = 0;
-						}
-					}
-				}
-			}
-		}
-	}
+public interface AtomicBlockStore {
 
 	/**
 	 * Gets the sequence number associated with a block location.<br>
@@ -127,34 +52,7 @@ public final class AtomicBlockStore {
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a
 	 *         single short record
 	 */
-	public int getSequence(int x, int y, int z) {
-		checkCompressing();
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				int blockId = blockIds.get(index);
-				if (!auxStore.isReserved(blockId)) {
-					return DatatableSequenceNumber.ATOMIC;
-				} else {
-					int sequence = auxStore.getSequence(blockId);
-					if (sequence != DatatableSequenceNumber.UNSTABLE) {
-						return sequence;
-					}
-				}
-			}
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public int getSequence(int x, int y, int z);
 
 	/**
 	 * Tests if a the sequence number associated with a particular block
@@ -167,30 +65,7 @@ public final class AtomicBlockStore {
 	 * @return true if the sequence number has not changed and expected is not
 	 *         DatatableSequenceNumber.ATOMIC
 	 */
-	public boolean testSequence(int x, int y, int z, int expected) {
-
-		if (expected == DatatableSequenceNumber.ATOMIC) {
-			return false;
-		}
-
-		checkCompressing();
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			if (spins++ > SPINS) {
-				interrupted |= atomicWait();
-			}
-			checkCompressing();
-
-			int blockId = blockIds.get(index);
-			return auxStore.isReserved(blockId) && auxStore.testSequence(blockId, expected);
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public boolean testSequence(int x, int y, int z, int expected);
 
 	/**
 	 * Gets the block id for a block at a particular location.<br>
@@ -202,34 +77,7 @@ public final class AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the block id
 	 */
-	public int getBlockId(int x, int y, int z) {
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				int seq = getSequence(x, y, z);
-				short blockId = blockIds.get(index);
-				if (auxStore.isReserved(blockId)) {
-					blockId = auxStore.getId(blockId);
-					if (testSequence(x, y, z, seq)) {
-						return blockId & 0x0000FFFF;
-					}
-				} else {
-					return blockId & 0x0000FFFF;
-				}
-			}
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public int getBlockId(int x, int y, int z);
 
 	/**
 	 * Gets the block data for a block at a particular location.<br>
@@ -241,34 +89,7 @@ public final class AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the block data
 	 */
-	public int getData(int x, int y, int z) {
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				int seq = getSequence(x, y, z);
-				short blockId = blockIds.get(index);
-				if (auxStore.isReserved(blockId)) {
-					blockId = auxStore.getData(blockId);
-					if (testSequence(x, y, z, seq)) {
-						return blockId & 0x0000FFFF;
-					}
-				} else {
-					return 0;
-				}
-			}
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public int getData(int x, int y, int z);
 
 	/**
 	 * Atomically gets the full set of data associated with the block.<br>
@@ -279,38 +100,10 @@ public final class AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the full state of the block
 	 */
-	public BlockFullState getFullData(int x, int y, int z) {
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				int seq = getSequence(x, y, z);
-				short blockId = blockIds.get(index);
-				if (auxStore.isReserved(blockId)) {
-					BlockFullState state = new BlockFullState(auxStore.getId(blockId), auxStore.getData(blockId));
-					if (testSequence(x, y, z, seq)) {
-						return state;
-					}
-				} else {
-					BlockFullState state = new BlockFullState(blockId, (short) 0);
-					return state;
-				}
-			}
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public BlockFullState getFullData(int x, int y, int z);
 
 	/**
-	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
+	 * Sets the block id and data for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored
 	 * as a single short.<br>
@@ -320,12 +113,10 @@ public final class AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
-	public void setBlock(int x, int y, int z, MaterialSource material) {
-		setBlock(x, y, z, material.getMaterial().getId(), material.getData());
-	}
+	public void setBlock(int x, int y, int z, MaterialSource material);
 	
 	/**
-	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
+	 * Sets the block id and data for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored
 	 * as a single short.<br>
@@ -335,12 +126,10 @@ public final class AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
-	public BlockFullState getAndSetBlock(int x, int y, int z, MaterialSource material) {
-		return getAndSetBlock(x, y, z, material.getMaterial().getId(), material.getData());
-	}
+	public BlockFullState getAndSetBlock(int x, int y, int z, MaterialSource material);
 
 	/**
-	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
+	 * Sets the block id and data for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored
 	 * as a single short.<br>
@@ -352,10 +141,8 @@ public final class AtomicBlockStore {
 	 * @param data the block data
 	 * @param auxData the block auxiliary data
 	 */
-	public void setBlock(int x, int y, int z, short id, short data) {
-		getAndSetBlockRaw(x, y, z, id, data);
-	}
-		
+	public void setBlock(int x, int y, int z, short id, short data);
+	
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
 	 * <br>
@@ -370,55 +157,7 @@ public final class AtomicBlockStore {
 	 * @param auxData the block auxiliary data
 	 * @return the old state of the block
 	 */
-	public BlockFullState getAndSetBlock(int x, int y, int z, short id, short data) {
-		return getAndSetBlockRaw(x, y, z, id, data);
-	}
-	
-	private BlockFullState getAndSetBlockRaw(int x, int y, int z, short id, short data) {
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				short oldBlockId = blockIds.get(index);
-				boolean oldReserved = auxStore.isReserved(oldBlockId);
-				if (data == 0 && !auxStore.isReserved(id)) {
-					if (!blockIds.compareAndSet(index, oldBlockId, id)) {
-						continue;
-					}
-					if (oldReserved) {
-						int oldInt = auxStore.remove(oldBlockId);
-						return new BlockFullState(oldInt);
-					} else {
-						return new BlockFullState(oldBlockId, (short) 0);
-					}
-				} else {
-					int newIndex = auxStore.add(id, data);
-					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
-						auxStore.remove(newIndex);
-						continue;
-					}
-					if (oldReserved) {
-						int oldInt = auxStore.remove(oldBlockId);
-						return new BlockFullState(oldInt);
-					} else {
-						return new BlockFullState(oldBlockId, (short) 0);
-					}
-				}
-			}
-		} finally {
-			markDirty(x, y, z);
-			atomicNotify();
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public BlockFullState getAndSetBlock(int x, int y, int z, short id, short data);
 
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z), if the
@@ -435,65 +174,7 @@ public final class AtomicBlockStore {
 	 * @param newAuxData the new block auxiliary data
 	 * @return true if the block was set
 	 */
-	public boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData) {
-		int index = getIndex(x, y, z);
-		int spins = 0;
-		boolean interrupted = false;
-		try {
-			while (true) {
-				if (spins++ > SPINS) {
-					interrupted |= atomicWait();
-				}
-				checkCompressing();
-
-				short oldBlockId = blockIds.get(index);
-				boolean oldReserved = auxStore.isReserved(oldBlockId);
-
-				if (!oldReserved) {
-					if (blockIds.get(index) != expectId || expectData != 0) {
-						return false;
-					}
-				} else {
-					int seq = auxStore.getSequence(oldBlockId);
-					short oldId = auxStore.getId(oldBlockId);
-					short oldData = auxStore.getData(oldBlockId);
-					if (!testSequence(x, y, z, seq)) {
-						continue;
-					}
-					if (oldId != expectId || oldData != expectData) {
-						return false;
-					}
-				}
-
-				if (newData == 0 && !auxStore.isReserved(newId)) {
-					if (!blockIds.compareAndSet(index, oldBlockId, newId)) {
-						continue;
-					}
-					if (oldReserved) {
-						auxStore.remove(oldBlockId);
-					}
-					markDirty(x, y, z);
-					return true;
-				} else {
-					int newIndex = auxStore.add(newId, newData);
-					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
-						auxStore.remove(newIndex);
-						continue;
-					}
-					if (oldReserved) {
-						auxStore.remove(oldBlockId);
-					}
-					markDirty(x, y, z);
-					return true;
-				}
-			}
-		} finally {
-			atomicNotify();
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
+	public boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData);
 
 	/**
 	 * Gets if the store would benefit from compression.<br>
@@ -503,12 +184,8 @@ public final class AtomicBlockStore {
 	 *
 	 * @return true if compression would reduce the store size
 	 */
-	public final boolean needsCompression() {
-		int entries = auxStore.getEntries();
-		int size = auxStore.getSize();
-		return size > 1 && (entries << 3) / 3 < size;
-	}
-
+	public boolean needsCompression();
+	
 	/**
 	 * Gets a short array containing the block ids in the store.<br>
 	 * <br>
@@ -517,9 +194,7 @@ public final class AtomicBlockStore {
 	 *
 	 * @return the array
 	 */
-	public short[] getBlockIdArray() {
-		return getBlockIdArray(null);
-	}
+	public short[] getBlockIdArray();
 
 	/**
 	 * Copies the block ids in the store into an array.<br>
@@ -532,23 +207,7 @@ public final class AtomicBlockStore {
 	 * @param the array to place the data
 	 * @return the array
 	 */
-	public short[] getBlockIdArray(short[] array) {
-		int length = blockIds.length();
-		if (array == null || array.length != length) {
-			array = new short[length];
-		}
-		for (int i = 0; i < length; i++) {
-			short blockId = blockIds.get(i);
-			if (auxStore.isReserved(blockId)) {
-				blockId = auxStore.getId(blockId);
-			} else {
-				blockId &= 0x0000FFFF;
-			}
-			array[i] = blockId;
-		}
-		return array;
-	}
-
+	public short[] getBlockIdArray(short[] array);
 	/**
 	 * Gets a short array containing the block data for the blocks in the store.<br>
 	 * <br>
@@ -557,9 +216,7 @@ public final class AtomicBlockStore {
 	 *
 	 * @return the array
 	 */
-	public final short[] getDataArray() {
-		return getDataArray(null);
-	}
+	public short[] getDataArray();
 
 	/**
 	 * Copies the block data in the store into an array.<br>
@@ -572,68 +229,15 @@ public final class AtomicBlockStore {
 	 * @param the array to place the data
 	 * @return the array
 	 */
-	public short[] getDataArray(short[] array) {
-		int length = blockIds.length();
-		if (array == null || array.length != length) {
-			array = new short[length];
-		}
-		for (int i = 0; i < length; i++) {
-			short blockId = blockIds.get(i);
-			if (auxStore.isReserved(blockId)) {
-				array[i] = auxStore.getData(blockId);
-			} else {
-				array[i] = 0;
-			}
-		}
-		return array;
-	}
+	public short[] getDataArray(short[] array);
 
 	/**
-	 * Compresses the auxiliary store.<br>
+	 * Compresses the store.<br>
 	 * <br>
 	 * This method should only be called when the store is guaranteed not to be
 	 * accessed from any other thread.<br>
 	 */
-	public void compress() {
-		if (!compressing.compareAndSet(false, true)) {
-			throw new IllegalStateException("Compression started while compression was in progress");
-		}
-		int length = side * side * side;
-		AtomicIntArrayStore newAuxStore = new AtomicIntArrayStore(side * side * side);
-		for (int i = 0; i < length; i++) {
-			short blockId = blockIds.get(i);
-			if (auxStore.isReserved(blockId)) {
-				short storedId = auxStore.getId(blockId);
-				short storedData = auxStore.getData(blockId);
-				int newIndex = newAuxStore.add(storedId, storedData);
-				if (!blockIds.compareAndSet(i, blockId, (short) newIndex)) {
-					throw new IllegalStateException("Unstable block id data during compression step");
-				}
-			}
-		}
-		auxStore = newAuxStore;
-		compressing.set(false);
-	}
-
-	/**
-	 * Gets the size of the internal arrays
-	 *
-	 * @return the size of the arrays
-	 */
-	public int getSize() {
-		checkCompressing();
-		return auxStore.getSize();
-	}
-
-	/**
-	 * Gets the number of entries in the store
-	 *
-	 * @return the size of the arrays
-	 */
-	public int getEntries() {
-		checkCompressing();
-		return auxStore.getEntries();
-	}
+	public void compress();
 
 	/**
 	 * Gets if the dirty array has overflowed since the last reset.<br>
@@ -641,26 +245,19 @@ public final class AtomicBlockStore {
 	 *
 	 * @return true if there was an overflow
 	 */
-	public boolean isDirtyOverflow() {
-		return dirtyBlocks.get() >= dirtyX.length;
-	}
-
+	public boolean isDirtyOverflow();
 	/**
 	 * Gets if the store has been modified since the last reset of the dirty
 	 * arrays
 	 *
 	 * @return true if the store is dirty
 	 */
-	public boolean isDirty() {
-		return dirtyBlocks.get() > 0;
-	}
+	public boolean isDirty();
 
 	/**
 	 * Resets the dirty arrays
 	 */
-	public void resetDirtyArrays() {
-		dirtyBlocks.set(0);
-	}
+	public void resetDirtyArrays();
 
 	/**
 	 * Gets the position of the dirty block at a given index.<br>
@@ -675,17 +272,7 @@ public final class AtomicBlockStore {
 	 * @param block
 	 * @return
 	 */
-	public Vector3 getDirtyBlock(int i) {
-		if (i >= dirtyBlocks.get()) {
-			return null;
-		} else {
-			return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
-		}
-	}
-
-	private final int getIndex(int x, int y, int z) {
-		return (y << doubleShift) + (z << shift) + x;
-	}
+	public Vector3 getDirtyBlock(int i);
 
 	/**
 	 * Marks a block as dirty.<br>
@@ -696,50 +283,6 @@ public final class AtomicBlockStore {
 	 * @param y the y coordinate of the dirty block
 	 * @param z the z coordinate of the dirty block
 	 */
-	public void markDirty(int x, int y, int z) {
-		int index = dirtyBlocks.getAndIncrement();
-		if (index < dirtyX.length) {
-			dirtyX[index] = (byte) x;
-			dirtyY[index] = (byte) y;
-			dirtyZ[index] = (byte) z;
-		}
-	}
-
-	private void checkCompressing() {
-		if (compressing.get()) {
-			throw new IllegalStateException("Attempting to access block store during compression phase");
-		}
-	}
-
-	/**
-	 * Waits until a notify
-	 *
-	 * @return true if interrupted during the wait
-	 */
-	private boolean atomicWait() {
-		waiting.incrementAndGet();
-		try {
-			synchronized (this) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					return true;
-				}
-			}
-		} finally {
-			waiting.decrementAndGet();
-		}
-		return true;
-	}
-
-	/**
-	 * Notifies all waiting threads
-	 */
-	private void atomicNotify() {
-		if (waiting.getAndAdd(0) > 0) {
-			synchronized (this) {
-				notifyAll();
-			}
-		}
-	}
+	public void markDirty(int x, int y, int z);
+	
 }

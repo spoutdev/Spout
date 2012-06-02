@@ -36,7 +36,7 @@ import org.spout.api.material.block.BlockFullState;
 public class AtomicBlockStoreTest {
 	private final static int MAX_SIZE = 4096;
 
-	private AtomicBlockStore store = new AtomicBlockStore(4);
+	private AtomicBlockStoreImpl store = new AtomicBlockStoreImpl(4);
 
 	private short[] ids = new short[MAX_SIZE];
 	private short[] data = new short[MAX_SIZE];
