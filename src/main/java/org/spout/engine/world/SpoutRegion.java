@@ -74,6 +74,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -142,10 +143,7 @@ public class SpoutRegion extends Region{
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
 	private final BAAWrapper chunkStore;
-	/**
-	 * Holds all not populated chunks
-	 */
-	protected Set<Chunk> nonPopulatedChunks = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
+
 	private boolean isPopulatingChunks = false;
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
@@ -165,10 +163,13 @@ public class SpoutRegion extends Region{
 	/**
 	 * A queue of chunks that need to be populated
 	 */
-	private final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
+	final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
+	final Set<Chunk> populationQueueSet = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 	
 	private final SpoutTaskManager taskManager;
+	
+	private final Thread executionThread;
 	
 	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
 	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
@@ -184,6 +185,13 @@ public class SpoutRegion extends Region{
 		super(world, x * Region.EDGE, y * Region.EDGE, z * Region.EDGE);
 		this.source = source;
 		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getEngine());
+		
+		AsyncExecutor ae = manager.getExecutor();
+		if (ae instanceof Thread) {
+			executionThread = (Thread) ae;
+		} else {
+			executionThread = null;
+		}
 
 		for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
 			for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
@@ -258,9 +266,6 @@ public class SpoutRegion extends Region{
 				if (success) {
 					newChunk.notifyColumn();
 					numberActiveChunks.incrementAndGet();
-					if (!newChunk.isPopulated()) {
-						nonPopulatedChunks.add(newChunk);
-					}
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
 						entity.setupInitialChunk(entity.getTransform());
 						addEntity(entity);
@@ -269,6 +274,10 @@ public class SpoutRegion extends Region{
 					occupiedChunksQueue.add(newChunk);
 
 					Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
+					
+					if (!newChunk.isPopulated()) {
+						queueChunkForPopulation(newChunk);
+					}
 
 					return newChunk;
 				} else {
@@ -502,7 +511,7 @@ public class SpoutRegion extends Region{
 	}
 
 	protected void queueChunkForPopulation(Chunk c) {
-		if (!populationQueue.contains(c)) {
+		if (populationQueueSet.add(c)) {
 			populationQueue.add(c);
 		}
 	}
@@ -602,8 +611,11 @@ public class SpoutRegion extends Region{
 					if (toPopulate == null) {
 						break;
 					}
+					populationQueueSet.remove(toPopulate);
 					if (toPopulate.isLoaded()) {
 						toPopulate.populate();
+					} else {
+						i--;
 					}
 				}
 
@@ -653,8 +665,8 @@ public class SpoutRegion extends Region{
 	public void haltRun() throws InterruptedException {
 	}
 	
-	private int dx = 0;
-	private int dy = 0;
+	private int compressDx = 0;
+	private int compressDy = 0;
 
 	public void finalizeRun() throws InterruptedException {
 		
@@ -669,17 +681,17 @@ public class SpoutRegion extends Region{
 		int reaped = 0;
 
 		
-		dy++;
-		if (dy >= Region.REGION_SIZE) {
-			dy = 0;
-			dx++;
-			if (dx >= Region.REGION_SIZE) {
-				dx = 0;
+		compressDy++;
+		if (compressDy >= Region.REGION_SIZE) {
+			compressDy = 0;
+			compressDx++;
+			if (compressDx >= Region.REGION_SIZE) {
+				compressDx = 0;
 			}
 		}
 
 		for (int dz = 0; dz < Region.REGION_SIZE && !chunkCompressed; dz++) {
-			Chunk chunk = chunks[dx][dy][dz].get();
+			Chunk chunk = chunks[compressDx][compressDy][dz].get();
 			if (chunk != null) {
 				chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
 
@@ -694,6 +706,10 @@ public class SpoutRegion extends Region{
 					if (do_unload) {
 						((SpoutChunk) chunk).unload(true);
 						reaped++;
+					}
+				} else {
+					if (!chunk.isPopulated()) {
+						queueChunkForPopulation(chunk);
 					}
 				}
 			}
@@ -836,9 +852,6 @@ public class SpoutRegion extends Region{
 	}
 
 	public void onChunkPopulated(SpoutChunk chunk) {
-		if (!isPopulatingChunks) {
-			nonPopulatedChunks.remove(chunk);
-		}
 		Spout.getEventManager().callDelayedEvent(new ChunkPopulateEvent(chunk));
 	}
 
@@ -853,7 +866,7 @@ public class SpoutRegion extends Region{
 	}
 
 	public Thread getExceutionThread() {
-		return ((ThreadAsyncExecutor) manager.getExecutor());
+		return executionThread;
 	}
 
 	/**

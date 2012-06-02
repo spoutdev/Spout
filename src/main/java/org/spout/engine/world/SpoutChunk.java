@@ -105,7 +105,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Holds if the chunk is populated
 	 */
-	private SnapshotableBoolean populated;
+	private AtomicBoolean populated;
 	/**
 	 * Snapshot Manager
 	 */
@@ -182,7 +182,7 @@ public class SpoutChunk extends Chunk {
 		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		parentRegion = region;
 		blockStore = new AtomicBlockStore<DatatableMap>(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
-		this.populated = new SnapshotableBoolean(snapshotManager, populated);
+		this.populated = new AtomicBoolean(populated);
 
 		if (skyLight == null) {
 			this.skyLight = new byte[CHUNK_VOLUME / 2];
@@ -689,10 +689,16 @@ public class SpoutChunk extends Chunk {
 	public boolean isDirty() {
 		return lightDirty.get() || blockStore.isDirty();
 	}
+	
+	int x = 0;
 
 	@Override
 	public boolean canSend() {
-		return this.isPopulated() && !this.isCalculatingLighting();
+		boolean canSend = this.isPopulated() && !this.isCalculatingLighting();
+		if (!canSend && !isPopulated()) {
+			((SpoutRegion)parentRegion).queueChunkForPopulation(this);
+		}
+		return canSend;
 	}
 
 	public boolean isCalculatingLighting() {
@@ -865,11 +871,6 @@ public class SpoutChunk extends Chunk {
 	public void syncEntities() {
 		Map<Entity, Integer> observerSnapshot = observers.get();
 		Map<Entity, Integer> observerLive = observers.getLive();
-
-		// If we are observed and not populated, queue population
-		if (!isPopulated() && observers.getLive().size() > 0) {
-			parentRegion.queueChunkForPopulation(this);
-		}
 
 		Set<Entity> entitiesSnapshot = entities.get();
 		entities.getLive();
