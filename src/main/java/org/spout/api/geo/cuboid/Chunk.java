@@ -32,10 +32,12 @@ import java.util.Set;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.AreaBlockAccess;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.BitSize;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -47,36 +49,24 @@ import org.spout.api.util.thread.SnapshotRead;
 public abstract class Chunk extends Cube implements AreaBlockAccess {
 
 	/**
-	 * Internal size of a side of a chunk
+	 * Stores the size of the amount of blocks in this Chunk
 	 */
-	public final static int CHUNK_SIZE = 16;
+	public static final BitSize BLOCKS = new BitSize(4);
 
-	/**
-	 * Internal size of an entire chunk's contents
-	 */
-	public static final int CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
-	/**
-	 * Number of bits on the side of a chunk
-	 */
-	public final static int CHUNK_SIZE_BITS = 4;
-	/**
-	 * Mask to convert a block integer coordinate into the chunk's base
-	 */
-	public final static int BASE_MASK = CHUNK_SIZE - 1;
 	/**
 	 * Mask to convert a block integer coordinate into the point base
 	 */
-	public final static int POINT_BASE_MASK = -CHUNK_SIZE;
+	public final static int POINT_BASE_MASK = -BLOCKS.SIZE;
 	
 	private final int blockX;
 	private final int blockY;
 	private final int blockZ;
 	
 	public Chunk(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), CHUNK_SIZE);
-		blockX = super.getX() << CHUNK_SIZE_BITS;
-		blockY = super.getY() << CHUNK_SIZE_BITS;
-		blockZ = super.getZ() << CHUNK_SIZE_BITS;
+		super(new Point(world, x, y, z), BLOCKS.SIZE);
+		blockX = super.getX() << BLOCKS.BITS;
+		blockY = super.getY() << BLOCKS.BITS;
+		blockZ = super.getZ() << BLOCKS.BITS;
 	}
 
 	/**
@@ -212,11 +202,9 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	public abstract DefaultedMap<String, Serializable> getDataMap();
 
-	/**
-	 * Gets whether the given block coordinates is inside this chunk
-	 */
+	@Override
 	public boolean containsBlock(int x, int y, int z) {
-		return x >> Chunk.CHUNK_SIZE_BITS == this.getX() && y >> Chunk.CHUNK_SIZE_BITS == this.getY() && z >> Chunk.CHUNK_SIZE_BITS == this.getZ();
+		return x >> BLOCKS.BITS == this.getX() && y >> BLOCKS.BITS == this.getY() && z >> BLOCKS.BITS == this.getZ();
 	}
 
 	/**
@@ -244,13 +232,40 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	}
 
 	/**
+	 * Gets the Block x-coordinate in the world
+	 * @param x-coordinate within this Chunk
+	 * @return x-coordinate within the World
+	 */
+	public int getBlockX(int x) {
+		return this.blockX + x & BLOCKS.MASK;
+	}
+
+	/**
+	 * Gets the Block x-coordinate in the world
+	 * @param x-coordinate within this Chunk
+	 * @return x-coordinate within the World
+	 */
+	public int getBlockY(int y) {
+		return this.blockY + y & BLOCKS.MASK;
+	}
+
+	/**
+	 * Gets the Block x-coordinate in the world
+	 * @param x-coordinate within this Chunk
+	 * @return x-coordinate within the World
+	 */
+	public int getBlockZ(int z) {
+		return this.blockZ + z & BLOCKS.MASK;
+	}
+
+	/**
 	 * Gets a chunk relative to this chunk
 	 * @param offset of the chunk relative to this chunk
 	 * @param load True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
 	 */
-	public Chunk getRelative(Vector3 offset, boolean load) {
-		return this.getWorld().getChunk(this.getX() + (int) offset.getX(), this.getY() + (int) offset.getY(), this.getZ() + (int) offset.getZ(), load);
+	public Chunk getRelative(Vector3 offset, LoadOption opt) {
+		return this.getWorld().getChunk(this.getX() + (int) offset.getX(), this.getY() + (int) offset.getY(), this.getZ() + (int) offset.getZ(), opt);
 	}
 
 	/**
@@ -259,7 +274,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * @return The Chunk
 	 */
 	public Chunk getRelative(Vector3 offset) {
-		return this.getRelative(offset, true);
+		return this.getRelative(offset, LoadOption.LOAD_GEN);
 	}
 
 	/**
@@ -268,8 +283,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 * @param load True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
 	 */
-	public Chunk getRelative(BlockFace offset, boolean load) {
-		return this.getRelative(offset.getOffset(), load);
+	public Chunk getRelative(BlockFace offset, LoadOption opt) {
+		return this.getRelative(offset.getOffset(), opt);
 	}
 
 	/**
