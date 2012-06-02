@@ -185,7 +185,16 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param source of this physics update
 	 */
 	public void updateBlockPhysics(int x, int y, int z, Source source);
-	
+
+	/**
+	 * Gets if a block is contained in this area
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return True if it is contained, False if not
+	 */
+	public boolean containsBlock(int x, int y, int z);
+
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
 	 * @param x coordinate of the block
@@ -250,7 +259,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public Block getBlock(Vector3 position, Source source);
-	
+
 	/**
 	 * Resets all dynamic material updates queued for the given location. This list is checked during the finalize part of the tick, and will cause the onPlacement method to be called.<br>
 	 *

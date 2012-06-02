@@ -167,6 +167,22 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 		return w;
 	}
 
+	public int getFloorX() {
+		return MathHelper.floor(x);
+	}
+
+	public int getFloorY() {
+		return MathHelper.floor(y);
+	}
+
+	public int getFloorZ() {
+		return MathHelper.floor(z);
+	}
+
+	public int getFloorW() {
+		return MathHelper.floor(w);
+	}
+
 	/**
 	 * Adds this Vector4 to the value of the Vector4 argument
 	 *

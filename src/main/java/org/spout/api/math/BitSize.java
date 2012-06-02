@@ -24,39 +24,39 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.generator;
+package org.spout.api.math;
 
-import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
+/**
+ * Stores the size that spans a fixed amount of bits<br>
+ * For example: 1, 2, 4, 8, 16 and 32 sizes match this description
+ */
+public class BitSize {
+	public final int SIZE;
+	public final int MASK;
+	public final int BITS;
+	public final int AREA;
+	public final int VOLUME;
+	public final int HALF_VOLUME;
 
-public interface WorldGenerator {
-	/**
-	 * Gets the block structure for a Chunk.
-	 *
-	 * The CuboidBuffer will always be exactly one Chunk in size {@link org.spout.api.geo.cuboid.Chunk#CHUNKS} cubed and Chunk aligned.
-	 *
-	 * Structural blocks should not contain any lighting sources and the
-	 * generator should give repeatable results.
-	 *
-	 * It is recommended that seeded random number generators from
-	 * WorldGeneratorUtils are used.
-	 *
-	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
-	 * @param chunkX coordinate
-	 * @param chunkY coordinate
-	 * @param chunkZ coordinate
-	 */
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ);
+	public BitSize(BitSize... bitSizes) {
+		int bitCount = 0;
+		for (BitSize size : bitSizes) {
+			bitCount += size.BITS;
+		}
+		this.BITS = bitCount;
+		this.SIZE = 1 << bitCount;
+		this.MASK = this.SIZE - 1;
+		this.AREA = this.SIZE * this.SIZE;
+		this.VOLUME = this.SIZE * this.SIZE * this.SIZE;
+		this.HALF_VOLUME = this.VOLUME >> 1;
+	}
 
-	/**
-	 * Gets an array of Populators for the world generator
-	 *
-	 * @return the Populator array
-	 */
-	public Populator[] getPopulators();
-
-	/**
-	 * Gets the name of the generator.  This name should be unique to prevent two generators overwriting the same world
-	 */
-	public String getName();
+	public BitSize(int bitCount) {
+		this.BITS = bitCount;
+		this.SIZE = 1 << bitCount;
+		this.MASK = this.SIZE - 1;
+		this.AREA = this.SIZE * this.SIZE;
+		this.VOLUME = this.SIZE * this.SIZE * this.SIZE;
+		this.HALF_VOLUME = this.VOLUME >> 1;
+	}
 }
