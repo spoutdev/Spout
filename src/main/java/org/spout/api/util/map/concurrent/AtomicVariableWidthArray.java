@@ -57,6 +57,7 @@ public class AtomicVariableWidthArray implements Serializable {
 	private final int subIndexMask;
 	private final int[] valueBitmask;
 	private final int[] valueShift;
+	private final int maxValue;
 
 	private AtomicIntegerArray array;
 
@@ -97,6 +98,17 @@ public class AtomicVariableWidthArray implements Serializable {
 		this.array = new AtomicIntegerArray(newLength);
 		
 		this.fullWidth = width == 32;
+		
+		this.maxValue = this.fullWidth ? -1 : valueBitmask[0];
+	}
+	
+	/**
+	 * Gets the maximum unsigned value that can be stored in the array
+	 * 
+	 * @return the max value
+	 */
+	public int getMaxValue() {
+		return maxValue;
 	}
 
 	/**
