@@ -59,11 +59,11 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected Entity entity;
 	protected final Session session;
 
-	public NetworkSynchronizer(Player owner, Entity entity) {
+	public NetworkSynchronizer(Player owner, Session session, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
 		entity.setObserver(true);
-		session = owner.getSession();
+		this.session = session;
 		blockViewDistance = entity.getViewDistance();
 		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
 		targetSize = blockViewDistance / 2;
@@ -102,11 +102,11 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	public Entity getEntity() {
 		return entity;
 	}
-	
+
 	public Player getOwner() {
 		return owner;
 	}
-	
+
 	protected void registerProtocolEvents(final ProtocolEventListener listener) {
 		for (final Method method : listener.getClass().getDeclaredMethods()) {
 			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
@@ -157,8 +157,8 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			} catch (EventException e) {
 				if (e.getCause() != null) {
 					Throwable t = e.getCause();
-					session.getGame().getLogger().severe("Error occurred while firing protocol event"
-							+ event.getName() + " for player " + owner.getName() + ": " + t.getMessage());
+					session.getGame().getLogger().severe("Error occurred while calling protocol event"
+							+ event.getClass().getSimpleName() + " for player " + owner.getName() + ": " + t.getMessage());
 					t.printStackTrace();
 				}
 			}
