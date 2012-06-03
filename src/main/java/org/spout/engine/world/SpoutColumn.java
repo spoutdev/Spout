@@ -28,6 +28,7 @@ package org.spout.engine.world;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +38,6 @@ import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.scheduler.TickStage;
 
@@ -53,12 +53,15 @@ public class SpoutColumn {
 	/**
 	 * Number of bits on the side of a column
 	 */
+	private static int FILE_VERSION = 2;
+	
 	public final static int COLUMN_SIZE_BITS = Chunk.CHUNK_SIZE_BITS;
 	private final World world;
 	private final int x;
 	private final int z;
 	private final AtomicInteger activeChunks = new AtomicInteger(0);
 	private final AtomicInteger[][] heightMap;
+	private final AtomicInteger lowestY = new AtomicInteger();
 
 	public SpoutColumn(World world, int x, int z) {
 		this.world = world;
@@ -71,11 +74,22 @@ public class SpoutColumn {
 				heightMap[xx][zz] = new AtomicInteger(0);
 			}
 		}
+		
+		lowestY.set(Integer.MAX_VALUE);
 
 		readHeightMap(((SpoutWorld) world).getHeightMapInputStream(x, z));
 	}
 
-	public void registerChunk() {
+	public void registerChunk(int y) {
+		boolean success = false;
+		while (!success) {
+			int oldLowestY = lowestY.get();
+			if (y < oldLowestY) {
+				success = lowestY.compareAndSet(oldLowestY, y);
+			} else {
+				success = true;
+			}
+		}
 		activeChunks.incrementAndGet();
 	}
 
@@ -105,7 +119,12 @@ public class SpoutColumn {
 
 	public int getSurfaceHeight(int x, int z) {
 		AtomicInteger v = getAtomicInteger(x, z);
-		return v.get();
+		int height = v.get();
+		if (height == Integer.MIN_VALUE) {
+			return lowestY.get();
+		} else {
+			return height;
+		}
 	}
 
 	public void notifyChunkAdded(Chunk c, int x, int z) {
@@ -139,7 +158,7 @@ public class SpoutColumn {
 		//System.out.println("Notify block change:       " + x + ", " + y + ", " + z);
 		AtomicInteger v = getAtomicInteger(x, z);
 		notifyBlockChange(v, x, y, z);
-		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);
+		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);	
 	}
 
 	private void notifyBlockChange(AtomicInteger v, int x, int y, int z) {
@@ -194,6 +213,7 @@ public class SpoutColumn {
 					getAtomicInteger(x, z).set(Integer.MIN_VALUE);
 				}
 			}
+			lowestY.set(Integer.MAX_VALUE);
 			return;
 		}
 
@@ -203,6 +223,17 @@ public class SpoutColumn {
 				for (int z = 0; z < COLUMN_SIZE; z++) {
 					getAtomicInteger(x, z).set(dataStream.readInt());
 				}
+			}
+			int version;
+			try {
+				version = dataStream.readInt();
+			} catch (EOFException eof) {
+				version = 1;
+			}
+			if (version > 1) {
+				lowestY.set(dataStream.readInt());
+			} else {
+				lowestY.set(Integer.MAX_VALUE);
 			}
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error reading column height-map for column" + x + ", " + z);
@@ -217,6 +248,8 @@ public class SpoutColumn {
 					dataStream.writeInt(getAtomicInteger(x, z).get());
 				}
 			}
+			dataStream.writeInt(FILE_VERSION);
+			dataStream.writeInt(lowestY.get());
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error writing column height-map for column" + x + ", " + z);
 		}

@@ -210,7 +210,7 @@ public class SpoutChunk extends Chunk {
 		this.dataMap = new DataMap(this.datatableMap);
 
 		column = world.getColumn(this.getBlockX(), this.getBlockZ(), true);
-		column.registerChunk();
+		column.registerChunk((int) (y * Chunk.CHUNK_SIZE));
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
 		blockStore.resetDirtyArrays();	// Clear false dirty state on freshly loaded chunk
