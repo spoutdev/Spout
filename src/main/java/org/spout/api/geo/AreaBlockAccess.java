@@ -30,7 +30,6 @@ import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
@@ -112,7 +111,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data);
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data);
 	
 	/**
 	 * Sets the given bits in the data for the block at (x, y, z)<br>

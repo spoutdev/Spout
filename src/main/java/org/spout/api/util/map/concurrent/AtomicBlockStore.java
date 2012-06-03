@@ -26,7 +26,6 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
 
@@ -100,7 +99,7 @@ public interface AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the full state of the block
 	 */
-	public BlockFullState getFullData(int x, int y, int z);
+	public int getFullData(int x, int y, int z);
 
 	/**
 	 * Sets the block id and data for the block at (x, y, z).<br>
@@ -124,9 +123,10 @@ public interface AtomicBlockStore {
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
-	 * @param fullState the new state of the Block
+	 * @param material the new material
+	 * @return the old full state of the block
 	 */
-	public BlockFullState getAndSetBlock(int x, int y, int z, MaterialSource material);
+	public int getAndSetBlock(int x, int y, int z, MaterialSource material);
 
 	/**
 	 * Sets the block id and data for the block at (x, y, z).<br>
@@ -155,9 +155,9 @@ public interface AtomicBlockStore {
 	 * @param id the block id
 	 * @param data the block data
 	 * @param auxData the block auxiliary data
-	 * @return the old state of the block
+	 * @return the old full state of the block
 	 */
-	public BlockFullState getAndSetBlock(int x, int y, int z, short id, short data);
+	public int getAndSetBlock(int x, int y, int z, short id, short data);
 
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z), if the

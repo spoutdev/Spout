@@ -279,7 +279,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the full state of the block
 	 */
-	public BlockFullState getFullData(int x, int y, int z) {
+	public int getFullData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -293,12 +293,12 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 				int seq = getSequence(x, y, z);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
-					BlockFullState state = new BlockFullState(auxStore.getId(blockId), auxStore.getData(blockId));
+					int state = auxStore.getInt(blockId);
 					if (testSequence(x, y, z, seq)) {
 						return state;
 					}
 				} else {
-					BlockFullState state = new BlockFullState(blockId, (short) 0);
+					int state = BlockFullState.getPacked(blockId, (short) 0);
 					return state;
 				}
 			}
@@ -335,7 +335,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
-	public BlockFullState getAndSetBlock(int x, int y, int z, MaterialSource material) {
+	public int getAndSetBlock(int x, int y, int z, MaterialSource material) {
 		return getAndSetBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
 
@@ -368,13 +368,13 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param id the block id
 	 * @param data the block data
 	 * @param auxData the block auxiliary data
-	 * @return the old state of the block
+	 * @return the old full state of the block
 	 */
-	public BlockFullState getAndSetBlock(int x, int y, int z, short id, short data) {
+	public int getAndSetBlock(int x, int y, int z, short id, short data) {
 		return getAndSetBlockRaw(x, y, z, id, data);
 	}
 	
-	private BlockFullState getAndSetBlockRaw(int x, int y, int z, short id, short data) {
+	private int getAndSetBlockRaw(int x, int y, int z, short id, short data) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
 		boolean interrupted = false;
@@ -393,9 +393,9 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 					}
 					if (oldReserved) {
 						int oldInt = auxStore.remove(oldBlockId);
-						return new BlockFullState(oldInt);
+						return oldInt;
 					} else {
-						return new BlockFullState(oldBlockId, (short) 0);
+						return BlockFullState.getPacked(oldBlockId, (short) 0);
 					}
 				} else {
 					int newIndex = auxStore.add(id, data);
@@ -405,9 +405,9 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 					}
 					if (oldReserved) {
 						int oldInt = auxStore.remove(oldBlockId);
-						return new BlockFullState(oldInt);
+						return oldInt;
 					} else {
-						return new BlockFullState(oldBlockId, (short) 0);
+						return BlockFullState.getPacked(oldBlockId, (short) 0);
 					}
 				}
 			}

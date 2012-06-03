@@ -123,7 +123,16 @@ public abstract class MaterialRegistry {
 	 * @param state the full state of the block
 	 */
 	public static Material get(BlockFullState state) {
-		short id = state.getId();
+		return get(state.getPacked());
+	}
+		
+	/**
+	 * Gets the material for the given packed full state
+	 * 
+	 * @param state the full state of the block
+	 */
+	public static Material get(int packedState) {
+		short id = BlockFullState.getId(packedState);
 		if (id < 0 || id >= materialLookup.length) {
 			return null;
 		}
@@ -131,7 +140,7 @@ public abstract class MaterialRegistry {
 		if (material == null) {
 			return null;
 		} else {
-			return material.getSubMaterial(state.getData());
+			return material.getSubMaterial(BlockFullState.getData(packedState));
 		}
 	}
 

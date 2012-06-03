@@ -166,9 +166,11 @@ public class AtomicBlockStoreTest {
 	private void check(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 
-		BlockFullState fullData = store.getFullData(x, y, z);
-		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getData() == data[index]);
-		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", fullData.getId() == ids[index]);
+		int packedData = store.getFullData(x, y, z);
+		short id = BlockFullState.getId(packedData);
+		short d = BlockFullState.getData(packedData);
+		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", d == data[index]);
+		assertTrue("Record read at " + x + ", " + y + ", " + z + " has wrong short data", id == ids[index]);
 	}
 
 	private final static int getIndex(int x, int y, int z) {
@@ -194,8 +196,10 @@ public class AtomicBlockStoreTest {
 		for (int x = 15; x >= 0; x--) {
 			for (int y = 15; y >= 0; y--) {
 				for (int z = 15; z >= 0; z--) {
-					BlockFullState fullData = store.getFullData(x, y, z);
-					if (fullData.getData() != 0 || (fullData.getId() & 0xC000) == 0xC000 ) {
+					int packedData = store.getFullData(x, y, z);
+					short id = BlockFullState.getId(packedData);
+					short d = BlockFullState.getData(packedData);
+					if (d != 0 || (id & 0xC000) == 0xC000 ) {
 						entries++;
 					}
 				}

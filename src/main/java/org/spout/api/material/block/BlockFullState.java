@@ -50,6 +50,22 @@ public class BlockFullState implements Cloneable {
 	public final short getData() {
 		return data;
 	}
+	
+	public int getPacked() {
+		return getPacked(id, data);
+	}
+	
+	public static int getPacked(short id, short data) {
+		return id << 16 | (data & 0xFFFF);
+	}
+	
+	public static short getId(int packed) {
+		return (short) (packed >> 16);
+	}
+	
+	public static short getData(int packed) {
+		return (short) packed;
+	}
 
 	@Override
 	public String toString() {
