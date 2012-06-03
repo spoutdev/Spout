@@ -28,8 +28,10 @@ package org.spout.api.inventory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
+import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.material.Material;
@@ -67,6 +69,12 @@ public class ShapelessRecipe implements Recipe {
 		return plugin;
 	}
 
+	@Override
+	public int getNumOfMaterials() {
+		Set<Material> set = new HashSet<Material>(ingredients);
+		return set.size();
+	}
+		
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
