@@ -55,7 +55,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.LoadGenerateOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -268,78 +268,113 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public SpoutRegion getRegion(int x, int y, int z) {
-		return getRegion(x, y, z, LoadOption.LOAD_GEN);
+		return regions.getRegion(x, y, z);
 	}
 
 	@Override
-	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
+	public SpoutRegion getRegion(int x, int y, int z, boolean load) {
+		return regions.getRegion(x, y, z, load ? LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED : LoadGenerateOption.NO_LOAD);
+	}
+
+	@Override
+	public SpoutRegion getRegion(int x, int y, int z, LoadGenerateOption loadopt) {
 		return regions.getRegion(x, y, z, loadopt);
 	}
 
 	@Override
-	public SpoutRegion getRegionFromChunk(int x, int y, int z) {
-		return getRegionFromChunk(x, y, z, LoadOption.LOAD_GEN);
+	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
+		return this.regions.getRegionFromBlock(x, y, z);
 	}
 
 	@Override
-	public SpoutRegion getRegionFromChunk(int x, int y, int z, LoadOption loadopt) {
-		return getRegion(x >> Region.CHUNKS.BITS, y >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS, loadopt);
+	public SpoutRegion getRegionFromBlock(int x, int y, int z, boolean load) {
+		return this.regions.getRegionFromBlock(x, y, z, load ? LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED : LoadGenerateOption.NO_LOAD);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromBlock(int x, int y, int z, LoadGenerateOption loadopt) {
+		return this.regions.getRegionFromBlock(x, y, z, loadopt);
 	}
 
 	@Override
 	public SpoutRegion getRegionFromBlock(Vector3 position) {
-		return getRegionFromBlock(position, LoadOption.LOAD_GEN);
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return regions.getRegionFromBlock(x, y, z);
 	}
 
 	@Override
-	public SpoutRegion getRegionFromBlock(Vector3 position, LoadOption loadopt) {
-		return this.getRegionFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
+	public SpoutRegion getRegionFromBlock(Vector3 position, boolean load) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return regions.getRegionFromBlock(x, y, z, load ? LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED : LoadGenerateOption.NO_LOAD);
 	}
 
 	@Override
-	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
-		return getRegionFromBlock(x, y, z, LoadOption.LOAD_GEN);
-	}
-
-	@Override
-	public SpoutRegion getRegionFromBlock(int x, int y, int z, LoadOption loadopt) {
-		return getRegion(x >> Region.BLOCKS.BITS, y >> Region.BLOCKS.BITS, z >> Region.BLOCKS.BITS, loadopt);
+	public SpoutRegion getRegionFromBlock(Vector3 position, LoadGenerateOption loadopt) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return regions.getRegionFromBlock(x, y, z, loadopt);
 	}
 
 	@Override
 	public SpoutChunk getChunk(int x, int y, int z) {
-		return this.getChunk(x, y, z, LoadOption.LOAD_GEN);
+		return this.getChunk(x, y, z, true);
 	}
 
 	@Override
-	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
-		SpoutRegion region = getRegionFromChunk(x, y, z, loadopt);
+	public SpoutChunk getChunk(int x, int y, int z, boolean load) {
+		return this.getChunk(x, y, z, load ? LoadGenerateOption.LOAD_OR_GENERATE_IF_NEEDED : LoadGenerateOption.NO_LOAD);
+	}
+
+	@Override
+	public SpoutChunk getChunk(int x, int y, int z, LoadGenerateOption loadopt) {
+		SpoutRegion region = getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, loadopt);
 		if (region != null) {
-			return region.getChunk(x, y, z, loadopt);
+			return region.getChunk(x & Region.REGION_SIZE - 1, y & Region.REGION_SIZE - 1, z & Region.REGION_SIZE - 1, loadopt);
 		}
 		return null;
 	}
 
 	@Override
 	public SpoutChunk getChunkFromBlock(int x, int y, int z) {
-		return this.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN);
+		return this.getChunkFromBlock(x, y, z, true);
 	}
 
 	@Override
-	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
-		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
+	public SpoutChunk getChunkFromBlock(int x, int y, int z, boolean load) {
+		return this.getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, load);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadGenerateOption loadopt) {
+		return this.getChunk(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS, loadopt);
 	}
 
 	@Override
 	public SpoutChunk getChunkFromBlock(Vector3 position) {
-		return this.getChunkFromBlock(position, LoadOption.LOAD_GEN);
+		return this.getChunkFromBlock(position, true);
 	}
 
 	@Override
-	public SpoutChunk getChunkFromBlock(Vector3 position, LoadOption loadopt) {
-		return this.getChunkFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
+	public SpoutChunk getChunkFromBlock(Vector3 position, boolean load) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return this.getChunkFromBlock(x, y, z, load);
 	}
 
+	@Override
+	public SpoutChunk getChunkFromBlock(Vector3 position, LoadGenerateOption loadopt) {
+		int x = MathHelper.floor(position.getX());
+		int y = MathHelper.floor(position.getY());
+		int z = MathHelper.floor(position.getZ());
+		return this.getChunkFromBlock(x, y, z, loadopt);
+	}
+	
 	@Override
 	public Biome getBiomeType(int x, int y, int z) {
 		if (y < 0 || y > getHeight()) {
@@ -386,7 +421,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public Entity createAndSpawnEntity(Point point, Controller controller) {
 		Entity e = createEntity(point, controller);
 		//initialize region if needed
-		this.getRegionFromBlock(point);
+		this.getRegionFromBlock(point, true);
 		spawnEntity(e);
 		return e;
 	}
@@ -427,16 +462,6 @@ public final class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void haltRun() throws InterruptedException {
 		// TODO - save on halt ?
-	}
-
-	@Override
-	public boolean containsBlock(int x, int y, int z) {
-		return true;
-	}
-
-	@Override
-	public boolean containsChunk(int x, int y, int z) {
-		return true;
 	}
 
 	@Override
@@ -520,27 +545,27 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		this.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
+		regions.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
 	}
 
 	@Override
 	public void resetDynamicBlock(int x, int y, int z) {
-		this.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
+		regions.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
 	}
-
+	
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
-		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, hint);
+		regions.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, hint);
 	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
-		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
+		regions.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
 	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z) {
-		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
+		regions.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
 	}
 	
 	@Override
@@ -681,8 +706,8 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * @return the column or null if it doesn't exist
 	 */
 	public SpoutColumn getColumn(int x, int z, boolean create) {
-		int colX = x >> SpoutColumn.BLOCKS.BITS;
-		int colZ = z >> SpoutColumn.BLOCKS.BITS;
+		int colX = x >> SpoutColumn.COLUMN_SIZE_BITS;
+		int colZ = z >> SpoutColumn.COLUMN_SIZE_BITS;
 		long key = IntPairHashed.key(colX, colZ);
 		SpoutColumn column = columns.get(key);
 		if (create && column == null) {
@@ -700,8 +725,8 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	private BAAWrapper getColumnHeightMapBAA(int x, int z) {
-		int cx = x >> Region.CHUNKS.BITS;
-		int cz = z >> Region.CHUNKS.BITS;
+		int cx = x >> Region.REGION_SIZE_BITS;
+		int cz = z >> Region.REGION_SIZE_BITS;
 
 		BAAWrapper baa = null;
 
@@ -788,27 +813,27 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public boolean hasChunk(int x, int y, int z) {
-		return this.getChunk(x, y, z, LoadOption.NO_LOAD) != null;
+		return this.getChunk(x, y, z, false) != null;
 	}
 
 	@Override
 	public boolean hasChunkAtBlock(int x, int y, int z) {
-		return this.getChunkFromBlock(x, y, z, LoadOption.NO_LOAD) != null;
+		return this.getChunkFromBlock(x, y, z, false) != null;
 	}
 
 	@Override
 	public void saveChunk(int x, int y, int z) {
-		SpoutRegion r = this.getRegionFromChunk(x, y, z, LoadOption.NO_LOAD);
+		SpoutRegion r = this.getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, false);
 		if (r != null) {
-			r.saveChunk(x, y, z);
+			r.saveChunk(x & Region.REGION_SIZE - 1, y & Region.REGION_SIZE - 1, z & Region.REGION_SIZE - 1);
 		}
 	}
 
 	@Override
 	public void unloadChunk(int x, int y, int z, boolean save) {
-		SpoutRegion r = this.getRegionFromChunk(x, y, z, LoadOption.NO_LOAD);
+		SpoutRegion r = this.getRegion(x >> Region.REGION_SIZE_BITS, y >> Region.REGION_SIZE_BITS, z >> Region.REGION_SIZE_BITS, false);
 		if (r != null) {
-			r.unloadChunk(x, y, z, save);
+			r.unloadChunk(x & Region.REGION_SIZE - 1, y & Region.REGION_SIZE - 1, z & Region.REGION_SIZE - 1, save);
 		}
 	}
 
@@ -921,15 +946,16 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * @return nearby region's players
 	 */
 	private Set<Player> getPlayersNearRegion(Point position, int range) {
+		final int REGION_SIZE = Region.REGION_SIZE * Chunk.CHUNK_SIZE;
 		Region center = this.getRegionFromBlock(position);
 
 		if (center != null) {
 			HashSet<Player> players = new HashSet<Player>();
-			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
+			final int regions = (range + REGION_SIZE - 1) / REGION_SIZE; //round up 1 region size
 			for (int dx = -regions; dx < regions; dx++) {
 				for (int dy = -regions; dy < regions; dy++) {
 					for (int dz = -regions; dz < regions; dz++) {
-						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, LoadOption.NO_LOAD);
+						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, false);
 						if (region != null) {
 							players.addAll(region.getPlayers());
 						}

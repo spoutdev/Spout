@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -64,6 +63,7 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentLinkedQueue<PointAlone> resetPending = new ConcurrentLinkedQueue<PointAlone>();
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
+	private final static int regionMask = (Chunk.CHUNK_SIZE * Region.REGION_SIZE) - 1;
 	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
@@ -71,30 +71,30 @@ public class DynamicBlockUpdateTree {
 	}
 
 	public void resetBlockUpdates(int x, int y, int z) {
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
 		resetPending.add(new PointAlone(null, x, y, z));
 	}
 	
 	public void queueBlockUpdates(int x, int y, int z) {
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
 		pending.add(new PointAlone(null, x, y, z));
 	}
 	
 	public void queueBlockUpdates(int x, int y, int z, long updateTime) {
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
 		pending.add(new PointLongPair(x, y, z, updateTime));
 	}
 	
 	public void queueBlockUpdates(int x, int y, int z, long updateTime, Object hint) {
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
 		pending.add(new PointLongObjectTriplet(x, y, z, updateTime, hint));
 	}
 	
@@ -139,17 +139,18 @@ public class DynamicBlockUpdateTree {
 			if (!processed.add(packed)) {
 				continue;
 			}
-			int bx = p.getBlockX() & Region.BLOCKS.MASK;
-			int by = p.getBlockY() & Region.BLOCKS.MASK;
-			int bz = p.getBlockZ() & Region.BLOCKS.MASK;
+			int bx = p.getBlockX() & regionMask;
+			int by = p.getBlockY() & regionMask;
+			int bz = p.getBlockZ() & regionMask;
 			
 			removeAll(DynamicBlockUpdate.getBlockPacked(bx, by, bz));
-
-			Chunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
+			
+			int rShift = Region.REGION_SIZE_BITS;
+			Chunk c = region.getChunk(bx >> rShift, by >> rShift, bz >> rShift, false);
 			if (c == null) {
 				continue;
 			}
-
+			
 			Block b =  c.getBlock(bx, by, bz);
 			Material m = b.getMaterial();
 			
@@ -166,9 +167,9 @@ public class DynamicBlockUpdateTree {
 			if (!processed.add(packed)) {
 				continue;
 			}
-			int bx = p.getBlockX() & Region.BLOCKS.MASK;
-			int by = p.getBlockY() & Region.BLOCKS.MASK;
-			int bz = p.getBlockZ() & Region.BLOCKS.MASK;
+			int bx = p.getBlockX() & regionMask;
+			int by = p.getBlockY() & regionMask;
+			int bz = p.getBlockZ() & regionMask;
 			
 			Object hint = p.getHint();
 			long updateTime = p.getUpdateTime();
@@ -199,9 +200,10 @@ public class DynamicBlockUpdateTree {
 		int bx = update.getX();
 		int by = update.getY();
 		int bz = update.getZ();
-
-		Chunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
-
+		
+		int rShift = Region.REGION_SIZE_BITS;
+		Chunk c = region.getChunk(bx >> rShift, by >> rShift, bz >> rShift, false);
+		
 		if (c == null) {
 			// TODO - this shouldn't happen - maybe a warning
 			return true;
@@ -237,7 +239,7 @@ public class DynamicBlockUpdateTree {
 			int minx = bx - rlx;
 			int miny = by - rly;
 			int minz = bz - rlz;
-			int rs = Region.BLOCKS.SIZE;
+			int rs = Region.REGION_SIZE * Chunk.CHUNK_SIZE;
 			if (maxx >= rs || maxy >= rs || maxz >= rs || minx < 0 || miny < 0 || minz < 0) {
 				return false;
 			} else {

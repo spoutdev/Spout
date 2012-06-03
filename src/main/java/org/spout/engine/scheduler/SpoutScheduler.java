@@ -599,6 +599,9 @@ public final class SpoutScheduler implements Scheduler {
 	}
 	
 	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
+		if (true) {
+			return;
+		}
 		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
 		AsyncExecutorUtils.dumpAllStacks();
 		AsyncExecutorUtils.checkForDeadlocks();

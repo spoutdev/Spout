@@ -186,18 +186,18 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
-		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
+		super(world, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE);
 		parentRegion = region;
-		blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, blocks, data);
+		blockStore = new AtomicBlockStoreImpl(Chunk.CHUNK_SIZE_BITS, 10, blocks, data);
 		this.populated = new AtomicBoolean(populated);
 
 		if (skyLight == null) {
-			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
+			this.skyLight = new byte[CHUNK_VOLUME / 2];
 		} else {
 			this.skyLight = skyLight;
 		}
 		if (blockLight == null) {
-			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
+			this.blockLight = new byte[CHUNK_VOLUME / 2];
 		} else {
 			this.blockLight = blockLight;
 		}
@@ -228,9 +228,9 @@ public class SpoutChunk extends Chunk {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
 
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
@@ -270,9 +270,9 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source, boolean event) {
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
 
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
@@ -320,7 +320,7 @@ public class SpoutChunk extends Chunk {
 			} else {
 				byte old = this.getBlockSkyLight(x, y, z);
 				if (old == 0) {
-					world.getLightingManager().skyLight.addRefresh(this, x, y, z);
+					world.getLightingManager().skyLight.addRefresh(x, y, z);
 				} else if (old < 15) {
 					this.setBlockSkyLight(x, y, z, (byte) 0, source);
 				}
@@ -343,17 +343,17 @@ public class SpoutChunk extends Chunk {
 		Point base = buffer.getBase();
 		Vector3 size = buffer.getSize();
 
-		int startX = base.getBlockX() - this.getBlockX();
-		int startY = base.getBlockY() - this.getBlockY();
-		int startZ = base.getBlockZ() - this.getBlockZ();
+		int startX = base.getBlockX() - (getX() * Chunk.CHUNK_SIZE);
+		int startY = base.getBlockY() - (getX() * Chunk.CHUNK_SIZE);
+		int startZ = base.getBlockZ() - (getX() * Chunk.CHUNK_SIZE);
 
-		int endX = (base.getBlockX() + (int)size.getX()) - this.getBlockX();
-		int endY = (base.getBlockY() + (int)size.getY()) - this.getBlockY();
-		int endZ = (base.getBlockZ() + (int)size.getZ()) - this.getBlockZ();
+		int endX = (base.getBlockX() + (int)size.getX()) - (getX() * Chunk.CHUNK_SIZE);
+		int endY = (base.getBlockY() + (int)size.getY()) - (getX() * Chunk.CHUNK_SIZE);
+		int endZ = (base.getBlockZ() + (int)size.getZ()) - (getX() * Chunk.CHUNK_SIZE);
 
-		endX &= BLOCKS.MASK;
-		endY &= BLOCKS.MASK;
-		endZ &= BLOCKS.MASK;
+		endX &= 0xF;
+		endY &= 0xF;
+		endZ &= 0xF;
 
 		for (int dx = startX; dx < endX; dx++) {
 			for (int dy = startY; dy < endY; dy++) {
@@ -366,28 +366,28 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void resetDynamicBlock(int x, int y, int z) {
-		parentRegion.resetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
+		parentRegion.resetDynamicBlock((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK);
 	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate, hint);
+		parentRegion.queueDynamicUpdate((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK, nextUpdate, hint);
 	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate);
+		parentRegion.queueDynamicUpdate((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK, nextUpdate);
 	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z));
+		parentRegion.queueDynamicUpdate((getX() + x) & Region.BASE_MASK, (getY() + y) & Region.BASE_MASK, (getZ() + z) & Region.BASE_MASK);
 	}
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState state = blockStore.getFullData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
+		BlockFullState state = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 		BlockMaterial mat = BlockMaterial.get(state.getId());
 		if (mat != null) {
 			return mat.getSubMaterial(state.getData());
@@ -399,7 +399,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		checkChunkLoaded();
-		return (short) blockStore.getData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
+		return (short) blockStore.getData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 	}
 
 	@Override
@@ -408,9 +408,9 @@ public class SpoutChunk extends Chunk {
 			throw new NullPointerException("Source can not be null");
 		}
 		light &= 0xF;
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
 
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
@@ -455,9 +455,9 @@ public class SpoutChunk extends Chunk {
 			throw new NullPointerException("Source can not be null");
 		}
 		light &= 0xF;
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		x &= BASE_MASK;
+		y &= BASE_MASK;
+		z &= BASE_MASK;
 
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
@@ -510,7 +510,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
-		return (y & BLOCKS.MASK) << 8 | (z & BLOCKS.MASK) << 4 | (x & BLOCKS.MASK);
+		return (y & BASE_MASK) << 8 | (z & BASE_MASK) << 4 | (x & BASE_MASK);
 	}
 
 	@Override
@@ -786,7 +786,7 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public Biome getBiomeType(int x, int y, int z) {
-		return biomes.getBiome(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
+		return biomes.getBiome(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
 	}
 
 	public static enum SaveState {
@@ -853,11 +853,11 @@ public class SpoutChunk extends Chunk {
 		Arrays.fill(this.skyLight, (byte) 0);
 
 		// Initialize block lighting
-		for (x = 0; x < BLOCKS.SIZE; x++) {
-			for (y = 0; y < BLOCKS.SIZE; y++) {
-				for (z = 0; z < BLOCKS.SIZE; z++) {
+		for (x = 0; x < CHUNK_SIZE; x++) {
+			for (y = 0; y < CHUNK_SIZE; y++) {
+				for (z = 0; z < CHUNK_SIZE; z++) {
 					if (!this.setBlockLight(x, y, z, this.getBlockMaterial(x, y, z).getLightLevel(this.getBlockData(x, y, z)), world)) {
-						world.getLightingManager().blockLight.addRefresh(this, x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+						world.getLightingManager().blockLight.addRefresh(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 					}
 				}
 			}
@@ -865,9 +865,9 @@ public class SpoutChunk extends Chunk {
 
 		// Report the columns that require a sky-light update
 		minY = this.getBlockY();
-		maxY = minY + BLOCKS.SIZE;
-		for (x = 0; x < BLOCKS.SIZE; x++) {
-			for (z = 0; z < BLOCKS.SIZE; z++) {
+		maxY = minY + CHUNK_SIZE;
+		for (x = 0; x < CHUNK_SIZE; x++) {
+			for (z = 0; z < CHUNK_SIZE; z++) {
 				columnY = this.column.getSurfaceHeight(x, z) + 1;
 				if (columnY < minY) {
 					columnY = minY;
@@ -879,7 +879,7 @@ public class SpoutChunk extends Chunk {
 				}
 				// refresh area below height
 				for (y = columnY; y >= minY; y--) {
-					world.getLightingManager().skyLight.addRefresh(this, x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+					world.getLightingManager().skyLight.addRefresh(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 				}
 			}
 		}
@@ -1072,8 +1072,8 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public void notifyColumn() {
-		for (int x = 0; x < BLOCKS.SIZE; x++) {
-			for (int z = 0; z < BLOCKS.SIZE; z++) {
+		for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
+			for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
 				notifyColumn(x, z);
 			}
 		}
@@ -1135,7 +1135,10 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public Block getBlock(int x, int y, int z, Source source) {
-		return new SpoutBlock(this.getWorld(), getBlockX(x), getBlockY(y), getBlockZ(z), this, source);
+		x = (x & BASE_MASK) + this.getBlockX();
+		y = (y & BASE_MASK) + this.getBlockY();
+		z = (z & BASE_MASK) + this.getBlockZ();
+		return new SpoutBlock(this.getWorld(), x, y, z, this, source);
 	}
 
 	@Override
@@ -1143,7 +1146,7 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 		// TODO - this should probably trigger a dynamic block reset
-		return this.blockStore.compareAndSetBlock(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, expect.getId(), expect.getData(), expect.getId(), data);
+		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
 	}
 
 	@Override
@@ -1151,19 +1154,19 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
 
 		boolean success = false;
 		short oldData = 0;
 		while (!success) {
-			BlockFullState state = this.blockStore.getFullData(x, y, z);
+			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 			oldData = state.getData();
 			short oldId = state.getId();
 			short newData = (short)(oldData | bits);
 			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(x, y, z, oldId, oldData, oldId, newData);
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return oldData;
 	}
@@ -1173,19 +1176,19 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
 
 		boolean success = false;
 		short oldData = 0;
 		while (!success) {
-			BlockFullState state = this.blockStore.getFullData(x, y, z);
+			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 			oldData = state.getData();
 			short oldId = state.getId();
 			short newData = (short)(oldData & (~bits));
 			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(x, y, z, oldId, oldData, oldId, newData);
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return oldData;
 	}
@@ -1194,39 +1197,38 @@ public class SpoutChunk extends Chunk {
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		checkChunkLoaded();
 
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
 
 		int shift = shiftCache[bits];
 
-		BlockFullState state = this.blockStore.getFullData(x, y, z);
+		BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 
-		return (state.getData() & bits) >> shift;
+		return (state.getData() & bits) >> (shift);
 	}
 
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
-
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		int bx = x & BASE_MASK;
+		int by = y & BASE_MASK;
+		int bz = z & BASE_MASK;
 
 		int shift = shiftCache[bits];
 
 		boolean success = false;
 		short oldData = 0;
 		while (!success) {
-			BlockFullState state = this.blockStore.getFullData(x, y, z);
+			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
 			oldData = state.getData();
 			short oldId = state.getId();
 
 			short newData = (short)(((value << shift) & bits) | (oldData & (~bits)));
 
 			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(x, y, z, oldId, oldData, oldId, newData);
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 		}
 		return (oldData & bits) >> shift;
 	}

@@ -27,7 +27,6 @@
 package org.spout.engine.world;
 
 import org.spout.api.Spout;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
@@ -83,13 +82,6 @@ public class SpoutWorldLightingModel {
 		for (int i = 0; i < this.neighbors.length; i++) {
 			BlockFace face = BlockFaces.NESWBT.get(i);
 			this.neighbors[i] = sky ? new SkyElement(world, face, this.center) : new BlockElement(world, face, this.center);
-		}
-	}
-
-	public void addRefresh(SpoutChunk chunk, int x, int y, int z) {
-		BlockMaterial mat = chunk.getBlockMaterial(x, y, z).getSubMaterial(chunk.getBlockData(x, y, z));
-		if (!mat.getOcclusion().get(BlockFaces.NESWBT)) {
-			this.addRefresh(x, y, z);
 		}
 	}
 
@@ -391,7 +383,7 @@ public class SpoutWorldLightingModel {
 			if (center.chunk != null && center.chunk.isLoaded() && center.chunk.containsBlock(this.x, this.y, this.z)) {
 				this.chunk = center.chunk;
 			} else {
-				this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.NO_LOAD);
+				this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, false);
 			}
 			if (this.chunk == null || !this.chunk.isLoaded()) {
 				this.material = null;

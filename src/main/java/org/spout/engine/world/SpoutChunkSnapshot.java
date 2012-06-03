@@ -46,6 +46,10 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The parent region that manages this chunk
 	 */
 	private final WeakReference<Region> parentRegion;
+	/**
+	 * The mask that should be applied to the x, y and z coords
+	 */
+	private final int coordMask;
 	
 	private final Set<WeakReference<Entity>> entities;
 	private final short[] blockIds;
@@ -57,6 +61,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
 		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
+		coordMask = Chunk.CHUNK_SIZE - 1;
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 		if (entities) {
 			Set<WeakReference<Entity>> liveEntities = new HashSet<WeakReference<Entity>>();
@@ -76,7 +81,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
-		return (y & Chunk.BLOCKS.MASK) << 8 | (z & Chunk.BLOCKS.MASK) << 4 | x & Chunk.BLOCKS.MASK;
+		return (y & this.coordMask) << 8 | (z & this.coordMask) << 4 | x & this.coordMask;
 	}
 
 	@Override

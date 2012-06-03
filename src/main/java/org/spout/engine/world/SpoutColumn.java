@@ -37,16 +37,23 @@ import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
-import org.spout.api.math.BitSize;
 import org.spout.api.scheduler.TickStage;
 
 public class SpoutColumn {
 	/**
-	 * Stores the size of the amount of blocks in this Column
+	 * Internal size of a side of a column
 	 */
-	public static BitSize BLOCKS = Chunk.BLOCKS;
-
+	public final static int COLUMN_SIZE = Chunk.CHUNK_SIZE;
+	/**
+	 * Internal size of a side of a column
+	 */
+	public final static int BIT_MASK = COLUMN_SIZE - 1;
+	/**
+	 * Number of bits on the side of a column
+	 */
+	public final static int COLUMN_SIZE_BITS = Chunk.CHUNK_SIZE_BITS;
 	private final World world;
 	private final int x;
 	private final int z;
@@ -57,10 +64,10 @@ public class SpoutColumn {
 		this.world = world;
 		this.x = x;
 		this.z = z;
-		this.heightMap = new AtomicInteger[BLOCKS.SIZE][BLOCKS.SIZE];
+		this.heightMap = new AtomicInteger[COLUMN_SIZE][COLUMN_SIZE];
 
-		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
-			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+		for (int xx = 0; xx < COLUMN_SIZE; xx++) {
+			for (int zz = 0; zz < COLUMN_SIZE; zz++) {
 				heightMap[xx][zz] = new AtomicInteger(0);
 			}
 		}
@@ -103,7 +110,7 @@ public class SpoutColumn {
 
 	public void notifyChunkAdded(Chunk c, int x, int z) {
 		int y = c.getBlockY();
-		int maxY = y + Chunk.BLOCKS.SIZE - 1;
+		int maxY = y + Chunk.CHUNK_SIZE - 1;
 		AtomicInteger v = getAtomicInteger(x, z);
 
 		if (maxY < v.get()) {
@@ -161,9 +168,9 @@ public class SpoutColumn {
 	}
 
 	private boolean isAir(int x, int y, int z) {
-		int xx = (this.x << BLOCKS.BITS) + (x & BLOCKS.MASK);
+		int xx = (this.x << COLUMN_SIZE_BITS) + (x & BIT_MASK);
 		int yy = y;
-		int zz = (this.z << BLOCKS.BITS) + (z & BLOCKS.MASK);
+		int zz = (this.z << COLUMN_SIZE_BITS) + (z & BIT_MASK);
 		return isAir(world.getBlockMaterial(xx, yy, zz));
 	}
 
@@ -176,14 +183,14 @@ public class SpoutColumn {
 	}
 
 	private AtomicInteger getAtomicInteger(int x, int z) {
-		return heightMap[x & BLOCKS.MASK][z & BLOCKS.MASK];
+		return heightMap[x & BIT_MASK][z & BIT_MASK];
 	}
 
 	private void readHeightMap(InputStream in) {
 		if (in == null) {
 			//The inputstream is null because no height map data exists
-			for (int x = 0; x < BLOCKS.SIZE; x++) {
-				for (int z = 0; z < BLOCKS.SIZE; z++) {
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
 					getAtomicInteger(x, z).set(Integer.MIN_VALUE);
 				}
 			}
@@ -192,8 +199,8 @@ public class SpoutColumn {
 
 		DataInputStream dataStream = new DataInputStream(in);
 		try {
-			for (int x = 0; x < BLOCKS.SIZE; x++) {
-				for (int z = 0; z < BLOCKS.SIZE; z++) {
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
 					getAtomicInteger(x, z).set(dataStream.readInt());
 				}
 			}
@@ -205,8 +212,8 @@ public class SpoutColumn {
 	private void writeHeightMap(OutputStream out) {
 		DataOutputStream dataStream = new DataOutputStream(out);
 		try {
-			for (int x = 0; x < BLOCKS.SIZE; x++) {
-				for (int z = 0; z < BLOCKS.SIZE; z++) {
+			for (int x = 0; x < COLUMN_SIZE; x++) {
+				for (int z = 0; z < COLUMN_SIZE; z++) {
 					dataStream.writeInt(getAtomicInteger(x, z).get());
 				}
 			}

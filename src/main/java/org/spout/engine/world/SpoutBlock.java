@@ -80,7 +80,7 @@ public class SpoutBlock implements Block {
 	@Override
 	public Chunk getChunk() {
 		if (this.chunk == null || !this.chunk.isLoaded()) {
-			this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z);
+			this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, true);
 		}
 		return this.chunk;
 	}

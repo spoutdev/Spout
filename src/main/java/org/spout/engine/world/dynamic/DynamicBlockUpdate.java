@@ -33,6 +33,9 @@ import org.spout.api.util.hashing.ByteTripleHashed;
 
 public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 
+	private static final int chunkMask = Region.REGION_SIZE - 1;
+	private static final int regionMask = (Region.REGION_SIZE * Chunk.CHUNK_SIZE) - 1;
+
 	private final int packed;
 	private final int chunkPacked;
 	private final long nextUpdate;
@@ -46,11 +49,11 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	}
 
 	public DynamicBlockUpdate(int x, int y, int z, long nextUpdate, long lastUpdate, Object hint) {
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
 		this.packed = getBlockPacked(x, y, z);
-		this.chunkPacked = ByteTripleHashed.key(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS);
+		this.chunkPacked = ByteTripleHashed.key(x >> Chunk.CHUNK_SIZE_BITS, y >> Chunk.CHUNK_SIZE_BITS, z >> Chunk.CHUNK_SIZE_BITS);
 		this.nextUpdate = nextUpdate;
 		this.lastUpdate = lastUpdate;
 		this.hint = hint;
@@ -89,12 +92,12 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	}
 
 	public boolean isInChunk(Chunk c) {
-		int cx = c.getX() & Region.CHUNKS.MASK;
-		int cy = c.getY() & Region.CHUNKS.MASK;
-		int cz = c.getZ() & Region.CHUNKS.MASK;
-		int bxShift = getX() >> Chunk.BLOCKS.BITS;
-		int byShift = getY() >> Chunk.BLOCKS.BITS;
-		int bzShift = getZ() >> Chunk.BLOCKS.BITS;
+		int cx = c.getX() & chunkMask;
+		int cy = c.getY() & chunkMask;
+		int cz = c.getZ() & chunkMask;
+		int bxShift = getX() >> Chunk.CHUNK_SIZE_BITS;
+		int byShift = getY() >> Chunk.CHUNK_SIZE_BITS;
+		int bzShift = getZ() >> Chunk.CHUNK_SIZE_BITS;
 		return cx == bxShift && cy == byShift && cz == bzShift;
 	}
 
@@ -191,11 +194,17 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	}
 		
 	public static int getBlockPacked(int x, int y, int z) {
-		return ByteTripleHashed.key(x & Region.BLOCKS.MASK, y & Region.BLOCKS.MASK, z & Region.BLOCKS.MASK);
+		x &= regionMask;
+		y &= regionMask;
+		z &= regionMask;
+		return ByteTripleHashed.key(x, y, z);
 	}
 
 	public static int getChunkPacked(Chunk c) {
-		return ByteTripleHashed.key(c.getX() & Chunk.BLOCKS.MASK, c.getY() & Chunk.BLOCKS.MASK, c.getZ() & Chunk.BLOCKS.MASK);
+		int cx = c.getX() & chunkMask;
+		int cy = c.getY() & chunkMask;
+		int cz = c.getZ() & chunkMask;
+		return ByteTripleHashed.key(cx, cy, cz);
 	}
 
 	public static int unpackX(int packed) {
@@ -209,4 +218,5 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	public static int unpackZ(int packed) {
 		return ByteTripleHashed.key3(packed);
 	}
+
 }
