@@ -250,9 +250,9 @@ public class WorldFiles {
 			is = new NBTInputStream(dis, false);
 			CompoundTag chunkTag = (CompoundTag) is.readTag();
 			CompoundMap map = chunkTag.getValue();
-			int cx = (r.getX() << Region.REGION_SIZE_BITS) + x;
-			int cy = (r.getY() << Region.REGION_SIZE_BITS) + y;
-			int cz = (r.getZ() << Region.REGION_SIZE_BITS) + z;
+			int cx = r.getChunkX() + x;
+			int cy = r.getChunkY() + y;
+			int cz = r.getChunkZ() + z;
 
 			boolean populated = SafeCast.toGeneric(map.get("populated"), new ByteTag("", false), ByteTag.class).getBooleanValue();
 			short[] blocks = SafeCast.toShortArray(toTagValue(map.get("blocks")), null);

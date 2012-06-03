@@ -47,6 +47,7 @@ import org.spout.api.entity.PlayerController;
 import org.spout.api.entity.component.EntityComponent;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.event.entity.EntityMoveEvent;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -123,7 +124,7 @@ public class SpoutEntity implements Entity, Tickable {
 	}
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller) {
-		this(engine, transform, controller, SpoutConfiguration.VIEW_DISTANCE.getInt() * SpoutChunk.CHUNK_SIZE);
+		this(engine, transform, controller, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 	}
 
 	public SpoutEntity(SpoutEngine engine, Point point, Controller controller) {
@@ -177,7 +178,7 @@ public class SpoutEntity implements Entity, Tickable {
 		 */
 		if (!isDead() && getPosition() != null && getWorld() != null) {
 			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
-			chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), false));
+			chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
 			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
 		}
 	}
@@ -594,7 +595,7 @@ public class SpoutEntity implements Entity, Tickable {
 		if (controllerLive.get() instanceof PlayerController) {
 			return;
 		}
-		final int viewDistance = getViewDistance() / Chunk.CHUNK_SIZE;
+		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
 		int cx = chunkLive.get().getX();
 		int cy = chunkLive.get().getY();
@@ -603,7 +604,7 @@ public class SpoutEntity implements Entity, Tickable {
 		for (int dx = -viewDistance; dx < viewDistance; dx++) {
 			for (int dy = -viewDistance; dy < viewDistance; dy++) {
 				for (int dz = -viewDistance; dz < viewDistance; dz++) {
-					Chunk chunk = w.getChunk(cx + dx, cy + dy, cz + dz, true);
+					Chunk chunk = w.getChunk(cx + dx, cy + dy, cz + dz);
 					chunk.refreshObserver(this);
 					observing.add((SpoutChunk)chunk);
 				}
