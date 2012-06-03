@@ -519,7 +519,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
 		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
 	}
 	

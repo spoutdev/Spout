@@ -236,9 +236,10 @@ public class SpoutChunk extends Chunk {
 		checkBlockStoreUpdateAllowed();
 
 		BlockMaterial material = this.getBlockMaterial(x, y, z);
-		BlockFullState oldState = blockStore.getAndSetBlock(x, y, z, material.getId(), data);
+		int oldState = blockStore.getAndSetBlock(x, y, z, material.getId(), data);
+		int oldData = BlockFullState.getData(oldState);
 
-		if (((oldState.getData() ^ data) & material.getDataMask()) != 0) {
+		if (((oldData ^ data) & material.getDataMask()) != 0) {
 			Material oldMaterial = MaterialRegistry.get(oldState);
 			if (material instanceof DynamicMaterial) {
 				if (oldMaterial instanceof BlockMaterial) {
@@ -383,10 +384,12 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState state = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
-		BlockMaterial mat = BlockMaterial.get(state.getId());
+		int state = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
+		short data = BlockFullState.getData(state);
+		short id = BlockFullState.getId(state);
+		BlockMaterial mat = BlockMaterial.get(id);
 		if (mat != null) {
-			return mat.getSubMaterial(state.getData());
+			return mat.getSubMaterial(data);
 		} else {
 			return BlockMaterial.AIR;
 		}
@@ -1131,11 +1134,13 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 		// TODO - this should probably trigger a dynamic block reset
-		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expect.getId(), expect.getData(), expect.getId(), data);
+		short expId = BlockFullState.getId(expect);
+		short expData = BlockFullState.getData(expect);
+		return this.blockStore.compareAndSetBlock(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK, expId, expData, expId, data);
 	}
 	
 	@Override
@@ -1150,9 +1155,9 @@ public class SpoutChunk extends Chunk {
 		boolean success = false;
 		short oldData = 0;
 		while (!success) {
-			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
-			oldData = state.getData();
-			short oldId = state.getId();
+			int state = this.blockStore.getFullData(bx, by, bz);
+			oldData = BlockFullState.getData(state);
+			short oldId = BlockFullState.getId(state);
 			short newData = (short)(oldData | bits);
 			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
@@ -1172,9 +1177,9 @@ public class SpoutChunk extends Chunk {
 		boolean success = false;
 		short oldData = 0;
 		while (!success) {
-			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
-			oldData = state.getData();
-			short oldId = state.getId();
+			int state = this.blockStore.getFullData(bx, by, bz);
+			oldData = BlockFullState.getData(state);
+			short oldId = BlockFullState.getId(state);
 			short newData = (short)(oldData & (~bits));
 			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
@@ -1192,9 +1197,10 @@ public class SpoutChunk extends Chunk {
 
 		int shift = shiftCache[bits];
 		
-		BlockFullState state = this.blockStore.getFullData(bx, by, bz);
+		int state = this.blockStore.getFullData(bx, by, bz);
+		int data = BlockFullState.getData(state);
 		
-		return (state.getData() & bits) >> (shift);
+		return (data & bits) >> (shift);
 	}
 
 	@Override
@@ -1210,9 +1216,9 @@ public class SpoutChunk extends Chunk {
 		boolean success = false;
 		short oldData = 0;
 		while (!success) {
-			BlockFullState state = this.blockStore.getFullData(bx, by, bz);
-			oldData = state.getData();
-			short oldId = state.getId();
+			int state = this.blockStore.getFullData(bx, by, bz);
+			oldData = BlockFullState.getData(state);
+			short oldId = BlockFullState.getId(state);
 			
 			short newData = (short)(((value << shift) & bits) | (oldData & (~bits)));
 			

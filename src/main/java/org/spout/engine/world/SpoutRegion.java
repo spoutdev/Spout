@@ -1108,7 +1108,7 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
 		return this.getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
 	}
 

@@ -136,7 +136,7 @@ public class FilteredChunk extends SpoutChunk{
 	}
 	
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, BlockFullState expect, short data) {
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
 		if (uniform.get()) {
 			initialize();
 		}
