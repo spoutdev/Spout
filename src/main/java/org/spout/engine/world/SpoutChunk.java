@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -142,6 +143,12 @@ public class SpoutChunk extends Chunk {
 	 * Every time a change is committed the value is set to 0. The region will increment it as well.
 	 */
 	protected final AtomicInteger lightingCounter = new AtomicInteger(-1);
+	
+	/**
+	 * Indicates if there has been any changes since the last render snapshot
+	 */
+	private final AtomicBoolean renderDirtyFlag = new AtomicBoolean(true);
+	private final AtomicBoolean renderSnapshotInProgress = new AtomicBoolean(false);
 
 	/**
 	 * Data map and Datatable associated with it
@@ -622,6 +629,33 @@ public class SpoutChunk extends Chunk {
 		System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
 		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), blockLightCopy, skyLightCopy, entities);
 	}
+	
+	@Override
+	public Future<ChunkSnapshot> getFutureSnapshot() {
+		return getFutureSnapshot(false);
+	}
+
+	@Override
+	public Future<ChunkSnapshot> getFutureSnapshot(boolean entities) {
+		return getFutureSnapshot(entities, false);
+	}
+
+	public Future<ChunkSnapshot> getFutureSnapshot(boolean entities, boolean renderSnapshot) {
+		boolean renderDirty;
+		if (renderSnapshot) {
+			renderDirty = renderDirtyFlag.get();
+			if (renderDirty) {
+				if (!renderSnapshotInProgress.compareAndSet(false, true)) {
+					throw new IllegalStateException("Only one render snapshot may be in progress at one time for a given chunk");
+				}
+			} else {
+				return null;
+			}
+		}
+		SpoutChunkSnapshotFuture future = new SpoutChunkSnapshotFuture(this, entities, renderSnapshot);
+		parentRegion.addSnapshotFuture(future);
+		return future;
+	}
 
 	@Override
 	public boolean refreshObserver(Entity entity) {
@@ -711,6 +745,17 @@ public class SpoutChunk extends Chunk {
 
 	protected Vector3 getDirtyBlock(int i) {
 		return blockStore.getDirtyBlock(i);
+	}
+	
+	public void setRenderClean() {
+		renderDirtyFlag.set(false);
+		if (!renderSnapshotInProgress.compareAndSet(true, false)) {
+			Spout.getLogger().info("Render snapshot set to done when no snapshot was in progress");
+		}
+	}
+	
+	public void setRenderDirty() {
+		renderDirtyFlag.set(true);
 	}
 
 	public void resetDirtyArrays() {
@@ -1194,4 +1239,5 @@ public class SpoutChunk extends Chunk {
 	public BiomeManager getBiomeManager() {
 		return biomes;
 	}
+
 }

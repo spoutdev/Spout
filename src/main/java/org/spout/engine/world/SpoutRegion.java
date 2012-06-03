@@ -142,6 +142,8 @@ public class SpoutRegion extends Region{
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
 	private final BAAWrapper chunkStore;
+	
+	private final ConcurrentLinkedQueue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
 
 	private boolean isPopulatingChunks = false;
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
@@ -787,7 +789,7 @@ public class SpoutRegion extends Region{
 
 	public void preSnapshotRun() throws InterruptedException {
 		entityManager.preSnapshotRun();
-
+		
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
@@ -798,6 +800,7 @@ public class SpoutRegion extends Region{
 					SpoutChunk spoutChunk = (SpoutChunk) chunk;
 
 					if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+						spoutChunk.setRenderDirty();
 						for (Entity entity : spoutChunk.getObserversLive()) {
 							//chunk.refreshObserver(entity);
 							if (!(entity.getController() instanceof PlayerController)) {
@@ -812,6 +815,12 @@ public class SpoutRegion extends Region{
 					}
 				}
 			}
+			
+			SpoutChunkSnapshotFuture snapshotFuture;
+			while ((snapshotFuture = snapshotQueue.poll()) != null) {
+				snapshotFuture.run();
+			}
+			
 		}
 		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 		int cx, cy, cz;
@@ -1174,6 +1183,10 @@ public class SpoutRegion extends Region{
 			}
 		}
 		return removed;
+	}
+	
+	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
+		snapshotQueue.add(future);
 	}
 	
 }

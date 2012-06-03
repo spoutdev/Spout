@@ -24,44 +24,34 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.util.thread.future;
+package org.spout.engine.world;
 
-import org.spout.api.util.future.MonitorableFuture;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.util.future.SimpleFuture;
 
-import org.spout.engine.util.thread.AsyncManager;
-
-/**
- * This is a future that is linked to a particular AsyncManager
- */
-public class ManagedFuture<T> extends MonitorableFuture<T> {
-	private AsyncManager manager;
-
-	public ManagedFuture() {
-		super();
+public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implements Runnable {
+	
+	private final SpoutChunk chunk;
+	private final boolean entities;
+	private final boolean renderSnapshot;
+	
+	public SpoutChunkSnapshotFuture(SpoutChunk chunk, boolean entities, boolean renderSnapshot) {
+		this.chunk = chunk;
+		this.entities = entities;
+		this.renderSnapshot = renderSnapshot;
 	}
 
-	public ManagedFuture(T result) {
-		super(result);
+	@Override
+	public void run() {
+		try {
+			ChunkSnapshot snapshot = chunk.getSnapshot(entities);
+			if (renderSnapshot) {
+				chunk.setRenderClean();
+			}
+			super.setResult(snapshot);
+		} catch (Throwable t) {
+			super.setThrowable(t);
+		}
 	}
 
-	public ManagedFuture(AsyncManager manager, T result) {
-		super(result);
-		this.manager = manager;
-	}
-
-	/**
-	 * Gets manager associated with this future
-	 * @return the manager
-	 */
-	public AsyncManager getManager() {
-		return manager;
-	}
-
-	/**
-	 * Sets the manager associated with this future
-	 * @return the manager
-	 */
-	public void setManager(AsyncManager manager) {
-		this.manager = manager;
-	}
 }
