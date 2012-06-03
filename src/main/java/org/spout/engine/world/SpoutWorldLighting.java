@@ -58,14 +58,14 @@ public class SpoutWorldLighting extends Thread implements Source {
 	@Override
 	public void run() {
 		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
+
 		while (this.running) {
-			if (!this.skyLight.resolve() & !this.blockLight.resolve()) {
-				this.skyLight.reportChanges();
-				this.blockLight.reportChanges();
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException ex) {}
-			}
+			this.skyLight.resolve();
+			this.blockLight.resolve();
+
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException ex) {}
 		}
 	}
 }
