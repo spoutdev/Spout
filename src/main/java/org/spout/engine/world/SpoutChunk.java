@@ -237,7 +237,7 @@ public class SpoutChunk extends Chunk {
 
 		BlockMaterial material = this.getBlockMaterial(x, y, z);
 		int oldState = blockStore.getAndSetBlock(x, y, z, material.getId(), data);
-		int oldData = BlockFullState.getData(oldState);
+		short oldData = BlockFullState.getData(oldState);
 
 		if (((oldData ^ data) & material.getDataMask()) != 0) {
 			Material oldMaterial = MaterialRegistry.get(oldState);
@@ -1198,7 +1198,7 @@ public class SpoutChunk extends Chunk {
 		int shift = shiftCache[bits];
 		
 		int state = this.blockStore.getFullData(bx, by, bz);
-		int data = BlockFullState.getData(state);
+		short data = BlockFullState.getData(state);
 		
 		return (data & bits) >> (shift);
 	}
