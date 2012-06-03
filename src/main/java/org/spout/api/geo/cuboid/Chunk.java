@@ -28,6 +28,7 @@ package org.spout.api.geo.cuboid;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.Biome;
@@ -101,6 +102,23 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	@LiveRead
 	public abstract ChunkSnapshot getSnapshot(boolean entities);
+	
+	/**
+	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
+	 *
+	 * @return the snapshot
+	 */
+	@LiveRead
+	public abstract Future<ChunkSnapshot> getFutureSnapshot();
+
+	/**
+	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
+	 *
+	 * @param entities whether to include entity data in the snapshot
+	 * @return the snapshot
+	 */
+	@LiveRead
+	public abstract Future<ChunkSnapshot> getFutureSnapshot(boolean entities);
 
 	/**
 	 * Refresh the distance between a player and the chunk, and adds the player
