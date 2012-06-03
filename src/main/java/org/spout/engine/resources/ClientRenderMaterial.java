@@ -27,6 +27,7 @@
 package org.spout.engine.resources;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +43,23 @@ import org.spout.api.resource.Resource;
 public class ClientRenderMaterial extends Resource implements RenderMaterial {
 	Shader shader;
 	Map<String, Object> materialParameters;
+	
+	
+	enum RenderSetting {
+		DEPTH,
+		PROJECTION,
+		VIEW,
+				
+	}
+	
+	private class RenderSettingState {
+		RenderSetting setting;
+		Object state;
+	
+	}
+	ArrayList<RenderSettingState> states = new ArrayList<RenderSettingState>();
+	
+	
 	
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this.shader = s;
