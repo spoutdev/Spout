@@ -387,10 +387,13 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		checkChunkLoaded();
-		BlockFullState state = blockStore.getFullData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
-		BlockMaterial mat = BlockMaterial.get(state.getId());
+		short id = (short)blockStore.getBlockId(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK);
+		BlockMaterial mat = BlockMaterial.get(id);
 		if (mat != null) {
-			return mat.getSubMaterial(state.getData());
+			if (mat.hasSubMaterials()) {
+				return mat.getSubMaterial((short) blockStore.getData(x & BASE_MASK, y & BASE_MASK, z & BASE_MASK));
+			}
+			return mat;
 		} else {
 			return BlockMaterial.AIR;
 		}
