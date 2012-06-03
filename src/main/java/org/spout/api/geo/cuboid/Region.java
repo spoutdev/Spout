@@ -32,10 +32,8 @@ import java.util.Set;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.AreaChunkAccess;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.BitSize;
 import org.spout.api.player.Player;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.thread.DelayedWrite;
@@ -46,32 +44,33 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
  */
 public abstract class Region extends Cube implements AreaChunkAccess, Iterable<Chunk>  {
-
 	/**
-	 * Stores the size of the amount of chunks in this Region
+	 * Number of chunks on a side of a region
 	 */
-	public static final BitSize CHUNKS = new BitSize(4);
-
+	public static final int REGION_SIZE = 16;
 	/**
-	 * Stores the size of the amount of blocks in this Region
+	 * Number of bits in {@link #REGION_SIZE}
 	 */
-	public static final BitSize BLOCKS = new BitSize(CHUNKS, Chunk.BLOCKS);
-
-	private final int blockX;
-	private final int blockY;
-	private final int blockZ;
-	private final int chunkX;
-	private final int chunkY;
-	private final int chunkZ;
+	public static final int REGION_SIZE_BITS = 4;
+	/**
+	 * Number of blocks on a side of a region
+	 */
+	public final static int EDGE = REGION_SIZE * Chunk.CHUNK_SIZE;
+	/**
+	 * The number of bits to shift to go from block to region or region to block coordinates.
+	 */
+	public static final int BLOCK_SHIFT = REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
+	/**
+	 * Mask to convert a block integer coordinate into the region's base
+	 */
+	public final static int BASE_MASK = EDGE - 1;
+	/**
+	 * The number of chunks in a region
+	 */
+	public static final int REGION_CHUNK_VOLUME = REGION_SIZE * REGION_SIZE * REGION_SIZE;
 
 	public Region(World world, float x, float y, float z) {
-		super(new Point(world, x, y, z), BLOCKS.SIZE);
-		this.blockX = super.getX() << BLOCKS.BITS;
-		this.blockY = super.getY() << BLOCKS.BITS;
-		this.blockZ = super.getZ() << BLOCKS.BITS;
-		this.chunkX = super.getX() << CHUNKS.BITS;
-		this.chunkY = super.getY() << CHUNKS.BITS;
-		this.chunkZ = super.getZ() << CHUNKS.BITS;
+		super(new Point(world, x, y, z), EDGE);
 	}
 
 	/**
@@ -79,7 +78,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 	 * @return the x-coordinate of the first block in this region
 	 */
 	public int getBlockX() {
-		return this.blockX;
+		return this.getX() << BLOCK_SHIFT;
 	}
 
 	/**
@@ -87,7 +86,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 	 * @return the y-coordinate of the first block in this region
 	 */
 	public int getBlockY() {
-		return this.blockY;
+		return this.getY() << BLOCK_SHIFT;
 	}
 
 	/**
@@ -95,95 +94,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 	 * @return the z-coordinate of the first block in this region
 	 */
 	public int getBlockZ() {
-		return this.blockZ;
-	}
-
-	/**
-	 * Gets the x-coordinate of this region as a Chunk coordinate
-	 * @return the x-coordinate of the first chunk in this region
-	 */
-	public int getChunkX() {
-		return this.chunkX;
-	}
-
-	/**
-	 * Gets the y-coordinate of this region as a Chunk coordinate
-	 * @return the y-coordinate of the first chunk in this region
-	 */
-	public int getChunkY() {
-		return this.chunkY;
-	}
-
-	/**
-	 * Gets the z-coordinate of this region as a Chunk coordinate
-	 * @return the z-coordinate of the first chunk in this region
-	 */
-	public int getChunkZ() {
-		return this.chunkZ;
-	}
-
-	/**
-	 * Gets the Block x-coordinate in the world
-	 * @param x-coordinate within this Region
-	 * @return x-coordinate within the World
-	 */
-	public int getBlockX(int x) {
-		return this.blockX + x & BLOCKS.MASK;
-	}
-
-	/**
-	 * Gets the Block y-coordinate in the world
-	 * @param y-coordinate within this Region
-	 * @return y-coordinate within the World
-	 */
-	public int getBlockY(int y) {
-		return this.blockY + y & BLOCKS.MASK;
-	}
-
-	/**
-	 * Gets the Block z-coordinate in the world
-	 * @param z-coordinate within this Region
-	 * @return z-coordinate within the World
-	 */
-	public int getBlockZ(int z) {
-		return this.blockZ + z & BLOCKS.MASK;
-	}
-
-	/**
-	 * Gets the Chunk x-coordinate in the world
-	 * @param x-coordinate within this Region
-	 * @return x-coordinate within the World
-	 */
-	public int getChunkX(int x) {
-		return this.chunkX + x & CHUNKS.MASK;
-	}
-
-	/**
-	 * Gets the Chunk y-coordinate in the world
-	 * @param y-coordinate within this Region
-	 * @return y-coordinate within the World
-	 */
-	public int getChunkY(int y) {
-		return this.chunkY + y & CHUNKS.MASK;
-	}
-
-	/**
-	 * Gets the Chunk z-coordinate in the world
-	 * @param z-coordinate within this Region
-	 * @return z-coordinate within the World
-	 */
-	public int getChunkZ(int z) {
-		return this.chunkZ + z & CHUNKS.MASK;
-	}
-
-	@Override
-	public boolean containsBlock(int x, int y, int z) {
-		return x >> BLOCKS.BITS == this.getX() && y >> BLOCKS.BITS == this.getY() && z >> BLOCKS.BITS == this.getZ();
-	}
-
-	@Override
-	public boolean containsChunk(int x, int y, int z) {
-		return x >> CHUNKS.BITS == this.getX() && y >> CHUNKS.BITS == this.getY() && z >> CHUNKS.BITS == this.getZ();
+		return this.getZ() << BLOCK_SHIFT;
 	}
 
 	/**
@@ -240,10 +151,10 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 	private class ChunkIterator implements Iterator<Chunk> {
 		private Chunk next;
 		public ChunkIterator() {
-			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-						next = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
+			for (int dx = 0; dx < Region.REGION_SIZE; dx++) {
+				for (int dy = 0; dy < Region.REGION_SIZE; dy++) {
+					for (int dz = 0; dz < Region.REGION_SIZE; dz++) {
+						next = getChunk(dx, dy, dz, false);
 						if (next != null) {
 							break;
 						}
@@ -261,10 +172,10 @@ public abstract class Region extends Cube implements AreaChunkAccess, Iterable<C
 		public Chunk next() {
 			Chunk current = next;
 			next = null;
-			for (int dx = current.getX(); dx < CHUNKS.SIZE; dx++) {
-				for (int dy = current.getY(); dy < CHUNKS.SIZE; dy++) {
-					for (int dz = current.getZ(); dz < CHUNKS.SIZE; dz++) {
-						next = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
+			for (int dx = current.getX(); dx < Region.REGION_SIZE; dx++) {
+				for (int dy = current.getY(); dy < Region.REGION_SIZE; dy++) {
+					for (int dz = current.getZ(); dz < Region.REGION_SIZE; dz++) {
+						next = getChunk(dx, dy, dz, false);
 						if (next != null) {
 							break;
 						}

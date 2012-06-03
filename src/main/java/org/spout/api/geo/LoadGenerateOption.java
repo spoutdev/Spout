@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo;
 
-public enum LoadOption {
+public enum LoadGenerateOption {
 	/**
 	 * Do not load or generate chunk/region if not currently loaded
 	 */
@@ -34,16 +34,16 @@ public enum LoadOption {
 	/**
 	 * Load chunk/region if not currently loaded, but do not generate it if it does not yet exist
 	 */
-	LOAD_ONLY(true, false),
+	LOAD_IF_NEEDED(true, false),
 	/**
 	 * Load chunk/region if not currently loaded, and generate it if it does not yet exist
 	 */
-	LOAD_GEN(true, true);
-
+	LOAD_OR_GENERATE_IF_NEEDED(true, true);
+	
 	private final boolean load;
 	private final boolean generate;
-
-	private LoadOption(boolean load, boolean generate) {
+	
+	private LoadGenerateOption(boolean load, boolean generate) {
 		this.load = load;
 		this.generate = generate;
 	}

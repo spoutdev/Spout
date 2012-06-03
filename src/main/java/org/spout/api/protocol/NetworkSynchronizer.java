@@ -39,7 +39,6 @@ import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventHandler;
 import org.spout.api.exception.EventException;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -65,7 +64,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		entity.setObserver(true);
 		this.session = session;
 		blockViewDistance = entity.getViewDistance();
-		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
+		viewDistance = blockViewDistance / Chunk.CHUNK_SIZE;
 		targetSize = blockViewDistance / 2;
 	}
 
@@ -188,7 +187,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		// TODO teleport smoothing
 		Point currentPosition = entity.getPosition();
 		if (currentPosition != null) {
-			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1) {
+			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.CHUNK_SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 			}
@@ -253,7 +252,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			i = priorityChunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 				Point p = i.next();
-				Chunk c = p.getWorld().getChunkFromBlock(p);
+				Chunk c = p.getWorld().getChunkFromBlock(p, true);
 				if (c.canSend()) {
 					sendChunk(c);
 					activeChunks.add(p);
@@ -265,7 +264,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			i = chunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 				Point p = i.next();
-				Chunk c = p.getWorld().getChunkFromBlock(p);
+				Chunk c = p.getWorld().getChunkFromBlock(p, true);
 				if (c.canSend()) {
 					sendChunk(c);
 					activeChunks.add(p);
@@ -296,7 +295,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			if (!chunkInitQueue.contains(p) && !this.initializedChunks.contains(p)) {
 				i.remove();
 			} else {
-				Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
+				Chunk c = p.getWorld().getChunkFromBlock(p, false);
 				if (c != null) {
 					addObserver(c);
 					i.remove();
@@ -306,7 +305,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	}
 
 	private void addObserver(Point p) {
-		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
+		Chunk c = p.getWorld().getChunkFromBlock(p, false);
 		if (c != null) {
 			addObserver(c);
 		} else {
@@ -320,7 +319,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	}
 
 	private void removeObserver(Point p) {
-		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
+		Chunk c = p.getWorld().getChunkFromBlock(p, false);
 		if (c != null) {
 			removeObserver(c);
 		}
@@ -353,16 +352,16 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 		}
 
-		int cx = bx >> Chunk.BLOCKS.BITS;
-		int cy = by >> Chunk.BLOCKS.BITS;
-		int cz = bz >> Chunk.BLOCKS.BITS;
-
+		int cx = bx >> Chunk.CHUNK_SIZE_BITS;
+		int cy = by >> Chunk.CHUNK_SIZE_BITS;
+		int cz = bz >> Chunk.CHUNK_SIZE_BITS;
+		
 		Iterator<IntVector3> itr = new OutwardIterator(cx, cy, cz, viewDistance);
 		int distance = 0;
-
+		
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
-			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
+			Point base = new Point(world, v.getX() << Chunk.CHUNK_SIZE_BITS, v.getY() << Chunk.CHUNK_SIZE_BITS, v.getZ() << Chunk.CHUNK_SIZE_BITS);
 			if (!activeChunks.contains(base)) {
 				if (distance <= targetSize) {
 					priorityChunkSendQueue.add(base);

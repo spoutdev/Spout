@@ -144,18 +144,6 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 		return z;
 	}
 
-	public int getFloorX() {
-		return MathHelper.floor(x);
-	}
-
-	public int getFloorY() {
-		return MathHelper.floor(y);
-	}
-
-	public int getFloorZ() {
-		return MathHelper.floor(z);
-	}
-
 	public final float getRight() {
 		return getX();
 	}

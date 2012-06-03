@@ -184,15 +184,15 @@ public class Point extends Vector3 {
 	}
 
 	public int getBlockX() {
-		return this.getFloorX();
+		return MathHelper.floor(this.getX());
 	}
 
 	public int getBlockY() {
-		return this.getFloorY();
+		return MathHelper.floor(this.getY());
 	}
 
 	public int getBlockZ() {
-		return this.getFloorZ();
+		return MathHelper.floor(this.getZ());
 	}
 
 	/**

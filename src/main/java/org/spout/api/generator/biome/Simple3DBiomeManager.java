@@ -29,7 +29,7 @@ package org.spout.api.generator.biome;
 import org.spout.api.geo.cuboid.Chunk;
 
 public class Simple3DBiomeManager extends BiomeManager{
-	private byte[] biomes = new byte[Chunk.BLOCKS.VOLUME];
+	private byte[] biomes = new byte[Chunk.CHUNK_VOLUME];
 	public Simple3DBiomeManager(int chunkX, int chunkY, int chunkZ) {
 		super(chunkX, chunkY, chunkZ);
 	}
@@ -42,7 +42,7 @@ public class Simple3DBiomeManager extends BiomeManager{
 
 	@Override
 	public byte[] serialize() {
-		byte[] data = new byte[Chunk.BLOCKS.VOLUME];
+		byte[] data = new byte[Chunk.CHUNK_VOLUME];
 		System.arraycopy(biomes, 0, data, 0, biomes.length);
 		return data;
 	}
