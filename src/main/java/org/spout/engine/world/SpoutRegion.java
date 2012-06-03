@@ -541,6 +541,16 @@ public class SpoutRegion extends Region{
 	}
 
 	public void startTickRun(int stage, long delta) throws InterruptedException {
+		boolean visibleToPlayers = this.entityManager.getPlayers().size() > 0;
+		if (!visibleToPlayers) {
+			//Search for players near to the center of the region
+			int bx = getX() * Region.REGION_SIZE * Chunk.CHUNK_SIZE;
+			int by = getY() * Region.REGION_SIZE * Chunk.CHUNK_SIZE;
+			int bz = getZ() * Region.REGION_SIZE * Chunk.CHUNK_SIZE;
+			int half = Region.EDGE / 2;
+			Point center = new Point(getWorld(), bx + half, by + half, bz + half);
+			visibleToPlayers = getWorld().getNearbyPlayers(center, Region.EDGE).size() > 0;
+		}
 		switch (stage) {
 			case 0: {
 				taskManager.heartbeat(delta);
@@ -548,7 +558,12 @@ public class SpoutRegion extends Region{
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
 					try {
-						ent.onTick(dt);
+						//Try and determine if we should tick this entity
+						//If the entity is not important (not an observer)
+						//And the entity is not visible to players, don't tick it
+						if (visibleToPlayers || (ent.getController() != null && ent.getController().isImportant())) {
+							ent.onTick(dt);
+						}
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
 						e.printStackTrace();
@@ -636,11 +651,14 @@ public class SpoutRegion extends Region{
 			case 1: {
 				//Resolve collisions and prepare for a snapshot.
 				Set<SpoutEntity> resolvers = new HashSet<SpoutEntity>();
-				boolean shouldResolve;
 				for (SpoutEntity ent : entityManager) {
-					shouldResolve = ent.preResolve();
-					if (shouldResolve) {
-						resolvers.add(ent);
+					//Try and determine if we should resolve collisions for this entity
+					//If the entity is not important (not an observer)
+					//And the entity is not visible to players, don't resolve it
+					if (visibleToPlayers || (ent.getController() != null && ent.getController().isImportant())) {
+						if (ent.preResolve()) {
+							resolvers.add(ent);
+						}
 					}
 				}
 
