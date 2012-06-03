@@ -599,7 +599,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 			throw new IllegalStateException("Compression started while compression was in progress");
 		}
 		int length = side * side * side;
-		AtomicIntArrayStore newAuxStore = new AtomicIntArrayStore(side * side * side);
+		AtomicIntArrayStore newAuxStore = new AtomicIntArrayStore(length);
 		for (int i = 0; i < length; i++) {
 			short blockId = blockIds.get(i);
 			if (auxStore.isReserved(blockId)) {
