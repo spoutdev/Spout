@@ -88,7 +88,6 @@ public class SpoutEntity implements Entity, Tickable {
 	private Model model;
 	private Thread owningThread;
 	private Transform lastTransform = transform;
-	private Point collisionPoint;
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
@@ -204,52 +203,48 @@ public class SpoutEntity implements Entity, Tickable {
 	 * move events fired.
 	 */
 	public void resolve() {
-		Point to = null;
-
-		//Handle Player collisions elsewhere
-		if (collision != null && !(controllerLive.get() instanceof PlayerController)) {
-			//Set collision point at the current position of the entity.
-			collisionPoint = getPosition();
-
-			//Move the collision volume to the new position
-			collision.setPosition(collisionPoint);
-
-			List<CollisionVolume> colliding = ((SpoutWorld) collisionPoint.getWorld()).getCollidingObject(this.collision);
-			Vector3 offset = lastTransform.getPosition().subtract(collisionPoint);
-			for (CollisionVolume box : colliding) {
-				Vector3 collision = this.collision.resolve(box);
-				if (collision != null) {
-					//Allow controllers to manipulate the collision first and then continue resolve
-					controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
-					collision = collision.subtract(collisionPoint);
-					float x = offset.getX() + collision.getX();
-					float y = offset.getY() + collision.getY();
-					float z = offset.getZ() + collision.getZ();
-
-					if (this.getCollision().getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-						to = lastTransform.getPosition().add(collisionPoint.add(x, y, z));
-					}
-				}
-			}
-		}
-		//Handle throwing proper EntityMoveEvent
-		if (!lastTransform.getPosition().equals(transform.getPosition())) {
-			EntityMoveEvent event;
-			//Check for collision offset
-			if (to != null && !lastTransform.getPosition().equals(to)) {
-				event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
-				Spout.getEngine().getEventManager().callEvent(event);
-				if (!event.isCancelled()) {
-					setPosition(to);
-				}
-			} else {
-				event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
-				Spout.getEngine().getEventManager().callEvent(event);
-				if (event.isCancelled()) {
-					setPosition(lastTransform.getPosition());
-				}
-			}
-		}
+//		Point to = null;
+//
+//		//Handle Player collisions elsewhere
+//		if (collision != null && !(controllerLive.get() instanceof PlayerController)) {
+//			//Move the collision volume to the new position
+//			collision.setPosition(getPosition());
+//
+//			List<CollisionVolume> colliding = ((SpoutWorld) getPosition().getWorld()).getCollidingObject(collision);
+//			for (CollisionVolume box : colliding) {
+//				Vector3 resolved = collision.resolve(box);
+//				if (resolved != null) {
+//					if (collision.getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
+//						Vector3 offset = getPosition().subtract(lastTransform.getPosition());
+//						resolved = resolved.subtract(getPosition());
+//						Spout.log("Controller: " + controllerLive.get().toString());
+//						Spout.log("Pre-Collision position: " + getPosition().toString());
+//						to = lastTransform.getPosition().add(getPosition().add(MathHelper.add(resolved, offset)));
+//						Spout.log("Adjusted Collision position: " + to.toString());
+//					}
+//					//Controller modify the result of collisions "after the fact" but before entity move events are fired.
+//					controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
+//				}
+//			}
+//		}
+//		//Handle throwing proper EntityMoveEvent
+//		if (!lastTransform.getPosition().equals(transform.getPosition())) {
+//			EntityMoveEvent event;
+//			//Check for collision offset
+//			if (to != null && !lastTransform.getPosition().equals(to)) {
+//				event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
+//				Spout.getEngine().getEventManager().callEvent(event);
+//				if (!event.isCancelled()) {
+//					setPosition(to);
+//				}
+//			} else {
+//				event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
+//				Spout.getEngine().getEventManager().callEvent(event);
+//				if (event.isCancelled()) {
+//					setPosition(lastTransform.getPosition());
+//				}
+//			}
+//		}
 
 		lastTransform = transform.copy();
 	}

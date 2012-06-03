@@ -5,7 +5,6 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/annotations" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
@@ -13,25 +12,37 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="spoutapi" />
     <orderEntry type="library" name="Maven: org.spout:spoutnbt:1.0.3-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: net.royawesome:jlibnoise:dev-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty:3.4.4.Final" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.16.1-GA" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.3" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:12.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
-    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.10" level="project" />
     <orderEntry type="library" name="Maven: com.h2database:h2:1.3.166" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.directory.studio:org.apache.commons.collections:3.2.1" level="project" />
-    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
-    <orderEntry type="library" name="Maven: jline:jline:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.grahamedgecombe.jterminal:jterminal:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.beust:jcommander:1.23" level="project" />
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.7.2" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.19" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: slick:slick:274" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: phys2d:phys2d:060408" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.lwjgl:lwjgl:2.1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.lwjgl:lwjgl-jinput:2.1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.lwjgl:lwjgl-native:win32:2.1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.jnlp:jnlp:1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: ibxm:ibxm:unknown" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: jcraft:jogg:0.0.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: jcraft:jorbis:0.0.15" level="project" />
+    <orderEntry type="module" module-name="spoutapi" />
+    <orderEntry type="library" name="Maven: org.spout:simplenbt:1.0.4-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: net.royawesome:jlibnoise:dev-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty:3.4.6.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:12.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.directory.studio:org.apache.commons.collections:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.10" level="project" />
+    <orderEntry type="library" name="Maven: jline:jline:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.grahamedgecombe.jterminal:jterminal:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.beust:jcommander:1.26" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl:2.8.3" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl-platform:natives-windows:2.8.3" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl-platform:natives-linux:2.8.3" level="project" />
@@ -43,15 +54,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.jinput:jinput-platform:natives-osx:2.0.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: slick:slick:274" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: phys2d:phys2d:060408" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.lwjgl:lwjgl:2.1.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.lwjgl:lwjgl-jinput:2.1.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.lwjgl:lwjgl-native:win32:2.1.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.jnlp:jnlp:1.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: ibxm:ibxm:unknown" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: jcraft:jogg:0.0.7" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: jcraft:jorbis:0.0.15" level="project" />
   </component>
 </module>
 
