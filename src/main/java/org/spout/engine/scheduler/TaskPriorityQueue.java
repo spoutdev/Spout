@@ -28,9 +28,9 @@ package org.spout.engine.scheduler;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.PriorityQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
-public class TaskPriorityQueue extends PriorityQueue<SpoutTask> {
+public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 
 	private static final long serialVersionUID = 1L;
 	
