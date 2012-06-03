@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
@@ -62,6 +63,7 @@ public class SpoutColumn {
 	private final AtomicInteger activeChunks = new AtomicInteger(0);
 	private final AtomicInteger[][] heightMap;
 	private final AtomicInteger lowestY = new AtomicInteger();
+	private final AtomicReference<int[][]> heights = new AtomicReference<int[][]>();
 
 	public SpoutColumn(World world, int x, int z) {
 		this.world = world;
@@ -121,7 +123,17 @@ public class SpoutColumn {
 		AtomicInteger v = getAtomicInteger(x, z);
 		int height = v.get();
 		if (height == Integer.MIN_VALUE) {
-			return lowestY.get();
+			// No height known
+			int[][] h = heights.get();
+			if (h == null) {
+				h = world.getGenerator().getSurfaceHeight(world, x, z);
+				heights.set(h);
+			}
+			if (h == null) {
+				return lowestY.get();
+			} else {
+				return h[x & BIT_MASK][z & BIT_MASK];
+			}
 		} else {
 			return height;
 		}
