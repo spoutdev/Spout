@@ -135,4 +135,29 @@ public abstract class Controller extends EntityComponent{
 	public boolean isSavable() {
 		return true;
 	}
+
+	/**
+	 * Is important is a hint to the entity manager that this controller should be
+	 * considered important in regards to ticks and collisions. When unimportant
+	 * entities are far away from players or present in empty worlds, they will be
+	 * ticked less frequently, and may have more lax collisions. This allows regions
+	 * to optimize and only tick and collide entities that seem critical to players,
+	 * the regions near players, and the game logic of the world.
+	 * <p>
+	 * Important controllers are exempt from these optimizations and will be ticked 
+	 * on schedule and treated as if it were a player or observer. This will make the
+	 * controller more expensive in terms of performance, and importance should not be
+	 * given to non-players and non-observers lightly. In general, there should be 
+	 * very few cases where importance needs to be adjusted manually. 
+	 * <p>
+	 * <b>Note:</b> If a controller is an observer, it is always considered
+	 * to be important. Players are also always considered important.
+	 * @return important
+	 */
+	public boolean isImportant() {
+		if (getParent() != null) {
+			return getParent().isObserver();
+		}
+		return this instanceof PlayerController;
+	}
 }
