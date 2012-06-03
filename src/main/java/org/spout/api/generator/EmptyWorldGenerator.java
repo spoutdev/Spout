@@ -29,6 +29,8 @@ package org.spout.api.generator;
 
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
@@ -44,5 +46,10 @@ public class EmptyWorldGenerator implements WorldGenerator {
 	
 	public String getName() {
 		return "EmptyWorld";
+	}
+
+	@Override
+	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ) {
+		return new int[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
 	}
 }

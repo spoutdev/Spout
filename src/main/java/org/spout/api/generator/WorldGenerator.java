@@ -27,6 +27,7 @@
 package org.spout.api.generator;
 
 import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.geo.World;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 public interface WorldGenerator {
@@ -47,6 +48,19 @@ public interface WorldGenerator {
 	 * @param chunkZ coordinate
 	 */
 	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ);
+	
+	/**
+	 * Gets the surface height of the world.  This is used for initialisation purposed only, so only needs reasonable accuracy.<br>
+	 * <br>
+	 * The result value should be a 2d array of size {@link  org.spout.api.geo.cuboid.Chunk#CHUNK_SIZE} squared.<br>
+	 * <br>
+	 * This hint will improve lighting calculations for players who move into new areas.
+	 * 
+	 * @param chunkX coordinate
+	 * @param chunkZ coordinate
+	 * @return the surface height array for the column, or null not to provide a hint
+	 */
+	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ);
 
 	/**
 	 * Gets an array of Populators for the world generator
