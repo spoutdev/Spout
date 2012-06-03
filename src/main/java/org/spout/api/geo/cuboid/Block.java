@@ -342,4 +342,31 @@ public interface Block extends MaterialState {
 	 * @return this Block
 	 */
 	public Block update(boolean around);
+
+	/**
+	 * Queues a dynamic update on this block<br>
+	 * The Block Material must be dynamic for this to function.
+	 * 
+	 * @return this Block
+	 */
+	public Block dynamicUpdate();
+
+	/**
+	 * Queues a dynamic update on this block<br>
+	 * The Block Material must be dynamic for this to function.
+	 * 
+	 * @param delay to wait before updating
+	 * @return this Block
+	 */
+	public Block dynamicUpdate(long delay);
+
+	/**
+	 * Queues a dynamic update on this block<br>
+	 * The Block Material must be dynamic for this to function.
+	 * 
+	 * @param delay to wait before updating
+	 * @param hint parameter to use during the update
+	 * @return this Block
+	 */
+	public Block dynamicUpdate(long delay, Object hint);
 }

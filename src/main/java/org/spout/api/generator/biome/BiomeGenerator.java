@@ -71,17 +71,16 @@ public abstract class BiomeGenerator implements WorldGenerator {
 
 	@Override
 	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
-		final int x = chunkX << Chunk.CHUNK_SIZE_BITS;
-		final int z = chunkZ << Chunk.CHUNK_SIZE_BITS;
+		final int x = chunkX << Chunk.BLOCKS.BITS;
+		final int z = chunkZ << Chunk.BLOCKS.BITS;
 		final long seed = blockData.getWorld().getSeed();
-		final int chunkMask = Chunk.CHUNK_SIZE - 1;
 		Simple2DBiomeManager biomeManager = new Simple2DBiomeManager(chunkX, chunkY, chunkZ);
-		byte[] biomeData = new byte[Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE];
-		for (int dx = x; dx < x + Chunk.CHUNK_SIZE; ++dx) {
-			for (int dz = z; dz < z + Chunk.CHUNK_SIZE; ++dz) {
+		byte[] biomeData = new byte[Chunk.BLOCKS.AREA];
+		for (int dx = x; dx < x + Chunk.BLOCKS.SIZE; ++dx) {
+			for (int dz = z; dz < z + Chunk.BLOCKS.SIZE; ++dz) {
 				Biome biome = biomes.getBiome(dx, dz, seed);
 				biome.generateColumn(blockData, dx, chunkY, dz);
-				biomeData[(dz & chunkMask) << 4 | (dx & chunkMask)] = (byte) biome.getId();
+				biomeData[(dz & Chunk.BLOCKS.MASK) << 4 | (dx & Chunk.BLOCKS.MASK)] = (byte) biome.getId();
 			}
 		}
 		biomeManager.deserialize(biomeData);

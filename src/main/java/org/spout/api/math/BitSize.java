@@ -24,33 +24,26 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.generator;
+package org.spout.api.math;
 
-import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.generator.biome.EmptyBiomeManager;
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
+/**
+ * Stores the size that spans a fixed amount of bits<br>
+ * For example: 1, 2, 4, 8, 16 and 32 sizes match this description
+ */
+public class BitSize {
+	public final int SIZE;
+	public final int MASK;
+	public final int BITS;
+	public final int AREA;
+	public final int VOLUME;
+	public final int HALF_VOLUME;
 
-public class FlatWorldGenerator implements WorldGenerator {
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ) {
-		if (chunkY < 0) {
-			blockData.flood(BlockMaterial.UNBREAKABLE.getId());
-		}
-		return new EmptyBiomeManager(chunkX, chunkY, chunkZ);
-	}
-
-	public Populator[] getPopulators() {
-		return new Populator[0];
-	}
-	
-	public String getName() {
-		return "FlatWorld";
-	}
-
-	@Override
-	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ) {
-		 return new int[Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
+	public BitSize(int bitCount) {
+		this.BITS = bitCount;
+		this.SIZE = 1 << bitCount;
+		this.MASK = this.SIZE - 1;
+		this.AREA = this.SIZE * this.SIZE;
+		this.VOLUME = this.AREA * this.SIZE;
+		this.HALF_VOLUME = this.VOLUME >> 1;
 	}
 }

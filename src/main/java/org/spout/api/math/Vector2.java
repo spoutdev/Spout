@@ -132,6 +132,14 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 		return y;
 	}
 
+	public int getFloorX() {
+		return MathHelper.floor(x);
+	}
+
+	public int getFloorY() {
+		return MathHelper.floor(y);
+	}
+
 	/**
 	 * Adds this Vector2 to the value of the Vector2 argument
 	 *

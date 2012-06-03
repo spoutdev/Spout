@@ -50,6 +50,6 @@ public class EmptyWorldGenerator implements WorldGenerator {
 
 	@Override
 	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ) {
-		return new int[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+		return new int[Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
 	}
 }
