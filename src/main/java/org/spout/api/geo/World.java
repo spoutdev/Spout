@@ -35,6 +35,8 @@ import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.spawn.SpawnArrangement;
+import org.spout.api.entity.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -151,10 +153,10 @@ public interface World extends Source, AreaRegionAccess {
 	 * {@link #createAndSpawnEntity(point, controller)} for each element in the array.
 	 *
 	 * @param points The points to use for spawning the entities
-	 * @param controller The controller that will be attached to the Entity
+	 * @param type The type of controller that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, Controller controller);
+	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type);
 	
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
@@ -166,6 +168,28 @@ public interface World extends Source, AreaRegionAccess {
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controller);
+	
+	/**
+	 * Creates and Spawns entities at the given points.  This is the same as calling
+	 * {@link #createAndSpawnEntity(point, controller)} using type.createController() 
+	 * as the controller for each point. The two arrays must be the same length.
+	 *
+	 * @param points The points to use for spawning the entities
+	 * @param types The controller types that will be attached to the Entity
+	 * @return The Entities that has been created and spawned
+	 */
+	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types);
+	
+	/**
+	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
+	 * {@link #createAndSpawnEntity(point, controller)} for each Point, controller pair in
+	 * the arrangement
+	 *
+	 * @param points The points to use for spawning the entities
+	 * @param controller The controller that will be attached to the Entity
+	 * @return The Entities that has been created and spawned
+	 */
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement);
 
 	/**
 	 * Gets the world's spawn point
