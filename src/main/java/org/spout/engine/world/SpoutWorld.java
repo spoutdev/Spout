@@ -52,6 +52,8 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BlockController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.spawn.SpawnArrangement;
+import org.spout.api.entity.type.ControllerType;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
@@ -438,12 +440,31 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 	
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, Controller controller) {
+	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types) {
 		Entity[] entities = new Entity[points.length];
 		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], controller);
+			entities[i] = createAndSpawnEntity(points[i], types[i].createController());
 		}
 		return entities;
+	}
+	
+	@Override
+	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type) {
+		Entity[] entities = new Entity[points.length];
+		for (int i = 0; i < points.length; i++) {
+			entities[i] = createAndSpawnEntity(points[i], type.createController());
+		}
+		return entities;
+	}
+	
+	@Override
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement) {
+		ControllerType[] types = arrangement.getControllerTypes();
+		if (types.length == 1) {
+			return createAndSpawnEntity(arrangement.getArrangement(), types[0]);
+		} else {
+			return createAndSpawnEntity(arrangement.getArrangement(), types);
+		}
 	}
 
 	@Override
