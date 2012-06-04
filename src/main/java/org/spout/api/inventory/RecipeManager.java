@@ -26,6 +26,8 @@
  */
 package org.spout.api.inventory;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.material.Material;
@@ -52,15 +54,6 @@ public interface RecipeManager {
 	 * @return the recipes if they're found, otherwise null
 	 */
 	public Set<Recipe> getRecipes(Plugin plugin, Material result);
-		
-	/**
-	 * Gets a recipe registered to this games recipe database, based on the
-	 * plugin.
-	 * 
-	 * @param plugin that the recipes belongs to
-	 * @return the recipes if they're found, otherwise null
-	 */
-	public Set<Recipe> getRecipes(Plugin plugin);
 		
 	/**
 	 * Replaces an old recipe with a new one.
@@ -90,4 +83,57 @@ public interface RecipeManager {
 	 * @return All the registered recipes.
 	 */
 	public Set<Recipe> getAllRecipes();
+	
+			
+	/**
+	 * Gets all the recipes registered for a plugin.
+	 * 
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
+	 */
+	public Set<Recipe> getRecipes(Plugin plugin);
+	
+	/**
+	 * Gets all the shaped recipes registered for a plugin.
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
+	 */
+	public Set<Recipe> getShapedRecipes(Plugin plugin);
+	
+	/**
+	 * Gets all the shapeless recipes registered for a plugin.
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
+	 */
+	public Set<Recipe> getShapelessRecipes(Plugin plugin);
+	
+	/**
+	 * Match the materials to any ShapedRecipe
+	 * @param materials by rows
+	 * @return ShapedRecipe
+	 */
+	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials);
+	
+	/**
+	 * Match the materials to any ShapelessRecipe
+	 * @param materials
+	 * @return ShapelesRecipe
+	 */
+	public ShapelessRecipe matchShapelessRecipe(List<Material> materials);
+	
+	/**
+	 * Match the materials to any ShapedRecipe for a given plugin
+	 * @param plugin 
+	 * @param materials by rows
+	 * @return ShapedRecipe
+	 */
+	public ShapedRecipe matchShapedRecipe(Plugin plugin, List<List<Material>> materials);
+	
+	/**
+	 * Match the materials to any ShapelessRecipe for a given plugin
+	 * @param plugin 
+	 * @param materials
+	 * @return ShapelesRecipe
+	 */
+	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials);
 }

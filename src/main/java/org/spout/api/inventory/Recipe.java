@@ -37,4 +37,6 @@ public interface Recipe {
 	public ItemStack getResult();
 	
 	public List<Material> getIngredients();
+	
+	public int getNumOfMaterials();
 }

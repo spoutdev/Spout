@@ -29,8 +29,10 @@ package org.spout.api.inventory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
+import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.material.Material;
@@ -75,6 +77,12 @@ public class ShapedRecipe implements Recipe {
 		return list;
 	}
 	
+	@Override
+	public int getNumOfMaterials() {
+		Set<Material> set = new HashSet<Material>(ingredientsMap.values());
+		return set.size();
+	}
+    
 	public HashMap<Character, Material> getIngredientsMap() {
 		return ingredientsMap;
 	}
@@ -84,6 +92,18 @@ public class ShapedRecipe implements Recipe {
 		return Collections.unmodifiableList(rows);
 	}
 
+	public List<List<Material>> getRowsAsMaterials() {
+		List<List<Material>> materials = new ArrayList<List<Material>>();
+		for (List<Character> row : getRows()) {
+			List<Material> rowAsMaterials = new ArrayList<Material>();
+			for (Character c : row) {
+				rowAsMaterials.add(ingredientsMap.get(c));
+			}
+			materials.add(rowAsMaterials);
+		}
+		return materials;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
