@@ -29,8 +29,8 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,7 +64,6 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
@@ -424,6 +423,27 @@ public final class SpoutWorld extends AsyncManager implements World {
 		this.getRegionFromBlock(point, true);
 		spawnEntity(e);
 		return e;
+	}
+	
+	@Override
+	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers) {
+		if (points.length != controllers.length) {
+			throw new IllegalArgumentException("Point and controller array must be of equal length");
+		}
+		Entity[] entities = new Entity[points.length];
+		for (int i = 0; i < points.length; i++) {
+			entities[i] = createAndSpawnEntity(points[i], controllers[i]);
+		}
+		return entities;
+	}
+	
+	@Override
+	public Entity[] createAndSpawnEntity(Point[] points, Controller controller) {
+		Entity[] entities = new Entity[points.length];
+		for (int i = 0; i < points.length; i++) {
+			entities[i] = createAndSpawnEntity(points[i], controller);
+		}
+		return entities;
 	}
 
 	@Override
