@@ -39,9 +39,9 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
+import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.resource.Resource;
 
-import org.spout.engine.filesystem.BasicResourceLoader;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.resources.ClientRenderMaterial;
 

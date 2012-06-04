@@ -34,7 +34,7 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.ModelFace;
 import org.spout.api.model.PositionNormalTexture;
-import org.spout.engine.filesystem.BasicResourceLoader;
+import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.mesh.BaseMesh;
 
 

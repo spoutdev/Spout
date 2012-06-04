@@ -29,7 +29,7 @@ package org.spout.engine.resources.loader;
 
 import java.io.InputStream;
 
-import org.spout.engine.filesystem.BasicResourceLoader;
+import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.resources.ClientFont;
 
 public class FontLoader extends BasicResourceLoader<ClientFont>{

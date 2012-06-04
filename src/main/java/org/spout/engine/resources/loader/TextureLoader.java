@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.spout.api.render.Texture;
+import org.spout.api.resource.BasicResourceLoader;
 
-import org.spout.engine.filesystem.BasicResourceLoader;
 import org.spout.engine.resources.ClientTexture;
 
 public class TextureLoader extends BasicResourceLoader<Texture> {
