@@ -29,18 +29,18 @@ package org.spout.engine.world;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.event.world.RegionLoadEvent;
 import org.spout.api.event.world.RegionUnloadEvent;
-import org.spout.api.geo.LoadGenerateOption;
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -58,32 +58,6 @@ public class RegionSource implements Iterable<Region> {
 	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
 		loadedRegions = new TSyncInt21TripleObjectHashMap<Region>();
-	}
-
-	/**
-	 * Gets the region associated with the block x, y, z coordinates
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return region, if it is loaded and exists
-	 */
-	@SnapshotRead
-	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
-		return getRegionFromBlock(x, y, z, LoadGenerateOption.NO_LOAD);
-	}
-
-	/**
-	 * Gets the region associated with the block x, y, z coordinates
-	 * @param x    the x coordinate
-	 * @param y    the y coordinate
-	 * @param z    the z coordinate
-	 * @param loadopt to control whether to load or generate the region, if needed
-	 * @return region
-	 */
-	@LiveRead
-	public SpoutRegion getRegionFromBlock(int x, int y, int z, LoadGenerateOption loadopt) {
-		int shifts = Region.REGION_SIZE_BITS + Chunk.CHUNK_SIZE_BITS;
-		return getRegion(x >> shifts, y >> shifts, z >> shifts, loadopt);
 	}
 
 	@DelayedWrite
@@ -119,18 +93,6 @@ public class RegionSource implements Iterable<Region> {
 	}
 
 	/**
-	 * Gets the region associated with the region x, y, z coordinates
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return region, if it is loaded and exists
-	 */
-	@LiveRead
-	public SpoutRegion getRegion(int x, int y, int z) {
-		return getRegion(x, y, z, LoadGenerateOption.NO_LOAD);
-	}
-
-	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
 	 * <p/>
 	 * Will load or generate a region if requested.
@@ -142,7 +104,7 @@ public class RegionSource implements Iterable<Region> {
 	 * @return region
 	 */
 	@LiveRead
-	public SpoutRegion getRegion(int x, int y, int z, LoadGenerateOption loadopt) {
+	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
 		if (region != null || (!loadopt.loadIfNeeded())) {
@@ -151,6 +113,12 @@ public class RegionSource implements Iterable<Region> {
 			/* If not generating region, and it doesn't exist yet, we're done */
 			if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
 				return null;
+			}
+			if (Spout.debugMode()) {
+				System.out.println("[debug] Started new region: [" + x + "/" + y + "/" + z + "]");
+				for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+					System.out.println("  at " + element);
+				}
 			}
 			region = new SpoutRegion(world, x, y, z, this);
 			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);

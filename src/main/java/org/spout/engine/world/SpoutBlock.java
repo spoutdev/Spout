@@ -80,7 +80,7 @@ public class SpoutBlock implements Block {
 	@Override
 	public Chunk getChunk() {
 		if (this.chunk == null || !this.chunk.isLoaded()) {
-			this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, true);
+			this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z);
 		}
 		return this.chunk;
 	}
@@ -327,4 +327,21 @@ public class SpoutBlock implements Block {
 		return world.getBiomeType(x, y, z);
 	}
 
+	@Override
+	public Block dynamicUpdate() {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z);
+		return this;
+	}
+
+	@Override
+	public Block dynamicUpdate(long delay) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, delay);
+		return this;
+	}
+
+	@Override
+	public Block dynamicUpdate(long delay, Object hint) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, delay, hint);
+		return this;
+	}
 }
