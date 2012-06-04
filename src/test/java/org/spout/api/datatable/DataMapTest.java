@@ -35,7 +35,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
-import org.spout.api.map.DefaultKeyImpl;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.map.DefaultedKey;
 
 public class DataMapTest {
@@ -78,7 +78,7 @@ public class DataMapTest {
 
 		test.put(serialString, serialValue);
 		
-		DefaultedKey<Integer> defaultedKey = new DefaultKeyImpl<Integer>(defaultedKeyString, defaultedValue);
+		DefaultedKey<Integer> defaultedKey = new DefaultedKeyImpl<Integer>(defaultedKeyString, defaultedValue);
 		
 		assertTrue("Defaulted key did not return default value", defaultedValue.equals(test.get(defaultedKey)));
 		

@@ -26,12 +26,12 @@
  */
 package org.spout.api.map;
 
-public class DefaultKeyImpl<T> implements DefaultedKey<T> {
+public class DefaultedKeyImpl<T> implements DefaultedKey<T> {
 
 	private final T defaultValue;
 	private final String key;
 	
-	public DefaultKeyImpl(String key, T defaultValue) {
+	public DefaultedKeyImpl(String key, T defaultValue) {
 		this.key = key;
 		this.defaultValue = defaultValue;
 	}
