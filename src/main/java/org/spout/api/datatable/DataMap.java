@@ -42,6 +42,7 @@ import org.spout.api.datatable.value.DatatableFloat;
 import org.spout.api.datatable.value.DatatableInt;
 import org.spout.api.datatable.value.DatatableObject;
 import org.spout.api.datatable.value.DatatableSerializable;
+import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedMap;
 
 /**
@@ -96,22 +97,35 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 
 	@Override
 	public Serializable get(Object key) {
+		return get(key, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Serializable> T get(Object key, T defaultValue) {
 		if (key instanceof String) {
-			return get((String)key);
+			String keyString = (String)key;
+			T value;
+			try {
+				value = (T)map.get(keyString).get();
+			} catch (ClassCastException e) {
+				value = null;
+			}
+			if (value == null) {
+				return defaultValue;
+			} else {
+				return value;
+			}
+		} else {
+			return defaultValue;
 		}
-		return null;
 	}
 	
 	@Override
-	public Serializable get(Object key, Serializable defaultValue) {
-		if (containsKey(key)) {
-			return get(key);
-		}
-		return defaultValue;
-	}
-	
-	public Serializable get(String key) {
-		return map.get(key).get();
+	public <T extends Serializable> T get(DefaultedKey<T> key) {
+		T defaultValue = key.getDefaultValue();
+		String keyString = key.getKeyString();
+		return get(keyString, defaultValue);
 	}
 
 	@Override
@@ -129,11 +143,24 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		}
 		return old;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
+		String keyString = key.getKeyString();
+		try {
+			return (T)put(keyString, value);
+		} catch (ClassCastException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public Serializable remove(Object key) {
 		if (key instanceof String) {
 			return remove((String)key);
+		} else if (key instanceof DefaultedKey) {
+			return remove(((DefaultedKey<?>)key).getKeyString());
 		}
 		return null;
 	}
@@ -213,14 +240,11 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 				list.add(o.get());
 				keys.add(o.getKey());
 			}
-			if (expectedAmount > 1) {
-				current = list.get(index);
-				next = list.get(index + 1);
-			} else if (expectedAmount > 0) {
-				current = list.get(index);
+			current = null;
+			if (expectedAmount == 0) {
 				next = null;
 			} else {
-				current = next = null;
+				next = list.get(index);
 			}
 		}
 		
