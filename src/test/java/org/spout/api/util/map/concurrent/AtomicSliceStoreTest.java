@@ -89,7 +89,7 @@ public class AtomicSliceStoreTest {
 		System.out.println();
 		System.out.println("-- Starting element removal test --");
 
-		for (int pass = 0; pass < 10; pass++) {
+		for (int pass = 0; pass < 7; pass++) {
 			System.out.println("Removing 1/3 of the entries");
 			for (int x = 15; x >= 0; x--) {
 				for (int z = 15; z >= 0; z--) {
