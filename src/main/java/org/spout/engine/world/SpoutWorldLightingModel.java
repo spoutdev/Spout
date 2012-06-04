@@ -87,13 +87,9 @@ public class SpoutWorldLightingModel {
 	}
 
 	public void addRefresh(SpoutChunk chunk, int x, int y, int z) {
-		this.addRefresh(x, y, z);
-		// Fail?
-		/*
 		if (!chunk.getBlockMaterial(x, y, z).getOcclusion().get(BlockFaces.NESWBT)) {
 			this.addRefresh(x, y, z);
 		}
-		*/
 	}
 
 	public void addRefresh(int x, int y, int z) {
@@ -255,9 +251,6 @@ public class SpoutWorldLightingModel {
 	 * @return True if it was successful
 	 */
 	public boolean loadReceive(int x, int y, int z) {
-		return this.loadSend(x, y, z);
-		// Fail?
-		/*
 		this.center.load(x, y, z);
 		if (this.center.material == null || this.center.material.getOcclusion().get(BlockFaces.NESWBT)) {
 			return false;
@@ -270,7 +263,6 @@ public class SpoutWorldLightingModel {
 			}
 		}
 		return true;
-		*/
 	}
 
 	/**

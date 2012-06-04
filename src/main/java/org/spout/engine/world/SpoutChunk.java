@@ -317,21 +317,13 @@ public class SpoutChunk extends Chunk {
 				for (y = newheight; y < oldheight; y++) {
 					world.setBlockSkyLight(x, y + 1, z, (byte) 15, source);
 				}
-			} else if (!this.setBlockSkyLight(x, y, z, (byte) 0, source)) {
-				// if the light level is left unchanged, refresh lighting from neighbors
-				world.getLightingManager().skyLight.addRefresh(x, y, z);
 			} else {
-				// This was previously used instead of the three lines above
-				// It is a possible cause for bugged lighting
-				// Keep it, as it did solve a problem with wrongly-cleared blocks (dark chunks)
-				/*
 				byte old = this.getBlockSkyLight(x, y, z);
 				if (old == 0) {
 					world.getLightingManager().skyLight.addRefresh(this, x, y, z);
 				} else if (old < 15) {
 					this.setBlockSkyLight(x, y, z, (byte) 0, source);
 				}
-				 */
 			}
 		}
 		if (material instanceof DynamicMaterial) {
@@ -867,7 +859,7 @@ public class SpoutChunk extends Chunk {
 			for (y = 0; y < BLOCKS.SIZE; y++) {
 				for (z = 0; z < BLOCKS.SIZE; z++) {
 					if (!this.setBlockLight(x, y, z, this.getBlockMaterial(x, y, z).getLightLevel(this.getBlockData(x, y, z)), world)) {
-						// Failing?
+						// Bugged?
 						//world.getLightingManager().blockLight.addRefresh(this, x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 					}
 				}
@@ -889,13 +881,12 @@ public class SpoutChunk extends Chunk {
 					this.setBlockSkyLight(x, y, z, (byte) 15, world);
 				}
 				// refresh area below height
-				// This is a possible cause for bugged light
-				// It does offer fixes, but just in case, it is commented out
+				// Bugged?
 				/*
 				for (y = columnY; y >= minY; y--) {
 					world.getLightingManager().skyLight.addRefresh(this, x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
 				}
-				 */
+				*/
 			}
 		}
 	}
