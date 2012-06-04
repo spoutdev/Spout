@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.math.MathHelper;
 import org.spout.api.util.StringMap;
 
 public abstract class MaterialRegistry {
@@ -169,5 +170,33 @@ public abstract class MaterialRegistry {
 	 */
 	public static Material get(String name) {
 		return nameLookup.get(name.toLowerCase());
+	}
+
+	/**
+	 * Gets the minimum data mask required to account for all sub-materials of the material
+	 * 
+	 * @param m the material
+	 * @return the minimum data mask
+	 */
+	public static short verifyMinimumDatamask(Material m) {
+		Material root = m;
+		while (root.isSubMaterial()) {
+			root = m.getParentMaterial();
+		}
+
+		if (root.getData() != 0) {
+			throw new IllegalStateException("Root materials must have data set to zero");
+		}
+		Material[] subMaterials = root.getSubMaterials();
+
+		short minimumMask = 0;
+
+		for (Material sm : subMaterials) {
+			minimumMask |= sm.getData() & 0xFFFF;
+		}
+
+		minimumMask = (short) (MathHelper.roundUpPow2(minimumMask + 1) - 1);
+
+		return minimumMask;
 	}
 }

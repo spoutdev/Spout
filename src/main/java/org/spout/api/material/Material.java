@@ -63,7 +63,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = this;
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this);
-		this.dataMask = -1;
+		this.dataMask = 0;
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = this;
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this, id);
-		this.dataMask = -1;
+		this.dataMask = 0;
 	}
 	
 	/**
