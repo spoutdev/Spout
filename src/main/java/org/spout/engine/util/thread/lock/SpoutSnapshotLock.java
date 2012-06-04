@@ -105,6 +105,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			} else {
 				newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks + 1);
 			}
+			// FIXME: oldLockInfo could be null here, which would raise an exception.
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
 		}
 	}

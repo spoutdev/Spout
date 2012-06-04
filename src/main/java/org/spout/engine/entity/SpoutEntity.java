@@ -720,6 +720,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public void removeComponent(EntityComponent component) {
+		// FIXME: an AtomicReference<EntityComponent> never equals() an EntityComponent... I think
 		if (components.remove(component)) {
 			component.onDetached();
 		}
@@ -727,6 +728,7 @@ public class SpoutEntity implements Entity, Tickable {
 
 	@Override
 	public boolean hasComponent(EntityComponent component) {
+		// FIXME: an AtomicReference<EntityComponent> never equals() an EntityComponent... I think
 		return components.contains(component);
 	}
 	
