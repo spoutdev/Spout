@@ -35,6 +35,7 @@ import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -145,6 +146,27 @@ public interface World extends Source, AreaRegionAccess {
 	 * @return The Entity that has been created and spawned
 	 */
 	public Entity createAndSpawnEntity(Point point, Controller controller);
+	
+	/**
+	 * Creates and Spawns entities at the given points.  This is the same as calling
+	 * {@link #createAndSpawnEntity(point, controller)} for each element in the array.
+	 *
+	 * @param points The points to use for spawning the entities
+	 * @param controller The controller that will be attached to the Entity
+	 * @return The Entities that has been created and spawned
+	 */
+	public Entity[] createAndSpawnEntity(Point[] points, Controller controller);
+	
+	/**
+	 * Creates and Spawns entities at the given points.  This is the same as calling
+	 * {@link #createAndSpawnEntity(point, controller)} for each point with the 
+	 * corresponding element from the controller array. The two arrays must be the same length.
+	 *
+	 * @param points The points to use for spawning the entities
+	 * @param controllers The controllers that will be attached to the Entity
+	 * @return The Entities that has been created and spawned
+	 */
+	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controller);
 
 	/**
 	 * Gets the world's spawn point
