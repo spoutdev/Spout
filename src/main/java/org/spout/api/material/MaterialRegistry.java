@@ -178,7 +178,7 @@ public abstract class MaterialRegistry {
 	 * @param m the material
 	 * @return the minimum data mask
 	 */
-	public static short verifyMinimumDatamask(Material m) {
+	public static short getMinimumDatamask(Material m) {
 		Material root = m;
 		while (root.isSubMaterial()) {
 			root = m.getParentMaterial();
