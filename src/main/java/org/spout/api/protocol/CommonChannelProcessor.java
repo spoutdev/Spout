@@ -42,7 +42,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
  * usage.  The reuse channel buffer is always reused.<br>
  * <br>
  * Subclasses should extends the read and write methods.  It is guaranteed that the read
- * and write methods will not to called from more than 1 thread at the same time.
+ * and write methods will not be called from more than 1 thread at the same time.
  */
 public abstract class CommonChannelProcessor implements ChannelProcessor {
 	
