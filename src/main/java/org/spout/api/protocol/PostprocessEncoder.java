@@ -26,52 +26,39 @@
  */
 package org.spout.api.protocol;
 
-import java.io.IOException;
+import static org.jboss.netty.channel.Channels.write;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-import org.spout.api.Spout;
 
-/**
- * A {@link OneToOneEncoder} which encodes Minecraft {@link Message}s into
- * {@link ChannelBuffer}s.
- */
-public class CommonEncoder extends PostprocessEncoder {
-	private volatile CodecLookupService codecLookup = null;
+public abstract class PostprocessEncoder extends OneToOneEncoder {
 	
-	@SuppressWarnings("unchecked")
+	private final AtomicReference<ChannelProcessor> postProcessor = new AtomicReference<ChannelProcessor>();
+
 	@Override
-	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
-		if (msg instanceof Message) {
-			if (codecLookup == null) {
-				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
+	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
+		
+		ChannelProcessor processor = postProcessor.get();
+		if (processor == null || !(evt instanceof MessageEvent)) {
+			super.handleDownstream(ctx, evt);
+		} else {
+			MessageEvent e = (MessageEvent) evt;
+			Object originalMessage = e.getMessage();
+			Object encodedMessage = encode(ctx, e.getChannel(), originalMessage);
+			if (originalMessage == encodedMessage) {
+				ctx.sendDownstream(evt);
+			} else if (encodedMessage != null) {
+				if (encodedMessage instanceof ChannelBuffer) {
+					encodedMessage = processor.write(ctx, (ChannelBuffer)encodedMessage);
+				}
+				write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
 			}
-			Message message = (Message) msg;
-
-			Class<? extends Message> clazz = message.getClass();
-			MessageCodec<Message> codec;
-
-			codec = (MessageCodec<Message>) codecLookup.find(clazz);
-			if (codec == null) {
-				throw new IOException("Unknown message type: " + clazz + ".");
-			}
-
-			ChannelBuffer opcodeBuf = ChannelBuffers.buffer(codec.isExpanded() ? 2 : 1);
-			if (codec.isExpanded()) {
-				opcodeBuf.writeShort(codec.getOpcode());
-			} else {
-				opcodeBuf.writeByte(codec.getOpcode());
-			}
-
-			return ChannelBuffers.wrappedBuffer(opcodeBuf, codec.encode(message));
 		}
-		return msg;
-	}
-
-	public void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService();
-	}
+    }
+	
 }
