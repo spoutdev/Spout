@@ -67,6 +67,22 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 		return valueHolder.getBoolean(def);
 	}
 
+	public byte getByte() {
+		return valueHolder.getByte();
+	}
+
+	public byte getByte(byte def) {
+		return valueHolder.getByte(def);
+	}
+
+	public short getShort() {
+		return valueHolder.getShort();
+	}
+
+	public short getShort(short def) {
+		return valueHolder.getShort(def);
+	}
+
 	public int getInt() {
 		return valueHolder.getInt();
 	}

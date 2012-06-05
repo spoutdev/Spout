@@ -416,6 +416,50 @@ public class MathHelper {
 	}
 
 	/**
+	 * Casts a value to a byte. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Byte castByte(Object o) {
+		if (o == null) {
+			return null;
+		}
+
+		if (o instanceof Number) {
+			return ((Number)o).byteValue();
+		} else {
+			try {
+				return Byte.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * Casts a value to a short. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Short castShort(Object o) {
+		if (o == null) {
+			return null;
+		}
+
+		if (o instanceof Number) {
+			return ((Number)o).shortValue();
+		} else {
+			try {
+				return Short.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		}
+	}
+
+	/**
 	 * Casts a value to an integer. May return null.
 	 *
 	 * @param o

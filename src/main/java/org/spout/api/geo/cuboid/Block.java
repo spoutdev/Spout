@@ -160,6 +160,7 @@ public interface Block extends MaterialState {
 	public BlockMaterial getMaterial();
 
 	@Override
+	@Deprecated
 	public BlockMaterial getSubMaterial();
 
 	/**
