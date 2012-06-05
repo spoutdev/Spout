@@ -48,6 +48,42 @@ public interface ValueHolder {
 	public boolean getBoolean(boolean def);
 
 	/**
+	 * Return this node's value as a byte
+	 *
+	 * @return the byte value
+	 * @see #getByte(byte)
+	 * @see #getValue()
+	 */
+	public byte getByte();
+
+	/**
+	 * Return this value as a byte
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a byte
+	 * @return the integer value
+	 * @see #getValue(Object)
+	 */
+	public byte getByte(byte def);
+
+	/**
+	 * Return this node's value as a short
+	 *
+	 * @return the short value
+	 * @see #getShort(short)
+	 * @see #getValue()
+	 */
+	public short getShort();
+
+	/**
+	 * Return this value as a short
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a short
+	 * @return the short value
+	 * @see #getValue(Object)
+	 */
+	public short getShort(short def);
+
+	/**
 	 * Return this node's value as an integer
 	 *
 	 * @return the integer value

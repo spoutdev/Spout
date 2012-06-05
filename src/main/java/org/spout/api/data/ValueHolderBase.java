@@ -53,6 +53,24 @@ public class ValueHolderBase implements ValueHolder {
 		return val == null ? def : val;
 	}
 
+	public byte getByte() {
+		return getByte((byte) 0);
+	}
+
+	public byte getByte(byte def) {
+		final Byte val = MathHelper.castByte(getValue(def));
+		return val == null ? def : val;
+	}
+
+	public short getShort() {
+		return getShort((short) 0);
+	}
+
+	public short getShort(short def) {
+		final Short val = MathHelper.castShort(getValue(def));
+		return val == null ? def : val;
+	}
+
 	public int getInt() {
 		return getInt(0);
 	}
