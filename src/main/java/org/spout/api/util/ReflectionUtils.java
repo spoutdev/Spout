@@ -33,8 +33,6 @@ import java.util.List;
 
 /**
  * Various utility methods that deal with reflection
- *
- * @author zml2008
  */
 public class ReflectionUtils {
 

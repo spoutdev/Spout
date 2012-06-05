@@ -41,8 +41,6 @@ import java.util.regex.Pattern;
  * reflection to get all the fields in the subclass that have values of the type {@link ConfigurationHolder}.
  * These fields will be automatically associated with the attached configuration and have
  * their default values loaded into the configuration as needed on load
- *
- * @author zml2008
  */
 public abstract class ConfigurationHolderConfiguration implements Configuration {
 	private final Configuration base;

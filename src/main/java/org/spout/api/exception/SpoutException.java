@@ -27,9 +27,6 @@
 package org.spout.api.exception;
 
 public class SpoutException extends Exception {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 450854545313111159L;
 
 	public SpoutException(String msg) {

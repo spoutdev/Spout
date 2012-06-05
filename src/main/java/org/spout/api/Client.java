@@ -35,14 +35,11 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 
 /**
- * Represents the client-specific implementation of Minecraft.
+ * Represents the client-specific component of the Spout platform.
  */
 public interface Client extends Engine {
 	/**
-	 * Gets the location of the temporary general cache (used for non-texture
-	 * and non-audio files).
-	 *
-	 * This cache is purged when the game shuts down.
+	 * Gets the location of the temporary general cache (used for non-texture and non-audio files). This cache is purged when the game shuts down.
 	 *
 	 * @return temporary cache.
 	 */
@@ -81,7 +78,6 @@ public interface Client extends Engine {
 	/**
 	 * The Camera object is the viewport into the scene
 	 *
-	 *
 	 * @return the location and view of the camera
 	 */
 	public Camera getActiveCamera();
@@ -100,7 +96,7 @@ public interface Client extends Engine {
 	public PluginStore getPluginStore();
 
 	/**
-	 * Gets the current render mode that spoutclient is running in
+	 * Gets the current render mode that the client is running in
 	 *
 	 * @return render mode
 	 */

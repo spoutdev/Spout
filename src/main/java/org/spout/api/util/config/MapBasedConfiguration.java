@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * A base class for configurations that load their values from a {@link Map}
- *
- * @author zml2008
  */
 public abstract class MapBasedConfiguration extends AbstractConfiguration {
 	/**

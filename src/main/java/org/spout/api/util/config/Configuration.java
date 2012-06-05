@@ -30,9 +30,6 @@ import org.spout.api.exception.ConfigurationException;
 
 import java.util.regex.Pattern;
 
-/**
- * @author zml2008
- */
 public interface Configuration extends ConfigurationNodeSource {
 	/**
 	 * Load the configuration's values

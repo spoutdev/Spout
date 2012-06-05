@@ -37,10 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- *
- * @author zml2008
- */
 public class ConfigurationNode extends AbstractConfigurationNodeSource implements ValueHolder {
 	private Object value;
 	private boolean attached;
@@ -73,6 +69,16 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 
 	public byte getByte(byte def) {
 		return valueHolder.getByte(def);
+	}
+
+	@Override
+	public float getFloat() {
+		return valueHolder.getFloat();
+	}
+
+	@Override
+	public float getFloat(float def) {
+		return valueHolder.getFloat(def);
 	}
 
 	public short getShort() {

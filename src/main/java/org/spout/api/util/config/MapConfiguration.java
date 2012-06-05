@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * This represents a configuration that loads its values from an in-memory {@link Map}
- *
- * @author zml2008
  */
 public class MapConfiguration extends MapBasedConfiguration {
 	private Map<?, ?> map;

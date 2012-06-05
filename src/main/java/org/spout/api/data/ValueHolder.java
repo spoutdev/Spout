@@ -60,10 +60,28 @@ public interface ValueHolder {
 	 * Return this value as a byte
 	 *
 	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a byte
-	 * @return the integer value
+	 * @return the byte value
 	 * @see #getValue(Object)
 	 */
 	public byte getByte(byte def);
+
+	/**
+	 * Return this node's value as a float
+	 *
+	 * @return the float value
+	 * @see #getFloat(float)
+	 * @see #getValue()
+	 */
+	public float getFloat();
+
+	/**
+	 * Return this value as a float
+	 *
+	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a float
+	 * @return the float value
+	 * @see #getValue(Object)
+	 */
+	public float getFloat(float def);
 
 	/**
 	 * Return this node's value as a short

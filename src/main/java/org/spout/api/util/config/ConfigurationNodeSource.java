@@ -29,10 +29,6 @@ package org.spout.api.util.config;
 import java.util.Map;
 import java.util.Set;
 
-/**
- *
- * @author zml2008
- */
 public interface ConfigurationNodeSource {
 	/**
 	 * Gets a child of the current node.

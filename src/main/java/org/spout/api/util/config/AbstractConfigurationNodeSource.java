@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.config;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,10 +34,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * A basic implementation of ConfigurationNodeSource.
- *
- * @author zml2008
  */
 public abstract class AbstractConfigurationNodeSource implements ConfigurationNodeSource {
 	protected final Map<String, ConfigurationNode> children = new LinkedHashMap<String, ConfigurationNode>();

@@ -30,8 +30,6 @@ import java.io.File;
 
 /**
  * Represents a configuration that loads from a file
- *
- * @author zml2008
  */
 public interface FileConfiguration extends Configuration {
 	/**

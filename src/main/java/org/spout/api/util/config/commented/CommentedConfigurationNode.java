@@ -31,8 +31,6 @@ import org.spout.api.util.config.ConfigurationNode;
 
 /**
  * A ConfigurationNode type that also stores comments. These normally exist in {@link CommentedConfiguration}s.
- *
- * @author zml2008
  */
 public class CommentedConfigurationNode extends ConfigurationNode {
 	public static final String LINE_SEPARATOR;

@@ -26,17 +26,16 @@
  */
 package org.spout.api.util.config;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.spout.api.exception.ConfigurationException;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * A basic implementation of {@link Configuration} using {@link ConfigurationNodeSource}
  * method implementations from {@link AbstractConfigurationNodeSource}
- *
- * @author zml2008
  */
 public abstract class AbstractConfiguration extends AbstractConfigurationNodeSource implements Configuration {
 	private String pathSeparator;

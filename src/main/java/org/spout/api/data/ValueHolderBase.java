@@ -62,6 +62,17 @@ public class ValueHolderBase implements ValueHolder {
 		return val == null ? def : val;
 	}
 
+	@Override
+	public float getFloat() {
+		return getFloat(0f);
+	}
+
+	@Override
+	public float getFloat(float def) {
+		final Float val = MathHelper.castFloat(getValue(def));
+		return val == null ? def : val;
+	}
+
 	public short getShort() {
 		return getShort((short) 0);
 	}

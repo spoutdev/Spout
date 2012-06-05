@@ -416,6 +416,28 @@ public class MathHelper {
 	}
 
 	/**
+	 * Casts a value to a float. May return null.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public static Float castFloat(Object o) {
+		if (o == null) {
+			return null;
+		}
+
+		if (o instanceof Number) {
+			return ((Number) o).floatValue();
+		} else {
+			try {
+				return Float.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		}
+	}
+
+	/**
 	 * Casts a value to a byte. May return null.
 	 *
 	 * @param o
@@ -504,7 +526,7 @@ public class MathHelper {
 	}
 
 	/**
-	 * Casts a value to a double. May return null.
+	 * Casts a value to a long. May return null.
 	 *
 	 * @param o
 	 * @return

@@ -62,8 +62,8 @@ import org.spout.api.util.thread.SnapshotRead;
  */
 public interface Engine extends Named {
 	/**
-	 * The permission to be used for standard broadcasts. Implementations should register
-	 * this permission with {@link org.spout.api.permissions.DefaultPermissions}
+	 * The permissions to be used for standard broadcasts. Implementations should register
+	 * this permissions with {@link org.spout.api.permissions.DefaultPermissions}
 	 */
 	public static final String STANDARD_BROADCAST_PERMISSION = "spout.broadcast.standard";
 
