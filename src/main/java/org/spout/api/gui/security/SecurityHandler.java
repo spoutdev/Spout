@@ -75,7 +75,7 @@ public class SecurityHandler {
 
 	public KeyPair getKeyPair(int keySize, String algorithm, String RNGAlgorithm, String RNGProvider) {
 		KeyPair pair = serverKeys.get(algorithm);
-		if (pair == null) {
+		if (pair == null && provider != null) {
 			SecureRandom secureRandom;
 			try {
 				secureRandom = SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
