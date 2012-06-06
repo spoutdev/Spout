@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.gui.security;
+package org.spout.api.security;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
