@@ -157,11 +157,6 @@
 			<version>1.2.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.47</version>
-		</dependency>
 	</dependencies>
 
 	<!-- Build settings -->
