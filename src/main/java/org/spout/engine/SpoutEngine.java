@@ -460,7 +460,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			generator = defaultGenerator;
 		}
 
-		SpoutWorld world = WorldFiles.loadWorldData(this, name, generator, engineItemMap);
+		SpoutWorld world = WorldFiles.loadWorldFromData(name, generator, engineItemMap);
 		if(world == null) {
 			Spout.getLogger().info("Generating new world named [" + name + "]");
 

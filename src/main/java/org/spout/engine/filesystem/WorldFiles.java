@@ -34,9 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -55,8 +53,6 @@ import org.spout.api.entity.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -65,6 +61,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.util.NBTMapper;
@@ -84,7 +81,6 @@ import org.spout.nbt.LongTag;
 import org.spout.nbt.ShortArrayTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.Tag;
-import org.spout.nbt.exception.InvalidTagException;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
@@ -101,7 +97,7 @@ public class WorldFiles {
 			generatorName = Long.toHexString(System.currentTimeMillis());
 			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
 		}
-		
+
 		//Save the world item map
 		world.getItemMap().save();
 
@@ -112,7 +108,7 @@ public class WorldFiles {
 		worldTags.put(new StringTag("generator", generatorName));
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
-		worldTags.put(new ByteArrayTag("extraData", ((DataMap)world.getDataMap()).getRawMap().compress())); //TODO this tag is named wrong but changing it corrupts worlds...
+		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDataMap()).getRawMap().compress())); //TODO this tag is named wrong but changing it corrupts worlds...
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
 		worldTags.put(new ListTag<FloatTag>("spawn_point", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
@@ -134,22 +130,8 @@ public class WorldFiles {
 		}
 	}
 
-	public static SpoutWorld loadWorldData(Engine engine, String name, WorldGenerator generator, StringMap global) {
+	public static SpoutWorld loadWorldFromData(String name, WorldGenerator generator, StringMap global) {
 		SpoutWorld world = null;
-
-		String generatorName = generator.getName();
-		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
-			generatorName = Long.toHexString(System.currentTimeMillis());
-			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
-		}
-		
-		//Load the world specific item map
-		File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
-		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
-		if (itemMapFile.exists()) {
-			itemStore.load();
-		}
-		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
 
 		File worldData = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "world.dat");
 
@@ -159,15 +141,14 @@ public class WorldFiles {
 				is = new NBTInputStream(new DataInputStream(new FileInputStream(worldData)), false);
 				CompoundTag dataTag = (CompoundTag) is.readTag();
 				CompoundMap map = dataTag.getValue();
-				GenericDatatableMap extraData = new GenericDatatableMap();
+
 				byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), WORLD_VERSION);
 				switch (version) {
 					case 1:
-						world = loadVersionOne(engine, name, generator, generatorName, itemMap, map, extraData);
+						world = loadVersionOne(name, generator, global, map);
 						break;
 					case 2:
-						world = loadVersionOne(engine, name, generator, generatorName, itemMap, map, extraData);
-						loadVersionTwo(world, map);
+						world = loadVersionTwo(name, generator, global, map);
 						break;
 				}
 			} catch (Exception e) {
@@ -187,28 +168,74 @@ public class WorldFiles {
 
 	/**
 	 * Loads version 2 of the world NBT
-	 * @param world The SpoutWorld being loaded
-	 * @param map The compound map of tags
+	 * @param name The name of the world
+	 * @param generator The generator of the world
+	 * @param global The global StringMap for the engine
+	 * @param map The CompoundMap of tags from NBT
+	 * @return The newly created SpoutWorld loaded from NBT
 	 */
-	private static void loadVersionTwo(SpoutWorld world, CompoundMap map) {
-		//Version 2 adds spawn point saving to NBT
-		Transform spawn = NBTMapper.nbtToTransform(world, (LinkedList<FloatTag>) NBTMapper.toTagValue(map.get("spawn_position")));
+	private static SpoutWorld loadVersionTwo(String name, WorldGenerator generator, StringMap global, CompoundMap map) {
+		SpoutWorld world;
+
+		//Load the world specific item map
+		File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
+		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
+		if (itemMapFile.exists()) {
+			itemStore.load();
+		}
+		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
+
+		String generatorName = generator.getName();
+
+		GenericDatatableMap extraData = new GenericDatatableMap();
+
+		long seed = SafeCast.toLong(NBTMapper.toTagValue(map.get("seed")), new Random().nextLong());
+		String savedGeneratorName = SafeCast.toString(NBTMapper.toTagValue(map.get("generator")), "");
+
+		long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
+		long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
+
+		byte[] extraDataBytes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extra_data")), new byte[0]);
+		extraData.decompress(extraDataBytes);
+
+		if (!savedGeneratorName.equals(generatorName)) {
+			Spout.getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
+		}
+
+		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
+		world = new SpoutWorld(name, Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+
+		@SuppressWarnings("unchecked")
+		ArrayList<FloatTag> spawnPosition = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("spawn_position")), null, ArrayList.class);
+		Transform spawn = NBTMapper.nbtToTransform(world, spawnPosition);
 		world.setSpawnPoint(spawn);
+
+		return world;
 	}
 
 	/**
 	 * Loads version 1 of the world NBT
-	 * @param engine The engine invoking the load
 	 * @param name The name of the world
 	 * @param generator The generator of the world
-	 * @param generatorName The name of the generator
-	 * @param itemMap The StringMap of items for this world
+	 * @param global The global StringMap for the engine
 	 * @param map The CompoundMap of tags from NBT
-	 * @param extraData The Datatable for the world
 	 * @return The newly created SpoutWorld loaded from NBT
 	 */
-	private static SpoutWorld loadVersionOne(Engine engine, String name, WorldGenerator generator, String generatorName, StringMap itemMap, CompoundMap map, GenericDatatableMap extraData) {
-		//Version 1 is basic world tags
+	private static SpoutWorld loadVersionOne(String name, WorldGenerator generator, StringMap global, CompoundMap map) {
+		SpoutWorld world;
+
+		//Load the world specific item map
+		File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
+		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
+		if (itemMapFile.exists()) {
+			itemStore.load();
+		}
+		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
+
+		String generatorName = generator.getName();
+
+		GenericDatatableMap extraData = new GenericDatatableMap();
+
 		long seed = SafeCast.toLong(NBTMapper.toTagValue(map.get("seed")), new Random().nextLong());
 		String savedGeneratorName = SafeCast.toString(NBTMapper.toTagValue(map.get("generator")), "");
 
@@ -223,20 +250,22 @@ public class WorldFiles {
 		}
 
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
-		return new SpoutWorld(name, engine, seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+		world = new SpoutWorld(name, Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+
+		return world;
 	}
 
 	public static void saveChunk(SpoutChunk c, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
-		
+
 		//Switch block ids from engine material ids to world specific ids
 		SpoutWorld world = c.getWorld();
-		StringMap global = ((SpoutEngine)Spout.getEngine()).getEngineItemMap();
+		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
 		for (int i = 0; i < blocks.length; i++) {
 			blocks[i] = (short) global.convertTo(itemMap, blocks[i]);
 		}
-		
+
 		chunkTags.put(new ByteTag("version", CHUNK_VERSION));
 		chunkTags.put(new ByteTag("format", (byte) 0));
 		chunkTags.put(new IntTag("x", c.getX()));
@@ -279,7 +308,7 @@ public class WorldFiles {
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
 		NBTInputStream is = null;
-		
+
 		try {
 			if (dis == null) {
 				//The inputstream is null because no chunk data exists
@@ -299,7 +328,7 @@ public class WorldFiles {
 			byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
 			byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
 			byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
-			
+
 			BiomeManager manager = null;
 			if (map.containsKey("biomes")) {
 				try {
@@ -318,23 +347,24 @@ public class WorldFiles {
 			if (manager == null) {
 				manager = new EmptyBiomeManager(cx, cy, cz);
 			}
-			
+
 			//Convert world block ids to engine material ids 
 			SpoutWorld world = r.getWorld();
-			StringMap global = ((SpoutEngine)Spout.getEngine()).getEngineItemMap();
+			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 			StringMap itemMap = world.getItemMap();
 			for (int i = 0; i < blocks.length; i++) {
 				blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
 			}
-			
+
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
-			loadEntities(r, entityMap , dataForRegion.loadedEntities);
-			
+			loadEntities(r, entityMap, dataForRegion.loadedEntities);
+
+			@SuppressWarnings("unchecked")
 			List<CompoundTag> updateList = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("dynamic_updates")), null, List.class);
 			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 		} catch (IOException e) {
@@ -379,63 +409,63 @@ public class WorldFiles {
 		CompoundMap map = tag.getValue();
 
 		@SuppressWarnings("unused")
-		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte)0);
+		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) 0);
 		String name = SafeCast.toString(NBTMapper.toTagValue(map.get("controller")), "");
-		
+
 		ControllerType type = ControllerRegistry.get(name);
 		if (type == null) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
 		} else if (type.canCreateController()) {
-			
+
 			//Read entity
 			Float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
 			Float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
 			Float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
-			
+
 			if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
 				return null;
 			}
-			
+
 			float sX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleX")), 1.0F);
 			float sY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleY")), 1.0F);
 			float sZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleZ")), 1.0F);
-			
+
 			float qX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatX")), 0.0F);
 			float qY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatY")), 0.0F);
 			float qZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatZ")), 0.0F);
 			float qW = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatW")), 1.0F);
-			
+
 			long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
 			long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
 			UUID uid = new UUID(msb, lsb);
-			
+
 			int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
-			boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte)0), ByteTag.class).getBooleanValue();
-			
+			boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
+
 			//Setup controller
 			Controller controller = type.createController();
 			try {
-				boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte)0), ByteTag.class).getBooleanValue();
+				boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
 
 				if (controllerDataExists) {
 					byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
-					DatatableMap dataMap = ((DataMap)controller.data()).getRawMap();
+					DatatableMap dataMap = ((DataMap) controller.data()).getRawMap();
 					dataMap.decompress(data);
 				}
 			} catch (Exception error) {
 				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type.getName(), error);
 			}
-			
+
 			//Setup entity
 			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
 			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
 			e.setObserver(observer);
-			
+
 			return e;
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
 		}
-		
+
 		return null;
 	}
 
@@ -452,46 +482,46 @@ public class WorldFiles {
 		map.put(new FloatTag("posX", e.getPosition().getX()));
 		map.put(new FloatTag("posY", e.getPosition().getY()));
 		map.put(new FloatTag("posZ", e.getPosition().getZ()));
-		
+
 		map.put(new FloatTag("scaleX", e.getScale().getX()));
 		map.put(new FloatTag("scaleY", e.getScale().getY()));
 		map.put(new FloatTag("scaleZ", e.getScale().getZ()));
-		
+
 		map.put(new FloatTag("quatX", e.getRotation().getX()));
 		map.put(new FloatTag("quatY", e.getRotation().getY()));
 		map.put(new FloatTag("quatZ", e.getRotation().getZ()));
 		map.put(new FloatTag("quatW", e.getRotation().getW()));
-		
+
 		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
 		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
-		
+
 		map.put(new IntTag("view", e.getViewDistance()));
 		map.put(new ByteTag("observer", e.isObserverLive()));
-		
+
 		//Write controller
 		try {
 			//Call onSave
 			e.getController().onSave();
 			//Serialize data
-			DatatableMap dataMap = ((DataMap)e.getController().data()).getRawMap();
+			DatatableMap dataMap = ((DataMap) e.getController().data()).getRawMap();
 			if (!dataMap.isEmpty()) {
 				map.put(new ByteTag("controller_data_exists", true));
 				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
 			} else {
 				map.put(new ByteTag("controller_data_exists", false));
 			}
-		} catch(Exception error) {
+		} catch (Exception error) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getController().getType(), error);
 		}
-		
+
 		CompoundTag tag = new CompoundTag("entity_" + e.getId(), map);
 
 		return tag;
 	}
-	
+
 	private static ListTag<CompoundTag> saveDynamicUpdates(SpoutChunk c) {
-		List<DynamicBlockUpdate> updates = ((SpoutRegion)c.getRegion()).getDynamicBlockUpdates(c);
-		
+		List<DynamicBlockUpdate> updates = ((SpoutRegion) c.getRegion()).getDynamicBlockUpdates(c);
+
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 
 		for (DynamicBlockUpdate update : updates) {
@@ -503,18 +533,17 @@ public class WorldFiles {
 
 		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
 	}
-	
+
 	private static CompoundTag saveDynamicUpdate(DynamicBlockUpdate update) {
 		CompoundMap map = new CompoundMap();
-		
+
 		map.put(new IntTag("packed", update.getPacked()));
 		map.put(new LongTag("nextUpdate", update.getNextUpdate()));
 		map.put(new LongTag("lastUpdate", update.getLastUpdate()));
-		
+
 		return new CompoundTag("update", map);
-		
 	}
-	
+
 	private static void loadDynamicUpdates(List<CompoundTag> list, List<DynamicBlockUpdate> loadedUpdates) {
 		if (list != null) {
 			for (CompoundTag t : list) {
@@ -525,7 +554,7 @@ public class WorldFiles {
 			}
 		}
 	}
-	
+
 	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag t) {
 		CompoundMap map = t.getValue();
 		int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);

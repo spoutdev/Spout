@@ -1,31 +1,6 @@
-/*
- * This file is part of Spout.
- *
- * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
- * Spout is licensed under the SpoutDev License Version 1.
- *
- * Spout is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition, 180 days after any changes are published, you can use the
- * software, incorporating those changes, under the terms of the MIT license,
- * as described in the SpoutDev License Version 1.
- *
- * Spout is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev License Version 1 along with this program.
- * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
- * including the MIT license.
- */
 package org.spout.engine.util;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.spout.api.geo.World;
@@ -46,7 +21,7 @@ public class NBTMapper {
 	 * @param floatsList the list of floats representing a transform.
 	 * @return the constructed transform from NBT tags
 	 */
-	public static Transform nbtToTransform(World world, LinkedList<FloatTag> floatsList) {
+	public static Transform nbtToTransform(World world, ArrayList<FloatTag> floatsList) {
 		//Position
 		float px = SafeCast.toFloat(floatsList.get(0), 1f);
 		float py = SafeCast.toFloat(floatsList.get(1), 85f);
@@ -68,8 +43,8 @@ public class NBTMapper {
 	 * @param transform The transform to convert to tags
 	 * @return compound map composing of tags
 	 */
-	public static LinkedList<FloatTag> transformToNBT(Transform transform) {
-		LinkedList<FloatTag> floatsList = new LinkedList<FloatTag>();
+	public static ArrayList<FloatTag> transformToNBT(Transform transform) {
+		ArrayList<FloatTag> floatsList = new ArrayList<FloatTag>(10);
 		Vector3 point = transform.getPosition();
 		Quaternion rotation = transform.getRotation();
 		Vector3 scale = transform.getScale();
