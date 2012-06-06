@@ -111,7 +111,7 @@ public class WorldFiles {
 		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDataMap()).getRawMap().compress())); //TODO this tag is named wrong but changing it corrupts worlds...
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
-		worldTags.put(new ListTag<FloatTag>("spawn_point", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
+		worldTags.put(new ListTag<FloatTag>("spawn_position", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
 		CompoundTag worldTag = new CompoundTag(world.getName(), worldTags);
 
 		NBTOutputStream os = null;
@@ -205,8 +205,7 @@ public class WorldFiles {
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
 		world = new SpoutWorld(name, Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
 
-		@SuppressWarnings("unchecked")
-		ArrayList<FloatTag> spawnPosition = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("spawn_position")), null, ArrayList.class);
+		List<FloatTag> spawnPosition = (List<FloatTag>) NBTMapper.toTagValue(map.get("spawn_position"));
 		Transform spawn = NBTMapper.nbtToTransform(world, spawnPosition);
 		world.setSpawnPoint(spawn);
 

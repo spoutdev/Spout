@@ -67,6 +67,7 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
@@ -211,7 +212,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
 		
 		AsyncExecutor e = getExecutor();
-		Thread t = null;
+		Thread t;
 		if (e instanceof Thread) {
 			t = (Thread)e;
 		} else {
@@ -220,6 +221,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
+		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 	}
 
 	@Override
