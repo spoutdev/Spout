@@ -204,7 +204,7 @@
 						<manifestEntries>
 							<Main-Class>org.spout.engine.SpoutServer</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
-							<Implementation-Version>${releaseVersion}-b${buildNumber}</Implementation-Version>
+							<Implementation-Version>${releaseVersion} b${buildNumber}</Implementation-Version>
 							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
 							<Specification-Title>SpoutAPI</Specification-Title>
 							<Specification-Version>${apiVersion}</Specification-Version>
@@ -238,10 +238,14 @@
 								<filter>
 									<artifact>*:*</artifact>
 									<excludes>
+										<exclude>lib/**</exclude>
 										<exclude>templates/**</exclude>
-										<exclude>LICENSE</exclude>
 										<exclude>META-INF/*.xml</exclude>
 										<exclude>META-INF/*.txt</exclude>
+										<exclude>**/LICENSE</exclude>
+										<exclude>**/NOTICE</exclude>
+										<exclude>**/DEPENDENCIES</exclude>
+										<exclude>**/*.java</exclude>
 									</excludes>
 								</filter>
 								<filter>

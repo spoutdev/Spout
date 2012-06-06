@@ -21,10 +21,10 @@ Track and submit issues and bugs on our [issue tracker][Issues].
 
 Credits
 -------
- * [The Minecraft Coalition](http://wiki.vg/wiki) - protocol and file formats research.
+ * [The Minecraft Coalition](http://wiki.vg) - protocol and file formats research.
  * [Trustin Lee](http://gleamynode.net) - author of the [Netty](http://jboss.org/netty) library.
  * Graham Edgecombe - author of the original [Lightstone](https://github.com/grahamedgecombe/lightstone) - and everyone else who has contributed to Lightstone.
- * Tad Hardesty - author of the Lightstone form, [Glowstone](https://github.com/SpaceManiac/Glowstone) - and everyone else who has contributed to Glowstone.
+ * Tad Hardesty - author of the Lightstone fork, [Glowstone](https://github.com/SpaceManiac/Glowstone) - and everyone else who has contributed to Glowstone.
  * [Notch](http://mojang.com/notch) and all the other people at [Mojang](http://mojang.com) - for making such an awesome game in the first place!
 
 Source
