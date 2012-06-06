@@ -86,6 +86,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.47</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>12.0</version>
@@ -257,6 +263,29 @@
 						<goals>
 							<goal>shade</goal>
 						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>lib/**</exclude>
+										<exclude>templates/**</exclude>
+										<exclude>META-INF/*.xml</exclude>
+										<exclude>META-INF/*.txt</exclude>
+										<exclude>**/LICENSE</exclude>
+										<exclude>**/NOTICE</exclude>
+										<exclude>**/DEPENDENCIES</exclude>
+										<exclude>**/*.java</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>org.bouncycastle:*</artifact>
+									<excludes>
+										<exclude>META-INF/**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
