@@ -88,7 +88,7 @@ public class NBTMapper {
 	 * @param clzzz the return type to use
 	 * @return the value as an onbject of the same type as the given class
 	 */
-	public <T> static T getTagValue(Tag t, Class<T> clazz) {
+	public static <T> T getTagValue(Tag t, Class<T> clazz) {
 		Object o = toTagValue(t);
 		if (o == null) {
 			return null;
@@ -110,7 +110,7 @@ public class NBTMapper {
 	 * @param defaultValue the value to return if the tag or its value is null or the value cannot be cast
 	 * @return the value as an onbject of the same type as the default value, or the default value
 	 */
-	public <T> static T toTagValue(Tag t, T defaultValue) {
+	public static <T> T toTagValue(Tag t, T defaultValue) {
 		Object o = toTagValue(t);
 		if (o == null) {
 			return defaultValue;
