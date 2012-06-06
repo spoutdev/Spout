@@ -72,7 +72,7 @@ public class NBTMapper {
 	 * @param transform The transform to convert to tags
 	 * @return compound map composing of tags
 	 */
-	public static ArrayList<FloatTag> transformToNBT(Transform transform) {
+	public static List<FloatTag> transformToNBT(Transform transform) {
 		ArrayList<FloatTag> floatsList = new ArrayList<FloatTag>(10);
 		Vector3 point = transform.getPosition();
 		Quaternion rotation = transform.getRotation();
@@ -112,7 +112,7 @@ public class NBTMapper {
 	 * This method will return null if the value cannot be cast to the given class.
 	 * 
 	 * @param t Tag to get the value from
-	 * @param clzzz the return type to use
+	 * @param clazz the return type to use
 	 * @return the value as an onbject of the same type as the given class
 	 */
 	public static <T> T getTagValue(Tag t, Class<T> clazz) {
