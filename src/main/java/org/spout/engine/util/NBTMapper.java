@@ -2,6 +2,7 @@ package org.spout.engine.util;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.lang.ClassCastException;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -16,6 +17,7 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.exception.InvalidTagException;
 
 public class NBTMapper {
+	
 	/**
 	 * This method takes a linked list and constructs a transform from it. Ordering is VERY IMPORTANT
 	 * @param floatsList the list of floats representing a transform.
@@ -77,4 +79,50 @@ public class NBTMapper {
 			return t.getValue();
 		}
 	}
+	
+	/**
+	 * Takes in an NBT tag, sanely checks null status, and then returns it value.
+	 * This method will return null if the value cannot be cast to the given class.
+	 * 
+	 * @param t Tag to get the value from
+	 * @param clzzz the return type to use
+	 * @return the value as an onbject of the same type as the given class
+	 */
+	public <T> static T getTagValue(Tag t, Class<T> clazz) {
+		Object o = toTagValue(t);
+		if (o == null) {
+			return null;
+		} else {
+			try {
+				T value = (T) o;
+				return value;	
+			} catch (ClassCastException e) {
+				return null;
+			}	
+		}
+	}
+	
+	/**
+	 * Takes in an NBT tag, sanely checks null status, and then returns it value.
+	 * This method will return null if the value cannot be cast to the default value.
+	 * 
+	 * @param t Tag to get the value from
+	 * @param defaultValue the value to return if the tag or its value is null or the value cannot be cast
+	 * @return the value as an onbject of the same type as the default value, or the default value
+	 */
+	public <T> static T toTagValue(Tag t, T defaultValue) {
+		Object o = toTagValue(t);
+		if (o == null) {
+			return defaultValue;
+		} else {
+			try {
+				T value = (T) o;
+				return value;	
+			} catch (ClassCastException e) {
+				return defaultValue;
+			}	
+		} 	
+	}
+	
+
 }
