@@ -30,10 +30,9 @@ package org.spout.api.signal;
  * Class that implements both SignalInterface and SubscriberInterface
  * You'll need this one in most of the cases
  */
-public class SignalSubscriberObject extends SignalObject implements
-		SignalInterface, SubscriberInterface {
+public class SignalSubscriberObject extends SignalObject implements SubscriberInterface {
 	SignalInterface sender = null;
-	
+
 	@Override
 	public SignalInterface sender() {
 		return sender;
@@ -43,5 +42,4 @@ public class SignalSubscriberObject extends SignalObject implements
 	public void setSender(SignalInterface sender) {
 		this.sender = sender;
 	}
-
 }

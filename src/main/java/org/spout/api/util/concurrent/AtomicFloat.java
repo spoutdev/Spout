@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * This does not exist in the standard java atomic package
  */
-public class AtomicFloat extends Number implements Serializable {
+public class AtomicFloat extends Number {
 	private static final long serialVersionUID = 1623478887667L;
 
 	private AtomicInteger value = new AtomicInteger();

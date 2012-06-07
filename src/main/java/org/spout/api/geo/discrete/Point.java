@@ -309,7 +309,7 @@ public class Point extends Vector3 {
 		out.writeUTF(world != null ? world.getName() : "null");
 	}
 	
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private void readObject(java.io.ObjectInputStream in) throws IOException {
 		float x = in.readFloat();
 		float y = in.readFloat();
 		float z = in.readFloat();

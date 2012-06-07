@@ -38,7 +38,7 @@ import org.spout.api.io.FileUtil;
  * This implements a SimpleStore that is stored in memory. The save and load
  * methods can be used to write the map to a File.
  */
-public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
+public class FlatFileStore<T> extends MemoryStore<T> {
 	private final File file;
 	private boolean dirty = false;
 	private final Class<?> clazz; // preserve class, so parser knows what to do

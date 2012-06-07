@@ -46,7 +46,7 @@ import org.spout.api.signal.SignalInterface;
 import org.spout.api.signal.SignalSubscriberObject;
 import org.spout.api.signal.SubscriberInterface;
 
-public class ScreenStack extends SignalSubscriberObject implements Renderable, KeyboardEventHandler, MouseEventHandler, Tickable, SubscriberInterface, SignalInterface {
+public class ScreenStack extends SignalSubscriberObject implements Renderable, KeyboardEventHandler, MouseEventHandler, Tickable {
 	/**
 	 * Contains all attached screens in front-to-back order, that means, the topmost screen is the first element
 	 */

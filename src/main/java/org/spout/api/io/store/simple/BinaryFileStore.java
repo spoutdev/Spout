@@ -42,7 +42,7 @@ import java.util.Map.Entry;
  * This implements a SimpleStore that is stored in memory. The save and load
  * methods can be used to write the map to a binary file.
  */
-public class BinaryFileStore extends MemoryStore<Integer> implements SimpleStore<Integer> {
+public class BinaryFileStore extends MemoryStore<Integer> {
 
 	private File file;
 	private boolean dirty = false;

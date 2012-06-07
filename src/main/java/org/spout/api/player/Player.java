@@ -36,7 +36,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.Threadsafe;
 
-public interface Player extends CommandSource, PermissionsSubject, DataSubject, Source {
+public interface Player extends CommandSource {
 	/**
 	 * Gets the player's name. This method is thread-safe.
 	 *

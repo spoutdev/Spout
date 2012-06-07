@@ -26,7 +26,7 @@
  */
 package org.spout.api.gui;
 
-public interface Screen extends MouseEventHandler, KeyboardEventHandler, Container, Widget {
+public interface Screen extends KeyboardEventHandler, Container {
 	/**
 	 * Sets the focussed control
 	 * @param control the control in focus 

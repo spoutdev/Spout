@@ -39,7 +39,7 @@ import org.spout.api.gui.WidgetType;
  * </pre>
  *
  */
-public class Group extends AbstractWidgetContainer implements Container, Label {
+public class Group extends AbstractWidgetContainer implements Label {
 	
 	private TextProperties properties = new TextProperties();
 	private String text = "";

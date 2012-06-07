@@ -35,7 +35,7 @@ import org.spout.api.exception.MissingCommandException;
 import org.spout.api.geo.World;
 import org.spout.api.util.Named;
 
-public class SimpleCommandTest implements Named, CommandSource {
+public class SimpleCommandTest implements CommandSource {
 	private SimpleCommand testCommand;
 
 	@Before
