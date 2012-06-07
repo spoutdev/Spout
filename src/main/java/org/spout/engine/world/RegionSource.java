@@ -114,12 +114,7 @@ public class RegionSource implements Iterable<Region> {
 			if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
 				return null;
 			}
-			if (Spout.debugMode()) {
-				System.out.println("[debug] Started new region: [" + x + "/" + y + "/" + z + "]");
-				for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-					System.out.println("  at " + element);
-				}
-			}
+
 			region = new SpoutRegion(world, x, y, z, this);
 			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
