@@ -97,9 +97,9 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		long currentTime = System.currentTimeMillis();
 
 		while (!success) {
-			LockInfo oldLockInfo = locks.get(plugin);
+			final LockInfo oldLockInfo = locks.get(plugin);
 
-			LockInfo newLockInfo;
+			final LockInfo newLockInfo;
 			if (oldLockInfo == null || oldLockInfo.locks == 0) {
 				newLockInfo = new LockInfo(currentTime, 1);
 			} else {
@@ -113,14 +113,12 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		boolean success = false;
 
 		while (!success) {
-			LockInfo oldLockInfo = locks.get(plugin);
-
-			LockInfo newLockInfo;
+			final LockInfo oldLockInfo = locks.get(plugin);
 			if (oldLockInfo == null) {
 				throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock");
-			} else {
-				newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks - 1);
 			}
+
+			final LockInfo newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks - 1);
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
 		}
 	}
@@ -132,7 +130,6 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 
 		public final long oldestLock;
-		;
 		public final int locks;
 	}
 }

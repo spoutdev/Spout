@@ -69,23 +69,29 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	@Override
 	public boolean startExecutor() {
-		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.STARTED)) {
-			super.start();
-			return true;
-		} else {
+		if (!state.compareAndSet(ExecutorState.CREATED, ExecutorState.STARTED)) {
+			// Not coming from CREATED => fail
 			return false;
 		}
+
+		super.start();
+		return true;
 	}
 
 	@Override
 	public boolean haltExecutor() {
 		if (state.compareAndSet(ExecutorState.CREATED, ExecutorState.HALTED)) {
+			// Coming from CREATED => success
 			return true;
-		} else if (state.compareAndSet(ExecutorState.STARTED, ExecutorState.HALTING)) {
-			return true;
-		} else {
-			return false;
 		}
+
+		if (state.compareAndSet(ExecutorState.STARTED, ExecutorState.HALTING)) {
+			// Coming from STARTED => success
+			return true;
+		}
+
+		// Not coming from CREATED or STARTED => fail
+		return false;
 	}
 
 	@Override
@@ -105,10 +111,13 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			taskQueue.add(task);
 			pulse();
 		}
+
 		ManagedFuture<Serializable> future = task.getFuture();
-		if (future != null) {
-			future.setManager(manager);
+		if (future == null) {
+			return null;
 		}
+
+		future.setManager(manager);
 		return future;
 	}
 

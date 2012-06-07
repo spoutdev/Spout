@@ -288,11 +288,11 @@ public final class SpoutSession implements Session {
 	@Override
 	public InetSocketAddress getAddress() {
 		SocketAddress addr = channel.getRemoteAddress();
-		if (addr instanceof InetSocketAddress) {
-			return (InetSocketAddress) addr;
-		} else {
+		if (!(addr instanceof InetSocketAddress)) {
 			return null;
 		}
+
+		return (InetSocketAddress) addr;
 	}
 
 	@Override
@@ -364,9 +364,9 @@ public final class SpoutSession implements Session {
 	public void setProtocol(Protocol protocol) {
 		if (!this.protocol.compareAndSet(bootstrapProtocol, protocol)) {
 			throw new IllegalArgumentException("The protocol may only be set once per session");
-		} else {
-			server.getLogger().info("Setting protocol to " + protocol.getName());
 		}
+
+		server.getLogger().info("Setting protocol to " + protocol.getName());
 	}
 
 	@Override

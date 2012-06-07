@@ -116,23 +116,23 @@ public class SpoutColumn {
 	}
 
 	public int getSurfaceHeight(int x, int z) {
-		AtomicInteger v = getAtomicInteger(x, z);
-		int height = v.get();
-		if (height == Integer.MIN_VALUE) {
-			// No height known
-			int[][] h = heights.get();
-			if (h == null) {
-				h = world.getGenerator().getSurfaceHeight(world, x, z);
-				heights.set(h);
-			}
-			if (h == null) {
-				return lowestY.get();
-			} else {
-				return h[x & BLOCKS.MASK][z & BLOCKS.MASK];
-			}
-		} else {
+		final int height = getAtomicInteger(x, z).get();
+		if (height != Integer.MIN_VALUE) {
+			// height known
 			return height;
 		}
+
+		int[][] h = heights.get();
+		if (h == null) {
+			h = world.getGenerator().getSurfaceHeight(world, x, z);
+			heights.set(h);
+		}
+
+		if (h == null) {
+			return lowestY.get();
+		}
+
+		return h[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
 
 	public void notifyChunkAdded(Chunk c, int x, int z) {
@@ -188,9 +188,9 @@ public class SpoutColumn {
 			int value = v.get();
 			if (!isAir(x, value, z)) {
 				return;
-			} else {
-				v.compareAndSet(value, value - 1);
 			}
+
+			v.compareAndSet(value, value - 1);
 		}
 	}
 

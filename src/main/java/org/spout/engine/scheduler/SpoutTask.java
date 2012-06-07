@@ -133,16 +133,16 @@ public class SpoutTask implements Task {
 	/**
 	 * Creates a copy of this task for a particular Region
 	 * 
-	 * @param r the region
+	 * @param region the region
 	 * @return the new task instance
 	 */
-	public SpoutTask getRegionTask(SpoutRegion r) {
-		if (task instanceof ParallelRunnable) {
-			ParallelRunnable newRunnable = ((ParallelRunnable) task).newInstance(r, this);
-			return new SpoutTask(r.getTaskManager(), scheduler, owner, newRunnable, sync, delay, period, priority);
-		} else {
-			return new SpoutTask(r.getTaskManager(), scheduler, owner, task, sync, delay, period, priority);
+	public SpoutTask getRegionTask(SpoutRegion region) {
+		Runnable runnable = task;
+		if (runnable instanceof ParallelRunnable) {
+			runnable = ((ParallelRunnable) runnable).newInstance(region, this);
 		}
+
+		return new SpoutTask(region.getTaskManager(), scheduler, owner, runnable, sync, delay, period, priority);
 	}
 
 	/**
@@ -263,17 +263,18 @@ public class SpoutTask implements Task {
 	private boolean attemptDefer() {
 		if (priority.getMaxDeferred() <= 0) {
 			return false;
-		} else if (deferBegin < 0) {
+		}
+		if (deferBegin < 0) {
 			deferBegin = manager.getUpTime();
 			return true;
-		} else {
-			if (manager.getUpTime() - deferBegin > priority.getMaxDeferred()) {
-				deferBegin = -1;
-				return false;
-			} else {
-				return true;
-			}
 		}
+
+		if (manager.getUpTime() - deferBegin > priority.getMaxDeferred()) {
+			deferBegin = -1;
+			return false;
+		}
+
+		return true;
 	}
 
 	
@@ -297,9 +298,9 @@ public class SpoutTask implements Task {
 	public Task getChildTask(Region region) {
 		if (parallelInfo == null) {
 			throw new UnsupportedOperationException("This methods is only supported for parent parallel tasks");
-		} else {
-			return parallelInfo.getTask(region);
 		}
+
+		return parallelInfo.getTask(region);
 	}
 	
 	public void setParallelInfo(ParallelTaskInfo info) {

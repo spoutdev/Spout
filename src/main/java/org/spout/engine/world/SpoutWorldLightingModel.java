@@ -252,9 +252,14 @@ public class SpoutWorldLightingModel {
 	 */
 	public boolean loadReceive(int x, int y, int z) {
 		this.center.load(x, y, z);
-		if (this.center.material == null || this.center.material.getOcclusion().get(BlockFaces.NESWBT)) {
+		if (this.center.material == null) {
 			return false;
 		}
+
+		if (this.center.material.getOcclusion().get(BlockFaces.NESWBT)) {
+			return false;
+		}
+
 		for (Element element : this.neighbors) {
 			if (this.center.material.getOcclusion().get(element.offset)) {
 				element.material = null;
@@ -276,7 +281,9 @@ public class SpoutWorldLightingModel {
 		this.center.load(x, y, z);
 		if (this.center.material == null) {
 			return false;
-		} else if (this.center.isSource()) {
+		}
+
+		if (this.center.isSource()) {
 			for (Element element : this.neighbors) {
 				element.load(x, y, z);
 			}
@@ -368,11 +375,15 @@ public class SpoutWorldLightingModel {
 		 * Checks if this element can send light to the center
 		 */
 		public boolean isEmittingToCenter() {
-			if (material == null || center.material.getOcclusion().get(offset)) {
+			if (material == null) {
 				return false;
-			} else {
-				return this.isSource() || !material.getOcclusion().get(offset.getOpposite());
 			}
+
+			if (center.material.getOcclusion().get(offset)) {
+				return false;
+			}
+
+			return this.isSource() || !material.getOcclusion().get(offset.getOpposite());
 		}
 
 		/**
@@ -380,11 +391,15 @@ public class SpoutWorldLightingModel {
 		 * @return
 		 */
 		public boolean isReceivingFromCenter() {
-			if (material == null || material.getOcclusion().get(offset.getOpposite())) {
+			if (material == null) {
 				return false;
-			} else {
-				return center.isSource() || !center.material.getOcclusion().get(offset);
 			}
+
+			if (material.getOcclusion().get(offset.getOpposite())) {
+				return false;
+			}
+
+			return center.isSource() || !center.material.getOcclusion().get(offset);
 		}
 
 		@Override

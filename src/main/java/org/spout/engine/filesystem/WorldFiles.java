@@ -554,14 +554,18 @@ public class WorldFiles {
 	}
 
 	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag t) {
-		CompoundMap map = t.getValue();
-		int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
-		long nextUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("nextUpdate")), -1L);
-		long lastUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("lastUpdate")), -1L);
-		if (packed < 0 || nextUpdate < 0) {
+		final CompoundMap map = t.getValue();
+		final int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
+		if (packed < 0) {
 			return null;
-		} else {
-			return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate, null);
 		}
+
+		final long nextUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("nextUpdate")), -1L);
+		if (nextUpdate < 0) {
+			return null;
+		}
+
+		final long lastUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("lastUpdate")), -1L);
+		return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate, null);
 	}
 }

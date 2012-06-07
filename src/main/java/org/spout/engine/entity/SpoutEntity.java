@@ -156,9 +156,9 @@ public class SpoutEntity implements Entity, Tickable {
 			if (cont.getParent() != this) {
 				if (Spout.debugMode()) {
 					throw new IllegalStateException("Controller parent does not match entity");
-				} else {
-					cont.attachToEntity(this);
 				}
+
+				cont.attachToEntity(this);
 			}
 			//If this is the first tick, we need to attach the controller
 			//Controller is attached here instead of inside of the constructor
@@ -647,9 +647,9 @@ public class SpoutEntity implements Entity, Tickable {
 		World world = getWorld();
 		if (world == null) {
 			return null;
-		} else {
-			return world.getRegionFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
 		}
+
+		return world.getRegionFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
 	}
 
 	@Override

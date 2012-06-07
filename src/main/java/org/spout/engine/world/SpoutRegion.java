@@ -237,16 +237,19 @@ public class SpoutRegion extends Region{
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
 
-		SpoutChunk chunk = chunks[x][y][z].get();
-		if (chunk != null || (!loadopt.loadIfNeeded())) {
+		final SpoutChunk chunk = chunks[x][y][z].get();
+		if (chunk != null) {
 			return chunk;
 		}
 
-		AtomicReference<SpoutChunk> ref = chunks[x][y][z];
+		if (!loadopt.loadIfNeeded()) {
+			return null;
+		}
 
-		boolean success = false;
+		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 
-		ChunkDataForRegion dataForRegion = new ChunkDataForRegion();
+
+		final ChunkDataForRegion dataForRegion = new ChunkDataForRegion();
 
 		SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 
@@ -260,10 +263,8 @@ public class SpoutRegion extends Region{
 			generated = true;
 		}
 
-		while (!success) {
-			success = ref.compareAndSet(null, newChunk);
-
-			if (success) {
+		while (true) {
+			if (chunkReference.compareAndSet(null, newChunk)) {
 				newChunk.notifyColumn();
 				numberActiveChunks.incrementAndGet();
 				for (SpoutEntity entity : dataForRegion.loadedEntities) {
@@ -280,15 +281,14 @@ public class SpoutRegion extends Region{
 				}
 
 				return newChunk;
-			} else {
-				newChunk.deregisterFromColumn(false);
-				SpoutChunk oldChunk = ref.get();
-				if (oldChunk != null) {
-					return oldChunk;
-				}
+			}
+
+			newChunk.deregisterFromColumn(false);
+			SpoutChunk oldChunk = chunkReference.get();
+			if (oldChunk != null) {
+				return oldChunk;
 			}
 		}
-		return this.getWorld().getChunk(x, y, z, loadopt);
 	}
 
 	@Override
@@ -448,7 +448,7 @@ public class SpoutRegion extends Region{
 	public void copySnapshotRun() throws InterruptedException {
 		entityManager.copyAllSnapshots();
 
-		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
+		final Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 
 		while (itr.hasNext()) {
 			// NOTE : This is only called for chunks with contain entities.
@@ -476,9 +476,9 @@ public class SpoutRegion extends Region{
 				// No point in checking any others, since all processed
 				saveMarked.clear();
 				break;
-			} else {
-				empty |= processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
 			}
+
+			empty |= processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
 		}
 
 		// Updates on nulled chunks
@@ -759,12 +759,12 @@ public class SpoutRegion extends Region{
 					Vector3 block = chunk.getDirtyBlock(i);
 					if (block == null) {
 						break;
-					} else {
-						try {
-							synchronizer.updateBlock(chunk, (int) block.getX(), (int) block.getY(), (int) block.getZ());
-						} catch (Exception e) {
-							Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-						}
+					}
+
+					try {
+						synchronizer.updateBlock(chunk, (int) block.getX(), (int) block.getY(), (int) block.getZ());
+					} catch (Exception e) {
+						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
 					}
 				}
 			} else {

@@ -133,29 +133,31 @@ public class SpoutPlayer implements Player {
 
 	@DelayedWrite
 	public boolean disconnect() {
-		if (onlineLive.compareAndSet(true, false)) {
-			final SpoutEntity entity = entityLive.getAndSet(null);
-			if (entity != null) {
-				entity.kill();
-			}
-			sessionLive.set(null);
-			synchronizerLive.set(null);
-			return true;
-		} else {
+		if (!onlineLive.compareAndSet(true, false)) {
+			// player was already offline
 			return false;
 		}
+
+		final SpoutEntity entity = entityLive.getAndSet(null);
+		if (entity != null) {
+			entity.kill();
+		}
+		sessionLive.set(null);
+		synchronizerLive.set(null);
+		return true;
 	}
 
 	@DelayedWrite
 	public boolean connect(SpoutSession session, SpoutEntity entity) {
-		if (onlineLive.compareAndSet(false, true)) {
-			sessionLive.set(session);
-			entityLive.set(entity);
-			copyToSnapshot();
-			return true;
-		} else {
+		if (!onlineLive.compareAndSet(false, true)) {
+			// player was already online
 			return false;
 		}
+
+		sessionLive.set(session);
+		entityLive.set(entity);
+		copyToSnapshot();
+		return true;
 	}
 
 	@Override
@@ -191,12 +193,12 @@ public class SpoutPlayer implements Player {
 	@Override
 	public boolean sendRawMessage(String message) {
 		Message chatMessage = getSession().getPlayerProtocol().getChatMessage(message);
-		if (message != null) {
-			session.send(chatMessage);
-			return true;
-		} else {
+		if (message == null) {
 			return false;
 		}
+
+		session.send(chatMessage);
+		return true;
 	}
 
 	@Override
@@ -307,11 +309,11 @@ public class SpoutPlayer implements Player {
 	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		NetworkSynchronizer s = synchronizer;
-		if (s == null) {
-			return synchronizerLive.get();
-		} else {
+		if (s != null) {
 			return s;
 		}
+
+		return synchronizerLive.get();
 	}
 
 	@Override
