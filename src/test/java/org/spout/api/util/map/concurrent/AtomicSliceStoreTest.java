@@ -215,6 +215,9 @@ public class AtomicSliceStoreTest {
 	}
 
 	private void checkStoreCompressed() {
+		if (store.getSize() <= 3 && store.getEntries() <= 3) {
+			return;
+		}
 		double loadFactor = (double) store.getEntries() / (double)store.getSize();
 		System.out.println("Load factor test: " + store.getEntries() + "/" + store.getSize() + " (0.37 < " + loadFactor + " < 0.76)");
 		System.out.println();
