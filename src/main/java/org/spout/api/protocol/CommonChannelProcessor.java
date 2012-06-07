@@ -33,22 +33,12 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
 
 /**
- * Bridge class for passing ChannelBuffers through byte array read/write processing<br>
- * <br>
- * The internal ChannelBuffer can be reused only if the amount output by the processor
- * for a single input is less than the capacity of the reused buffer.  If the data read 
- * from the processor due to a single write is larger than the capacity, then additional 
- * ChannelBuffers are generated to store the result.  These additional buffers are single 
- * usage.  The reuse channel buffer is always reused.<br>
- * <br>
- * Subclasses should extends the read and write methods.  It is guaranteed that the read
- * and write methods will not be called from more than 1 thread at the same time.
+ * Bridge class for passing ChannelBuffers through byte array read/write processing
  */
 public abstract class CommonChannelProcessor implements ChannelProcessor {
 	
 	private final static ChannelBuffer[] DUMMY_ARRAY = new ChannelBuffer[0];
 
-	private ChannelBuffer reusedChannelBuffer;
 	private final byte[] byteBuffer;
 	protected final int capacity;
 	
@@ -58,13 +48,13 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 	}
 	
 	@Override
-	public final synchronized ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input) {
-		if (reusedChannelBuffer == null) {
-			reusedChannelBuffer = getNewBufferInstance(ctx, capacity);
-		} else {
-			reusedChannelBuffer.clear();
-		}
-		ChannelBuffer channelBuffer = reusedChannelBuffer;
+	public final ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input) {
+		return write(ctx, input, null);
+	}
+	
+	@Override
+	public final synchronized ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input, ChannelBuffer buffer) {
+		ChannelBuffer channelBuffer = buffer == null ? getNewBufferInstance(ctx, capacity) : buffer;
 		int nextSize = capacity;
 		int remaining;
 		ArrayList<ChannelBuffer> consumedBuffers = null;
@@ -76,13 +66,11 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 			while ((read = read(byteBuffer)) > 0) {
 				if (channelBuffer.writableBytes() >= read) {
 					channelBuffer.writeBytes(byteBuffer, 0, read);
-				} else if (channelBuffer.writableBytes() + channelBuffer.readerIndex() > read) {
-					channelBuffer.discardReadBytes();
-					channelBuffer.writeBytes(byteBuffer, 0, read);
 				} else {
 					ChannelBuffer newBuffer = getNewBufferInstance(ctx, nextSize);
 					nextSize *= 2;
 					if (consumedBuffers == null) {
+						System.out.println("Creating arraylist");
 						consumedBuffers = new ArrayList<ChannelBuffer>(16);
 					}
 					consumedBuffers.add(channelBuffer);
@@ -92,7 +80,6 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 				
 			}
 		}
-		input.discardReadBytes();
 		if (consumedBuffers != null) {
 			consumedBuffers.add(channelBuffer);
 			return ChannelBuffers.wrappedBuffer(consumedBuffers.toArray(DUMMY_ARRAY));
