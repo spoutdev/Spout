@@ -76,16 +76,19 @@ public class TripleInt {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof TripleInt)) {
-			return false;
-		} else {
-			TripleInt other = (TripleInt) o;
-
-			if (other == NULL) {
-				return this == NULL;
-			} else {
-				return other.x == x && other.y == y && other.z == z;
-			}
+		if (this == NULL) {
+			return o == NULL;
 		}
+
+		if (!(o instanceof TripleInt)) {
+			return false;
+		}
+
+		TripleInt other = (TripleInt) o;
+		if (other == NULL) {
+			return this == NULL;
+		}
+
+		return other.x == x && other.y == y && other.z == z;
 	}
 }
