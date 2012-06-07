@@ -48,7 +48,7 @@ public class MessagingCommands {
 
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
 	@CommandPermissions("spout.command.say")
-	public void say(CommandContext args, CommandSource source) throws CommandException {
+	public void say(CommandContext args, CommandSource source) {
 		String message = args.getJoinedString(0);
 		if (!message.isEmpty()) {
 			if (source instanceof Player) {

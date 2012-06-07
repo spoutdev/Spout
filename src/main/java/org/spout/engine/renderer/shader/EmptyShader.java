@@ -33,8 +33,7 @@ import java.io.FileNotFoundException;
  * @author RoyAwesome
  */
 public class EmptyShader extends ClientShader {
-	public EmptyShader()
-			throws FileNotFoundException {
+	public EmptyShader() {
 		super(null, null);
 	}
 

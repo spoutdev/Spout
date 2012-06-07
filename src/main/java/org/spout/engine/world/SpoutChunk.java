@@ -617,9 +617,8 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * @return true if the chunk can be skipped
-	 * @throws InterruptedException
 	 */
-	public boolean copySnapshotRun() throws InterruptedException {
+	public boolean copySnapshotRun() {
 		// NOTE : This is only called for chunks with contain entities.
 		snapshotManager.copyAllSnapshots();
 		return entities.get().size() == 0;

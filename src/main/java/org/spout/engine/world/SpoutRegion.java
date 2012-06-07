@@ -445,7 +445,7 @@ public class SpoutRegion extends Region{
 		saveMarked.add(TripleInt.NULL);
 	}
 
-	public void copySnapshotRun() throws InterruptedException {
+	public void copySnapshotRun() {
 		entityManager.copyAllSnapshots();
 
 		final Iterator<SpoutChunk> itr = occupiedChunks.iterator();
@@ -551,7 +551,7 @@ public class SpoutRegion extends Region{
 		this.deallocate((SpoutEntity)e);
 	}
 
-	public void startTickRun(int stage, long delta) throws InterruptedException {
+	public void startTickRun(int stage, long delta) {
 		boolean visibleToPlayers = this.entityManager.getPlayers().size() > 0;
 		if (!visibleToPlayers) {
 			//Search for players near to the center of the region
@@ -693,13 +693,13 @@ public class SpoutRegion extends Region{
 		}
 	}
 
-	public void haltRun() throws InterruptedException {
+	public void haltRun() {
 	}
 
 	private int compressDx = 0;
 	private int compressDy = 0;
 
-	public void finalizeRun() throws InterruptedException {
+	public void finalizeRun() {
 
 		long worldAge = getWorld().getAge();
 
@@ -799,7 +799,7 @@ public class SpoutRegion extends Region{
 		Spout.getEventManager().callDelayedEvent(evt);
 	}
 
-	public void preSnapshotRun() throws InterruptedException {
+	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
 
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
