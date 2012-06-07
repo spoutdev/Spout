@@ -42,11 +42,11 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 	public List<Material> ingredients = new ArrayList<Material>();
 
 	public ShapedRecipe buildShapedRecipe() {
-		return new ShapedRecipe((T) this);
+		return new ShapedRecipe(this);
 	}
 	
 	public ShapelessRecipe buildShapelessRecipe() {
-		return new ShapelessRecipe((T) this);
+		return new ShapelessRecipe(this);
 	}
     
 	public T addPlugin(Plugin plugin) {

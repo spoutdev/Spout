@@ -140,7 +140,7 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		} else if (value instanceof Integer) {
 			map.set(intKey, new DatatableInt(intKey, (Integer)value));
 		} else {
-			map.set(intKey, new DatatableSerializable(intKey, (Serializable)value));
+			map.set(intKey, new DatatableSerializable(intKey, value));
 		}
 		return old;
 	}

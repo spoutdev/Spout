@@ -57,12 +57,12 @@ public class AttributeValue {
 	
 	public long getLongValue() {
 		if(isInt()) {
-			return (long)(int)(Integer) getValue();
+			return (Integer) getValue();
 		}
 		if(isLong()) {
 			return (Long) getValue();
 		}
-		return (long) 0;
+		return 0;
 	}
 	
 	public boolean isLong() {
@@ -74,7 +74,7 @@ public class AttributeValue {
 			return (Double) getValue();
 		}
 		if(isFloat()) {
-			return (double)(float)(Float) getValue();
+			return (Float) getValue();
 		}
 		return 0d;
 	}

@@ -392,7 +392,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 	}
 
 	private int mapHash(int key) {
-		int intKey = (int) (key >> 32 ^ key);
+		int intKey = (key >> 32 ^ key);
 
 		return (0x7FFFFFFF & intKey) % hashScramble & mapMask;
 	}

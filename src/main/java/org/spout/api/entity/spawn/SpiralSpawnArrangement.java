@@ -66,7 +66,7 @@ public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 		points[0] = center;
 		
 		for (int i = 1; i < number; i++) {
-			distance = (float)Math.sqrt((float)i);
+			distance = (float)Math.sqrt(i);
 			
 			Vector3 offset = Point.FORWARD.transform(MathHelper.rotateY(angle));
 			offset = offset.multiply(distance).multiply(scaleRadius);

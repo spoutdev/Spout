@@ -37,7 +37,7 @@ public class ShortPairHashed {
 	 * @return squashed int
 	 */
 	public static int key(short key1, short key2) {
-		return (int) key1 << 16 | key2 & 0xFFFF;
+		return key1 << 16 | key2 & 0xFFFF;
 	}
 
 	/**

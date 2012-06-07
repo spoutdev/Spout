@@ -303,7 +303,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 	}
 
 	private int mapHash(int key) {
-		int intKey = (int) (key >> 32 ^ key);
+		int intKey = key >> 32 ^ key;
 
 		return (0x7FFFFFFF & intKey) % hashScramble & mapMask;
 	}

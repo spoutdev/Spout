@@ -79,7 +79,7 @@ public class DatatableIntTest {
 
 		assertTrue("Wrong value as bool", i.asBool() == (value != 0));
 
-		assertTrue("Wrong value as float", i.asFloat() == (float)value);
+		assertTrue("Wrong value as float", i.asFloat() == value);
 
 		assertTrue("Wrong value as int", i.asInt() == value);
 	}
