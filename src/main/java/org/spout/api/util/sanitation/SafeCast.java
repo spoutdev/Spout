@@ -27,7 +27,6 @@
 package org.spout.api.util.sanitation;
 
 public class SafeCast {
-	
 	public static long toLong(Object o, long def) {
 		if (o instanceof Long) {
 			return (Long)o;
@@ -84,13 +83,15 @@ public class SafeCast {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T toGeneric(Object o, T def, Class<T> clazz) {
-		if (clazz.isInstance(o)) {
-			return (T)o;
-		} else {
+	public static <T, U extends T> T toGeneric(Object o, U def, Class<T> clazz) {
+		if (o == null) {
+			return def;
+		}
+
+		try {
+			return clazz.cast(o);
+		} catch (ClassCastException e) {
 			return def;
 		}
 	}
-
 }
