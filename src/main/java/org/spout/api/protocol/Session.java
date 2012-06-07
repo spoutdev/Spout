@@ -26,9 +26,11 @@
  */
 package org.spout.api.protocol;
 
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 
 import org.spout.api.Engine;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.player.Player;
 
 public interface Session {
@@ -164,4 +166,11 @@ public interface Session {
 	 * @return is connected
 	 */
 	public boolean isConnected();
+	
+	/**
+	 * Gets a map of data attached to this session.
+	 * 
+	 * @return data map
+	 */
+	public DefaultedMap<String, Serializable> getDataMap();
 }
