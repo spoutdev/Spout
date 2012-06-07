@@ -28,59 +28,59 @@ package org.spout.api.util.sanitation;
 
 public class SafeCast {
 	public static long toLong(Object o, long def) {
-		if (o instanceof Long) {
-			return (Long)o;
-		} else {
+		if (!(o instanceof Long)) {
 			return def;
 		}
+
+		return (Long) o;
 	}
-	
+
 	public static int toInt(Object o, int def) {
-		if (o instanceof Integer) {
-			return (Integer)o;
-		} else {
+		if (!(o instanceof Integer)) {
 			return def;
 		}
+
+		return (Integer) o;
 	}
-	
+
 	public static byte toByte(Object o, byte def) {
-		if (o instanceof Byte) {
-			return (Byte)o;
-		} else {
+		if (!(o instanceof Byte)) {
 			return def;
 		}
+
+		return (Byte) o;
 	}
-	
+
 	public static float toFloat(Object o, float def) {
-		if (o instanceof Float) {
-			return (Float)o;
-		} else {
+		if (!(o instanceof Float)) {
 			return def;
 		}
+
+		return (Float) o;
 	}
-	
+
 	public static byte[] toByteArray(Object o, byte[] def) {
-		if (o instanceof byte[]) {
-			return (byte[])o;
-		} else {
+		if (!(o instanceof byte[])) {
 			return def;
 		}
+
+		return (byte[]) o;
 	}
-	
+
 	public static short[] toShortArray(Object o, short[] def) {
-		if (o instanceof short[]) {
-			return (short[])o;
-		} else {
+		if (!(o instanceof short[])) {
 			return def;
 		}
+
+		return (short[]) o;
 	}
-	
+
 	public static String toString(Object o, String def) {
-		if (o instanceof String) {
-			return (String)o;
-		} else {
+		if (!(o instanceof String)) {
 			return def;
 		}
+
+		return (String) o;
 	}
 
 	public static <T, U extends T> T toGeneric(Object o, U def, Class<T> clazz) {

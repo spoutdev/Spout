@@ -300,28 +300,44 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return intersects((BoundingBox) other);
-		} else if (other instanceof BoundingSphere) {
+		}
+
+		if (other instanceof BoundingSphere) {
 			return intersects((BoundingSphere) other);
-		} else if (other instanceof Segment) {
+		}
+
+		if (other instanceof Segment) {
 			return intersects((Segment) other);
-		} else if (other instanceof Plane) {
+		}
+
+		if (other instanceof Plane) {
 			return intersects((Plane) other);
 		}
+
 		return false;
 	}
 
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return containsBoundingBox((BoundingBox) other);
-		} else if (other instanceof BoundingSphere) {
+		}
+
+		if (other instanceof BoundingSphere) {
 			return containsBoundingSphere((BoundingSphere) other);
-		} else if (other instanceof Plane) {
+		}
+
+		if (other instanceof Plane) {
 			return containsPlane((Plane) other);
-		} else if (other instanceof Ray) {
+		}
+
+		if (other instanceof Ray) {
 			return containsRay((Ray) other);
-		} else if (other instanceof Segment) {
+		}
+
+		if (other instanceof Segment) {
 			return containsSegment((Segment) other);
 		}
+
 		return false;
 	}
 
@@ -353,37 +369,36 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		if (other instanceof BoundingBox) {
 			return CollisionHelper.getCollision(this, (BoundingBox)other);
 		}
+
 		return null;
 	}
 
 	@Override
 	public Vector3 getPosition() {
-		
 		return min;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(7, 27).append(min).append(max).toHashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof BoundingBox) {
-			if (other == this) {
-				return true;
-			} else {
-				BoundingBox b = (BoundingBox) other;
-				return b.min.equals(this.min) && b.max.equals(this.max);
-			}
-		} else {
+		if (!(other instanceof BoundingBox)) {
 			return false;
 		}
+
+		if (other == this) {
+			return true;
+		}
+
+		BoundingBox b = (BoundingBox) other;
+		return b.min.equals(this.min) && b.max.equals(this.max);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(min=" + this.min + ", max=" + this.max + ')';
 	}
-	
 }

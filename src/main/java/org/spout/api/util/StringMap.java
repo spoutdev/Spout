@@ -93,16 +93,15 @@ public class StringMap {
 	 * @param localId to convert
 	 * @return returns the foreign id, or 0 on failure
 	 */
-
 	public int convertTo(StringMap other, int localId) {
 		int foreignId = 0;
 
 		if (other == this) {
-			if (store.reverseGet(localId) != null) {
-				return localId;
-			} else {
+			if (store.reverseGet(localId) == null) {
 				return 0;
 			}
+
+			return localId;
 		} else if (other == parent) {
 			foreignId = thisToParentMap.get(localId);
 		} else if (other.parent == this) {
@@ -164,25 +163,26 @@ public class StringMap {
 	 */
 
 	public int register(String key) {
-
 		Integer id = store.get(key);
-
 		if (id != null) {
 			return id;
-		} else {
-			int localId = nextId.getAndIncrement();
-
-			while (localId < maxId) {
-				if (store.setIfAbsent(key, localId)) {
-					return localId;
-				}
-				Integer storeId = store.get(key);
-				if (storeId != null) {
-					return storeId;
-				}
-				localId = nextId.getAndIncrement();
-			}
 		}
+
+		int localId = nextId.getAndIncrement();
+
+		while (localId < maxId) {
+			if (store.setIfAbsent(key, localId)) {
+				return localId;
+			}
+
+			Integer storeId = store.get(key);
+			if (storeId != null) {
+				return storeId;
+			}
+
+			localId = nextId.getAndIncrement();
+		}
+
 		throw new IllegalStateException("StringMap id space exhausted");
 	}
 	
@@ -201,6 +201,7 @@ public class StringMap {
 		if (id >= this.minId) {
 			throw new IllegalArgumentException("Hardcoded ids must be below the minimum id value");
 		}
+
 		return store.setIfAbsent(key, id);
 	}
 	

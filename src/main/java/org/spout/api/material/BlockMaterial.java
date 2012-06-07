@@ -78,11 +78,12 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public static BlockMaterial get(short id) {
 		Material mat = Material.get(id);
-		if (mat instanceof BlockMaterial) {
-			return (BlockMaterial) mat;
-		} else {
+		if (!(mat instanceof BlockMaterial)) {
 			return null;
 		}
+
+		return (BlockMaterial) mat;
+
 	}
 
 	/**
@@ -93,11 +94,11 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public static BlockMaterial get(String name) {
 		Material mat = Material.get(name);
-		if (mat instanceof BlockMaterial) {
-			return (BlockMaterial) mat;
-		} else {
+		if (!(mat instanceof BlockMaterial)) {
 			return null;
 		}
+
+		return (BlockMaterial) mat;
 	}
 
 	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFaces.NESWBT);
@@ -158,13 +159,14 @@ public class BlockMaterial extends Material implements Placeable {
 				return controller;
 			}
 		}
-		if (forced) {
-			controller = (BlockController) this.controller.createController();
-			block.setController(controller);
-			return controller;
-		} else {
+
+		if (!forced) {
 			return null;
 		}
+
+		controller = (BlockController) this.controller.createController();
+		block.setController(controller);
+		return controller;
 	}
 
 	@Override

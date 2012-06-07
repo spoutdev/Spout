@@ -57,11 +57,11 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 
 	@Override
 	public String detectProtocolDefinition(Message message) {
-		if (message instanceof CustomDataMessage) {
-			return detectProtocolDefinition((CustomDataMessage)message);
-		} else {
+		if (!(message instanceof CustomDataMessage)) {
 			return null;
 		}
+
+		return detectProtocolDefinition((CustomDataMessage)message);
 	}
 
 	private String detectProtocolDefinition(CustomDataMessage message) {

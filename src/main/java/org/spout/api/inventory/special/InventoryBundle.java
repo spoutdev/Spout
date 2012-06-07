@@ -66,10 +66,11 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 		for (InventoryBase inventory : inventories) {
 			if (slot < inventory.getSize()) {
 				return inventory.getItem(slot);
-			} else {
-				slot -= inventory.getSize();
 			}
+
+			slot -= inventory.getSize();
 		}
+
 		throw new IllegalArgumentException("Slot is out of range");
 	}
 
@@ -79,9 +80,9 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 			if (slot < inventory.getSize()) {
 				inventory.setItem(slot, item);
 				return;
-			} else {
-				slot -= inventory.getSize();
 			}
+
+			slot -= inventory.getSize();
 		}
 		throw new IllegalArgumentException("Slot is out of range");
 	}
@@ -126,9 +127,9 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 				if (inv == inventory) {
 					this.notifyViewers(slot, item);
 					return;
-				} else {
-					slot += inv.getSize();
 				}
+
+				slot += inv.getSize();
 			}
 		}
 	}

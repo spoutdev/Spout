@@ -51,17 +51,17 @@ public final class BiomeRegistry {
 	 * Sets up the biome registry for the first use
 	 */
 	public static StringMap setupRegistry() {
-		if (!setup) {
-			File biomeStoreFile = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "biomes.dat");
-			store.setFile(biomeStoreFile);
-			if (biomeStoreFile.exists()) {
-				store.load();
-			}
-			setup = true;
-			return biomeRegistry;
-		} else {
+		if (setup) {
 			throw new IllegalStateException("Can not setup biome registry twice!");
 		}
+
+		File biomeStoreFile = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "biomes.dat");
+		store.setFile(biomeStoreFile);
+		if (biomeStoreFile.exists()) {
+			store.load();
+		}
+		setup = true;
+		return biomeRegistry;
 	}
 
 	/**

@@ -181,27 +181,27 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public final Material[] getSubMaterials() {
 		if (this.submaterials == null) {
 			return new Material[0];
-		} else {
-			if (submaterialsDirty) {
-				int materialCount = 0;
-				for (int i = 0; i < this.submaterials.length; i++) {
-					if (this.submaterials[i] != null) {
-						materialCount++;
-					}
-				}
-				Material[] newSubmaterials = new Material[materialCount];
-				materialCount = 0;
-				for (int i = 0; i < this.submaterials.length; i++) {
-					if (this.submaterials[i] != null) {
-						newSubmaterials[materialCount++] = this.submaterials[i];
-					}
-				}
-				this.submaterialsContiguous = newSubmaterials;
-				submaterialsDirty = false;
-			}
-			Material[] sm = submaterialsContiguous;
-			return Arrays.copyOf(sm, sm.length);
 		}
+
+		if (submaterialsDirty) {
+			int materialCount = 0;
+			for (int i = 0; i < this.submaterials.length; i++) {
+				if (this.submaterials[i] != null) {
+					materialCount++;
+				}
+			}
+			Material[] newSubmaterials = new Material[materialCount];
+			materialCount = 0;
+			for (int i = 0; i < this.submaterials.length; i++) {
+				if (this.submaterials[i] != null) {
+					newSubmaterials[materialCount++] = this.submaterials[i];
+				}
+			}
+			this.submaterialsContiguous = newSubmaterials;
+			submaterialsDirty = false;
+		}
+		Material[] sm = submaterialsContiguous;
+		return Arrays.copyOf(sm, sm.length);
 	}
 
 	/**

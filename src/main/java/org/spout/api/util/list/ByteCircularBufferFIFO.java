@@ -90,9 +90,9 @@ public class ByteCircularBufferFIFO {
 	public int read() {
 		if (end <= start) {
 			return -1;
-		} else {
-			return buf[(start++) & mask] & 0xFF;
 		}
+
+		return buf[(start++) & mask] & 0xFF;
 	}
 	
 	/**
@@ -145,14 +145,14 @@ public class ByteCircularBufferFIFO {
 	public byte[] toByteArray() {
 		if (end < start) {
 			return emptyArray;
-		} else {
-			byte[] a = new byte[end - start];
-			int j = 0;
-			for (int i = start; i < end; i++) {
-				a[j++] = buf[i & mask];
-			}
-			return a;
 		}
+
+		byte[] a = new byte[end - start];
+		int j = 0;
+		for (int i = start; i < end; i++) {
+			a[j++] = buf[i & mask];
+		}
+		return a;
 	}
 	
 	/**
@@ -186,14 +186,14 @@ public class ByteCircularBufferFIFO {
 	private int nextPow2(int x) {
 		if (x <= 0) {
 			return 1;
-		} else {
-			x = x - 1;
-			x |= (x >> 1);
-			x |= (x >> 2);
-			x |= (x >> 4);
-			x |= (x >> 8);
-			x |= (x >> 16);
-			return x + 1;
 		}
+
+		x = x - 1;
+		x |= (x >> 1);
+		x |= (x >> 2);
+		x |= (x >> 4);
+		x |= (x >> 8);
+		x |= (x >> 16);
+		return x + 1;
 	}
 }

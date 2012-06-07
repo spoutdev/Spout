@@ -59,14 +59,14 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 		} catch (InvocationTargetException e) {
 			if (e.getCause() == null) {
 				throw new WrappedCommandException(e);
-			} else {
-				Throwable cause = e.getCause();
-				if (cause instanceof CommandException) {
-					throw (CommandException) cause;
-				} else {
-					throw new WrappedCommandException(cause);
-				}
 			}
+
+			Throwable cause = e.getCause();
+			if (cause instanceof CommandException) {
+				throw (CommandException) cause;
+			}
+
+			throw new WrappedCommandException(cause);
 		}
 		return true;
 	}

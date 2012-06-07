@@ -65,17 +65,22 @@ public enum ChatColor {
 	}
 
 	public static ChatColor byCode(int code) {
-		if (code < 0 || code >= codeLookup.length) {
+		if (code < 0) {
 			return null;
-		} else {
-			return codeLookup[code];
 		}
+
+		if (code >= codeLookup.length) {
+			return null;
+		}
+
+		return codeLookup[code];
 	}
 
 	public static ChatColor byName(String name) {
 		if (name == null) {
 			return null;
 		}
+
 		Matcher matcher = matchPatern.matcher(name);
 		if (matcher.matches()) {
 			int code;

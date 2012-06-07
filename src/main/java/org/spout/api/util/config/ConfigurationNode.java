@@ -178,12 +178,17 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 	public Object getValue(Object def) {
 		if (hasChildren()) {
 			return getValues();
-		} else {
-			if (def != null && value == null && getConfiguration().doesWriteDefaults()) {
-				setValue(def);
-			}
-			return value == null ? def : value;
 		}
+
+		if (value != null) {
+			return value;
+		}
+
+		if (def != null && getConfiguration().doesWriteDefaults()) {
+			setValue(def);
+		}
+
+		return def;
 	}
 
 	/**

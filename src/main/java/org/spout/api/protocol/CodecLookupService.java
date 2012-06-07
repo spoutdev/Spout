@@ -79,11 +79,15 @@ public abstract class CodecLookupService {
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
 	private MessageCodec<?> findNotchian(int opcode) {
-		if (opcode < 0 || opcode >= opcodeTable.length) {
+		if (opcode < 0) {
 			return null;
-		} else {
-			return opcodeTable[opcode];
 		}
+
+		if (opcode >= opcodeTable.length) {
+			return null;
+		}
+
+		return opcodeTable[opcode];
 	}
 
 	public MessageCodec<?> find(int opcode) {

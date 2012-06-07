@@ -226,8 +226,8 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 	public BlockFace get(int index, BlockFace def) {
 		if (index < 0 || index >= this.faces.length) {
 			return def;
-		} else {
-			return this.faces[index];
 		}
+
+		return this.faces[index];
 	}
 }

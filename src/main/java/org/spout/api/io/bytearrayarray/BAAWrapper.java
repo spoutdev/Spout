@@ -122,52 +122,52 @@ public class BAAWrapper {
 			return in;
 		}
 	}
-	
+
 	private ByteArrayArray getByteArrayArray() {
 		int count = 0;
 		while (true) {
 			ByteArrayArray baa = baaRef.get();
-			
-			// If the baa exists and isn't closed return it
+
 			if (baa != null) {
-				if (baa.isClosed()) {
-					baaRef.compareAndSet(baa, null);
-					continue;
-				} else {
+				// If the baa exists and isn't closed return it
+				if (!baa.isClosed()) {
 					return baa;
 				}
-			// Some other thread is trying to open the file
-			// Spinning lock, then yield and then sleep
-			} else if (!baaRef.compareAndSet(null, openInProgress)) {
-				count++;
-				if (count > 10 ) {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
+				baaRef.compareAndSet(baa, null);
+				continue;
+			}
 
-					}
-				} else if (count > 0) {
-					Thread.yield();
-				}
-			// Successfully claimed the right to open a new file
-			// Attempt to open the file.  If an IOException is throw return null
-			} else {
-				baa = null;
+			if (baaRef.compareAndSet(null, openInProgress)) {
+				// Successfully claimed the right to open a new file
+				// Attempt to open the file.  If an IOException is throw return null
+				//baa = null; // not needed - already null
 				try {
 					try {
 						baa = new SimpleRegionFile(file, segmentSize, entries, timeout);
 					} catch (IOException e) {
 						System.out.println("Error when creating SimpleRegionFile object: " + file);
-						baa = null;
+						//baa = null; // not needed - already null. The assignment above comes after the potential IOException. 
 					}
+
 					return baa;
 				} finally {
 					if (!baaRef.compareAndSet(openInProgress, baa)) {
 						throw new IllegalStateException("chunkStore variable changed outside locking scheme");
-					}				
+					}
 				}
+			}
+
+			// Some other thread is trying to open the file
+			// Spinning lock, then yield and then sleep
+			count++;
+			if (count > 10) {
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+				}
+			} else if (count > 0) {
+				Thread.yield();
 			}
 		}
 	}
-	
 }

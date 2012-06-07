@@ -142,11 +142,11 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 				int blockId = blockIds.get(index);
 				if (!auxStore.isReserved(blockId)) {
 					return DatatableSequenceNumber.ATOMIC;
-				} else {
-					int sequence = auxStore.getSequence(blockId);
-					if (sequence != DatatableSequenceNumber.UNSTABLE) {
-						return sequence;
-					}
+				}
+
+				int sequence = auxStore.getSequence(blockId);
+				if (sequence != DatatableSequenceNumber.UNSTABLE) {
+					return sequence;
 				}
 			}
 		} finally {
@@ -391,25 +391,19 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 					if (!blockIds.compareAndSet(index, oldBlockId, id)) {
 						continue;
 					}
-					if (oldReserved) {
-						int oldInt = auxStore.remove(oldBlockId);
-						return oldInt;
-					} else {
-						return BlockFullState.getPacked(oldBlockId, (short) 0);
-					}
 				} else {
 					int newIndex = auxStore.add(id, data);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
 						auxStore.remove(newIndex);
 						continue;
 					}
-					if (oldReserved) {
-						int oldInt = auxStore.remove(oldBlockId);
-						return oldInt;
-					} else {
-						return BlockFullState.getPacked(oldBlockId, (short) 0);
-					}
 				}
+
+				if (oldReserved) {
+					return auxStore.remove(oldBlockId);
+				}
+
+				return BlockFullState.getPacked(oldBlockId, (short) 0);
 			}
 		} finally {
 			markDirty(x, y, z);
@@ -469,23 +463,20 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 					if (!blockIds.compareAndSet(index, oldBlockId, newId)) {
 						continue;
 					}
-					if (oldReserved) {
-						auxStore.remove(oldBlockId);
-					}
-					markDirty(x, y, z);
-					return true;
 				} else {
 					int newIndex = auxStore.add(newId, newData);
 					if (!blockIds.compareAndSet(index, oldBlockId, (short) newIndex)) {
 						auxStore.remove(newIndex);
 						continue;
 					}
-					if (oldReserved) {
-						auxStore.remove(oldBlockId);
-					}
-					markDirty(x, y, z);
-					return true;
 				}
+
+				if (oldReserved) {
+					auxStore.remove(oldBlockId);
+				}
+
+				markDirty(x, y, z);
+				return true;
 			}
 		} finally {
 			atomicNotify();
@@ -678,9 +669,9 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	public Vector3 getDirtyBlock(int i) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
-		} else {
-			return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 		}
+
+		return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 	}
 
 	private final int getIndex(int x, int y, int z) {

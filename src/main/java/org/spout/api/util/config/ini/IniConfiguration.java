@@ -365,9 +365,12 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 	public String[] ensureCorrectPath(String[] rawPath) {
 		if (rawPath.length <= 2) {
 			return rawPath;
-		} else {
-			return new String[] {rawPath[0], StringUtils.join(ArrayUtils.subarray(rawPath, 1, rawPath.length), getPathSeparator())};
 		}
+
+		return new String[] {
+				rawPath[0],
+				StringUtils.join(ArrayUtils.subarray(rawPath, 1, rawPath.length), getPathSeparator())
+		};
 	}
 
 	@Override

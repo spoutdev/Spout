@@ -88,9 +88,9 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 		V value = get(key);
 		if (value == null) {
 			return def;
-		} else {
-			return value;
 		}
+
+		return value;
 	}
 
 	public synchronized V remove(K key) {
@@ -114,11 +114,15 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 	}
 
 	public synchronized boolean setIfAbsent(K key, V value) {
-		if (map.get(key) != null || reverseMap.get(value) != null) {
+		if (map.get(key) != null) {
 			return false;
-		} else {
-			set(key, value);
-			return true;
 		}
+
+		if (reverseMap.get(value) != null) {
+			return false;
+		}
+
+		set(key, value);
+		return true;
 	}
 }

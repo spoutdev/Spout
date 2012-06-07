@@ -120,9 +120,9 @@ public class AtomicVariableWidthArray implements Serializable {
 	public final int get(int i) {
 		if (fullWidth) {
 			return array.get(i);
-		} else {
-			return unPack(array.get(getIndex(i)), getSubIndex(i));
 		}
+
+		return unPack(array.get(getIndex(i)), getSubIndex(i));
 	}
 	
 	/**
@@ -134,15 +134,16 @@ public class AtomicVariableWidthArray implements Serializable {
 	public final void set(int i, int newValue) {
 		if (fullWidth) {
 			array.set(i,  newValue);
-		} else {
-			boolean success = false;
-			int index = getIndex(i);
-			int subIndex = getSubIndex(i);
-			while (!success) {
-				int prev = array.get(index);
-				int next = pack(prev, newValue, subIndex);
-				success = array.compareAndSet(index, prev, next);
-			}
+			return;
+		}
+
+		boolean success = false;
+		int index = getIndex(i);
+		int subIndex = getSubIndex(i);
+		while (!success) {
+			int prev = array.get(index);
+			int next = pack(prev, newValue, subIndex);
+			success = array.compareAndSet(index, prev, next);
 		}
 	}
 
@@ -157,21 +158,21 @@ public class AtomicVariableWidthArray implements Serializable {
 	public final boolean compareAndSet(int i, int expect, int update) {
 		if (fullWidth) {
 			return array.compareAndSet(i, expect, update);
-		} else {
-			boolean success = false;
-			int index = getIndex(i);
-			int subIndex = getSubIndex(i);
-			while (!success) {
-				int prev = array.get(index);
-				if (unPack(prev, subIndex) != expect) {
-					return false;
-				} else {
-					int next = pack(prev, update, subIndex);
-					success = array.compareAndSet(index, prev, next);
-				}
-			}
-			return true;
 		}
+
+		boolean success = false;
+		int index = getIndex(i);
+		int subIndex = getSubIndex(i);
+		while (!success) {
+			int prev = array.get(index);
+			if (unPack(prev, subIndex) != expect) {
+				return false;
+			}
+
+			int next = pack(prev, update, subIndex);
+			success = array.compareAndSet(index, prev, next);
+		}
+		return true;
 	}
 	
 	/**
@@ -184,18 +185,18 @@ public class AtomicVariableWidthArray implements Serializable {
 	public final int getAndSet(int i, int newValue) {
 		if (fullWidth) {
 			return array.getAndSet(i, newValue);
-		} else {
-			boolean success = false;
-			int index = getIndex(i);
-			int subIndex = getSubIndex(i);
-			int prev = 0;
-			while (!success) {
-				prev = array.get(index);
-				int next = pack(prev, newValue, subIndex);
-				success = array.compareAndSet(index, prev, next);
-			}
-			return unPack(prev, subIndex);
 		}
+
+		boolean success = false;
+		int index = getIndex(i);
+		int subIndex = getSubIndex(i);
+		int prev = 0;
+		while (!success) {
+			prev = array.get(index);
+			int next = pack(prev, newValue, subIndex);
+			success = array.compareAndSet(index, prev, next);
+		}
+		return unPack(prev, subIndex);
 	}
 	
 	private final int addAndGet(int i, int delta, boolean old) {
@@ -205,22 +206,22 @@ public class AtomicVariableWidthArray implements Serializable {
 			} else {
 				return array.addAndGet(i, delta);
 			}
-		} else {
-			boolean success = false;
-			int index = getIndex(i);
-			int subIndex = getSubIndex(i);
-			int prev = 0;
-			int prevValue = 0;
-			int newValue = 0;
-			while (!success) {
-				prev = array.get(index);
-				prevValue = unPack(prev, subIndex);
-				newValue = prevValue + delta;
-				int next = pack(prev, newValue, subIndex);
-				success = array.compareAndSet(index, prev, next);
-			}
-			return (old ? prevValue : newValue) & valueBitmask[0];
 		}
+
+		boolean success = false;
+		int index = getIndex(i);
+		int subIndex = getSubIndex(i);
+		int prev = 0;
+		int prevValue = 0;
+		int newValue = 0;
+		while (!success) {
+			prev = array.get(index);
+			prevValue = unPack(prev, subIndex);
+			newValue = prevValue + delta;
+			int next = pack(prev, newValue, subIndex);
+			success = array.compareAndSet(index, prev, next);
+		}
+		return (old ? prevValue : newValue) & valueBitmask[0];
 	}
 	
 	/**

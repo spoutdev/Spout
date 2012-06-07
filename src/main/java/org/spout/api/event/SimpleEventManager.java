@@ -105,11 +105,11 @@ public class SimpleEventManager implements EventManager {
 			clazz.getDeclaredMethod("getHandlerList");
 			return clazz;
 		} catch (NoSuchMethodException e) {
-			if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Event.class) && Event.class.isAssignableFrom(clazz.getSuperclass())) {
-				return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
-			} else {
+			if (clazz.getSuperclass() == null || clazz.getSuperclass().equals(Event.class) || !Event.class.isAssignableFrom(clazz.getSuperclass())) {
 				throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName());
 			}
+
+			return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
 		}
 	}
 
@@ -136,9 +136,10 @@ public class SimpleEventManager implements EventManager {
 			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
 				Spout.getEngine().getLogger().severe("Wrong method arguments used for event type registered");
 				continue;
-			} else {
-				eventClass = checkClass.asSubclass(Event.class);
 			}
+
+			eventClass = checkClass.asSubclass(Event.class);
+
 			method.setAccessible(true);
 			Set<ListenerRegistration> eventSet = ret.get(eventClass);
 			if (eventSet == null) {
@@ -156,9 +157,9 @@ public class SimpleEventManager implements EventManager {
 					} catch (InvocationTargetException e) {
 						if (e.getCause() instanceof EventException) {
 							throw (EventException)e.getCause();
-						} else {
-							throw new EventException(e.getCause());
 						}
+
+						throw new EventException(e.getCause());
 					} catch (Throwable t) {
 						throw new EventException(t);
 					}

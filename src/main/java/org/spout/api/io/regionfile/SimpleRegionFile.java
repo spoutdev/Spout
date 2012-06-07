@@ -243,14 +243,15 @@ public class SimpleRegionFile implements ByteArrayArray {
 	@Override
 	public boolean attemptClose() throws IOException {
 		refreshAccess();
-		if (this.numberBlocksLocked.compareAndSet(0, FILE_CLOSED)) {
-			synchronized(file) {
-				file.close();
-			}
-			return true;
-		} else {
+		if (!this.numberBlocksLocked.compareAndSet(0, FILE_CLOSED)) {
+			// Cannot close: either the file is already closed or there are still blocks locked.
 			return false;
 		}
+
+		synchronized(file) {
+			file.close();
+		}
+		return true;
 	}
 	
 	/**
@@ -295,9 +296,9 @@ public class SimpleRegionFile implements ByteArrayArray {
 	private int sizeToSegments(int size) {
 		if (size <= 0) {
 			return 0;
-		} else {
-			return ((size - 1) >> segmentSize) + 1;
 		}
+
+		return ((size - 1) >> segmentSize) + 1;
 	}
 	
 	/**

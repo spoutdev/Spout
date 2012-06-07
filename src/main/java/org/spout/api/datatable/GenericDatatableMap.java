@@ -75,9 +75,9 @@ public class GenericDatatableMap implements DatatableMap {
 	public void set(int key, DatatableObject value) {
 		if (stringmap.getString(key) == null) {
 			throw new IllegalArgumentException("Key " + key + " does not have a matching string");
-		} else {
-			setRaw(key, value);
 		}
+
+		setRaw(key, value);
 	}
 	
 	private void setRaw(int key, DatatableObject value) {
@@ -91,9 +91,9 @@ public class GenericDatatableMap implements DatatableMap {
 		DatatableObject value = map.get(intKey);
 		if (value == null) {
 			return niltype;
-		} else {
-			return value;
 		}
+
+		return value;
 	}
 
 	@Override
@@ -143,11 +143,11 @@ public class GenericDatatableMap implements DatatableMap {
 				int key = obj.hashCode() + 0;
 				if (!keyReplacement.contains(key)) {
 					throw new IOException("Unknown key when decompressing GenericDatatableMap");
-				} else {
-					int newKey = keyReplacement.get(key);
-					obj.setKey(newKey);
-					setRaw(newKey, obj);
 				}
+
+				int newKey = keyReplacement.get(key);
+				obj.setKey(newKey);
+				setRaw(newKey, obj);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

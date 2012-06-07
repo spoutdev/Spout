@@ -261,17 +261,17 @@ public class CommonPluginLoader implements PluginLoader {
 
 		if (cached != null) {
 			return cached;
-		} else {
-			for (String current : loaders.keySet()) {
-				CommonClassLoader loader = loaders.get(current);
+		}
 
-				try {
-					cached = loader.findClass(name, false);
-				} catch (ClassNotFoundException cnfe) {
-				}
-				if (cached != null) {
-					return cached;
-				}
+		for (String current : loaders.keySet()) {
+			CommonClassLoader loader = loaders.get(current);
+
+			try {
+				cached = loader.findClass(name, false);
+			} catch (ClassNotFoundException cnfe) {
+			}
+			if (cached != null) {
+				return cached;
 			}
 		}
 		return null;

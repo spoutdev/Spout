@@ -59,9 +59,9 @@ public class Inventory extends InventoryBase {
 		this.checkSlotRange(slot);
 		if (contents[slot] == null) {
 			return null;
-		} else {
-			return contents[slot].clone();
 		}
+
+		return contents[slot].clone();
 	}
 
 	@Override

@@ -153,36 +153,36 @@ public class MonitorableFuture<T> implements Future<T> {
 	public T get(long timeout, TimeUnit units) throws InterruptedException, TimeoutException {
 		if (timeout == 0) {
 			return get();
-		} else {
-			long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, units);
-
-			if (timeoutMillis == 0) {
-				timeoutMillis = 1;
-			}
-
-			long currentTime = System.currentTimeMillis();
-			long endTime = currentTime + timeoutMillis;
-
-			T result = null;
-
-			while (endTime > currentTime) {
-				if (!done.getAndSet(false)) {
-					synchronized (waiting) {
-						waiting.incrementAndGet();
-						try {
-							waiting.wait();
-						} finally {
-							waiting.decrementAndGet();
-						}
-					}
-				} else {
-					result = this.result.getAndSet(null);
-					return result;
-				}
-				currentTime = System.currentTimeMillis();
-			}
-			throw new TimeoutException("SimpleFuture timed out");
 		}
+
+		long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, units);
+
+		if (timeoutMillis == 0) {
+			timeoutMillis = 1;
+		}
+
+		long currentTime = System.currentTimeMillis();
+		long endTime = currentTime + timeoutMillis;
+
+		T result = null;
+
+		while (endTime > currentTime) {
+			if (!done.getAndSet(false)) {
+				synchronized (waiting) {
+					waiting.incrementAndGet();
+					try {
+						waiting.wait();
+					} finally {
+						waiting.decrementAndGet();
+					}
+				}
+			} else {
+				result = this.result.getAndSet(null);
+				return result;
+			}
+			currentTime = System.currentTimeMillis();
+		}
+		throw new TimeoutException("SimpleFuture timed out");
 	}
 
 	/**

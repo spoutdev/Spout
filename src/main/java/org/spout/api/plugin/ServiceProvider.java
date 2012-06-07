@@ -99,8 +99,8 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 	public int compareTo(ServiceProvider<?> other) {
 		if (priority.ordinal() == other.getPriority().ordinal()) {
 			return 0;
-		} else {
-			return priority.ordinal() < other.getPriority().ordinal() ? 1 : -1;
 		}
+
+		return priority.ordinal() < other.getPriority().ordinal() ? 1 : -1;
 	}
 }

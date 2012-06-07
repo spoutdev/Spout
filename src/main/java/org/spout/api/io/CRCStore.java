@@ -111,15 +111,15 @@ public class CRCStore {
 			if (cacheHit && (!timeExpired || notUpdated)) {
 				//System.out.println("Cached");
 				return crc;
-			} else {
-				crc = FileUtil.getCRC(in, buffer);
-				info = urlLastModified + ":" + crc;
-				synchronized (urlCRCStoreSync) {
-					urlCRCStore.set(key, info);
-					urlCRCStore.save();
-				}
-				return crc;
 			}
+
+			crc = FileUtil.getCRC(in, buffer);
+			info = urlLastModified + ":" + crc;
+			synchronized (urlCRCStoreSync) {
+				urlCRCStore.set(key, info);
+				urlCRCStore.save();
+			}
+			return crc;
 		} catch (IOException ioe) {
 			crc = FileUtil.getCRC(in, buffer);
 			synchronized (urlCRCStoreSync) {

@@ -159,9 +159,9 @@ public abstract class CuboidBuffer {
 	protected static int getIndex(CuboidBuffer source, int x, int y, int z) {
 		if (x < source.baseX || x >= source.topX || y < source.baseY || y >= source.topY || z < source.baseZ || z >= source.topZ) {
 			return -1;
-		} else {
-			return (y - source.baseY) * source.Yinc + (z - source.baseZ) * source.Zinc + (x - source.baseX) * source.Xinc;
 		}
+
+		return (y - source.baseY) * source.Yinc + (z - source.baseZ) * source.Zinc + (x - source.baseX) * source.Xinc;
 	}
 
 	protected CuboidBufferCopyRun getCopyRun(CuboidBuffer other) {

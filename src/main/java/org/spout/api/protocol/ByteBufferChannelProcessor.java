@@ -97,29 +97,29 @@ public class ByteBufferChannelProcessor extends CommonChannelProcessor {
 		}
 		return toCopy;
 	}
-	
+
 	private int stored() {
 		if (full) {
 			return internalBuffer.length;
-		} else {
-			if (writePointer >= readPointer) {
-				return writePointer - readPointer;
-			} else {
-				return internalBuffer.length - (readPointer - writePointer);
-			}
 		}
+
+		if (writePointer >= readPointer) {
+			return writePointer - readPointer;
+		}
+
+		return internalBuffer.length - (readPointer - writePointer);
 	}
-	
+
 	private int freeSpace() {
 		if (full) {
 			return 0;
-		} else {
-			if (writePointer >= readPointer) {
-				return internalBuffer.length - (writePointer - readPointer);
-			} else {
-				return readPointer - writePointer;
-			}
 		}
+
+		if (writePointer >= readPointer) {
+			return internalBuffer.length - (writePointer - readPointer);
+		}
+
+		return readPointer - writePointer;
 	}
 	
 }

@@ -285,9 +285,9 @@ public abstract class InventoryBase implements Serializable {
 		ItemStack item = this.getItem(slot);
 		if (item == null) {
 			return material == null;
-		} else {
-			return item.getMaterial().equals(material.getMaterial()) && item.getData() == material.getData();
 		}
+
+		return item.getMaterial().equals(material.getMaterial()) && item.getData() == material.getData();
 	}
 
 	/**
@@ -336,26 +336,26 @@ public abstract class InventoryBase implements Serializable {
 	 * @return True if the addition was successful, False if not
 	 */
 	public boolean addItem(ItemStack item, boolean toFirstOpenSlot) {
-		if (toFirstOpenSlot) {
-			ItemStack content;
-			for (int i = 0; i < this.getSize(); ++i) {
-				content = this.getItem(i);
-				if (content == null || content.isEmpty()) {
-					this.setItem(i, item.limitStackSize());
-				} else if (content.equalsIgnoreSize(item)) {
-					content.stack(item);
-					this.setItem(i, content);
-				} else {
-					continue;
-				}
-				if (item.isEmpty()) {
-					return true;
-				}
-			}
-			return false;
-		} else {
+		if (!toFirstOpenSlot) {
 			return this.addItem(item, true, true);
 		}
+
+		ItemStack content;
+		for (int i = 0; i < this.getSize(); ++i) {
+			content = this.getItem(i);
+			if (content == null || content.isEmpty()) {
+				this.setItem(i, item.limitStackSize());
+			} else if (content.equalsIgnoreSize(item)) {
+				content.stack(item);
+				this.setItem(i, content);
+			} else {
+				continue;
+			}
+			if (item.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -371,28 +371,27 @@ public abstract class InventoryBase implements Serializable {
 	public boolean addItem(ItemStack item, boolean stackItem, boolean toEmptySlot) {
 		if (stackItem && toEmptySlot) {
 			return this.addItem(item, true, false) || this.addItem(item, false, true);
-		} else {
-			ItemStack content;
-			for (int i = 0; i < this.getSize(); ++i) {
-				content = this.getItem(i);
-				if (stackItem) {
-					if (content == null || !content.equalsIgnoreSize(item)) {
-						continue;
-					}
-					content.stack(item);
-					this.setItem(i, content);
-				} else if (toEmptySlot) {
-					if (content != null && !content.isEmpty()) {
-						continue;
-					}
-					this.setItem(i, item.limitStackSize());
-				}
-				if (item.isEmpty()) {
-					return true;
-				}
-			}
-			return false;
 		}
+		ItemStack content;
+		for (int i = 0; i < this.getSize(); ++i) {
+			content = this.getItem(i);
+			if (stackItem) {
+				if (content == null || !content.equalsIgnoreSize(item)) {
+					continue;
+				}
+				content.stack(item);
+				this.setItem(i, content);
+			} else if (toEmptySlot) {
+				if (content != null && !content.isEmpty()) {
+					continue;
+				}
+				this.setItem(i, item.limitStackSize());
+			}
+			if (item.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

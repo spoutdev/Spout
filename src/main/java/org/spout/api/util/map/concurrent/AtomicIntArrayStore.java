@@ -314,11 +314,11 @@ public final class AtomicIntArrayStore {
 				if (fails > maxFails && maxFails > 0) {
 					unlock(lockedIndexes);
 					return false;
-				} else {
-					seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
-					if (seq == DatatableSequenceNumber.UNSTABLE) {
-						fails++;
-					}
+				}
+
+				seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
+				if (seq == DatatableSequenceNumber.UNSTABLE) {
+					fails++;
 				}
 			} while (seq == DatatableSequenceNumber.UNSTABLE);
 			lockedIndexes++;

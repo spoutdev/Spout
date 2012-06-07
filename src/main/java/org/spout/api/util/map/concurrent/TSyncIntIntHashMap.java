@@ -286,13 +286,13 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		lock.lock();
 		try {
 			TIntIntMap map = mapArray[m];
-			if (map.containsKey(key) && map.get(key) == value) {
-				totalKeys.decrementAndGet();
-				map.remove(key);
-				return true;
-			} else {
+			if (!map.containsKey(key) || map.get(key) != value) {
 				return false;
 			}
+
+			totalKeys.decrementAndGet();
+			map.remove(key);
+			return true;
 		} finally {
 			lock.unlock();
 		}

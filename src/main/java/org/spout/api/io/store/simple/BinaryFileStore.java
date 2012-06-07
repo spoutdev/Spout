@@ -72,36 +72,36 @@ public class BinaryFileStore extends MemoryStore<Integer> implements SimpleStore
 
 	@Override
 	public synchronized boolean save() {
-		if (dirty) {
-			boolean saved = true;
-			DataOutputStream out = null;
-			try {
-				out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-				Iterator<Entry<String, Integer>> itr = super.getEntrySet().iterator();
+		if (!dirty) {
+			return true;
+		}
 
-				while (itr.hasNext()) {
-					Entry<String, Integer> next = itr.next();
-					out.writeInt(next.getValue());
-					out.writeUTF(next.getKey());
+		boolean saved = true;
+		DataOutputStream out = null;
+		try {
+			out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+			Iterator<Entry<String, Integer>> itr = super.getEntrySet().iterator();
+
+			while (itr.hasNext()) {
+				Entry<String, Integer> next = itr.next();
+				out.writeInt(next.getValue());
+				out.writeUTF(next.getKey());
+			}
+		} catch (IOException ioe) {
+			saved = false;
+		} finally {
+			try {
+				if (out != null) {
+					out.close();
 				}
 			} catch (IOException ioe) {
 				saved = false;
-			} finally {
-				try {
-					if (out != null) {
-						out.close();
-					}
-				} catch (IOException ioe) {
-					saved = false;
-				}
-				if (saved) {
-					dirty = false;
-				}
 			}
-			return saved;
-		} else {
-			return true;
+			if (saved) {
+				dirty = false;
+			}
 		}
+		return saved;
 	}
 
 	@Override

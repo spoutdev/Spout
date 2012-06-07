@@ -167,32 +167,31 @@ public class SimpleRegionFileTest {
 		byte[] expected = dataCache[entry];
 		if (expected == null) {
 			return true;
-		} else {
-			//System.out.println("Checking entry " + entry);
-			DataInputStream in = new DataInputStream(srf.getInputStream(entry));
-			int i = 0;
-			boolean eof = false;
-			while (!eof) {
-				byte b;
-				try {
-					b = in.readByte();
-				} catch (EOFException e) {
-					eof = true;
-					continue;
-				}
-				if (i >= expected.length || b != expected[i++]) {
-					if (i >= expected.length) {
-						System.out.println("Failed due to wrong EOF");
-					} else {
-						System.out.println("Failed due to data mismatch at position " + i);
-					}
+		}
+		//System.out.println("Checking entry " + entry);
+		DataInputStream in = new DataInputStream(srf.getInputStream(entry));
+		for (int i = 0; ; ++i) {
+			final byte b;
+			try {
+				b = in.readByte();
+			} catch (EOFException e) {
+				if (i != expected.length) {
+					System.out.println("Failed due to to short data " + i + " != " + expected.length);
 					return false;
 				}
+
+				return true;
 			}
-			if (i != expected.length) {
-				System.out.println("Failed due to to short data " + i + " != " + expected.length);
+
+			if (i >= expected.length) {
+				System.out.println("Failed due to wrong EOF");
+				return false;
 			}
-			return i == expected.length;
+
+			if (b != expected[i]) {
+				System.out.println("Failed due to data mismatch at position " + i);
+				return false;
+			}
 		}
 	}
 

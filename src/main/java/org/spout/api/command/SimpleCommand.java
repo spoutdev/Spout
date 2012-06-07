@@ -279,21 +279,31 @@ public class SimpleCommand implements Command {
 
 	public Command getChild(String name, boolean fuzzyLookup) {
 		Command command = children.get(name);
-		if (command == null && fuzzyLookup) {
-			int minDistance = -1;
-			for (Map.Entry<String, Command> entry : children.entrySet()) {
-				int distance = StringUtil.getLevenshteinDistance(name, entry.getKey());
-				if (minDistance < 0 || distance < minDistance) {
-					command = entry.getValue();
-					minDistance = distance;
-				}
-			}
-			if (minDistance > 0 && minDistance < 2) {
-				return command;
-			} else {
-				return null;
+		if (command != null) {
+			return command;
+		}
+
+		if (!fuzzyLookup) {
+			return null;
+		}
+
+		int minDistance = -1;
+		for (Map.Entry<String, Command> entry : children.entrySet()) {
+			int distance = StringUtil.getLevenshteinDistance(name, entry.getKey());
+			if (minDistance < 0 || distance < minDistance) {
+				command = entry.getValue();
+				minDistance = distance;
 			}
 		}
+
+		if (minDistance <= 0) {
+			return null;
+		}
+
+		if (minDistance >= 2) {
+			return null;
+		}
+
 		return command;
 	}
 

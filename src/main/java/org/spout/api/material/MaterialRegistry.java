@@ -56,17 +56,17 @@ public abstract class MaterialRegistry {
 	 * Sets up the material registry for it's first use. May not be called more than once.
 	 */
 	public static StringMap setupRegistry() {
-		if (!setup) {
-			File serverItemMap = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "materials.dat");
-			store.setFile(serverItemMap);
-			if (serverItemMap.exists()) {
-				store.load();
-			}
-			setup = true;
-			return materialRegistry;
-		} else {
+		if (setup) {
 			throw new IllegalStateException("Can not setup material registry twice!");
 		}
+
+		File serverItemMap = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "materials.dat");
+		store.setFile(serverItemMap);
+		if (serverItemMap.exists()) {
+			store.load();
+		}
+		setup = true;
+		return materialRegistry;
 	}
 
 	/**
@@ -83,10 +83,10 @@ public abstract class MaterialRegistry {
 			int id = materialRegistry.register(material.getName());
 			if (!materialLookup[id].compareAndSet(null, material)) {
 				throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
-			} else {
-				nameLookup.put(material.getName().toLowerCase(), material);
-				return id;
 			}
+
+			nameLookup.put(material.getName().toLowerCase(), material);
+			return id;
 		}
 	}
 	
@@ -99,10 +99,10 @@ public abstract class MaterialRegistry {
 		materialRegistry.register(material.getName(), id);
 		if (!materialLookup[id].compareAndSet(null, material)) {
 			throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
-		} else {
-			nameLookup.put(material.getName().toLowerCase(), material);
-			return id;
 		}
+
+		nameLookup.put(material.getName().toLowerCase(), material);
+		return id;
 	}
 
 	/**
@@ -140,9 +140,9 @@ public abstract class MaterialRegistry {
 		Material material = materialLookup[id].get();
 		if (material == null) {
 			return null;
-		} else {
-			return material.getSubMaterial(BlockFullState.getData(packedState));
 		}
+
+		return material.getSubMaterial(BlockFullState.getData(packedState));
 	}
 
 	/**

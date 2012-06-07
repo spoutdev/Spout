@@ -77,10 +77,10 @@ public final class BiomeMap {
 	}
 
 	public int indexOf(Biome biome) {
-		if(map.reverseGet(biome) != null) {
-			return map.reverseGet(biome);
-		} else {
+		if(map.reverseGet(biome) == null) {
 			return -1;
 		}
+
+		return map.reverseGet(biome);
 	}
 }

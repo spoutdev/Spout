@@ -92,9 +92,9 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		} else {
-			buffer[index] = data;
 		}
+
+		buffer[index] = data;
 	}
 
 	@Override
@@ -102,9 +102,9 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		} else {
-			return buffer[index];
 		}
+
+		return buffer[index];
 	}
 
 	public short[] getRawArray() {

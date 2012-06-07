@@ -103,22 +103,23 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Serializable> T get(Object key, T defaultValue) {
-		if (key instanceof String) {
-			String keyString = (String)key;
-			T value;
-			try {
-				value = (T)map.get(keyString).get();
-			} catch (ClassCastException e) {
-				value = null;
-			}
-			if (value == null) {
-				return defaultValue;
-			} else {
-				return value;
-			}
-		} else {
+		if (!(key instanceof String)) {
 			return defaultValue;
 		}
+
+		final String keyString = (String) key;
+		final T value;
+		try {
+			value = (T)map.get(keyString).get();
+		} catch (ClassCastException e) {
+			return defaultValue;
+		}
+
+		if (value == null) {
+			return defaultValue;
+		}
+
+		return value;
 	}
 	
 	@Override
@@ -392,10 +393,12 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		if (!(obj instanceof DataMap)) {
 			return false;
 		}
+
 		DataMap other = (DataMap)obj;
 		if (isEmpty() && other.isEmpty()) {
 			return true;
 		}
+
 		for (Map.Entry<? extends String, ? extends Serializable> e : entrySet()) {
 			Serializable value = e.getValue();
 			Serializable otherValue = other.get(e.getKey());

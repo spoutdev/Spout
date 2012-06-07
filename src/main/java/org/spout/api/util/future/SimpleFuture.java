@@ -43,14 +43,19 @@ public class SimpleFuture<T> implements Future<T> {
 
 	@SuppressWarnings("unchecked")
 	public boolean setThrowable(Throwable t) {
-		if (throwable.compareAndSet(null, t) && resultRef.compareAndSet(null, (T)THROWABLE)) {
-			synchronized (resultRef) {
-				resultRef.notifyAll();
-			}
-			return true;
-		} else {
+		if (!throwable.compareAndSet(null, t)) {
 			return false;
 		}
+
+		if (!resultRef.compareAndSet(null, (T)THROWABLE)) {
+			return false;
+		}
+
+		synchronized (resultRef) {
+			resultRef.notifyAll();
+		}
+
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,14 +63,16 @@ public class SimpleFuture<T> implements Future<T> {
 		if (result == null) {
 			result = (T)NULL;
 		}
-		if (resultRef.compareAndSet(null, result)) {
-			synchronized (resultRef) {
-				resultRef.notifyAll();
-			}
-			return true;
-		} else {
+		
+		if (!resultRef.compareAndSet(null, result)) {
 			return false;
 		}
+		
+		synchronized (resultRef) {
+			resultRef.notifyAll();
+		}
+		
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,7 +100,6 @@ public class SimpleFuture<T> implements Future<T> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		boolean noTimeout = timeout <= 0;
@@ -109,26 +115,27 @@ public class SimpleFuture<T> implements Future<T> {
 		while (noTimeout || currentTime < endTime) {
 			synchronized (resultRef) {
 				T result = resultRef.get();
-				if (result == null) {
-					if (noTimeout) {
-						resultRef.wait();
-					} else {
-						resultRef.wait(endTime - currentTime);
-					}
-				} else {
+				if (result != null) {
 					if (result == NULL || result == CANCEL) {
 						return null;
-					} else if (result == (T)THROWABLE) {
+					}
+
+					if (result == THROWABLE) {
 						Throwable t = throwable.get();
 						throw new ExecutionException("Exception occured when trying to retrieve the result of this future", t);
-					} else {
-						return result;
 					}
+
+					return result;
+				}
+
+				if (noTimeout) {
+					resultRef.wait();
+				} else {
+					resultRef.wait(endTime - currentTime);
 				}
 			}
 			currentTime = System.currentTimeMillis();
 		}
 		throw new TimeoutException("Wait duration of " + (currentTime - (endTime - timeoutInMS)) + "ms exceeds timeout of " + timeout + unit.toString());
 	}
-
 }

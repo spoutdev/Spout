@@ -179,7 +179,7 @@ public class CommonPluginManager implements PluginManager {
 						safelyLog(Level.SEVERE, new StringBuilder().append("Unable to load '").append(file.getName()).append("' in directory '").append(paramFile.getPath()).append("': ").append(e.getMessage()).toString(), e);
 						iterator.remove();
 					} else {
-						plugin = null;
+						//plugin = null; // not needed - already null. The assignment above comes after the potential IOException.
 					}
 				} catch (InvalidDescriptionFileException e) {
 					safelyLog(Level.SEVERE, new StringBuilder().append("Unable to load '").append(file.getName()).append("' in directory '").append(paramFile.getPath()).append("': ").append(e.getMessage()).toString(), e);

@@ -50,24 +50,24 @@ public class DatatableSerializable extends DatatableObject {
 		Serializable value = super.get();
 		if (value instanceof ByteArrayWrapper) {
 			return ((ByteArrayWrapper)value).getArray();
-		} else {
-			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-
-			try {
-				ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-
-				objOut.writeObject(super.get());
-				objOut.flush();
-				objOut.close();
-			} catch (IOException e) {
-				if (Spout.debugMode()) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			return byteOut.toByteArray();
 		}
+
+		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+
+		try {
+			ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
+
+			objOut.writeObject(super.get());
+			objOut.flush();
+			objOut.close();
+		} catch (IOException e) {
+			if (Spout.debugMode()) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		return byteOut.toByteArray();
 	}
 
 	@Override
@@ -79,32 +79,29 @@ public class DatatableSerializable extends DatatableObject {
 	public Serializable get() {
 		while (true) {
 			Serializable s = super.get();
-			if (s instanceof ByteArrayWrapper) {
-				try {
-					ByteArrayWrapper w = (ByteArrayWrapper)s;
-					ObjectInputStream inObj = new ObjectInputStream(new ByteArrayInputStream(w.getArray()));
-					Object o;
-					try {
-						o = inObj.readObject();
-					} finally {
-						// Overkill
-						inObj.close();
-					}
-					Serializable deserialized = (Serializable)o;
-					if (super.compareAndSet(s, deserialized)) {
-						return deserialized;
-					} else {
-						continue;
-					}
-				} catch (IOException e) {
-					return null;
-				} catch (ClassNotFoundException e) {
-					return null;
-				} catch (ClassCastException e) {
-					return null;
-				}
-			} else {
+			if (!(s instanceof ByteArrayWrapper)) {
 				return super.get();
+			}
+			try {
+				ByteArrayWrapper w = (ByteArrayWrapper)s;
+				ObjectInputStream inObj = new ObjectInputStream(new ByteArrayInputStream(w.getArray()));
+				Object o;
+				try {
+					o = inObj.readObject();
+				} finally {
+					// Overkill
+					inObj.close();
+				}
+				Serializable deserialized = (Serializable)o;
+				if (super.compareAndSet(s, deserialized)) {
+					return deserialized;
+				}
+			} catch (IOException e) {
+				return null;
+			} catch (ClassNotFoundException e) {
+				return null;
+			} catch (ClassCastException e) {
+				return null;
 			}
 		}
 	}
@@ -123,9 +120,9 @@ public class DatatableSerializable extends DatatableObject {
 		Serializable s = super.get();
 		if (s == null) {
 			return false;
-		} else {
-			return s instanceof ByteArrayWrapper;
 		}
+
+		return s instanceof ByteArrayWrapper;
 	}
 	
 	private static class ByteArrayWrapper implements Serializable {

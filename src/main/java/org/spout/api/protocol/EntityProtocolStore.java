@@ -76,9 +76,9 @@ public class EntityProtocolStore {
 			}
 			if (protocols[id] != null) {
 				throw new IllegalStateException("Entity protocol id " + id + " used more than once");
-			} else {
-				protocols[id] = protocol;
 			}
+
+			protocols[id] = protocol;
 		} finally {
 			lock.writeUnlock(seq);
 		}

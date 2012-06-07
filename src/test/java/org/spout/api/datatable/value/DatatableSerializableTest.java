@@ -122,20 +122,21 @@ public class DatatableSerializableTest {
 		for (int i = 0; i < buf.length; i++) {
 			if (i + oldArray.length > buf.length) {
 				return false;
-			} else {
-				boolean match = true;
-				for (int j = 0; j < oldArray.length; j++) {
-					if (buf[i + j] != oldArray[j]) {
-						match = false;
-						break;
-					}
+			}
+
+			boolean match = true;
+			for (int j = 0; j < oldArray.length; j++) {
+				if (buf[i + j] != oldArray[j]) {
+					match = false;
+					break;
 				}
-				if (match) {
-					for (int j = 0; j < oldArray.length; j++) {
-						buf[i + j] = newArray[j];
-					}
-					return true;
-				} 
+			}
+
+			if (match) {
+				for (int j = 0; j < oldArray.length; j++) {
+					buf[i + j] = newArray[j];
+				}
+				return true;
 			}
 		}
 		return false;

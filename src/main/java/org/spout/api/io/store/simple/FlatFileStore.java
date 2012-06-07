@@ -64,16 +64,17 @@ public class FlatFileStore<T> extends MemoryStore<T> implements SimpleStore<T> {
 
 	@Override
 	public synchronized boolean save() {
-		if (dirty) {
-			Collection<String> strings = getStrings();
-			boolean saved = FileUtil.stringToFile(strings, file);
-			if (saved) {
-				dirty = false;
-			}
-			return saved;
-		} else {
+		if (!dirty) {
 			return true;
 		}
+
+		Collection<String> strings = getStrings();
+		boolean saved = FileUtil.stringToFile(strings, file);
+		if (saved) {
+			dirty = false;
+		}
+
+		return saved;
 	}
 
 	@Override

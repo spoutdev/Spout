@@ -107,14 +107,14 @@ public class Transform implements Serializable{
 	 */
 	@Threadsafe
 	public boolean set(Transform transform) {
-		if (transform != null) {
-			setPosition(transform.position);
-			setRotation(transform.rotation);
-			setScale(transform.scale);
-			return true;
-		} else {
+		if (transform == null) {
 			return false;
 		}
+
+		setPosition(transform.position);
+		setRotation(transform.rotation);
+		setScale(transform.scale);
+		return true;
 	}
 
 	/**
@@ -181,14 +181,10 @@ public class Transform implements Serializable{
 	@Threadsafe
 	public Transform getAbsolutePosition() {
 		if (parent == null) {
-			Transform r = copy();
-			return r;
-		} else {
-			Transform r = createSum(parent.getAbsolutePosition());
-			return r;
-
+			return copy();
 		}
 
+		return createSum(parent.getAbsolutePosition());
 	}
 
 	/**
@@ -206,7 +202,6 @@ public class Transform implements Serializable{
 		t.setParent(parent);
 
 		return t;
-
 	}
 
 	/**

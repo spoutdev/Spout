@@ -55,27 +55,27 @@ public class OptimisticReadWriteLock {
 		int seq;
 		if ((seq = tryReadLock()) != UNSTABLE) {
 			return seq;
-		} else {
-			synchronized (this) {
-				boolean interrupted = false;
-				waiting.incrementAndGet();
-				try {
-					while (true) {
-						if ((seq = tryReadLock()) != UNSTABLE) {
-							if (interrupted) {
-								Thread.currentThread().interrupt();
-							}
-							return seq;
+		}
+
+		synchronized (this) {
+			boolean interrupted = false;
+			waiting.incrementAndGet();
+			try {
+				while (true) {
+					if ((seq = tryReadLock()) != UNSTABLE) {
+						if (interrupted) {
+							Thread.currentThread().interrupt();
 						}
-						try {
-							wait();
-						} catch (InterruptedException ie) {
-							interrupted = true;
-						}
+						return seq;
 					}
-				} finally {
-					waiting.decrementAndGet();
+					try {
+						wait();
+					} catch (InterruptedException ie) {
+						interrupted = true;
+					}
 				}
+			} finally {
+				waiting.decrementAndGet();
 			}
 		}
 	}
@@ -92,9 +92,9 @@ public class OptimisticReadWriteLock {
 	public boolean readUnlock(int sequence) {
 		if (sequence == UNSTABLE) {
 			throw new IllegalArgumentException("UNSTABLE sequence number passed to readUnlock");
-		} else {
-			return this.sequence.compareAndSet(sequence, sequence);
 		}
+
+		return this.sequence.compareAndSet(sequence, sequence);
 	}
 
 	/**
@@ -114,27 +114,27 @@ public class OptimisticReadWriteLock {
 		int seq;
 		if ((seq = tryWriteLock()) != UNSTABLE) {
 			return seq;
-		} else {
-			synchronized (this) {
-				boolean interrupted = false;
-				waiting.incrementAndGet();
-				try {
-					while (true) {
-						if ((seq = tryWriteLock()) != UNSTABLE) {
-							if (interrupted) {
-								Thread.currentThread().interrupt();
-							}
-							return seq;
+		}
+
+		synchronized (this) {
+			boolean interrupted = false;
+			waiting.incrementAndGet();
+			try {
+				while (true) {
+					if ((seq = tryWriteLock()) != UNSTABLE) {
+						if (interrupted) {
+							Thread.currentThread().interrupt();
 						}
-						try {
-							wait();
-						} catch (InterruptedException ie) {
-							interrupted = true;
-						}
+						return seq;
 					}
-				} finally {
-					waiting.decrementAndGet();
+					try {
+						wait();
+					} catch (InterruptedException ie) {
+						interrupted = true;
+					}
 				}
+			} finally {
+				waiting.decrementAndGet();
 			}
 		}
 	}

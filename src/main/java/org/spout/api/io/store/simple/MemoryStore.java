@@ -84,9 +84,8 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		T value = get(key);
 		if (value == null) {
 			return def;
-		} else {
-			return value;
 		}
+		return value;
 	}
 
 	public synchronized T remove(String key) {
@@ -110,11 +109,15 @@ public class MemoryStore<T> implements SimpleStore<T> {
 	}
 
 	public synchronized boolean setIfAbsent(String key, T value) {
-		if (map.get(key) != null || reverseMap.get(value) != null) {
+		if (map.get(key) != null) {
 			return false;
-		} else {
-			set(key, value);
-			return true;
 		}
+
+		if (reverseMap.get(value) != null) {
+			return false;
+		}
+
+		set(key, value);
+		return true;
 	}
 }

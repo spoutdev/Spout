@@ -40,14 +40,14 @@ import org.spout.api.util.list.ByteCircularBufferFIFO;
  * Rest:         5 bytes
  */
 public class VarInt {
-	
 	public static void writeString(OutputStream buf, String data) throws IOException {
 		if (data == null) {
 			writeInt(buf, -1);
 			return;
-		} else {
-			writeInt(buf, data.length());
 		}
+
+		writeInt(buf, data.length());
+
 		for (int i = 0; i < data.length(); i++) {
 			writeInt(buf, data.charAt(i) & 0xFF);
 		}
@@ -88,6 +88,7 @@ public class VarInt {
 		if (length == -1) {
 			return null;
 		}
+
 		char[] data = new char[length];
 		for (int i = 0; i < length; i++) {
 			data[i] = (char)readInt(buf);
@@ -102,23 +103,24 @@ public class VarInt {
 			throw new IllegalStateException("FIFO is empty when trying to read integer");
 		}
 
-		int data = 0;
 		if (b1 == 255) {
 			byte[] arr = new byte[4];
 			if (buf.read(arr) != 4) {
 				throw new IllegalStateException("FIFO ran out of bytes when trying to read integer");
 			}
+
+			int data = 0;
 			data |= (arr[0] & 0xFF) << 24;
 			data |= (arr[1] & 0xFF) << 16;
 			data |= (arr[2] & 0xFF) << 8;
 			data |= (arr[3] & 0xFF) << 0;
+			return data;
 		} else if ((b1 & 0x80) == 0x80) {
 			int b2 = buf.read();
 			return ((b1 << 8) | (b2 & 0xFF)) & 0x7FFF;
 		} else {
 			return b1;
 		}
-		return data;
 	}
 	
 	public static int readInt(InputStream buf) throws IOException {

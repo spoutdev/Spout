@@ -70,9 +70,9 @@ public class OutwardIteratorTest {
 	private void add(IntVector3 v) {
 		if (v.getX() < 0 || v.getX() >= SIZE || v.getY() < 0 || v.getY() >= SIZE || v.getZ() < 0 || v.getZ() >= SIZE) {
 			return;
-		} else {
-			assertFalse("Coordinate hit more than once " + v, (hits[v.getX()][v.getY()][v.getZ()]++) > 0);
 		}
+
+		assertFalse("Coordinate hit more than once " + v, (hits[v.getX()][v.getY()][v.getZ()]++) > 0);
 	}
 	
 	private boolean check() {

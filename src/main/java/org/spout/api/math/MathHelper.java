@@ -428,12 +428,12 @@ public class MathHelper {
 
 		if (o instanceof Number) {
 			return ((Number) o).floatValue();
-		} else {
-			try {
-				return Float.valueOf(o.toString());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		}
+
+		try {
+			return Float.valueOf(o.toString());
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 
@@ -450,12 +450,12 @@ public class MathHelper {
 
 		if (o instanceof Number) {
 			return ((Number)o).byteValue();
-		} else {
-			try {
-				return Byte.valueOf(o.toString());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		}
+
+		try {
+			return Byte.valueOf(o.toString());
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 
@@ -472,12 +472,12 @@ public class MathHelper {
 
 		if (o instanceof Number) {
 			return ((Number)o).shortValue();
-		} else {
-			try {
-				return Short.valueOf(o.toString());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		}
+
+		try {
+			return Short.valueOf(o.toString());
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 
@@ -494,12 +494,12 @@ public class MathHelper {
 
 		if (o instanceof Number) {
 			return ((Number)o).intValue();
-		} else {
-			try {
-				return Integer.valueOf(o.toString());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		}
+
+		try {
+			return Integer.valueOf(o.toString());
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 
@@ -516,12 +516,12 @@ public class MathHelper {
 
 		if (o instanceof Number) {
 			return ((Number)o).doubleValue();
-		} else {
-			try {
-				return Double.valueOf(o.toString());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		}
+
+		try {
+			return Double.valueOf(o.toString());
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 
@@ -538,12 +538,12 @@ public class MathHelper {
 
 		if (o instanceof Number) {
 			return ((Number)o).longValue();
-		} else {
-			try {
-				return Long.valueOf(o.toString());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		}
+
+		try {
+			return Long.valueOf(o.toString());
+		} catch (NumberFormatException e) {
+			return null;
 		}
 	}
 

@@ -312,13 +312,13 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		lock.lock();
 		try {
 			V current = mapArray[m].get(key);
-			if (current == value) {
-				totalKeys.decrementAndGet();
-				mapArray[m].remove(key);
-				return true;
-			} else {
+			if (current != value) {
 				return false;
 			}
+
+			totalKeys.decrementAndGet();
+			mapArray[m].remove(key);
+			return true;
 		} finally {
 			lock.unlock();
 		}

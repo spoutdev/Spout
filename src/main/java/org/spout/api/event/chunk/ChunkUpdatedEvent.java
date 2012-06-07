@@ -59,12 +59,11 @@ public class ChunkUpdatedEvent extends ChunkEvent{
 	 * @return number of blocks, or -1 if whole chunk invalidated (or, equivalently, too many blocks)
 	 */
 	public int getBlockUpdateCount() {
-		if (blocks != null) {
-			return blocks.size();
-		}
-		else {
+		if (blocks == null) {
 			return -1;
 		}
+
+		return blocks.size();
 	}
 	/**
 	 * Get chunk-relative coordinates of Nth updated block

@@ -147,9 +147,9 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 	public CompoundMap getNBTData() {
 		if (nbtData == null) {
 			return null;
-		} else {
-			return new CompoundMap(nbtData);
 		}
+
+		return new CompoundMap(nbtData);
 	}
 
 	/**
@@ -268,21 +268,21 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 	 * @return True if stacking was successful, False otherwise
 	 */
 	public boolean stack(ItemStack item) {
-		if (this.equalsIgnoreSize(item)) {
-			final int maxsize = this.getMaxStackSize();
-			final int combinedSize = this.getAmount() + item.getAmount();
-			if (combinedSize <= maxsize) {
-				this.setAmount(combinedSize);
-				item.setAmount(0);
-				return true;
-			} else {
-				this.setAmount(maxsize);
-				item.setAmount(combinedSize - maxsize);
-				return false;
-			}
-		} else {
+		if (!this.equalsIgnoreSize(item)) {
 			return false;
 		}
+
+		final int maxsize = this.getMaxStackSize();
+		final int combinedSize = this.getAmount() + item.getAmount();
+		if (combinedSize > maxsize) {
+			this.setAmount(maxsize);
+			item.setAmount(combinedSize - maxsize);
+			return false;
+		}
+
+		this.setAmount(combinedSize);
+		item.setAmount(0);
+		return true;
 	}
 	
 	/**

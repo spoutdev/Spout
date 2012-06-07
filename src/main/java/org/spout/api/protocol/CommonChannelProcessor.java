@@ -80,12 +80,12 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 				
 			}
 		}
-		if (consumedBuffers != null) {
-			consumedBuffers.add(channelBuffer);
-			return ChannelBuffers.wrappedBuffer(consumedBuffers.toArray(DUMMY_ARRAY));
-		} else {
+		if (consumedBuffers == null) {
 			return channelBuffer;
 		}
+
+		consumedBuffers.add(channelBuffer);
+		return ChannelBuffers.wrappedBuffer(consumedBuffers.toArray(DUMMY_ARRAY));
 	}
 	
 	/**

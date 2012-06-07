@@ -157,12 +157,12 @@ public class ScreenStack extends SignalSubscriberObject implements Renderable, K
 	 * @return the main screen
 	 */
 	public FullScreen getMainScreen() {
-		if (screens.getLast() instanceof FullScreen || screens.getLast() == null) {
-			return (FullScreen) screens.getLast();
-		} else {
+		if (!(screens.getLast() instanceof FullScreen) && screens.getLast() != null) {
 			//Should never happen
 			throw new IllegalStateException("Main Screen is not a FullScreen");
 		}
+
+		return (FullScreen) screens.getLast();
 	}
 
 	private void recalculate() {
