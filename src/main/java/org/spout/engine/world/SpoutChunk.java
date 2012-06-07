@@ -820,6 +820,10 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void populate(boolean force) {
+		if (!force && observers.getLive().size() <= 0 && observers.get().size() <= 0) {
+			return;
+		}
+
 		if (this.populated.getAndSet(true) && !force) {
 			return;
 		}
