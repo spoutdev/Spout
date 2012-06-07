@@ -321,7 +321,7 @@ public class SpoutRegion extends Region{
 		WorldGenerator generator = getWorld().getGenerator();
 		BiomeManager manager = generator.generate(buffer, x, y, z);
 
-		return new FilteredChunk(getWorld(), this, x, y, z, buffer.getRawArray(), manager, (DataMap)buffer.getDataMap());
+		return new FilteredChunk(getWorld(), this, x, y, z, buffer.getRawArray(), manager, buffer.getDataMap());
 	}
 
 	/**
@@ -347,7 +347,7 @@ public class SpoutRegion extends Region{
 				e.kill();
 			}
 
-			((SpoutChunk) currentChunk).setUnloaded();
+			currentChunk.setUnloaded();
 
 			occupiedChunksQueue.remove(currentChunk);
 			occupiedChunks.remove(currentChunk);
@@ -508,7 +508,7 @@ public class SpoutRegion extends Region{
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
 		boolean empty = false;
-		SpoutChunk c = (SpoutChunk) getChunk(x, y, z, LoadOption.NO_LOAD);
+		SpoutChunk c = getChunk(x, y, z, LoadOption.NO_LOAD);
 		if (c != null) {
 			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
 			if (oldState.isSave()) {

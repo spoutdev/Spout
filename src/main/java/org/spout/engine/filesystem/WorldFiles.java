@@ -518,7 +518,7 @@ public class WorldFiles {
 	}
 
 	private static ListTag<CompoundTag> saveDynamicUpdates(SpoutChunk c) {
-		List<DynamicBlockUpdate> updates = ((SpoutRegion) c.getRegion()).getDynamicBlockUpdates(c);
+		List<DynamicBlockUpdate> updates = c.getRegion().getDynamicBlockUpdates(c);
 
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 

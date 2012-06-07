@@ -755,7 +755,7 @@ public class SpoutChunk extends Chunk {
 	public boolean canSend() {
 		boolean canSend = this.isPopulated() && !this.isCalculatingLighting();
 		if (!canSend && !isPopulated() && this.observers.get().size() > 0 && this.observers.getLive().size() > 0) {
-			((SpoutRegion) parentRegion).queueChunkForPopulation(this);
+			parentRegion.queueChunkForPopulation(this);
 		}
 		return canSend;
 	}

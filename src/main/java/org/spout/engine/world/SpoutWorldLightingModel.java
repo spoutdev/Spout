@@ -61,7 +61,7 @@ public class SpoutWorldLightingModel {
 			if (Spout.debugMode()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("[debug] Finished processing ").append(this.changes).append(sky ? " sky" : " block");
-				builder.append(" lighting operations in ").append(((double) processTime / 1E6D)).append(" ms");
+				builder.append(" lighting operations in ").append(processTime / 1E6D).append(" ms");
 				System.out.println(builder);
 			}
 			this.changes = 0;
