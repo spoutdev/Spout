@@ -26,6 +26,7 @@
  */
 package org.spout.engine.protocol;
 
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
@@ -41,10 +42,14 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.PlayerProtocol;
@@ -115,6 +120,12 @@ public final class SpoutSession implements Session {
 	 * @todo Probably add to SpoutAPI
 	 */
 	private boolean isConnected = false;
+	
+	/**
+	 * Data map and Datatable associated with it
+	 */
+	private final DatatableMap datatableMap;
+	private final DataMap dataMap;
 
 	/**
 	 * Creates a new session.
@@ -127,6 +138,8 @@ public final class SpoutSession implements Session {
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		this.bootstrapProtocol = bootstrapProtocol;
 		isConnected = true;
+		this.datatableMap = new GenericDatatableMap();;
+		this.dataMap = new DataMap(this.datatableMap);
 	}
 
 	/**
@@ -370,5 +383,10 @@ public final class SpoutSession implements Session {
 	@Override
 	public boolean isConnected() {
 		return channel.isOpen();
+	}
+	
+	@Override
+	public DefaultedMap<String, Serializable> getDataMap() {
+		return dataMap;
 	}
 }
