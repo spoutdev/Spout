@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
@@ -58,13 +57,13 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
 
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.util.NBTMapper;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
@@ -108,7 +107,7 @@ public class WorldFiles {
 		worldTags.put(new StringTag("generator", generatorName));
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
-		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDataMap()).getRawMap().compress())); //TODO this tag is named wrong but changing it corrupts worlds...
+		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDataMap()).getRawMap().compress()));
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
 		worldTags.put(new ListTag<FloatTag>("spawn_position", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
@@ -143,7 +142,7 @@ public class WorldFiles {
 				CompoundMap map = dataTag.getValue();
 
 				byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), WORLD_VERSION);
-				switch (version) {
+				switch (version) {                                                          
 					case 1:
 						world = loadVersionOne(name, generator, global, map);
 						break;
