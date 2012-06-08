@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 
 import static org.jboss.netty.channel.Channels.write;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -36,14 +37,19 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-public abstract class PostprocessEncoder extends OneToOneEncoder {
+public abstract class PostprocessEncoder extends OneToOneEncoder implements ProcessorHandler {
 	
-	private final AtomicReference<ChannelProcessor> postProcessor = new AtomicReference<ChannelProcessor>();
+	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<ChannelProcessor>();
+	private final AtomicBoolean locked = new AtomicBoolean(false);
 
 	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
 		
-		ChannelProcessor processor = postProcessor.get();
+		if (locked.get()) {
+			throw new IllegalStateException("Encode attempted when channel was locked");
+		}
+		
+		ChannelProcessor processor = this.processor.get();
 		if (processor == null || !(evt instanceof MessageEvent)) {
 			super.handleDownstream(ctx, evt);
 		} else {
@@ -58,7 +64,27 @@ public abstract class PostprocessEncoder extends OneToOneEncoder {
 				}
 				write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
 			}
+			if (originalMessage instanceof ProcessorSetupMessage) {
+				ProcessorSetupMessage setupMessage = (ProcessorSetupMessage) originalMessage;
+				ChannelProcessor newProcessor = setupMessage.getProcessor();
+				if (newProcessor != null) {
+					setProcessor(newProcessor);
+				}
+				if (setupMessage.isChannelLocking()) {
+					locked.set(true);
+				}
+				setupMessage.setProcessorHandler(this);
+			}
 		}
     }
+	
+	public void setProcessor(ChannelProcessor processor) {
+		if (processor == null) {
+			throw new IllegalArgumentException("Processor may not be set to null");
+		} else if (!this.processor.compareAndSet(null, processor)){
+			throw new IllegalArgumentException("Processor may only be set once");
+		}
+		locked.set(false);
+	}
 	
 }

@@ -107,8 +107,6 @@ public class PreprocessReplayingDecoderTest {
 
 			};
 			
-			System.out.println("Sending: " + buf.readableBytes() + " " + i);
-
 			p.messageReceived(fake, e);
 		}
 
@@ -183,7 +181,7 @@ public class PreprocessReplayingDecoderTest {
 				this.setProcessor(new NegatingProcessor(512));
 				breakOccured = true;
 			}
-
+			
 			return buf;
 		}
 

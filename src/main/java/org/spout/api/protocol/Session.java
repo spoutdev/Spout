@@ -150,6 +150,12 @@ public interface Session {
 		 * client to send its identification packet.
 		 */
 		EXCHANGE_IDENTIFICATION,
+		
+		/**
+		 * In the exchange encryption state, the server is waiting for the
+		 * client to send its encryption response packet.
+		 */
+		EXCHANGE_ENCRYPTION,
 
 		/**
 		 * In the game state the session has an associated player.

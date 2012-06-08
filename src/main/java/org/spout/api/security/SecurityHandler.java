@@ -35,6 +35,9 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.spout.api.Spout;
 
@@ -63,6 +66,21 @@ public class SecurityHandler {
 	
 	public Provider getProvider() {
 		return provider;
+	}
+	
+	public Cipher getCipher(String transformation) {
+		if (provider == null) {
+			return null;
+		} else {
+			try {
+				return Cipher.getInstance(transformation, provider);
+			} catch (NoSuchAlgorithmException e) {
+				Spout.getLogger().info("Unable to find algorithm " + transformation);
+			} catch (NoSuchPaddingException e) {
+				Spout.getLogger().info("Padding not found");
+			}
+			return null;
+		}
 	}
 
 	public KeyPair getKeyPair(String algorithm) {

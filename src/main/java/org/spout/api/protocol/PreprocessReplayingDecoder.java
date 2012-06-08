@@ -28,6 +28,8 @@ package org.spout.api.protocol;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.CompositeChannelBuffer;
@@ -37,18 +39,16 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.spout.api.protocol.replayable.ReplayableChannelBuffer;
 import org.spout.api.protocol.replayable.ReplayableError;
 
-public abstract class PreprocessReplayingDecoder extends FrameDecoder {
+public abstract class PreprocessReplayingDecoder extends FrameDecoder implements ProcessorHandler {
 
 	private final int capacity;
-	private ChannelProcessor processor = null;
+	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<ChannelProcessor>();
+	private final AtomicBoolean locked = new AtomicBoolean(false);
 
 	private final ReplayableChannelBuffer replayableBuffer = new ReplayableChannelBuffer();
 
 	private ChannelBuffer processedBuffer = null;
 	private List<Object> frames = new LinkedList<Object>();
-	
-	int total = 0;
-	int processedOut = 0;
 	
 	/**
 	 * Constructs a new replaying decoder.<br>
@@ -72,9 +72,15 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder {
 			throw new IllegalStateException("Empty buffer sent to decode()");
 		}
 		
+		if (locked.get()) {
+			throw new IllegalStateException("Decode attempted when channel was locked");
+		}
+		
 		frames.clear();
 		Object lastFrame = null;
 		Object newFrame = null;
+		
+		ChannelProcessor processor = this.processor.get();
 
 		ChannelBuffer liveBuffer;
 		do {
@@ -91,17 +97,13 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder {
 			int readPointer = liveBuffer.readerIndex();
 			try {
 				newFrame = decodeProcessed(ctx, c, replayableBuffer.setBuffer(liveBuffer));
-				if (newFrame != null) {
-					int outputLength = ((byte[])newFrame).length;
-					processedOut += outputLength;
-				}
 			} catch (ReplayableError e) {
 				// roll back liveBuffer read to state prior to calling decodeProcessed
 				liveBuffer.readerIndex(readPointer);
 				// No frame returned
 				newFrame = null;
 			}
-
+			
 			if (newFrame != null) {
 				if (lastFrame == null) {
 					lastFrame = newFrame;
@@ -109,8 +111,20 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder {
 					frames.add(lastFrame);
 					lastFrame = newFrame;
 				}
+				if (newFrame instanceof ProcessorSetupMessage) {
+					ProcessorSetupMessage setupMessage = (ProcessorSetupMessage) newFrame;
+					ChannelProcessor newProcessor = setupMessage.getProcessor();
+					if (newProcessor != null) {
+						setProcessor(newProcessor);
+					}
+					if (setupMessage.isChannelLocking()) {
+						locked.set(true);
+					}
+					setupMessage.setProcessorHandler(this);
+				}
+				processor = this.processor.get();
 			}
-		} while (newFrame != null);
+		} while (newFrame != null && !locked.get());
 
 		if (processedBuffer != null) {
 			if (processedBuffer instanceof CompositeChannelBuffer || (processedBuffer.capacity() > capacity && processedBuffer.writable())) {
@@ -133,20 +147,14 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder {
 		}
 	}
 
-	/**
-	 * Sets the processor to be used to preprocess the packets<br>
-	 * <br>
-	 * This method must be called just before returning from the decodeProcessed method
-	 * @param processor
-	 */
+	@Override
 	public void setProcessor(ChannelProcessor processor) {
-		if (this.processor != null) {
-			throw new IllegalArgumentException("Processor may only be set once");
-		} else if (processor == null) {
+		if (processor == null) {
 			throw new IllegalArgumentException("Processor may not be set to null");
-		} else {
-			this.processor = processor;
+		} else if (!this.processor.compareAndSet(null, processor)){
+			throw new IllegalArgumentException("Processor may only be set once");
 		}
+		locked.set(false);
 	}
 
 	/**
