@@ -42,7 +42,7 @@ import org.spout.nbt.Tag;
 /**
  * Utility class to map out complex objects into NBT structures vice-versa.
  */
-public class SpoutNBTMapper {
+public class NBTMapper {
 	/**
 	 * This method takes a list and constructs a transform from it.
 	 * @param list the list of floats representing a transform.

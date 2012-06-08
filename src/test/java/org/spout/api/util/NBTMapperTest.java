@@ -38,7 +38,7 @@ import org.spout.nbt.ListTag;
 
 import static junit.framework.Assert.assertEquals;
 
-public class SpoutNBTMapperTest {
+public class NBTMapperTest {
 	@Test
 	public void transformTest() {
 		ArrayList<FloatTag> list = new ArrayList<FloatTag>();
