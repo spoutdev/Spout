@@ -26,6 +26,7 @@
  */
 package org.spout.api.util;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.junit.Test;
@@ -33,19 +34,21 @@ import org.junit.Test;
 import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.nbt.FloatTag;
+import org.spout.nbt.ListTag;
 
 import static junit.framework.Assert.assertEquals;
 
 public class SpoutNBTMapperTest {
 	@Test
 	public void transformTest() {
-		LinkedList<FloatTag> list = new LinkedList<FloatTag>();
+		ArrayList<FloatTag> list = new ArrayList<FloatTag>();
 		FloatTag test = new FloatTag("test", 1f);
 		FloatTag test2 = new FloatTag("test2", 2f);
 		list.add(test);
 		list.add(test2);
-		float ftest = SafeCast.toFloat(list.get(0).getValue(), 3f);
-		float ftest2 = SafeCast.toFloat(list.get(1).getValue(), 4f);
+		ListTag<FloatTag> testList = new ListTag<FloatTag>("test_transform", FloatTag.class, list);
+		float ftest = SafeCast.toFloat(testList.getValue().get(0).getValue(), 3f);
+		float ftest2 = SafeCast.toFloat(testList.getValue().get(1).getValue(), 4f);
 		System.out.println("Safe cast of first test tag returned: " + ftest);
 		System.out.println("Safe cast of second test tag returned: " + ftest2);
 		assertEquals(test.getValue(), ftest);
