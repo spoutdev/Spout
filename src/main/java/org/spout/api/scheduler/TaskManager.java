@@ -85,10 +85,9 @@ public interface TaskManager {
 	 * 
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
-	 * @param priority the priority of the task
 	 * @return the task id of the task
 	 */
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority);
+	public int scheduleAsyncTask(Object plugin, Runnable task);
 	
 	/**
 	 * Schedules a once off task to occur after a delay.  This task will be
