@@ -146,12 +146,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	}
 
-	/*	@Override
-		public boolean registerRecipe(Recipe recipe) {
-			// TODO Auto-generated method stub
-			return false;
-		}*/
-
 	@Override
 	public boolean allowFlight() {
 		return allowFlight;
