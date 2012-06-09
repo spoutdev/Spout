@@ -508,8 +508,8 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
-		return taskManager.scheduleAsyncDelayedTask(plugin, task, priority);
+	public int scheduleAsyncTask(Object plugin, Runnable task) {
+		return taskManager.scheduleAsyncTask(plugin, task);
 	}
 
 	@Override
