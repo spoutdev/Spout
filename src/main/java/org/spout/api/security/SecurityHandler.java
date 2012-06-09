@@ -103,7 +103,7 @@ public class SecurityHandler {
 		return null;
 	}
 	
-	public AsymmetricBlockCipher getCipher(String cipher, String padding) {
+	public AsymmetricBlockCipher getAsymmetricCipher(String cipher, String padding) {
 		if (cipher.equals("RSA")) {
 			return addPadding(new RSAEngine(), padding);
 		} else {
