@@ -376,7 +376,7 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 	@Override
 	public int readUnsignedShort() {
 		checkAvail(2);
-		return readUnsignedShort();
+		return buffer.readUnsignedShort();
 	}
 
 	@Override

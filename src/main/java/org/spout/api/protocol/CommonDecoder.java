@@ -27,19 +27,20 @@
 package org.spout.api.protocol;
 
 import java.io.IOException;
-import org.spout.api.Spout;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import org.jboss.netty.handler.codec.replay.VoidEnum;
+import org.spout.api.Spout;
+import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+import org.spout.api.protocol.replayable.ReplayableError;
 
 /**
  * A {@link ReplayingDecoder} which decodes {@link ChannelBuffer}s into
  * Common {@link org.spout.api.protocol.Message}s.
  */
-public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
+public class CommonDecoder extends PreprocessReplayingDecoder {
 	private volatile CodecLookupService codecLookup = null;
 	private int previousOpcode = -1;
 	private volatile BootstrapProtocol bootstrapProtocol;
@@ -47,12 +48,13 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 	private final CommonEncoder encoder;
 
 	public CommonDecoder(CommonHandler handler, CommonEncoder encoder) {
+		super(512);
 		this.encoder = encoder;
 		this.handler = handler;
 	}
 
 	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf, VoidEnum state) throws Exception {
+	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
 		if (codecLookup == null) {
 			bootstrapProtocol = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress());
 			codecLookup = bootstrapProtocol.getCodecLookupService();
@@ -63,7 +65,7 @@ public class CommonDecoder extends ReplayingDecoder<VoidEnum> {
 		try {
 			opcode = buf.getUnsignedShort(buf.readerIndex());
 		}
-		catch (Error e) {
+		catch (ReplayableError e) {
 			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
 		}
 		

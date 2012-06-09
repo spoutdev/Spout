@@ -167,7 +167,7 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 	 * @return the message to pass to the next stage
 	 * @throws Exception
 	 */
-	public abstract Object decodeProcessed(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception;
+	protected abstract Object decodeProcessed(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception;
 
 	private static ChannelBuffer getNewBuffer(ChannelHandlerContext ctx, int capacity) {
 		return ctx.getChannel().getConfig().getBufferFactory().getBuffer(capacity);
