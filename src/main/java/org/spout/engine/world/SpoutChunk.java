@@ -671,6 +671,9 @@ public class SpoutChunk extends Chunk {
 		Integer oldDistance = observers.put(entity, distance);
 		if (oldDistance == null) {
 			parentRegion.unloadQueue.remove(this);
+			if (!isPopulated()) {
+				parentRegion.queueChunkForPopulation(this);
+			}
 			return true;
 		} else {
 			return false;
@@ -731,7 +734,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean canSend() {
 		boolean canSend = this.isPopulated() && !this.isCalculatingLighting();
-		if (!canSend && !isPopulated()) {
+		if (!canSend && !isPopulated() && this.observers.get().size() > 0 && this.observers.getLive().size() > 0) {
 			((SpoutRegion)parentRegion).queueChunkForPopulation(this);
 		}
 		return canSend;
@@ -820,6 +823,10 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void populate(boolean force) {
+		if (this.observers.get().size() == 0 || this.observers.getLive().size() == 0) {
+			return;
+		}
+		
 		if (this.populated.getAndSet(true) && !force) {
 			return;
 		}
