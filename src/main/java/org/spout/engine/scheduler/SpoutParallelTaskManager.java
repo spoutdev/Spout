@@ -114,8 +114,8 @@ public class SpoutParallelTaskManager implements TaskManager {
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
-		return scheduleAsyncRepeatingTask(plugin, task, 0, -1, priority);
+	public int scheduleAsyncTask(Object plugin, Runnable task) {
+		return scheduleAsyncRepeatingTask(plugin, task, 0, -1, TaskPriority.CRITICAL);
 	}
 
 	@Override
