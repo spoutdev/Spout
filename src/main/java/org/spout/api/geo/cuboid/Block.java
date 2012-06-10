@@ -27,7 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.Source;
-import org.spout.api.entity.BlockController;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
@@ -38,7 +38,6 @@ import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.material.source.MaterialState;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 

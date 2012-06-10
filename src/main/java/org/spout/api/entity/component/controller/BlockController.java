@@ -24,9 +24,10 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.entity.component.controller;
 
-import org.spout.api.entity.type.ControllerType;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 

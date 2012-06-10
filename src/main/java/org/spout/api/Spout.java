@@ -80,7 +80,7 @@ public final class Spout {
 	}
 
 	public static void log(String arg) {
-		instance.getLogger().info(arg);
+		getLogger().info(arg);
 	}
 
 	public static String getAPIVersion() {
@@ -89,5 +89,16 @@ public final class Spout {
 	
 	public static FileSystem getFilesystem() {
 		return instance.getFilesystem();
+	}
+
+	public void multilineLog(String multiline) {
+		String[] split = multiline.split("\n");
+		for (String line : split) {
+			while (line.length() > 40) {
+				getLogger().info(line.substring(0, 40));
+				line = line.substring(40);
+			}
+			getLogger().info(line);
+		}
 	}
 }

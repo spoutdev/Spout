@@ -27,7 +27,7 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.Source;
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
 

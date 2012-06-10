@@ -24,24 +24,49 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.action;
+package org.spout.api.entity.component.controller.type;
 
-import org.spout.api.entity.Controller;
-import org.spout.api.entity.Entity;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-public abstract class TimedAction<T extends Controller> extends EntityAction<T> {
-	private int delayCounter = 0;
-	private int tickDelay = 1;
+import org.spout.api.entity.component.Controller;
 
-	public TimedAction(int tickDelay) {
-		this.tickDelay = tickDelay;
+/**
+ *
+ * @author zml2008
+ */
+public class EmptyConstructorControllerType extends ControllerType {
+	private Constructor<? extends Controller> constructor;
+
+	public EmptyConstructorControllerType(Class<? extends Controller> controllerClass, String name) {
+		super(controllerClass, name);
+		try {
+			constructor = controllerClass.getDeclaredConstructor();
+			constructor.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			constructor = null;
+		}
 	}
 
-	public boolean shouldRun(Entity entity, T controller) {
-		if (++delayCounter % tickDelay == 0) {
-			delayCounter = 0;
-			return true;
+	@Override
+	public boolean canCreateController() {
+		return constructor != null;
+	}
+
+	@Override
+	public Controller createController() {
+		if (constructor == null) {
+			return null;
 		}
-		return false;
+		try {
+			return constructor.newInstance();
+		} catch (InstantiationException e) {
+			return null;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace(); // This should never happen - print the stack trace if it does
+			return null;
+		} catch (InvocationTargetException e) {
+			return null;
+		}
 	}
 }

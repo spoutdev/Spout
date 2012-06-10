@@ -24,25 +24,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.type;
+package org.spout.api.entity.component.controller.action;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Entity;
 
-/**
- * @author zml2008
- */
-public class UncreatableControllerType extends ControllerType {
-	public UncreatableControllerType(Class<? extends Controller> controllerClass, String name) {
-		super(controllerClass, name);
-	}
+public abstract class EntityAction<T extends Controller> {
 
-	@Override
-	public boolean canCreateController() {
-		return false;
-	}
+	public abstract boolean shouldRun(Entity entity, T controller);
 
-	@Override
-	public Controller createController() {
-		return null;
-	}
+	public abstract void run(Entity entity, T controller, float dt);
 }
