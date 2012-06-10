@@ -26,13 +26,18 @@
  */
 package org.spout.engine.world.dynamic;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.util.hashing.ByteTripleHashed;
 
 public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
+	
+	private final static AtomicInteger idCounter = new AtomicInteger(0);
 
+	private final int id;
 	private final int packed;
 	private final int chunkPacked;
 	private final long nextUpdate;
@@ -54,6 +59,7 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 		this.nextUpdate = nextUpdate;
 		this.lastUpdate = lastUpdate;
 		this.hint = hint;
+		this.id = idCounter.getAndIncrement();
 	}
 
 	public int getX() {
@@ -99,16 +105,33 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+
+		if (!(o instanceof DynamicBlockUpdate)) {
+			return false;
+		}
+
+		return id == ((DynamicBlockUpdate)o).id;
+	}
+
+	
+	@Override
 	public int compareTo(DynamicBlockUpdate o) {
 		if (nextUpdate != o.nextUpdate) {
 			return subToInt(nextUpdate, o.nextUpdate);
-		} else if (packed != o.packed) {
-			return packed - o.packed;
 		} else {
-			return subToInt(lastUpdate, o.lastUpdate);
+			return id - o.id;
 		}
 	}
-
+	
+	@Override
+	public int hashCode() {
+		return ((int) nextUpdate) + id;
+	}
+	
 	private final int subToInt(long a, long b) {
 		long result = a - b;
 		int msbs = (int) (result >> 32);
@@ -127,20 +150,6 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 		return 0;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (o == this) {
-			return true;
-		}
-
-		if (!(o instanceof DynamicBlockUpdate)) {
-			return false;
-		}
-
-		DynamicBlockUpdate other = (DynamicBlockUpdate) o;
-		return nextUpdate == other.nextUpdate && packed == other.packed && lastUpdate == other.lastUpdate;
-	}
-
 	public DynamicBlockUpdate add(DynamicBlockUpdate update) {
 		if (update == null) {
 			return this;
@@ -150,9 +159,8 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 			throw new IllegalArgumentException("Linked list error in dynamic block update, updates must not already be part of a list");
 		}
 
-		update.next = this.next;
-		this.next = update;
-		return this;
+		update.next = this;
+		return update;
 	}
 
 	public DynamicBlockUpdate remove(DynamicBlockUpdate update) {
@@ -184,14 +192,11 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	}
 
 	@Override
-	public int hashCode() {
-		return (packed << 8) + ((int) nextUpdate);
-	}
-
-	@Override
 	public String toString() {
-		return "DynamicBlockUpdate{ packed: " + getPacked() + " chunkPacked: " + getChunkPacked() + " nextUpdate: " + getNextUpdate() + " lastUpdate: " + getLastUpdate()
-				+ " pos: (" + getX() + ", " + getY() + ", " + getZ() + ") }";
+		return "DynamicBlockUpdate{ id: + " + id + " packed: " + getPacked() + " chunkPacked: " + getChunkPacked() + 
+				" nextUpdate: " + getNextUpdate() + " lastUpdate: " + getLastUpdate() + 
+				" pos: (" + getX() + ", " + getY() + ", " + getZ() + ")" +
+				" hint: " + hint + " }";
 	}
 	
 	public static int getPointPacked(Point p) {
