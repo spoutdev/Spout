@@ -89,30 +89,31 @@ public class SecurityHandler {
 	}
 	
 	public byte[] encodeKey(CipherParameters key) {
-		if (key instanceof RSAKeyParameters) {
-			if (((RSAKeyParameters) key).isPrivate()) {
-				return null;
-			} else {
-				RSAKeyParameters rsaKey = (RSAKeyParameters) key;
-
-				ASN1EncodableVector encodable = new ASN1EncodableVector();
-				encodable.add(new ASN1Integer(rsaKey.getModulus()));
-				encodable.add(new ASN1Integer(rsaKey.getExponent()));
-
-				return KeyUtil.getEncodedSubjectPublicKeyInfo(
-						new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, new DERNull()), 
-						new DERSequence(encodable));
-			}
+		if (!(key instanceof RSAKeyParameters)) {
+			return null;
 		}
-		return null;
+
+		if (((RSAKeyParameters) key).isPrivate()) {
+			return null;
+		}
+
+		RSAKeyParameters rsaKey = (RSAKeyParameters) key;
+
+		ASN1EncodableVector encodable = new ASN1EncodableVector();
+		encodable.add(new ASN1Integer(rsaKey.getModulus()));
+		encodable.add(new ASN1Integer(rsaKey.getExponent()));
+
+		return KeyUtil.getEncodedSubjectPublicKeyInfo(
+				new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, new DERNull()), 
+				new DERSequence(encodable));
 	}
 	
 	public BufferedBlockCipher getSymmetricCipher(String cipher, String wrapper) {
 		if (cipher.equals("AES")) {
 			return addSymmetricWrapper(new AESEngine(), wrapper);
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 	
 	private BufferedBlockCipher addSymmetricWrapper(BlockCipher rawCipher, String wrapper) {
@@ -125,25 +126,25 @@ public class SecurityHandler {
 				return null;
 			}
 			return new BufferedBlockCipher(new CFBBlockCipher(rawCipher, bits));
-		} else {
-			return new BufferedBlockCipher(rawCipher);
 		}
+
+		return new BufferedBlockCipher(rawCipher);
 	}
 	
 	public PaddedBufferedBlockCipher addSymmetricPadding(BlockCipher rawCipher, String padding) {
 		if (padding.equals("PKCS7")) {
 			return new PaddedBufferedBlockCipher(rawCipher);
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 	
 	public AsymmetricBlockCipher getAsymmetricCipher(String cipher, String padding) {
 		if (cipher.equals("RSA")) {
 			return addAsymmetricPadding(new RSAEngine(), padding);
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 	
 	private AsymmetricBlockCipher addAsymmetricPadding(AsymmetricBlockCipher rawCipher, String padding) {
@@ -159,10 +160,10 @@ public class SecurityHandler {
 	public AsymmetricCipherKeyPairGenerator getGenerator(String algorithm) {
 		if (algorithm.equals("RSA")) {
 			return new RSAKeyPairGenerator();
-		} else {
-			Spout.getLogger().info("Unable to find key generator " + algorithm);
-			return null;
 		}
+
+		Spout.getLogger().info("Unable to find key generator " + algorithm);
+		return null;
 	}
 
 	public void initGenerator(int keySize, String algorithm, AsymmetricCipherKeyPairGenerator generator, SecureRandom random) {
@@ -193,15 +194,15 @@ public class SecurityHandler {
 			outputBlocks.add(result);
 			pos += length;
 		}
-		
+
 		byte[] output = new byte[outputSize];
-		
+
 		pos = 0;
 		for (byte[] block : outputBlocks) {
 			System.arraycopy(block, 0, output, pos, block.length);
 			pos += block.length;
 		}
-		
+
 		return output;
 	}
 
@@ -215,38 +216,40 @@ public class SecurityHandler {
 
 	public AsymmetricCipherKeyPair  getKeyPair(int keySize, String algorithm, String RNGAlgorithm, String RNGProvider) {
 		AsymmetricCipherKeyPair pair = serverKeys.get(algorithm);
-		if (pair == null && provider != null) {
-			SecureRandom secureRandom;
-			try {
-				secureRandom = SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
-			} catch (NoSuchProviderException e) {
-				Spout.getLogger().info("Unable to find algorithm to for random number generator");
-				return null;
-			} catch (NoSuchAlgorithmException e) {
-				Spout.getLogger().info("Unable to find algorithm to generate random number generator for key pair creation");
-				return null;
-			}
-			
-			AsymmetricCipherKeyPairGenerator generator = getGenerator(algorithm);
-			
-			if (generator == null) {
-				return null;
-			}
-			
-			initGenerator(keySize, algorithm, generator, secureRandom);
-			
-			AsymmetricCipherKeyPair  newPair = generator.generateKeyPair();
-
-			AsymmetricCipherKeyPair  oldPair = serverKeys.putIfAbsent(algorithm, newPair);
-
-			if (oldPair == null) {
-				return newPair;
-			} else {
-				return oldPair;
-			}
-		} else {
+		if (pair != null) {
 			return pair;
 		}
 
+		if (provider == null) {
+			return pair;
+		}
+
+		SecureRandom secureRandom;
+		try {
+			secureRandom = SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
+		} catch (NoSuchProviderException e) {
+			Spout.getLogger().info("Unable to find algorithm to for random number generator");
+			return null;
+		} catch (NoSuchAlgorithmException e) {
+			Spout.getLogger().info("Unable to find algorithm to generate random number generator for key pair creation");
+			return null;
+		}
+
+		AsymmetricCipherKeyPairGenerator generator = getGenerator(algorithm);
+
+		if (generator == null) {
+			return null;
+		}
+
+		initGenerator(keySize, algorithm, generator, secureRandom);
+
+		AsymmetricCipherKeyPair newPair = generator.generateKeyPair();
+
+		AsymmetricCipherKeyPair oldPair = serverKeys.putIfAbsent(algorithm, newPair);
+		if (oldPair != null) {
+			return oldPair;
+		}
+
+		return newPair;
 	}
 }
