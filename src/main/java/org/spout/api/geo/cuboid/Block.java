@@ -38,6 +38,7 @@ import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.material.source.MaterialState;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
@@ -352,6 +353,11 @@ public interface Block extends MaterialState {
 	 * @return this Block
 	 */
 	public Block update(UpdateOption option);
+	
+	/**
+	 * Resets all dynamic material updates queued for this block. This list is checked during the finalize part of the tick, and will cause the onPlacement method to be called.<br>
+	 */
+	public abstract void resetDynamic();
 
 	/**
 	 * Queues a dynamic update on this block<br>
