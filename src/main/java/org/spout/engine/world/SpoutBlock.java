@@ -35,6 +35,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.cuboid.UpdateOption;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
@@ -302,11 +303,22 @@ public class SpoutBlock implements Block {
 	public Block update() {
 		return this.update(true);
 	}
-
+	
 	@Override
 	public Block update(boolean around) {
+		return update(true, around);
+	}
+	
+	@Override
+	public Block update(UpdateOption option) {
+		return update(option.updateSelf(), option.updateAround());
+	}
+
+	private Block update(boolean self, boolean around) {
 		World world = this.getWorld();
-		world.updateBlockPhysics(this.x, this.y, this.z, this.source);
+		if (self) {
+			world.updateBlockPhysics(this.x, this.y, this.z, this.source);
+		}
 		if (around) {
 			//South and North
 			world.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
