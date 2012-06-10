@@ -86,7 +86,7 @@ public class VertexBufferImpl extends VertexBuffer {
 		buff.put(data);
 		buff.flip();
 		
-		setData(data, verticies);
+		setData(buff, verticies);
 		
 		
 	}
