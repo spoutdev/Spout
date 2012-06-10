@@ -71,6 +71,8 @@ import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.vertexbuffer.VertexBuffer;
+import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 import org.spout.engine.util.RenderModeConverter;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunkSnapshot;
@@ -135,6 +137,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 	}
 
+	VertexBufferImpl buffer;
+	
 	public void initRenderer() {
 		createWindow();
 		
@@ -167,6 +171,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		Spout.log("Loading Material");
 		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Vanilla/resources/materials/terrain.smt");
+		
+		
+		buffer = new VertexBufferImpl();
+		float[] b = new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f };
+		buffer.setData(b, 3);
+		buffer.enableAttribute(0, 0);
 		
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
@@ -250,6 +260,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
 
+		material.getShader().setUniform("View", view);
+		material.getShader().setUniform("Projection", activeCamera.getProjection());
+		buffer.drawBuffer(material);
+		
 		//renderer.getRenderer().getShader().setUniform("View", view);
 		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		//renderer.begin();
@@ -259,7 +273,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//renderer.end();
 		
 		//renderer.draw();
-
+/*
 	
 		textureTest.begin(material);
 		textureTest.getShader().setUniform("View", activeCamera.getView());
@@ -279,7 +293,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		textureTest.addVertex(1, 0);
 		textureTest.end();
 		textureTest.render();
-		
+		*/
 		/*
 		Object[] worlds = this.getLiveWorlds().toArray();
 		SpoutWorld world = (SpoutWorld)worlds[0];

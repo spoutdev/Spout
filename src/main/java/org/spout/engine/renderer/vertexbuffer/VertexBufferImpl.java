@@ -31,6 +31,7 @@ import gnu.trove.list.array.TIntArrayList;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -78,6 +79,16 @@ public class VertexBufferImpl extends VertexBuffer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, NULL);
 		
 		attributes.clear();
+	}
+	
+	public void setData(float[] data, int verticies){
+		FloatBuffer buff = BufferUtils.createFloatBuffer(data.length);
+		buff.put(data);
+		buff.flip();
+		
+		setData(data, verticies);
+		
+		
 	}
 
 	@Override
