@@ -339,6 +339,11 @@ public class SpoutBlock implements Block {
 	public Biome getBiomeType() {
 		return world.getBiomeType(x, y, z);
 	}
+	
+	@Override
+	public void resetDynamic() {
+		this.getRegion().resetDynamicBlock(this.x, this.y, this.z);
+	}
 
 	@Override
 	public Block dynamicUpdate() {
