@@ -1,7 +1,6 @@
 /*
- * This file is part of Spout.
+ * This file is part of Spout (http://www.spout.org/).
  *
- * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * Spout is licensed under the SpoutDev License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify
@@ -65,6 +64,7 @@ public class MemoryLeakThread extends Thread {
 		while (!this.isInterrupted()) {
 			TObjectByteHashMap<WeakReference<Chunk>> recentChunkPasses = new TObjectByteHashMap<WeakReference<Chunk>>();
 			
+			int analyzed = 0;
 			Iterator<WeakReference<Chunk>> i = chunkQueue.iterator();
 			while (i.hasNext()) {
 				WeakReference<Chunk> ref = i.next();
@@ -75,6 +75,7 @@ public class MemoryLeakThread extends Thread {
 						byte passes;
 						if (chunkPasses.containsKey(ref)) {
 							passes = (byte) (chunkPasses.get(ref) + 1);
+							analyzed++;
 						} else {
 							passes = 1;
 						}
@@ -99,6 +100,8 @@ public class MemoryLeakThread extends Thread {
 				chunkQueue.addAll(chunkArrivals);
 				chunkArrivals.clear();
 			}
+			
+			Spout.getLogger().info("Memory Leak Detection Analyzed " + analyzed + " potential leaks");
 
 			try {
 				sleep(60000);
