@@ -292,6 +292,19 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * If a replacement policy, other than REPLACE_NONE, is specified and there is already an update for that block pending, the update must replace at least one of those updates, or it won't be added
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param nextUpdate the update time
+	 * @param policy the insertion policy
+	 */
+	@DelayedWrite
+	public abstract void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate);
+	
+	/**
+	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
 	 * 
 	 * @param x
 	 * @param y
@@ -301,4 +314,19 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@DelayedWrite
 	public abstract void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint);
+	
+	/**
+	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param nextUpdate the update time
+	 * @param policy the insertion policy
+	 * @param hint a non-persistent hint for the update
+	 */
+	@DelayedWrite
+	public abstract void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint);
+	
+	
 }

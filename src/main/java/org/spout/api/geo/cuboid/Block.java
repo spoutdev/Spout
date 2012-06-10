@@ -29,6 +29,7 @@ package org.spout.api.geo.cuboid;
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
@@ -360,6 +361,16 @@ public interface Block extends MaterialState {
 	 * @return this Block
 	 */
 	public Block dynamicUpdate(long delay);
+	
+	/**
+	 * Queues a dynamic update on this block<br>
+	 * The Block Material must be dynamic for this to function.
+	 * 
+	 * @param delay to wait before updating
+	 * @param policy the insertion policy
+	 * @return this Block
+	 */
+	public Block dynamicUpdate(long delay, InsertionPolicy policy);
 
 	/**
 	 * Queues a dynamic update on this block<br>
@@ -370,4 +381,15 @@ public interface Block extends MaterialState {
 	 * @return this Block
 	 */
 	public Block dynamicUpdate(long delay, Object hint);
+	
+	/**
+	 * Queues a dynamic update on this block<br>
+	 * The Block Material must be dynamic for this to function.
+	 * 
+	 * @param delay to wait before updating
+	 * @param policy the insertion policy
+	 * @param hint parameter to use during the update
+	 * @return this Block
+	 */
+	public Block dynamicUpdate(long delay, InsertionPolicy policy, Object hint);
 }
