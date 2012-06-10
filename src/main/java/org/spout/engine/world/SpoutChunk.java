@@ -793,7 +793,11 @@ public class SpoutChunk extends Chunk {
 	public void setUnloaded() {
 		TickStage.checkStage(TickStage.SNAPSHOT);
 		saveState.set(SaveState.UNLOADED);
-		blockStore = null;
+		//Clear as much as possible to limit the damage of a potential leak
+		this.blockStore = null;
+		this.blockLight = null;
+		this.skyLight = null;
+		this.dataMap.clear();
 		deregisterFromColumn();
 	}
 

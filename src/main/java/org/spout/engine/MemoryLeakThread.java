@@ -49,6 +49,7 @@ public class MemoryLeakThread extends Thread {
 
 	public MemoryLeakThread() {
 		super("Memory Leak Detection Thread");
+		this.setDaemon(true);
 	}
 
 	public void monitor(Chunk chunk) {
@@ -62,6 +63,7 @@ public class MemoryLeakThread extends Thread {
 	@Override
 	public void run() {
 		while (!this.isInterrupted()) {
+			System.gc();
 			TObjectByteHashMap<WeakReference<Chunk>> recentChunkPasses = new TObjectByteHashMap<WeakReference<Chunk>>();
 			
 			int analyzed = 0;
@@ -83,8 +85,14 @@ public class MemoryLeakThread extends Thread {
 						
 						if (passes > LEAK_PASSES) {
 							Spout.getLogger().severe("Chunk is leaking memory! Chunk is " + chunk.toString());
+							if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
+								Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
+							}
 						} else if (passes > WARNING_PASSES) {
 							Spout.getLogger().warning("Chunk may be leaking memory, " + chunk.toString());
+							if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
+								Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
+							}
 						}
 					}
 				} else {
