@@ -152,6 +152,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
+	
+	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
+	private final MemoryLeakThread leakThread = new MemoryLeakThread();
+	
 	protected SpoutConfiguration config = new SpoutConfiguration();
 	private File worldFolder = new File(".");
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
@@ -160,7 +164,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
-	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
+	
 	protected FileSystem filesystem;
 
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
@@ -184,6 +188,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public void start() {
 		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
+			leakThread.start();
 		}
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
@@ -797,5 +802,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public FileSystem getFilesystem() {
 		return filesystem;
+	}
+	
+	public MemoryLeakThread getLeakThread() {
+		return leakThread;
 	}
 }
