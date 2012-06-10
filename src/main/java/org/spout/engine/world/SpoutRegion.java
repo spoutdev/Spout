@@ -49,10 +49,10 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
-import org.spout.api.entity.BlockController;
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.PlayerController;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;

@@ -28,7 +28,7 @@ package org.spout.engine.world;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Source;
-import org.spout.api.entity.BlockController;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
