@@ -42,6 +42,7 @@ import org.spout.api.math.BitSize;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.SnapshotRead;
 
 /**
@@ -210,6 +211,17 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 */
 	@LiveRead
 	public abstract Set<Entity> getLiveEntities();
+	
+	
+	/**
+	 * Gets the number of observers viewing this chunk. If the number
+	 * of observing entities falls to zero, this chunk may be reaped at
+	 * any time.
+	 * 
+	 * @return number of observers
+	 */
+	@LiveRead
+	public abstract int getNumObservers();
 
 	/**
 	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
@@ -218,6 +230,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess {
 	 *
 	 * @return data map
 	 */
+	@LiveRead
+	@LiveWrite
 	public abstract DefaultedMap<String, Serializable> getDataMap();
 
 	@Override
