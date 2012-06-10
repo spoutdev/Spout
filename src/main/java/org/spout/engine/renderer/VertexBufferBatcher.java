@@ -32,11 +32,11 @@ import org.lwjgl.BufferUtils;
 import org.spout.engine.renderer.vertexbuffer.VertexBuffer;
 
 public class VertexBufferBatcher extends BatchVertexRenderer {
-	final static int SIZE_FLOAT = 4;
-	final static int VERTEX_LOCATION = 0;
-	final static int COLOR_LOCATION = 1;
-	final static int NORMAL_LOCATION = 2;
-	final static int TEXCOORD0_LOCATION = 3;
+	protected static final int SIZE_FLOAT = 4;
+	protected static final int VERTEX_LOCATION = 0;
+	protected static final int COLOR_LOCATION = 1;
+	protected static final int NORMAL_LOCATION = 2;
+	protected static final int TEXCOORD0_LOCATION = 3;
 	
 	
 	
