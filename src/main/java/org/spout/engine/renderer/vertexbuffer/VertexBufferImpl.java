@@ -92,7 +92,7 @@ public class VertexBufferImpl extends VertexBuffer {
 
 
 	@Override
-	public void bindBuffer() {
+	void bindBuffer() {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
 		
 

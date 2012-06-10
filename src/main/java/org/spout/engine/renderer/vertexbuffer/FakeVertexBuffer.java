@@ -45,13 +45,13 @@ public class FakeVertexBuffer extends VertexBuffer {
 	}
 
 	@Override
-	public void bindBuffer() {
+	void bindBuffer() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	void drawBuffer(RenderMaterial material) {
+	public void drawBuffer(RenderMaterial material) {
 		// TODO Auto-generated method stub
 		
 	}
