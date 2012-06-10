@@ -119,6 +119,8 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 					}
 					if (setupMessage.isChannelLocking()) {
 						locked.set(true);
+					} else {
+						locked.set(false);
 					}
 					setupMessage.setProcessorHandler(this);
 				}

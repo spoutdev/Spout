@@ -42,15 +42,19 @@ import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.RSAPublicKeyStructure;
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPairGenerator;
+import org.bouncycastle.crypto.BlockCipher;
+import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.encodings.PKCS1Encoding;
+import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
+import org.bouncycastle.crypto.modes.CFBBlockCipher;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.util.KeyUtil;
@@ -103,15 +107,47 @@ public class SecurityHandler {
 		return null;
 	}
 	
-	public AsymmetricBlockCipher getAsymmetricCipher(String cipher, String padding) {
-		if (cipher.equals("RSA")) {
-			return addPadding(new RSAEngine(), padding);
+	public BufferedBlockCipher getSymmetricCipher(String cipher, String wrapper) {
+		if (cipher.equals("AES")) {
+			return addSymmetricWrapper(new AESEngine(), wrapper);
 		} else {
 			return null;
 		}
 	}
 	
-	private AsymmetricBlockCipher addPadding(AsymmetricBlockCipher rawCipher, String padding) {
+	private BufferedBlockCipher addSymmetricWrapper(BlockCipher rawCipher, String wrapper) {
+		if (wrapper.startsWith("CFB")) {
+			int bits;
+			try {
+				bits = Integer.parseInt(wrapper.substring(3));
+			} catch (NumberFormatException e) {
+				Spout.getLogger().info("Unable to parse bits for CFB wrapper from: " + wrapper);
+				return null;
+			}
+			System.out.println("bits: " + bits);
+			return new BufferedBlockCipher(new CFBBlockCipher(rawCipher, bits));
+		} else {
+			return new BufferedBlockCipher(rawCipher);
+		}
+	}
+	
+	public PaddedBufferedBlockCipher addSymmetricPadding(BlockCipher rawCipher, String padding) {
+		if (padding.equals("PKCS7")) {
+			return new PaddedBufferedBlockCipher(rawCipher);
+		} else {
+			return null;
+		}
+	}
+	
+	public AsymmetricBlockCipher getAsymmetricCipher(String cipher, String padding) {
+		if (cipher.equals("RSA")) {
+			return addAsymmetricPadding(new RSAEngine(), padding);
+		} else {
+			return null;
+		}
+	}
+	
+	private AsymmetricBlockCipher addAsymmetricPadding(AsymmetricBlockCipher rawCipher, String padding) {
 		if (padding == null) {
 			return rawCipher;
 		} else if (padding.equals("PKCS1")) {

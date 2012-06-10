@@ -50,7 +50,12 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 		}
 		
 		ChannelProcessor processor = this.processor.get();
-		if (processor == null || !(evt instanceof MessageEvent)) {
+		if (processor == null) {
+			super.handleDownstream(ctx, evt);
+			if (evt instanceof MessageEvent) {
+				checkForSetupMessage(((MessageEvent)evt).getMessage());
+			}
+		} else if (!(evt instanceof MessageEvent)) {
 			super.handleDownstream(ctx, evt);
 		} else {
 			MessageEvent e = (MessageEvent) evt;
@@ -64,19 +69,25 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 				}
 				write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
 			}
-			if (originalMessage instanceof ProcessorSetupMessage) {
-				ProcessorSetupMessage setupMessage = (ProcessorSetupMessage) originalMessage;
-				ChannelProcessor newProcessor = setupMessage.getProcessor();
-				if (newProcessor != null) {
-					setProcessor(newProcessor);
-				}
-				if (setupMessage.isChannelLocking()) {
-					locked.set(true);
-				}
-				setupMessage.setProcessorHandler(this);
-			}
+			checkForSetupMessage(originalMessage);
 		}
     }
+	
+	private void checkForSetupMessage(Object e) {
+		if (e instanceof ProcessorSetupMessage) {
+			ProcessorSetupMessage setupMessage = (ProcessorSetupMessage) e;
+			ChannelProcessor newProcessor = setupMessage.getProcessor();
+			if (newProcessor != null) {
+				setProcessor(newProcessor);
+			}
+			if (setupMessage.isChannelLocking()) {
+				locked.set(true);
+			} else {
+				locked.set(false);
+			}
+			setupMessage.setProcessorHandler(this);
+		}
+	}
 	
 	public void setProcessor(ChannelProcessor processor) {
 		if (processor == null) {

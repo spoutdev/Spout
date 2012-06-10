@@ -209,7 +209,7 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 
 	@Override
 	public char getChar(int index) {
-		checkAvail(index, 1);
+		checkAvail(index, 2);
 		return buffer.getChar(index);
 	}
 
@@ -411,7 +411,7 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 
 	@Override
 	public char readChar() {
-		checkAvail(1);
+		checkAvail(2);
 		return buffer.readChar();
 	}
 
