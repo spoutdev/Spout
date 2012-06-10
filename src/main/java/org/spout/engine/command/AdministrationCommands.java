@@ -54,7 +54,7 @@ public class AdministrationCommands {
 
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
 	@CommandPermissions("spout.command.stop")
-	public void stop(CommandContext args, CommandSource source) throws CommandException {
+	public void stop(CommandContext args, CommandSource source) {
 		String message = "Server shutting down";
 		if (args.length() > 0) {
 			message = args.getJoinedString(0);
@@ -64,7 +64,7 @@ public class AdministrationCommands {
 
 	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = {""})
 	@CommandPermissions("spout.command.dumpstack")
-	public void dumpstack(CommandContext args, CommandSource source) throws CommandException {
+	public void dumpstack(CommandContext args, CommandSource source) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
 		server.getLogger().info("[--------------Thread Stack Dump--------------]");
@@ -81,7 +81,7 @@ public class AdministrationCommands {
 
 	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.kick")
-	public void kick(CommandContext args, CommandSource source) throws CommandException {
+	public void kick(CommandContext args, CommandSource source) {
 		String playerName = args.getString(0);
 		String message = "You have been kicked from the server.";
 		if (args.length() >= 2) {

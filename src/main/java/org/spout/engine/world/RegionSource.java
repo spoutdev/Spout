@@ -107,38 +107,42 @@ public class RegionSource implements Iterable<Region> {
 	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
-		if (region != null || (!loadopt.loadIfNeeded())) {
+		if (region != null) {
 			return region;
-		} else {
-			/* If not generating region, and it doesn't exist yet, we're done */
-			if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
-				return null;
-			}
-
-			region = new SpoutRegion(world, x, y, z, this);
-			SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
-
-			if (current != null) {
-				((SpoutScheduler)Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
-				return current;
-			} else {
-				if (!region.getManager().getExecutor().startExecutor()) {
-					throw new IllegalStateException("Unable to start region executor");
-				}
-				
-				TaskManager tm = Spout.getEngine().getParallelTaskManager();
-				SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
-				ptm.registerRegion(region);
-				
-				TaskManager tmWorld = world.getParallelTaskManager();
-				SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
-				ptmWorld.registerRegion(region);
-
-				Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
-
-				return region;
-			}
 		}
+
+		if (!loadopt.loadIfNeeded()) {
+			return null;
+		}
+
+		/* If not generating region, and it doesn't exist yet, we're done */
+		if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
+			return null;
+		}
+
+		region = new SpoutRegion(world, x, y, z, this);
+		SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
+
+		if (current != null) {
+			((SpoutScheduler)Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
+			return current;
+		}
+
+		if (!region.getManager().getExecutor().startExecutor()) {
+			throw new IllegalStateException("Unable to start region executor");
+		}
+
+		TaskManager tm = Spout.getEngine().getParallelTaskManager();
+		SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+		ptm.registerRegion(region);
+
+		TaskManager tmWorld = world.getParallelTaskManager();
+		SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+		ptmWorld.registerRegion(region);
+
+		Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
+
+		return region;
 	}
 
 	/**

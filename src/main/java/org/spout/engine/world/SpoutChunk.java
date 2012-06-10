@@ -404,11 +404,11 @@ public class SpoutChunk extends Chunk {
 		short data = BlockFullState.getData(state);
 		short id = BlockFullState.getId(state);
 		BlockMaterial mat = BlockMaterial.get(id);
-		if (mat != null) {
-			return mat.getSubMaterial(data);
-		} else {
+		if (mat == null) {
 			return BlockMaterial.AIR;
 		}
+
+		return mat.getSubMaterial(data);
 	}
 
 	@Override
@@ -617,9 +617,8 @@ public class SpoutChunk extends Chunk {
 
 	/**
 	 * @return true if the chunk can be skipped
-	 * @throws InterruptedException
 	 */
-	public boolean copySnapshotRun() throws InterruptedException {
+	public boolean copySnapshotRun() {
 		// NOTE : This is only called for chunks with contain entities.
 		snapshotManager.copyAllSnapshots();
 		return entities.get().size() == 0;
@@ -678,19 +677,21 @@ public class SpoutChunk extends Chunk {
 		if (!entity.isObserver()) {
 			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
 		}
+
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
 		int distance = (int) ((SpoutEntity) entity).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(entity, distance);
-		if (oldDistance == null) {
-			parentRegion.unloadQueue.remove(this);
-			if (!isPopulated()) {
-				parentRegion.queueChunkForPopulation(this);
-			}
-			return true;
-		} else {
+		if (oldDistance != null) {
+			// The player was already observing the chunk from distance oldDistance 
 			return false;
 		}
+
+		parentRegion.unloadQueue.remove(this);
+		if (!isPopulated()) {
+			parentRegion.queueChunkForPopulation(this);
+		}
+		return true;
 	}
 
 	@Override
@@ -698,15 +699,16 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
 		TickStage.checkStage(TickStage.FINALIZE);
+
 		Integer oldDistance = observers.remove(entity);
-		if (oldDistance != null) {
-			if (observers.isEmptyLive()) {
-				parentRegion.unloadQueue.add(this);
-			}
-			return true;
-		} else {
+		if (oldDistance == null) {
 			return false;
 		}
+
+		if (observers.isEmptyLive()) {
+			parentRegion.unloadQueue.add(this);
+		}
+		return true;
 	}
 
 	public Set<Entity> getObserversLive() {
@@ -725,14 +727,14 @@ public class SpoutChunk extends Chunk {
 	public boolean compressIfRequired() {
 		checkChunkLoaded();
 		TickStage.checkStage(restrictedStages, regionThread);
-		if (blockStore.needsCompression()) {
-			checkChunkLoaded();
-			checkBlockStoreUpdateAllowed();
-			blockStore.compress();
-			return true;
-		} else {
+		if (!blockStore.needsCompression()) {
 			return false;
 		}
+
+		checkChunkLoaded();
+		checkBlockStoreUpdateAllowed();
+		blockStore.compress();
+		return true;
 	}
 
 	public void setLightDirty(boolean dirty) {
@@ -753,7 +755,7 @@ public class SpoutChunk extends Chunk {
 	public boolean canSend() {
 		boolean canSend = this.isPopulated() && !this.isCalculatingLighting();
 		if (!canSend && !isPopulated() && this.observers.get().size() > 0 && this.observers.getLive().size() > 0) {
-			((SpoutRegion) parentRegion).queueChunkForPopulation(this);
+			parentRegion.queueChunkForPopulation(this);
 		}
 		return canSend;
 	}
@@ -1096,12 +1098,12 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public boolean isReapable(long worldAge) {
-		if (lastUnloadCheck.get() + UNLOAD_PERIOD < worldAge) {
-			lastUnloadCheck.set(worldAge);
-			return this.observers.getLive().size() <= 0 && this.observers.get().size() <= 0;
-		} else {
+		if (lastUnloadCheck.get() + UNLOAD_PERIOD >= worldAge) {
 			return false;
 		}
+
+		lastUnloadCheck.set(worldAge);
+		return this.observers.getLive().size() <= 0 && this.observers.get().size() <= 0;
 	}
 
 	public void notifyColumn() {

@@ -429,9 +429,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 		ControllerType[] types = arrangement.getControllerTypes();
 		if (types.length == 1) {
 			return createAndSpawnEntity(arrangement.getArrangement(), types[0]);
-		} else {
-			return createAndSpawnEntity(arrangement.getArrangement(), types);
 		}
+
+		return createAndSpawnEntity(arrangement.getArrangement(), types);
 	}
 
 	@Override
@@ -694,9 +694,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 		SpoutColumn column = getColumn(x, z, load);
 		if (column == null) {
 			return Integer.MIN_VALUE;
-		} else {
-			return column.getSurfaceHeight(x, z);
 		}
+
+		return column.getSurfaceHeight(x, z);
 	}
 
 	@Override

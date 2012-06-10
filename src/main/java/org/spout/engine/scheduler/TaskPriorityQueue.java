@@ -66,18 +66,23 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 		if (Thread.currentThread() != taskThread) {
 			throw new IllegalStateException("getPendingTask() may only be called from the thread that created the TaskPriorityQueue");
 		}
+
 		SpoutTask task = peek();
-		if (task == null || task.getNextCallTime() > currentTime) {
+		if (task == null) {
 			return null;
-		} else {
-			task = poll();
-			if (task.getNextCallTime() > currentTime) {
-				add(task);
-				return null;
-			} else {
-				return task;
-			}
 		}
+
+		if (task.getNextCallTime() > currentTime) {
+			return null;
+		}
+
+		task = poll();
+		if (task.getNextCallTime() > currentTime) {
+			add(task);
+			return null;
+		}
+
+		return task;
 	}
 	
 	/**
@@ -88,11 +93,15 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 	 */
 	public boolean hasPendingTasks(long currentTime) {
 		SpoutTask task = peek();
-		if (task == null || task.getNextCallTime() > currentTime) {
+		if (task == null) {
 			return false;
-		} else {
-			return true;
 		}
+
+		if (task.getNextCallTime() > currentTime) {
+			return false;
+		}
+
+		return true;
 	}
 	
 	@Override
@@ -114,14 +123,15 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 	
 	@Override
 	public boolean remove(Object task) {
-		if (super.remove(task)) {
-			if (task instanceof SpoutTask) {
-				((SpoutTask)task).unlockNextCallTime();
-			}
-			return true;
-		} else {
+		if (!super.remove(task)) {
 			return false;
 		}
+
+		if (task instanceof SpoutTask) {
+			((SpoutTask)task).unlockNextCallTime();
+		}
+
+		return true;
 	}
 	
 	@Override

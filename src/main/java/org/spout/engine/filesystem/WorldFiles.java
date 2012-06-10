@@ -362,8 +362,7 @@ public class WorldFiles {
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
-			@SuppressWarnings("unchecked")
-			List<CompoundTag> updateList = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("dynamic_updates")), null, List.class);
+			List<CompoundTag> updateList = (List<CompoundTag>) SafeCast.toGeneric(NBTMapper.toTagValue(map.get("dynamic_updates")), null, List.class);
 			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -518,7 +517,7 @@ public class WorldFiles {
 	}
 
 	private static ListTag<CompoundTag> saveDynamicUpdates(SpoutChunk c) {
-		List<DynamicBlockUpdate> updates = ((SpoutRegion) c.getRegion()).getDynamicBlockUpdates(c);
+		List<DynamicBlockUpdate> updates = c.getRegion().getDynamicBlockUpdates(c);
 
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 
@@ -554,14 +553,18 @@ public class WorldFiles {
 	}
 
 	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag t) {
-		CompoundMap map = t.getValue();
-		int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
-		long nextUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("nextUpdate")), -1L);
-		long lastUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("lastUpdate")), -1L);
-		if (packed < 0 || nextUpdate < 0) {
+		final CompoundMap map = t.getValue();
+		final int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
+		if (packed < 0) {
 			return null;
-		} else {
-			return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate, null);
 		}
+
+		final long nextUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("nextUpdate")), -1L);
+		if (nextUpdate < 0) {
+			return null;
+		}
+
+		final long lastUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("lastUpdate")), -1L);
+		return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate, null);
 	}
 }
