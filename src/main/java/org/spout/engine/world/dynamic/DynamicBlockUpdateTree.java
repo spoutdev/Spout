@@ -65,9 +65,11 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
 	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
+	private final Thread regionThread;
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
+		this.regionThread = region.getExceutionThread();
 	}
 
 	public void resetBlockUpdates(int x, int y, int z) {
@@ -111,12 +113,14 @@ public class DynamicBlockUpdateTree {
 	}
 
 	public boolean removeDynamicBlockUpdates(Chunk c) {
-		TickStage.checkStage(TickStage.SNAPSHOT);
+		TickStage.checkStage(TickStage.SNAPSHOT, regionThread);
 		Set<DynamicBlockUpdate> toRemove = getDynamicBlockUpdates(c);
 		if (toRemove != null && toRemove.size() > 0) {
 			List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(toRemove);
 			for (DynamicBlockUpdate dm : list) {
-				remove(dm);
+				if (!remove(dm)) {
+					throw new IllegalStateException("Expected update not present when removing all updates for chunk " + c);
+				}
 			}
 			return false;
 		} else {
@@ -125,7 +129,7 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	public void commitPending(long currentTime) {
-		TickStage.checkStage(TickStage.FINALIZE);
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		List<DynamicBlockUpdate> l;
 		while ((l = pendingLists.poll()) != null) {
 			for (DynamicBlockUpdate update : l) {
@@ -196,6 +200,7 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	public boolean updateDynamicBlock(long currentTime, DynamicBlockUpdate update, boolean force) {
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		int bx = update.getX();
 		int by = update.getY();
 		int bz = update.getZ();
@@ -253,6 +258,7 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	public DynamicBlockUpdate getNextUpdate(long currentTime) {
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		if (queuedUpdates.isEmpty()) {
 			return null;
 		} else {
@@ -301,28 +307,49 @@ public class DynamicBlockUpdateTree {
 	 */
 	private boolean remove(DynamicBlockUpdate update) {
 		boolean removed = false;
-		DynamicBlockUpdate previous = blockToUpdateMap.remove(update.getPacked());
-		while (previous != null) {
-			if (previous != update) {
-				previous = previous.getNext();
+		int packedKey = update.getPacked();
+		DynamicBlockUpdate root = blockToUpdateMap.get(packedKey);
+		DynamicBlockUpdate current = root;
+		DynamicBlockUpdate previous = null;
+		boolean rootChanged = false;
+		while (current != null) {
+			if (current != update) {
+				previous = current;
+				current = current.getNext();
 				continue;
 			}
 			removed = true;
-			if (!queuedUpdates.remove(previous)) {
+			if (!queuedUpdates.remove(current)) {
 				throw new IllegalStateException("Dynamic block update missing from queue when removed");
 			}
-			int previousPacked = previous.getChunkPacked();
-			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previousPacked);
-			if (chunkSet == null || !chunkSet.remove(previous)) {
+			int currentPacked = current.getChunkPacked();
+			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(currentPacked);
+			if (chunkSet == null || !chunkSet.remove(current)) {
 				throw new IllegalStateException("Dynamic block update missing from chunk when removed");
 			} else {
 				if (chunkSet.size() == 0) {
-					if (chunkToUpdateMap.remove(previousPacked) == null) {
+					if (chunkToUpdateMap.remove(currentPacked) == null) {
 						throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
 					}
 				}
 			}
-			previous = previous.getNext();
+			if (current == root) {
+				root = current.getNext();
+				current = root;
+				rootChanged = true;
+			} else {
+				if (previous.remove(current) != previous) {
+					throw new IllegalStateException("Removing current from previous should not move root");
+				}
+				current = previous.getNext();
+			}
+		}
+		if (rootChanged) {
+			if (root != null) {
+				blockToUpdateMap.put(packedKey, root);
+			} else {
+				blockToUpdateMap.remove(packedKey);
+			}
 		}
 		return removed;
 	}

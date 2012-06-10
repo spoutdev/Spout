@@ -175,7 +175,7 @@ public class SpoutRegion extends Region{
 	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
 	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 
-	private final DynamicBlockUpdateTree dynamicBlockTree = new DynamicBlockUpdateTree(this);
+	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -193,6 +193,8 @@ public class SpoutRegion extends Region{
 		} else {
 			executionThread = null;
 		}
+		
+		dynamicBlockTree = new DynamicBlockUpdateTree(this);
 
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
