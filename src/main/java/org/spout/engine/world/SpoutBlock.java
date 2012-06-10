@@ -30,6 +30,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Source;
 import org.spout.api.entity.BlockController;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -334,14 +335,26 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public Block dynamicUpdate(long delay) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, delay);
+	public Block dynamicUpdate(long updateTime) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime);
+		return this;
+	}
+	
+	@Override
+	public Block dynamicUpdate(long updateTime, InsertionPolicy policy) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, policy, updateTime);
 		return this;
 	}
 
 	@Override
-	public Block dynamicUpdate(long delay, Object hint) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, delay, hint);
+	public Block dynamicUpdate(long updateTime, Object hint) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, hint);
+		return this;
+	}
+	
+	@Override
+	public Block dynamicUpdate(long updateTime, InsertionPolicy policy, Object hint) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, policy, updateTime, hint);
 		return this;
 	}
 }
