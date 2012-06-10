@@ -344,6 +344,14 @@ public interface Block extends MaterialState {
 	 * @return this Block
 	 */
 	public Block update(boolean around);
+	
+	/**
+	 * Performs a physics update on this block and/or neighboring blocks
+	 * 
+	 * @param option indicates which blocks to update
+	 * @return this Block
+	 */
+	public Block update(UpdateOption option);
 
 	/**
 	 * Queues a dynamic update on this block<br>
