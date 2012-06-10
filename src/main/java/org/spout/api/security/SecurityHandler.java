@@ -124,7 +124,6 @@ public class SecurityHandler {
 				Spout.getLogger().info("Unable to parse bits for CFB wrapper from: " + wrapper);
 				return null;
 			}
-			System.out.println("bits: " + bits);
 			return new BufferedBlockCipher(new CFBBlockCipher(rawCipher, bits));
 		} else {
 			return new BufferedBlockCipher(rawCipher);
@@ -183,7 +182,6 @@ public class SecurityHandler {
 
 		while (pos < input.length) {
 			int length = Math.min(input.length - pos, blockSize);
-			System.out.println("length: " + length);
 			byte[] result;
 			try {
 				result = cipher.processBlock(input, pos, length);
@@ -200,7 +198,6 @@ public class SecurityHandler {
 		
 		pos = 0;
 		for (byte[] block : outputBlocks) {
-			System.out.println("block : " + block.length);
 			System.arraycopy(block, 0, output, pos, block.length);
 			pos += block.length;
 		}
