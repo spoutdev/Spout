@@ -219,7 +219,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 		}
 	}
 
-	public void preSnapshotRun() throws InterruptedException {
+	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
 			Controller controller = e.getController();
 			if (controller != null) {

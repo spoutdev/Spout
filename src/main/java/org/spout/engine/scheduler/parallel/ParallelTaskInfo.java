@@ -60,42 +60,47 @@ public class ParallelTaskInfo {
 		if (regions.containsKey(region)) {
 			return false;
 		}
+
 		if (!alive) {
 			return false;
-		} else {
-			SpoutTask newTask = task.getRegionTask(region);
-			if (newTask == null) {
-				Spout.getLogger().info("Unable to create parallel task for " + task);
-			}
-			int newId = ((SpoutTaskManager) region.getTaskManager()).schedule(newTask);
-			children.add(new RegionIdPair(newId, region));
-			regions.put(region, newTask);
-			return true;
 		}
+
+		SpoutTask newTask = task.getRegionTask(region);
+		if (newTask == null) {
+			Spout.getLogger().info("Unable to create parallel task for " + task);
+		}
+
+		int newId = ((SpoutTaskManager) region.getTaskManager()).schedule(newTask);
+		children.add(new RegionIdPair(newId, region));
+		regions.put(region, newTask);
+		return true;
 	}
 
 	public synchronized boolean remove(SpoutRegion region) {
 		TickStage.checkStage(TickStage.TICKSTART);
 		if (!regions.containsKey(region)) {
 			return false;
-		} else {
-			boolean success = false;
-			Iterator<RegionIdPair> itr = children.iterator();
-			while (itr.hasNext()) {
-				RegionIdPair pair = itr.next();
-				if (pair.getRegion() == region) {
-					success = true;
-					itr.remove();
-				}
-			}
-			if (!success) {
-				throw new IllegalStateException("Region exists in region map and but not in children map");
-			}
-			if (regions.remove(region) == null) {
-				throw new IllegalStateException("Region exists in region map with contains but cannot be removed");
-			}
-			return success;
 		}
+
+		boolean success = false;
+		final Iterator<RegionIdPair> itr = children.iterator();
+		while (itr.hasNext()) {
+			RegionIdPair pair = itr.next();
+			if (pair.getRegion() == region) {
+				success = true;
+				itr.remove();
+			}
+		}
+
+		if (!success) {
+			throw new IllegalStateException("Region exists in region map and but not in children map");
+		}
+
+		if (regions.remove(region) == null) {
+			throw new IllegalStateException("Region exists in region map with contains but cannot be removed");
+		}
+
+		return true;
 	}
 
 	public synchronized Task getTask(Region r) {

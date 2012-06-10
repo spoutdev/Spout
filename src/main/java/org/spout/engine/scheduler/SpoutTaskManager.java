@@ -240,11 +240,11 @@ public class SpoutTaskManager implements TaskManager {
 			if (activeWorkers.isEmpty()) {
 				success = true;
 				continue;
-			} else {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-				}
+			}
+
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
 			}
 		}
 		if (!success) {

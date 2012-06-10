@@ -55,11 +55,11 @@ public abstract class VertexBuffer {
 	 * 
 	 * Does not need to be called before drawBuffer
 	 */
-	public abstract void bindBuffer();
+	abstract void bindBuffer();
 	/**
 	 * Draws the current buffer.  
 	 * @param material
 	 */
-	abstract void drawBuffer(RenderMaterial material);
+	public abstract void drawBuffer(RenderMaterial material);
 	
 }

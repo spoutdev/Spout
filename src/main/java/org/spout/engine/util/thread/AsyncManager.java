@@ -60,15 +60,15 @@ public abstract class AsyncManager {
 	}
 
 	public Engine getEngine() {
-		if (engine == null) {
-			if (!(this instanceof Engine)) {
-				throw new IllegalStateException("Only the Server object itself should have a null server reference");
-			} else {
-				return (Engine) this;
-			}
-		} else {
+		if (engine != null) {
 			return engine;
 		}
+
+		if (!(this instanceof Engine)) {
+			throw new IllegalStateException("Only the Engine object itself should have a null engine reference");
+		}
+
+		return (Engine) this;
 	}
 
 	// TODO - these 2 methods are probably overly complex for requirements

@@ -112,65 +112,73 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	private final int subToInt(long a, long b) {
 		long result = a - b;
 		int msbs = (int) (result >> 32);
-		if (msbs != 0 && msbs != -1) {
-			if (result > 0) {
-				return 1;
-			} else if (result < 0) {
-				return -1;
-			} else {
-				return 0;
-			}
-		} else {
+		if (msbs == 0 || msbs == -1) {
 			return (int) result;
 		}
+
+		if (result > 0) {
+			return 1;
+		}
+
+		if (result < 0) {
+			return -1;
+		}
+
+		return 0;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
 			return true;
-		} else {
-			if (o instanceof DynamicBlockUpdate) {
-				DynamicBlockUpdate other = (DynamicBlockUpdate) o;
-				return nextUpdate == other.nextUpdate && packed == other.packed && lastUpdate == other.lastUpdate;
-			} else {
-				return false;
-			}
 		}
+
+		if (!(o instanceof DynamicBlockUpdate)) {
+			return false;
+		}
+
+		DynamicBlockUpdate other = (DynamicBlockUpdate) o;
+		return nextUpdate == other.nextUpdate && packed == other.packed && lastUpdate == other.lastUpdate;
 	}
 
 	public DynamicBlockUpdate add(DynamicBlockUpdate update) {
 		if (update == null) {
 			return this;
-		} else if (update.next != null) {
-			throw new IllegalArgumentException("Linked list error in dynamic block update, updates must not already be part of a list");
-		} else {
-			update.next = this.next;
-			this.next = update;
-			return this;
 		}
+
+		if (update.next != null) {
+			throw new IllegalArgumentException("Linked list error in dynamic block update, updates must not already be part of a list");
+		}
+
+		update.next = this.next;
+		this.next = update;
+		return this;
 	}
 
 	public DynamicBlockUpdate remove(DynamicBlockUpdate update) {
 		if (next == null) {
 			return this;
-		} else if (update == null) {
-			return this;
-		} else if (update == this) {
-			return this.next;
-		} else {
-			DynamicBlockUpdate current = this;
-			while (current != null) {
-				if (current.next == update) {
-					current.next = update.next;
-					break;
-				}
-				current = current.next;
-			}
+		}
+
+		if (update == null) {
 			return this;
 		}
+
+		if (update == this) {
+			return this.next;
+		}
+
+		DynamicBlockUpdate current = this;
+		while (current != null) {
+			if (current.next == update) {
+				current.next = update.next;
+				break;
+			}
+			current = current.next;
+		}
+		return this;
 	}
-	
+
 	public DynamicBlockUpdate getNext() {
 		return next;
 	}

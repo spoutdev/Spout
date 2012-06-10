@@ -152,6 +152,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
+	
+	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
+	private final MemoryLeakThread leakThread = new MemoryLeakThread();
+	
 	protected SpoutConfiguration config = new SpoutConfiguration();
 	private File worldFolder = new File(".");
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
@@ -160,7 +164,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
-	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
+	
 	protected FileSystem filesystem;
 
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
@@ -184,6 +188,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public void start() {
 		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
+			leakThread.start();
 		}
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
@@ -420,11 +425,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public World getWorld(String name) {
 		World world = loadedWorlds.get().get(name);
-		if (world == null) {
-			return loadedWorlds.getLive().get(name);
-		} else {
+		if (world != null) {
 			return world;
 		}
+
+		return loadedWorlds.getLive().get(name);
 	}
 
 	@Override
@@ -475,13 +480,13 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 		if (oldWorld != null) {
 			return oldWorld;
-		} else {
-			if (!world.getExecutor().startExecutor()) {
-				throw new IllegalStateException("Unable to start executor for new world");
-			}
-			getEventManager().callDelayedEvent(new WorldLoadEvent(world));
-			return world;
 		}
+
+		if (!world.getExecutor().startExecutor()) {
+			throw new IllegalStateException("Unable to start executor for new world");
+		}
+		getEventManager().callDelayedEvent(new WorldLoadEvent(world));
+		return world;
 	}
 
 	@Override
@@ -642,26 +647,27 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public boolean setDefaultWorld(World world) {
 		if (world == null) {
 			return false;
-		} else {
-			defaultWorld.set(world);
-			return true;
 		}
+
+		defaultWorld.set(world);
+		return true;
 	}
 
 	@Override
 	public World getDefaultWorld() {
-		World d = defaultWorld.get();
-		if (d == null || !loadedWorlds.get().containsKey(d.getName())) {
-			Map<String, SpoutWorld> l = loadedWorlds.get();
-			if (l.size() == 0) {
-				return null;
-			} else {
-				World first = l.values().iterator().next();
-				return first;
-			}
-		} else {
-			return d;
+		final Map<String, SpoutWorld> loadedWorlds = this.loadedWorlds.get();
+
+		final World defaultWorld = this.defaultWorld.get();
+		if (defaultWorld != null && loadedWorlds.containsKey(defaultWorld.getName())) {
+			return defaultWorld;
 		}
+
+		if (loadedWorlds.isEmpty()) {
+			return null;
+		}
+
+		final World first = loadedWorlds.values().iterator().next();
+		return first;
 	}
 
 	@Override
@@ -689,22 +695,22 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public boolean unloadWorld(World world, boolean save) {
 		if (world == null) {
 			return false;
-		} else {
-			boolean success = loadedWorlds.remove(world.getName(), (SpoutWorld) world);
-			if (success) {
-				if (save) {
-					SpoutWorld w = (SpoutWorld) world;
-					if (!w.getExecutor().haltExecutor()) {
-						throw new IllegalStateException("Executor was already halted when halting was attempted");
-					}
-					getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
-					w.unload(save);
-				}
-				//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
-				//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
-			}
-			return success;
 		}
+
+		boolean success = loadedWorlds.remove(world.getName(), (SpoutWorld) world);
+		if (success) {
+			if (save) {
+				SpoutWorld w = (SpoutWorld) world;
+				if (!w.getExecutor().haltExecutor()) {
+					throw new IllegalStateException("Executor was already halted when halting was attempted");
+				}
+				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
+				w.unload(save);
+			}
+			//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
+			//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
+		}
+		return success;
 	}
 
 	public EntityManager getExpectedEntityManager(Point point) {
@@ -738,22 +744,20 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// The new player needs a corresponding entity
 		SpoutEntity newEntity = new SpoutEntity(this, getDefaultWorld().getSpawnPoint(), null);
 
-		boolean success = false;
-
-		while (!success) {
+		while (true) {
 			player = onlinePlayers.getLive().get(playerName);
 
 			if (player != null) {
 				if (!player.connect(session, newEntity)) {
 					return null;
-				} else {
-					success = true;
 				}
-			} else {
-				player = new SpoutPlayer(playerName, newEntity, session);
-				if (onlinePlayers.putIfAbsent(playerName, player) == null) {
-					success = true;
-				}
+
+				break;
+			}
+
+			player = new SpoutPlayer(playerName, newEntity, session);
+			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
+				break;
 			}
 		}
 
@@ -797,5 +801,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public FileSystem getFilesystem() {
 		return filesystem;
+	}
+	
+	public MemoryLeakThread getLeakThread() {
+		return leakThread;
 	}
 }

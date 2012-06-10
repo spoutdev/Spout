@@ -32,7 +32,14 @@ import org.lwjgl.BufferUtils;
 import org.spout.engine.renderer.vertexbuffer.VertexBuffer;
 
 public class VertexBufferBatcher extends BatchVertexRenderer {
-	final int SIZE_FLOAT = 4;
+	protected static final int SIZE_FLOAT = 4;
+	protected static final int VERTEX_LOCATION = 0;
+	protected static final int COLOR_LOCATION = 1;
+	protected static final int NORMAL_LOCATION = 2;
+	protected static final int TEXCOORD0_LOCATION = 3;
+	
+	
+	
 	VertexBuffer buffer;
 	
 	public VertexBufferBatcher(int mode, VertexBuffer buffer) {
@@ -56,15 +63,22 @@ public class VertexBufferBatcher extends BatchVertexRenderer {
 		}
 		FloatBuffer verts = BufferUtils.createFloatBuffer(size);
 		verts.put(vertexBuffer.toArray());
-		
+		int offset = 0;
+		buffer.enableAttribute(VERTEX_LOCATION, offset);
 		if(useColors){
 			verts.put(colorBuffer.toArray());
+			offset += this.numVerticies * SIZE_FLOAT * 4;
+			buffer.enableAttribute(COLOR_LOCATION, offset);
 		}
 		if(useNormals){
 			verts.put(normalBuffer.toArray());
+			offset += this.numVerticies * SIZE_FLOAT * 4;
+			buffer.enableAttribute(NORMAL_LOCATION, offset);
 		}
 		if(useTextures){
 			verts.put(uvBuffer.toArray());
+			offset += this.numVerticies * SIZE_FLOAT * 2;
+			buffer.enableAttribute(TEXCOORD0_LOCATION, offset);
 		}
 		
 		verts.flip();
@@ -78,7 +92,7 @@ public class VertexBufferBatcher extends BatchVertexRenderer {
 
 	@Override
 	protected void doRender() {
-		// TODO Auto-generated method stub
+		this.buffer.drawBuffer(this.activeMaterial);
 		
 	}
 

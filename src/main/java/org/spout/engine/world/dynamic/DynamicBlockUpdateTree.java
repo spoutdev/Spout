@@ -65,9 +65,11 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
 	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
+	private final Thread regionThread;
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
+		this.regionThread = region.getExceutionThread();
 	}
 
 	public void resetBlockUpdates(int x, int y, int z) {
@@ -111,21 +113,27 @@ public class DynamicBlockUpdateTree {
 	}
 
 	public boolean removeDynamicBlockUpdates(Chunk c) {
-		TickStage.checkStage(TickStage.SNAPSHOT);
+		TickStage.checkStage(TickStage.SNAPSHOT, regionThread);
 		Set<DynamicBlockUpdate> toRemove = getDynamicBlockUpdates(c);
-		if (toRemove != null && toRemove.size() > 0) {
-			List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(toRemove);
-			for (DynamicBlockUpdate dm : list) {
-				remove(dm);
-			}
-			return false;
-		} else {
+		if (toRemove == null) {
 			return true;
 		}
+
+		if (toRemove.size() <= 0) {
+			return true;
+		}
+
+		List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(toRemove);
+		for (DynamicBlockUpdate dm : list) {
+			if (!remove(dm)) {
+				throw new IllegalStateException("Expected update not present when removing all updates for chunk " + c);
+			}
+		}
+		return false;
 	}
 	
 	public void commitPending(long currentTime) {
-		TickStage.checkStage(TickStage.FINALIZE);
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		List<DynamicBlockUpdate> l;
 		while ((l = pendingLists.poll()) != null) {
 			for (DynamicBlockUpdate update : l) {
@@ -196,6 +204,7 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	public boolean updateDynamicBlock(long currentTime, DynamicBlockUpdate update, boolean force) {
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		int bx = update.getX();
 		int by = update.getY();
 		int bz = update.getZ();
@@ -210,67 +219,68 @@ public class DynamicBlockUpdateTree {
 		Block b =  c.getBlock(bx, by, bz);
 		Material m = b.getMaterial();
 		
-		if (m instanceof DynamicMaterial) {
-			DynamicMaterial dm = (DynamicMaterial)m;
-			Vector3[] range = (force) ? zeroVector3Array : dm.maxRange();
-			if (range == null || range.length < 1) {
-				range = zeroVector3Array;
-			}
-			Vector3 rangeHigh = range[0];
-			Vector3 rangeLow = range.length < 2 ? range[0] : range[1];
-
-			int rhx = (int)rangeHigh.getX();
-			int rhy = (int)rangeHigh.getY();
-			int rhz = (int)rangeHigh.getZ();
-			if (rhx < 0 || rhy < 0 || rhz < 0) {
-				throw new IllegalArgumentException("Max range values must be greater or equal to 0");
-			}
-			int rlx = (int)rangeLow.getX();
-			int rly = (int)rangeLow.getY();
-			int rlz = (int)rangeLow.getZ();
-			if (rlx < 0 || rly < 0 || rlz < 0) {
-				throw new IllegalArgumentException("Max range values must be greater or equal to 0");
-			}
-			int maxx = bx + rhx;
-			int maxy = by + rhy;
-			int maxz = bz + rhz;
-			int minx = bx - rlx;
-			int miny = by - rly;
-			int minz = bz - rlz;
-			int rs = Region.BLOCKS.SIZE;
-			if (maxx >= rs || maxy >= rs || maxz >= rs || minx < 0 || miny < 0 || minz < 0) {
-				return false;
-			} else {
-				long nextUpdate = dm.update(b, region, update.getNextUpdate(), update.getLastUpdate(), update.getHint());
-				if (nextUpdate > 0) {
-					add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime, null));
-				}
-				return true;
-			}
-		} else {
+		if (!(m instanceof DynamicMaterial)) {
 			return true;
 		}
+
+		DynamicMaterial dm = (DynamicMaterial)m;
+		Vector3[] range = (force) ? zeroVector3Array : dm.maxRange();
+		if (range == null || range.length < 1) {
+			range = zeroVector3Array;
+		}
+		Vector3 rangeHigh = range[0];
+		Vector3 rangeLow = range.length < 2 ? range[0] : range[1];
+
+		int rhx = (int)rangeHigh.getX();
+		int rhy = (int)rangeHigh.getY();
+		int rhz = (int)rangeHigh.getZ();
+		if (rhx < 0 || rhy < 0 || rhz < 0) {
+			throw new IllegalArgumentException("Max range values must be greater or equal to 0");
+		}
+		int rlx = (int)rangeLow.getX();
+		int rly = (int)rangeLow.getY();
+		int rlz = (int)rangeLow.getZ();
+		if (rlx < 0 || rly < 0 || rlz < 0) {
+			throw new IllegalArgumentException("Max range values must be greater or equal to 0");
+		}
+		int maxx = bx + rhx;
+		int maxy = by + rhy;
+		int maxz = bz + rhz;
+		int minx = bx - rlx;
+		int miny = by - rly;
+		int minz = bz - rlz;
+		int rs = Region.BLOCKS.SIZE;
+		if (maxx >= rs || maxy >= rs || maxz >= rs || minx < 0 || miny < 0 || minz < 0) {
+			return false;
+		}
+
+		long nextUpdate = dm.update(b, region, update.getNextUpdate(), update.getLastUpdate(), update.getHint());
+		if (nextUpdate > 0) {
+			add(new DynamicBlockUpdate(bx, by, bz, nextUpdate, currentTime, null));
+		}
+		return true;
 	}
 	
 	public DynamicBlockUpdate getNextUpdate(long currentTime) {
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		if (queuedUpdates.isEmpty()) {
 			return null;
-		} else {
-			DynamicBlockUpdate first = queuedUpdates.first();
-			if (first == null) {
-				return null;
-			} else {
-				if (first.getNextUpdate() <= currentTime) {
-					if (!remove(first)) {
-						throw new IllegalStateException("queued updates for dynamic block updates violated threading rules");
-					} else {
-						return first;
-					}
-				}  else {
-					return null;
-				}
-			}
 		}
+
+		DynamicBlockUpdate first = queuedUpdates.first();
+		if (first == null) {
+			return null;
+		}
+
+		if (first.getNextUpdate() > currentTime) {
+			return null;
+		}
+
+		if (!remove(first)) {
+			throw new IllegalStateException("queued updates for dynamic block updates violated threading rules");
+		}
+
+		return first;
 	}
 	
 	private boolean add(DynamicBlockUpdate update) {
@@ -301,28 +311,49 @@ public class DynamicBlockUpdateTree {
 	 */
 	private boolean remove(DynamicBlockUpdate update) {
 		boolean removed = false;
-		DynamicBlockUpdate previous = blockToUpdateMap.remove(update.getPacked());
-		while (previous != null) {
-			if (previous != update) {
-				previous = previous.getNext();
+		int packedKey = update.getPacked();
+		DynamicBlockUpdate root = blockToUpdateMap.get(packedKey);
+		DynamicBlockUpdate current = root;
+		DynamicBlockUpdate previous = null;
+		boolean rootChanged = false;
+		while (current != null) {
+			if (current != update) {
+				previous = current;
+				current = current.getNext();
 				continue;
 			}
 			removed = true;
-			if (!queuedUpdates.remove(previous)) {
+			if (!queuedUpdates.remove(current)) {
 				throw new IllegalStateException("Dynamic block update missing from queue when removed");
 			}
-			int previousPacked = previous.getChunkPacked();
-			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previousPacked);
-			if (chunkSet == null || !chunkSet.remove(previous)) {
+			int currentPacked = current.getChunkPacked();
+			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(currentPacked);
+			if (chunkSet == null || !chunkSet.remove(current)) {
 				throw new IllegalStateException("Dynamic block update missing from chunk when removed");
-			} else {
-				if (chunkSet.size() == 0) {
-					if (chunkToUpdateMap.remove(previousPacked) == null) {
-						throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
-					}
+			}
+	
+			if (chunkSet.size() == 0) {
+				if (chunkToUpdateMap.remove(currentPacked) == null) {
+					throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
 				}
 			}
-			previous = previous.getNext();
+			if (current == root) {
+				root = current.getNext();
+				current = root;
+				rootChanged = true;
+			} else {
+				if (previous.remove(current) != previous) {
+					throw new IllegalStateException("Removing current from previous should not move root");
+				}
+				current = previous.getNext();
+			}
+		}
+		if (rootChanged) {
+			if (root != null) {
+				blockToUpdateMap.put(packedKey, root);
+			} else {
+				blockToUpdateMap.remove(packedKey);
+			}
 		}
 		return removed;
 	}
@@ -335,27 +366,27 @@ public class DynamicBlockUpdateTree {
 	 */
 	private boolean removeAll(int packed) {
 		DynamicBlockUpdate previous = blockToUpdateMap.remove(packed);
-		if (previous != null) {
-			while (previous != null) {
-				if (!queuedUpdates.remove(previous)) {
-					throw new IllegalStateException("Dynamic block update missing from queue when removed");
-				}
-				int previousPacked = previous.getChunkPacked();
-				HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previousPacked);
-				if (chunkSet == null || !chunkSet.remove(previous)) {
-					throw new IllegalStateException("Dynamic block update missing from chunk when removed");
-				} else {
-					if (chunkSet.size() == 0) {
-						if (chunkToUpdateMap.remove(previousPacked) == null) {
-							throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
-						}
-					}
-				}
-				previous = previous.getNext();
-			}
-			return true;
-		} else {
+		if (previous == null) {
 			return false;
 		}
+
+		while (previous != null) {
+			if (!queuedUpdates.remove(previous)) {
+				throw new IllegalStateException("Dynamic block update missing from queue when removed");
+			}
+			int previousPacked = previous.getChunkPacked();
+			HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(previousPacked);
+			if (chunkSet == null || !chunkSet.remove(previous)) {
+				throw new IllegalStateException("Dynamic block update missing from chunk when removed");
+			}
+
+			if (chunkSet.size() == 0) {
+				if (chunkToUpdateMap.remove(previousPacked) == null) {
+					throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
+				}
+			}
+			previous = previous.getNext();
+		}
+		return true;
 	}
 }

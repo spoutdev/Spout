@@ -240,10 +240,10 @@ public final class SpoutScheduler implements Scheduler {
 			for (AsyncExecutor e : asyncExecutors.get()) {
 				if (!(e.getManager() instanceof SpoutEngine)) {
 					throw new IllegalStateException("Only the engine should be left to shutdown");
-				} else {
-					if (!e.haltExecutor()) {
-						throw new IllegalStateException("Unable to halt engine executor");
-					}
+				}
+
+				if (!e.haltExecutor()) {
+					throw new IllegalStateException("Unable to halt engine executor");
 				}
 			}
 
@@ -258,9 +258,9 @@ public final class SpoutScheduler implements Scheduler {
 	public void startMainThread() {
 		if (mainThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the main thread twice");
-		} else {
-			mainThread.start();
 		}
+
+		mainThread.start();
 	}
 
 	public void startRenderThread() {
@@ -575,14 +575,14 @@ public final class SpoutScheduler implements Scheduler {
 	public boolean isServerLoaded() {
 		if (heavyLoad.get()) {
 			return true;
-		} else {
-			if (getRemainingTickTime() < 0) {
-				heavyLoad.set(true);
-				return true;
-			} else {
-				return false;
-			}
 		}
+
+		if (getRemainingTickTime() >= 0) {
+			return false;
+		}
+
+		heavyLoad.set(true);
+		return true;
 	}
 	
 	/**
@@ -599,9 +599,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 	
 	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
-		if (true) {
-			return;
-		}
+		/*
 		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
 		AsyncExecutorUtils.dumpAllStacks();
 		AsyncExecutorUtils.checkForDeadlocks();
@@ -625,5 +623,6 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
+		*/
 	}
 }

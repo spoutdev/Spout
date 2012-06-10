@@ -139,14 +139,14 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	public boolean remove(int x, int y, int z, V value) {
 		synchronized (live) {
 			V current = live.get(x, y, z);
-			if (current.equals(value)) {
-				live.remove(x, y, z);
-				TripleInt key = new TripleInt(x, y, z);
-				markDirty(key);
-				return true;
-			} else {
+			if (!current.equals(value)) {
 				return false;
 			}
+
+			live.remove(x, y, z);
+			TripleInt key = new TripleInt(x, y, z);
+			markDirty(key);
+			return true;
 		}
 	}
 
@@ -180,11 +180,11 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	public V getValue(int x, int y, int z) {
 		synchronized (live) {
 			V liveValue = live.get(x, y, z);
-			if (liveValue == null) {
-				return snapshot.get(x, y, z);
-			} else {
+			if (liveValue != null) {
 				return liveValue;
 			}
+
+			return snapshot.get(x, y, z);
 		}
 	}
 

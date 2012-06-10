@@ -119,6 +119,14 @@
 					<include>LICENSE.txt</include>
 				</includes>
 			</resource>
+			<resource>
+				<targetPath>resources</targetPath>
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
 		</resources>
 		<!-- Plugins -->
 		<plugins>
